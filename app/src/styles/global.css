@@ -1,0 +1,163 @@
+@import './tokens.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--page-outer);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: var(--maroon);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--maroon-hover);
+}
+
+button {
+  font-family: inherit;
+}
+
+/* The phone-sized app shell — centred on wide screens, full-bleed on mobile */
+.app-shell {
+  max-width: var(--app-max);
+  margin: 0 auto;
+  min-height: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--page);
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 480px) {
+  .app-shell {
+    height: min(100dvh, 940px);
+    margin-top: max(0px, calc((100dvh - 940px) / 2));
+    border-radius: 22px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.22);
+  }
+}
+
+.screen {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Bilingual label pair */
+.label-ta {
+  font: 600 15px/1.3 var(--font-ta);
+  color: var(--ink);
+}
+.label-en {
+  font: 400 12px/1.35 var(--font-ui);
+  color: var(--ink-3);
+}
+
+/* Scrollbar — subtle on desktop preview */
+.screen::-webkit-scrollbar {
+  width: 8px;
+}
+.screen::-webkit-scrollbar-thumb {
+  background: var(--hairline-2);
+  border-radius: 999px;
+}
+
+/* Horizontal card rails (NorthNadu): scroll with snap, no visible scrollbar */
+.nn-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+.nn-scroll::-webkit-scrollbar {
+  display: none;
+}
+.nn-scroll > * {
+  scroll-snap-align: start;
+}
+
+/* Focus ring for keyboard users / accessibility */
+:focus-visible {
+  outline: 3px solid var(--maroon);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@keyframes npmPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+@keyframes npmFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: npmFadeUp var(--dur-mid) var(--ease);
+}
+
+/* Premium press/hover micro-interaction (iOS-like) */
+.press {
+  transition:
+    transform 0.16s cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+  will-change: transform;
+}
+.press:active {
+  transform: scale(0.975);
+  filter: brightness(1.04);
+}
+@media (hover: hover) {
+  .press:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Leaflet map container sizing (imported where used) */
+.leaflet-container {
+  font-family: var(--font-ui);
+}

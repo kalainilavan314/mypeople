@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+app/dist/
+app/dev-dist/
+
+# Secrets — DATABASE_URL, JWT_SECRET, NIC_PEPPER, invite codes.
+# Never commit these: NIC_PEPPER in particular is the salt protecting every
+# stored NIC hash. Deployment secrets belong in the host's env-var settings.
+.env
+.env.*
+!.env.example
+
+# Locally stored uploads (avatars, donation slips). Member data — and in a
+# deployed environment these live in object storage, not in the repo.
+server/uploads/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

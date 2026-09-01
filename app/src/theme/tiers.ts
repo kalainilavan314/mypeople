@@ -1,0 +1,47 @@
+// Membership tiers. Ascending: Volunteer → Diamond → Gold → Platinum.
+// Diamond = GS-division level (recruit 20% of your GS division, 2 seats/GS)
+// Gold    = DS-division level (500 recruits, 3 seats/DS)
+// Platinum= District/GA level (1,000 recruits, 5 seats/district)
+
+export type MemberTier = 'volunteer' | 'diamond' | 'gold' | 'platinum';
+
+export interface TierDef {
+  key: MemberTier;
+  level: number; // 0..3
+  nameEn: string;
+  nameTa: string;
+  adminLevel: 'none' | 'gs' | 'ds' | 'district';
+  seatLimit: number | null;
+  requirementEn: string;
+  color: string; // accent
+  grad: string; // card / badge gradient
+}
+
+export const TIERS: Record<MemberTier, TierDef> = {
+  volunteer: {
+    key: 'volunteer', level: 0, nameEn: 'Volunteer', nameTa: 'தன்னார்வலர்',
+    adminLevel: 'none', seatLimit: null, requirementEn: 'Join the movement',
+    color: '#8E98B7', grad: 'linear-gradient(135deg,#3E4470,#2A3154)',
+  },
+  diamond: {
+    key: 'diamond', level: 1, nameEn: 'Diamond', nameTa: 'வைரம்',
+    adminLevel: 'gs', seatLimit: 2, requirementEn: 'Recruit 20% of your GS division',
+    color: '#6EC6FF', grad: 'linear-gradient(135deg,#7FD8FF,#3E9BE0)',
+  },
+  gold: {
+    key: 'gold', level: 2, nameEn: 'Gold', nameTa: 'தங்கம்',
+    adminLevel: 'ds', seatLimit: 3, requirementEn: 'Recruit 500 volunteers',
+    color: '#FFCB6B', grad: 'linear-gradient(135deg,#FFDC8A,#E0A63C)',
+  },
+  platinum: {
+    key: 'platinum', level: 3, nameEn: 'Platinum', nameTa: 'பிளாட்டினம்',
+    adminLevel: 'district', seatLimit: 5, requirementEn: 'Recruit 1,000 people',
+    color: '#D9E1F2', grad: 'linear-gradient(135deg,#EEF2FA,#AEB9D6)',
+  },
+};
+
+export const TIER_ORDER: MemberTier[] = ['volunteer', 'diamond', 'gold', 'platinum'];
+
+export function tierDef(key: string | null | undefined): TierDef {
+  return TIERS[(key as MemberTier)] ?? TIERS.volunteer;
+}

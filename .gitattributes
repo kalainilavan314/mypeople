@@ -1,0 +1,11 @@
+# Authored on Windows, deployed to Linux. Normalise to LF in the repository so
+# the checkout Render builds from is byte-identical regardless of who committed.
+* text=auto eol=lf
+
+# Binary — never touch these.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.woff2 binary
+*.ico binary
