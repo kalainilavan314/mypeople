@@ -1,149 +1,155 @@
 # Deploying NorthUnity — free tier
 
-One **Render** free web service runs the Node API *and* serves the built PWA, so
-there is a single origin and a single URL. **Supabase** free provides Postgres
-and the file storage for avatars and donation slips.
+**Vercel** serves the built PWA from its CDN and runs the API as a serverless
+function. **Supabase** free provides Postgres and the file storage for avatars
+and donation slips. One origin, so the app's relative `/api` calls just work.
 
-Total cost: nothing. Read [What "free" actually costs](#what-free-actually-costs)
-before promising anyone a demo — the limits are real.
+Total cost: nothing, and **no credit card**.
+
+> Render was the original target and its config is still in `render.yaml` — the
+> app runs unmodified on either. It was dropped because Render now requires card
+> verification before running even a free service.
 
 This deploys the app as a **closed pilot**: registration requires an invite code.
 See [Why the invite code is mandatory](#why-the-invite-code-is-mandatory).
 
 ---
 
-## Before you start
+## Status
 
-The project is **not in git yet**, and Render deploys from a repository.
-
-```bash
-git init && git add . && git commit -m "NorthUnity membership app"
-```
-
-`.gitignore` already excludes `node_modules/`, `app/dist/`, `server/uploads/`
-and **every `.env` file**. Confirm before pushing — `server/.env` contains your
-live database password and `NIC_PEPPER`:
-
-```bash
-git status --porcelain | grep -E "\.env$|node_modules|uploads/" || echo "clean — no secrets staged"
-```
-
-Then create an empty GitHub repo and push to it. Make it **private**: this
-codebase handles NIC numbers.
+| Step | |
+|---|---|
+| Git repo, pushed to GitHub | ✅ `kalainilavan314/northunity` (private, branch `main`) |
+| Supabase project + `npm-uploads` bucket | ✅ `gsmeprfwwhcexzhzafui`, Sydney |
+| All 8 migrations applied | ✅ 920 GN divisions, 34 DS, 5 districts, 4 seeded events |
+| API verified against live Supabase | ✅ 14/14, through the serverless path |
+| **Vercel project** | ⬜ **the remaining step** |
 
 ---
 
-## 1. Supabase — database and storage
+## Deploy to Vercel
 
-1. Create a project at [supabase.com](https://supabase.com). Region:
-   **Southeast Asia (Singapore)** — closest to both Sri Lanka and Render's
-   Singapore region.
-2. Save the database password it shows you. It is displayed once.
-3. **Connection string** — Project Settings → Database → Connection string →
-   URI, and pick the **Session pooler** entry (host looks like
-   `aws-0-ap-southeast-1.pooler.supabase.com`, port `5432`).
-
-   > Use the pooler, not "Direct connection". Supabase's direct host is
-   > IPv6-only on the free plan, and Render's free instances are IPv4 — a direct
-   > URL fails with `ENETUNREACH`. This is the single most common way this
-   > deployment goes wrong.
-
-   Append `?sslmode=require` if it is not already there.
-4. **Storage** — Storage → New bucket → name it `npm-uploads`, leave it
-   **Private**. The API streams these files through its own authenticated
-   endpoints, so the bucket must not be public.
-5. **Service key** — Project Settings → API → `service_role` key. Server-side
-   only; it bypasses row-level security and must never reach a browser.
-
-## 2. Run the migrations
-
-From your machine, pointed at the new database. All eight migrations apply to an
-empty Postgres, including the geo reference hierarchy — no PostGIS needed.
-
-PowerShell:
-```powershell
-cd server; $env:DATABASE_URL="<your session-pooler URI>"; npm run migrate
-```
-
-bash:
-```bash
-cd server && DATABASE_URL="<your session-pooler URI>" npm run migrate
-```
-
-Expect eight `applied` lines. Then confirm:
-```bash
-npm run migrate -- --status
-```
-
-Useful flags:
-- `--status` — show applied vs pending, change nothing.
-- `--baseline` — record migrations as applied **without running them**, for a
-  database whose schema already exists. Your local dev database has already been
-  baselined; `0001_init.sql` is not idempotent and would fail if re-run there.
-
-## 3. Render — the app
-
-1. [render.com](https://render.com) → **New → Blueprint** → pick your repo.
-   `render.yaml` is read automatically.
-2. Fill in the values it prompts for:
+1. Sign in at [vercel.com](https://vercel.com) with GitHub. No card required.
+2. **Add New → Project** → import `kalainilavan314/northunity`. Grant access to
+   the repo if prompted (it is private).
+3. Vercel reads `vercel.json`, so leave the build settings alone. It builds the
+   frontend with `npm ci --prefix app && npm run build --prefix app`, serves
+   `app/dist`, and exposes `api/[...path].js` at `/api/*`.
+4. Add these **Environment Variables** before deploying:
 
    | Variable | Value |
    |---|---|
-   | `DATABASE_URL` | the session-pooler URI from step 1 |
-   | `NIC_PEPPER` | a long random string — **see the warning below** |
+   | `NODE_ENV` | `production` |
+   | `DATABASE_URL` | the Supabase **transaction pooler** URI — see below |
+   | `JWT_SECRET` | any long random string |
+   | `NIC_PEPPER` | a long random string — **see the warning** |
    | `SIGNUP_INVITE_CODE` | the code you give pilot testers, e.g. `PILOT-2026` |
-   | `SUPABASE_URL` | `https://<project-ref>.supabase.co` |
+   | `SUPABASE_URL` | `https://gsmeprfwwhcexzhzafui.supabase.co` |
    | `SUPABASE_SERVICE_KEY` | the `service_role` key |
+   | `SUPABASE_BUCKET` | `npm-uploads` |
 
-   `JWT_SECRET` is generated by Render. `SUPABASE_BUCKET` defaults to
-   `npm-uploads`.
+   Generate the two secrets:
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
 
-   > **`NIC_PEPPER` is set once and never changed.** It salts every stored NIC
-   > hash, and NIC is the login identity. Change it later and every member is
-   > permanently locked out — there is no recovery path. Generate it now, put it
-   > in your password manager, and leave it alone:
-   > ```bash
-   > node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-   > ```
+5. Deploy.
 
-3. Deploy. First build takes a few minutes.
-4. Check `https://<your-app>.onrender.com/api/health` → `{"ok":true,...}`.
+### Which pooler, and why
 
-The server refuses to start in production if `JWT_SECRET`, `NIC_PEPPER`,
-`DATABASE_URL` or `SIGNUP_INVITE_CODE` is missing — that is deliberate, so a
+Supabase offers three connection endpoints. The choice matters:
+
+| | Host / port | Use |
+|---|---|---|
+| Direct connection | `db.<ref>.supabase.co:5432` | ❌ IPv6-only on the free plan |
+| **Transaction pooler** | `...pooler.supabase.com:6543` | ✅ **serverless runtime** — a new connection per invocation is exactly what it is for |
+| Session pooler | `...pooler.supabase.com:5432` | ✅ **migrations** — holds a session across the multi-statement files |
+
+So use port **`6543`** for `DATABASE_URL` on Vercel, and port `5432` when running
+migrations from your machine. Same host, same credentials, different port.
+
+> **Do not append `?sslmode=require`.** pg builds its config as
+> `Object.assign({}, config, parse(connectionString))`, so parameters in the URL
+> override the ones passed alongside it — `sslmode` silently replaces the pinned
+> Supabase CA and the connection then fails. TLS is configured in code; leave the
+> URL bare.
+
+> **`NIC_PEPPER` is set once and never changed.** It salts every stored NIC hash,
+> and the NIC is the login identity. Change it later and every member is
+> permanently locked out — there is no recovery path. Put it in your password
+> manager.
+
+The function refuses to start in production if `JWT_SECRET`, `NIC_PEPPER`,
+`DATABASE_URL` or `SIGNUP_INVITE_CODE` is missing — deliberately, so a
 misconfigured deploy fails loudly instead of running on dev defaults.
 
-## 4. Check it works
+## Check it works
 
-Open the URL. The sign-up screen shows an **Invite code** field — that field
-only appears because `/api/config` reported `inviteRequired: true`, which
-confirms the gate is live. Create an account, then verify:
+Open the deployment URL:
 
-- Events list is populated (proves the geo hierarchy loaded)
-- Set a profile photo, hard-refresh, and confirm it survives (proves Supabase
-  Storage is wired — if it disappears, `SUPABASE_URL` / `SUPABASE_SERVICE_KEY`
-  did not take effect and it fell back to the ephemeral local disk)
-- Install to home screen (proves the PWA service worker is served correctly)
+- `…/api/health` returns `{"ok":true,…}`
+- The sign-up screen shows an **Invite code** field. It only renders when
+  `/api/config` reports `inviteRequired: true`, so seeing it proves the gate is live.
+- Create an account, then check the **Events** list is populated — that proves
+  the geo hierarchy loaded.
+- Set a profile photo, hard-refresh, confirm it survives. If it vanishes, the
+  Supabase storage variables are not reaching the function and it fell back to a
+  local disk that does not persist.
+- Install to the home screen — proves the service worker is served correctly.
 
-Server logs on boot state which backend is active:
+## The upload size cap
+
+Vercel caps request bodies at **4.5 MB**. Images are posted as base64 JSON, which
+inflates bytes by 4/3, so the API enforces its own ceilings under that:
+
+| | Server limit | Client compresses to |
+|---|---|---|
+| Avatars | 2 MB | ≤ 2 MB, 512px |
+| Donation slips | 2.5 MB | ≤ 2 MB, 1280px |
+
+`compressImage` steps quality down and then dimensions until the photo fits, so
+in practice a phone photo lands far below the ceiling. Anything still over it
+gets a clean `413 image_too_large` rather than an opaque failure at the edge.
+
+These limits widen automatically on a host with a real process — the code keys
+off `process.env.VERCEL`.
+
+## Running the migrations
+
+Already done for the current schema. For future ones, from your machine, using
+the **session pooler** (port `5432`):
+
+```bash
+cd server && DATABASE_URL="<session pooler URI>" npm run migrate
 ```
-  storage  supabase
+
+PowerShell:
+```powershell
+cd server; $env:DATABASE_URL="<session pooler URI>"; npm run migrate
 ```
-If that says `local`, the Supabase variables are not reaching the process.
+
+Flags:
+- `--status` — show applied vs pending, change nothing.
+- `--baseline` — record migrations as applied **without running them**, for a
+  database whose schema already exists. The local dev database is already
+  baselined; `0001_init.sql` is not idempotent and would fail if re-run there.
+
+Migrations do **not** run on deploy. Apply them before shipping code that needs
+them.
 
 ---
 
 ## Why the invite code is mandatory
 
-`POST /api/auth/signup` performs **no identity verification at all**. There is
-an OTP endpoint, but nothing consumes the code it issues — the signup handler
-never checks it. Anyone who can reach the URL can create an account against any
-NIC number.
+`POST /api/auth/signup` performs **no identity verification at all**. There is an
+OTP endpoint, but nothing consumes the code it issues — the signup handler never
+checks it. Anyone who can reach the URL can create an account against any NIC
+number.
 
 For a closed pilot, `SIGNUP_INVITE_CODE` is what makes that acceptable: it is
-required, compared in constant time, and the server will not boot in production
+required, compared in constant time, and the function will not boot in production
 without it. It is a shared secret, not identity — it stops strangers, not a
-determined tester who was given the code and passes it on.
+tester who passes the code on.
 
 **Before any public launch**, one of these has to happen first:
 - wire a real SMS gateway (Dialog, Mobitel, Text.lk — none are free) and make
@@ -154,27 +160,18 @@ determined tester who was given the code and passes it on.
 
 | Limit | Effect |
 |---|---|
-| Render free sleeps after ~15 min idle | First visitor waits **30–60s** for a cold start. Later visitors are fast. |
-| Render free: 750 instance-hours/month | Enough for one always-available service. |
-| Supabase free pauses after ~7 days with no activity | The database stops. You resume it from the dashboard — data is retained, but the app is down until you do. |
-| Supabase free: 500 MB database | Ample: the geo hierarchy plus members is a few MB. |
+| Vercel serverless cold starts | First request after idle waits ~1–3s. Far better than Render free's 30–60s. |
+| Vercel Hobby: 4.5 MB request bodies | See [the upload cap](#the-upload-size-cap). |
+| Vercel Hobby: non-commercial use only | A party membership app is a grey area in Vercel's terms. Worth reading before a public launch. |
+| Supabase free pauses after ~7 days idle | The database stops. Resume from the dashboard — data is retained, app is down until you do. |
+| Supabase free: 500 MB database | Ample — the geo hierarchy plus members is a few MB. |
 | Supabase free: 1 GB storage | Donation slips are the growth driver. Roughly 2,000–5,000 compressed photos. |
-| Ephemeral filesystem on Render | Why storage must be Supabase. With the Supabase vars unset, uploads silently fall back to local disk and are lost on every deploy. |
-
-For a pilot in Jaffna, the cold start is the limitation people will actually
-notice. If that becomes a problem, Render's paid instance (~$7/month) removes
-sleeping entirely and is the one upgrade worth buying first.
+| Database in Sydney, functions in Washington by default | Cross-region latency per query. Set the Vercel function region to Sydney (`syd1`) in project settings to avoid it. |
 
 ## Updating
 
-Push to the deployment branch; Render rebuilds automatically.
-
-New migrations do **not** run automatically — free instances have no pre-deploy
-hook. Apply them from your machine, before deploying code that depends on them:
-
-```bash
-cd server && DATABASE_URL="<production URI>" npm run migrate
-```
+Push to `main`; Vercel rebuilds automatically. New migrations must be applied
+manually first, as above.
 
 ## Regenerating the geo reference data
 
@@ -187,3 +184,19 @@ cd server && node scripts/export-geo.mjs migrations/0000_geo_reference.sql
 
 It reads `DATABASE_URL` (your local GIS database) and exports codes and names
 only — no geometry — for the connected `LK*` hierarchy.
+
+## The pinned Supabase CA
+
+Supabase terminates Postgres TLS with its own private CA, so the system trust
+store cannot verify it. Rather than disabling verification, that one certificate
+is trusted explicitly: `server/src/supabase-ca.js` (inlined so serverless
+bundling includes it), with `server/certs/supabase-root-2021.crt` kept as the
+provenance record. It is byte-identical to the dashboard download:
+
+```
+SHA-256 80:70:25:AD:50:D4:ED:21:9D:2C:9C:7D:29:9C:00:4F
+        82:4E:B0:0C:F7:F6:5A:FE:F6:07:D0:7B:72:E6:CA:FA
+```
+
+Valid until 26 Apr 2031. When it is rotated, download the new one and regenerate
+the module.

@@ -1,0 +1,35 @@
+{
+  "name": "northunity",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "NorthUnity — Tamil-first membership PWA for the Northern Province, Sri Lanka",
+  "engines": {
+    "node": ">=18"
+  },
+  "comment": [
+    "This root manifest exists for the serverless deployment. Vercel installs",
+    "from the repository root, and api/[...path].js pulls in server/src, so the",
+    "API's runtime dependencies have to be resolvable from here. They are kept",
+    "identical to server/package.json — update both together.",
+    "",
+    "The frontend keeps its own manifest in app/ and is built by buildCommand in",
+    "vercel.json. Nothing is installed from app/ at the root."
+  ],
+  "scripts": {
+    "dev": "npm run dev --prefix app",
+    "dev:api": "npm run dev --prefix server",
+    "build": "npm run build --prefix app",
+    "typecheck": "npm run typecheck --prefix app",
+    "migrate": "npm run migrate --prefix server",
+    "start": "node server/src/index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.0"
+  }
+}

@@ -1,10 +1,6 @@
 import 'dotenv/config';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import pg from 'pg';
-
-const CERTS_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'certs');
+import { SUPABASE_ROOT_CA } from './supabase-ca.js';
 
 /**
  * TLS settings for the database connection.
@@ -12,9 +8,11 @@ const CERTS_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 
  * Supabase terminates TLS with its own private CA ("Supabase Root 2021 CA"),
  * not a publicly trusted root, so verifying against the system trust store
  * always fails with SELF_SIGNED_CERT_IN_CHAIN. The answer is to trust that one
- * CA explicitly — certs/supabase-root-2021.crt — which keeps full verification
- * (chain AND hostname) rather than turning it off. The file is a public CA
- * certificate, not a secret, so it is committed.
+ * CA explicitly, which keeps full verification (chain AND hostname) rather than
+ * turning it off.
+ *
+ * The certificate is a static import, not an fs read: serverless bundlers trace
+ * imports and would ship a function without a file loaded at runtime.
  *
  * PGSSL_CA overrides it with an inline PEM, for a different provider.
  * PGSSL_INSECURE=true disables verification entirely — a last resort: it still
@@ -23,16 +21,7 @@ const CERTS_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 
  */
 function sslConfig() {
   if (process.env.PGSSL_INSECURE === 'true') return { rejectUnauthorized: false };
-
-  let ca = process.env.PGSSL_CA || null;
-  if (!ca) {
-    const bundled = fs
-      .readdirSync(CERTS_DIR, { withFileTypes: true })
-      .filter((e) => e.isFile() && e.name.endsWith('.crt'))
-      .map((e) => fs.readFileSync(path.join(CERTS_DIR, e.name), 'utf8'));
-    if (bundled.length) ca = bundled;
-  }
-  return ca ? { ca, rejectUnauthorized: true } : { rejectUnauthorized: true };
+  return { ca: process.env.PGSSL_CA || SUPABASE_ROOT_CA, rejectUnauthorized: true };
 }
 
 /**

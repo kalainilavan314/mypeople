@@ -39,6 +39,12 @@ function requireInvite(supplied) {
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) throw bad('invalid_invite_code', 403);
 }
 
+// On Vercel this module is imported by api/index.js and invoked per request
+// rather than listening on a port. That platform also caps request bodies at
+// 4.5 MB, well under the 8 MB a long-running host accepts, so the upload limits
+// below tighten automatically instead of failing with an opaque 413 at the edge.
+const SERVERLESS = !!process.env.VERCEL;
+
 const app = express();
 
 // Same-origin by default: the single-service deploy serves the PWA from this
@@ -47,11 +53,17 @@ const app = express();
 const ALLOWED = (process.env.ALLOWED_ORIGINS || '').split(',').map((o) => o.trim()).filter(Boolean);
 if (ALLOWED.length) app.use(cors({ origin: ALLOWED, credentials: true }));
 else if (!PROD) app.use(cors());
-// 8mb: donation slip photos arrive as base64 JSON (client compresses first).
-app.use(express.json({ limit: '8mb' }));
+
+// Donation slip photos arrive as base64 JSON (the client compresses first).
+// Base64 inflates bytes by 4/3, so the image ceilings are set well under the
+// body limit to leave room for that plus the surrounding JSON.
+const BODY_LIMIT = process.env.MAX_BODY || (SERVERLESS ? '4mb' : '8mb');
+const MAX_SLIP_BYTES = SERVERLESS ? 2.5 * 1024 * 1024 : 6 * 1024 * 1024;
+const MAX_AVATAR_BYTES = SERVERLESS ? 2 * 1024 * 1024 : 3 * 1024 * 1024;
+app.use(express.json({ limit: BODY_LIMIT }));
 
 // Decode a data:image base64 payload; returns { buf, ext } or throws 400.
-function decodeImage(image, maxBytes = 6 * 1024 * 1024) {
+function decodeImage(image, maxBytes = MAX_SLIP_BYTES) {
   const match = /^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/.exec(String(image || ''));
   if (!match) throw bad('bad_image');
   const buf = Buffer.from(match[2], 'base64');
@@ -419,7 +431,7 @@ app.post('/api/me/avatar', wrap(async (req, res) => {
   const m = await memberById(id);
   if (!m) throw bad('unauthorized', 401);
 
-  const { buf, ext } = decodeImage(req.body?.image, 3 * 1024 * 1024);
+  const { buf, ext } = decodeImage(req.body?.image, MAX_AVATAR_BYTES);
   const fname = `${crypto.randomUUID()}.${ext}`;
   await putObject('avatars', fname, buf);
   if (m.avatar_path) await deleteObject('avatars', m.avatar_path);
@@ -622,11 +634,18 @@ if (hasBuild) {
 
 app.use((_req, res) => res.status(404).json({ error: 'not_found' }));
 
-const port = Number(process.env.PORT || 8787);
-app.listen(port, () => {
-  console.log(`NPM membership API on port ${port}`);
-  console.log(`  mode     ${PROD ? 'production' : 'development'}`);
-  console.log(`  storage  ${storageBackend}`);
-  console.log(`  frontend ${hasBuild ? 'served from app/dist' : 'not built — API only'}`);
-  if (!PROD && DEV_OTP) console.log('  DEV_OTP  on — OTP codes are returned in API responses');
-});
+// Under a serverless host there is no port to bind: the platform imports this
+// module and hands each request to the exported Express app, which is itself a
+// valid (req, res) handler. Only bind a port when running as a real process.
+if (!SERVERLESS) {
+  const port = Number(process.env.PORT || 8787);
+  app.listen(port, () => {
+    console.log(`NPM membership API on port ${port}`);
+    console.log(`  mode     ${PROD ? 'production' : 'development'}`);
+    console.log(`  storage  ${storageBackend}`);
+    console.log(`  frontend ${hasBuild ? 'served from app/dist' : 'not built — API only'}`);
+    if (!PROD && DEV_OTP) console.log('  DEV_OTP  on — OTP codes are returned in API responses');
+  });
+}
+
+export default app;
