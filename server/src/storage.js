@@ -14,10 +14,18 @@
 // /api/donations/:id/slip endpoints, so the existing access rules (unguessable
 // UUID for avatars, admin-only for slips) continue to apply unchanged.
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const LOCAL_ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'uploads');
+// A serverless filesystem is read-only apart from the temp directory, so the
+// local backend cannot write beside the source there. It is only ever a
+// fallback in that environment — uploads must go to object storage — but it has
+// to resolve to a writable path rather than throw, or the whole function dies.
+const SERVERLESS = !!process.env.VERCEL;
+const LOCAL_ROOT = SERVERLESS
+  ? path.join(os.tmpdir(), 'npm-uploads')
+  : path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'uploads');
 
 const SUPABASE_URL = (process.env.SUPABASE_URL || '').replace(/\/+$/, '');
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || '';
@@ -34,12 +42,13 @@ const remoteUrl = (area, name) =>
   `${SUPABASE_URL}/storage/v1/object/${encodeURIComponent(BUCKET)}/${area}/${encodeURIComponent(path.basename(name))}`;
 const authHeaders = () => ({ authorization: `Bearer ${SUPABASE_KEY}`, apikey: SUPABASE_KEY });
 
-if (backend === 'local') {
-  for (const area of ['avatars', 'donations']) fs.mkdirSync(path.join(LOCAL_ROOT, area), { recursive: true });
-}
-
 export async function putObject(area, name, buf) {
   if (backend === 'local') {
+    // Created on write, not at import. Doing this at module scope crashes the
+    // entire module on a read-only filesystem — and under a serverless runtime
+    // that surfaces as an opaque FUNCTION_INVOCATION_FAILED on every route,
+    // including ones that never touch storage.
+    fs.mkdirSync(path.join(LOCAL_ROOT, area), { recursive: true });
     fs.writeFileSync(localPath(area, name), buf);
     return;
   }
