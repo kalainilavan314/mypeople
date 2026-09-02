@@ -13,22 +13,6 @@ import { putObject, getObject, deleteObject, mimeFor, backend as storageBackend 
 
 const PROD = process.env.NODE_ENV === 'production';
 
-// Fail fast rather than booting a public deployment on the dev fallbacks in
-// lib.js ('dev-secret' / 'dev-pepper'). NIC_PEPPER especially: changing it later
-// invalidates every NIC hash already stored, so it has to be right on day one.
-if (PROD) {
-  // SIGNUP_INVITE_CODE is in this list on purpose: signup performs no OTP or
-  // identity check, so without an invite code a reachable deployment has fully
-  // open registration. Set it to '' only for a deliberately public launch.
-  const missing = ['JWT_SECRET', 'NIC_PEPPER', 'DATABASE_URL', 'SIGNUP_INVITE_CODE'].filter(
-    (k) => process.env[k] === undefined || process.env[k] === null,
-  );
-  if (missing.length) {
-    console.error(`Refusing to start: ${missing.join(', ')} must be set when NODE_ENV=production.`);
-    process.exit(1);
-  }
-}
-
 // Closed-pilot gate on registration. Unset (dev) => open; set => must match.
 const INVITE_CODE = process.env.SIGNUP_INVITE_CODE || '';
 function requireInvite(supplied) {
@@ -39,13 +23,48 @@ function requireInvite(supplied) {
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) throw bad('invalid_invite_code', 403);
 }
 
-// On Vercel this module is imported by api/index.js and invoked per request
+// On Vercel this module is imported by api/[...path].js and invoked per request
 // rather than listening on a port. That platform also caps request bodies at
 // 4.5 MB, well under the 8 MB a long-running host accepts, so the upload limits
 // below tighten automatically instead of failing with an opaque 413 at the edge.
 const SERVERLESS = !!process.env.VERCEL;
 
+// Refuse to run a public deployment on the dev fallbacks in lib.js
+// ('dev-secret' / 'dev-pepper'). NIC_PEPPER especially: changing it later
+// invalidates every NIC hash already stored, so it has to be right on day one.
+//
+// SIGNUP_INVITE_CODE is in this list on purpose: signup performs no OTP or
+// identity check, so without an invite code a reachable deployment has fully
+// open registration. Set it to '' only for a deliberately public launch.
+const MISSING_ENV = PROD
+  ? ['JWT_SECRET', 'NIC_PEPPER', 'DATABASE_URL', 'SIGNUP_INVITE_CODE'].filter(
+      (k) => process.env[k] === undefined || process.env[k] === null,
+    )
+  : [];
+
+if (MISSING_ENV.length) {
+  console.error(`Misconfigured: ${MISSING_ENV.join(', ')} must be set when NODE_ENV=production.`);
+}
+
 const app = express();
+
+// A misconfigured deployment answers every request with a description of what
+// is wrong, and serves nothing else.
+//
+// It must NOT exit the process here. On a long-lived host process.exit(1) is a
+// clear, loud failure; under a serverless runtime the module is initialised
+// inside the request, so exiting surfaces only as FUNCTION_INVOCATION_FAILED
+// with no indication of the cause. Variable NAMES are safe to report — the
+// response never contains a value — and this only ever appears while broken.
+if (MISSING_ENV.length) {
+  app.use((_req, res) =>
+    res.status(503).json({
+      error: 'server_misconfigured',
+      missing: MISSING_ENV,
+      hint: 'Set these environment variables on the deployment and redeploy.',
+    }),
+  );
+}
 
 // Same-origin by default: the single-service deploy serves the PWA from this
 // same process, so no cross-origin access is needed at all. ALLOWED_ORIGINS
