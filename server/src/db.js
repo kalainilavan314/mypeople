@@ -1,25 +1,71 @@
 import 'dotenv/config';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 
+const CERTS_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'certs');
+
 /**
- * Pool config shared by the API and the migration runner.
+ * TLS settings for the database connection.
  *
- * Managed Postgres (Supabase, Neon, RDS) requires TLS; a local server normally
- * has none, and forcing it there just breaks development. So TLS is switched on
- * for every non-local host and left off for localhost.
+ * Supabase terminates TLS with its own private CA ("Supabase Root 2021 CA"),
+ * not a publicly trusted root, so verifying against the system trust store
+ * always fails with SELF_SIGNED_CERT_IN_CHAIN. The answer is to trust that one
+ * CA explicitly — certs/supabase-root-2021.crt — which keeps full verification
+ * (chain AND hostname) rather than turning it off. The file is a public CA
+ * certificate, not a secret, so it is committed.
  *
- * Certificates are verified by default. PGSSL_INSECURE=true turns verification
- * off for providers that terminate TLS with a self-signed chain — it still
- * encrypts, but it stops authenticating the server, so use it only if the
- * connection genuinely fails without it. This database holds NIC hashes.
+ * PGSSL_CA overrides it with an inline PEM, for a different provider.
+ * PGSSL_INSECURE=true disables verification entirely — a last resort: it still
+ * encrypts, but stops authenticating the server, and this database holds NIC
+ * hashes.
+ */
+function sslConfig() {
+  if (process.env.PGSSL_INSECURE === 'true') return { rejectUnauthorized: false };
+
+  let ca = process.env.PGSSL_CA || null;
+  if (!ca) {
+    const bundled = fs
+      .readdirSync(CERTS_DIR, { withFileTypes: true })
+      .filter((e) => e.isFile() && e.name.endsWith('.crt'))
+      .map((e) => fs.readFileSync(path.join(CERTS_DIR, e.name), 'utf8'));
+    if (bundled.length) ca = bundled;
+  }
+  return ca ? { ca, rejectUnauthorized: true } : { rejectUnauthorized: true };
+}
+
+/**
+ * Drop sslmode/ssl from the URL's query string.
+ *
+ * pg builds its config as Object.assign({}, config, parse(connectionString)) —
+ * values parsed out of the URL WIN over ones passed alongside it. So a URL
+ * ending in ?sslmode=require silently replaces the ssl object above (CA and
+ * all) with a bare { rejectUnauthorized: true }, and the connection then fails
+ * against Supabase's private CA. Removing the parameter lets sslConfig() stand.
+ */
+function stripSslParams(url) {
+  try {
+    const u = new URL(url);
+    u.searchParams.delete('sslmode');
+    u.searchParams.delete('ssl');
+    return u.toString();
+  } catch {
+    return url; // not parseable — hand it to pg unchanged and let it complain
+  }
+}
+
+/**
+ * Pool config shared by the API and the migration runner. TLS is used for every
+ * non-local host and skipped for localhost, where a dev server normally has none.
  */
 export function poolConfig(overrides = {}) {
   const url = process.env.DATABASE_URL || '';
   const isLocal = /@(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(url);
   return {
-    connectionString: url,
+    connectionString: isLocal ? url : stripSslParams(url),
     max: Number(process.env.PG_POOL_MAX || 10),
-    ...(isLocal ? {} : { ssl: { rejectUnauthorized: process.env.PGSSL_INSECURE !== 'true' } }),
+    ...(isLocal ? {} : { ssl: sslConfig() }),
     ...overrides,
   };
 }
