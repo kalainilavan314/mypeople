@@ -1,2 +1,2 @@
-commit=3ffca24
-built=marker
+commit=4f8d0b5
+note=regenerated on each release to verify which build is live
