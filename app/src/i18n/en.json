@@ -1,8 +1,8 @@
 {
   "auth": {
     "welcome": "Welcome!",
-    "welcomeSub": "NorthUnity · Northern Province",
-    "welcomeBack": "Welcome to NorthUnity",
+    "welcomeSub": "My People · Northern Province",
+    "welcomeBack": "Welcome to My People",
     "signInSub": "Sign in to continue",
     "nameLabel": "Full name",
     "namePlaceholder": "Your full name",
@@ -287,7 +287,7 @@
     "nReferred": "{{n}} referred",
     "location": "Location",
     "helpSupport": "Help & Support",
-    "about": "About NorthUnity",
+    "about": "About My People",
     "points": "Points",
     "referred": "Referred",
     "checkins": "Check-ins",
@@ -399,7 +399,15 @@
       "pending": "Pending",
       "approved": "Approved",
       "rejected": "Rejected"
-    }
+    },
+    "bankTitle": "Official account",
+    "accName": "Account name",
+    "accNumber": "Account number",
+    "bank": "Bank",
+    "branch": "Branch",
+    "bankCode": "Bank code",
+    "branchCode": "Branch code",
+    "swift": "SWIFT code"
   },
   "creport": {
     "title": "Community Reporting",
@@ -455,5 +463,11 @@
     "cta": "Join the Community",
     "member": "Already a member?",
     "signIn": "Sign In"
+  },
+  "brand": {
+    "name": "My People",
+    "nameTa": "என் மக்கள்",
+    "slogan": "The target is one, the liberation of the race.",
+    "sloganTa": "இலக்கு ஒன்று தான் இனத்தின் விடிவு"
   }
 }

@@ -4,6 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { c, font, radius } from '../theme/tokens';
 import { pick } from '../i18n';
 import { Icon } from '../components/Icon';
+import { Logo } from '../components/Logo';
+// Still used as the large low-opacity watermark behind the card — a Northern
+// Province motif, not the brand emblem, which is now <Logo /> above.
 import { PalmyraMark } from '../components/PalmyraMark';
 import { Button, QueryBoundary } from '../components/ui';
 import { QR } from '../lib/qr';
@@ -50,12 +53,15 @@ export function Card() {
 
                 {/* Header band */}
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 11, padding: '15px 18px', borderBottom: '1px solid rgba(255,255,255,.08)', background: 'rgba(255,255,255,.03)' }}>
-                  <div style={{ width: 34, height: 34, borderRadius: 9, background: c.maroon, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
-                    <PalmyraMark size={26} stroke="#fff" opacity={0.95} />
+                  <div style={{ width: 34, height: 34, borderRadius: 9, background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
+                    {/* The mark is full colour, so it needs a light chip behind
+                        it on the card's dark header rather than the gold tile
+                        that suited the single-colour palmyra. */}
+                    <Logo size={28} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ font: `700 14px/1.15 ${font.ta}`, color: '#fff' }}>வடமாகாண மக்கள் இயக்கம்</div>
-                    <div style={{ font: `500 9.5px/1 ${font.ui}`, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(232,243,241,.7)', marginTop: 3 }}>NorthUnity · Northern Province</div>
+                    <div style={{ font: `700 14px/1.15 ${font.ta}`, color: '#fff' }}>{t('brand.nameTa')}</div>
+                    <div style={{ font: `500 9.5px/1 ${font.ui}`, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(232,243,241,.7)', marginTop: 3 }}>{t('brand.name')} · Northern Province</div>
                   </div>
                   <span style={{ flex: 'none', display: 'inline-flex', alignItems: 'center', gap: 5, height: 26, padding: '0 11px', borderRadius: 999, background: tier.grad, color: tier.key === 'volunteer' ? '#E8F3F1' : '#00352D', font: `700 11px/1 ${font.ui}` }}>
                     <Icon name="star" size={12} color={tier.key === 'volunteer' ? '#E8F3F1' : '#00352D'} fill={tier.key === 'volunteer' ? 'none' : '#00352D'} strokeWidth={2} />

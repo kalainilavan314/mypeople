@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { authC, font, radius } from '../../theme/tokens';
 import { LangToggle } from '../auth/parts';
+import { Logo } from '../../components/Logo';
 
 /**
  * First-launch welcome (NorthUnity reference): light warm-paper screen with the
@@ -77,24 +78,15 @@ export function Welcome() {
 
       {/* ---------- brand row ---------- */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '24px 24px 0' }}>
-        <span
-          aria-hidden="true"
-          style={{
-            width: 36, height: 36, borderRadius: 10, background: GOLD, flex: 'none',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-        >
-          {/* mini palmyrah mark, white */}
-          <svg width={20} height={20} viewBox="0 0 100 100" fill="none" stroke="#fff" strokeWidth={7} strokeLinecap="round" aria-hidden="true">
-            <path d="M50 96V54" />
-            <path d="M50 58C40 46 26 40 14 40" />
-            <path d="M50 58C60 46 74 40 86 40" />
-            <path d="M50 54C44 38 34 26 22 20" />
-            <path d="M50 54C56 38 66 26 78 20" />
-            <path d="M50 50C49 34 49 20 50 8" />
-          </svg>
+        <Logo size={36} style={{ borderRadius: 10 }} />
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ display: 'block', font: `800 18px/1.1 ${font.ta}`, letterSpacing: '-0.2px', color: INK }}>
+            {t('brand.nameTa')}
+          </span>
+          <span style={{ display: 'block', font: `600 12px/1.2 ${font.head}`, letterSpacing: '-0.2px', color: INK, opacity: 0.72, marginTop: 2 }}>
+            {t('brand.name')}
+          </span>
         </span>
-        <span style={{ font: `800 20px/1 ${font.head}`, letterSpacing: '-0.5px', color: INK, flex: 1 }}>NorthUnity</span>
         <LangToggle />
       </div>
 

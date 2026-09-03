@@ -15,14 +15,14 @@ export default defineConfig({
       filename: 'sw.ts',
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      includeAssets: ['favicon.svg', 'offline.html'],
+      includeAssets: ['favicon.png', 'logo.png', 'offline.html'],
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
       },
       manifest: {
-        name: 'NorthUnity',
-        short_name: 'NorthUnity',
-        description: 'Every person is a part of the North · வடக்கின் ஒற்றுமை',
+        name: 'என் மக்கள் · My People',
+        short_name: 'My People',
+        description: 'இலக்கு ஒன்று தான் இனத்தின் விடிவு · The target is one, the liberation of the race.',
         lang: 'ta',
         dir: 'ltr',
         start_url: '/',
