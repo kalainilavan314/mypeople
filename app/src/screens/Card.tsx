@@ -48,7 +48,7 @@ export function Card() {
           return (
             <>
               {/* ---------- Membership card ---------- */}
-              <div style={{ position: 'relative', overflow: 'hidden', borderRadius: radius.xxl, boxShadow: '0 8px 22px -6px rgba(201,143,38,.45)', background: 'linear-gradient(135deg,#E8A838 0%,#B37F1B 100%)', color: '#FFF9EC' }}>
+              <div style={{ position: 'relative', overflow: 'hidden', borderRadius: radius.xxl, boxShadow: '0 8px 22px -6px rgba(4,48,116,.45)', background: 'linear-gradient(135deg,#043074 0%,#021D47 100%)', color: '#EAF1FB' }}>
                 <PalmyraMark size={240} stroke="#FFFFFF" opacity={0.05} style={{ position: 'absolute', right: -64, top: -46 }} />
 
                 {/* Header band */}

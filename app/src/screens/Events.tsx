@@ -14,7 +14,7 @@ import type { NpmEvent } from '../data/types';
 
 const eventPin = L.divIcon({
   className: '',
-  html: `<div style="width:26px;height:26px;border-radius:50% 50% 50% 0;background:#E8A838;transform:rotate(-45deg);border:2px solid #FFFFFF;box-shadow:0 2px 8px rgba(201,143,38,.5)"></div>`,
+  html: `<div style="width:26px;height:26px;border-radius:50% 50% 50% 0;background:#043074;transform:rotate(-45deg);border:2px solid #FFFFFF;box-shadow:0 2px 8px rgba(4,48,116,.5)"></div>`,
   iconSize: [26, 26],
   iconAnchor: [13, 26],
   popupAnchor: [0, -24],

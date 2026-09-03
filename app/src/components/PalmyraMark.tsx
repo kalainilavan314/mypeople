@@ -7,7 +7,7 @@ interface Props {
   style?: React.CSSProperties;
 }
 
-export function PalmyraMark({ size = 210, stroke = '#F59E0B', opacity = 0.16, style }: Props) {
+export function PalmyraMark({ size = 210, stroke = '#043074', opacity = 0.16, style }: Props) {
   // Use currentColor so `var(--x)` strokes resolve (SVG attributes don't take var()).
   return (
     <svg

@@ -348,7 +348,7 @@ function HeroCard({ onCta }: { onCta: () => void }) {
           <button
             onClick={onCta}
             className="press"
-            style={{ flex: 'none', border: 'none', cursor: 'pointer', padding: '10px 20px', borderRadius: 10, background: '#E8A838', color: '#fff', font: `700 13px/1 ${font.head}` }}
+            style={{ flex: 'none', border: 'none', cursor: 'pointer', padding: '10px 20px', borderRadius: 10, background: '#043074', color: '#fff', font: `700 13px/1 ${font.head}` }}
           >
             {t('home.heroCta')}
           </button>

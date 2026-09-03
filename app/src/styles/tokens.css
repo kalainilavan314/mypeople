@@ -1,105 +1,113 @@
 /* ===========================================================================
-   NorthUnity design system — ported from the NorthUnity Flutter AppTheme.
+   என் மக்கள் · My People — design system.
 
-   Palette: palmyrah-gold primary (#E8A838), Northern-sea-blue secondary
-   (#4A90D9), Northern-greenery tertiary (#6B9E5E), warm paper surfaces.
-   Font: Outfit. Light is the primary theme (civic app, outdoor use); dark
-   mirrors it on charcoal surfaces.
+   The palette is sampled from the organisation's own logo rather than chosen:
+   the mark is 12% deep navy #043074 by area, with the five figures supplying
+   blue #017DFC, red, orange, yellow-green and green. Navy carries the interface;
+   the figure colours are used only as category accents, which is what keeps a
+   five-colour logo from turning into a five-colour UI.
+
+   Surfaces are white and near-white with a faint cool cast, so the navy reads as
+   deliberate rather than heavy. Light is the primary theme (civic app, outdoor
+   use); dark mirrors it on charcoal with a lifted blue accent, because #043074
+   is far too dark to sit on a dark surface.
 
    Legacy variable names are kept and re-pointed so every existing screen
    re-themes without edits:
-     --maroon*  = primary gold accent      --gold   = primary gold
+     --maroon*  = primary navy accent      --gold   = amber highlight
      --page/--card = surfaces              --ink*   = text ramp
      --hairline* = outlineVariant / outline
 =========================================================================== */
 :root {
-  /* --- Primary: palmyrah gold ------------------------------------------- */
-  --primary: #e8a838;
-  --primary-light: #ffb347;
-  --primary-mid: #d99a2b;
-  --primary-container: #fff3d6;
-  --on-primary-container: #3d2800;
+  /* --- Primary: logo navy ------------------------------------------------ */
+  --primary: #043074;
+  --primary-light: #0a4ba8;
+  --primary-mid: #032b68;
+  --primary-container: #e4edfb;
+  --on-primary-container: #032b68;
   --on-primary: #ffffff;
 
-  /* Legacy accent aliases (whole app reads these) */
-  --maroon: #e8a838;
-  --maroon-pressed: #c98f26;
-  --maroon-hover: #f0b95a;
-  --maroon-tint: rgba(232, 168, 56, 0.16);
-  --maroon-tint-soft: rgba(232, 168, 56, 0.08);
-  --maroon-tint-border: rgba(232, 168, 56, 0.36);
+  /* Legacy accent aliases (the whole app reads these) */
+  --maroon: #043074;
+  --maroon-pressed: #032b68;
+  --maroon-hover: #0a4ba8;
+  --maroon-tint: rgba(4, 48, 116, 0.12);
+  --maroon-tint-soft: rgba(4, 48, 116, 0.06);
+  --maroon-tint-border: rgba(4, 48, 116, 0.28);
 
-  /* --- Secondary: Northern sea blue ------------------------------------- */
-  --secondary: #4a90d9;
-  --secondary-container: #deeefb;
-  --on-secondary-container: #0b2744;
+  /* --- Secondary: the blue figure ---------------------------------------- */
+  --secondary: #017dfc;
+  --secondary-container: #dceafe;
+  --on-secondary-container: #05305e;
 
-  /* --- Tertiary: Northern greenery --------------------------------------- */
-  --tertiary: #6b9e5e;
-  --tertiary-container: #def0d8;
+  /* --- Tertiary: the green figure ---------------------------------------- */
+  --tertiary: #2e9e22;
+  --tertiary-container: #dff4da;
 
-  /* --- Surfaces (warm paper) --------------------------------------------- */
-  --page: #fafaf7; /* scaffold background */
-  --page-outer: #f5f0e8; /* deepest / outer */
-  --card: #fffdf8; /* surface */
-  --card-cream: #f5f0e8; /* surfaceVariant */
-  --card-warm: #fffdf8;
-  --surface-variant: #f5f0e8;
+  /* --- Surfaces (white, faint cool cast) --------------------------------- */
+  --page: #f7fafd; /* scaffold background */
+  --page-outer: #eef3f9; /* deepest / outer */
+  --card: #ffffff; /* surface */
+  --card-cream: #eff4fa; /* surfaceVariant */
+  --card-warm: #ffffff;
+  --surface-variant: #eff4fa;
 
   /* --- Lines -------------------------------------------------------------- */
-  --hairline: #ede8df; /* outlineVariant */
-  --hairline-2: #d4cfc4; /* outline */
-  --hairline-3: #f5f0e8;
+  --hairline: #e4eaf2; /* outlineVariant */
+  --hairline-2: #c6d2e3; /* outline */
+  --hairline-3: #eff4fa;
 
-  /* --- Ink (warm dark on light) ------------------------------------------ */
-  --ink: #1c1917; /* onSurface */
-  --ink-0: #2a2622;
-  --ink-2: #5c5751; /* onSurfaceVariant */
-  --ink-3: #8a847c;
-  --ink-4: #b8b2a8; /* hint / placeholder */
+  /* --- Ink (navy-black on light) ----------------------------------------- */
+  --ink: #0b1b3a; /* onSurface */
+  --ink-0: #14264a;
+  --ink-2: #4a5a78; /* onSurfaceVariant */
+  --ink-3: #7a8aa6;
+  --ink-4: #a9b6cc; /* hint / placeholder */
 
   /* --- Accents used by category tiles ------------------------------------ */
-  --purple: #9b6bb5;
-  --lavender: #4a90d9;
+  --purple: #7a5cc4;
+  --lavender: #017dfc;
 
   /* --- Tier accents -------------------------------------------------------- */
-  --sprout: #2d7a4f;
-  --sprout-soft: rgba(45, 122, 79, 0.14);
-  --root: #e8a838;
-  --root-soft: rgba(232, 168, 56, 0.16);
-  --palmyra: #6b6560;
+  --sprout: #2e9e22;
+  --sprout-soft: rgba(46, 158, 34, 0.14);
+  --root: #e08a00;
+  --root-soft: rgba(224, 138, 0, 0.16);
+  --palmyra: #5a6b87;
 
-  /* Gold / emblem — the palmyrah-gold primary */
-  --gold: #e8a838;
+  /* Amber highlight — the orange figure. Used for emblems and the Root tier. */
+  --gold: #e08a00;
 
   /* --- Semantic ------------------------------------------------------------ */
-  --success: #2d7a4f;
-  --success-bg: #d6f0e4;
-  --warning: #b45309;
-  --warning-bg: #fef3c7;
-  --error: #b91c1c;
-  --error-bg: #fee2e2;
-  --info: #4a90d9;
+  --success: #1f8b34;
+  --success-bg: #ddf3e0;
+  --warning: #b26a00;
+  --warning-bg: #fdf0d5;
+  --error: #c10504; /* the logo red, tempered for text contrast */
+  --error-bg: #fde4e4;
+  --info: #017dfc;
 
-  /* --- Gradients (action cards, CTAs, impact strip) ------------------------ */
-  --grad-primary: linear-gradient(135deg, #e8a838 0%, #ffb347 100%);
-  --grad-join: linear-gradient(90deg, #e8a838 0%, #ffb347 100%);
-  --grad-volunteer: linear-gradient(135deg, #ff8c42 0%, #ffb347 100%);
-  --grad-survey: linear-gradient(135deg, #4a90d9 0%, #74b3e8 100%);
-  --grad-community: linear-gradient(135deg, #6b9e5e 0%, #8dc87f 100%);
-  --grad-events: linear-gradient(135deg, #e07b54 0%, #eda07a 100%);
-  --grad-agriculture: linear-gradient(135deg, #9b6bb5 0%, #be93d4 100%);
-  --grad-you: linear-gradient(135deg, #e8a838 0%, #ffb347 100%);
+  /* --- Gradients (action cards, CTAs, impact strip) ------------------------
+     Primary actions are navy. The category gradients borrow one figure colour
+     each, so the tiles stay recognisably from the same mark. */
+  --grad-primary: linear-gradient(135deg, #043074 0%, #0a4ba8 100%);
+  --grad-join: linear-gradient(90deg, #043074 0%, #0359c0 100%);
+  --grad-volunteer: linear-gradient(135deg, #e08a00 0%, #ffa900 100%);
+  --grad-survey: linear-gradient(135deg, #017dfc 0%, #5aa9ff 100%);
+  --grad-community: linear-gradient(135deg, #2e9e22 0%, #5fc94a 100%);
+  --grad-events: linear-gradient(135deg, #c10504 0%, #e8474a 100%);
+  --grad-agriculture: linear-gradient(135deg, #7a5cc4 0%, #a98ee0 100%);
+  --grad-you: linear-gradient(135deg, #043074 0%, #0a4ba8 100%);
   --green-gradient: var(--grad-primary);
 
-  /* --- District colours (NorthUnity identity) ----------------------------- */
-  --d-jaffna: #e8a838;
-  --d-kilinochchi: #4a90d9;
-  --d-mannar: #6b9e5e;
-  --d-mullaitivu: #e07b54;
-  --d-vavuniya: #9b6bb5;
+  /* --- District colours — one figure per district ------------------------- */
+  --d-jaffna: #043074;
+  --d-kilinochchi: #017dfc;
+  --d-mannar: #2e9e22;
+  --d-mullaitivu: #c10504;
+  --d-vavuniya: #e08a00;
 
-  /* --- Radii (Flutter reference: cards 20, inputs 14, pills 100) ---------- */
+  /* --- Radii ---------------------------------------------------------------- */
   --r-sm: 12px;
   --r-md: 14px;
   --r-lg: 16px;
@@ -113,12 +121,12 @@
   --dur-mid: 260ms;
   --dur-slow: 480ms;
 
-  /* --- Shadows — warm gold-tinted ------------------------------------------ */
-  --shadow-card: 0 4px 12px rgba(140, 100, 20, 0.07), 0 1px 3px rgba(140, 100, 20, 0.04);
-  --shadow-nav: 0 -4px 20px rgba(140, 100, 20, 0.1);
-  --shadow-fab: 0 6px 18px -4px rgba(232, 168, 56, 0.5);
-  --shadow-lg: 0 8px 20px rgba(232, 168, 56, 0.22);
-  --shadow-tile: 0 4px 12px rgba(140, 100, 20, 0.25);
+  /* --- Shadows — cool navy-tinted, kept shallow so white stays white ------- */
+  --shadow-card: 0 4px 12px rgba(11, 27, 58, 0.06), 0 1px 3px rgba(11, 27, 58, 0.04);
+  --shadow-nav: 0 -4px 20px rgba(11, 27, 58, 0.08);
+  --shadow-fab: 0 6px 18px -4px rgba(4, 48, 116, 0.42);
+  --shadow-lg: 0 8px 20px rgba(4, 48, 116, 0.18);
+  --shadow-tile: 0 4px 12px rgba(11, 27, 58, 0.18);
 
   /* --- Fonts ------------------------------------------------------------------ */
   --font-ui: 'Outfit', ui-sans-serif, system-ui, sans-serif;
@@ -132,65 +140,81 @@
 }
 
 /* ---------------------------------------------------------------------------
-   DARK MODE — mirrors the Flutter darkTheme surfaces (#0F1117 / #1A1D24 /
-   #252830). Gold stays the accent — it reads well on charcoal. Toggled by
-   data-theme="dark" on <html> (see state/theme.ts).
+   DARK MODE — charcoal surfaces with a lifted blue accent. #043074 is almost
+   black against a dark surface, so the accent moves to the logo's brighter blue
+   and the containers become deep navy rather than pale tints.
+   Toggled by data-theme="dark" on <html> (see state/theme.ts).
 --------------------------------------------------------------------------- */
 :root[data-theme='dark'] {
-  --primary: #e8a838;
-  --primary-mid: #d99a2b;
-  --primary-container: #4d3a10;
-  --on-primary-container: #fff3d6;
-  --on-primary: #2a1e00;
+  --primary: #4d9bff;
+  --primary-light: #7ab6ff;
+  --primary-mid: #2f7fe0;
+  --primary-container: #0d2f5e;
+  --on-primary-container: #d7e7ff;
+  --on-primary: #04203f;
 
-  --maroon: #e8a838;
-  --maroon-pressed: #ffb347;
-  --maroon-hover: #f0b95a;
-  --maroon-tint: rgba(232, 168, 56, 0.18);
-  --maroon-tint-soft: rgba(232, 168, 56, 0.1);
-  --maroon-tint-border: rgba(232, 168, 56, 0.38);
+  --maroon: #4d9bff;
+  --maroon-pressed: #7ab6ff;
+  --maroon-hover: #7ab6ff;
+  --maroon-tint: rgba(77, 155, 255, 0.18);
+  --maroon-tint-soft: rgba(77, 155, 255, 0.1);
+  --maroon-tint-border: rgba(77, 155, 255, 0.38);
 
-  --secondary-container: #14324f;
-  --tertiary: #8dc87f;
-  --tertiary-container: #223d1c;
+  --secondary: #74b3f8;
+  --secondary-container: #10395f;
+  --on-secondary-container: #d7e7ff;
+  --tertiary: #6fd05e;
+  --tertiary-container: #1c3c18;
 
-  /* Surfaces (charcoal) */
-  --page: #0f1117;
-  --page-outer: #0a0c10;
-  --card: #1a1d24;
-  --card-cream: #252830;
-  --card-warm: #252830;
-  --surface-variant: #252830;
+  /* Surfaces (charcoal, faint blue cast) */
+  --page: #10141c;
+  --page-outer: #0a0d13;
+  --card: #1a202b;
+  --card-cream: #242c3a;
+  --card-warm: #242c3a;
+  --surface-variant: #242c3a;
 
   /* Lines */
-  --hairline: #2e3138;
-  --hairline-2: #4a4d55;
-  --hairline-3: #252830;
+  --hairline: #2c3444;
+  --hairline-2: #485266;
+  --hairline-3: #242c3a;
 
   /* Ink (light on dark) */
-  --ink: #ecebe8;
-  --ink-0: #dcdad5;
-  --ink-2: #a8a49d;
-  --ink-3: #837f78;
-  --ink-4: #55524d;
+  --ink: #e8ecf3;
+  --ink-0: #d5dbe6;
+  --ink-2: #a3adbf;
+  --ink-3: #7d8799;
+  --ink-4: #545d6e;
 
-  /* Semantic — lift for contrast */
+  /* Accents */
+  --purple: #a98ee0;
+  --lavender: #74b3f8;
+  --gold: #f0a92e;
+
+  /* Semantic — lifted for contrast */
   --error: #f28b82;
   --error-bg: rgba(242, 139, 130, 0.16);
   --success: #6ddba0;
   --success-bg: rgba(109, 219, 160, 0.14);
-  --warning: #f6b73c;
-  --warning-bg: rgba(246, 183, 60, 0.16);
-  --info: #74b3e8;
+  --warning: #f0a92e;
+  --warning-bg: rgba(240, 169, 46, 0.16);
+  --info: #74b3f8;
 
   --sprout: #6ddba0;
   --sprout-soft: rgba(109, 219, 160, 0.16);
-  --palmyra: #a8a49d;
+  --root: #f0a92e;
+  --root-soft: rgba(240, 169, 46, 0.16);
+  --palmyra: #a3adbf;
+
+  /* Gradients — the accent lifts with the theme */
+  --grad-primary: linear-gradient(135deg, #2f7fe0 0%, #4d9bff 100%);
+  --grad-join: linear-gradient(90deg, #2f7fe0 0%, #4d9bff 100%);
+  --grad-you: linear-gradient(135deg, #2f7fe0 0%, #4d9bff 100%);
 
   /* Shadows (deep) */
   --shadow-card: 0 6px 18px rgba(0, 0, 0, 0.45);
   --shadow-nav: 0 -4px 24px rgba(0, 0, 0, 0.5);
-  --shadow-fab: 0 8px 22px -6px rgba(232, 168, 56, 0.45);
+  --shadow-fab: 0 8px 22px -6px rgba(77, 155, 255, 0.45);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
   --shadow-tile: 0 4px 14px rgba(0, 0, 0, 0.4);
 }

@@ -33,17 +33,17 @@ export function markWelcomeSeen(): void {
 
 /* District dots — positions and colours from the NorthUnity reference. */
 const DISTRICTS = [
-  { name: 'Jaffna', color: '#E8A838', x: 0.5, y: 0.18 },
-  { name: 'Kilinochchi', color: '#4A90D9', x: 0.52, y: 0.38 },
-  { name: 'Mannar', color: '#6B9E5E', x: 0.2, y: 0.42 },
-  { name: 'Mullaitivu', color: '#E07B54', x: 0.72, y: 0.35 },
-  { name: 'Vavuniya', color: '#9B6BB5', x: 0.5, y: 0.6 },
+  { name: 'Jaffna', color: '#043074', x: 0.5, y: 0.18 },
+  { name: 'Kilinochchi', color: '#017DFC', x: 0.52, y: 0.38 },
+  { name: 'Mannar', color: '#2E9E22', x: 0.2, y: 0.42 },
+  { name: 'Mullaitivu', color: '#C10504', x: 0.72, y: 0.35 },
+  { name: 'Vavuniya', color: '#E08A00', x: 0.5, y: 0.6 },
 ] as const;
 
 /* Connection lines radiate from the centre at these angles (degrees). */
 const CONNECTION_ANGLES = [-60, -20, 20, 60, 100];
 
-const GOLD = '#E8A838';
+const GOLD = '#043074';
 const INK = '#1C1917';
 
 export function Welcome() {
@@ -190,7 +190,7 @@ export function Welcome() {
           <span
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px',
-              background: '#FFF3D6', border: '1px solid rgba(232,168,56,.3)', borderRadius: radius.pill,
+              background: '#E4EDFB', border: '1px solid rgba(4,48,116,.22)', borderRadius: radius.pill,
             }}
           >
             <span style={{ width: 6, height: 6, borderRadius: 999, background: GOLD }} />

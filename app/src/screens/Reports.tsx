@@ -14,12 +14,12 @@ import type { CommunityReport, CommunityReportCategory, CommunityReportPriority,
 
 const CATEGORIES: { key: CommunityReportCategory; emoji: string; color: string }[] = [
   { key: 'road', emoji: '🛣️', color: '#B45309' },
-  { key: 'water', emoji: '💧', color: '#4A90D9' },
+  { key: 'water', emoji: '💧', color: '#017DFC' },
   { key: 'waste', emoji: '🗑️', color: '#6B9E5E' },
-  { key: 'electricity', emoji: '💡', color: '#E8A838' },
+  { key: 'electricity', emoji: '💡', color: '#E08A00' },
   { key: 'agriculture', emoji: '🌾', color: '#6B9E5E' },
   { key: 'environment', emoji: '🌿', color: '#6B9E5E' },
-  { key: 'public_facility', emoji: '🏛️', color: '#E07B54' },
+  { key: 'public_facility', emoji: '🏛️', color: '#C10504' },
   { key: 'other', emoji: '❓', color: '#9E9E9E' },
 ];
 

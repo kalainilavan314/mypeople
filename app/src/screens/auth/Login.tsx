@@ -67,10 +67,13 @@ export function Login() {
           <LangToggle />
         </div>
 
-        {/* ---------- brand ---------- */}
-        <LogoBars height={26} />
-        <div style={{ marginTop: 12 }}>
-          <Wordmark size={30} />
+        {/* ---------- brand ----------
+            Mark beside the name rather than stacked above it: at 26px the logo
+            read as an afterthought next to a 30px wordmark, and the pairing is
+            how the identity appears on the organisation's own card. */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <LogoBars height={48} />
+          <Wordmark size={26} />
         </div>
 
         <h1 style={{ font: `700 20px/1.3 ${font.head}`, color: authC.text, margin: '14px 0 0' }}>{t('auth.welcomeCommunity')}</h1>

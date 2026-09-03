@@ -4,6 +4,7 @@
 
 import { useState, type CSSProperties, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Logo } from '../../components/Logo';
 import { authC, font, radius } from '../../theme/tokens';
 import { setSavedLang } from '../../i18n';
 import { Icon, type IconName } from '../../components/Icon';
@@ -275,33 +276,34 @@ export function Steps({ step, total }: { step: number; total: number }) {
 
 /* --------------------------------------------------------------- BackChip */
 /* ------------------------------------------------------------------ LogoBars
-   The five-stroke mark from the reference — one rising bar per Northern district,
-   fading from light to deep teal. */
+   Kept under its original name so callers do not change. It now renders the
+   organisation mark itself rather than the five abstract bars, which were a
+   placeholder from the design reference and had no relation to the real logo. */
 export function LogoBars({ height = 28 }: { height?: number }) {
-  const bars = [0.55, 0.78, 1, 0.78, 0.55];
-  return (
-    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height }} aria-hidden="true">
-      {bars.map((h, i) => (
-        <span
-          key={i}
-          style={{
-            width: 4,
-            height: `${h * 100}%`,
-            borderRadius: 2,
-            background: i === 2 ? authC.green : i % 2 === 0 ? authC.greenSoft : authC.greenBright,
-          }}
-        />
-      ))}
-    </div>
-  );
+  return <Logo size={height} />;
 }
 
 /* ------------------------------------------------------------------ Wordmark
-   "North" in ink + "Unity" in palmyrah gold. */
+   The organisation name, Tamil first with the English beneath — the same pairing
+   used on the business card and throughout the app. Reads from i18n so it is
+   never hard-coded in two places. */
 export function Wordmark({ size = 30 }: { size?: number }) {
+  const { t } = useTranslation();
   return (
-    <div style={{ font: `800 ${size}px/1.1 ${font.head}`, letterSpacing: '-0.6px', color: authC.text }}>
-      North<span style={{ color: authC.green }}>Unity</span>
+    <div>
+      <div style={{ font: `800 ${size}px/1.1 ${font.ta}`, letterSpacing: '-0.3px', color: authC.text }}>
+        {t('brand.nameTa')}
+      </div>
+      <div
+        style={{
+          font: `600 ${Math.round(size * 0.52)}px/1.2 ${font.head}`,
+          letterSpacing: '-0.2px',
+          color: authC.green,
+          marginTop: 2,
+        }}
+      >
+        {t('brand.name')}
+      </div>
     </div>
   );
 }

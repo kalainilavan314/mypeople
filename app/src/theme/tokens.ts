@@ -82,69 +82,70 @@ export const font = {
 } as const;
 
 // ----------------------------------------------------------------------------
-// Auth theme — NorthUnity light: warm-paper surface, filled surfaceVariant
-// fields, palmyrah-gold CTAs. Kept as a SEPARATE token set from `c` because the
-// auth screens are always light (they render before the theme preference is
-// known), but the palette matches the rest of the app.
-// Legacy key names (`green*`) are retained so GreenButton / parts.tsx keep
-// working — they simply hold gold values now.
+// Auth theme — the sign-in screens are ALWAYS light: they render before the
+// stored theme preference is known, so a dark-mode flash would be worse than
+// simply committing to light. Kept as a separate token set from `c` for that
+// reason, but sampled from the same logo — deep navy on white.
+//
+// The legacy key names (`green*`) are retained so GreenButton and parts.tsx keep
+// working unchanged; they now hold navy values.
 // ----------------------------------------------------------------------------
 
-// Accent scale (palmyrah gold + variants). Name kept as `green` for back-compat.
+// Accent scale (logo navy + variants). Name kept as `green` for back-compat.
 export const green = {
-  50: '#FFFBF2',
-  100: '#FFF3D6',
-  200: '#FFE4A8',
-  300: '#FFD080',
-  bright: '#FFB347',
-  400: '#F0B95A',
-  base: '#E8A838',
-  500: '#E8A838',
-  deep: '#C98F26',
-  600: '#C98F26',
-  700: '#8A5F13',
+  50: '#F5F9FF',
+  100: '#E4EDFB',
+  200: '#C3D8F4',
+  300: '#8FB4E6',
+  bright: '#0A4BA8',
+  400: '#0F57BC',
+  base: '#043074',
+  500: '#043074',
+  deep: '#032B68',
+  600: '#032B68',
+  700: '#021D47',
   ink: '#FFFFFF',
 } as const;
 
-// Brand button gradient (palmyrah gold) — used on CTAs / active tab.
-export const greenGradient = 'linear-gradient(135deg, #E8A838 0%, #FFB347 100%)';
+// Brand button gradient (logo navy) — used on CTAs / active tab.
+export const greenGradient = 'linear-gradient(135deg, #043074 0%, #0A4BA8 100%)';
 
 export const authC = {
-  // Surfaces
-  bg: '#FAFAF7', // page background (NorthUnity warm paper)
-  bgDeep: '#F5F0E8', // deepest / outer
-  surface: '#FFFDF8', // raised card
-  surface2: '#F5F0E8',
-  field: '#F5F0E8', // input fill — Material "filled" style
-  fieldBorder: '#EDE8DF',
-  fieldFocus: '#E8A838',
-  line: '#EDE8DF',
+  // Surfaces — white and near-white with a faint cool cast.
+  bg: '#F7FAFD',
+  bgDeep: '#EEF3F9',
+  surface: '#FFFFFF',
+  surface2: '#EFF4FA',
+  field: '#F2F6FC', // input fill — Material "filled" style
+  fieldBorder: '#E4EAF2',
+  fieldFocus: '#043074',
+  line: '#E4EAF2',
   glass: 'rgba(255,255,255,.85)',
   glassBorder: 'rgba(255,255,255,.7)',
 
-  // Accent (palmyrah gold)
-  green: '#E8A838',
-  greenBright: '#FFB347',
-  greenDeep: '#C98F26',
-  greenSoft: '#FFF3D6',
+  // Accent (logo navy)
+  green: '#043074',
+  greenBright: '#0A4BA8',
+  greenDeep: '#032B68',
+  greenSoft: '#E4EDFB',
   greenGrad: greenGradient,
-  greenGradPressed: 'linear-gradient(135deg, #C98F26 0%, #E8A838 100%)',
-  greenGlow: '0 8px 24px -6px rgba(232,168,56,.46)',
+  greenGradPressed: 'linear-gradient(135deg, #032B68 0%, #043074 100%)',
+  greenGlow: '0 8px 24px -6px rgba(4,48,116,.38)',
 
   // Accent purple / blue
-  purple: '#9B6BB5',
-  lavender: '#4A90D9',
+  purple: '#7A5CC4',
+  lavender: '#017DFC',
 
   // Text
-  text: '#1C1917',
-  text2: '#5C5751',
-  text3: '#B8B2A8', // muted / placeholder
+  text: '#0B1B3A',
+  text2: '#4A5A78',
+  text3: '#A9B6CC', // muted / placeholder
   onGreen: '#FFFFFF',
 
   // Semantic
-  error: '#B91C1C',
-  errorSoft: '#FEE2E2',
-  success: '#2D7A4F',
+  error: '#C10504',
+  errorSoft: '#FDE4E4',
+  success: '#1F8B34',
 } as const;
 
 export const ease = 'cubic-bezier(.22,.61,.36,1)';

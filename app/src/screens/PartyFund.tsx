@@ -28,7 +28,7 @@ import type { Donation } from '../data/types';
      an admin verifies the account and approves → donation joins the list. */
 
 const PRESETS = [500, 1000, 2500, 5000];
-const GOLD = '#E8A838';
+const GOLD = '#043074';
 
 const fmtLKR = (n: number) => `Rs. ${n.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 const fmtDate = (iso: string) =>
