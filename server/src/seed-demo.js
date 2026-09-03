@@ -31,13 +31,19 @@ async function main() {
   try {
     await client.query('BEGIN');
 
-    // Jaffna district + a real DS/GS division from the GIS tables.
+    // Jaffna district + a real DS/GS division from the geo reference tables.
+    //
+    // The "d.geom IS NOT NULL" filter this once carried told the real district
+    // apart from an orphan duplicate of the same name in the GIS database.
+    // 0000_geo_reference imports neither the orphans nor any geometry, so the
+    // name alone is now unambiguous — and the query works against a plain
+    // Postgres with no PostGIS, which is what the deployment runs on.
     const { rows: geo } = await client.query(`
       SELECT d.district_code, ds.ds_code, g.gn_code
         FROM geo.district d
         JOIN geo.ds_division ds ON ds.district_code = d.district_code
         JOIN geo.gn_division g  ON g.ds_code = ds.ds_code
-       WHERE d.name_en = 'Jaffna' AND d.geom IS NOT NULL
+       WHERE d.name_en = 'Jaffna'
        ORDER BY ds.ds_code, g.gn_code
        LIMIT 1`);
     if (!geo.length) throw new Error('No Jaffna district/DS/GS found in the geo schema');
