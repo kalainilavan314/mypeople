@@ -3,7 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5" />
+    <!--
+      interactive-widget=resizes-content: when the on-screen keyboard opens,
+      shrink the LAYOUT viewport, not just the visual one. The default
+      (resizes-visual) leaves 100dvh at full height, so the app shell — which is
+      a fixed-height, overflow:hidden column — keeps the focused field parked
+      underneath the keyboard. It looks and feels like the field will not accept
+      input. Chrome/Android honours this; iOS is handled by the visualViewport
+      fallback in src/lib/viewport.ts.
+    -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5, interactive-widget=resizes-content"
+    />
     <meta name="theme-color" content="#E8A838" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0F1117" media="(prefers-color-scheme: dark)" />
     <meta name="description" content="NorthUnity · Every person is a part of the North · வடக்கின் ஒற்றுமை" />
