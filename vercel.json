@@ -4,11 +4,6 @@
   "outputDirectory": "app/dist",
   "installCommand": "npm install",
   "framework": null,
-  "functions": {
-    "api/**": {
-      "includeFiles": "server/**"
-    }
-  },
   "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }],
   "headers": [
     {
