@@ -168,6 +168,30 @@ tester who passes the code on.
 | Supabase free: 1 GB storage | Donation slips are the growth driver. Roughly 2,000–5,000 compressed photos. |
 | Database in Sydney, functions in Washington by default | Cross-region latency per query. Set the Vercel function region to Sydney (`syd1`) in project settings to avoid it. |
 
+## If a push does not deploy
+
+Vercel blocks a deployment when it cannot tie the commit author to a GitHub
+account. The symptom is quiet and easy to misread: pushes succeed, the
+Deployments list shows failures described only as "Deployment was blocked", and
+the site keeps serving the last good build as though nothing had changed.
+
+GitHub carries the real reason. Ask it for the commit status:
+
+    gh api repos/OWNER/REPO/commits/$(git rev-parse HEAD)/status -q '.state, .statuses[].description'
+
+It answers "GitHub couldn't verify an account for the commit."
+
+The fix is to commit as an identity GitHub recognises. The noreply address always
+verifies and never exposes a private email — take ID and LOGIN from
+`gh api user -q '.id, .login'`:
+
+    git config user.email "ID+LOGIN@users.noreply.github.com"
+    git config user.name  "LOGIN"
+
+Commits already pushed under an unverified author stay blocked, but there is no
+need to rewrite history: the next commit from a verified author deploys the whole
+tree, including everything that was blocked before it.
+
 ## Updating
 
 Push to `main`; Vercel rebuilds automatically. New migrations must be applied
