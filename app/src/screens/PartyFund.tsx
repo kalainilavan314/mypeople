@@ -14,6 +14,7 @@ import {
   useSubmitSlipDonation,
 } from '../data/queries';
 import { fetchSlipImage, startCardDonation } from '../data/httpContent';
+import { authApi } from '../data/authApi';
 import { compressImage } from '../lib/image';
 import type { Donation } from '../data/types';
 
@@ -139,6 +140,26 @@ function DonateTab({ onDone }: { onDone: () => void }) {
   const [custom, setCustom] = useState('');
   const [method, setMethod] = useState<'card' | 'slip' | null>(null);
 
+  // The card path is a sandbox with no payment gateway behind it, so the server
+  // disables it in production. Hide the option entirely rather than offer a
+  // method that fails on submit — and default to false so a failed config call
+  // never exposes it.
+  const [cardEnabled, setCardEnabled] = useState(false);
+  useEffect(() => {
+    let live = true;
+    authApi.config().then((cfg) => {
+      if (live) setCardEnabled(!!cfg.cardPaymentsEnabled);
+    });
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  // Never leave a hidden method selected.
+  useEffect(() => {
+    if (!cardEnabled && method === 'card') setMethod(null);
+  }, [cardEnabled, method]);
+
   const effAmount = custom ? Number(digitsOnly(custom)) : amount;
   const amountOk = Number.isFinite(effAmount) && effAmount >= 100 && effAmount <= 1000000;
 
@@ -184,14 +205,16 @@ function DonateTab({ onDone }: { onDone: () => void }) {
 
       {/* method */}
       <div style={{ font: `700 16px/1.2 ${font.ta}`, color: c.ink, margin: '20px 0 12px' }}>{t('fund.method')}</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        <MethodCard
-          emoji="💳"
-          title={t('fund.methodCard')}
-          sub={t('fund.methodCardSub')}
-          active={method === 'card'}
-          onClick={() => setMethod('card')}
-        />
+      <div style={{ display: 'grid', gridTemplateColumns: cardEnabled ? '1fr 1fr' : '1fr', gap: 10 }}>
+        {cardEnabled && (
+          <MethodCard
+            emoji="💳"
+            title={t('fund.methodCard')}
+            sub={t('fund.methodCardSub')}
+            active={method === 'card'}
+            onClick={() => setMethod('card')}
+          />
+        )}
         <MethodCard
           emoji="🧾"
           title={t('fund.methodSlip')}
@@ -201,7 +224,7 @@ function DonateTab({ onDone }: { onDone: () => void }) {
         />
       </div>
 
-      {method === 'card' && amountOk && <CardFlow amount={effAmount} onDone={onDone} />}
+      {cardEnabled && method === 'card' && amountOk && <CardFlow amount={effAmount} onDone={onDone} />}
       {method === 'slip' && amountOk && <SlipFlow amount={effAmount} onDone={onDone} />}
     </div>
   );

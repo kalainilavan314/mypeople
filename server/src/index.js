@@ -96,7 +96,22 @@ async function withProgress(m) {
   return { ...publicMember(m), tierProgress: await tierProgress(m) };
 }
 
-const DEV_OTP = process.env.DEV_OTP === 'true';
+// Never returns OTP codes in a production response, whatever the environment
+// says. Leaving this to configuration alone means one stray variable turns the
+// login flow into an open door.
+const DEV_OTP = !PROD && process.env.DEV_OTP === 'true';
+
+// The card donation path is a SANDBOX. /api/donations/card/confirm writes the
+// donation straight to status='approved', and the "bank OTP" it verifies is one
+// this server generated itself — there is no payment gateway behind any of it.
+// No money moves, yet the member is told the donation succeeded and the party
+// fund total goes up.
+//
+// That is fine as a demo and unacceptable as a way to take real contributions,
+// so in production it is off unless someone deliberately turns it on for a
+// demonstration. Replace card/start and card/confirm with a real gateway
+// (PayHere, or a bank IPG) before accepting actual donations.
+const CARD_SANDBOX = !PROD || process.env.ALLOW_SANDBOX_CARD === 'true';
 const wrap = (fn) => (req, res) => fn(req, res).catch((e) => {
   console.error(e);
   res.status(e.status || 500).json({ error: e.publicMessage || 'server_error' });
@@ -107,7 +122,14 @@ app.get('/api/health', (_req, res) => res.json({ ok: true, service: 'npm-members
 
 // Public deployment switches the frontend needs to know about. Deliberately
 // says only WHETHER an invite code is required, never what it is.
-app.get('/api/config', (_req, res) => res.json({ inviteRequired: !!INVITE_CODE }));
+app.get('/api/config', (_req, res) =>
+  res.json({
+    inviteRequired: !!INVITE_CODE,
+    // The UI hides the card option entirely when this is false, rather than
+    // offering a payment method that returns 503 on submit.
+    cardPaymentsEnabled: CARD_SANDBOX,
+  }),
+);
 
 // --- OTP --------------------------------------------------------------------
 app.post('/api/auth/request-otp', wrap(async (req, res) => {
@@ -541,6 +563,7 @@ app.get('/api/donations/mine', wrap(async (req, res) => {
 
 // Card step 1: request the bank OTP (sandbox — logged, and returned when DEV_OTP).
 app.post('/api/donations/card/start', wrap(async (req, res) => {
+  if (!CARD_SANDBOX) throw bad('card_payments_unavailable', 503);
   const m = await requireMember(req);
   const amount = parseAmount(req.body?.amount);
   const code = otpCode();
@@ -554,6 +577,7 @@ app.post('/api/donations/card/start', wrap(async (req, res) => {
 
 // Card step 2: verify the OTP and record the (sandbox-approved) donation.
 app.post('/api/donations/card/confirm', wrap(async (req, res) => {
+  if (!CARD_SANDBOX) throw bad('card_payments_unavailable', 503);
   const m = await requireMember(req);
   const { code, last4, brand, note } = req.body || {};
   const amount = parseAmount(req.body?.amount);

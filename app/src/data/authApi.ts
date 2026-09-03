@@ -122,11 +122,14 @@ export const authApi = {
    * Treated as open if the call fails, so a hiccup here cannot lock the form —
    * the server rejects a bad or missing code regardless.
    */
-  async config(): Promise<{ inviteRequired: boolean }> {
+  async config(): Promise<{ inviteRequired: boolean; cardPaymentsEnabled: boolean }> {
     try {
-      return await get<{ inviteRequired: boolean }>('/config');
+      return await get<{ inviteRequired: boolean; cardPaymentsEnabled: boolean }>('/config');
     } catch {
-      return { inviteRequired: false };
+      // Fail closed on payments, open on the invite field: a hiccup here must
+      // not surface a card flow that cannot take money, and must not lock the
+      // sign-up form — the server rejects a bad or missing invite code anyway.
+      return { inviteRequired: false, cardPaymentsEnabled: false };
     }
   },
 
