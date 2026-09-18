@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, lazy, Suspense } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { savedLang } from './i18n';
@@ -9,38 +9,59 @@ import { useMember } from './data/queries';
 import { api } from './data';
 import { c, font } from './theme/tokens';
 
-// Screens
-import { Community } from './screens/Community';
-import { MyArea } from './screens/MyArea';
+// Eager screens: the first paint after auth (Home) and the pre-auth entry
+// points. Everything else is route-split (below) so the initial bundle stays
+// small — Home no longer pulls Gallery, the Leaflet map or PartyFund on load.
 import { Home } from './screens/Home';
-import { Card } from './screens/Card';
-import { Events } from './screens/Events';
-import { Reports } from './screens/Reports';
-import { Gallery } from './screens/Gallery';
-import { Profile } from './screens/Profile';
-import { Announcement } from './screens/Announcement';
-import { Survey } from './screens/Survey';
-import { EventDetail } from './screens/EventDetail';
-import { Referral } from './screens/Referral';
-import { Milestones } from './screens/Milestones';
-import { Notifications } from './screens/Notifications';
-import { Courses } from './screens/Courses';
-import { Ideas } from './screens/Ideas';
-import { Skills } from './screens/Skills';
-import { PartyFund } from './screens/PartyFund';
-import { EditProfile } from './screens/EditProfile';
-import { Privacy } from './screens/Privacy';
-import { Language } from './screens/Language';
 import { Welcome, hasSeenWelcome } from './screens/onboarding/Welcome';
-import { Join } from './screens/onboarding/Join';
-import { Otp } from './screens/onboarding/Otp';
-import { Nic } from './screens/onboarding/Nic';
-import { Pending } from './screens/onboarding/Pending';
 import { Login } from './screens/auth/Login';
-import { SignUp } from './screens/auth/SignUp';
-import { Forgot } from './screens/auth/Forgot';
-import { ProfileSetup } from './screens/auth/ProfileSetup';
-import { Questions } from './screens/auth/Questions';
+
+// Route-split screens. Named exports are adapted to the default export React
+// .lazy expects. Each becomes its own chunk, fetched on navigation (and PWA-
+// precached, so subsequent visits are instant).
+const named = <M, K extends keyof M>(p: Promise<M>, k: K) => p.then((m) => ({ default: m[k] as React.ComponentType }));
+const Community = lazy(() => named(import('./screens/Community'), 'Community'));
+const MyArea = lazy(() => named(import('./screens/MyArea'), 'MyArea'));
+const Card = lazy(() => named(import('./screens/Card'), 'Card'));
+const Events = lazy(() => named(import('./screens/Events'), 'Events'));
+const Reports = lazy(() => named(import('./screens/Reports'), 'Reports'));
+const Gallery = lazy(() => named(import('./screens/Gallery'), 'Gallery'));
+const Profile = lazy(() => named(import('./screens/Profile'), 'Profile'));
+const Announcement = lazy(() => named(import('./screens/Announcement'), 'Announcement'));
+const Survey = lazy(() => named(import('./screens/Survey'), 'Survey'));
+const EventDetail = lazy(() => named(import('./screens/EventDetail'), 'EventDetail'));
+const Referral = lazy(() => named(import('./screens/Referral'), 'Referral'));
+const Milestones = lazy(() => named(import('./screens/Milestones'), 'Milestones'));
+const Notifications = lazy(() => named(import('./screens/Notifications'), 'Notifications'));
+const Courses = lazy(() => named(import('./screens/Courses'), 'Courses'));
+const Ideas = lazy(() => named(import('./screens/Ideas'), 'Ideas'));
+const Skills = lazy(() => named(import('./screens/Skills'), 'Skills'));
+const PartyFund = lazy(() => named(import('./screens/PartyFund'), 'PartyFund'));
+const EditProfile = lazy(() => named(import('./screens/EditProfile'), 'EditProfile'));
+const Privacy = lazy(() => named(import('./screens/Privacy'), 'Privacy'));
+const Language = lazy(() => named(import('./screens/Language'), 'Language'));
+const Join = lazy(() => named(import('./screens/onboarding/Join'), 'Join'));
+const Otp = lazy(() => named(import('./screens/onboarding/Otp'), 'Otp'));
+const Nic = lazy(() => named(import('./screens/onboarding/Nic'), 'Nic'));
+const Pending = lazy(() => named(import('./screens/onboarding/Pending'), 'Pending'));
+const SignUp = lazy(() => named(import('./screens/auth/SignUp'), 'SignUp'));
+const Forgot = lazy(() => named(import('./screens/auth/Forgot'), 'Forgot'));
+const ProfileSetup = lazy(() => named(import('./screens/auth/ProfileSetup'), 'ProfileSetup'));
+const Questions = lazy(() => named(import('./screens/auth/Questions'), 'Questions'));
+
+/** Lightweight fallback while a route chunk loads. */
+function ScreenFallback() {
+  return (
+    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 48 }}>
+      <span
+        aria-label="Loading"
+        role="status"
+        style={{ width: 26, height: 26, border: `3px solid ${c.hairline}`, borderTopColor: c.maroon, borderRadius: '50%', display: 'inline-block', animation: 'npmSpin 800ms linear infinite' }}
+      />
+      <style>{'@keyframes npmSpin{to{transform:rotate(360deg)}}'}</style>
+    </div>
+  );
+}
 
 function OfflineBanner() {
   const { t } = useTranslation();
@@ -90,7 +111,9 @@ function TabLayout() {
     <div className="app-shell">
       {!online && <OfflineBanner />}
       <div className="screen">
-        <Outlet />
+        <Suspense fallback={<ScreenFallback />}>
+          <Outlet />
+        </Suspense>
       </div>
       <BottomNav />
     </div>
@@ -102,7 +125,9 @@ function OnboardingLayout() {
   return (
     <div className="app-shell">
       <div className="screen">
-        <Outlet />
+        <Suspense fallback={<ScreenFallback />}>
+          <Outlet />
+        </Suspense>
       </div>
     </div>
   );
