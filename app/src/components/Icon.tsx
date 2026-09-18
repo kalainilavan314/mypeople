@@ -46,6 +46,7 @@ export type IconName =
   | 'clipboard'
   | 'compass'
   | 'bookmark'
+  | 'menu'
   | 'x';
 
 const paths: Record<IconName, React.ReactNode> = {
@@ -132,6 +133,7 @@ const paths: Record<IconName, React.ReactNode> = {
     </>
   ),
   bars: <path d="M5 20V11M12 20V5M19 20v-6" />,
+  menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   sprout: (
     <>
       <path d="M12 21v-8" />

@@ -353,3 +353,101 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
     font-size: 11px;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Home fixed top bar — centred brand mark with two icon actions each side,
+   sticky over the Home scroll area, plus the "Explore more" bottom sheet.
+--------------------------------------------------------------------------- */
+.home-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--card);
+  border-bottom: 1px solid var(--hairline);
+}
+.topbar-group { display: flex; gap: 8px; flex: none; }
+.topbar-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline-2);
+  background: var(--card);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex: none;
+  transition: background 160ms var(--ease);
+}
+.topbar-btn:active { background: var(--surface-variant); }
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+.topbar-word { display: flex; flex-direction: column; align-items: flex-start; line-height: 1; min-width: 0; }
+.topbar-word .ta { font: 700 15px/1.15 var(--font-ta); color: var(--ink-0); white-space: nowrap; }
+.topbar-word span:last-child {
+  font: 600 9.5px/1.2 var(--font-ui);
+  color: var(--ink-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* Explore-more bottom sheet */
+.topbar-sheet {
+  margin: auto auto 0;
+  width: 100%;
+  max-width: var(--app-max);
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--hairline);
+  border-bottom: 0;
+  border-radius: var(--r-2xl) var(--r-2xl) 0 0;
+  padding: 16px 16px calc(16px + var(--safe-bottom));
+  max-height: 80dvh;
+  box-shadow: var(--shadow-lg);
+}
+.topbar-sheet::backdrop { background: rgba(16, 28, 43, 0.45); }
+.topbar-sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.topbar-sheet-head h2 { font: 700 18px/1.3 var(--font-ui); color: var(--ink-0); margin: 0; }
+.topbar-sheet-list { overflow-y: auto; max-height: 62dvh; }
+.topbar-sheet-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--hairline);
+  padding: 14px 4px;
+  min-height: 56px;
+  text-align: left;
+  font: 600 15px/1.3 var(--font-ui);
+  color: var(--ink);
+  cursor: pointer;
+}
+.topbar-sheet-item:last-child { border-bottom: 0; }
+.topbar-sheet-item > span:nth-child(2) { flex: 1; min-width: 0; }
+.topbar-sheet-item svg:last-child { color: var(--ink-3); flex: none; }
+.topbar-sheet-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-sm);
+  background: var(--surface-variant);
+  display: grid;
+  place-items: center;
+  color: var(--primary);
+  flex: none;
+}
