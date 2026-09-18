@@ -7,8 +7,9 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { pool, memberById, memberByNicHash, memberByPhone } from './db.js';
-import { nicHash, signToken, verifyToken, otpCode, memberCode, referralCode, publicMember } from './lib.js';
+import { nicHash, signToken, verifyToken, otpCode, memberCode, referralCode, publicMember, verifyAvatarUrl } from './lib.js';
 import { recomputeTier, tierProgress } from './tier.js';
+import { clientIp, checkOtpRequest, issueOtp, consumeOtp, checkLogin, recordLogin, sleep } from './throttle.js';
 import { putObject, getObject, deleteObject, mimeFor, backend as storageBackend } from './storage.js';
 
 const PROD = process.env.NODE_ENV === 'production';
@@ -38,7 +39,7 @@ const SERVERLESS = !!process.env.VERCEL;
 // open registration. Set it to '' only for a deliberately public launch.
 const MISSING_ENV = PROD
   ? ['JWT_SECRET', 'NIC_PEPPER', 'DATABASE_URL', 'SIGNUP_INVITE_CODE'].filter(
-      (k) => process.env[k] === undefined || process.env[k] === null,
+      (k) => k === 'SIGNUP_INVITE_CODE' ? process.env[k] == null : !process.env[k]?.trim() || ['dev-secret', 'dev-pepper'].includes(process.env[k]),
     )
   : [];
 
@@ -47,6 +48,14 @@ if (MISSING_ENV.length) {
 }
 
 const app = express();
+app.disable('x-powered-by');
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  if (req.path.startsWith('/api/')) res.setHeader('Cache-Control', 'no-store');
+  next();
+});
 
 // A misconfigured deployment answers every request with a description of what
 // is wrong, and serves nothing else.
@@ -135,26 +144,34 @@ app.get('/api/config', (_req, res) =>
 app.post('/api/auth/request-otp', wrap(async (req, res) => {
   const { phone, purpose = 'signup' } = req.body || {};
   if (!phone || String(phone).replace(/\D/g, '').length < 9) throw bad('invalid_phone');
+
+  // Layered limits: per-phone cooldown, hourly and daily caps, and a per-IP cap
+  // so one attacker cannot walk through many numbers. Unthrottled, this endpoint
+  // issued ten codes for one number instantly — an SMS bill and, once each code
+  // stays valid, ten simultaneous guesses at a 6-digit secret.
+  const ip = clientIp(req);
+  const gate = await checkOtpRequest(String(phone), ip);
+  if (!gate.ok) {
+    res.set('retry-after', String(gate.retryAfter));
+    throw bad('too_many_requests', 429);
+  }
+
   const code = otpCode();
-  await pool.query(
-    `INSERT INTO npm.otp (phone, code, purpose, expires_at) VALUES ($1,$2,$3, now() + interval '10 minutes')`,
-    [phone, code, purpose],
-  );
+  // Issuing invalidates any code still outstanding for this phone and purpose.
+  await issueOtp({ phone: String(phone), code, purpose, ip });
   // No SMS gateway yet: log it, and (dev only) return it so the flow is testable.
-  console.log(`[OTP] ${phone} -> ${code} (${purpose})`);
+  // OTPs and phone numbers must never be written to logs.
   res.json({ ok: true, ...(DEV_OTP ? { devCode: code } : {}) });
 }));
 
 app.post('/api/auth/verify-otp', wrap(async (req, res) => {
-  const { phone, code } = req.body || {};
+  const { phone, code, purpose = 'signup' } = req.body || {};
   if (!phone || !code) throw bad('missing_fields');
-  const r = await pool.query(
-    `SELECT id FROM npm.otp WHERE phone=$1 AND code=$2 AND consumed=false AND expires_at > now()
-     ORDER BY created_at DESC LIMIT 1`,
-    [phone, String(code)],
-  );
-  if (!r.rows[0]) throw bad('invalid_code', 401);
-  await pool.query(`UPDATE npm.otp SET consumed=true WHERE id=$1`, [r.rows[0].id]);
+
+  // Counts wrong guesses against the code and burns it after five, so the
+  // 6-digit space cannot be searched within the code's lifetime.
+  const r = await consumeOtp({ phone: String(phone), code: String(code), purpose });
+  if (!r.ok) throw bad(r.reason === 'too_many_attempts' ? 'too_many_attempts' : 'invalid_code', 401);
   res.json({ ok: true });
 }));
 
@@ -172,6 +189,21 @@ app.post('/api/auth/signup', wrap(async (req, res) => {
   requireInvite(b.inviteCode);
   if (!name || !nic || !password) throw bad('missing_fields');
   if (String(password).length < 6) throw bad('weak_password');
+
+  // Trim first, then judge. "   " is a truthy string, so the check above passed
+  // it and an empty name was stored. Browser attributes cannot be relied on for
+  // this: an API client never sees them.
+  const fullName = String(name).trim();
+  if (fullName.length < 2 || fullName.length > 150) throw bad('bad_name');
+
+  // A date of birth in 2050 was accepted. The upper bound cannot live in a CHECK
+  // constraint, which has to be immutable, so it is enforced here.
+  if (dob) {
+    const d = new Date(String(dob));
+    if (Number.isNaN(d.getTime())) throw bad('bad_dob');
+    if (d > new Date()) throw bad('dob_in_future');
+    if (d < new Date('1900-01-01')) throw bad('bad_dob');
+  }
 
   const nh = nicHash(nic);
   if (await memberByNicHash(nh)) throw bad('nic_exists', 409);
@@ -204,14 +236,23 @@ app.post('/api/auth/signup', wrap(async (req, res) => {
               dob, gender, gs_code, ds_code, district_code, referral_code, referred_by, language)
            VALUES ($1,$2,$3,$4,'verified',$5,$6,$7,$8,$9,$10,$11,$12,$13)
            RETURNING *`,
-          [memberCode(), String(name).trim(), phoneVal, nh, pwHash,
+          [memberCode(), fullName, phoneVal, nh, pwHash,
             dob || null, gender || null, gsCode || null, dsCode || null, districtCode || null,
-            referralCode(name), referrerId, language || 'en'],
+            referralCode(fullName), referrerId, language || 'en'],
         );
         member = ins.rows[0];
       } catch (e) {
-        if (e.code === '23505') continue; // unique_violation on generated code -> retry
-        throw e;
+        if (e.code !== '23505') throw e;
+        // Which unique constraint was violated decides the outcome, and getting
+        // this wrong is worse than not catching at all. member_code and
+        // referral_code are generated here, so a collision is bad luck and
+        // retrying with fresh values is correct. A NIC or phone collision is the
+        // caller's input and must surface as 409 — retrying it five more times
+        // and then reporting could_not_allocate_code would turn a clear
+        // "already registered" into an opaque 500.
+        if (e.constraint === 'member_nic_hash_active_key') throw bad('nic_exists', 409);
+        if (e.constraint === 'member_phone_key') throw bad('phone_exists', 409);
+        continue; // generated-code collision -> retry
       }
     }
     if (!member) throw bad('could_not_allocate_code', 500);
@@ -254,10 +295,33 @@ app.post('/api/auth/signup', wrap(async (req, res) => {
 app.post('/api/auth/login', wrap(async (req, res) => {
   const { nic, password } = req.body || {};
   if (!nic || !password) throw bad('missing_fields');
-  const member = await memberByNicHash(nicHash(nic));
-  if (!member) throw bad('invalid_credentials', 401);
-  const ok = await bcrypt.compare(String(password), member.password_hash);
+
+  // Throttled by account AND address together, never by address alone: members
+  // in a government office, an internet cafe or behind carrier NAT share one
+  // public IP, and locking that IP out would deny service to everyone in the
+  // building because of one person's typo.
+  //
+  // The identifier is the NIC hash, so nothing here stores a NIC. Failures are
+  // recorded even for accounts that do not exist, so probing for valid NICs
+  // cannot be distinguished from guessing a password.
+  const ip = clientIp(req);
+  const identifier = nicHash(nic);
+
+  const gate = await checkLogin(identifier, ip);
+  if (!gate.ok) {
+    res.set('retry-after', String(gate.retryAfter));
+    throw bad('too_many_attempts', 429);
+  }
+  // Progressive delay past the soft threshold: unnoticeable to someone who
+  // mistyped, ruinous to a script making thousands of guesses.
+  await sleep(gate.delayMs);
+
+  const member = await memberByNicHash(identifier);
+  const ok = member ? await bcrypt.compare(String(password), member.password_hash) : false;
+
+  await recordLogin(identifier, ip, ok);
   if (!ok) throw bad('invalid_credentials', 401);
+
   res.json({ ok: true, token: signToken(member.id), member: await withProgress(member) });
 }));
 
@@ -425,7 +489,13 @@ app.patch('/api/me', wrap(async (req, res) => {
 
   const b = req.body || {};
   const name = b.name !== undefined ? String(b.name).trim() : undefined;
-  if (name !== undefined && !name) throw bad('bad_name');
+  if (name !== undefined && (name.length < 2 || name.length > 150)) throw bad('bad_name');
+  if (b.dob !== undefined && b.dob) {
+    const d = new Date(String(b.dob));
+    if (Number.isNaN(d.getTime())) throw bad('bad_dob');
+    if (d > new Date()) throw bad('dob_in_future');
+    if (d < new Date('1900-01-01')) throw bad('bad_dob');
+  }
   if (b.gender !== undefined && b.gender !== null && !GENDERS.includes(b.gender)) throw bad('bad_gender');
 
   // Validate division codes against the real hierarchy (all-or-nothing).
@@ -484,12 +554,30 @@ app.post('/api/me/avatar', wrap(async (req, res) => {
 // Avatars load via plain <img> tags (which cannot send a Bearer header), so
 // this endpoint is unauthenticated — the member UUID in the URL is unguessable.
 app.get('/api/avatars/:memberId', wrap(async (req, res) => {
+  // Member photographs are personal data and this endpoint previously served
+  // any of them to anyone who knew the member id, with no authentication at all.
+  // Ids are UUIDs so they could not be enumerated, but "unguessable" is not
+  // "authorised".
+  //
+  // The URL carries its own short-lived signature (see signedAvatarUrl), which
+  // is what makes this work at all: an <img> tag cannot send an Authorization
+  // header, so the permission has to travel in the URL. A signature is checked
+  // against the member AND their current photograph, so it stops working when
+  // the photograph is replaced.
   const r = await pool.query(`SELECT avatar_path FROM npm.member WHERE id=$1`, [req.params.memberId]);
   const fname = r.rows[0]?.avatar_path;
   if (!fname) throw bad('not_found', 404);
+
+  if (!verifyAvatarUrl(req.params.memberId, fname, req.query.e, req.query.s)) {
+    // 404, not 403: a wrong signature should not confirm that this member
+    // exists or has a photograph.
+    throw bad('not_found', 404);
+  }
+
   const buf = await getObject('avatars', fname);
   if (!buf) throw bad('not_found', 404);
-  res.set('cache-control', 'private, max-age=31536000, immutable'); // uuid filename = safe to cache
+  // Private: the signature is in the URL, so a shared cache must never keep it.
+  res.set('cache-control', 'private, max-age=86400');
   res.type(mimeFor(fname)).send(buf);
 }));
 
@@ -571,7 +659,7 @@ app.post('/api/donations/card/start', wrap(async (req, res) => {
     `INSERT INTO npm.otp (phone, code, purpose, expires_at) VALUES ($1,$2,'donation', now() + interval '10 minutes')`,
     [`don:${m.id}`, code],
   );
-  console.log(`[DONATION OTP] ${m.full_name} Rs.${amount} -> ${code}`);
+  // Payment verification codes must never be written to logs.
   res.json({ ok: true, ...(DEV_OTP ? { devCode: code } : {}) });
 }));
 

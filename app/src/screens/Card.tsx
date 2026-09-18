@@ -141,7 +141,17 @@ export function Card() {
               </div>
               <QueryBoundary query={badgesQ}>
                 {(badges) => (
-                  <div style={{ display: 'flex', gap: 12, marginTop: 12, overflowX: 'auto', paddingBottom: 4 }}>
+                  <div
+                    // The strip scrolls horizontally and contains nothing
+                    // focusable, so without a tabindex a keyboard or switch user
+                    // cannot scroll it and never sees the badges past the fold.
+                    // Making the region itself focusable is the accessible fix
+                    // for a scroller with no interactive children.
+                    tabIndex={0}
+                    role="group"
+                    aria-label={t('card.badges')}
+                    style={{ display: 'flex', gap: 12, marginTop: 12, overflowX: 'auto', paddingBottom: 4 }}
+                  >
                     {badges.map((b) => (
                       <div key={b.id} style={{ flex: 'none', width: 76, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, opacity: b.earned ? 1 : 0.45 }}>
                         <div style={{ width: 56, height: 56, borderRadius: 16, background: b.earned ? c.maroonTint : c.cardCream, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

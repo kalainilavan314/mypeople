@@ -7,7 +7,7 @@ import { Icon } from '../components/Icon';
 import { NetImage } from '../components/nn';
 import { authApi, type ServerMember } from '../data/authApi';
 import { keys } from '../data/queries';
-import { useMe } from '../hooks/useMe';
+import { useMe, meKey } from '../hooks/useMe';
 import { DISTRICTS } from '../data/divisions';
 import { compressImage } from '../lib/image';
 
@@ -82,6 +82,9 @@ function EditForm({ me }: { me: ServerMember }) {
       });
       // The mock content layer reads the cached name — refresh it everywhere.
       await qc.invalidateQueries({ queryKey: keys.member });
+      // useMe is cached now, so it has to be invalidated too or the
+      // profile screen keeps showing the values from before the edit.
+      await qc.invalidateQueries({ queryKey: meKey });
       setSaved(true);
       setTimeout(() => navigate('/profile', { replace: true }), 900);
     } catch (e) {

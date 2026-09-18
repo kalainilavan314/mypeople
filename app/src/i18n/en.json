@@ -199,7 +199,8 @@
     "recruits": "Recruits",
     "memberId": "Member ID",
     "referralId": "Referral ID",
-    "topTier": "Top tier reached — Platinum"
+    "topTier": "Top tier reached — Platinum",
+    "badges": "Achievement badges"
   },
   "events": {
     "title": "Events",

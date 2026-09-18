@@ -11,9 +11,9 @@ export const nicHash = (nic) =>
   crypto.createHash('sha256').update(PEPPER + String(nic).trim().toUpperCase()).digest('hex');
 
 export const signToken = (memberId) => jwt.sign({ sub: memberId }, SECRET, { expiresIn: '30d' });
-export const verifyToken = (token) => jwt.verify(token, SECRET);
+export const verifyToken = (token) => jwt.verify(token, SECRET, { algorithms: ['HS256'] });
 
-export const otpCode = () => String(Math.floor(100000 + Math.random() * 900000));
+export const otpCode = () => String(crypto.randomInt(100000, 1000000));
 
 export function memberCode() {
   const yy = String(new Date().getFullYear()).slice(2);
@@ -58,8 +58,44 @@ export function publicMember(m) {
     recruitCount: m.recruit_count,
     language: m.language,
     isAdmin: !!m.is_admin,
-    // uuid filename per upload -> URL changes on replacement (cache-safe)
-    avatarUrl: m.avatar_path ? `/api/avatars/${m.id}?v=${String(m.avatar_path).slice(0, 8)}` : null,
+    // Signed, expiring URL. A member photograph is personal data, so the
+    // endpoint cannot be open — but an <img> tag cannot send an Authorization
+    // header, so a bearer token is not available either. The same answer object
+    // storage uses applies: put a short-lived signature in the URL itself.
+    avatarUrl: m.avatar_path ? signedAvatarUrl(m.id, m.avatar_path) : null,
     joinedAt: m.created_at,
   };
+}
+
+/* ----------------------------------------------------------- avatar URLs */
+
+// How long a signed photograph URL stays usable. Long enough that a URL handed
+// to the browser keeps working while someone reads the page, short enough that a
+// link copied out of devtools or a shared screenshot stops working the next day.
+// Every /api/me response mints fresh URLs, so the client never sees a stale one.
+const AVATAR_URL_TTL_SECONDS = 24 * 60 * 60;
+
+const avatarSignature = (memberId, avatarPath, exp) =>
+  crypto
+    .createHmac('sha256', SECRET)
+    .update(`avatar:${memberId}:${avatarPath}:${exp}`)
+    .digest('base64url')
+    .slice(0, 27);
+
+export function signedAvatarUrl(memberId, avatarPath) {
+  const exp = Math.floor(Date.now() / 1000) + AVATAR_URL_TTL_SECONDS;
+  const sig = avatarSignature(memberId, avatarPath, exp);
+  // v changes when the file does, so a replaced photograph is never served from
+  // cache; e and s make the URL unguessable and time-limited.
+  return `/api/avatars/${memberId}?v=${String(avatarPath).slice(0, 8)}&e=${exp}&s=${sig}`;
+}
+
+/** True if this signature authorises this member's current photograph now. */
+export function verifyAvatarUrl(memberId, avatarPath, exp, sig) {
+  const expNum = Number(exp);
+  if (!Number.isFinite(expNum) || expNum < Math.floor(Date.now() / 1000)) return false;
+  const expected = avatarSignature(memberId, avatarPath, expNum);
+  const a = Buffer.from(String(sig ?? ''));
+  const b = Buffer.from(expected);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
