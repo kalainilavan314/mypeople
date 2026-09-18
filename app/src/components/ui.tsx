@@ -2,12 +2,13 @@
 // EmptyState, QueryBoundary. Kept together to reduce file sprawl; each is independent.
 
 import type { ReactNode, CSSProperties } from 'react';
+import { useId } from 'react';
 import type { UseQueryResult } from '@tanstack/react-query';
-import { c, font, ease, radius, shadow, tier as tierMap, type Tier } from '../theme/tokens';
+import { c, font, ease, radius, shadow, control, tier as tierMap, type Tier } from '../theme/tokens';
 import { Icon, type IconName } from './Icon';
 
 /* ---------------------------------------------------------------- Button */
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'success';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'success' | 'danger';
 
 export function Button({
   children,
@@ -31,12 +32,12 @@ export function Button({
   ariaLabel?: string;
 }) {
   const base: CSSProperties = {
-    height: 52,
+    height: control.hSm,
     padding: '0 20px',
-    borderRadius: radius.pill,
+    borderRadius: radius.sm,
     border: 'none',
     cursor: disabled ? 'default' : 'pointer',
-    font: `600 15px/1 ${font.ui}`,
+    font: `600 16px/1 ${font.ui}`,
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -45,16 +46,128 @@ export function Button({
     transition: `all ${160}ms ${ease}`,
   };
   const variants: Record<ButtonVariant, CSSProperties> = {
-    primary: { background: disabled ? c.hairline3 : c.maroon, color: disabled ? c.ink4 : '#FFFFFF', boxShadow: disabled ? 'none' : shadow.fab },
-    secondary: { background: c.page, color: c.ink0, border: `1px solid ${c.hairline}` },
+    primary: { background: disabled ? c.hairline3 : c.maroon, color: disabled ? c.ink4 : '#FFFFFF', boxShadow: disabled ? 'none' : shadow.card },
+    secondary: { background: c.card, color: c.ink0, border: `1px solid ${c.hairline2}` },
     ghost: { background: 'transparent', color: c.maroon },
     success: { background: c.success, color: '#FFFFFF' },
+    danger: { background: c.error, color: '#FFFFFF' },
   };
   return (
     <button type={type} onClick={disabled ? undefined : onClick} disabled={disabled} aria-label={ariaLabel} style={{ ...base, ...variants[variant], ...style }}>
       {icon && <Icon name={icon} size={18} color={variants[variant].color as string} />}
       {children}
     </button>
+  );
+}
+
+/* ----------------------------------------------------------------- Field */
+/* Accessible labelled input/textarea: 56px control, 12px radius, readable
+   placeholder, explicit error slot wired via aria-describedby / aria-invalid
+   (USWDS-style validation). Placeholder + focus colours live in global.css. */
+export function Field({
+  label,
+  value,
+  onChange,
+  type = 'text',
+  placeholder,
+  hint,
+  error,
+  required = false,
+  name,
+  inputMode,
+  autoComplete,
+  textarea = false,
+  maxLength,
+  disabled = false,
+  style,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  placeholder?: string;
+  hint?: string;
+  error?: string;
+  required?: boolean;
+  name?: string;
+  inputMode?: 'text' | 'numeric' | 'tel' | 'email' | 'decimal' | 'search';
+  autoComplete?: string;
+  textarea?: boolean;
+  maxLength?: number;
+  disabled?: boolean;
+  style?: CSSProperties;
+}) {
+  const id = useId();
+  const hintId = `${id}-hint`;
+  const errId = `${id}-err`;
+  const describedBy = [hint ? hintId : null, error ? errId : null].filter(Boolean).join(' ') || undefined;
+  const controlStyle: CSSProperties = {
+    height: textarea ? undefined : control.h,
+    minHeight: textarea ? 112 : undefined,
+    width: '100%',
+    borderRadius: radius.sm,
+    border: `1px solid ${error ? c.error : c.hairline2}`,
+    background: disabled ? c.cardCream : c.card,
+    color: c.ink,
+    font: `400 16px/1.4 ${font.ui}`,
+    padding: textarea ? '14px 16px' : '0 16px',
+    outline: 'none',
+    boxSizing: 'border-box',
+  };
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, ...style }}>
+      <label htmlFor={id} className="t-label" style={{ color: c.ink2 }}>
+        {label}
+        {required && (
+          <span aria-hidden="true" style={{ color: c.error }}>
+            {' '}
+            *
+          </span>
+        )}
+      </label>
+      {hint && (
+        <span id={hintId} className="t-caption">
+          {hint}
+        </span>
+      )}
+      {textarea ? (
+        <textarea
+          id={id}
+          name={name}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          required={required}
+          maxLength={maxLength}
+          disabled={disabled}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
+          style={controlStyle}
+        />
+      ) : (
+        <input
+          id={id}
+          name={name}
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          required={required}
+          maxLength={maxLength}
+          disabled={disabled}
+          inputMode={inputMode}
+          autoComplete={autoComplete}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
+          style={controlStyle}
+        />
+      )}
+      {error && (
+        <span id={errId} role="alert" className="t-caption" style={{ color: c.error, fontWeight: 600 }}>
+          {error}
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -223,7 +336,7 @@ export function QueryBoundary<T>({ query, children, label }: { query: UseQueryRe
     );
   }
   if (query.isError || query.data === undefined) {
-    return <EmptyState icon="x" title="ஏதோ தவறு நடந்தது" sub="Something went wrong. Pull to retry." />;
+    return <div role="alert" style={{ padding: 24, textAlign: "center" }}><p>Unable to load this section. Please try again.</p><button type="button" disabled={query.isFetching} onClick={() => void query.refetch()} style={{ minHeight: 44, padding: "8px 20px", border: `1px solid ${c.hairline}`, borderRadius: 10, color: c.ink, background: c.card, cursor: "pointer" }}>{query.isFetching ? "Retrying…" : "Retry / மீண்டும் முயற்சி"}</button></div>;
   }
   return <>{children(query.data)}</>;
 }

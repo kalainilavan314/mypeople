@@ -33,17 +33,17 @@ export function markWelcomeSeen(): void {
 
 /* District dots — positions and colours from the NorthUnity reference. */
 const DISTRICTS = [
-  { name: 'Jaffna', color: '#043074', x: 0.5, y: 0.18 },
-  { name: 'Kilinochchi', color: '#017DFC', x: 0.52, y: 0.38 },
-  { name: 'Mannar', color: '#2E9E22', x: 0.2, y: 0.42 },
-  { name: 'Mullaitivu', color: '#C10504', x: 0.72, y: 0.35 },
-  { name: 'Vavuniya', color: '#E08A00', x: 0.5, y: 0.6 },
+  { name: 'Jaffna', color: '#14263D', x: 0.5, y: 0.18 },
+  { name: 'Kilinochchi', color: '#526A82', x: 0.52, y: 0.38 },
+  { name: 'Mannar', color: '#526A82', x: 0.2, y: 0.42 },
+  { name: 'Mullaitivu', color: '#526A82', x: 0.72, y: 0.35 },
+  { name: 'Vavuniya', color: '#526A82', x: 0.5, y: 0.6 },
 ] as const;
 
 /* Connection lines radiate from the centre at these angles (degrees). */
 const CONNECTION_ANGLES = [-60, -20, 20, 60, 100];
 
-const GOLD = '#043074';
+const GOLD = '#14263D';
 const INK = '#1C1917';
 
 export function Welcome() {

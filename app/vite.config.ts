@@ -29,8 +29,8 @@ export default defineConfig({
         scope: '/',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#F7FAFD',
-        theme_color: '#043074',
+        background_color: '#F4F6F8',
+        theme_color: '#14263D',
         categories: ['social', 'government', 'productivity'],
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },

@@ -10,6 +10,8 @@ import { api } from './data';
 import { c, font } from './theme/tokens';
 
 // Screens
+import { Community } from './screens/Community';
+import { MyArea } from './screens/MyArea';
 import { Home } from './screens/Home';
 import { Card } from './screens/Card';
 import { Events } from './screens/Events';
@@ -149,6 +151,8 @@ export function App() {
       {/* Main app */}
       <Route element={<RequireAuth />}>
         <Route path="/" element={<Home />} />
+<Route path="/community" element={<Community />} />
+<Route path="/area" element={<MyArea />} />
         <Route path="/announcement/:id" element={<Announcement />} />
         <Route path="/survey" element={<Survey />} />
         <Route path="/events" element={<Events />} />

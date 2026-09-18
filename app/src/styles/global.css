@@ -32,6 +32,18 @@ button {
   font-family: inherit;
 }
 
+/* Form controls: readable (not extremely pale) placeholder, clear focus border. */
+input::placeholder,
+textarea::placeholder {
+  color: var(--ink-3);
+  opacity: 1;
+}
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--primary);
+}
+
 /* The phone-sized app shell — centred on wide screens, full-bleed on mobile */
 .app-shell {
   max-width: var(--app-max);
@@ -79,6 +91,77 @@ textarea,
 select,
 [contenteditable='true'] {
   scroll-margin-block: 96px;
+}
+
+/* ---------------------------------------------------------------------------
+   Typography scale (brief). One class per role; colours default sensibly but
+   can be overridden inline. English uses Inter; Tamil must NOT inherit the
+   negative English tracking, so `.ta` / :lang(ta) swaps the family and resets
+   letter-spacing + relaxes leading.
+--------------------------------------------------------------------------- */
+.t-page {
+  font: 700 28px/36px var(--font-ui);
+  letter-spacing: -0.02em;
+  color: var(--ink-0);
+  margin: 0;
+}
+.t-section {
+  font: 700 22px/28px var(--font-ui);
+  letter-spacing: -0.01em;
+  color: var(--ink-0);
+  margin: 0;
+}
+.t-card {
+  font: 600 18px/24px var(--font-ui);
+  color: var(--ink);
+  margin: 0;
+}
+.t-body {
+  font: 400 16px/24px var(--font-ui);
+  color: var(--ink);
+  margin: 0;
+}
+.t-label {
+  font: 600 14px/20px var(--font-ui);
+  color: var(--ink-2);
+}
+.t-secondary {
+  font: 400 14px/20px var(--font-ui);
+  color: var(--ink-3);
+}
+.t-caption {
+  font: 500 12px/16px var(--font-ui);
+  color: var(--ink-3);
+}
+.t-nav {
+  font: 600 12px/16px var(--font-ui);
+}
+
+/* Tamil rendering: natural tracking, roomier leading, Tamil font. */
+.ta,
+:lang(ta) {
+  font-family: var(--font-ta);
+  letter-spacing: normal;
+}
+.ta.t-page,
+.ta.t-section,
+:lang(ta).t-page,
+:lang(ta).t-section {
+  letter-spacing: normal;
+  line-height: 1.35;
+}
+/* Tamil headings anywhere (workspace h1, type-scale) must not use negative
+   English tracking — reset with enough specificity to win over element rules. */
+:lang(ta) .work-heading h1,
+:lang(ta) .t-page,
+:lang(ta) .t-section,
+:lang(ta) h1,
+:lang(ta) h2 {
+  letter-spacing: normal;
+}
+/* Eyebrow tracking is for Latin small-caps; relax it for Tamil. */
+:lang(ta) .work-eyebrow {
+  letter-spacing: 0.02em;
 }
 
 /* Bilingual label pair */
@@ -173,6 +256,8 @@ select,
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
 }
@@ -180,4 +265,91 @@ select,
 /* Leaflet map container sizing (imported where used) */
 .leaflet-container {
   font-family: var(--font-ui);
+}
+
+/* Shared polish: readable forms, stable numeric alignment and restrained depth. */
+body { line-height: 1.5; }
+input, textarea, select { font-family: inherit; color: inherit; }
+input:not([type='checkbox']):not([type='radio']):not([type='range']),
+textarea, select { font-size: max(16px, 1em); }
+textarea { resize: vertical; }
+button, a, input, select, textarea { touch-action: manipulation; }
+button:disabled { cursor: not-allowed; }
+img, video { max-width: 100%; }
+.screen { scrollbar-gutter: stable; overflow-x: hidden; }
+h1, h2, h3 { text-wrap: balance; }
+p { text-wrap: pretty; }
+input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
+  font-variant-numeric: tabular-nums;
+}
+@media (min-width: 480px) {
+  .app-shell {
+    border: 1px solid var(--hairline);
+    box-shadow: 0 16px 56px rgba(4, 48, 116, .12);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-iteration-count: 1 !important;
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .press:hover, .press:active { transform: none; }
+}
+.workspace{padding:24px 20px 32px;font-family:var(--font-ui);color:var(--ink);animation:npmFadeUp 180ms ease-out}.work-heading{margin:0 0 24px}.work-heading h1{font-size:28px;line-height:36px;font-weight:700;letter-spacing:-.02em;color:var(--ink-0);margin:8px 0}.work-heading p,.work-area p{font-size:13px;color:var(--ink-3);margin:8px 0;line-height:1.6}.work-eyebrow{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--ink-2)}.work-greeting{display:flex;gap:12px;justify-content:space-between;align-items:center}.work-greeting>div{min-width:0}.work-icon-button{border:1px solid var(--hairline);border-radius:10px;background:var(--card);color:var(--ink);width:44px;height:44px;display:grid;place-items:center;flex-shrink:0;cursor:pointer;border-radius:var(--r-sm)}
+.work-area{padding:20px;background:var(--card);border:1px solid var(--hairline);border-left:3px solid var(--primary);border-radius:var(--r-lg)}.work-area h2{font-size:19px;line-height:1.4;margin:8px 0;font-weight:600}.work-area>a{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;margin-top:8px;min-height:32px}.work-section{margin-top:24px}.work-section h2,.work-section-head h2{font-size:16px;font-weight:650;margin:0 0 12px;line-height:1.4}.work-section-head{display:flex;justify-content:space-between;align-items:center;gap:16px}.work-section-head>a{font-size:12px;white-space:nowrap;margin-bottom:12px}.work-panel{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-lg);overflow:hidden}
+.work-link{display:flex;align-items:center;gap:12px;padding:16px;color:var(--ink);min-height:72px}.work-link+.work-link,.work-event+.work-event{border-top:1px solid var(--hairline)}.work-link>span:nth-child(2){flex:1;min-width:0}.work-link strong,.work-event strong{display:block;font-size:14px;font-weight:600;line-height:1.45}.work-link small,.work-event small{display:block;color:var(--ink-3);font-size:12px;line-height:1.6;margin-top:4px}.work-icon{width:36px;height:36px;border-radius:10px;background:var(--surface-variant);display:grid;place-items:center;color:var(--primary);flex:none}.work-event{display:flex;padding:16px;gap:16px;align-items:center;color:var(--ink)}.work-event>div{flex:1}.work-event time{width:40px;text-align:center;flex:none;color:var(--ink-2)}.work-event time strong{font-size:24px;font-weight:600}.work-event time span{font-size:10px;text-transform:uppercase}.work-empty,.work-note{font-size:12px;line-height:1.7;color:var(--ink-3)}.work-empty{padding:20px;border:1px dashed var(--hairline-2);border-radius:12px}.work-details{padding:20px}.work-details dl{margin-bottom:0}.work-details dl>div{padding:12px 0;border-bottom:1px solid var(--hairline)}.work-details dl>div:last-child{border:0}.work-details dt{font-size:12px;color:var(--ink-3)}.work-details dd{font-size:15px;font-weight:600;margin:4px 0 0}
+/* Primary bottom navigation — five tabs, ~72–80px incl. safe area. Active tab
+   shows a soft-blue pill behind a navy icon (SGDS-style selected state). */
+.work-nav {
+  display: flex;
+  flex: none;
+  border-top: 1px solid var(--hairline);
+  background: var(--card);
+  padding: 8px 8px calc(8px + var(--safe-bottom));
+  gap: 2px;
+  box-shadow: var(--shadow-nav);
+}
+.work-nav button {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--ink-3);
+  padding: 6px 0;
+  font: 600 12px/16px var(--font-ui);
+  cursor: pointer;
+  min-height: 56px;
+  border-radius: 12px;
+}
+.work-nav .work-nav-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 32px;
+  border-radius: 999px;
+  transition: background 160ms var(--ease);
+}
+.work-nav button[aria-current] {
+  color: var(--primary);
+}
+.work-nav button[aria-current] .work-nav-icon {
+  background: var(--primary-container);
+}
+@media (max-width: 360px) {
+  .workspace {
+    padding: 20px 16px;
+  }
+  .work-heading h1 {
+    font-size: 23px;
+  }
+  .work-nav button {
+    font-size: 11px;
+  }
 }

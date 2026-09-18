@@ -60,6 +60,13 @@ export const c = {
   tertiary: 'var(--tertiary)',
   tertiaryContainer: 'var(--tertiary-container)',
   surfaceVariant: 'var(--surface-variant)',
+
+  // Teal accent — the single optional secondary accent (semantic colours stay
+  // reserved for success/warning/error).
+  accent: 'var(--accent)',
+  accentHover: 'var(--accent-hover)',
+  accentContainer: 'var(--accent-container)',
+  onAccentContainer: 'var(--on-accent-container)',
 } as const;
 
 /** Gradients from the NorthUnity reference (action cards, CTAs, impact strip). */
@@ -75,9 +82,9 @@ export const grad = {
 } as const;
 
 export const font = {
-  ui: "'Outfit', ui-sans-serif, system-ui, sans-serif",
-  head: "'Outfit', ui-sans-serif, system-ui, sans-serif",
-  ta: "'Noto Sans Tamil', 'Outfit', sans-serif",
+  ui: "'Inter', ui-sans-serif, system-ui, sans-serif",
+  head: "'Inter', ui-sans-serif, system-ui, sans-serif",
+  ta: "'Noto Sans Tamil', 'Inter', sans-serif",
   mono: "'JetBrains Mono', ui-monospace, monospace",
 } as const;
 
@@ -97,10 +104,10 @@ export const green = {
   100: '#E4EDFB',
   200: '#C3D8F4',
   300: '#8FB4E6',
-  bright: '#0A4BA8',
+  bright: '#203B59',
   400: '#0F57BC',
-  base: '#043074',
-  500: '#043074',
+  base: '#14263D',
+  500: '#14263D',
   deep: '#032B68',
   600: '#032B68',
   700: '#021D47',
@@ -108,7 +115,7 @@ export const green = {
 } as const;
 
 // Brand button gradient (logo navy) — used on CTAs / active tab.
-export const greenGradient = 'linear-gradient(135deg, #043074 0%, #0A4BA8 100%)';
+export const greenGradient = 'linear-gradient(135deg, #14263D 0%, #203B59 100%)';
 
 export const authC = {
   // Surfaces — white and near-white with a faint cool cast.
@@ -118,18 +125,18 @@ export const authC = {
   surface2: '#EFF4FA',
   field: '#F2F6FC', // input fill — Material "filled" style
   fieldBorder: '#E4EAF2',
-  fieldFocus: '#043074',
+  fieldFocus: '#14263D',
   line: '#E4EAF2',
   glass: 'rgba(255,255,255,.85)',
   glassBorder: 'rgba(255,255,255,.7)',
 
   // Accent (logo navy)
-  green: '#043074',
-  greenBright: '#0A4BA8',
+  green: '#14263D',
+  greenBright: '#203B59',
   greenDeep: '#032B68',
   greenSoft: '#E4EDFB',
   greenGrad: greenGradient,
-  greenGradPressed: 'linear-gradient(135deg, #032B68 0%, #043074 100%)',
+  greenGradPressed: 'linear-gradient(135deg, #032B68 0%, #14263D 100%)',
   greenGlow: '0 8px 24px -6px rgba(4,48,116,.38)',
 
   // Accent purple / blue
@@ -139,7 +146,7 @@ export const authC = {
   // Text
   text: '#0B1B3A',
   text2: '#4A5A78',
-  text3: '#A9B6CC', // muted / placeholder
+  text3: '#687481', // muted / placeholder
   onGreen: '#FFFFFF',
 
   // Semantic
@@ -151,13 +158,43 @@ export const authC = {
 export const ease = 'cubic-bezier(.22,.61,.36,1)';
 export const dur = { fast: 160, mid: 260, slow: 480 } as const;
 
+// Radii mirror tokens.css --r-* (brief scale): input 12, card 16, feature 20–24.
 export const radius = {
-  sm: 12,
+  sm: 12, // inputs, small controls
   md: 14,
-  lg: 16,
-  xl: 20,
-  xxl: 24,
+  lg: 16, // standard card
+  xl: 20, // feature card
+  xxl: 24, // large feature card
   pill: 999,
+} as const;
+
+// 8px spacing scale (mirrors --space-*). Use for gaps/padding in inline styles.
+export const space = {
+  1: 4,
+  2: 8,
+  3: 12,
+  4: 16,
+  6: 24,
+  8: 32,
+  10: 40,
+  12: 48,
+  gutter: 20, // mobile page horizontal padding
+} as const;
+
+// Control heights (mirror --control-h*).
+export const control = { h: 56, hSm: 52, touchMin: 44 } as const;
+
+// Typography scale (px). `lh` = line-height px, `ls` = letter-spacing.
+// Tamil should not inherit negative tracking — pass the `.ta`/lang override in CSS.
+export const type = {
+  page: { size: 28, lh: 36, weight: 700, ls: '-0.02em' },
+  section: { size: 22, lh: 28, weight: 700, ls: '-0.01em' },
+  card: { size: 18, lh: 24, weight: 600, ls: 'normal' },
+  body: { size: 16, lh: 24, weight: 400, ls: 'normal' },
+  label: { size: 14, lh: 20, weight: 600, ls: 'normal' },
+  secondary: { size: 14, lh: 20, weight: 400, ls: 'normal' },
+  caption: { size: 12, lh: 16, weight: 500, ls: 'normal' },
+  nav: { size: 12, lh: 16, weight: 600, ls: 'normal' },
 } as const;
 
 export const shadow = {

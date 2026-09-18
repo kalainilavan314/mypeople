@@ -129,9 +129,9 @@
   --shadow-tile: 0 4px 12px rgba(11, 27, 58, 0.18);
 
   /* --- Fonts ------------------------------------------------------------------ */
-  --font-ui: 'Outfit', ui-sans-serif, system-ui, sans-serif;
-  --font-head: 'Outfit', ui-sans-serif, system-ui, sans-serif;
-  --font-ta: 'Noto Sans Tamil', 'Outfit', sans-serif;
+  --font-ui: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-head: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-ta: 'Noto Sans Tamil', 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   /* --- Layout ------------------------------------------------------------------ */
@@ -217,4 +217,179 @@
   --shadow-fab: 0 8px 22px -6px rgba(77, 155, 255, 0.45);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
   --shadow-tile: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+/* ===========================================================================
+   AUTHORITATIVE THEME — "என் மக்கள் · My People" institutional system.
+
+   This block is the single source of truth for the running app. It re-points
+   every legacy variable name (--maroon*, --grad-*, --ink*, --r-*) onto one
+   disciplined navy palette, so every screen re-themes without edits.
+
+   Colour has one meaning per hue (SGDS discipline):
+     navy   = brand / primary interaction        --primary / --maroon
+     teal   = optional secondary accent          --accent
+     green  = success only                       --success
+     amber  = warning only                       --warning
+     red    = destructive / error only           --error
+   The old five-colour "figure" gradients are collapsed to navy so nothing in
+   the UI reads as rainbow. Gradient is reserved for the ONE branded surface
+   (the membership card / a hero) via --grad-primary.
+=========================================================================== */
+:root {
+  /* --- Brand navy -------------------------------------------------------- */
+  --primary: #14263d;
+  --primary-mid: #203b59;
+  --primary-light: #526a82;
+  --maroon: #14263d;
+  --maroon-hover: #203b59;
+  --maroon-pressed: #0f1d30;
+  --primary-container: #e9eef3;
+  --on-primary-container: #14263d;
+  --maroon-tint: rgba(20, 38, 61, 0.1);
+  --maroon-tint-soft: rgba(20, 38, 61, 0.05);
+  --maroon-tint-border: rgba(20, 38, 61, 0.24);
+
+  /* --- Teal accent (optional secondary) --------------------------------- */
+  --accent: #0f766e;
+  --accent-hover: #0b5e57;
+  --accent-container: #d7edea;
+  --on-accent-container: #0b4a45;
+  --secondary: #0f766e;
+  --secondary-container: #d7edea;
+  --tertiary: #166534;
+
+  /* --- Surfaces --------------------------------------------------------- */
+  --page: #f4f6f8;
+  --page-outer: #e9eef3;
+  --card: #ffffff;
+  --card-cream: #eef2f6;
+  --card-warm: #ffffff;
+  --surface-variant: #eef2f6;
+
+  /* --- Ink ramp (tuned for WCAG 2.2 AA on white) ------------------------ */
+  --ink: #18212b; /* body / primary text — ~13:1 */
+  --ink-0: #14263d; /* headings / brand navy */
+  --ink-2: #3e4c5e; /* labels / strong secondary — ~7:1 */
+  --ink-3: #53657a; /* secondary text & placeholders — ~4.7:1 */
+  --ink-4: #6b7b8e; /* decorative / disabled only — do NOT use for text */
+
+  /* --- Lines ------------------------------------------------------------ */
+  --hairline: #d7e0ea;
+  --hairline-2: #c2ceda;
+  --hairline-3: #eef2f6;
+
+  /* --- Semantic (one role each) ----------------------------------------- */
+  --success: #166534;
+  --success-bg: #e4f3e8;
+  --warning: #9a5b00;
+  --warning-bg: #fbefd9;
+  --error: #b42318;
+  --error-bg: #fbe7e4;
+  --info: #14263d;
+
+  /* --- Tier accents (Sprout / Root / Palmyra — a legitimate semantic set) */
+  --sprout: #166534;
+  --sprout-soft: rgba(22, 101, 52, 0.12);
+  --root: #9a5b00;
+  --root-soft: rgba(154, 91, 0, 0.14);
+  --palmyra: #526a82;
+
+  /* --- Gradients — navy only. --grad-primary is the one branded surface -- */
+  --grad-primary: linear-gradient(150deg, #14263d 0%, #26456b 100%);
+  --grad-join: var(--grad-primary);
+  --grad-you: var(--grad-primary);
+  --grad-volunteer: #203b59;
+  --grad-survey: #203b59;
+  --grad-community: #203b59;
+  --grad-events: #203b59;
+  --grad-agriculture: #203b59;
+  --green-gradient: var(--grad-primary);
+
+  /* --- Radii (brief scale) ---------------------------------------------- */
+  --r-sm: 12px; /* inputs, small controls */
+  --r-md: 14px;
+  --r-lg: 16px; /* standard card */
+  --r-xl: 20px; /* feature card */
+  --r-2xl: 24px; /* large feature card */
+  --r-pill: 999px;
+
+  /* --- Spacing (8px base + 4px steps) ----------------------------------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --gutter: 20px; /* mobile page horizontal padding */
+
+  /* --- Control sizing --------------------------------------------------- */
+  --control-h: 56px; /* primary inputs / buttons */
+  --control-h-sm: 52px; /* compact buttons */
+  --touch-min: 44px; /* minimum comfortable touch target */
+
+  /* --- Shadows — subtle, elevation only --------------------------------- */
+  --shadow-card: 0 1px 2px rgba(20, 38, 61, 0.06), 0 1px 3px rgba(20, 38, 61, 0.05);
+  --shadow-nav: 0 -1px 0 rgba(20, 38, 61, 0.06);
+  --shadow-fab: 0 6px 16px -6px rgba(20, 38, 61, 0.35);
+  --shadow-lg: 0 8px 24px -8px rgba(20, 38, 61, 0.18);
+  --shadow-tile: none;
+}
+
+:root[data-theme='dark'] {
+  --primary: #bbcddf;
+  --primary-mid: #94acc4;
+  --primary-light: #7e99b3;
+  --maroon: #bbcddf;
+  --maroon-hover: #d3e0ee;
+  --maroon-pressed: #a7bccf;
+  --primary-container: #26384a;
+  --on-primary-container: #e6edf5;
+  --maroon-tint: rgba(187, 205, 223, 0.16);
+  --maroon-tint-soft: rgba(187, 205, 223, 0.08);
+  --maroon-tint-border: rgba(187, 205, 223, 0.32);
+
+  --accent: #5fb3aa;
+  --accent-hover: #7cc6be;
+  --accent-container: #123c38;
+  --on-accent-container: #cdeeea;
+  --secondary: #5fb3aa;
+  --secondary-container: #123c38;
+  --tertiary: #96c7a8;
+
+  --page: #131c26;
+  --page-outer: #0c131c;
+  --card: #1b2734;
+  --card-cream: #26384a;
+  --card-warm: #1b2734;
+  --surface-variant: #26384a;
+
+  --ink: #e6edf5;
+  --ink-0: #f2f6fb;
+  --ink-2: #c2ceda;
+  --ink-3: #a2b1c2;
+  --ink-4: #7e8b9c;
+  --hairline: #344354;
+  --hairline-2: #46596d;
+  --hairline-3: #26384a;
+
+  --success: #96c7b0;
+  --success-bg: rgba(150, 199, 176, 0.14);
+  --warning: #e4bf89;
+  --warning-bg: rgba(228, 191, 137, 0.16);
+  --error: #f0acac;
+  --error-bg: rgba(240, 172, 172, 0.16);
+  --info: #bbcddf;
+
+  --sprout: #96c7b0;
+  --sprout-soft: rgba(150, 199, 176, 0.16);
+  --root: #e4bf89;
+  --root-soft: rgba(228, 191, 137, 0.16);
+  --palmyra: #a2b1c2;
+
+  --grad-primary: linear-gradient(150deg, #1b2b41 0%, #2c445f 100%);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-nav: 0 -1px 0 rgba(255, 255, 255, 0.06);
 }
