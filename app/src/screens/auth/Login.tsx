@@ -1,15 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { authC, font, radius } from '../../theme/tokens';
+import { authC, font } from '../../theme/tokens';
 import { Icon } from '../../components/Icon';
 import { authApi, ApiError } from '../../data/authApi';
 import { useAuth } from '../../state/auth';
 import { isValidNic } from '../../lib/nic';
 import { AuthPage, Field, FieldLabel, GreenButton, LinkText, LangToggle, LogoBars, SegTabs, Wordmark } from './parts';
-
-/** Demo credentials surfaced on the login card (seeded by server/src/seed-demo.js). */
-const DEMO = { nic: '990740623V', password: 'kalai' };
 
 export function Login() {
   const navigate = useNavigate();
@@ -43,12 +40,6 @@ export function Login() {
     } finally {
       setBusy(false);
     }
-  };
-
-  const useDemo = () => {
-    setNic(DEMO.nic);
-    setPassword(DEMO.password);
-    void doLogin(DEMO.nic, DEMO.password);
   };
 
   return (
@@ -129,42 +120,6 @@ export function Login() {
           </GreenButton>
         </div>
 
-        {/* The demo account is a DEV-only convenience. It must never be exposed in
-            production, where publishing working credentials on the login screen is
-            an open door — so this whole block is compiled out of the prod build. */}
-        {import.meta.env.DEV && (<>
-        {/* ---------- or ---------- */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
-          <span style={{ flex: 1, height: 1, background: authC.line }} />
-          <span style={{ font: `400 13px/1 ${font.ui}`, color: authC.text3 }}>{t('auth.or')}</span>
-          <span style={{ flex: 1, height: 1, background: authC.line }} />
-        </div>
-
-        {/* ---------- demo account ---------- */}
-        <div style={{ background: authC.greenSoft, border: `1px solid ${authC.line}`, borderRadius: radius.md, padding: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12 }}>
-            <Icon name="shield" size={16} color={authC.green} strokeWidth={2} />
-            <span style={{ font: `700 13.5px/1 ${font.ui}`, color: authC.green }}>{t('auth.demoAccount')}</span>
-          </div>
-          <DemoRow label={t('auth.nicLabel')} value={DEMO.nic} />
-          <DemoRow label={t('auth.passwordLabel')} value={DEMO.password} />
-          <button
-            type="button"
-            onClick={useDemo}
-            disabled={busy}
-            className="press"
-            style={{
-              marginTop: 14, width: '100%', height: 48, borderRadius: radius.sm, border: 'none',
-              background: authC.green, color: authC.onGreen, font: `700 15px/1 ${font.ui}`,
-              cursor: busy ? 'default' : 'pointer',
-            }}
-          >
-            {t('auth.useDemo')}
-          </button>
-          <div style={{ font: `400 11.5px/1.45 ${font.ui}`, color: authC.text2, marginTop: 10 }}>{t('auth.demoHint')}</div>
-        </div>
-        </>)}
-
         <div style={{ flex: 1, minHeight: 18 }} />
 
         <div style={{ textAlign: 'center', font: `500 13px/1 ${font.ui}`, color: authC.text2 }}>
@@ -175,20 +130,3 @@ export function Login() {
   );
 }
 
-function DemoRow({ label, value }: { label: string; value: string }) {
-  const [copied, setCopied] = useState(false);
-  const copy = () => {
-    navigator.clipboard?.writeText(value).catch(() => {});
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1400);
-  };
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '5px 0' }}>
-      <span style={{ flex: 'none', width: 78, font: `500 12px/1.3 ${font.ui}`, color: authC.text2 }}>{label}</span>
-      <span style={{ flex: 1, font: `600 13.5px/1.3 ${font.mono}`, color: authC.text, overflow: 'hidden', textOverflow: 'ellipsis' }}>{value}</span>
-      <button type="button" onClick={copy} aria-label={`Copy ${label}`} style={{ flex: 'none', border: 'none', background: 'transparent', cursor: 'pointer', padding: 4, display: 'flex' }}>
-        <Icon name={copied ? 'check' : 'share'} size={15} color={copied ? authC.success : authC.green} strokeWidth={2.2} />
-      </button>
-    </div>
-  );
-}
