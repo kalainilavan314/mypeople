@@ -73,6 +73,9 @@ export function SignUp() {
       phone: '',
       password,
       inviteCode: inviteCode.trim(),
+      // Date of birth is derived from the NIC here — the profile step no longer
+      // asks for it again (it is already encoded in the national ID number).
+      dob: nicInfo.dob ? nicInfo.dob.toISOString().slice(0, 10) : '',
     });
     setStep(1);
   };

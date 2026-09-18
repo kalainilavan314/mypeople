@@ -14,8 +14,12 @@ import { putObject, getObject, deleteObject, mimeFor, backend as storageBackend 
 
 const PROD = process.env.NODE_ENV === 'production';
 
-// Closed-pilot gate on registration. Unset (dev) => open; set => must match.
-const INVITE_CODE = process.env.SIGNUP_INVITE_CODE || '';
+// Registration is OPEN — no invite/referral code is required to sign up.
+// (Previously a closed-pilot gate behind SIGNUP_INVITE_CODE.)
+// WARNING: signup performs no OTP or identity check, so anyone who can reach the
+// URL can create an account against any NIC number. This was a deliberate
+// product decision to open registration; see DEPLOY.md for the trade-off.
+const INVITE_CODE = '';
 function requireInvite(supplied) {
   if (!INVITE_CODE) return;
   const a = Buffer.from(String(supplied ?? ''));
@@ -38,8 +42,8 @@ const SERVERLESS = !!process.env.VERCEL;
 // identity check, so without an invite code a reachable deployment has fully
 // open registration. Set it to '' only for a deliberately public launch.
 const MISSING_ENV = PROD
-  ? ['JWT_SECRET', 'NIC_PEPPER', 'DATABASE_URL', 'SIGNUP_INVITE_CODE'].filter(
-      (k) => k === 'SIGNUP_INVITE_CODE' ? process.env[k] == null : !process.env[k]?.trim() || ['dev-secret', 'dev-pepper'].includes(process.env[k]),
+  ? ['JWT_SECRET', 'NIC_PEPPER', 'DATABASE_URL'].filter(
+      (k) => !process.env[k]?.trim() || ['dev-secret', 'dev-pepper'].includes(process.env[k]),
     )
   : [];
 

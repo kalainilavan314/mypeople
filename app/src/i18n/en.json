@@ -1,7 +1,7 @@
 {
   "auth": {
     "welcome": "Welcome!",
-    "welcomeSub": "My People · Northern Province",
+    "welcomeSub": "My People · Northern & Eastern Province",
     "welcomeBack": "Welcome to My People",
     "signInSub": "Sign in to continue",
     "nameLabel": "Full name",
@@ -53,7 +53,7 @@
     "resetSentSub": "Check the mobile number registered with your NIC for a reset code.",
     "backToLogin": "Back to login",
     "welcomeCommunity": "Welcome to Our Community",
-    "communitySub": "A place for people who care about the future of Northern Province.",
+    "communitySub": "A place for people who care about the future of the Northern and Eastern Province.",
     "createAccount": "Create Account",
     "loginToCommunity": "Login to Community",
     "or": "or",
@@ -457,9 +457,9 @@
     }
   },
   "welcome": {
-    "badge": "Northern Province, Sri Lanka",
+    "badge": "Northern & Eastern Province, Sri Lanka",
     "line1": "Every person is",
-    "line2": "a part of the North.",
+    "line2": "a part of the North and East.",
     "sub": "Together, we can build it.",
     "cta": "Join the Community",
     "member": "Already a member?",

@@ -72,7 +72,7 @@ export function Card() {
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ font: `700 14px/1.15 ${font.ta}`, color: '#fff' }}>{t('brand.nameTa')}</div>
-                    <div style={{ font: `500 9.5px/1 ${font.ui}`, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(232,243,241,.7)', marginTop: 3 }}>{t('brand.name')} · Northern Province</div>
+                    <div style={{ font: `500 9.5px/1 ${font.ui}`, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(232,243,241,.7)', marginTop: 3 }}>{t('brand.name')} · Northern &amp; Eastern Province</div>
                   </div>
                   <span style={{ flex: 'none', display: 'inline-flex', alignItems: 'center', gap: 5, height: 26, padding: '0 11px', borderRadius: 999, background: tier.grad, color: tier.key === 'volunteer' ? '#E8F3F1' : '#00352D', font: `700 11px/1 ${font.ui}` }}>
                     <Icon name="star" size={12} color={tier.key === 'volunteer' ? '#E8F3F1' : '#00352D'} fill={tier.key === 'volunteer' ? 'none' : '#00352D'} strokeWidth={2} />

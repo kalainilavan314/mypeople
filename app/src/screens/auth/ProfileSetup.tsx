@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { authC, font, radius } from '../../theme/tokens';
@@ -7,18 +7,12 @@ import { AuthPage, Field, FieldLabel } from './parts';
 import { signupDraft } from '../../state/signupDraft';
 import { DISTRICTS, districtByCode, gsByCode, type GsFlat } from '../../data/divisions';
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const YEARS = Array.from({ length: 2012 - 1940 + 1 }, (_, i) => 2010 - i); // 2010 .. 1940
-
 export function ProfileSetup() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const d = signupDraft.get();
 
   const [name, setName] = useState(d.name);
-  const [day, setDay] = useState(d.dob ? Number(d.dob.slice(8, 10)) : 15);
-  const [month, setMonth] = useState(d.dob ? Number(d.dob.slice(5, 7)) - 1 : 0);
-  const [year, setYear] = useState(d.dob ? Number(d.dob.slice(0, 4)) : 2000);
   const [gender, setGender] = useState<'male' | 'female' | 'other' | null>(d.gender);
   const [districtCode, setDistrictCode] = useState<string | null>(d.districtCode);
   const [dsCode, setDsCode] = useState<string | null>(d.dsCode);
@@ -26,8 +20,12 @@ export function ProfileSetup() {
   const [referralId, setReferralId] = useState(d.referralId);
   const [sheet, setSheet] = useState(false);
 
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const dob = `${year}-${String(month + 1).padStart(2, '0')}-${String(Math.min(day, daysInMonth)).padStart(2, '0')}`;
+  // Date of birth comes from the NIC (captured on the previous step) — we do not
+  // ask for it again. Shown read-only so the member can see what was derived.
+  const dob = d.dob;
+  const dobDisplay = dob
+    ? new Date(dob + 'T00:00:00Z').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' })
+    : '—';
   const gsLabel = gsCode ? gsByCode(gsCode)?.gs.name : null;
 
   // District -> DS -> GS cascade: changing a parent clears its children.
@@ -66,10 +64,10 @@ export function ProfileSetup() {
 
         <div style={{ height: 20 }} />
         <FieldLabel ta={t('profileSetup.dob')} en="Date of birth" />
-        <div style={{ display: 'flex', gap: 10, background: authC.surface2, border: `1px solid ${authC.fieldBorder}`, borderRadius: radius.md, padding: '6px 10px' }}>
-          <Wheel values={Array.from({ length: daysInMonth }, (_, i) => String(i + 1))} index={Math.min(day, daysInMonth) - 1} onChange={(i) => setDay(i + 1)} />
-          <Wheel values={MONTHS} index={month} onChange={setMonth} flex={1.4} />
-          <Wheel values={YEARS.map(String)} index={YEARS.indexOf(year)} onChange={(i) => setYear(YEARS[i])} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, height: 56, padding: '0 16px', background: authC.surface2, border: `1px solid ${authC.fieldBorder}`, borderRadius: radius.md }}>
+          <Icon name="calendar" size={20} color={authC.text3} />
+          <span style={{ flex: 1, font: `600 15px/1.3 ${font.ui}`, color: dob ? authC.text : authC.text3 }}>{dobDisplay}</span>
+          <span style={{ font: `500 11.5px/1.2 ${font.ui}`, color: authC.text3 }}>{t('profileSetup.dobFromNic', 'from your NIC')}</span>
         </div>
 
         <div style={{ height: 20 }} />
@@ -124,43 +122,6 @@ export function ProfileSetup() {
         <GsSheet districtCode={districtCode} dsCode={dsCode} onPick={(g) => { setGsCode(g.code); setSheet(false); }} onClose={() => setSheet(false)} />
       )}
     </AuthPage>
-  );
-}
-
-/* --------------------------------------------------------------- Wheel */
-const ITEM_H = 38;
-function Wheel({ values, index, onChange, flex = 1 }: { values: string[]; index: number; onChange: (i: number) => void; flex?: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const settling = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (el && Math.round(el.scrollTop / ITEM_H) !== index) el.scrollTop = index * ITEM_H;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index, values.length]);
-
-  const onScroll = () => {
-    const el = ref.current;
-    if (!el) return;
-    if (settling.current) clearTimeout(settling.current);
-    settling.current = setTimeout(() => {
-      const i = Math.max(0, Math.min(values.length - 1, Math.round(el.scrollTop / ITEM_H)));
-      el.scrollTo({ top: i * ITEM_H, behavior: 'smooth' });
-      if (i !== index) onChange(i);
-    }, 90);
-  };
-
-  return (
-    <div style={{ position: 'relative', flex, height: ITEM_H * 5 }}>
-      <div style={{ position: 'absolute', left: 0, right: 0, top: ITEM_H * 2, height: ITEM_H, background: authC.greenSoft, borderRadius: 10, pointerEvents: 'none' }} />
-      <div ref={ref} onScroll={onScroll} style={{ height: '100%', overflowY: 'auto', scrollSnapType: 'y mandatory', paddingTop: ITEM_H * 2, paddingBottom: ITEM_H * 2, scrollbarWidth: 'none' }}>
-        {values.map((v, i) => (
-          <div key={v} style={{ height: ITEM_H, scrollSnapAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', font: `${i === index ? 700 : 400} ${i === index ? 17 : 15}px/1 ${font.ui}`, color: i === index ? authC.text : authC.text3 }}>
-            {v}
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }
 

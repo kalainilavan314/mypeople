@@ -59,7 +59,7 @@ export function Profile() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, color: 'rgba(255,255,255,.82)' }}>
                   <Icon name="mapPin" size={14} color="rgba(255,255,255,.82)" strokeWidth={2} />
                   <span style={{ font: `500 13px/1.3 ${font.ui}` }}>
-                    {[me?.districtName ?? member.electorateNameEn, t('profile.northernProvince', 'Northern Province')].filter(Boolean).join(' · ')}
+                    {[me?.districtName ?? member.electorateNameEn, t('profile.northernProvince', 'Northern & Eastern Province')].filter(Boolean).join(' · ')}
                   </span>
                 </div>
                 {me?.gsName && (
