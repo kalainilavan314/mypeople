@@ -51,7 +51,7 @@ export function SignUp() {
   const detailsOk =
     name.trim().length >= 2 &&
     nicInfo.valid &&
-    password.length >= 6 &&
+    password.length >= 15 &&
     (!inviteRequired || inviteCode.trim().length > 0);
 
   const back = () => {
@@ -64,7 +64,7 @@ export function SignUp() {
     setError(null);
     if (!detailsOk) {
       if (!nicInfo.valid) setError(t('auth.errNic'));
-      else if (password.length < 6) setError(t('auth.passwordRule'));
+      else if (password.length < 15) setError(t('auth.passwordRule'));
       return;
     }
     signupDraft.patch({
@@ -211,7 +211,6 @@ function NicCard({ info }: { info: ReturnType<typeof parseNic> }) {
         [t('auth.dob'), info.dob ? formatDob(info.dob) : '—'],
         [t('auth.gender'), t(info.gender === 'female' ? 'auth.female' : 'auth.male')],
         [t('auth.ageLabel'), String(info.age)],
-        [t('auth.voting'), info.votingEligible ? t('auth.eligible') : t('auth.notEligible')],
       ]
     : [[t('auth.nicNumber'), info.normalized || '—']];
   return (

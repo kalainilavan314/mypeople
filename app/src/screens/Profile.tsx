@@ -18,7 +18,7 @@ import { authApi } from '../data/authApi';
    and spacing carry the screen. */
 
 const fmtYear = (iso: string | undefined) =>
-  iso ? new Date(iso).toLocaleDateString('en-US', { year: 'numeric' }) : '—';
+  iso ? new Date(iso).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—';
 
 export function Profile() {
   const navigate = useNavigate();

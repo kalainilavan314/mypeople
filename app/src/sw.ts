@@ -1,6 +1,7 @@
 // Custom service worker (injectManifest strategy). Bundled by Vite, so no absolute
 // node_modules paths get inlined — safe with the apostrophe in the project folder name.
 
+import { clientsClaim } from 'workbox-core';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies';
@@ -11,6 +12,7 @@ import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 declare let self: ServiceWorkerGlobalScope & {
   __WB_MANIFEST: (string | { url: string; revision: string | null })[];
   skipWaiting: () => Promise<void>;
+  addEventListener: (type: string, listener: (event: { data?: { type?: string } }) => void) => void;
 };
 
 precacheAndRoute(self.__WB_MANIFEST);
@@ -48,4 +50,12 @@ registerRoute(
   }),
 );
 
-self.skipWaiting();
+// Do NOT skipWaiting unconditionally — that silently swaps the app under an open
+// session and is why members saw stale/half-updated builds. Instead the new SW
+// waits; the page shows an "Update now" prompt (components/UpdatePrompt) and,
+// when accepted, posts SKIP_WAITING. clientsClaim() then lets the freshly
+// activated SW control the page so the single reload serves the new assets.
+clientsClaim();
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') void self.skipWaiting();
+});

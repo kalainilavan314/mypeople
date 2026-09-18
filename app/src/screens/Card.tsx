@@ -108,10 +108,29 @@ export function Card() {
 
               {/* ---------- QR ---------- */}
               <div style={{ marginTop: 16, background: c.card, border: `1px solid ${c.hairline}`, borderRadius: radius.xl, padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                <div style={{ background: '#fff', padding: 14, borderRadius: 14 }}>
-                  <QR value={cardTokenQ.data ?? `${code}|${referral}`} size={188} />
-                </div>
-                <div style={{ font: `400 12px/1.4 ${font.ui}`, color: c.ink3, textAlign: 'center' }}>{t('card.checkInQr')}</div>
+                {cardTokenQ.data ? (
+                  <>
+                    {/* Only ever renders the signed, opaque check-in token — never
+                        the member/referral codes or any personal data. */}
+                    <div style={{ background: '#fff', padding: 14, borderRadius: 14 }}>
+                      <QR value={cardTokenQ.data} size={188} />
+                    </div>
+                    <div style={{ font: `400 12px/1.4 ${font.ui}`, color: c.ink3, textAlign: 'center' }}>{t('card.checkInQr')}</div>
+                  </>
+                ) : cardTokenQ.isLoading ? (
+                  <div style={{ minHeight: 200, display: 'grid', placeItems: 'center', font: `500 13px/1.4 ${font.ui}`, color: c.ink3 }}>
+                    {t('card.qrLoading', 'Generating your secure code…')}
+                  </div>
+                ) : (
+                  <div style={{ minHeight: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, textAlign: 'center' }}>
+                    <Icon name="idCard" size={30} color={c.ink3} />
+                    <div style={{ font: `600 14px/1.4 ${font.ta}`, color: c.ink }}>{t('card.qrUnavailableTitle', 'Check-in code unavailable')}</div>
+                    <div style={{ font: `400 12px/1.5 ${font.ui}`, color: c.ink3, maxWidth: 240 }}>{t('card.qrUnavailableBody', "We couldn't create your secure code. Please try again.")}</div>
+                    <div style={{ marginTop: 4 }}>
+                      <Button variant="secondary" onClick={() => cardTokenQ.refetch()}>{t('common.retry', 'Try again')}</Button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* ---------- Actions ---------- */}
@@ -186,7 +205,9 @@ function Meta({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ minWidth: 0 }}>
       <div style={{ font: `500 9px/1 ${font.ui}`, letterSpacing: '.08em', textTransform: 'uppercase', color: 'rgba(232,243,241,.55)' }}>{label}</div>
-      <div style={{ font: `600 13px/1.35 ${font.ta}`, color: '#E8F3F1', marginTop: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{value}</div>
+      {/* Identity/location fields must never silently truncate — wrap to two
+          lines rather than ellipsize (e.g. "Chunnakam Town Centre"). */}
+      <div style={{ font: `600 13px/1.35 ${font.ta}`, color: '#E8F3F1', marginTop: 4, whiteSpace: 'normal', wordBreak: 'break-word' }}>{value}</div>
     </div>
   );
 }

@@ -298,7 +298,7 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   .press:hover, .press:active { transform: none; }
 }
 .workspace{padding:24px 20px 32px;font-family:var(--font-ui);color:var(--ink);animation:npmFadeUp 180ms ease-out}.work-heading{margin:0 0 24px}.work-heading h1{font-size:28px;line-height:36px;font-weight:700;letter-spacing:-.02em;color:var(--ink-0);margin:8px 0}.work-heading p,.work-area p{font-size:13px;color:var(--ink-3);margin:8px 0;line-height:1.6}.work-eyebrow{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--ink-2)}.work-greeting{display:flex;gap:12px;justify-content:space-between;align-items:center}.work-greeting>div{min-width:0}.work-icon-button{border:1px solid var(--hairline);border-radius:10px;background:var(--card);color:var(--ink);width:44px;height:44px;display:grid;place-items:center;flex-shrink:0;cursor:pointer;border-radius:var(--r-sm)}
-.work-area{padding:20px;background:var(--card);border:1px solid var(--hairline);border-left:3px solid var(--primary);border-radius:var(--r-lg)}.work-area h2{font-size:19px;line-height:1.4;margin:8px 0;font-weight:600}.work-area>a{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;margin-top:8px;min-height:32px}.work-section{margin-top:24px}.work-section h2,.work-section-head h2{font-size:16px;font-weight:650;margin:0 0 12px;line-height:1.4}.work-section-head{display:flex;justify-content:space-between;align-items:center;gap:16px}.work-section-head>a{font-size:12px;white-space:nowrap;margin-bottom:12px}.work-panel{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-lg);overflow:hidden}
+.work-area{padding:16px 18px;background:var(--card);border:1px solid var(--hairline);border-left:3px solid var(--primary);border-radius:var(--r-lg)}.work-area h2{font-size:19px;line-height:1.35;margin:4px 0;font-weight:600}.work-area>a{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;margin-top:6px;min-height:32px}.work-section{margin-top:24px}.work-section h2,.work-section-head h2{font-size:16px;font-weight:650;margin:0 0 12px;line-height:1.4}.work-section-head{display:flex;justify-content:space-between;align-items:center;gap:16px}.work-section-head>a{font-size:12px;white-space:nowrap;margin-bottom:12px}.work-panel{background:var(--card);border:1px solid var(--hairline);border-radius:var(--r-lg);overflow:hidden}
 .work-link{display:flex;align-items:center;gap:12px;padding:16px;color:var(--ink);min-height:72px}.work-link+.work-link,.work-event+.work-event{border-top:1px solid var(--hairline)}.work-link>span:nth-child(2){flex:1;min-width:0}.work-link strong,.work-event strong{display:block;font-size:14px;font-weight:600;line-height:1.45}.work-link small,.work-event small{display:block;color:var(--ink-3);font-size:12px;line-height:1.6;margin-top:4px}.work-icon{width:36px;height:36px;border-radius:10px;background:var(--surface-variant);display:grid;place-items:center;color:var(--primary);flex:none}.work-event{display:flex;padding:16px;gap:16px;align-items:center;color:var(--ink)}.work-event>div{flex:1}.work-event time{width:40px;text-align:center;flex:none;color:var(--ink-2)}.work-event time strong{font-size:24px;font-weight:600}.work-event time span{font-size:10px;text-transform:uppercase}.work-empty,.work-note{font-size:12px;line-height:1.7;color:var(--ink-3)}.work-empty{padding:20px;border:1px dashed var(--hairline-2);border-radius:12px}.work-details{padding:20px}.work-details dl{margin-bottom:0}.work-details dl>div{padding:12px 0;border-bottom:1px solid var(--hairline)}.work-details dl>div:last-child{border:0}.work-details dt{font-size:12px;color:var(--ink-3)}.work-details dd{font-size:15px;font-weight:600;margin:4px 0 0}
 /* Primary bottom navigation — five tabs, ~72–80px incl. safe area. Active tab
    shows a soft-blue pill behind a navy icon (SGDS-style selected state). */
@@ -403,4 +403,44 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   margin-top: 2px;
+}
+
+/* "New version available" update prompt (components/UpdatePrompt). Floats above
+   the bottom nav, phone-width and centred. */
+.update-toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(88px + var(--safe-bottom));
+  width: min(100% - 32px, 416px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 12px 16px;
+  border-radius: var(--r-lg);
+  background: #14263d;
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.5);
+}
+.update-toast-btn {
+  flex: none;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: var(--r-sm);
+  border: 0;
+  background: #fff;
+  color: #14263d;
+  font: 600 14px/1 var(--font-ui);
+  cursor: pointer;
+}
+.update-toast-x {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.12);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
 }

@@ -13,7 +13,11 @@ export default defineConfig({
       strategies: 'injectManifest',
       srcDir: 'src',
       filename: 'sw.ts',
-      registerType: 'autoUpdate',
+      // 'prompt' (not autoUpdate): a new build waits until the member taps
+      // "Update now" (see components/UpdatePrompt), instead of silently swapping
+      // assets under an open session or leaving a stale build until a manual
+      // cache clear.
+      registerType: 'prompt',
       injectRegister: 'auto',
       includeAssets: ['favicon.png', 'logo.png', 'offline.html'],
       injectManifest: {

@@ -129,6 +129,10 @@ export function Login() {
           </GreenButton>
         </div>
 
+        {/* The demo account is a DEV-only convenience. It must never be exposed in
+            production, where publishing working credentials on the login screen is
+            an open door — so this whole block is compiled out of the prod build. */}
+        {import.meta.env.DEV && (<>
         {/* ---------- or ---------- */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
           <span style={{ flex: 1, height: 1, background: authC.line }} />
@@ -159,6 +163,7 @@ export function Login() {
           </button>
           <div style={{ font: `400 11.5px/1.45 ${font.ui}`, color: authC.text2, marginTop: 10 }}>{t('auth.demoHint')}</div>
         </div>
+        </>)}
 
         <div style={{ flex: 1, minHeight: 18 }} />
 

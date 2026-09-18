@@ -18,6 +18,7 @@ import '@fontsource/jetbrains-mono/400.css';
 import '@fontsource/jetbrains-mono/500.css';
 import './styles/global.css';
 import { App } from './App';
+import { UpdatePrompt } from './components/UpdatePrompt';
 import { applyTheme, getTheme } from './state/theme';
 import { installViewportSizing } from './lib/viewport';
 
@@ -58,6 +59,7 @@ createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <App />
       </BrowserRouter>
+      <UpdatePrompt />
     </QueryClientProvider>
   </StrictMode>,
 );

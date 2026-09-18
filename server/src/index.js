@@ -14,19 +14,17 @@ import { putObject, getObject, deleteObject, mimeFor, backend as storageBackend 
 
 const PROD = process.env.NODE_ENV === 'production';
 
-// Registration is OPEN — no invite/referral code is required to sign up.
-// (Previously a closed-pilot gate behind SIGNUP_INVITE_CODE.)
+// Password policy (NIST SP 800-63B, single password factor): length is the
+// strength lever — a long minimum, a generous maximum, no composition rules.
+const MIN_PASSWORD = 15;
+const MAX_PASSWORD = 64;
+
+// Registration is OPEN. There is no invite/referral gate anywhere — not in
+// config, not in the UI, and not in the signup transaction (previously a
+// closed-pilot gate behind SIGNUP_INVITE_CODE, now removed outright so no stale
+// validation can resurface at the final submission step).
 // WARNING: signup performs no OTP or identity check, so anyone who can reach the
-// URL can create an account against any NIC number. This was a deliberate
-// product decision to open registration; see DEPLOY.md for the trade-off.
-const INVITE_CODE = '';
-function requireInvite(supplied) {
-  if (!INVITE_CODE) return;
-  const a = Buffer.from(String(supplied ?? ''));
-  const b = Buffer.from(INVITE_CODE);
-  // Length-independent compare, then constant-time on equal lengths.
-  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) throw bad('invalid_invite_code', 403);
-}
+// URL can create an account against any NIC number — a deliberate product choice.
 
 // On Vercel this module is imported by api/[...path].js and invoked per request
 // rather than listening on a port. That platform also caps request bodies at
@@ -188,7 +186,7 @@ app.get('/api/health', (_req, res) => res.json({ ok: true, service: 'npm-members
 // says only WHETHER an invite code is required, never what it is.
 app.get('/api/config', (_req, res) =>
   res.json({
-    inviteRequired: !!INVITE_CODE,
+    inviteRequired: false,
     // The UI hides the card option entirely when this is false, rather than
     // offering a payment method that returns 503 on submit.
     cardPaymentsEnabled: CARD_SANDBOX,
@@ -234,16 +232,14 @@ app.post('/api/auth/verify-otp', wrap(async (req, res) => {
 app.post('/api/auth/signup', wrap(async (req, res) => {
   const b = req.body || {};
   const { name, nic, phone, password, dob, gender, districtCode, dsCode, gsCode, referralId, answers, language } = b;
-  // Identity is the NIC — a mobile number is optional (no SMS/OTP step).
-  //
-  // Note there is deliberately no OTP check here: /api/auth/request-otp issues a
-  // code but nothing consumes it, so possession of a phone number proves nothing.
-  // On a reachable deployment the invite code below is therefore the *only* thing
-  // standing between the internet and an account created against any NIC number.
-  // It is required in production for exactly that reason (see the boot guard).
-  requireInvite(b.inviteCode);
+  // Identity is the NIC — a mobile number is optional (no SMS/OTP step). There is
+  // no invite gate: registration is open (see the note near the top of this file).
   if (!name || !nic || !password) throw bad('missing_fields');
-  if (String(password).length < 6) throw bad('weak_password');
+  // Password policy (NIST SP 800-63B for a single password factor): a long
+  // minimum, a generous maximum, and no character-composition rules. Length is
+  // the strength lever; passphrases and password managers are encouraged.
+  if (String(password).length < MIN_PASSWORD) throw bad('weak_password');
+  if (String(password).length > MAX_PASSWORD) throw bad('password_too_long');
 
   // Trim first, then judge. "   " is a truthy string, so the check above passed
   // it and an empty name was stored. Browser attributes cannot be relied on for
