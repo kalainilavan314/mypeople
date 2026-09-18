@@ -29,20 +29,49 @@ export function installViewportSizing(): () => void {
   const vv = window.visualViewport;
 
   const apply = () => {
-    // Without visualViewport, leave --app-h unset so the CSS falls back to
+    // Without visualViewport there is nothing to measure; the CSS falls back to
     // 100dvh, which is correct on every browser new enough to support it.
     if (!vv) return;
-    // On iOS the visual viewport also shrinks while pinch-zoomed; scale > 1
-    // means the user zoomed rather than the keyboard opening, and resizing the
-    // shell then would fight them.
-    const height = vv.scale > 1.01 ? window.innerHeight : vv.height;
-    root.style.setProperty('--app-h', `${Math.round(height)}px`);
+
+    // --app-h is set ONLY while something is covering the viewport — in
+    // practice the on-screen keyboard. The rest of the time the property is
+    // removed so plain 100dvh governs the shell.
+    //
+    // This matters more than it looks. An earlier version tracked the height
+    // unconditionally, which meant a stale reading did not merely miss a
+    // keyboard, it actively sized the shell wrongly in the normal state: a
+    // desktop window left the shell hundreds of pixels taller or shorter than
+    // the viewport. Intervening only when there is something to correct makes
+    // the worst case a missed shrink rather than a broken layout.
+    //
+    // A pinch-zoom also shrinks the visual viewport (scale > 1), and resizing
+    // the shell then would fight the person doing the zooming.
+    const covered = window.innerHeight - vv.height;
+    if (vv.scale <= 1.01 && covered > 80) {
+      root.style.setProperty('--app-h', `${Math.round(vv.height)}px`);
+    } else {
+      root.style.removeProperty('--app-h');
+    }
   };
 
   apply();
+
+  // Two independent triggers, because the two cases are genuinely different.
+  //
+  // visualViewport events cover the keyboard: on iOS the layout viewport does
+  // not change at all when the keyboard opens, only the visual one, so nothing
+  // observes a box change and only these events fire.
   vv?.addEventListener('resize', apply);
   vv?.addEventListener('scroll', apply);
   window.addEventListener('orientationchange', apply);
+
+  // A ResizeObserver covers everything else. Listening for window 'resize' is
+  // not enough: the layout viewport can change without a resize event reaching
+  // the page, which left --app-h holding a previous, taller height and the
+  // shell overflowing the viewport. Observing the element's own box reacts to
+  // the change itself rather than to a notification about it.
+  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => apply()) : null;
+  ro?.observe(root);
 
   // Bring the focused field into view once the keyboard animation has settled.
   // `scroll-margin-block` in global.css reserves the space above and below, so
@@ -61,6 +90,7 @@ export function installViewportSizing(): () => void {
     vv?.removeEventListener('resize', apply);
     vv?.removeEventListener('scroll', apply);
     window.removeEventListener('orientationchange', apply);
+    ro?.disconnect();
     document.removeEventListener('focusin', onFocusIn);
     root.style.removeProperty('--app-h');
     cleanup = null;
