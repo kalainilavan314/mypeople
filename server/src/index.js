@@ -7,7 +7,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { pool, memberById, memberByNicHash, memberByPhone } from './db.js';
-import { nicHash, signToken, verifyToken, otpCode, memberCode, referralCode, publicMember, verifyAvatarUrl } from './lib.js';
+import { nicHash, signToken, verifyToken, otpCode, memberCode, referralCode, publicMember, verifyAvatarUrl, hashOtp, isNicFormat, signCardToken } from './lib.js';
 import { recomputeTier, tierProgress } from './tier.js';
 import { clientIp, checkOtpRequest, issueOtp, consumeOtp, checkLogin, recordLogin, sleep } from './throttle.js';
 import { putObject, getObject, deleteObject, mimeFor, backend as storageBackend } from './storage.js';
@@ -89,6 +89,57 @@ const BODY_LIMIT = process.env.MAX_BODY || (SERVERLESS ? '4mb' : '8mb');
 const MAX_SLIP_BYTES = SERVERLESS ? 2.5 * 1024 * 1024 : 6 * 1024 * 1024;
 const MAX_AVATAR_BYTES = SERVERLESS ? 2 * 1024 * 1024 : 3 * 1024 * 1024;
 app.use(express.json({ limit: BODY_LIMIT }));
+
+// --- Session cookie ---------------------------------------------------------
+// The session token lives in a Secure, HttpOnly, SameSite=Lax cookie rather than
+// in a header the client reads from localStorage: an XSS bug then cannot read
+// the session token, because JavaScript never sees it. SameSite=Lax is also the
+// primary CSRF defence — the browser withholds the cookie from cross-site
+// POST/fetch, so a forged request from another origin arrives unauthenticated.
+//
+// The Bearer header is still accepted (tokenFromReq below) so non-browser
+// clients and the transition period keep working; browsers use the cookie.
+const SESSION_COOKIE = 'mp_session';
+const SESSION_MAX_AGE = 30 * 24 * 60 * 60 * 1000; // 30d, matches the JWT
+function setSession(res, token) {
+  res.cookie(SESSION_COOKIE, token, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: PROD,
+    path: '/',
+    maxAge: SESSION_MAX_AGE,
+  });
+}
+function clearSession(res) {
+  res.clearCookie(SESSION_COOKIE, { httpOnly: true, sameSite: 'lax', secure: PROD, path: '/' });
+}
+function cookieToken(req) {
+  const raw = req.headers.cookie || '';
+  const m = raw.match(/(?:^|;\s*)mp_session=([^;]+)/);
+  return m ? decodeURIComponent(m[1]) : null;
+}
+// Cookie first (browser), then Authorization: Bearer (non-browser / transition).
+function tokenFromReq(req) {
+  return cookieToken(req) || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null);
+}
+
+// --- CSRF (defence in depth over SameSite) ----------------------------------
+// SameSite=Lax already stops a cross-site request from carrying the cookie, so
+// this only ever fires on a same-cookie request whose Origin is present and
+// does not match. Requests with no cookie (Bearer clients) and requests with no
+// Origin header are left alone; a mismatch with an active cookie is refused.
+app.use((req, res, next) => {
+  if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
+  if (!req.path.startsWith('/api/')) return next();
+  if (!cookieToken(req)) return next();
+  const origin = req.headers.origin;
+  if (!origin) return next();
+  if (ALLOWED.includes(origin)) return next();
+  try {
+    if (new URL(origin).host === req.headers.host) return next();
+  } catch { /* fall through */ }
+  return res.status(403).json({ error: 'csrf_origin_mismatch' });
+});
 
 // Decode a data:image base64 payload; returns { buf, ext } or throws 400.
 function decodeImage(image, maxBytes = MAX_SLIP_BYTES) {
@@ -211,6 +262,10 @@ app.post('/api/auth/signup', wrap(async (req, res) => {
   if (phoneVal && await memberByPhone(phoneVal)) throw bad('phone_exists', 409);
 
   const pwHash = await bcrypt.hash(String(password), 10);
+  // Honest verification: at signup the most we can attest is that the NIC
+  // *format* is valid — never identity. Anything more requires a coordinator
+  // review (see /api/me/verification, recorded in npm.verification_audit).
+  const vStatus = isNicFormat(nic) ? 'nic_format' : 'unverified';
 
   const client = await pool.connect();
   try {
@@ -232,11 +287,11 @@ app.post('/api/auth/signup', wrap(async (req, res) => {
       try {
         const ins = await client.query(
           `INSERT INTO npm.member
-             (member_code, full_name, phone, nic_hash, nic_status, password_hash,
+             (member_code, full_name, phone, nic_hash, nic_status, verification_status, password_hash,
               dob, gender, gs_code, ds_code, district_code, referral_code, referred_by, language)
-           VALUES ($1,$2,$3,$4,'verified',$5,$6,$7,$8,$9,$10,$11,$12,$13)
+           VALUES ($1,$2,$3,$4,'pending',$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
            RETURNING *`,
-          [memberCode(), fullName, phoneVal, nh, pwHash,
+          [memberCode(), fullName, phoneVal, nh, vStatus, pwHash,
             dob || null, gender || null, gsCode || null, dsCode || null, districtCode || null,
             referralCode(fullName), referrerId, language || 'en'],
         );
@@ -280,9 +335,18 @@ app.post('/api/auth/signup', wrap(async (req, res) => {
       }
     }
 
+    // Record the initial verification state in the audit trail.
+    await client.query(
+      `INSERT INTO npm.verification_audit (member_id, from_status, to_status, method, notes)
+       VALUES ($1, NULL, $2, 'signup_format_check', 'Initial state at sign-up')`,
+      [member.id, vStatus],
+    );
+
     await client.query('COMMIT');
     const full = await memberById(member.id);
-    res.json({ ok: true, token: signToken(member.id), member: await withProgress(full) });
+    const token = signToken(member.id);
+    setSession(res, token);
+    res.json({ ok: true, token, member: await withProgress(full) });
   } catch (e) {
     await client.query('ROLLBACK');
     throw e;
@@ -322,13 +386,21 @@ app.post('/api/auth/login', wrap(async (req, res) => {
   await recordLogin(identifier, ip, ok);
   if (!ok) throw bad('invalid_credentials', 401);
 
-  res.json({ ok: true, token: signToken(member.id), member: await withProgress(member) });
+  const token = signToken(member.id);
+  setSession(res, token);
+  // token is still returned for non-browser clients; browsers use the cookie.
+  res.json({ ok: true, token, member: await withProgress(member) });
 }));
+
+// Clear the session cookie. Client also drops its cached member.
+app.post('/api/auth/logout', (req, res) => {
+  clearSession(res);
+  res.json({ ok: true });
+});
 
 // --- Me ---------------------------------------------------------------------
 app.get('/api/me', wrap(async (req, res) => {
-  const auth = req.headers.authorization || '';
-  const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+  const token = tokenFromReq(req);
   if (!token) throw bad('unauthorized', 401);
   let sub;
   try { sub = verifyToken(token).sub; } catch { throw bad('unauthorized', 401); }
@@ -337,10 +409,20 @@ app.get('/api/me', wrap(async (req, res) => {
   res.json({ member: await withProgress(member) });
 }));
 
+// Opaque, signed, short-lived membership credential for the card QR. The QR
+// carries THIS, never the NIC/DOB or any personal detail — a check-in service
+// resolves the token server-side under its own authorization rules.
+app.get('/api/me/card-token', wrap(async (req, res) => {
+  const id = memberIdFromReq(req);
+  if (!id) throw bad('unauthorized', 401);
+  const m = await memberById(id);
+  if (!m) throw bad('unauthorized', 401);
+  res.json({ token: signCardToken(m.id) });
+}));
+
 // --- Events -----------------------------------------------------------------
 function memberIdFromReq(req) {
-  const a = req.headers.authorization || '';
-  const t = a.startsWith('Bearer ') ? a.slice(7) : null;
+  const t = tokenFromReq(req);
   if (!t) return null;
   try { return verifyToken(t).sub; } catch { return null; }
 }
@@ -602,6 +684,56 @@ async function requireAdmin(req) {
   return m;
 }
 
+// --- Verification review (coordinator) --------------------------------------
+// A coordinator moves a member through the verification states. Every change is
+// written to the append-only audit trail with who did it, how, and why.
+// 'identity_confirmed' is the only state that asserts a real identity check —
+// it must never be set by self-service, only here.
+const VERIFICATION_STATES = ['unverified', 'nic_format', 'review_pending', 'identity_confirmed'];
+app.post('/api/members/:id/verification', wrap(async (req, res) => {
+  const admin = await requireAdmin(req);
+  const { status, method, notes } = req.body || {};
+  if (!VERIFICATION_STATES.includes(status)) throw bad('bad_status');
+  const target = await memberById(req.params.id);
+  if (!target) throw bad('not_found', 404);
+
+  const confirmed = status === 'identity_confirmed';
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    if (confirmed) {
+      await client.query(
+        `UPDATE npm.member
+           SET verification_status = $1, verification_method = $2, review_notes = $3,
+               verified_at = now(), verified_by = $4
+         WHERE id = $5`,
+        [status, method || 'coordinator_review', notes || null, admin.id, target.id],
+      );
+    } else {
+      await client.query(
+        `UPDATE npm.member
+           SET verification_status = $1, verification_method = $2, review_notes = $3,
+               verified_at = NULL, verified_by = NULL
+         WHERE id = $4`,
+        [status, method || 'coordinator_review', notes || null, target.id],
+      );
+    }
+    await client.query(
+      `INSERT INTO npm.verification_audit (member_id, from_status, to_status, method, changed_by, notes)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [target.id, target.verification_status, status, method || 'coordinator_review', admin.id, notes || null],
+    );
+    await client.query('COMMIT');
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    client.release();
+  }
+  const full = await memberById(target.id);
+  res.json({ ok: true, member: await withProgress(full) });
+}));
+
 function mapDonation(d, { withDonor = true } = {}) {
   return {
     id: d.id,
@@ -657,7 +789,7 @@ app.post('/api/donations/card/start', wrap(async (req, res) => {
   const code = otpCode();
   await pool.query(
     `INSERT INTO npm.otp (phone, code, purpose, expires_at) VALUES ($1,$2,'donation', now() + interval '10 minutes')`,
-    [`don:${m.id}`, code],
+    [`don:${m.id}`, hashOtp(code)],
   );
   // Payment verification codes must never be written to logs.
   res.json({ ok: true, ...(DEV_OTP ? { devCode: code } : {}) });
@@ -674,7 +806,7 @@ app.post('/api/donations/card/confirm', wrap(async (req, res) => {
   const r = await pool.query(
     `SELECT id FROM npm.otp WHERE phone=$1 AND code=$2 AND purpose='donation' AND consumed=false AND expires_at > now()
      ORDER BY created_at DESC LIMIT 1`,
-    [`don:${m.id}`, String(code)],
+    [`don:${m.id}`, hashOtp(code)],
   );
   if (!r.rows[0]) throw bad('invalid_code', 401);
   await pool.query(`UPDATE npm.otp SET consumed=true WHERE id=$1`, [r.rows[0].id]);

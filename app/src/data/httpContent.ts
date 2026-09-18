@@ -1,15 +1,14 @@
 // Real (backend-backed) content methods. Composed over the mock client in
 // data/index.ts so these hit Postgres while the rest stays mock for now.
 import type { CommunityReport, Donation, DonationBoard, NewCommunityReport, NpmEvent, RsvpStatus } from './types';
-import { getToken } from './authApi';
 
 async function req<T>(path: string, opts: RequestInit = {}): Promise<T> {
-  const token = getToken();
   const res = await fetch('/api' + path, {
     ...opts,
+    // Auth travels in the HttpOnly session cookie.
+    credentials: 'include',
     headers: {
       'content-type': 'application/json',
-      ...(token ? { authorization: `Bearer ${token}` } : {}),
       ...(opts.headers || {}),
     },
   });
@@ -106,10 +105,7 @@ export async function reviewDonation(id: string, action: 'approve' | 'reject', n
 
 /** Admin-only slip image, fetched with the auth header → object URL. */
 export async function fetchSlipImage(id: string): Promise<string> {
-  const token = getToken();
-  const res = await fetch(`/api/donations/${id}/slip`, {
-    headers: token ? { authorization: `Bearer ${token}` } : {},
-  });
+  const res = await fetch(`/api/donations/${id}/slip`, { credentials: 'include' });
   if (!res.ok) throw new Error(`http_${res.status}`);
   return URL.createObjectURL(await res.blob());
 }

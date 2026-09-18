@@ -10,6 +10,7 @@
 // stops one attacker walking through many numbers; a daily cap stops slow,
 // patient abuse that never trips either.
 import { pool } from './db.js';
+import { hashOtp } from './lib.js';
 
 /** Client address, honouring a reverse proxy but never trusting it blindly. */
 export function clientIp(req) {
@@ -69,7 +70,8 @@ export async function issueOtp({ phone, code, purpose, ip, ttlMinutes = 5 }) {
     await client.query(
       `INSERT INTO npm.otp (phone, code, purpose, ip, expires_at)
        VALUES ($1, $2, $3, $4, now() + ($5 || ' minutes')::interval)`,
-      [phone, code, purpose, ip, String(ttlMinutes)],
+      // Stored hashed — the column holds a hash, never the live code.
+      [phone, hashOtp(code), purpose, ip, String(ttlMinutes)],
     );
     await client.query('COMMIT');
   } catch (e) {
@@ -103,7 +105,7 @@ export async function consumeOtp({ phone, code, purpose }) {
     return { ok: false, reason: 'too_many_attempts' };
   }
 
-  if (String(row.code) !== String(code)) {
+  if (String(row.code) !== hashOtp(code)) {
     const upd = await pool.query(
       `UPDATE npm.otp SET attempts = attempts + 1 WHERE id = $1 RETURNING attempts`,
       [row.id],

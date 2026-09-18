@@ -19,6 +19,10 @@ export interface ServerMember {
   districtCode: string | null;
   districtName: string | null;
   tier: 'volunteer' | 'diamond' | 'gold' | 'platinum';
+  // Honest verification state from the server (migration 0009). The UI shows a
+  // badge from this and never implies more than the state warrants.
+  verificationStatus?: 'unverified' | 'nic_format' | 'review_pending' | 'identity_confirmed';
+  verifiedAt?: string | null;
   referralCode: string;
   referredBy: string | null;
   recruitCount: number;
@@ -71,9 +75,13 @@ export class ApiError extends Error {
   }
 }
 
+// credentials:'include' sends the HttpOnly session cookie the server sets on
+// login/signup, so the browser authenticates every request without JavaScript
+// ever handling the token.
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`/api${path}`, {
     method: 'POST',
+    credentials: 'include',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),
   });
@@ -83,17 +91,20 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 }
 
 async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`/api${path}`);
+  const res = await fetch(`/api${path}`, { credentials: 'include' });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new ApiError(data.error || 'server_error', res.status);
   return data as T;
 }
 
+// The session token now lives only in the HttpOnly cookie — it is never stored
+// in localStorage, so an XSS bug cannot read it. Kept exported and returning
+// null so callers that used to attach a Bearer header simply attach nothing and
+// fall through to the cookie.
 export function getToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  return null;
 }
-function saveSession(token: string, member: ServerMember) {
-  localStorage.setItem(TOKEN_KEY, token);
+function saveSession(_token: string, member: ServerMember) {
   saveMember(member);
 }
 /** Refresh the cached member (after profile edits etc.) so every screen updates. */
@@ -151,23 +162,51 @@ export const authApi = {
     return r;
   },
 
-  // Fresh member (incl. live recruit count + tier progress). Updates the cache.
+  // Fresh member (incl. live recruit count + tier progress). Auth travels in the
+  // session cookie. 401 => genuinely signed out; other errors (offline) fall
+  // back to the locally cached copy so the UI still renders.
   async me(): Promise<ServerMember | null> {
-    const token = getToken();
-    if (!token) return null;
-    const res = await fetch('/api/me', { headers: { authorization: `Bearer ${token}` } });
+    let res: Response;
+    try {
+      res = await fetch('/api/me', { credentials: 'include' });
+    } catch {
+      return cachedMember();
+    }
+    if (res.status === 401) return null;
     if (!res.ok) return cachedMember();
     const data = (await res.json()) as { member: ServerMember };
     saveMember(data.member);
     return data.member;
   },
 
+  // Clear the server session cookie, then the local cache.
+  async logout(): Promise<void> {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    } catch {
+      /* best effort — the local flag/cache is cleared regardless */
+    }
+    clearSession();
+  },
+
+  // Signed, opaque, short-lived membership credential for the card QR. Carries
+  // no personal data; the server resolves it. Falls back to null on failure so
+  // the card can degrade to its non-QR content.
+  async cardToken(): Promise<string | null> {
+    try {
+      const r = await get<{ token: string }>('/me/card-token');
+      return r.token;
+    } catch {
+      return null;
+    }
+  },
+
   // Edit own profile details. Returns the fresh member and updates the cache.
   async updateProfile(update: ProfileUpdate): Promise<ServerMember> {
-    const token = getToken();
     const res = await fetch('/api/me', {
       method: 'PATCH',
-      headers: { 'content-type': 'application/json', ...(token ? { authorization: `Bearer ${token}` } : {}) },
+      credentials: 'include',
+      headers: { 'content-type': 'application/json' },
       body: JSON.stringify(update),
     });
     const data = await res.json().catch(() => ({}));
@@ -178,10 +217,10 @@ export const authApi = {
 
   // Upload a new profile photo (base64 data URL). Updates the cache.
   async uploadAvatar(image: string): Promise<ServerMember> {
-    const token = getToken();
     const res = await fetch('/api/me/avatar', {
       method: 'POST',
-      headers: { 'content-type': 'application/json', ...(token ? { authorization: `Bearer ${token}` } : {}) },
+      credentials: 'include',
+      headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ image }),
     });
     const data = await res.json().catch(() => ({}));

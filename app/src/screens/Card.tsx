@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { authApi } from '../data/authApi';
 import { c, font, radius } from '../theme/tokens';
 import { pick } from '../i18n';
 import { Icon } from '../components/Icon';
@@ -23,6 +25,15 @@ export function Card() {
   const me = useMe();
   const [wallet, setWallet] = useState(false);
   const [copied, setCopied] = useState(false);
+  // Opaque, server-signed membership credential for the QR — carries no personal
+  // data. Refreshed before its 10-minute expiry; falls back to the member codes
+  // if the endpoint is unreachable (offline / preview).
+  const cardTokenQ = useQuery({
+    queryKey: ['cardToken'],
+    queryFn: () => authApi.cardToken(),
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 8 * 60 * 1000,
+  });
 
   const copyReferral = (code: string) => {
     navigator.clipboard?.writeText(code).catch(() => {});
@@ -98,7 +109,7 @@ export function Card() {
               {/* ---------- QR ---------- */}
               <div style={{ marginTop: 16, background: c.card, border: `1px solid ${c.hairline}`, borderRadius: radius.xl, padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
                 <div style={{ background: '#fff', padding: 14, borderRadius: 14 }}>
-                  <QR value={`${code}|${referral}`} size={188} />
+                  <QR value={cardTokenQ.data ?? `${code}|${referral}`} size={188} />
                 </div>
                 <div style={{ font: `400 12px/1.4 ${font.ui}`, color: c.ink3, textAlign: 'center' }}>{t('card.checkInQr')}</div>
               </div>

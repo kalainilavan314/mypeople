@@ -15,6 +15,43 @@ export const verifyToken = (token) => jwt.verify(token, SECRET, { algorithms: ['
 
 export const otpCode = () => String(crypto.randomInt(100000, 1000000));
 
+// One-time codes are stored HASHED, never in the clear: a database read (backup
+// leak, SQL injection, a curious operator) must not hand over live codes. The
+// pepper is the app secret, so a stolen table alone cannot be brute-forced
+// against the tiny 6-digit space without it.
+export const hashOtp = (code) =>
+  crypto.createHmac('sha256', SECRET).update(`otp:${String(code)}`).digest('hex');
+
+// Sri Lankan NIC format: old 9 digits + V/X, or new 12 digits. Format only —
+// this proves nothing about identity, which is exactly why a passing check maps
+// to 'nic_format', not a confirmed identity.
+export const isNicFormat = (nic) => /^(\d{9}[VXvx]|\d{12})$/.test(String(nic || '').trim());
+
+// Opaque, signed, expiring membership credential for the card QR. The QR must
+// not carry NIC/DOB or any personal data: it carries this token, which a
+// check-in service resolves server-side under its own authorization rules.
+const CARD_TOKEN_TTL_SECONDS = 10 * 60;
+export function signCardToken(memberId) {
+  const exp = Math.floor(Date.now() / 1000) + CARD_TOKEN_TTL_SECONDS;
+  const body = `${memberId}.${exp}`;
+  const sig = crypto.createHmac('sha256', SECRET).update(`card:${body}`).digest('base64url').slice(0, 27);
+  return `${Buffer.from(body).toString('base64url')}.${sig}`;
+}
+export function verifyCardToken(token) {
+  const [b64, sig] = String(token || '').split('.');
+  if (!b64 || !sig) return null;
+  let body;
+  try { body = Buffer.from(b64, 'base64url').toString(); } catch { return null; }
+  const [memberId, expStr] = body.split('.');
+  const exp = Number(expStr);
+  if (!memberId || !Number.isFinite(exp) || exp < Math.floor(Date.now() / 1000)) return null;
+  const expected = crypto.createHmac('sha256', SECRET).update(`card:${body}`).digest('base64url').slice(0, 27);
+  const a = Buffer.from(sig);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+  return { memberId };
+}
+
 export function memberCode() {
   const yy = String(new Date().getFullYear()).slice(2);
   return `WTL-${yy}-${Math.floor(1000000 + Math.random() * 9000000)}`;
@@ -44,6 +81,10 @@ export function publicMember(m) {
     fullName: m.full_name,
     phone: m.phone,
     nicStatus: m.nic_status,
+    // Honest, explicit verification state (see migration 0009). The UI shows a
+    // badge from this and must never imply more than the state warrants.
+    verificationStatus: m.verification_status ?? 'unverified',
+    verifiedAt: m.verified_at ?? null,
     dob: dateOnly(m.dob),
     gender: m.gender,
     gsCode: m.gs_code,

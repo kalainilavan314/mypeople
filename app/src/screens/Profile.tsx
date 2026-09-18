@@ -9,6 +9,7 @@ import { useMember, useMyCommunityReports, useEvents } from '../data/queries';
 import { useMe } from '../hooks/useMe';
 import { useAuth } from '../state/auth';
 import { useTheme } from '../state/theme';
+import { authApi } from '../data/authApi';
 
 /* ================================================================== Profile
    Institutional workspace profile: a single navy header (the one branded
@@ -66,6 +67,7 @@ export function Profile() {
                     {t('profile.gnDivision', { name: me.gsName })}
                   </div>
                 )}
+                <VerificationPill status={me?.verificationStatus} label={verifyLabel(t, me?.verificationStatus)} />
               </div>
             </div>
 
@@ -125,7 +127,7 @@ export function Profile() {
 
           {/* ---- Logout ---- */}
           <div style={{ marginTop: 24 }}>
-            <Button variant="danger" fullWidth icon="logout" onClick={() => { logout(); navigate('/login'); }}>
+            <Button variant="danger" fullWidth icon="logout" onClick={() => { void authApi.logout(); logout(); navigate('/login'); }}>
               {t('profile.logout')}
             </Button>
           </div>
@@ -136,6 +138,40 @@ export function Profile() {
 }
 
 /* ------------------------------------------------------------------ pieces */
+
+type VStatus = 'unverified' | 'nic_format' | 'review_pending' | 'identity_confirmed';
+
+// Honest label for each verification state — never implies more than the state
+// warrants (e.g. NIC-format-checked is not "verified").
+function verifyLabel(t: (k: string, d: string) => string, status?: VStatus): { label: string; icon: IconName } {
+  switch (status) {
+    case 'identity_confirmed':
+      return { label: t('verify.confirmed', 'Identity confirmed'), icon: 'check' };
+    case 'review_pending':
+      return { label: t('verify.reviewPending', 'Identity review pending'), icon: 'info' };
+    case 'nic_format':
+      return { label: t('verify.nicFormat', 'NIC format checked'), icon: 'idCard' };
+    default:
+      return { label: t('verify.unverified', 'Not verified'), icon: 'info' };
+  }
+}
+
+function VerificationPill({ status, label }: { status?: VStatus; label: { label: string; icon: IconName } }) {
+  const confirmed = status === 'identity_confirmed';
+  return (
+    <span
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 10, height: 28, padding: '0 12px',
+        borderRadius: 999, background: confirmed ? 'rgba(150,199,176,.22)' : 'rgba(255,255,255,.12)',
+        border: `1px solid ${confirmed ? 'rgba(150,199,176,.6)' : 'rgba(255,255,255,.28)'}`,
+        color: '#fff', font: `600 12px/1 ${font.ui}`,
+      }}
+    >
+      <Icon name={label.icon} size={13} color="#fff" strokeWidth={2} />
+      {label.label}
+    </span>
+  );
+}
 
 function Stat({ icon, value, label }: { icon: IconName; value: string; label: string }) {
   return (

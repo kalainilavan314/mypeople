@@ -62,6 +62,8 @@ async function main() {
       await client.query(
         `UPDATE npm.member
             SET full_name=$2, password_hash=$3, nic_status='verified',
+                verification_status='identity_confirmed', verified_at=now(),
+                verification_method='demo_seed',
                 district_code=$4, ds_code=$5, gs_code=$6, deleted_at=NULL
           WHERE id=$1`,
         [id, NAME, pwHash, district_code, ds_code, gn_code],
@@ -70,9 +72,10 @@ async function main() {
     } else {
       const ins = await client.query(
         `INSERT INTO npm.member
-           (member_code, full_name, phone, nic_hash, nic_status, password_hash,
+           (member_code, full_name, phone, nic_hash, nic_status, verification_status,
+            verified_at, verification_method, password_hash,
             dob, gender, district_code, ds_code, gs_code, referral_code, language)
-         VALUES ($1,$2,NULL,$3,'verified',$4,$5,'male',$6,$7,$8,$9,'en')
+         VALUES ($1,$2,NULL,$3,'verified','identity_confirmed',now(),'demo_seed',$4,$5,'male',$6,$7,$8,$9,'en')
          RETURNING id`,
         [memberCode(), NAME, nh, pwHash, '1999-03-15',
           district_code, ds_code, gn_code, referralCode(NAME)],
