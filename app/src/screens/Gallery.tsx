@@ -12,9 +12,12 @@ interface Album {
   place: string;
   count: number;
   category: 'events' | 'community';
-  src: string;
+  /** Local/approved image path (in app/public). Omitted → branded placeholder.
+      No third-party image hosts: opening the gallery must not call out to
+      Unsplash/Pexels/rocket.new. Drop approved photos in app/public/gallery/. */
+  src?: string;
   alt: string;
-  grad: string; // fallback when the photo can't load (offline)
+  grad: string; // branded placeholder + offline fallback (navy)
   span?: boolean; // taller tile
 }
 
@@ -22,37 +25,31 @@ const ALBUMS: Album[] = [
   {
     id: 'convention', titleTa: 'மாவட்ட மாநாடு', titleEn: 'District convention', place: 'Jaffna Town Hall',
     count: 48, category: 'events', span: true, grad: grad.primary,
-    src: 'https://images.unsplash.com/photo-1613899323447-87ac2ee746b8',
     alt: 'Volunteers gathered at the district members convention in Jaffna',
   },
   {
     id: 'water', titleTa: 'நல்லூர் நீர் திட்டம்', titleEn: 'Nallur water drive', place: 'Nallur, Jaffna',
-    count: 21, category: 'community', grad: grad.survey,
-    src: 'https://img.rocket.new/generatedImages/rocket_gen_img_19d6d5413-1786524734227.png',
+    count: 21, category: 'community', grad: grad.primary,
     alt: 'Community members working together at the Nallur water drive',
   },
   {
     id: 'youth', titleTa: 'இளைஞர் பயிற்சி', titleEn: 'Youth workshop', place: 'Vavuniya',
-    count: 33, category: 'events', grad: grad.community,
-    src: 'https://img.rocket.new/generatedImages/rocket_gen_img_1e394c2f2-1786524735001.png',
+    count: 33, category: 'events', grad: grad.primary,
     alt: 'Young Tamil students at a leadership workshop in the Northern Province',
   },
   {
     id: 'palmyra', titleTa: 'பனை மீட்பு', titleEn: 'Palmyra planting', place: 'Mullaitivu',
-    count: 64, category: 'community', span: true, grad: 'linear-gradient(135deg,#2D7A4F,#8BC34A)',
-    src: 'https://img.rocket.new/generatedImages/rocket_gen_img_1c57ce6e8-1786524733616.png',
+    count: 64, category: 'community', span: true, grad: grad.primary,
     alt: 'Green paddy and palmyra fields in Mullaitivu during the planting season',
   },
   {
     id: 'library', titleTa: 'நூலக நிகழ்வு', titleEn: 'Library event', place: 'Jaffna Public Library',
-    count: 12, category: 'events', grad: grad.events,
-    src: 'https://img.rocket.new/generatedImages/rocket_gen_img_16cd4df73-1786524735503.png',
+    count: 12, category: 'events', grad: grad.primary,
     alt: 'Youth learning digital skills at the Jaffna public library',
   },
   {
     id: 'cleanup', titleTa: 'கடற்கரை சுத்தம்', titleEn: 'Coast clean-up', place: 'Mannar Beach',
-    count: 27, category: 'community', grad: 'linear-gradient(135deg,#4A90D9,#74B3E8)',
-    src: 'https://img.rocket.new/generatedImages/rocket_gen_img_1436754dd-1786524734456.png',
+    count: 27, category: 'community', grad: grad.primary,
     alt: 'Volunteers cleaning the coastal beach at Mannar',
   },
 ];
@@ -88,7 +85,7 @@ export function Gallery() {
       <div style={{ padding: '12px 16px 28px', columnCount: 2, columnGap: 12 }}>
         {albums.map((a) => (
           <div key={a.id} style={{ breakInside: 'avoid', marginBottom: 12 }}>
-            <div className="press" style={{ position: 'relative', height: a.span ? 220 : 150, borderRadius: radius.xl, overflow: 'hidden', boxShadow: shadow.card, cursor: 'pointer' }}>
+            <div className="press" style={{ position: 'relative', height: a.span ? 220 : 150, borderRadius: radius.lg, overflow: 'hidden', boxShadow: shadow.card, cursor: 'pointer' }}>
               <NetImage src={a.src} alt={a.alt} width="100%" height={a.span ? 220 : 150} fallbackIcon="camera" fallbackGrad={a.grad} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,.8) 0%, rgba(0,0,0,.15) 55%, transparent 100%)' }} />
               <div style={{ position: 'absolute', top: 10, right: 10, display: 'inline-flex', alignItems: 'center', gap: 4, height: 24, padding: '0 9px', borderRadius: 999, background: 'rgba(0,0,0,.42)', backdropFilter: 'blur(6px)' }}>

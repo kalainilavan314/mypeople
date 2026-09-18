@@ -27,9 +27,9 @@ export function Join() {
       {/* Hero */}
       <div style={{ position: 'relative', overflow: 'hidden', background: c.maroon, color: '#FFFFFF', padding: '48px 24px 40px', borderRadius: '0 0 30px 30px' }}>
         <PalmyraMark size={260} style={{ position: 'absolute', right: -70, top: -50 }} />
-        <PalmyraMark size={120} stroke="#E08A00" opacity={0.1} style={{ position: 'absolute', left: -30, bottom: -30 }} />
+        <PalmyraMark size={120} stroke="#FFFFFF" opacity={0.08} style={{ position: 'absolute', left: -30, bottom: -30 }} />
         <div style={{ position: 'relative' }}>
-          <div style={{ font: `500 13px/1 ${font.ui}`, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(245,217,168,.9)' }}>NPM</div>
+          <div style={{ font: `500 13px/1 ${font.ui}`, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,.8)' }}>MY PEOPLE</div>
           <h1 style={{ font: `700 28px/1.35 ${font.ta}`, margin: '14px 0 6px' }}>{t('onboarding.joinTitle')}</h1>
           <div style={{ font: `400 14px/1.5 ${font.ui}`, color: 'rgba(255,246,236,.75)' }}>{t('onboarding.joinSubtitle')}</div>
         </div>

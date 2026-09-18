@@ -13,7 +13,7 @@ import { QR, checkInToken } from '../lib/qr';
 import { useCheckIn, useEvent, useMember, useSetRsvp } from '../data/queries';
 import { currentRsvp } from '../data/mock/client';
 
-const pin = L.divIcon({ className: '', html: `<div style="width:24px;height:24px;border-radius:50% 50% 50% 0;background:#043074;transform:rotate(-45deg);border:2px solid #FFFFFF;box-shadow:0 2px 8px rgba(4,48,116,.5)"></div>`, iconSize: [24, 24], iconAnchor: [12, 24] });
+const pin = L.divIcon({ className: '', html: `<div style="width:24px;height:24px;border-radius:50% 50% 50% 0;background:#14263D;transform:rotate(-45deg);border:2px solid #FFFFFF;box-shadow:0 2px 8px rgba(4,48,116,.5)"></div>`, iconSize: [24, 24], iconAnchor: [12, 24] });
 
 export function EventDetail() {
   const { id = '' } = useParams();

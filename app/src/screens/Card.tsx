@@ -48,7 +48,7 @@ export function Card() {
           return (
             <>
               {/* ---------- Membership card ---------- */}
-              <div style={{ position: 'relative', overflow: 'hidden', borderRadius: radius.xxl, boxShadow: '0 8px 22px -6px rgba(4,48,116,.45)', background: 'linear-gradient(135deg,#043074 0%,#021D47 100%)', color: '#EAF1FB' }}>
+              <div style={{ position: 'relative', overflow: 'hidden', borderRadius: radius.xxl, boxShadow: '0 8px 24px -8px rgba(11,20,36,.5)', background: 'linear-gradient(150deg,#14263D 0%,#0B1424 100%)', color: '#EAF1FB' }}>
                 <PalmyraMark size={240} stroke="#FFFFFF" opacity={0.05} style={{ position: 'absolute', right: -64, top: -46 }} />
 
                 {/* Header band */}
@@ -97,8 +97,8 @@ export function Card() {
 
               {/* ---------- QR ---------- */}
               <div style={{ marginTop: 16, background: c.card, border: `1px solid ${c.hairline}`, borderRadius: radius.xl, padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                <div style={{ background: '#fff', padding: 12, borderRadius: 14 }}>
-                  <QR value={`${code}|${referral}`} size={156} />
+                <div style={{ background: '#fff', padding: 14, borderRadius: 14 }}>
+                  <QR value={`${code}|${referral}`} size={188} />
                 </div>
                 <div style={{ font: `400 12px/1.4 ${font.ui}`, color: c.ink3, textAlign: 'center' }}>{t('card.checkInQr')}</div>
               </div>

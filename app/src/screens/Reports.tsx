@@ -12,15 +12,18 @@ import type { CommunityReport, CommunityReportCategory, CommunityReportPriority,
    NorthUnity Community Reporting — categories, priorities and the 4-stage
    status pipeline, exactly as in the design reference. */
 
+// Categories are distinguished by emoji + label (not colour), per the design
+// system's one-meaning-per-colour rule — so every category tints navy.
+const CAT_COLOR = '#14263D';
 const CATEGORIES: { key: CommunityReportCategory; emoji: string; color: string }[] = [
-  { key: 'road', emoji: '🛣️', color: '#B45309' },
-  { key: 'water', emoji: '💧', color: '#017DFC' },
-  { key: 'waste', emoji: '🗑️', color: '#6B9E5E' },
-  { key: 'electricity', emoji: '💡', color: '#E08A00' },
-  { key: 'agriculture', emoji: '🌾', color: '#6B9E5E' },
-  { key: 'environment', emoji: '🌿', color: '#6B9E5E' },
-  { key: 'public_facility', emoji: '🏛️', color: '#C10504' },
-  { key: 'other', emoji: '❓', color: '#9E9E9E' },
+  { key: 'road', emoji: '🛣️', color: CAT_COLOR },
+  { key: 'water', emoji: '💧', color: CAT_COLOR },
+  { key: 'waste', emoji: '🗑️', color: CAT_COLOR },
+  { key: 'electricity', emoji: '💡', color: CAT_COLOR },
+  { key: 'agriculture', emoji: '🌾', color: CAT_COLOR },
+  { key: 'environment', emoji: '🌿', color: CAT_COLOR },
+  { key: 'public_facility', emoji: '🏛️', color: CAT_COLOR },
+  { key: 'other', emoji: '❓', color: CAT_COLOR },
 ];
 
 const PRIORITIES: { key: CommunityReportPriority; color: string }[] = [

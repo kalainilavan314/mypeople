@@ -17,11 +17,12 @@ import { compressImage } from '../lib/image';
    the District → DS → GS division cascade. Saving PATCHes /api/me, refreshes
    the cached member, and every screen (Home greeting, Profile header) follows. */
 
-const HEADER_TOP = '#0D1B3E';
-const HEADER_MID = '#1A2F6B';
-const HEADER_BOT = '#2D1B69';
-const CYAN = '#00D4FF';
-const VIOLET = '#9B59F5';
+const HEADER_TOP = '#14263D';
+const HEADER_MID = '#1B3050';
+const HEADER_BOT = '#0B1424';
+// Decorative light tones on the navy header (were cyan/violet — now white).
+const CYAN = 'rgba(255,255,255,.85)';
+const VIOLET = 'rgba(255,255,255,.5)';
 
 export function EditProfile() {
   const me = useMe();
@@ -120,7 +121,7 @@ function EditForm({ me }: { me: ServerMember }) {
           borderRadius: '0 0 32px 32px',
         }}
       >
-        <span aria-hidden="true" style={{ position: 'absolute', top: -40, right: -40, width: 160, height: 160, borderRadius: 999, background: 'rgba(155,89,245,.10)' }} />
+        <span aria-hidden="true" style={{ position: 'absolute', top: -40, right: -40, width: 160, height: 160, borderRadius: 999, background: 'rgba(255,255,255,.06)' }} />
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 10 }}>
           <button
             onClick={() => navigate(-1)}
@@ -136,7 +137,7 @@ function EditForm({ me }: { me: ServerMember }) {
         {/* avatar with camera badge */}
         <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 16 }}>
           <div style={{ position: 'relative', width: 96, height: 96 }}>
-            <span style={{ position: 'absolute', inset: 0, borderRadius: 999, background: `conic-gradient(${CYAN}, ${VIOLET}, #FFD166, #06D6A0, ${CYAN})` }} />
+            <span style={{ position: 'absolute', inset: 0, borderRadius: 999, background: 'rgba(255,255,255,.22)' }} />
             <span style={{ position: 'absolute', inset: 3, borderRadius: 999, overflow: 'hidden', background: HEADER_MID }}>
               {avatarPreview ? (
                 <img src={avatarPreview} alt={t('editProfile.photoAlt')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -148,9 +149,9 @@ function EditForm({ me }: { me: ServerMember }) {
               onClick={() => galleryRef.current?.click()}
               aria-label={t('editProfile.changePhoto')}
               className="press"
-              style={{ position: 'absolute', bottom: 0, right: 0, width: 30, height: 30, borderRadius: 999, border: `2px solid ${HEADER_MID}`, background: `linear-gradient(135deg, ${CYAN}, ${VIOLET})`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+              style={{ position: 'absolute', bottom: 0, right: 0, width: 30, height: 30, borderRadius: 999, border: `2px solid ${HEADER_MID}`, background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
             >
-              <Icon name="camera" size={14} color="#fff" strokeWidth={2.2} />
+              <Icon name="camera" size={14} color={c.maroon} strokeWidth={2.2} />
             </button>
           </div>
           <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
@@ -182,9 +183,9 @@ function EditForm({ me }: { me: ServerMember }) {
                 aria-pressed={on}
                 style={{
                   flex: 1, padding: '11px 0', cursor: 'pointer', textAlign: 'center',
-                  background: on ? 'rgba(0,212,255,.10)' : c.cardCream,
-                  border: `${on ? 2 : 1}px solid ${on ? '#0aa3c2' : c.hairline2}`, borderRadius: 10,
-                  font: `${on ? 700 : 400} 13px/1 ${font.ta}`, color: on ? '#0a7d94' : c.ink2,
+                  background: on ? c.maroonTint : c.cardCream,
+                  border: `${on ? 2 : 1}px solid ${on ? c.maroon : c.hairline2}`, borderRadius: 10,
+                  font: `${on ? 700 : 400} 13px/1 ${font.ta}`, color: on ? c.maroon : c.ink2,
                 }}
               >
                 {t(`editProfile.g_${g}`)}
@@ -249,11 +250,11 @@ function EditForm({ me }: { me: ServerMember }) {
           disabled={saving || saved}
           className="press"
           style={{
-            width: '100%', marginTop: 20, height: 50, border: 'none', cursor: 'pointer', borderRadius: 14,
-            background: saved ? '#06D6A0' : `linear-gradient(90deg, ${CYAN}, ${VIOLET})`,
-            boxShadow: '0 6px 16px rgba(155,89,245,.32)', color: '#fff',
+            width: '100%', marginTop: 20, height: 52, border: 'none', cursor: 'pointer', borderRadius: radius.sm,
+            background: saved ? c.success : c.maroon,
+            boxShadow: 'none', color: '#fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            font: `700 15px/1 ${font.head}`, letterSpacing: '.3px',
+            font: `600 16px/1 ${font.ui}`,
           }}
         >
           {saved ? (
