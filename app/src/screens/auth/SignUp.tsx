@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { authC, font, radius } from '../../theme/tokens';
 import { Icon } from '../../components/Icon';
 import { signupDraft } from '../../state/signupDraft';
-import { authApi } from '../../data/authApi';
 import { parseNic, formatDob } from '../../lib/nic';
 import { AuthPage, Field, FieldLabel, GreenButton, LangToggle, LinkText, Steps, BackChip } from './parts';
 
@@ -29,30 +28,10 @@ export function SignUp() {
   const [name, setName] = useState('');
   const [nic, setNic] = useState('');
   const [password, setPassword] = useState('');
-  const [inviteCode, setInviteCode] = useState('');
-  const [inviteRequired, setInviteRequired] = useState(false);
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Closed-pilot deployments gate registration behind an invite code. Ask for it
-  // here, on the first screen, rather than letting someone fill three screens of
-  // profile and survey before the server rejects the whole thing at the end.
-  useEffect(() => {
-    let live = true;
-    authApi.config().then((cfg) => {
-      if (live) setInviteRequired(cfg.inviteRequired);
-    });
-    return () => {
-      live = false;
-    };
-  }, []);
-
   const nicInfo = useMemo(() => parseNic(nic), [nic]);
-  const detailsOk =
-    name.trim().length >= 2 &&
-    nicInfo.valid &&
-    password.length >= 15 &&
-    (!inviteRequired || inviteCode.trim().length > 0);
 
   const back = () => {
     if (step === 0) navigate('/login');
@@ -62,17 +41,16 @@ export function SignUp() {
   const toNicReview = () => {
     setTouched(true);
     setError(null);
-    if (!detailsOk) {
-      if (!nicInfo.valid) setError(t('auth.errNic'));
-      else if (password.length < 15) setError(t('auth.passwordRule'));
-      return;
-    }
+    // Field-level reasons, in order, so a blocked "Next" always says WHY rather
+    // than sitting disabled with no explanation.
+    if (name.trim().length < 2) return setError(t('auth.errName'));
+    if (!nicInfo.valid) return setError(t('auth.errNic'));
+    if (password.length < 15) return setError(t('auth.passwordRule'));
     signupDraft.patch({
       name: name.trim(),
       nic: nicInfo.normalized,
       phone: '',
       password,
-      inviteCode: inviteCode.trim(),
       // Date of birth is derived from the NIC here — the profile step no longer
       // asks for it again (it is already encoded in the national ID number).
       dob: nicInfo.dob ? nicInfo.dob.toISOString().slice(0, 10) : '',
@@ -93,24 +71,6 @@ export function SignUp() {
         {step === 0 && (
           <>
             <Header title={t('auth.createTitle')} sub={t('auth.createSub')} />
-
-            {inviteRequired && (
-              <>
-                <FieldLabel ta={t('auth.inviteLabel')} en="Invite code" />
-                <Field
-                  icon="shield"
-                  value={inviteCode}
-                  onChange={(v) => setInviteCode(v.toUpperCase())}
-                  placeholder={t('auth.invitePlaceholder')}
-                  autoCapitalize="characters"
-                  ariaLabel={t('auth.inviteLabel')}
-                />
-                <div style={{ font: `400 11.5px/1.4 ${font.ui}`, color: authC.text3, marginTop: 8 }}>
-                  {t('auth.inviteHint')}
-                </div>
-                <div style={{ height: 16 }} />
-              </>
-            )}
 
             <FieldLabel ta={t('auth.nameLabel')} en="Full name" />
             <Field
@@ -143,7 +103,7 @@ export function SignUp() {
 
             {error && <ErrorNote text={error} />}
             <div style={{ flex: 1, minHeight: 24 }} />
-            <GreenButton onClick={toNicReview} disabled={!detailsOk}>{t('common.next')}</GreenButton>
+            <GreenButton onClick={toNicReview}>{t('common.next')}</GreenButton>
             <div style={{ textAlign: 'center', marginTop: 18, font: `500 13px/1 ${font.ui}`, color: authC.text3 }}>
               {t('auth.haveAccount')} <LinkText onClick={() => navigate('/login')}>{t('auth.login')}</LinkText>
             </div>

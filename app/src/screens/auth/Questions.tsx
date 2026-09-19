@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { authC, font, radius } from '../../theme/tokens';
 import { Icon } from '../../components/Icon';
-import { AuthPage, Steps } from './parts';
+import { AuthPage, GreenButton, Steps } from './parts';
 import { useAuth } from '../../state/auth';
 import { signupDraft } from '../../state/signupDraft';
 import { authApi, ApiError } from '../../data/authApi';
@@ -42,7 +42,6 @@ export function Questions() {
   const total = QUESTIONS.length;
   const q = QUESTIONS[step];
   const isLast = step === total - 1;
-  const answered = answers[q.id] != null;
 
   // Final step: create the account with the whole profile + survey.
   const finish = async (finalAnswers: Record<string, string>) => {
@@ -67,7 +66,7 @@ export function Questions() {
       setError(
         code === 'nic_exists' ? t('questions.errNic')
           : code === 'phone_exists' ? t('questions.errPhone')
-            : code === 'invalid_invite_code' ? t('auth.errInvite')
+            : code === 'weak_password' || code === 'password_too_long' ? t('auth.passwordRule')
               : t('auth.errNetwork'),
       );
       setBusy(false);
@@ -94,7 +93,7 @@ export function Questions() {
             onClick={() => void finish(answers)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', font: `600 13px/1 ${font.ui}`, color: authC.text3 }}
           >
-            {t('questions.skipAll')}
+            {t('questions.skipSurvey')}
           </button>
         </div>
         <Steps step={step + 1} total={total} />
@@ -108,6 +107,9 @@ export function Questions() {
           {t(`survey.q.${q.id}`)}
         </h1>
         <p style={{ font: `400 13.5px/1.5 ${font.ui}`, color: authC.text2, margin: '10px 0 0' }}>{t('survey.privacyNote')}</p>
+        {q.id === 'blood_group' && (
+          <p style={{ font: `400 12.5px/1.5 ${font.ui}`, color: authC.text3, margin: '8px 0 0' }}>{t('survey.bloodNote')}</p>
+        )}
 
         {q.layout === 'pair' ? (
           <div style={{ display: 'flex', gap: 12, marginTop: 26 }}>
@@ -127,7 +129,6 @@ export function Questions() {
           </div>
         )}
 
-        {busy && <div style={{ marginTop: 20, font: `600 13px/1 ${font.ui}`, color: authC.green }}>{t('questions.creating')}</div>}
         {error && (
           <div role="alert" style={{ marginTop: 16, padding: '10px 12px', borderRadius: 10, background: authC.errorSoft, color: authC.error, font: `500 12.5px/1.4 ${font.ui}` }}>
             {error}
@@ -136,22 +137,30 @@ export function Questions() {
 
         <div style={{ flex: 1, minHeight: 20 }} />
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <button type="button" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0} style={navBtn(step === 0)}>
-            <Icon name="chevronLeft" size={22} color={step === 0 ? authC.text3 : authC.text} />
-          </button>
-          <button type="button" onClick={advance} style={{ background: 'none', border: 'none', cursor: 'pointer', font: `600 15px/1 ${font.ui}`, color: authC.text2 }}>
-            {t('common.skip')}
-          </button>
+        {/* Explicit labelled action instead of a bare ✓ icon: "Next" through the
+            survey, "Finish" on the last step (which creates the account). */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button
             type="button"
-            onClick={advance}
-            aria-label={isLast ? t('questions.finish') : t('common.next')}
-            style={{ ...navBtn(false), background: answered ? authC.greenGrad : authC.surface2, border: answered ? 'none' : `1px solid ${authC.line}`, boxShadow: answered ? authC.greenGlow : 'none' }}
+            onClick={() => setStep((s) => Math.max(0, s - 1))}
+            disabled={step === 0}
+            style={navBtn(step === 0)}
+            aria-label={t('common.back')}
           >
-            <Icon name={isLast ? 'check' : 'chevron'} size={22} color={answered ? authC.onGreen : authC.text3} strokeWidth={2.2} />
+            <Icon name="chevronLeft" size={22} color={step === 0 ? authC.text3 : authC.text} />
           </button>
+          <GreenButton onClick={advance} loading={busy} style={{ flex: 1 }}>
+            {isLast ? t('questions.finish') : t('common.next')}
+          </GreenButton>
         </div>
+        <button
+          type="button"
+          onClick={advance}
+          disabled={busy}
+          style={{ margin: '14px auto 0', background: 'none', border: 'none', cursor: busy ? 'default' : 'pointer', font: `500 13px/1 ${font.ui}`, color: authC.text3 }}
+        >
+          {isLast ? t('questions.finishWithout') : t('questions.skipQuestion')}
+        </button>
       </div>
     </AuthPage>
   );

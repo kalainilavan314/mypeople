@@ -444,3 +444,21 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   place-items: center;
   cursor: pointer;
 }
+
+/* Bottom sheet (verification explainer, and any future modal list). */
+.topbar-sheet {
+  margin: auto auto 0;
+  width: 100%;
+  max-width: var(--app-max);
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--hairline);
+  border-bottom: 0;
+  border-radius: var(--r-2xl) var(--r-2xl) 0 0;
+  padding: 16px 16px calc(16px + var(--safe-bottom));
+  max-height: 80dvh;
+  box-shadow: var(--shadow-lg);
+}
+.topbar-sheet::backdrop { background: rgba(16, 28, 43, 0.45); }
+.topbar-sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.topbar-sheet-head h2 { font: 700 18px/1.3 var(--font-ui); color: var(--ink-0); margin: 0; }
