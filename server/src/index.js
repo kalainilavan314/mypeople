@@ -174,16 +174,19 @@ const DEV_OTP = !PROD && process.env.DEV_OTP === 'true';
 // demonstration. Replace card/start and card/confirm with a real gateway
 // (PayHere, or a bank IPG) before accepting actual donations.
 const CARD_SANDBOX = !PROD || process.env.ALLOW_SANDBOX_CARD === 'true';
-const wrap = (fn) => (req, res) => fn(req, res).catch((e) => {
+const wrap = (fn) => (req, res) => fn(req, res).catch(async (e) => {
   console.error(e);
   const status = e.status || 500;
   // Persist unexpected 5xx errors to a private log table (never to the HTTP
-  // response) so serverless-only failures can be diagnosed. Fire-and-forget.
+  // response). Awaited so a serverless function does not freeze before the write
+  // completes.
   if (status >= 500) {
-    pool.query(
-      'INSERT INTO public.error_log (path, method, status, message, code, stack) VALUES ($1,$2,$3,$4,$5,$6)',
-      [req.path, req.method, status, String((e && (e.message || e)) ?? '').slice(0, 500), e && e.code != null ? String(e.code) : null, String((e && e.stack) || '').slice(0, 2000)],
-    ).catch(() => {});
+    try {
+      await pool.query(
+        'INSERT INTO public.error_log (path, method, status, message, code, stack) VALUES ($1,$2,$3,$4,$5,$6)',
+        [req.path, req.method, status, String((e && (e.message || e)) ?? '').slice(0, 500), e && e.code != null ? String(e.code) : null, String((e && e.stack) || '').slice(0, 2000)],
+      );
+    } catch { /* logging must never mask the original error */ }
   }
   res.status(status).json({ error: e.publicMessage || 'server_error' });
 });
