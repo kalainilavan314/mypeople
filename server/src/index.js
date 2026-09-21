@@ -6,7 +6,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { pool, memberById, memberByNicHash, memberByPhone } from './db.js';
+import pg from 'pg';
+import { pool, poolConfig, memberById, memberByNicHash, memberByPhone } from './db.js';
 import { nicHash, signToken, verifyToken, otpCode, memberCode, referralCode, publicMember, verifyAvatarUrl, hashOtp, isNicFormat, signCardToken } from './lib.js';
 import { recomputeTier, tierProgress } from './tier.js';
 import { clientIp, checkOtpRequest, issueOtp, consumeOtp, checkLogin, recordLogin, sleep } from './throttle.js';
@@ -181,12 +182,17 @@ const wrap = (fn) => (req, res) => fn(req, res).catch(async (e) => {
   // response). Awaited so a serverless function does not freeze before the write
   // completes.
   if (status >= 500) {
+    // Use a FRESH connection, not the shared pool: the failing request may have
+    // left the pool in a bad state, which is itself a useful signal.
+    const c = new pg.Client(poolConfig());
     try {
-      await pool.query(
+      await c.connect();
+      await c.query(
         'INSERT INTO public.error_log (path, method, status, message, code, stack) VALUES ($1,$2,$3,$4,$5,$6)',
         [req.path, req.method, status, String((e && (e.message || e)) ?? '').slice(0, 500), e && e.code != null ? String(e.code) : null, String((e && e.stack) || '').slice(0, 2000)],
       );
     } catch { /* logging must never mask the original error */ }
+    finally { try { await c.end(); } catch { /* ignore */ } }
   }
   res.status(status).json({ error: e.publicMessage || 'server_error' });
 });
