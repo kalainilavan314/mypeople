@@ -198,29 +198,16 @@ const wrap = (fn) => (req, res) => fn(req, res).catch(async (e) => {
 });
 const bad = (msg, status = 400) => Object.assign(new Error(msg), { status, publicMessage: msg });
 
-app.get('/api/health', (_req, res) => res.json({ ok: true, service: 'npm-membership', time: new Date().toISOString() }));
-
-// TEMP diagnostic: does a simple pooled write work, and does an explicit
-// pool.connect() transaction work? Returns only booleans; the transaction error
-// (if any) is logged to error_log via the working pool for private reading.
-app.get('/api/_diag', wrap(async (_req, res) => {
-  let a = false, b = false;
-  try { await pool.query("INSERT INTO public.error_log(path,method,message) VALUES('_diag','GET','pool-write-ok')"); a = true; } catch { a = false; }
+// Health check, plus whether the database connection can WRITE (not just read).
+// A deployment pointed at a read-only / restricted database passes a naive read
+// check but fails every signup; this makes that state visible at a glance.
+app.get('/api/health', wrap(async (_req, res) => {
+  let dbWrite = null;
   try {
-    const c = await pool.connect();
-    try {
-      await c.query('BEGIN');
-      await c.query("INSERT INTO public.error_log(path,method,message) VALUES('_diag','GET','tx-write-ok')");
-      await c.query('COMMIT');
-      b = true;
-    } catch (e) {
-      try { await c.query('ROLLBACK'); } catch { /* ignore */ }
-      if (a) { try { await pool.query('INSERT INTO public.error_log(path,method,message,code) VALUES($1,$2,$3,$4)', ['_diag_txfail', 'GET', String((e && (e.message || e)) ?? '').slice(0, 300), e && e.code ? String(e.code) : null]); } catch { /* ignore */ } }
-    } finally { c.release(); }
-  } catch (e) {
-    if (a) { try { await pool.query('INSERT INTO public.error_log(path,method,message,code) VALUES($1,$2,$3,$4)', ['_diag_connectfail', 'GET', String((e && (e.message || e)) ?? '').slice(0, 300), e && e.code ? String(e.code) : null]); } catch { /* ignore */ } }
-  }
-  res.json({ a, b });
+    const r = await pool.query("SELECT current_setting('transaction_read_only') AS ro, pg_is_in_recovery() AS rec");
+    dbWrite = r.rows[0].ro === 'off' && r.rows[0].rec === false;
+  } catch { dbWrite = null; }
+  res.json({ ok: true, service: 'npm-membership', dbWrite, time: new Date().toISOString() });
 }));
 
 // Public deployment switches the frontend needs to know about. Deliberately
