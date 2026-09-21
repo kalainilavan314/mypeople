@@ -176,7 +176,16 @@ const DEV_OTP = !PROD && process.env.DEV_OTP === 'true';
 const CARD_SANDBOX = !PROD || process.env.ALLOW_SANDBOX_CARD === 'true';
 const wrap = (fn) => (req, res) => fn(req, res).catch((e) => {
   console.error(e);
-  res.status(e.status || 500).json({ error: e.publicMessage || 'server_error' });
+  const status = e.status || 500;
+  // Persist unexpected 5xx errors to a private log table (never to the HTTP
+  // response) so serverless-only failures can be diagnosed. Fire-and-forget.
+  if (status >= 500) {
+    pool.query(
+      'INSERT INTO public.error_log (path, method, status, message, code, stack) VALUES ($1,$2,$3,$4,$5,$6)',
+      [req.path, req.method, status, String((e && (e.message || e)) ?? '').slice(0, 500), e && e.code != null ? String(e.code) : null, String((e && e.stack) || '').slice(0, 2000)],
+    ).catch(() => {});
+  }
+  res.status(status).json({ error: e.publicMessage || 'server_error' });
 });
 const bad = (msg, status = 400) => Object.assign(new Error(msg), { status, publicMessage: msg });
 
