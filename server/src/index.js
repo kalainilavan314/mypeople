@@ -200,6 +200,29 @@ const bad = (msg, status = 400) => Object.assign(new Error(msg), { status, publi
 
 app.get('/api/health', (_req, res) => res.json({ ok: true, service: 'npm-membership', time: new Date().toISOString() }));
 
+// TEMP diagnostic: does a simple pooled write work, and does an explicit
+// pool.connect() transaction work? Returns only booleans; the transaction error
+// (if any) is logged to error_log via the working pool for private reading.
+app.get('/api/_diag', wrap(async (_req, res) => {
+  let a = false, b = false;
+  try { await pool.query("INSERT INTO public.error_log(path,method,message) VALUES('_diag','GET','pool-write-ok')"); a = true; } catch { a = false; }
+  try {
+    const c = await pool.connect();
+    try {
+      await c.query('BEGIN');
+      await c.query("INSERT INTO public.error_log(path,method,message) VALUES('_diag','GET','tx-write-ok')");
+      await c.query('COMMIT');
+      b = true;
+    } catch (e) {
+      try { await c.query('ROLLBACK'); } catch { /* ignore */ }
+      if (a) { try { await pool.query('INSERT INTO public.error_log(path,method,message,code) VALUES($1,$2,$3,$4)', ['_diag_txfail', 'GET', String((e && (e.message || e)) ?? '').slice(0, 300), e && e.code ? String(e.code) : null]); } catch { /* ignore */ } }
+    } finally { c.release(); }
+  } catch (e) {
+    if (a) { try { await pool.query('INSERT INTO public.error_log(path,method,message,code) VALUES($1,$2,$3,$4)', ['_diag_connectfail', 'GET', String((e && (e.message || e)) ?? '').slice(0, 300), e && e.code ? String(e.code) : null]); } catch { /* ignore */ } }
+  }
+  res.json({ a, b });
+}));
+
 // Public deployment switches the frontend needs to know about. Deliberately
 // says only WHETHER an invite code is required, never what it is.
 app.get('/api/config', (_req, res) =>
