@@ -49,6 +49,22 @@ const Forgot = lazy(() => named(import('./screens/auth/Forgot'), 'Forgot'));
 const ProfileSetup = lazy(() => named(import('./screens/auth/ProfileSetup'), 'ProfileSetup'));
 const Questions = lazy(() => named(import('./screens/auth/Questions'), 'Questions'));
 
+// Warm the common member route chunks during idle time, spaced out so it never
+// competes with the current screen. After this runs, tapping a tab or a Home
+// tile opens instantly instead of downloading a chunk on first click.
+function prefetchMemberRoutes() {
+  const load = [
+    () => import('./screens/Card'), () => import('./screens/Events'), () => import('./screens/Gallery'),
+    () => import('./screens/Profile'), () => import('./screens/Reports'), () => import('./screens/Community'),
+    () => import('./screens/MyArea'), () => import('./screens/Skills'), () => import('./screens/PartyFund'),
+    () => import('./screens/EditProfile'), () => import('./screens/Referral'), () => import('./screens/Milestones'),
+    () => import('./screens/Notifications'), () => import('./screens/Survey'), () => import('./screens/Ideas'),
+    () => import('./screens/Courses'), () => import('./screens/Language'), () => import('./screens/Privacy'),
+    () => import('./screens/EventDetail'),
+  ];
+  load.forEach((fn, i) => setTimeout(() => { void fn().catch(() => {}); }, i * 140));
+}
+
 /** Lightweight fallback while a route chunk loads. */
 function ScreenFallback() {
   return (
@@ -105,6 +121,22 @@ function TabLayout() {
   // Attempt a flush on first mount too (queued items from a previous session).
   useEffect(() => {
     if (navigator.onLine) void api.flushOutbox();
+  }, []);
+
+  // Prefetch member route chunks while the browser is idle, so navigation feels
+  // instant rather than downloading a chunk on the first tap of each button.
+  useEffect(() => {
+    let idleId: number | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    if (typeof window.requestIdleCallback === 'function') {
+      idleId = window.requestIdleCallback(prefetchMemberRoutes, { timeout: 2500 });
+    } else {
+      timeoutId = setTimeout(prefetchMemberRoutes, 1200);
+    }
+    return () => {
+      if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') window.cancelIdleCallback(idleId);
+      if (timeoutId !== undefined) clearTimeout(timeoutId);
+    };
   }, []);
 
   return (

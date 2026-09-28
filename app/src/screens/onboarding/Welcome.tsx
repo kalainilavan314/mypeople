@@ -105,30 +105,7 @@ export function Welcome() {
           {/* palmyrah path drawing — trunk, fronds, district connection lines */}
           <svg viewBox="0 0 100 100" fill="none" style={{ position: 'absolute', inset: '7.5%', width: '85%', height: '85%' }} aria-hidden="true">
             {/* province boundary ring */}
-            <circle cx="50" cy="50" r="42" stroke="rgba(232,168,56,.16)" strokeWidth="1" className="nu-path" pathLength={1} style={{ animationDelay: '.2s', animationDuration: '1.4s' }} />
-            {/* trunk */}
-            <path d="M50 88 C 48 65, 52 45, 50 40" stroke={GOLD} strokeWidth="2.6" strokeLinecap="round" className="nu-path" pathLength={1} style={{ animationDelay: '.35s' }} />
-            {/* fronds — left, right, top */}
-            {[
-              'M50 40 C 42 34, 32 28, 25 25',
-              'M50 40 C 44 32, 40 24, 38 16',
-              'M50 40 C 45 37, 33 35, 22 36',
-              'M50 40 C 58 34, 68 28, 75 25',
-              'M50 40 C 56 32, 60 24, 62 16',
-              'M50 40 C 55 37, 67 35, 78 36',
-              'M50 40 C 50 32, 50 24, 50 18',
-            ].map((d, i) => (
-              <path
-                key={d}
-                d={d}
-                stroke={GOLD}
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                className="nu-path"
-                pathLength={1}
-                style={{ animationDelay: `${0.75 + i * 0.08}s`, animationDuration: '.7s' }}
-              />
-            ))}
+            <circle cx="50" cy="50" r="42" stroke="rgba(20,38,61,.14)" strokeWidth="1" className="nu-path" pathLength={1} style={{ animationDelay: '.2s', animationDuration: '1.4s' }} />
             {/* community connection lines */}
             {CONNECTION_ANGLES.map((a, i) => {
               const rad = (a * Math.PI) / 180;
