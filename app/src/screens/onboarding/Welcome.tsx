@@ -189,9 +189,9 @@ export function Welcome() {
             onClick={() => go('/signup')}
             className="press"
             style={{
-              width: '100%', padding: '18px 0', borderRadius: 16, border: 'none', cursor: 'pointer',
+              width: '100%', padding: '16px 0', borderRadius: 14, border: 'none', cursor: 'pointer',
               background: GOLD, color: '#fff', font: `700 17px/1 ${font.head}`, letterSpacing: '.3px',
-              boxShadow: '0 10px 26px -8px rgba(232,168,56,.55)',
+              boxShadow: '0 10px 24px -10px rgba(20,38,61,.45)',
             }}
           >
             {t('welcome.cta')}
