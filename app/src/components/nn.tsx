@@ -176,7 +176,7 @@ export function QuickTile({ icon, label, sublabel, gradient, onClick }: { icon: 
    Teal gradient card: heading + three stat tiles separated by hairlines. */
 export function ImpactStrip({ title, stats }: { title: string; stats: { value: string; label: string; sublabel: string }[] }) {
   return (
-    <div style={{ background: grad.primary, borderRadius: radius.xxl, padding: 20, boxShadow: '0 8px 20px -6px rgba(232,168,56,.42)' }}>
+    <div style={{ background: grad.primary, borderRadius: radius.xxl, padding: 20, boxShadow: '0 8px 20px -6px rgba(20,38,61,.42)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
         <Icon name="trending" size={18} color="rgba(255,255,255,.9)" strokeWidth={2} />
         <span style={{ font: `700 14px/1 ${font.head}`, color: '#fff', letterSpacing: '.2px' }}>{title}</span>

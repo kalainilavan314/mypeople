@@ -94,7 +94,7 @@ export function PartyFund() {
 
       {/* total raised */}
       <div style={{ padding: '4px 16px 0' }}>
-        <div style={{ background: grad.primary, borderRadius: radius.xl, padding: '18px 20px', boxShadow: '0 8px 20px -6px rgba(232,168,56,.42)', color: '#fff' }}>
+        <div style={{ background: grad.primary, borderRadius: radius.xl, padding: '18px 20px', boxShadow: '0 8px 20px -6px rgba(20,38,61,.42)', color: '#fff' }}>
           <div style={{ font: `600 11px/1 ${font.ui}`, letterSpacing: '.14em', textTransform: 'uppercase', opacity: 0.85 }}>{t('fund.raised')}</div>
           <div style={{ font: `800 30px/1.15 ${font.head}`, marginTop: 6 }}>
             {boardQ.data ? fmtLKR(boardQ.data.total) : '—'}
@@ -376,7 +376,7 @@ function CardFlow({ amount, onDone }: { amount: number; onDone: () => void }) {
         className="press"
         style={{
           width: '100%', marginTop: 16, padding: '15px 0', border: 'none', borderRadius: radius.lg, cursor: 'pointer',
-          background: c.primary, color: '#fff', font: `700 15px/1 ${font.ta}`, boxShadow: '0 8px 22px -8px rgba(232,168,56,.55)',
+          background: c.primary, color: '#fff', font: `700 15px/1 ${font.ta}`, boxShadow: '0 8px 22px -8px rgba(20,38,61,.55)',
         }}
       >
         {starting ? t('common.loading') : t('fund.payAmount', { amount: fmtLKR(amount) })}
@@ -534,7 +534,7 @@ function SlipFlow({ amount, onDone }: { amount: number; onDone: () => void }) {
         className="press"
         style={{
           width: '100%', marginTop: 16, padding: '15px 0', border: 'none', borderRadius: radius.lg, cursor: 'pointer',
-          background: c.primary, color: '#fff', font: `700 15px/1 ${font.ta}`, boxShadow: '0 8px 22px -8px rgba(232,168,56,.55)',
+          background: c.primary, color: '#fff', font: `700 15px/1 ${font.ta}`, boxShadow: '0 8px 22px -8px rgba(20,38,61,.55)',
         }}
       >
         {submit.isPending ? t('common.loading') : t('fund.submitSlip', { amount: fmtLKR(amount) })}

@@ -277,7 +277,7 @@ function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
         style={{
           width: '100%', marginTop: 18, padding: '15px 0', border: 'none', borderRadius: radius.lg, cursor: 'pointer',
           background: submit.isPending ? c.maroonHover : c.primary, color: '#fff', font: `700 15px/1 ${font.ta}`,
-          boxShadow: '0 8px 22px -8px rgba(232,168,56,.55)',
+          boxShadow: '0 8px 22px -10px rgba(20,38,61,.5)',
         }}
       >
         {submit.isPending ? t('creport.submitting') : t('creport.submit')}

@@ -360,7 +360,7 @@ export function SegTabs({ tabs, active, onSelect }: { tabs: { key: string; label
               background: on ? authC.surface : 'transparent',
               color: on ? authC.green : authC.text2,
               font: `700 15px/1 ${font.ui}`,
-              boxShadow: on ? '0 2px 8px rgba(232,168,56,.18)' : 'none',
+              boxShadow: on ? '0 2px 8px rgba(20,38,61,.18)' : 'none',
               transition: 'background 180ms ease, color 180ms ease',
             }}
           >

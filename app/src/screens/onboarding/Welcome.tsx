@@ -98,7 +98,7 @@ export function Welcome() {
             aria-hidden="true"
             style={{
               position: 'absolute', inset: 0, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(232,168,56,.10) 0%, rgba(74,144,217,.05) 55%, transparent 75%)',
+              background: 'radial-gradient(circle, rgba(20,38,61,.10) 0%, rgba(74,144,217,.05) 55%, transparent 75%)',
             }}
           />
 
