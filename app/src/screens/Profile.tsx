@@ -42,7 +42,7 @@ export function Profile() {
             style={{
               background: 'var(--grad-primary)',
               color: '#fff',
-              margin: '0 -20px 24px',
+              margin: '0 -16px 24px',
               padding: 'calc(24px + var(--safe-top, 0px)) 20px 24px',
               borderRadius: '0 0 var(--r-2xl) var(--r-2xl)',
             }}

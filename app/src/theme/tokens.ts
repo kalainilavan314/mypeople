@@ -158,13 +158,13 @@ export const authC = {
 export const ease = 'cubic-bezier(.22,.61,.36,1)';
 export const dur = { fast: 160, mid: 260, slow: 480 } as const;
 
-// Radii mirror tokens.css --r-* (brief scale): input 12, card 16, feature 20–24.
+// Radii mirror tokens.css --r-* (civic spec): buttons/inputs 10–12, cards 12–16.
 export const radius = {
-  sm: 12, // inputs, small controls
-  md: 14,
-  lg: 16, // standard card
-  xl: 20, // feature card
-  xxl: 24, // large feature card
+  sm: 10, // inputs, buttons
+  md: 12,
+  lg: 14, // standard card
+  xl: 16, // feature card
+  xxl: 18, // large feature card
   pill: 999,
 } as const;
 
@@ -181,8 +181,8 @@ export const space = {
   gutter: 20, // mobile page horizontal padding
 } as const;
 
-// Control heights (mirror --control-h*).
-export const control = { h: 56, hSm: 52, touchMin: 44 } as const;
+// Control heights (civic spec §23/§24: inputs 48–52, buttons large 48 / medium 44).
+export const control = { h: 52, hSm: 48, touchMin: 44 } as const;
 
 // Typography scale (px). `lh` = line-height px, `ls` = letter-spacing.
 // Tamil should not inherit negative tracking — pass the `.ta`/lang override in CSS.

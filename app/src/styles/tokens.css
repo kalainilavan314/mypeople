@@ -250,43 +250,46 @@
   --maroon-tint-soft: rgba(20, 38, 61, 0.05);
   --maroon-tint-border: rgba(20, 38, 61, 0.24);
 
-  /* --- Teal accent (optional secondary) --------------------------------- */
-  --accent: #0f766e;
-  --accent-hover: #0b5e57;
-  --accent-container: #d7edea;
-  --on-accent-container: #0b4a45;
-  --secondary: #0f766e;
-  --secondary-container: #d7edea;
-  --tertiary: #166534;
+  /* --- Blue secondary + accent (civic design-system spec) --------------- */
+  --secondary: #315b82; /* secondary blue */
+  --secondary-container: #eef4fa;
+  --accent: #3b82f6; /* accent blue */
+  --accent-hover: #2f6fe0;
+  --accent-container: #eef4fa;
+  --on-accent-container: #1c3a63;
+  --tertiary: #315b82;
 
-  /* --- Surfaces --------------------------------------------------------- */
-  --page: #f4f6f8;
-  --page-outer: #e9eef3;
+  /* --- Surfaces (calm civic backgrounds) -------------------------------- */
+  --page: #f7f9fc; /* scaffold background */
+  --page-outer: #eef2f7; /* deepest / outer */
   --card: #ffffff;
-  --card-cream: #eef2f6;
+  --card-cream: #f5f7fa; /* soft neutral section */
   --card-warm: #ffffff;
-  --surface-variant: #eef2f6;
+  --surface-variant: #f5f7fa;
+  --soft-blue: #eef4fa; /* very soft blue section */
+  --soft-gray: #f5f7fa;
+  --soft-green: #f2f6f4;
 
-  /* --- Ink ramp (tuned for WCAG 2.2 AA on white) ------------------------ */
-  --ink: #18212b; /* body / primary text — ~13:1 */
+  /* --- Ink ramp (spec text colours, WCAG 2.2 AA on white) --------------- */
+  --ink: #152033; /* primary text */
   --ink-0: #14263d; /* headings / brand navy */
-  --ink-2: #3e4c5e; /* labels / strong secondary — ~7:1 */
-  --ink-3: #53657a; /* secondary text & placeholders — ~4.7:1 */
-  --ink-4: #6b7b8e; /* decorative / disabled only — do NOT use for text */
+  --ink-2: #3e4c5e; /* labels / strong secondary */
+  --ink-3: #667085; /* secondary text & placeholders */
+  --ink-4: #98a2b3; /* decorative / disabled only — do NOT use for text */
 
   /* --- Lines ------------------------------------------------------------ */
-  --hairline: #d7e0ea;
-  --hairline-2: #c2ceda;
-  --hairline-3: #eef2f6;
+  --hairline: #e6eaf0; /* border */
+  --hairline-2: #d3dae4;
+  --hairline-3: #f0f3f7;
 
-  /* --- Semantic (one role each) ----------------------------------------- */
-  --success: #166534;
-  --success-bg: #e4f3e8;
-  --warning: #9a5b00;
-  --warning-bg: #fbefd9;
-  --error: #b42318;
-  --error-bg: #fbe7e4;
-  --info: #14263d;
+  /* --- Semantic (one role each, spec values) ---------------------------- */
+  --success: #19764b;
+  --success-bg: #e7f2ec;
+  --warning: #b7791f;
+  --warning-bg: #fbf2e0;
+  --error: #c43d4b;
+  --error-bg: #fbeaec;
+  --info: #315b82;
 
   /* --- Tier accents (Sprout / Root / Palmyra — a legitimate semantic set) */
   --sprout: #166534;
@@ -306,12 +309,12 @@
   --grad-agriculture: #203b59;
   --green-gradient: var(--grad-primary);
 
-  /* --- Radii (brief scale) ---------------------------------------------- */
-  --r-sm: 12px; /* inputs, small controls */
-  --r-md: 14px;
-  --r-lg: 16px; /* standard card */
-  --r-xl: 20px; /* feature card */
-  --r-2xl: 24px; /* large feature card */
+  /* --- Radii (civic spec: buttons/inputs 10–12, cards 12–16, no 24+) ---- */
+  --r-sm: 10px; /* inputs, buttons */
+  --r-md: 12px;
+  --r-lg: 14px; /* standard card */
+  --r-xl: 16px; /* feature card */
+  --r-2xl: 18px; /* large feature card (kept restrained) */
   --r-pill: 999px;
 
   /* --- Spacing (8px base + 4px steps) ----------------------------------- */
@@ -323,7 +326,7 @@
   --space-8: 32px;
   --space-10: 40px;
   --space-12: 48px;
-  --gutter: 20px; /* mobile page horizontal padding */
+  --gutter: 16px; /* mobile page horizontal margin (spec §4) */
 
   /* --- Control sizing --------------------------------------------------- */
   --control-h: 56px; /* primary inputs / buttons */

@@ -23,17 +23,18 @@ export function BottomNav() {
     },
     { to: '/card', label: t('Card', 'அட்டை'), icon: 'idCard', match: ['/card', '/milestones'] },
     {
-      to: '/gallery',
-      label: t('Gallery', 'படங்கள்'),
-      icon: 'image',
-      match: ['/gallery'],
+      to: '/community',
+      label: t('Community', 'சமூகம்'),
+      icon: 'users',
+      // Community is the hub for local participation destinations.
+      match: ['/community', '/area', '/reports', '/fund', '/ideas', '/skills', '/courses', '/survey', '/gallery'],
     },
     {
       to: '/profile',
       label: t('Profile', 'சுயவிவரம்'),
       icon: 'user',
-      // Profile is the hub for the member's own area and settings.
-      match: ['/profile', '/referral', '/privacy', '/language', '/notifications', '/community', '/area', '/reports', '/fund', '/ideas', '/skills', '/courses', '/survey'],
+      // Profile owns the member's own identity and settings.
+      match: ['/profile', '/referral', '/privacy', '/language', '/notifications'],
     },
   ];
 
