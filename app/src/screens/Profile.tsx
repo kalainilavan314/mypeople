@@ -6,7 +6,6 @@ import { pick } from '../i18n';
 import { Icon, type IconName } from '../components/Icon';
 import { NetImage } from '../components/nn';
 import { Button, Toggle, StatusPill, EmptyState, QueryBoundary } from '../components/ui';
-import { PalmyraMark } from '../components/PalmyraMark';
 import { useMember, useMyCommunityReports, useEvents } from '../data/queries';
 import { useMe } from '../hooks/useMe';
 import { useAuth } from '../state/auth';
@@ -69,53 +68,53 @@ export function Profile() {
     <QueryBoundary query={memberQ}>
       {(member) => (
         <main className="workspace" style={{ paddingTop: 0 }}>
-          {/* ---- Compact navy header (the one branded surface) ---- */}
-          <header
-            style={{
-              position: 'relative',
-              overflow: 'hidden',
-              background: c.primary,
-              color: '#fff',
-              margin: '0 -16px 20px',
-              padding: 'calc(20px + var(--safe-top, 0px)) 16px 16px',
-              borderRadius: '0 0 var(--r-2xl) var(--r-2xl)',
-            }}
-          >
-            <PalmyraMark size={200} stroke="#FFFFFF" opacity={0.06} style={{ position: 'absolute', right: -44, top: -30 }} />
+          {/* ---- Hero header (regional cover image behind) ---- */}
+          <header className="pf-hero">
+            <div className="pf-hero-overlay" aria-hidden="true" />
+
+            {/* top row: back + settings */}
+            <div className="pf-hero-top">
+              <button className="pf-icon-btn" onClick={() => navigate(-1)} aria-label={t('common.back', 'Back')}>
+                <Icon name="chevronLeft" size={20} color="#fff" strokeWidth={2.2} />
+              </button>
+              <button className="pf-icon-btn" onClick={() => navigate('/language')} aria-label={t('profile.settings', 'Settings')}>
+                <Icon name="wrench" size={18} color="#fff" strokeWidth={2} />
+              </button>
+            </div>
 
             {/* title + subtitle */}
-            <div style={{ position: 'relative' }}>
+            <div className="pf-hero-text">
               <h1 style={{ font: `700 28px/1.15 ${font.head}`, letterSpacing: '-0.01em', margin: 0 }}>{t('profile.titleMy')}</h1>
-              <p style={{ font: `400 13px/1.45 ${font.ui}`, color: 'rgba(255,255,255,.72)', margin: '6px 0 0', maxWidth: 300 }}>
+              <p style={{ font: `400 13px/1.45 ${font.ui}`, color: 'rgba(255,255,255,.82)', margin: '6px 0 0', maxWidth: 260 }}>
                 {t('profile.subtitle', 'Your participation makes stronger communities')}
               </p>
             </div>
 
             {/* avatar + identity */}
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 16, marginTop: 18 }}>
+            <div className="pf-hero-text" style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 16 }}>
               <span style={{ position: 'relative', flex: 'none' }}>
-                <span style={{ width: 92, height: 92, borderRadius: 999, overflow: 'hidden', display: 'grid', placeItems: 'center', background: 'rgba(255,255,255,.12)', border: '2px solid rgba(255,255,255,.25)' }}>
+                <span style={{ width: 92, height: 92, borderRadius: 999, overflow: 'hidden', display: 'grid', placeItems: 'center', background: 'rgba(255,255,255,.14)', border: '3px solid rgba(255,255,255,.85)' }}>
                   <NetImage src={me?.avatarUrl ?? undefined} alt={member.fullName} width={92} height={92} radius={999} fallbackIcon="user" />
                 </span>
                 <button
                   onClick={() => navigate('/profile/edit')}
                   aria-label={t('profile.editProfile')}
-                  style={{ position: 'absolute', right: -2, bottom: -2, width: 30, height: 30, borderRadius: 999, border: '2px solid #14263D', background: '#fff', display: 'grid', placeItems: 'center', cursor: 'pointer' }}
+                  style={{ position: 'absolute', right: -2, bottom: -2, width: 30, height: 30, borderRadius: 999, border: '2px solid #fff', background: c.primary, display: 'grid', placeItems: 'center', cursor: 'pointer' }}
                 >
-                  <Icon name="camera" size={15} color={c.primary} strokeWidth={2} />
+                  <Icon name="camera" size={15} color="#fff" strokeWidth={2} />
                 </button>
               </span>
 
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ font: `700 23px/1.2 ${font.head}`, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.fullName}</div>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginTop: 6, color: 'rgba(255,255,255,.85)' }}>
-                  <Icon name="mapPin" size={14} color="rgba(255,255,255,.85)" strokeWidth={2} style={{ flex: 'none', marginTop: 2 }} />
+              <div style={{ minWidth: 0, flex: 1, textShadow: '0 1px 6px rgba(0,0,0,.4)' }}>
+                <div style={{ font: `700 24px/1.2 ${font.head}`, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.fullName}</div>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginTop: 6, color: 'rgba(255,255,255,.92)' }}>
+                  <Icon name="mapPin" size={14} color="rgba(255,255,255,.92)" strokeWidth={2} style={{ flex: 'none', marginTop: 2 }} />
                   <span style={{ font: `400 14px/1.4 ${font.ui}` }}>
                     {[me?.districtName ?? member.electorateNameEn, t('profile.northernProvince', 'Northern & Eastern Province')].filter(Boolean).join(' · ')}
                   </span>
                 </div>
                 {me?.gsName && (
-                  <div className="ta" style={{ font: `400 13px/1.4 ${font.ta}`, color: 'rgba(255,255,255,.66)', marginTop: 3 }}>
+                  <div style={{ font: `400 13px/1.4 ${font.ta}`, color: 'rgba(255,255,255,.8)', marginTop: 3 }}>
                     {t('profile.gnDivision', { name: me.gsName })}
                   </div>
                 )}
@@ -126,27 +125,23 @@ export function Profile() {
             <div style={{ position: 'relative', marginTop: 14 }}>
               <VerificationPill status={me?.verificationStatus} label={verifyLabel(t, me?.verificationStatus)} onClick={() => setVerifyOpen(true)} />
             </div>
-
-            {/* compact Edit Profile row */}
-            <button
-              onClick={() => navigate('/profile/edit')}
-              style={{
-                position: 'relative', marginTop: 16, width: '100%', height: 58, cursor: 'pointer',
-                borderRadius: 'var(--r-lg)', border: '1px solid rgba(255,255,255,.16)', background: '#fff',
-                display: 'flex', alignItems: 'center', gap: 12, padding: '0 16px', textAlign: 'left',
-              }}
-            >
-              <Icon name="wrench" size={18} color={c.primary} strokeWidth={2} />
-              <span style={{ flex: 1, font: `600 15px/1 ${font.ui}`, color: c.ink }}>{t('profile.editProfile')}</span>
-              <Icon name="chevron" size={17} color={c.ink3} />
-            </button>
           </header>
+
+          {/* ---- Edit Profile card (overlaps hero) ---- */}
+          <button className="pf-edit-card" onClick={() => navigate('/profile/edit')}>
+            <span className="pf-edit-ic"><Icon name="wrench" size={20} color={c.secondary} strokeWidth={2} /></span>
+            <span style={{ flex: 1, minWidth: 0 }}>
+              <span style={{ display: 'block', font: `700 16px/1.2 ${font.ui}`, color: c.ink0 }}>{t('profile.editProfile')}</span>
+              <span style={{ display: 'block', font: `400 12.5px/1.3 ${font.ui}`, color: c.ink3, marginTop: 3 }}>{t('profile.editProfileSub', 'Update your information, photo and preferences')}</span>
+            </span>
+            <Icon name="chevron" size={18} color={c.ink3} />
+          </button>
 
           <VerificationSheet open={verifyOpen} onClose={() => setVerifyOpen(false)} status={me?.verificationStatus} t={t} />
 
           {/* ---- Unified statistics card (4 columns) ---- */}
           <section
-            style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', background: c.card, border: `1px solid ${c.hairline}`, borderRadius: 'var(--r-lg)', overflow: 'hidden' }}
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', background: c.card, border: `1px solid ${c.hairline}`, borderRadius: 'var(--r-lg)', overflow: 'hidden', marginTop: 16 }}
           >
             <StatCol icon="report" tint="#EEF4FA" fg={c.secondary} value={reportsQ.data ? String(reportsQ.data.length) : '—'} label={t('profile.myReports')} first />
             <StatCol icon="users" tint="#F2F6F4" fg={c.success} value={me ? String(me.recruitCount) : '—'} label={t('profile.myReferrals')} />
@@ -156,7 +151,10 @@ export function Profile() {
 
           {/* ---- My Activity (real feed) ---- */}
           <section className="work-section">
-            <h2>{t('profile.myActivity')}</h2>
+            <div className="work-section-head">
+              <h2>{t('profile.myActivity')}</h2>
+              <button type="button" onClick={() => navigate('/reports')} style={{ background: 'none', border: 0, cursor: 'pointer', font: `600 13px/1 ${font.ui}`, color: c.secondary }}>{t('profile.viewAll', 'View All')}</button>
+            </div>
             <div style={{ background: c.card, border: `1px solid ${c.hairline}`, borderRadius: 'var(--r-lg)', overflow: 'hidden' }}>
               <QueryBoundary query={reportsQ} label={t('common.loading', 'Loading…')}>
                 {() =>
@@ -192,30 +190,24 @@ export function Profile() {
           <section className="work-section">
             <h2>{t('profile.menu', 'Menu')}</h2>
             <div className="work-panel">
-              <Row icon="user" label={t('profile.personalInfo', 'Personal Information')} onClick={() => navigate('/profile/edit')} />
-              <Row icon="shield" label={t('profile.membershipVerification', 'Membership & Verification')} onClick={() => setVerifyOpen(true)} />
-              <Row icon="report" label={t('profile.myReports')} onClick={() => navigate('/reports')} />
-              <Row icon="calendar" label={t('profile.myActivities')} onClick={() => navigate('/events')} />
-              <Row icon="clipboard" label={t('profile.mySurveys')} onClick={() => navigate('/survey')} />
-              <Row icon="bulb" label={t('profile.myIdeas')} onClick={() => navigate('/ideas')} />
-              <Row icon="book" label={t('profile.myCourses')} onClick={() => navigate('/courses')} />
-              <Row icon="users" label={t('profile.myReferrals')} onClick={() => navigate('/referral')} />
+              <Row icon="user" label={t('profile.personalInfo', 'Personal Information')} sub={t('profile.personalInfoSub', 'View and update your details')} onClick={() => navigate('/profile/edit')} />
+              <Row icon="shield" label={t('profile.membershipVerification', 'Membership & Verification')} sub={t('profile.membershipVerificationSub', 'Membership status, verification and card')} onClick={() => setVerifyOpen(true)} />
+              <Row icon="trending" label={t('profile.myActivity')} sub={t('profile.myActivitySub2', 'Reports, events, learning and more')} onClick={() => navigate('/reports')} />
+              <Row icon="users" label={t('profile.referrals', 'Referrals')} sub={t('profile.referralsSub', 'Invite and track your referrals')} onClick={() => navigate('/referral')} />
+              <Row icon="bell" label={t('profile.notifications')} sub={t('profile.notificationsSub', 'Manage your notification preferences')} onClick={() => navigate('/notifications')} />
+              <Row icon="globe" label={t('profile.language')} sub={lang === 'ta' ? 'தமிழ்' : 'English / தமிழ்'} onClick={() => navigate('/language')} />
+              <Row icon="lock" label={t('profile.privacy')} sub={t('profile.privacySub', 'Your data and consent settings')} onClick={() => navigate('/privacy')} />
+              <Row icon="forum" label={t('profile.helpSupport')} sub={t('profile.helpSupportSub', 'Get help or contact us')} onClick={() => navigate('/privacy')} />
             </div>
           </section>
 
           <section className="work-section">
-            <h2>{t('profile.account')}</h2>
             <div className="work-panel">
-              <Row icon="globe" label={t('profile.language')} value={lang === 'ta' ? 'தமிழ்' : 'English'} onClick={() => navigate('/language')} />
-              <Row icon="bell" label={t('profile.notifications')} onClick={() => navigate('/notifications')} />
-              <Row icon="lock" label={t('profile.privacy')} onClick={() => navigate('/privacy')} />
-              <Row icon="mapPin" label={t('profile.location')} value={me?.districtName ?? member.electorateNameEn ?? ''} onClick={() => navigate('/profile/edit')} />
               <div className="work-link" style={{ cursor: 'default' }}>
                 <span className="work-icon"><Icon name={isDark ? 'moon' : 'sun'} size={20} /></span>
                 <span style={{ flex: 1 }}><strong>{t('profile.darkMode')}</strong></span>
                 <Toggle on={isDark} onChange={() => toggleTheme()} ariaLabel={t('profile.darkMode')} />
               </div>
-              <Row icon="forum" label={t('profile.helpSupport')} onClick={() => navigate('/privacy')} />
               <Row icon="info" label={t('profile.about')} value="v1.0.0" />
             </div>
           </section>
@@ -265,23 +257,33 @@ function verifyLabel(t: (k: string, d: string) => string, status?: VStatus): { l
 }
 
 function VerificationPill({ status, label, onClick }: { status?: VStatus; label: { label: string; icon: IconName }; onClick: () => void }) {
-  const confirmed = status === 'identity_confirmed';
+  // Green for any completed check (nic_format / identity_confirmed), amber for a
+  // pending review, neutral otherwise — on a light pill that reads over the hero.
+  const good = status === 'identity_confirmed' || status === 'nic_format';
+  const pending = status === 'review_pending';
+  const fg = good ? '#16835D' : pending ? '#B7791F' : '#667085';
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={label.label}
       style={{
-        display: 'inline-flex', alignItems: 'center', gap: 6, height: 38, padding: '0 10px 0 12px',
+        display: 'inline-flex', alignItems: 'center', gap: 6, height: 36, padding: '0 12px',
         borderRadius: 999, cursor: 'pointer',
-        background: confirmed ? 'rgba(150,199,176,.22)' : 'rgba(255,255,255,.12)',
-        border: `1px solid ${confirmed ? 'rgba(150,199,176,.6)' : 'rgba(255,255,255,.28)'}`,
-        color: '#fff', font: `600 12.5px/1 ${font.ui}`,
+        background: 'rgba(255,255,255,.94)',
+        border: '1px solid rgba(255,255,255,.6)',
+        color: fg, font: `700 12.5px/1 ${font.ui}`,
+        boxShadow: '0 2px 8px rgba(11,20,36,.18)',
       }}
     >
-      <Icon name={label.icon} size={13} color="#fff" strokeWidth={2} />
+      {good ? (
+        <span style={{ width: 16, height: 16, borderRadius: 999, background: fg, display: 'grid', placeItems: 'center', flex: 'none' }}>
+          <Icon name="check" size={10} color="#fff" strokeWidth={3} />
+        </span>
+      ) : (
+        <Icon name={label.icon} size={15} color={fg} strokeWidth={2} />
+      )}
       {label.label}
-      <Icon name="check" size={13} color={confirmed ? '#96C7B0' : 'rgba(255,255,255,.75)'} strokeWidth={2.4} />
     </button>
   );
 }
@@ -350,19 +352,22 @@ function StatCol({ icon, tint, fg, value, label, first }: { icon: IconName; tint
   );
 }
 
-function Row({ icon, label, value, onClick }: { icon: IconName; label: string; value?: ReactNode; onClick?: () => void }) {
+function Row({ icon, label, sub, value, onClick }: { icon: IconName; label: string; sub?: string; value?: ReactNode; onClick?: () => void }) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={!onClick}
       className="work-link"
-      style={{ width: '100%', background: 'none', border: 0, cursor: onClick ? 'pointer' : 'default', textAlign: 'left', font: 'inherit' }}
+      style={{ width: '100%', background: 'none', border: 0, cursor: onClick ? 'pointer' : 'default', textAlign: 'left', font: 'inherit', alignItems: sub ? 'flex-start' : 'center' }}
     >
-      <span className="work-icon"><Icon name={icon} size={20} /></span>
-      <span style={{ flex: 1, minWidth: 0 }}><strong>{label}</strong></span>
+      <span className="work-icon" style={{ marginTop: sub ? 2 : 0 }}><Icon name={icon} size={20} /></span>
+      <span style={{ flex: 1, minWidth: 0 }}>
+        <strong style={{ display: 'block' }}>{label}</strong>
+        {sub ? <span style={{ display: 'block', font: `400 12.5px/1.35 ${font.ui}`, color: c.ink3, marginTop: 2 }}>{sub}</span> : null}
+      </span>
       {value ? <span className="t-secondary" style={{ whiteSpace: 'nowrap' }}>{value}</span> : null}
-      {onClick && <Icon name="chevron" size={16} color={c.ink3} />}
+      {onClick && <Icon name="chevron" size={16} color={c.ink3} style={{ flex: 'none', marginTop: sub ? 4 : 0 }} />}
     </button>
   );
 }

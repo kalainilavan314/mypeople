@@ -552,3 +552,12 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
 .idcard-photo img { width: 100%; height: 100%; object-fit: cover; }
 .idcard-col-mid { flex: 1; min-width: 0; }
 .idcard-col-right { flex: none; width: 166px; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 2px; }
+
+/* ---- Profile hero (regional cover image behind the header) ---- */
+.pf-hero { position: relative; overflow: hidden; margin: 0 -16px; padding: calc(14px + var(--safe-top, 0px)) 16px 62px; border-radius: 0 0 var(--r-2xl) var(--r-2xl); color: #fff; background: #14263D url('/profile-hero.webp') center 32% / cover no-repeat; }
+.pf-hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,20,36,.72) 0%, rgba(11,20,36,.34) 44%, rgba(11,20,36,.64) 100%); }
+.pf-hero-top { position: relative; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.pf-hero-text { position: relative; }
+.pf-icon-btn { width: 40px; height: 40px; border-radius: 999px; border: 1px solid rgba(255,255,255,.35); background: rgba(255,255,255,.16); display: grid; place-items: center; cursor: pointer; }
+.pf-edit-card { position: relative; z-index: 2; margin: -44px 0 0; width: 100%; display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--card); border: 1px solid var(--hairline); border-radius: var(--r-lg); box-shadow: var(--shadow-card); text-align: left; cursor: pointer; }
+.pf-edit-ic { flex: none; width: 46px; height: 46px; border-radius: 12px; background: var(--soft-blue); display: grid; place-items: center; }
