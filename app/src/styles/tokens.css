@@ -131,7 +131,7 @@
   /* --- Fonts ------------------------------------------------------------------ */
   --font-ui: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-head: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-ta: 'Noto Sans Tamil', 'Inter', sans-serif;
+  --font-ta: 'Inter', 'Noto Sans Tamil', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   /* --- Layout ------------------------------------------------------------------ */

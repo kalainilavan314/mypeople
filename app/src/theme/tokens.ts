@@ -84,7 +84,9 @@ export const grad = {
 export const font = {
   ui: "'Inter', ui-sans-serif, system-ui, sans-serif",
   head: "'Inter', ui-sans-serif, system-ui, sans-serif",
-  ta: "'Noto Sans Tamil', 'Inter', sans-serif",
+  // Inter first so Latin/English text uses Inter; Tamil glyphs fall back to
+  // Noto Sans Tamil per-glyph. (Noto-first made English render in the Tamil font.)
+  ta: "'Inter', 'Noto Sans Tamil', sans-serif",
   mono: "'JetBrains Mono', ui-monospace, monospace",
 } as const;
 
