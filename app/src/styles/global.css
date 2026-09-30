@@ -520,3 +520,20 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
 
 /* ---- Home empty state ---- */
 .home-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 28px 16px; background: var(--card); border: 1px solid var(--hairline); border-radius: var(--r-md); text-align: center; }
+
+/* ---- Membership ID card (fixed 680×428, scaled to fit via container units) ---- */
+.idcard-wrap { width: 100%; aspect-ratio: 680 / 428; overflow: hidden; border-radius: 18px; }
+.idcard { position: relative; width: 680px; height: 428px; transform-origin: top left; border-radius: 18px; overflow: hidden; background: #eef3f9; border: 1px solid #d7deea; box-shadow: 0 12px 32px -12px rgba(11,20,36,.55); }
+.idcard-guilloche { position: absolute; inset: 0; opacity: .7;
+  background:
+    radial-gradient(circle at 78% 62%, rgba(20,38,61,.06) 0, transparent 38%),
+    repeating-radial-gradient(circle at 50% 46%, rgba(20,38,61,.028) 0, rgba(20,38,61,.028) 1px, transparent 1px, transparent 11px); }
+.idcard-band { position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: linear-gradient(100deg, #0f1f33 0%, #1c3a5e 100%); }
+.idcard-band-top { top: 0; height: 34px; }
+.idcard-band-bottom { bottom: 0; height: 30px; }
+.idcard-body { position: absolute; top: 34px; bottom: 30px; left: 0; right: 0; display: flex; gap: 14px; padding: 15px 18px; }
+.idcard-col-left { flex: none; width: 132px; display: flex; flex-direction: column; align-items: center; }
+.idcard-photo { width: 128px; height: 154px; border-radius: 10px; overflow: hidden; background: #dfe5ee; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(11,20,36,.18); display: grid; place-items: center; }
+.idcard-photo img { width: 100%; height: 100%; object-fit: cover; }
+.idcard-col-mid { flex: 1; min-width: 0; }
+.idcard-col-right { flex: none; width: 166px; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 2px; }

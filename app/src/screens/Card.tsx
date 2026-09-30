@@ -6,16 +6,12 @@ import { authApi } from '../data/authApi';
 import { c, font, radius } from '../theme/tokens';
 import { pick } from '../i18n';
 import { Icon } from '../components/Icon';
-import { Logo } from '../components/Logo';
-// Large low-opacity watermark behind the card — a Northern Province motif.
-import { PalmyraMark } from '../components/PalmyraMark';
+import { MembershipIdCard } from '../components/MembershipIdCard';
 import { Button, QueryBoundary } from '../components/ui';
 import { QR } from '../lib/qr';
 import { useBadges, useMember } from '../data/queries';
 import { useMe } from '../hooks/useMe';
 import { tierDef } from '../theme/tiers';
-
-const SIGNATURE_FONT = '"Segoe Script", "Bradley Hand", "Snell Roundhand", cursive';
 
 export function Card() {
   const navigate = useNavigate();
@@ -59,104 +55,29 @@ export function Card() {
           const tier = tierDef(me?.tier ?? 'volunteer');
           const joined = new Date(me?.joinedAt ?? m.joinedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
           const prog = me?.tierProgress;
-          const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join('') || 'M';
-          const onCardTier = tier.key === 'volunteer';
 
           return (
             <>
-              {/* ===================== Membership card — landscape, 4-corner ===================== */}
-              <div
-                style={{
-                  position: 'relative',
-                  overflow: 'hidden',
-                  borderRadius: radius.xl,
-                  boxShadow: '0 10px 28px -10px rgba(11,20,36,.55)',
-                  background: 'linear-gradient(150deg,#14263D 0%,#0B1424 100%)',
-                  color: '#EAF1FB',
-                  minHeight: 214,
-                  padding: 16,
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                <PalmyraMark size={220} stroke="#FFFFFF" opacity={0.05} style={{ position: 'absolute', right: -58, bottom: -40 }} />
-
-                {/* ---- top corners: photo (left) · logo + tier (right) ---- */}
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-                  {/* top-left: member photograph */}
-                  {avatarUrl ? (
-                    <img
-                      src={avatarUrl}
-                      alt=""
-                      style={{ width: 50, height: 50, borderRadius: 12, objectFit: 'cover', border: '1.5px solid rgba(255,255,255,.35)', flex: 'none' }}
-                    />
-                  ) : (
-                    <div style={{ width: 50, height: 50, borderRadius: 12, background: 'rgba(255,255,255,.12)', border: '1.5px solid rgba(255,255,255,.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none', font: `700 18px/1 ${font.head}`, color: '#fff' }}>
-                      {initials}
-                    </div>
-                  )}
-
-                  {/* top-right: My People logo + brand + tier */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 7, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div style={{ textAlign: 'right', minWidth: 0 }}>
-                        <div style={{ font: `700 13px/1.15 ${font.ta}`, color: '#fff' }}>{t('brand.nameTa')}</div>
-                        <div style={{ font: `500 8px/1 ${font.ui}`, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(232,243,241,.7)', marginTop: 2 }}>{t('brand.name')}</div>
-                      </div>
-                      <div style={{ width: 30, height: 30, borderRadius: 8, background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
-                        <Logo size={24} />
-                      </div>
-                    </div>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, height: 24, padding: '0 10px', borderRadius: 999, background: tier.grad, color: onCardTier ? '#E8F3F1' : '#00352D', font: `700 10.5px/1 ${font.ui}` }}>
-                      <Icon name="star" size={11} color={onCardTier ? '#E8F3F1' : '#00352D'} fill={onCardTier ? 'none' : '#00352D'} strokeWidth={2} />
-                      {tier.nameEn}
-                    </span>
-                  </div>
-                </div>
-
-                {/* ---- centre: name + member id + location ---- */}
-                <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: 12 }}>
-                  <div style={{ font: `700 20px/1.2 ${font.head}`, color: '#fff' }}>{name}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 5 }}>
-                    <span style={{ font: `500 8.5px/1 ${font.ui}`, letterSpacing: '.1em', textTransform: 'uppercase', color: 'rgba(232,243,241,.55)' }}>{t('card.memberId')}</span>
-                    <span style={{ font: `700 13px/1 ${font.mono}`, color: c.gold }}>{code}</span>
-                  </div>
-                  <div style={{ font: `500 11px/1.4 ${font.ta}`, color: 'rgba(232,243,241,.8)', marginTop: 6 }}>
-                    {[districtName, dsName].filter((x) => x && x !== '—').join(' · ')}
-                  </div>
-                </div>
-
-                {/* ---- bottom corners: signature (left) · QR (right) ---- */}
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, marginTop: 12 }}>
-                  {/* bottom-left: electronic signature */}
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ font: `400 22px/1 ${SIGNATURE_FONT}`, color: '#EAF1FB', paddingBottom: 3, borderBottom: '1px solid rgba(255,255,255,.28)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 168 }}>
-                      {name}
-                    </div>
-                    <div style={{ font: `500 8px/1 ${font.ui}`, letterSpacing: '.1em', textTransform: 'uppercase', color: 'rgba(232,243,241,.5)', marginTop: 5 }}>
-                      {t('card.since', 'Member since')} {joined}
-                    </div>
-                  </div>
-
-                  {/* bottom-right: secure QR (signed token only, never PII) */}
-                  <button
-                    type="button"
-                    onClick={() => setShowQr((v) => !v)}
-                    aria-label={t('card.viewQr', 'View QR code')}
-                    style={{ flex: 'none', padding: 0, border: 'none', background: 'transparent', cursor: 'pointer' }}
-                  >
-                    {cardTokenQ.data ? (
-                      <div style={{ background: '#fff', padding: 6, borderRadius: 10 }}>
-                        <QR value={cardTokenQ.data} size={62} />
-                      </div>
-                    ) : (
-                      <div style={{ width: 74, height: 74, borderRadius: 10, background: 'rgba(255,255,255,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Icon name="idCard" size={22} color="rgba(255,255,255,.7)" />
-                      </div>
-                    )}
-                  </button>
-                </div>
-              </div>
+              {/* ===================== Membership ID card ===================== */}
+              <MembershipIdCard
+                fullName={name}
+                memberId={code}
+                district={districtName}
+                gsDivision={gsName}
+                memberSince={joined}
+                tier={tier.nameEn}
+                referralId={referral}
+                verified={me?.verificationStatus === 'identity_confirmed'}
+                verificationLabel={
+                  me?.verificationStatus === 'review_pending'
+                    ? t('verify.reviewPending', 'Review pending')
+                    : me?.verificationStatus === 'nic_format'
+                      ? t('verify.nicFormat', 'NIC checked')
+                      : t('verify.unverified', 'Not verified')
+                }
+                avatarUrl={avatarUrl}
+                qrValue={cardTokenQ.data}
+              />
 
               {/* ===================== Enlarged QR (View QR) ===================== */}
               {showQr && (
