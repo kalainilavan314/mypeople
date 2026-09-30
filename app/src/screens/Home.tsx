@@ -1,13 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import { c, font } from '../theme/tokens';
 import { useMe } from '../hooks/useMe';
 import { useEvents, useAnnouncements } from '../data/queries';
-import { authApi } from '../data/authApi';
 import { QueryBoundary } from '../components/ui';
 import { Icon, type IconName } from '../components/Icon';
-import { PalmyraMark } from '../components/PalmyraMark';
-import { QR } from '../lib/qr';
 import { useWorkspaceText } from '../components/MemberWorkspace';
 import { HomeTopBar } from '../components/HomeTopBar';
 
@@ -52,13 +48,6 @@ export function Home() {
   const announcements = useAnnouncements();
   const t = useWorkspaceText();
 
-  const cardTokenQ = useQuery({
-    queryKey: ['cardToken'],
-    queryFn: () => authApi.cardToken(),
-    staleTime: 5 * 60 * 1000,
-    refetchInterval: 8 * 60 * 1000,
-  });
-
   const upcoming = (events.data ?? [])
     .filter((e) => Date.parse(e.startsAt) >= Date.now())
     .sort((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt));
@@ -69,69 +58,36 @@ export function Home() {
     <>
       <HomeTopBar />
       <main className="workspace" style={{ paddingTop: 12 }}>
-        {/* ---- Hero ---- */}
+        {/* ---- Hero (regional cover image + welcome) ---- */}
         <section className="home-hero" aria-label={t('Welcome', 'வரவேற்பு')}>
-          <PalmyraMark size={150} stroke="#1f4e6b" opacity={0.16} style={{ position: 'absolute', right: 8, bottom: 6 }} />
-          <PalmyraMark size={104} stroke="#1f4e6b" opacity={0.12} style={{ position: 'absolute', right: 92, bottom: 22 }} />
-          <div className="home-hero-water" aria-hidden="true" />
-          <div style={{ position: 'relative', maxWidth: 300 }}>
-            <p style={{ font: `500 15px/1.4 ${font.ui}`, color: c.secondary, margin: 0 }}>
+          <div className="home-hero-overlay" aria-hidden="true" />
+          <div className="home-hero-text">
+            <p style={{ font: `600 15px/1.4 ${font.ui}`, color: c.secondary, margin: 0 }}>
               {t('Hello', 'வணக்கம்')}{firstName ? ', ' + firstName : ''}
             </p>
-            <h1 style={{ font: `700 32px/1.12 ${font.head}`, letterSpacing: '-0.01em', color: c.ink0, margin: '8px 0 0' }}>
+            <h1 style={{ font: `700 30px/1.14 ${font.head}`, letterSpacing: '-0.01em', color: c.ink0, margin: '8px 0 0' }}>
               {t('Together for', 'ஒன்றாக')}<br />{t('stronger communities', 'வலிமையான சமூகங்கள்')}
             </h1>
-            <p style={{ font: `400 15px/1.5 ${font.ui}`, color: c.ink3, margin: '12px 0 0' }}>
+            <p style={{ font: `400 14px/1.5 ${font.ui}`, color: c.ink2, margin: '10px 0 0', maxWidth: 260 }}>
               {t('Your membership, community services, events and local updates — all in one place.', 'உங்கள் உறுப்பினர், சேவைகள், நிகழ்வுகள் மற்றும் புதுப்பிப்புகள் ஒரே இடத்தில்.')}
             </p>
           </div>
         </section>
 
-        {/* ---- Membership summary (overlaps hero) ---- */}
-        <section className="home-member home-member-hero">
-          <div className="home-member-head">
-            <span className="home-member-eyebrow">{t('YOUR MEMBERSHIP', 'உங்கள் உறுப்பினர்')}</span>
-            <span className={`home-verify${v.verified ? ' is-verified' : ''}`}>
-              <Icon name={v.verified ? 'check' : 'info'} size={13} strokeWidth={2.2} />
+        {/* ---- Slim membership status (full card lives on the Card tab) ---- */}
+        <Link to="/card" className="home-member-chip">
+          <span className="home-member-chip-av">
+            {me?.avatarUrl ? <img src={me.avatarUrl} alt="" /> : <Icon name="user" size={22} color={c.ink4} />}
+          </span>
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <span className="home-member-chip-name">{me?.fullName || t('My membership', 'எனது உறுப்பினர்')}</span>
+            <span className={`home-verify${v.verified ? ' is-verified' : ''}`} style={{ marginTop: 5 }}>
+              <Icon name={v.verified ? 'check' : 'info'} size={12} strokeWidth={2.2} />
               {v.label}
             </span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginTop: 8 }}>
-            <span style={{ flex: 'none', width: 56, height: 56, borderRadius: 999, overflow: 'hidden', background: c.surfaceVariant, display: 'grid', placeItems: 'center' }}>
-              {me?.avatarUrl ? <img src={me.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <Icon name="user" size={26} color={c.ink4} />}
-            </span>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ font: `700 20px/1.2 ${font.head}`, color: c.ink0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{me?.fullName || '—'}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                <span style={{ font: `500 11px/1 ${font.ui}`, letterSpacing: '.06em', textTransform: 'uppercase', color: c.ink3 }}>{t('Member ID', 'உறுப்பினர் எண்')}</span>
-                <span style={{ font: `700 13px/1 ${font.mono}`, color: c.ink }}>{me?.memberCode || '—'}</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 5, font: `400 13px/1.4 ${font.ta}`, color: c.ink3 }}>
-                <Icon name="mapPin" size={13} color={c.ink3} strokeWidth={2} />
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {[me?.districtName, me?.gsName].filter(Boolean).join(' · ') || '—'}
-                </span>
-              </div>
-            </div>
-            {/* real signed QR — opens the card */}
-            <Link to="/card" aria-label={t('My QR', 'எனது QR')} style={{ flex: 'none', textDecoration: 'none', textAlign: 'center' }}>
-              <span style={{ display: 'block', background: '#fff', border: `1px solid ${c.hairline}`, borderRadius: 10, padding: 6 }}>
-                {cardTokenQ.data ? <QR value={cardTokenQ.data} size={56} /> : <span style={{ width: 56, height: 56, display: 'grid', placeItems: 'center' }}><Icon name="idCard" size={22} color={c.ink4} /></span>}
-              </span>
-              <span style={{ display: 'block', font: `600 10px/1 ${font.ui}`, color: c.ink3, marginTop: 4 }}>{t('My QR', 'எனது QR')}</span>
-            </Link>
-          </div>
-
-          <div className="home-member-actions">
-            <Link to="/card" className="mp-btn mp-btn-primary">
-              <Icon name="idCard" size={17} color="#fff" /> {t('View Membership Card', 'அட்டையைப் பார்')}
-            </Link>
-            <Link to="/card" className="mp-btn mp-btn-secondary" aria-label={t('View QR code', 'QR குறியீடு')}>
-              <Icon name="idCard" size={16} /> {t('QR', 'QR')}
-            </Link>
-          </div>
-        </section>
+          </span>
+          <Icon name="chevron" size={18} color={c.ink3} />
+        </Link>
 
         {/* ---- Quick Access ---- */}
         <section className="work-section">
