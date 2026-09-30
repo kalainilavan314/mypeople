@@ -43,9 +43,29 @@ export function Card() {
       });
       const pdf = new jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 53.98] });
       pdf.addImage(dataUrl, 'PNG', 0, 0, 85.6, 53.98);
-      pdf.save('my-people-membership-id.pdf');
-    } catch {
-      /* ignore — user can retry */
+
+      const blob = pdf.output('blob');
+      const file = new File([blob], 'my-people-membership-id.pdf', { type: 'application/pdf' });
+
+      // Mobile browsers ignore <a download> for blobs, so prefer the native
+      // share/save sheet where available; fall back to a download link.
+      if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'My People Membership ID' });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = file.name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+      }
+    } catch (err) {
+      // Don't warn when the user simply dismisses the share sheet.
+      if (!(err instanceof Error && err.name === 'AbortError')) {
+        alert(t('card.pdfError', 'Could not create the PDF. Please try again.'));
+      }
     } finally {
       setPdfBusy(false);
     }
