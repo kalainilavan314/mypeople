@@ -374,16 +374,24 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
    sticky over the Home scroll area, plus the "Explore more" bottom sheet.
 --------------------------------------------------------------------------- */
 .home-topbar {
-  position: sticky;
+  /* Fixed to the top so it never scrolls away (matches the bottom nav). */
+  position: fixed;
   top: 0;
-  z-index: 20;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--app-max);
+  z-index: 60;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 10px 16px;
+  padding: calc(10px + var(--safe-top, 0px)) 16px 10px;
   background: var(--card);
   border-bottom: 1px solid var(--hairline);
+}
+@media (min-width: 480px) {
+  .home-topbar { position: absolute; left: 0; right: 0; width: auto; max-width: none; transform: none; }
 }
 .topbar-group { display: flex; gap: 8px; flex: none; }
 .topbar-btn {

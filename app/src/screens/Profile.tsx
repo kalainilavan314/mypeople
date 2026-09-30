@@ -195,7 +195,7 @@ export function Profile() {
               <Row icon="trending" label={t('profile.myActivity')} sub={t('profile.myActivitySub2', 'Reports, events, learning and more')} onClick={() => navigate('/reports')} />
               <Row icon="users" label={t('profile.referrals', 'Referrals')} sub={t('profile.referralsSub', 'Invite and track your referrals')} onClick={() => navigate('/referral')} />
               <Row icon="bell" label={t('profile.notifications')} sub={t('profile.notificationsSub', 'Manage your notification preferences')} onClick={() => navigate('/notifications')} />
-              <Row icon="globe" label={t('profile.language')} sub={lang === 'ta' ? 'தமிழ்' : 'English / தமிழ்'} onClick={() => navigate('/language')} />
+              <Row icon="globe" label={t('profile.language')} sub={lang === 'ta' ? 'தமிழ்' : 'English'} onClick={() => navigate('/language')} />
               <Row icon="lock" label={t('profile.privacy')} sub={t('profile.privacySub', 'Your data and consent settings')} onClick={() => navigate('/privacy')} />
               <Row icon="forum" label={t('profile.helpSupport')} sub={t('profile.helpSupportSub', 'Get help or contact us')} onClick={() => navigate('/privacy')} />
             </div>

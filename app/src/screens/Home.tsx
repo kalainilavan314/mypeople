@@ -57,7 +57,7 @@ export function Home() {
   return (
     <>
       <HomeTopBar />
-      <main className="workspace" style={{ paddingTop: 12 }}>
+      <main className="workspace" style={{ paddingTop: 'calc(66px + var(--safe-top, 0px))' }}>
         {/* ---- Hero (regional cover image + welcome) ---- */}
         <section className="home-hero" aria-label={t('Welcome', 'வரவேற்பு')}>
           <div className="home-hero-overlay" aria-hidden="true" />

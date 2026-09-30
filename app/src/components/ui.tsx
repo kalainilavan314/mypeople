@@ -3,6 +3,7 @@
 
 import type { ReactNode, CSSProperties } from 'react';
 import { useId } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { c, font, ease, radius, shadow, control, tier as tierMap, type Tier } from '../theme/tokens';
 import { Icon, type IconName } from './Icon';
@@ -326,6 +327,8 @@ export function EmptyState({ icon = 'report', title, sub }: { icon?: IconName; t
 
 /* ---------------------------------------------------------- QueryBoundary */
 export function QueryBoundary<T>({ query, children, label }: { query: UseQueryResult<T>; children: (data: T) => ReactNode; label?: string }) {
+  const { i18n } = useTranslation();
+  const ta = i18n.language === 'ta';
   if (query.isLoading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '56px 24px' }}>
@@ -336,7 +339,7 @@ export function QueryBoundary<T>({ query, children, label }: { query: UseQueryRe
     );
   }
   if (query.isError || query.data === undefined) {
-    return <div role="alert" style={{ padding: 24, textAlign: "center" }}><p>Unable to load this section. Please try again.</p><button type="button" disabled={query.isFetching} onClick={() => void query.refetch()} style={{ minHeight: 44, padding: "8px 20px", border: `1px solid ${c.hairline}`, borderRadius: 10, color: c.ink, background: c.card, cursor: "pointer" }}>{query.isFetching ? "Retrying…" : "Retry / மீண்டும் முயற்சி"}</button></div>;
+    return <div role="alert" style={{ padding: 24, textAlign: "center" }}><p>{ta ? 'இந்தப் பகுதியை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.' : 'Unable to load this section. Please try again.'}</p><button type="button" disabled={query.isFetching} onClick={() => void query.refetch()} style={{ minHeight: 44, padding: "8px 20px", border: `1px solid ${c.hairline}`, borderRadius: 10, color: c.ink, background: c.card, cursor: "pointer" }}>{query.isFetching ? (ta ? 'மீண்டும் முயற்சிக்கிறது…' : 'Retrying…') : (ta ? 'மீண்டும் முயற்சி' : 'Retry')}</button></div>;
   }
   return <>{children(query.data)}</>;
 }
