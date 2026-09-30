@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +23,33 @@ export function Card() {
   const [wallet, setWallet] = useState(false);
   const [showQr, setShowQr] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Render the ID card to a PDF at true ID-card size (CR80 landscape, 85.6×54mm).
+  // The on-screen card is scaled down; we render it unscaled at 680×428 for crispness.
+  const downloadPdf = async () => {
+    const el = cardRef.current?.querySelector('.idcard') as HTMLElement | null;
+    if (!el || pdfBusy) return;
+    setPdfBusy(true);
+    try {
+      const [{ toPng }, jspdf] = await Promise.all([import('html-to-image'), import('jspdf')]);
+      const dataUrl = await toPng(el, {
+        width: 680,
+        height: 428,
+        pixelRatio: 3,
+        cacheBust: true,
+        style: { transform: 'none', width: '680px', height: '428px' },
+      });
+      const pdf = new jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 53.98] });
+      pdf.addImage(dataUrl, 'PNG', 0, 0, 85.6, 53.98);
+      pdf.save('my-people-membership-id.pdf');
+    } catch {
+      /* ignore — user can retry */
+    } finally {
+      setPdfBusy(false);
+    }
+  };
   // Opaque, server-signed membership credential for the QR — carries no personal
   // data. Refreshed before its 10-minute expiry; falls back to nothing if the
   // endpoint is unreachable (offline / preview).
@@ -59,6 +86,7 @@ export function Card() {
           return (
             <>
               {/* ===================== Membership ID card ===================== */}
+              <div ref={cardRef}>
               <MembershipIdCard
                 fullName={name}
                 memberId={code}
@@ -78,6 +106,7 @@ export function Card() {
                 avatarUrl={avatarUrl}
                 qrValue={cardTokenQ.data}
               />
+              </div>
 
               {/* ===================== Enlarged QR (View QR) ===================== */}
               {showQr && (
@@ -116,6 +145,10 @@ export function Card() {
                 </Button>
                 <Button variant="secondary" icon="share" ariaLabel={t('card.shareCode')} onClick={() => navigate('/referral')} />
               </div>
+
+              <Button variant="secondary" fullWidth icon="idCard" onClick={downloadPdf} disabled={pdfBusy} style={{ marginTop: 10 }}>
+                {pdfBusy ? t('card.preparingPdf', 'Preparing PDF…') : t('card.downloadPdf', 'Download ID card (PDF)')}
+              </Button>
 
               {/* ===================== Membership details ===================== */}
               <div style={{ marginTop: 20, background: c.card, border: `1px solid ${c.hairline}`, borderRadius: radius.lg, overflow: 'hidden' }}>
