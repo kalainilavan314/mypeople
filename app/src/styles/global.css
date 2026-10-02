@@ -164,6 +164,21 @@ select,
   letter-spacing: 0.02em;
 }
 
+/* Visible to assistive technology only. Used for headings that give a section
+   a name in the heading outline where a visible title would be redundant for
+   sighted users — the icons and layout already say what the group is. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Bilingual label pair */
 .label-ta {
   font: 600 15px/1.3 var(--font-ta);

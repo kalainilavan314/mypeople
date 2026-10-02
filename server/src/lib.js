@@ -10,8 +10,19 @@ const SECRET = process.env.JWT_SECRET || 'dev-secret';
 export const nicHash = (nic) =>
   crypto.createHash('sha256').update(PEPPER + String(nic).trim().toUpperCase()).digest('hex');
 
-export const signToken = (memberId) => jwt.sign({ sub: memberId }, SECRET, { expiresIn: '30d' });
+// The session version the token was signed with travels inside it. Verification
+// compares it against the member's current value, so incrementing that value
+// invalidates every token issued before — which is what makes logout real for a
+// stateless token. Tokens minted before this existed carry no sv; they are
+// treated as version 0, so nobody is signed out by the deployment itself.
+export const signToken = (memberId, sessionVersion = 0) =>
+  jwt.sign({ sub: memberId, sv: sessionVersion }, SECRET, { expiresIn: '30d' });
+
 export const verifyToken = (token) => jwt.verify(token, SECRET, { algorithms: ['HS256'] });
+
+/** True when the token was issued before the member's sessions were last revoked. */
+export const tokenIsStale = (payload, member) =>
+  Number(payload?.sv ?? 0) !== Number(member?.session_version ?? 0);
 
 export const otpCode = () => String(crypto.randomInt(100000, 1000000));
 

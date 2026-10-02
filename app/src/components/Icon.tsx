@@ -34,6 +34,8 @@ export type IconName =
   | 'phone'
   | 'shield'
   | 'idCard'
+  | 'download'
+  | 'crown'
   | 'moon'
   | 'sun'
   | 'image'
@@ -197,6 +199,19 @@ const paths: Record<IconName, React.ReactNode> = {
     <>
       <path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" />
       <path d="M9 12l2 2 4-4" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M12 3v12" />
+      <path d="M7.5 10.5 12 15l4.5-4.5" />
+      <path d="M4 17.5v1.5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1.5" />
+    </>
+  ),
+  crown: (
+    <>
+      <path d="M3 8.5 6.5 12 12 5l5.5 7L21 8.5 19.5 18h-15L3 8.5Z" />
+      <path d="M4.5 20.5h15" />
     </>
   ),
   idCard: (

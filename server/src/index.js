@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 import { pool, poolConfig, memberById, memberByNicHash, memberByPhone } from './db.js';
-import { nicHash, signToken, verifyToken, otpCode, memberCode, referralCode, publicMember, verifyAvatarUrl, hashOtp, isNicFormat, signCardToken } from './lib.js';
+import { nicHash, signToken, verifyToken, tokenIsStale, otpCode, memberCode, referralCode, publicMember, verifyAvatarUrl, hashOtp, isNicFormat, signCardToken } from './lib.js';
 import { recomputeTier, tierProgress } from './tier.js';
 import { clientIp, checkOtpRequest, issueOtp, consumeOtp, checkLogin, recordLogin, sleep } from './throttle.js';
 import { putObject, getObject, deleteObject, mimeFor, backend as storageBackend } from './storage.js';
@@ -372,7 +372,7 @@ app.post('/api/auth/signup', wrap(async (req, res) => {
 
     await client.query('COMMIT');
     const full = await memberById(member.id);
-    const token = signToken(member.id);
+    const token = signToken(member.id, member.session_version);
     setSession(res, token);
     res.json({ ok: true, token, member: await withProgress(full) });
   } catch (e) {
@@ -414,26 +414,32 @@ app.post('/api/auth/login', wrap(async (req, res) => {
   await recordLogin(identifier, ip, ok);
   if (!ok) throw bad('invalid_credentials', 401);
 
-  const token = signToken(member.id);
+  const token = signToken(member.id, member.session_version);
   setSession(res, token);
   // token is still returned for non-browser clients; browsers use the cookie.
   res.json({ ok: true, token, member: await withProgress(member) });
 }));
 
 // Clear the session cookie. Client also drops its cached member.
-app.post('/api/auth/logout', (req, res) => {
+app.post('/api/auth/logout', wrap(async (req, res) => {
+  // Clearing the cookie only stops THIS browser sending the token; the token
+  // itself stayed valid for its full 30-day life and worked if replayed.
+  // Incrementing the session version invalidates every token already issued to
+  // this member, which is what logging out has to mean on a shared device.
+  const token = tokenFromReq(req);
+  if (token) {
+    try {
+      const { sub } = verifyToken(token);
+      await pool.query('UPDATE npm.member SET session_version = session_version + 1 WHERE id = $1', [sub]);
+    } catch { /* an unreadable token has nothing to revoke */ }
+  }
   clearSession(res);
   res.json({ ok: true });
-});
+}));
 
 // --- Me ---------------------------------------------------------------------
 app.get('/api/me', wrap(async (req, res) => {
-  const token = tokenFromReq(req);
-  if (!token) throw bad('unauthorized', 401);
-  let sub;
-  try { sub = verifyToken(token).sub; } catch { throw bad('unauthorized', 401); }
-  const member = await memberById(sub);
-  if (!member) throw bad('not_found', 404);
+  const member = await requireMember(req);
   res.json({ member: await withProgress(member) });
 }));
 
@@ -441,14 +447,14 @@ app.get('/api/me', wrap(async (req, res) => {
 // carries THIS, never the NIC/DOB or any personal detail — a check-in service
 // resolves the token server-side under its own authorization rules.
 app.get('/api/me/card-token', wrap(async (req, res) => {
-  const id = memberIdFromReq(req);
-  if (!id) throw bad('unauthorized', 401);
-  const m = await memberById(id);
-  if (!m) throw bad('unauthorized', 401);
+  const m = await requireMember(req);
   res.json({ token: signCardToken(m.id) });
 }));
 
 // --- Events -----------------------------------------------------------------
+// Signature-only: it does NOT check whether the session has been revoked, so it
+// must not be used to authorise a request. requireMember() is the entry point
+// for that. Kept because signCardToken's verifier needs the same token shape.
 function memberIdFromReq(req) {
   const t = tokenFromReq(req);
   if (!t) return null;
@@ -484,10 +490,15 @@ function mapEvent(e, ctx = {}) {
 }
 
 async function reqContext(req) {
-  const memberId = memberIdFromReq(req);
-  if (!memberId) return { memberId: null, district: null };
-  const m = await memberById(memberId);
-  return { memberId, district: m?.district_code || null };
+  // Optional authentication: this only enriches a public response, so a missing
+  // or revoked token means "anonymous" rather than an error.
+  const token = tokenFromReq(req);
+  if (!token) return { memberId: null, district: null };
+  let payload;
+  try { payload = verifyToken(token); } catch { return { memberId: null, district: null }; }
+  const m = await memberById(payload.sub);
+  if (!m || tokenIsStale(payload, m)) return { memberId: null, district: null };
+  return { memberId: m.id, district: m.district_code || null };
 }
 
 app.get('/api/events', wrap(async (req, res) => {
@@ -509,8 +520,7 @@ app.get('/api/events/:id', wrap(async (req, res) => {
 }));
 
 app.post('/api/events/:id/rsvp', wrap(async (req, res) => {
-  const memberId = memberIdFromReq(req);
-  if (!memberId) throw bad('unauthorized', 401);
+  const memberId = (await requireMember(req)).id;
   const { status } = req.body || {};
   if (status === null) {
     await pool.query(`DELETE FROM npm.event_rsvp WHERE event_id=$1 AND member_id=$2`, [req.params.id, memberId]);
@@ -552,15 +562,13 @@ const REPORT_SELECT = `
   LEFT JOIN geo.district d ON d.district_code = cr.district_code`;
 
 app.get('/api/reports/mine', wrap(async (req, res) => {
-  const memberId = memberIdFromReq(req);
-  if (!memberId) throw bad('unauthorized', 401);
+  const memberId = (await requireMember(req)).id;
   const r = await pool.query(`${REPORT_SELECT} WHERE cr.member_id=$1 ORDER BY cr.created_at DESC`, [memberId]);
   res.json({ reports: r.rows.map(mapReport) });
 }));
 
 app.post('/api/reports', wrap(async (req, res) => {
-  const memberId = memberIdFromReq(req);
-  if (!memberId) throw bad('unauthorized', 401);
+  const memberId = (await requireMember(req)).id;
   const { category, title, description, districtCode, priority } = req.body || {};
   if (!category || !title || !String(title).trim() || !description || !String(description).trim()) throw bad('missing_fields');
   if (!REPORT_CATEGORIES.includes(category)) throw bad('bad_category');
@@ -589,13 +597,7 @@ app.post('/api/reports', wrap(async (req, res) => {
 const GENDERS = ['male', 'female', 'other'];
 
 app.patch('/api/me', wrap(async (req, res) => {
-  const m = await (async () => {
-    const id = memberIdFromReq(req);
-    if (!id) throw bad('unauthorized', 401);
-    const row = await memberById(id);
-    if (!row) throw bad('unauthorized', 401);
-    return row;
-  })();
+  const m = await requireMember(req);
 
   const b = req.body || {};
   const name = b.name !== undefined ? String(b.name).trim() : undefined;
@@ -647,10 +649,7 @@ app.patch('/api/me', wrap(async (req, res) => {
 
 // Profile photo: base64 upload -> file on disk, old file removed.
 app.post('/api/me/avatar', wrap(async (req, res) => {
-  const id = memberIdFromReq(req);
-  if (!id) throw bad('unauthorized', 401);
-  const m = await memberById(id);
-  if (!m) throw bad('unauthorized', 401);
+  const m = await requireMember(req);
 
   const { buf, ext } = decodeImage(req.body?.image, MAX_AVATAR_BYTES);
   const fname = `${crypto.randomUUID()}.${ext}`;
@@ -699,10 +698,15 @@ app.get('/api/avatars/:memberId', wrap(async (req, res) => {
 // and approves → donation appears on the public list.
 
 async function requireMember(req) {
-  const memberId = memberIdFromReq(req);
-  if (!memberId) throw bad('unauthorized', 401);
-  const m = await memberById(memberId);
+  const token = tokenFromReq(req);
+  if (!token) throw bad('unauthorized', 401);
+  let payload;
+  try { payload = verifyToken(token); } catch { throw bad('unauthorized', 401); }
+  const m = await memberById(payload.sub);
   if (!m) throw bad('unauthorized', 401);
+  // Issued before this member's sessions were last revoked (logout, password
+  // change). A valid signature is not enough on its own.
+  if (tokenIsStale(payload, m)) throw bad('session_expired', 401);
   return m;
 }
 

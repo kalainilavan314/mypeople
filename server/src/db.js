@@ -47,13 +47,37 @@ function stripSslParams(url) {
 /**
  * Pool config shared by the API and the migration runner. TLS is used for every
  * non-local host and skipped for localhost, where a dev server normally has none.
+ *
+ * Pool size is the setting that matters most here, and the safe default is much
+ * smaller than it looks. The API runs as several instances — on a serverless
+ * host, one pool per warm instance — while the database enforces a single
+ * ceiling across all of them. Supabase's shared pooler allows 15 client
+ * connections in session mode, so two instances at the old default of 10 were
+ * already over it: ten concurrent sign-ups returned ten 500s with
+ * "max clients reached in session mode". A smaller per-instance pool trades a
+ * little queueing for not exceeding the ceiling, and queueing degrades far more
+ * gracefully than refusing connections.
+ *
+ * Raise PG_POOL_MAX once the database is co-located and its own max_connections
+ * is known — on a dedicated server, 20-30 is reasonable.
  */
+const DEFAULT_POOL_MAX = 4;
+
 export function poolConfig(overrides = {}) {
   const url = process.env.DATABASE_URL || '';
   const isLocal = /@(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(url);
   return {
     connectionString: isLocal ? url : stripSslParams(url),
-    max: Number(process.env.PG_POOL_MAX || 10),
+    max: Number(process.env.PG_POOL_MAX || DEFAULT_POOL_MAX),
+    // Release idle connections so a shared ceiling is not held by one instance,
+    // but not so eagerly that every request pays for a new TLS handshake. At
+    // 10s this was actively harmful against a database ~300ms away: connections
+    // were closed between requests and reconnecting then timed out under load.
+    // 30s outlives a burst while still returning connections between them.
+    idleTimeoutMillis: Number(process.env.PG_IDLE_TIMEOUT_MS || 30_000),
+    // Bound the wait for a connection so a saturated pool surfaces as a slow
+    // request rather than one that hangs until the client gives up.
+    connectionTimeoutMillis: Number(process.env.PG_CONNECT_TIMEOUT_MS || 20_000),
     ...(isLocal ? {} : { ssl: sslConfig() }),
     ...overrides,
   };
