@@ -18,14 +18,14 @@ import { HomeTopBar } from '../components/HomeTopBar';
 
 // Quick Access — existing destinations, each with a restrained pastel tile.
 const QUICK: { to: string; icon: IconName; en: string; ta: string; sub: string; subTa: string; bg: string; fg: string }[] = [
-  { to: '/area', icon: 'mapPin', en: 'My Area', ta: 'எனது பகுதி', sub: 'Local info & updates', subTa: 'உள்ளூர் தகவல்', bg: '#EEF5FF', fg: '#3B82F6' },
-  { to: '/reports', icon: 'report', en: 'Report Issue', ta: 'பிரச்சினை', sub: 'Raise community issues', subTa: 'சமூகப் பிரச்சினை', bg: '#FFF5E8', fg: '#B7791F' },
-  { to: '/events', icon: 'calendar', en: 'Events', ta: 'நிகழ்வுகள்', sub: 'Upcoming events', subTa: 'வரவிருப்பவை', bg: '#EDF4FF', fg: '#3B82F6' },
-  { to: '/skills', icon: 'handHeart', en: 'Volunteer', ta: 'தன்னார்வம்', sub: 'Contribute your skills', subTa: 'திறன்களை வழங்குக', bg: '#EAF7F2', fg: '#16835D' },
-  { to: '/card', icon: 'idCard', en: 'Membership', ta: 'உறுப்பினர்', sub: 'View your card', subTa: 'அட்டையைப் பார்', bg: '#F2F4F7', fg: '#14263D' },
-  { to: '/survey', icon: 'clipboard', en: 'Surveys', ta: 'கருத்துக்கணிப்பு', sub: 'Share your opinion', subTa: 'கருத்தைப் பகிர்', bg: '#EEF2F7', fg: '#315B82' },
-  { to: '/courses', icon: 'book', en: 'Learning', ta: 'கற்றல்', sub: 'Build new skills', subTa: 'திறன்களை வளர்', bg: '#EEF4FF', fg: '#3B82F6' },
-  { to: '/community', icon: 'users', en: 'Community', ta: 'சமூகம்', sub: 'Connect & participate', subTa: 'இணைந்து பங்கேற்க', bg: '#EAF7F2', fg: '#16835D' },
+  { to: '/area', icon: 'mapPin', en: 'My Area', ta: 'எனது பகுதி', sub: 'Local updates', subTa: 'உள்ளூர்', bg: '#EEF5FF', fg: '#3B82F6' },
+  { to: '/reports', icon: 'report', en: 'Report Issue', ta: 'பிரச்சினை', sub: 'Raise an issue', subTa: 'பதிவு செய்', bg: '#FFF5E8', fg: '#B7791F' },
+  { to: '/events', icon: 'calendar', en: 'Events', ta: 'நிகழ்வுகள்', sub: 'Upcoming', subTa: 'வரவிருப்பவை', bg: '#EDF4FF', fg: '#3B82F6' },
+  { to: '/skills', icon: 'handHeart', en: 'Volunteer', ta: 'தன்னார்வம்', sub: 'Your skills', subTa: 'திறன்கள்', bg: '#EAF7F2', fg: '#16835D' },
+  { to: '/card', icon: 'idCard', en: 'Membership', ta: 'உறுப்பினர்', sub: 'Your card', subTa: 'அட்டை', bg: '#F2F4F7', fg: '#14263D' },
+  { to: '/survey', icon: 'clipboard', en: 'Surveys', ta: 'கருத்து', sub: 'Your opinion', subTa: 'கருத்து', bg: '#EEF2F7', fg: '#315B82' },
+  { to: '/courses', icon: 'book', en: 'Learning', ta: 'கற்றல்', sub: 'New skills', subTa: 'கற்றல்', bg: '#EEF4FF', fg: '#3B82F6' },
+  { to: '/community', icon: 'users', en: 'Community', ta: 'சமூகம்', sub: 'Join in', subTa: 'இணைக', bg: '#EAF7F2', fg: '#16835D' },
 ];
 
 function verify(t: (en: string, ta: string) => string, s?: string): { label: string; good: boolean } {
@@ -96,28 +96,22 @@ export function Home() {
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginTop: 10 }}>
-            <span style={{ flex: 'none', width: 56, height: 56, borderRadius: 999, overflow: 'hidden', background: c.surfaceVariant, display: 'grid', placeItems: 'center' }}>
-              {me?.avatarUrl ? <img src={me.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <Icon name="user" size={26} color={c.ink4} />}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 10 }}>
+            <span style={{ flex: 'none', width: 46, height: 46, borderRadius: 999, overflow: 'hidden', background: c.surfaceVariant, display: 'grid', placeItems: 'center' }}>
+              {me?.avatarUrl ? <img src={me.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <Icon name="user" size={24} color={c.ink4} />}
             </span>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ font: `700 19px/1.2 ${font.head}`, color: c.ink0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{me?.fullName || '—'}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 4 }}>
-                <span style={{ font: `600 11px/1 ${font.ui}`, letterSpacing: '.04em', color: c.ink2 }}>{t('Member ID', 'உறுப்பினர் எண்')}</span>
+              <div style={{ font: `700 17px/1.2 ${font.head}`, color: c.ink0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{me?.fullName || '—'}</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 4 }}>
+                <span style={{ font: `600 10px/1 ${font.ui}`, letterSpacing: '.08em', textTransform: 'uppercase', color: c.ink3 }}>{t('Member ID', 'உறுப்பினர் எண்')}</span>
                 <span style={{ font: `700 13px/1 ${font.mono}`, color: c.ink0 }}>{me?.memberCode || '—'}</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 5, font: `500 13px/1.4 ${font.ta}`, color: c.ink2 }}>
-                <Icon name="mapPin" size={13} color={c.ink3} strokeWidth={2} />
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {[me?.districtName, me?.gsName].filter(Boolean).join(' · ') || '—'}
-                </span>
               </div>
             </div>
             <Link to="/card" aria-label={t('My QR', 'எனது QR')} style={{ flex: 'none', textDecoration: 'none', textAlign: 'center' }}>
-              <span style={{ display: 'block', background: '#fff', border: `1px solid ${c.hairline}`, borderRadius: 10, padding: 6 }}>
-                {cardTokenQ.data ? <QR value={cardTokenQ.data} size={54} /> : <span style={{ width: 54, height: 54, display: 'grid', placeItems: 'center' }}><Icon name="idCard" size={22} color={c.ink4} /></span>}
+              <span style={{ display: 'block', background: '#fff', border: `1px solid ${c.hairline}`, borderRadius: 9, padding: 5 }}>
+                {cardTokenQ.data ? <QR value={cardTokenQ.data} size={46} /> : <span style={{ width: 46, height: 46, display: 'grid', placeItems: 'center' }}><Icon name="idCard" size={20} color={c.ink4} /></span>}
               </span>
-              <span style={{ display: 'block', font: `600 10px/1 ${font.ui}`, color: c.ink3, marginTop: 4 }}>{t('My QR', 'எனது QR')}</span>
+              <span style={{ display: 'block', font: `600 9px/1 ${font.ui}`, color: c.ink3, marginTop: 3 }}>{t('My QR', 'எனது QR')}</span>
             </Link>
           </div>
 
