@@ -573,6 +573,10 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
 /* ---- Home empty state ---- */
 .home-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 28px 16px; background: var(--card); border: 1px solid var(--hairline); border-radius: var(--r-md); text-align: center; }
 
+/* ---- Events header icon buttons ---- */
+.ev-iconbtn { width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--hairline-2); background: var(--card); display: grid; place-items: center; cursor: pointer; flex: none; transition: background 160ms var(--ease); }
+.ev-iconbtn:active { background: var(--surface-variant); }
+
 /* ---- Membership ID card (fixed 680×428, scaled to fit via container units) ---- */
 .idcard-wrap { width: 100%; aspect-ratio: 680 / 428; overflow: hidden; border-radius: 18px; }
 .idcard { position: relative; width: 680px; height: 428px; transform-origin: top left; border-radius: 18px; overflow: hidden; background: #eef3f9; border: 1px solid #d7deea; box-shadow: 0 12px 32px -12px rgba(11,20,36,.55); }
