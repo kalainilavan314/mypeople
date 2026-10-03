@@ -35,6 +35,7 @@ export type IconName =
   | 'shield'
   | 'idCard'
   | 'download'
+  | 'sliders'
   | 'crown'
   | 'moon'
   | 'sun'
@@ -135,6 +136,16 @@ const paths: Record<IconName, React.ReactNode> = {
     </>
   ),
   bars: <path d="M5 20V11M12 20V5M19 20v-6" />,
+  // Filter control: three tracks with offset handles. 'bars' is a bar CHART
+  // and reads as statistics, not as a filter.
+  sliders: (
+    <>
+      <path d="M4 7h10M18 7h2M4 12h4M12 12h8M4 17h8M16 17h4" />
+      <circle cx="16" cy="7" r="2" />
+      <circle cx="10" cy="12" r="2" />
+      <circle cx="14" cy="17" r="2" />
+    </>
+  ),
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   sprout: (
     <>
