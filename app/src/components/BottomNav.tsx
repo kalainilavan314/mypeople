@@ -2,11 +2,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Icon, type IconName } from './Icon';
 import { useWorkspaceText } from './MemberWorkspace';
 
-// Primary navigation — five destinations (Home / Events / Card / Gallery /
-// Profile). Each tab owns a family of routes so deep pages keep a tab lit.
-// Other destinations (Community hub, Reports, Skills, Fund, Referral…) are
-// reached from within Home and Profile rather than a centre action button.
-type Tab = { to: string; label: string; icon: IconName; match: string[] };
+// Primary navigation — Option B (Home | Events | Center Report FAB | Community | Profile)
+type Tab = { to: string; label: string; icon: IconName; match: string[]; isFab?: boolean };
 
 export function BottomNav() {
   const { pathname } = useLocation();
@@ -21,20 +18,24 @@ export function BottomNav() {
       icon: 'calendar',
       match: ['/events'],
     },
-    { to: '/card', label: t('Card', 'அட்டை'), icon: 'idCard', match: ['/card', '/milestones'] },
+    {
+      to: '/reports',
+      label: t('Report', 'பதிவு'),
+      icon: 'plus',
+      match: ['/reports'],
+      isFab: true,
+    },
     {
       to: '/community',
       label: t('Community', 'சமூகம்'),
       icon: 'users',
-      // Community is the hub for local participation destinations.
-      match: ['/community', '/area', '/reports', '/fund', '/ideas', '/skills', '/courses', '/survey', '/gallery'],
+      match: ['/community', '/area', '/fund', '/ideas', '/skills', '/courses', '/survey', '/gallery'],
     },
     {
       to: '/profile',
       label: t('Profile', 'சுயவிவரம்'),
       icon: 'user',
-      // Profile owns the member's own identity and settings.
-      match: ['/profile', '/referral', '/privacy', '/language', '/notifications'],
+      match: ['/profile', '/card', '/milestones', '/referral', '/privacy', '/language', '/notifications'],
     },
   ];
 
@@ -45,6 +46,24 @@ export function BottomNav() {
     <nav className="work-nav" aria-label={t('Primary navigation', 'முக்கிய வழிசெலுத்தல்')}>
       {tabs.map((tab) => {
         const active = isActive(tab);
+        if (tab.isFab) {
+          return (
+            <button
+              key={tab.to}
+              type="button"
+              className="work-nav-fab-btn"
+              onClick={() => navigate(tab.to)}
+              aria-current={active ? 'page' : undefined}
+              aria-label={tab.label}
+            >
+              <span className="work-nav-fab">
+                <Icon name="plus" size={24} color="#ffffff" strokeWidth={2.8} />
+              </span>
+              <span className={`work-nav-fab-label ${t('en', 'ta') === 'ta' ? 'ta' : ''}`}>{tab.label}</span>
+            </button>
+          );
+        }
+
         return (
           <button
             key={tab.to}
@@ -53,7 +72,7 @@ export function BottomNav() {
             aria-current={active ? 'page' : undefined}
           >
             <span className="work-nav-icon">
-              <Icon name={tab.icon} size={24} />
+              <Icon name={tab.icon} size={22} strokeWidth={active ? 2.3 : 1.8} />
             </span>
             <span className={t('en', 'ta') === 'ta' ? 'ta' : undefined}>{tab.label}</span>
           </button>
