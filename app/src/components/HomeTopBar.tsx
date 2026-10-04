@@ -30,8 +30,9 @@ export function HomeTopBar() {
           <span className="topbar-dot" aria-hidden="true" />
         </button>
         <button type="button" className="topbar-lang" onClick={() => navigate('/language')} aria-label={t('Language', 'மொழி')}>
-          <Icon name="globe" size={17} />
-          <span>{i18n.language === 'ta' ? 'த' : 'EN'}</span>
+          <Icon name="globe" size={17} color="var(--ink-2)" />
+          <span style={{ fontWeight: 600 }}>{i18n.language === 'ta' ? 'த' : 'EN'}</span>
+          <Icon name="chevron" size={13} color="var(--ink-3)" style={{ transform: 'rotate(90deg)' }} />
         </button>
       </div>
     </header>
