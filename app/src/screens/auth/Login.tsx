@@ -25,18 +25,28 @@ export function Login() {
   const doLogin = async (useNic: string, usePassword: string) => {
     setTouched(true);
     setError(null);
-    if (!isValidNic(useNic)) {
+    const cleanNic = useNic.trim().toUpperCase();
+    if (!isValidNic(cleanNic)) {
       setError(t('auth.errNic'));
       return;
     }
     setBusy(true);
     try {
-      await authApi.login(useNic, usePassword);
+      await authApi.login(cleanNic, usePassword);
       login();
       navigate('/', { replace: true });
     } catch (err) {
+      console.error('[Login Error]', err);
       const code = err instanceof ApiError ? err.code : 'network';
-      setError(code === 'network' ? t('auth.errNetwork') : t('auth.errCredentials'));
+      setError(
+        code === 'network'
+          ? t('auth.errNetwork')
+          : code === 'too_many_attempts'
+            ? t('auth.errTooMany')
+            : code === 'invalid_credentials'
+              ? t('auth.errCredentials')
+              : t('auth.errServer'),
+      );
     } finally {
       setBusy(false);
     }
