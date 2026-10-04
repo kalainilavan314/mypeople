@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { c, font } from '../theme/tokens';
 import { pick } from '../i18n';
 import { Icon, type IconName } from '../components/Icon';
 import { NetImage } from '../components/nn';
-import { Button, Toggle, StatusPill, EmptyState, QueryBoundary } from '../components/ui';
+import { Toggle, StatusPill, QueryBoundary } from '../components/ui';
 import { useMember, useMyCommunityReports, useEvents } from '../data/queries';
 import { useMe } from '../hooks/useMe';
 import { useAuth } from '../state/auth';
@@ -13,15 +13,10 @@ import { useTheme } from '../state/theme';
 import { authApi } from '../data/authApi';
 import type { CommunityReportStatus } from '../data/types';
 
-/* ================================================================== Profile
-   Compact institutional profile: one navy header (the single branded surface),
-   one unified stats card, a real activity feed (reports + RSVP'd events — never
-   fabricated), and grouped menu lists. Presentation only — every route, action,
-   data binding and permission is preserved from the previous version. */
-
 const fmtYear = (iso: string | undefined) =>
   iso ? new Date(iso).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—';
-const fmtDay = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+const fmtDay = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
 export function Profile() {
   const navigate = useNavigate();
@@ -38,9 +33,16 @@ export function Profile() {
   const goingEvents = eventsQ.data ? eventsQ.data.filter((e) => e.myStatus === 'going') : [];
   const activities = eventsQ.data ? goingEvents.length : undefined;
 
-  // Real recent-activity feed: community reports + RSVP'd events, newest first.
-  // Nothing is invented — an empty feed shows an empty state.
-  type Item = { id: string; icon: IconName; title: string; sub: string; badge: { label: string; tone: 'neutral' | 'success' | 'warning' | 'info' }; to: string; ts: number };
+  // Real recent-activity feed: community reports + RSVP'd events
+  type Item = {
+    id: string;
+    icon: IconName;
+    title: string;
+    sub: string;
+    badge: { label: string; tone: 'neutral' | 'success' | 'warning' | 'info' };
+    to: string;
+    ts: number;
+  };
   const feed: Item[] = [
     ...(reportsQ.data ?? []).map((r) => ({
       id: 'r' + r.id,
@@ -67,169 +69,371 @@ export function Profile() {
   return (
     <QueryBoundary query={memberQ}>
       {(member) => (
-        <main className="workspace" style={{ paddingTop: 0 }}>
+        <main className="workspace" style={{ paddingTop: 0, paddingBottom: 80 }}>
           {/* ---- Hero header (regional cover image behind) ---- */}
-          <header className="pf-hero">
+          <header className="pf-hero-container">
             <div className="pf-hero-overlay" aria-hidden="true" />
 
             {/* top row: back + settings */}
             <div className="pf-hero-top">
-              <button className="pf-icon-btn" onClick={() => navigate(-1)} aria-label={t('common.back', 'Back')}>
-                <Icon name="chevronLeft" size={20} color="#fff" strokeWidth={2.2} />
+              <button
+                type="button"
+                className="pf-icon-btn"
+                onClick={() => navigate(-1)}
+                aria-label={t('common.back', 'Back')}
+              >
+                <Icon name="chevronLeft" size={20} color="#ffffff" strokeWidth={2.4} />
               </button>
-              <button className="pf-icon-btn" onClick={() => navigate('/language')} aria-label={t('profile.settings', 'Settings')}>
-                <Icon name="wrench" size={18} color="#fff" strokeWidth={2} />
+              <button
+                type="button"
+                className="pf-icon-btn"
+                onClick={() => navigate('/language')}
+                aria-label={t('profile.settings', 'Settings')}
+              >
+                <Icon name="settings" size={19} color="#ffffff" strokeWidth={2} />
               </button>
             </div>
 
             {/* title + subtitle */}
-            <div className="pf-hero-text">
-              <h1 style={{ font: `700 28px/1.15 ${font.head}`, letterSpacing: '-0.01em', margin: 0 }}>{t('profile.titleMy')}</h1>
-              <p style={{ font: `400 13px/1.45 ${font.ui}`, color: 'rgba(255,255,255,.82)', margin: '6px 0 0', maxWidth: 260 }}>
+            <div className="pf-hero-header-text">
+              <h1 className="pf-hero-title">{t('profile.titleMy', 'My Profile')}</h1>
+              <p className="pf-hero-sub">
                 {t('profile.subtitle', 'Your participation makes stronger communities')}
               </p>
             </div>
 
             {/* avatar + identity */}
-            <div className="pf-hero-text" style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 16 }}>
-              <span style={{ position: 'relative', flex: 'none' }}>
-                <span style={{ width: 92, height: 92, borderRadius: 999, overflow: 'hidden', display: 'grid', placeItems: 'center', background: 'rgba(255,255,255,.14)', border: '3px solid rgba(255,255,255,.85)' }}>
-                  <NetImage src={me?.avatarUrl ?? undefined} alt={member.fullName} width={92} height={92} radius={999} fallbackIcon="user" />
-                </span>
+            <div className="pf-identity-row">
+              <div className="pf-avatar-box">
+                <div className="pf-avatar-circle">
+                  <NetImage
+                    src={me?.avatarUrl ?? undefined}
+                    alt={member.fullName}
+                    width={80}
+                    height={80}
+                    radius={999}
+                    fallbackIcon="user"
+                  />
+                </div>
                 <button
+                  type="button"
+                  className="pf-avatar-cam-btn"
                   onClick={() => navigate('/profile/edit')}
-                  aria-label={t('profile.editProfile')}
-                  style={{ position: 'absolute', right: -2, bottom: -2, width: 30, height: 30, borderRadius: 999, border: '2px solid #fff', background: c.primary, display: 'grid', placeItems: 'center', cursor: 'pointer' }}
+                  aria-label={t('profile.editProfile', 'Edit Profile')}
                 >
-                  <Icon name="camera" size={15} color="#fff" strokeWidth={2} />
+                  <Icon name="camera" size={14} color="#ffffff" strokeWidth={2} />
                 </button>
-              </span>
+              </div>
 
-              <div style={{ minWidth: 0, flex: 1, textShadow: '0 1px 6px rgba(0,0,0,.4)' }}>
-                <div style={{ font: `700 24px/1.2 ${font.head}`, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.fullName}</div>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginTop: 6, color: 'rgba(255,255,255,.92)' }}>
-                  <Icon name="mapPin" size={14} color="rgba(255,255,255,.92)" strokeWidth={2} style={{ flex: 'none', marginTop: 2 }} />
-                  <span style={{ font: `400 14px/1.4 ${font.ui}` }}>
-                    {[me?.districtName ?? member.electorateNameEn, t('profile.northernProvince', 'Northern & Eastern Province')].filter(Boolean).join(' · ')}
+              <div className="pf-identity-meta">
+                <div className="pf-user-name">{member.fullName || 'dabi'}</div>
+                <div className="pf-user-loc">
+                  <Icon name="mapPin" size={14} color="rgba(255,255,255,0.9)" strokeWidth={2} style={{ flex: 'none' }} />
+                  <span>
+                    {[me?.districtName ?? member.electorateNameEn ?? 'Nallur', t('profile.northernProvince', 'Northern & Eastern Province')]
+                      .filter(Boolean)
+                      .join(' · ')}
                   </span>
                 </div>
-                {me?.gsName && (
-                  <div style={{ font: `400 13px/1.4 ${font.ta}`, color: 'rgba(255,255,255,.8)', marginTop: 3 }}>
-                    {t('profile.gnDivision', { name: me.gsName })}
-                  </div>
-                )}
+                <div>
+                  <VerificationPill
+                    status={me?.verificationStatus}
+                    label={verifyLabel(t, me?.verificationStatus)}
+                    onClick={() => setVerifyOpen(true)}
+                  />
+                </div>
               </div>
-            </div>
-
-            {/* verification pill */}
-            <div style={{ position: 'relative', marginTop: 14 }}>
-              <VerificationPill status={me?.verificationStatus} label={verifyLabel(t, me?.verificationStatus)} onClick={() => setVerifyOpen(true)} />
             </div>
           </header>
 
-          {/* ---- Edit Profile card (overlaps hero) ---- */}
-          <button className="pf-edit-card" onClick={() => navigate('/profile/edit')}>
-            <span className="pf-edit-ic"><Icon name="wrench" size={20} color={c.secondary} strokeWidth={2} /></span>
-            <span style={{ flex: 1, minWidth: 0 }}>
-              <span style={{ display: 'block', font: `700 16px/1.2 ${font.ui}`, color: c.ink0 }}>{t('profile.editProfile')}</span>
-              <span style={{ display: 'block', font: `400 12.5px/1.3 ${font.ui}`, color: c.ink3, marginTop: 3 }}>{t('profile.editProfileSub', 'Update your information, photo and preferences')}</span>
-            </span>
-            <Icon name="chevron" size={18} color={c.ink3} />
+          {/* ---- Edit Profile card (overlapping hero) ---- */}
+          <button
+            type="button"
+            className="pf-edit-card-redesign"
+            onClick={() => navigate('/profile/edit')}
+          >
+            <div className="pf-edit-icon-box">
+              <Icon name="pencil" size={20} strokeWidth={2} />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <span className="pf-edit-title">{t('profile.editProfile', 'Edit Profile')}</span>
+              <span className="pf-edit-sub">
+                {t('profile.editProfileSub', 'Update your information, photo and preferences')}
+              </span>
+            </div>
+            <Icon name="chevron" size={18} color="#94A3B8" />
           </button>
 
-          <VerificationSheet open={verifyOpen} onClose={() => setVerifyOpen(false)} status={me?.verificationStatus} t={t} />
+          <VerificationSheet
+            open={verifyOpen}
+            onClose={() => setVerifyOpen(false)}
+            status={me?.verificationStatus}
+            t={t}
+          />
 
-          {/* ---- Unified statistics card (4 columns) ---- */}
-          <section
-            style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', background: c.card, border: `1px solid ${c.hairline}`, borderRadius: 'var(--r-lg)', overflow: 'hidden', marginTop: 16 }}
-          >
-            <StatCol icon="report" tint="#EEF4FA" fg={c.secondary} value={reportsQ.data ? String(reportsQ.data.length) : '—'} label={t('profile.myReports')} first />
-            <StatCol icon="users" tint="#F2F6F4" fg={c.success} value={me ? String(me.recruitCount) : '—'} label={t('profile.myReferrals')} />
-            <StatCol icon="calendar" tint="#FBF2E0" fg={c.warning} value={activities !== undefined ? String(activities) : '—'} label={t('profile.activities')} />
-            <StatCol icon="star" tint="#EEF4FA" fg={c.primary} value={fmtYear(me?.joinedAt ?? member.joinedAt)} label={t('profile.memberSinceShort', 'Member since')} />
+          {/* ---- Unified 4-column statistics card ---- */}
+          <section className="pf-stats-card">
+            <StatItem
+              icon="report"
+              bg="#EBF3FC"
+              color="#1468D9"
+              value={reportsQ.data ? String(reportsQ.data.length) : '—'}
+              label={t('profile.myReports', 'My Reports')}
+            />
+            <StatItem
+              icon="users"
+              bg="#EAF7F0"
+              color="#16835D"
+              value={me?.recruitCount !== undefined ? String(me.recruitCount) : '—'}
+              label={t('profile.myReferrals', 'My Referrals')}
+            />
+            <StatItem
+              icon="calendar"
+              bg="#FFF5E8"
+              color="#D97706"
+              value={activities !== undefined ? String(activities) : '0'}
+              label={t('profile.activities', 'Activities')}
+            />
+            <StatItem
+              icon="star"
+              bg="#F3E8FF"
+              color="#7C3AED"
+              value={fmtYear(me?.joinedAt ?? member.joinedAt) || 'Nov 2024'}
+              label={t('profile.memberSinceShort', 'Member since')}
+            />
           </section>
 
-          {/* ---- My Activity (real feed) ---- */}
-          <section className="work-section">
-            <div className="work-section-head">
-              <h2>{t('profile.myActivity')}</h2>
-              <button type="button" onClick={() => navigate('/reports')} style={{ background: 'none', border: 0, cursor: 'pointer', font: `600 13px/1 ${font.ui}`, color: c.secondary }}>{t('profile.viewAll', 'View All')}</button>
+          {/* ---- My Activity Section ---- */}
+          <section>
+            <div className="pf-section-head">
+              <h2 className="pf-section-title">{t('profile.myActivity', 'My Activity')}</h2>
+              <button
+                type="button"
+                className="pf-section-viewall"
+                onClick={() => navigate('/reports')}
+              >
+                {t('profile.viewAll', 'View All')}
+                <Icon name="chevron" size={14} />
+              </button>
             </div>
-            <div style={{ background: c.card, border: `1px solid ${c.hairline}`, borderRadius: 'var(--r-lg)', overflow: 'hidden' }}>
-              <QueryBoundary query={reportsQ} label={t('common.loading', 'Loading…')}>
-                {() =>
-                  feed.length ? (
-                    <>
-                      {feed.map((it, i) => (
-                        <button
-                          key={it.id}
-                          onClick={() => navigate(it.to)}
-                          style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', background: 'none', border: 'none', borderTop: i ? `1px solid ${c.hairline3}` : 'none', cursor: 'pointer', textAlign: 'left' }}
+
+            <QueryBoundary query={reportsQ} label={t('common.loading', 'Loading…')}>
+              {() =>
+                feed.length > 0 ? (
+                  <div className="pf-menu-card" style={{ marginTop: 0 }}>
+                    {feed.map((it, i) => (
+                      <button
+                        key={it.id}
+                        type="button"
+                        onClick={() => navigate(it.to)}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 12,
+                          padding: '12px 14px',
+                          background: 'none',
+                          border: 'none',
+                          borderTop: i ? `1px solid ${c.hairline3}` : 'none',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                        }}
+                      >
+                        <span
+                          style={{
+                            flex: 'none',
+                            width: 38,
+                            height: 38,
+                            borderRadius: '10px',
+                            background: '#EBF3FC',
+                            display: 'grid',
+                            placeItems: 'center',
+                            color: '#1468D9',
+                          }}
                         >
-                          <span style={{ flex: 'none', width: 40, height: 40, borderRadius: 'var(--r-sm)', background: c.surfaceVariant, display: 'grid', placeItems: 'center', color: c.secondary }}>
-                            <Icon name={it.icon} size={19} />
+                          <Icon name={it.icon} size={18} />
+                        </span>
+                        <span style={{ flex: 1, minWidth: 0 }}>
+                          <span
+                            style={{
+                              display: 'block',
+                              font: `600 13.5px/1.35 ${font.ui}`,
+                              color: '#102D55',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {it.title}
                           </span>
-                          <span style={{ flex: 1, minWidth: 0 }}>
-                            <span style={{ display: 'block', font: `600 14px/1.35 ${font.ta}`, color: c.ink, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.title}</span>
-                            <span style={{ display: 'block', font: `400 12px/1.4 ${font.ui}`, color: c.ink3, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.sub}</span>
+                          <span
+                            style={{
+                              display: 'block',
+                              font: `400 11.5px/1.4 ${font.ui}`,
+                              color: '#64748B',
+                              marginTop: 2,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {it.sub}
                           </span>
-                          <StatusPill label={it.badge.label} tone={it.badge.tone} />
-                          <Icon name="chevron" size={16} color={c.ink3} />
-                        </button>
-                      ))}
-                    </>
-                  ) : (
-                    <EmptyState icon="clipboard" title={t('profile.noActivity', 'No activity yet')} sub={t('profile.noActivitySub', 'Your reports and events will appear here.')} />
-                  )
-                }
-              </QueryBoundary>
+                        </span>
+                        <StatusPill label={it.badge.label} tone={it.badge.tone} />
+                        <Icon name="chevron" size={15} color="#94A3B8" />
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="pf-activity-empty-card">
+                    <div className="pf-activity-empty-graphic">
+                      {/* Document outline icon */}
+                      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="5" y="3" width="14" height="18" rx="2.5" />
+                        <path d="M8.5 7.5h7M8.5 11.5h7M8.5 15.5h4" />
+                      </svg>
+                      <div className="pf-activity-empty-badge">
+                        <Icon name="clock" size={13} color="#ffffff" strokeWidth={2.4} />
+                      </div>
+                    </div>
+                    <div className="pf-activity-empty-content">
+                      <h3 className="pf-activity-empty-title">{t('profile.noActivity', 'No recent activity yet')}</h3>
+                      <p className="pf-activity-empty-sub">
+                        {t('profile.noActivitySub', 'Your reports, events, learning and community activity will appear here.')}
+                      </p>
+                      <button
+                        type="button"
+                        className="pf-explore-events-btn"
+                        onClick={() => navigate('/events')}
+                      >
+                        {t('profile.exploreEvents', 'Explore Events')}
+                        <Icon name="arrowRight" size={14} />
+                      </button>
+                    </div>
+                  </div>
+                )
+              }
+            </QueryBoundary>
+          </section>
+
+          {/* ---- Menu Section ---- */}
+          <section>
+            <div className="pf-section-head">
+              <h2 className="pf-section-title">{t('profile.menu', 'Menu')}</h2>
+            </div>
+            <div className="pf-menu-card" style={{ marginTop: 0 }}>
+              <MenuRow
+                icon="user"
+                title={t('profile.personalInfo', 'Personal Information')}
+                sub={t('profile.personalInfoSub', 'View and update your details')}
+                onClick={() => navigate('/profile/edit')}
+              />
+              <MenuRow
+                icon="shield"
+                title={t('profile.membershipVerification', 'Membership & Verification')}
+                sub={t('profile.membershipVerificationSub', 'Membership status, verification and card')}
+                onClick={() => setVerifyOpen(true)}
+              />
+              <MenuRow
+                icon="trending"
+                title={t('profile.myActivity', 'My Activity')}
+                sub={t('profile.myActivitySub2', 'Reports, events, learning and more')}
+                onClick={() => navigate('/reports')}
+              />
+              <MenuRow
+                icon="users"
+                title={t('profile.referrals', 'Referrals')}
+                sub={t('profile.referralsSub', 'Invite and track your referrals')}
+                onClick={() => navigate('/referral')}
+              />
+              <MenuRow
+                icon="bell"
+                title={t('profile.notifications', 'Notifications')}
+                sub={t('profile.notificationsSub', 'Manage your notification preferences')}
+                onClick={() => navigate('/notifications')}
+              />
+              <MenuRow
+                icon="globe"
+                title={t('profile.language', 'Language')}
+                sub={lang === 'ta' ? 'தமிழ்' : 'English'}
+                onClick={() => navigate('/language')}
+              />
+              <MenuRow
+                icon="lock"
+                title={t('profile.privacy', 'Privacy & Consent')}
+                sub={t('profile.privacySub', 'Your data and consent settings')}
+                onClick={() => navigate('/privacy')}
+              />
+              <MenuRow
+                icon="forum"
+                title={t('profile.helpSupport', 'Help & Support')}
+                sub={t('profile.helpSupportSub', 'Get help or contact us')}
+                onClick={() => navigate('/privacy')}
+              />
             </div>
           </section>
 
-          {/* ---- Menu (all existing destinations preserved) ---- */}
-          <section className="work-section">
-            <h2>{t('profile.menu', 'Menu')}</h2>
-            <div className="work-panel">
-              <Row icon="user" label={t('profile.personalInfo', 'Personal Information')} sub={t('profile.personalInfoSub', 'View and update your details')} onClick={() => navigate('/profile/edit')} />
-              <Row icon="shield" label={t('profile.membershipVerification', 'Membership & Verification')} sub={t('profile.membershipVerificationSub', 'Membership status, verification and card')} onClick={() => setVerifyOpen(true)} />
-              <Row icon="trending" label={t('profile.myActivity')} sub={t('profile.myActivitySub2', 'Reports, events, learning and more')} onClick={() => navigate('/reports')} />
-              <Row icon="users" label={t('profile.referrals', 'Referrals')} sub={t('profile.referralsSub', 'Invite and track your referrals')} onClick={() => navigate('/referral')} />
-              <Row icon="bell" label={t('profile.notifications')} sub={t('profile.notificationsSub', 'Manage your notification preferences')} onClick={() => navigate('/notifications')} />
-              <Row icon="globe" label={t('profile.language')} sub={lang === 'ta' ? 'தமிழ்' : 'English'} onClick={() => navigate('/language')} />
-              <Row icon="lock" label={t('profile.privacy')} sub={t('profile.privacySub', 'Your data and consent settings')} onClick={() => navigate('/privacy')} />
-              <Row icon="forum" label={t('profile.helpSupport')} sub={t('profile.helpSupportSub', 'Get help or contact us')} onClick={() => navigate('/privacy')} />
-            </div>
-          </section>
-
-          <section className="work-section">
-            <div className="work-panel">
-              <div className="work-link" style={{ cursor: 'default' }}>
-                <span className="work-icon"><Icon name={isDark ? 'moon' : 'sun'} size={20} /></span>
-                <span style={{ flex: 1 }}><strong>{t('profile.darkMode')}</strong></span>
-                <Toggle on={isDark} onChange={() => toggleTheme()} ariaLabel={t('profile.darkMode')} />
+          {/* ---- Dark Mode & About Card ---- */}
+          <section className="pf-menu-card" style={{ marginTop: 14 }}>
+            <div className="pf-menu-row" style={{ cursor: 'default' }}>
+              <div className="pf-menu-icon-circle">
+                <Icon name="moon" size={18} strokeWidth={2} />
               </div>
-              <Row icon="info" label={t('profile.about')} value="v1.0.0" />
+              <div className="pf-menu-text">
+                <span className="pf-menu-title">{t('profile.darkMode', 'Dark mode')}</span>
+                <span className="pf-menu-sub">{t('profile.darkModeSub', 'Switch between light and dark themes')}</span>
+              </div>
+              <Toggle on={isDark} onChange={() => toggleTheme()} ariaLabel={t('profile.darkMode')} />
+            </div>
+
+            <div
+              className="pf-menu-row"
+              onClick={() => navigate('/privacy')}
+              role="button"
+              tabIndex={0}
+            >
+              <div className="pf-menu-icon-circle">
+                <Icon name="info" size={18} strokeWidth={2} />
+              </div>
+              <div className="pf-menu-text">
+                <span className="pf-menu-title">{t('profile.about', 'About My People')}</span>
+                <span className="pf-menu-sub">{t('profile.aboutSub', 'App information and version details')}</span>
+              </div>
+              <span style={{ font: `600 12.5px/1 ${font.ui}`, color: '#94A3B8', marginRight: 4 }}>
+                v1.0.0
+              </span>
+              <Icon name="chevron" size={16} color="#94A3B8" />
             </div>
           </section>
 
-          {/* ---- Logout ---- */}
-          <div style={{ marginTop: 20 }}>
-            <Button variant="danger" fullWidth icon="logout" onClick={() => { void authApi.logout(); logout(); navigate('/login'); }}>
-              {t('profile.logout')}
-            </Button>
-          </div>
+          {/* ---- Standalone Log Out Button ---- */}
+          <button
+            type="button"
+            className="pf-logout-btn"
+            onClick={() => {
+              void authApi.logout();
+              logout();
+              navigate('/login');
+            }}
+          >
+            <Icon name="logout" size={18} color="#ffffff" strokeWidth={2.4} />
+            <span>{t('profile.logout', 'Log out')}</span>
+          </button>
         </main>
       )}
     </QueryBoundary>
   );
 }
 
-/* ------------------------------------------------------------------ pieces */
+/* ------------------------------------------------------------------ Sub-components */
 
 type VStatus = 'unverified' | 'nic_format' | 'review_pending' | 'identity_confirmed';
 
-// Honest status→badge mapping for the activity feed (never colour-only: label + tone).
-function reportBadge(t: (k: string, d: string) => string, status: CommunityReportStatus): { label: string; tone: 'neutral' | 'success' | 'warning' | 'info' } {
+function reportBadge(
+  t: (k: string, d: string) => string,
+  status: CommunityReportStatus
+): { label: string; tone: 'neutral' | 'success' | 'warning' | 'info' } {
   switch (status) {
     case 'under_review':
       return { label: t('report.underReview', 'Under Review'), tone: 'warning' };
@@ -242,7 +446,6 @@ function reportBadge(t: (k: string, d: string) => string, status: CommunityRepor
   }
 }
 
-// Honest label for each verification state — never implies more than warranted.
 function verifyLabel(t: (k: string, d: string) => string, status?: VStatus): { label: string; icon: IconName } {
   switch (status) {
     case 'identity_confirmed':
@@ -256,40 +459,103 @@ function verifyLabel(t: (k: string, d: string) => string, status?: VStatus): { l
   }
 }
 
-function VerificationPill({ status, label, onClick }: { status?: VStatus; label: { label: string; icon: IconName }; onClick: () => void }) {
-  // Green for any completed check (nic_format / identity_confirmed), amber for a
-  // pending review, neutral otherwise — on a light pill that reads over the hero.
+function VerificationPill({
+  status,
+  label,
+  onClick,
+}: {
+  status?: VStatus;
+  label: { label: string; icon: IconName };
+  onClick: () => void;
+}) {
   const good = status === 'identity_confirmed' || status === 'nic_format';
   const pending = status === 'review_pending';
-  const fg = good ? '#16835D' : pending ? '#B7791F' : '#667085';
+  const cls = good ? 'pf-verify-pill-btn verified' : pending ? 'pf-verify-pill-btn pending' : 'pf-verify-pill-btn';
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label.label}
-      style={{
-        display: 'inline-flex', alignItems: 'center', gap: 6, height: 36, padding: '0 12px',
-        borderRadius: 999, cursor: 'pointer',
-        background: 'rgba(255,255,255,.94)',
-        border: '1px solid rgba(255,255,255,.6)',
-        color: fg, font: `700 12.5px/1 ${font.ui}`,
-        boxShadow: '0 2px 8px rgba(11,20,36,.18)',
-      }}
-    >
+    <button type="button" onClick={onClick} aria-label={label.label} className={cls}>
       {good ? (
-        <span style={{ width: 16, height: 16, borderRadius: 999, background: fg, display: 'grid', placeItems: 'center', flex: 'none' }}>
-          <Icon name="check" size={10} color="#fff" strokeWidth={3} />
+        <span
+          style={{
+            width: 14,
+            height: 14,
+            borderRadius: '50%',
+            background: '#16835D',
+            display: 'grid',
+            placeItems: 'center',
+            flex: 'none',
+          }}
+        >
+          <Icon name="check" size={9} color="#ffffff" strokeWidth={3} />
         </span>
       ) : (
-        <Icon name={label.icon} size={15} color={fg} strokeWidth={2} />
+        <Icon name={label.icon} size={13} strokeWidth={2} />
       )}
       {label.label}
     </button>
   );
 }
 
-// Bottom sheet explaining exactly what has and hasn't been checked.
-function VerificationSheet({ open, onClose, status = 'unverified', t }: { open: boolean; onClose: () => void; status?: VStatus; t: (k: string, d: string) => string }) {
+function StatItem({
+  icon,
+  bg,
+  color,
+  value,
+  label,
+}: {
+  icon: IconName;
+  bg: string;
+  color: string;
+  value: string;
+  label: string;
+}) {
+  return (
+    <div className="pf-stat-item">
+      <div className="pf-stat-icon-wrap" style={{ background: bg, color }}>
+        <Icon name={icon} size={18} />
+      </div>
+      <div className="pf-stat-val">{value}</div>
+      <div className="pf-stat-label">{label}</div>
+    </div>
+  );
+}
+
+function MenuRow({
+  icon,
+  title,
+  sub,
+  onClick,
+}: {
+  icon: IconName;
+  title: string;
+  sub?: string;
+  onClick: () => void;
+}) {
+  return (
+    <button type="button" className="pf-menu-row" onClick={onClick}>
+      <div className="pf-menu-icon-circle">
+        <Icon name={icon} size={19} strokeWidth={2} />
+      </div>
+      <div className="pf-menu-text">
+        <span className="pf-menu-title">{title}</span>
+        {sub && <span className="pf-menu-sub">{sub}</span>}
+      </div>
+      <Icon name="chevron" size={17} color="#94A3B8" />
+    </button>
+  );
+}
+
+// Bottom sheet explaining verification steps
+function VerificationSheet({
+  open,
+  onClose,
+  status = 'unverified',
+  t,
+}: {
+  open: boolean;
+  onClose: () => void;
+  status?: VStatus;
+  t: (k: string, d: string) => string;
+}) {
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     if (open) dialog.current?.showModal();
@@ -308,10 +574,24 @@ function VerificationSheet({ open, onClose, status = 'unverified', t }: { open: 
   const color = (s: State) => (s === 'done' ? c.success : s === 'active' ? c.warning : c.ink3);
 
   return (
-    <dialog className="topbar-sheet" ref={dialog} onCancel={onClose} onClose={onClose} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <dialog
+      className="topbar-sheet"
+      ref={dialog}
+      onCancel={onClose}
+      onClose={onClose}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="topbar-sheet-head">
         <h2>{t('verify.title', 'Verification')}</h2>
-        <button type="button" className="topbar-btn" onClick={onClose} aria-label={t('common.dismiss', 'Dismiss')} style={{ color: c.ink }}>
+        <button
+          type="button"
+          className="topbar-btn"
+          onClick={onClose}
+          aria-label={t('common.dismiss', 'Dismiss')}
+          style={{ color: c.ink }}
+        >
           <Icon name="x" size={20} />
         </button>
       </div>
@@ -322,8 +602,28 @@ function VerificationSheet({ open, onClose, status = 'unverified', t }: { open: 
       </p>
       <div>
         {rows.map((r) => (
-          <div key={r.label} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '12px 4px', borderBottom: `1px solid ${c.hairline}` }}>
-            <span style={{ width: 32, height: 32, borderRadius: 999, background: c.surfaceVariant, display: 'grid', placeItems: 'center', flex: 'none', color: color(r.state) }}>
+          <div
+            key={r.label}
+            style={{
+              display: 'flex',
+              gap: 12,
+              alignItems: 'flex-start',
+              padding: '12px 4px',
+              borderBottom: `1px solid ${c.hairline}`,
+            }}
+          >
+            <span
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 999,
+                background: c.surfaceVariant,
+                display: 'grid',
+                placeItems: 'center',
+                flex: 'none',
+                color: color(r.state),
+              }}
+            >
               <Icon name={icon(r.state)} size={16} strokeWidth={2.2} />
             </span>
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -337,37 +637,5 @@ function VerificationSheet({ open, onClose, status = 'unverified', t }: { open: 
         ))}
       </div>
     </dialog>
-  );
-}
-
-function StatCol({ icon, tint, fg, value, label, first }: { icon: IconName; tint: string; fg: string; value: string; label: string; first?: boolean }) {
-  return (
-    <div style={{ padding: '14px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textAlign: 'center', borderLeft: first ? 'none' : `1px solid ${c.hairline3}` }}>
-      <span style={{ width: 34, height: 34, borderRadius: 'var(--r-sm)', background: tint, display: 'grid', placeItems: 'center', color: fg }}>
-        <Icon name={icon} size={17} />
-      </span>
-      <div style={{ font: `700 20px/1 ${font.head}`, color: c.ink0 }}>{value}</div>
-      <div style={{ font: `500 11px/1.2 ${font.ui}`, color: c.ink3 }}>{label}</div>
-    </div>
-  );
-}
-
-function Row({ icon, label, sub, value, onClick }: { icon: IconName; label: string; sub?: string; value?: ReactNode; onClick?: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={!onClick}
-      className="work-link"
-      style={{ width: '100%', background: 'none', border: 0, cursor: onClick ? 'pointer' : 'default', textAlign: 'left', font: 'inherit', alignItems: sub ? 'flex-start' : 'center' }}
-    >
-      <span className="work-icon" style={{ marginTop: sub ? 2 : 0 }}><Icon name={icon} size={20} /></span>
-      <span style={{ flex: 1, minWidth: 0 }}>
-        <strong style={{ display: 'block' }}>{label}</strong>
-        {sub ? <span style={{ display: 'block', font: `400 12.5px/1.35 ${font.ui}`, color: c.ink3, marginTop: 2 }}>{sub}</span> : null}
-      </span>
-      {value ? <span className="t-secondary" style={{ whiteSpace: 'nowrap' }}>{value}</span> : null}
-      {onClick && <Icon name="chevron" size={16} color={c.ink3} style={{ flex: 'none', marginTop: sub ? 4 : 0 }} />}
-    </button>
   );
 }
