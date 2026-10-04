@@ -53,7 +53,7 @@ export default defineConfig({
     // Proxy API calls to the membership backend so the same origin (incl. the
     // public tunnel) serves both the app and the API.
     proxy: {
-      '/api': { target: 'http://localhost:8787', changeOrigin: true },
+      '/api': { target: 'http://localhost:8787', changeOrigin: false },
     },
   },
 });
