@@ -1,304 +1,81 @@
 /* ===========================================================================
-   என் மக்கள் · My People — design system.
-
-   The palette is sampled from the organisation's own logo rather than chosen:
-   the mark is 12% deep navy #043074 by area, with the five figures supplying
-   blue #017DFC, red, orange, yellow-green and green. Navy carries the interface;
-   the figure colours are used only as category accents, which is what keeps a
-   five-colour logo from turning into a five-colour UI.
-
-   Surfaces are white and near-white with a faint cool cast, so the navy reads as
-   deliberate rather than heavy. Light is the primary theme (civic app, outdoor
-   use); dark mirrors it on charcoal with a lifted blue accent, because #043074
-   is far too dark to sit on a dark surface.
-
-   Legacy variable names are kept and re-pointed so every existing screen
-   re-themes without edits:
-     --maroon*  = primary navy accent      --gold   = amber highlight
-     --page/--card = surfaces              --ink*   = text ramp
-     --hairline* = outlineVariant / outline
-=========================================================================== */
-:root {
-  /* --- Primary: logo navy ------------------------------------------------ */
-  --primary: #043074;
-  --primary-light: #0a4ba8;
-  --primary-mid: #032b68;
-  --primary-container: #e4edfb;
-  --on-primary-container: #032b68;
-  --on-primary: #ffffff;
-
-  /* Legacy accent aliases (the whole app reads these) */
-  --maroon: #043074;
-  --maroon-pressed: #032b68;
-  --maroon-hover: #0a4ba8;
-  --maroon-tint: rgba(4, 48, 116, 0.12);
-  --maroon-tint-soft: rgba(4, 48, 116, 0.06);
-  --maroon-tint-border: rgba(4, 48, 116, 0.28);
-
-  /* --- Secondary: the blue figure ---------------------------------------- */
-  --secondary: #017dfc;
-  --secondary-container: #dceafe;
-  --on-secondary-container: #05305e;
-
-  /* --- Tertiary: the green figure ---------------------------------------- */
-  --tertiary: #2e9e22;
-  --tertiary-container: #dff4da;
-
-  /* --- Surfaces (white, faint cool cast) --------------------------------- */
-  --page: #f7fafd; /* scaffold background */
-  --page-outer: #eef3f9; /* deepest / outer */
-  --card: #ffffff; /* surface */
-  --card-cream: #eff4fa; /* surfaceVariant */
-  --card-warm: #ffffff;
-  --surface-variant: #eff4fa;
-
-  /* --- Lines -------------------------------------------------------------- */
-  --hairline: #e4eaf2; /* outlineVariant */
-  --hairline-2: #c6d2e3; /* outline */
-  --hairline-3: #eff4fa;
-
-  /* --- Ink (navy-black on light) ----------------------------------------- */
-  --ink: #0b1b3a; /* onSurface */
-  --ink-0: #14264a;
-  --ink-2: #4a5a78; /* onSurfaceVariant */
-  --ink-3: #7a8aa6;
-  --ink-4: #a9b6cc; /* hint / placeholder */
-
-  /* --- Accents used by category tiles ------------------------------------ */
-  --purple: #7a5cc4;
-  --lavender: #017dfc;
-
-  /* --- Tier accents -------------------------------------------------------- */
-  --sprout: #2e9e22;
-  --sprout-soft: rgba(46, 158, 34, 0.14);
-  --root: #e08a00;
-  --root-soft: rgba(224, 138, 0, 0.16);
-  --palmyra: #5a6b87;
-
-  /* Amber highlight — the orange figure. Used for emblems and the Root tier. */
-  --gold: #e08a00;
-
-  /* --- Semantic ------------------------------------------------------------ */
-  --success: #1f8b34;
-  --success-bg: #ddf3e0;
-  --warning: #b26a00;
-  --warning-bg: #fdf0d5;
-  --error: #c10504; /* the logo red, tempered for text contrast */
-  --error-bg: #fde4e4;
-  --info: #017dfc;
-
-  /* --- Gradients (action cards, CTAs, impact strip) ------------------------
-     Primary actions are navy. The category gradients borrow one figure colour
-     each, so the tiles stay recognisably from the same mark. */
-  --grad-primary: linear-gradient(135deg, #043074 0%, #0a4ba8 100%);
-  --grad-join: linear-gradient(90deg, #043074 0%, #0359c0 100%);
-  --grad-volunteer: linear-gradient(135deg, #e08a00 0%, #ffa900 100%);
-  --grad-survey: linear-gradient(135deg, #017dfc 0%, #5aa9ff 100%);
-  --grad-community: linear-gradient(135deg, #2e9e22 0%, #5fc94a 100%);
-  --grad-events: linear-gradient(135deg, #c10504 0%, #e8474a 100%);
-  --grad-agriculture: linear-gradient(135deg, #7a5cc4 0%, #a98ee0 100%);
-  --grad-you: linear-gradient(135deg, #043074 0%, #0a4ba8 100%);
-  --green-gradient: var(--grad-primary);
-
-  /* --- District colours — one figure per district ------------------------- */
-  --d-jaffna: #043074;
-  --d-kilinochchi: #017dfc;
-  --d-mannar: #2e9e22;
-  --d-mullaitivu: #c10504;
-  --d-vavuniya: #e08a00;
-
-  /* --- Radii ---------------------------------------------------------------- */
-  --r-sm: 12px;
-  --r-md: 14px;
-  --r-lg: 16px;
-  --r-xl: 20px;
-  --r-2xl: 24px;
-  --r-pill: 999px;
-
-  /* --- Motion --------------------------------------------------------------- */
-  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --dur-fast: 160ms;
-  --dur-mid: 260ms;
-  --dur-slow: 480ms;
-
-  /* --- Shadows — cool navy-tinted, kept shallow so white stays white ------- */
-  --shadow-card: 0 4px 12px rgba(11, 27, 58, 0.06), 0 1px 3px rgba(11, 27, 58, 0.04);
-  --shadow-nav: 0 -4px 20px rgba(11, 27, 58, 0.08);
-  --shadow-fab: 0 6px 18px -4px rgba(4, 48, 116, 0.42);
-  --shadow-lg: 0 8px 20px rgba(4, 48, 116, 0.18);
-  --shadow-tile: 0 4px 12px rgba(11, 27, 58, 0.18);
-
-  /* --- Fonts ------------------------------------------------------------------ */
-  --font-ui: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-head: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-ta: 'Inter', 'Noto Sans Tamil', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-
-  /* --- Layout ------------------------------------------------------------------ */
-  --app-max: 448px;
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-/* ---------------------------------------------------------------------------
-   DARK MODE — charcoal surfaces with a lifted blue accent. #043074 is almost
-   black against a dark surface, so the accent moves to the logo's brighter blue
-   and the containers become deep navy rather than pale tints.
-   Toggled by data-theme="dark" on <html> (see state/theme.ts).
---------------------------------------------------------------------------- */
-:root[data-theme='dark'] {
-  --primary: #4d9bff;
-  --primary-light: #7ab6ff;
-  --primary-mid: #2f7fe0;
-  --primary-container: #0d2f5e;
-  --on-primary-container: #d7e7ff;
-  --on-primary: #04203f;
-
-  --maroon: #4d9bff;
-  --maroon-pressed: #7ab6ff;
-  --maroon-hover: #7ab6ff;
-  --maroon-tint: rgba(77, 155, 255, 0.18);
-  --maroon-tint-soft: rgba(77, 155, 255, 0.1);
-  --maroon-tint-border: rgba(77, 155, 255, 0.38);
-
-  --secondary: #74b3f8;
-  --secondary-container: #10395f;
-  --on-secondary-container: #d7e7ff;
-  --tertiary: #6fd05e;
-  --tertiary-container: #1c3c18;
-
-  /* Surfaces (charcoal, faint blue cast) */
-  --page: #10141c;
-  --page-outer: #0a0d13;
-  --card: #1a202b;
-  --card-cream: #242c3a;
-  --card-warm: #242c3a;
-  --surface-variant: #242c3a;
-
-  /* Lines */
-  --hairline: #2c3444;
-  --hairline-2: #485266;
-  --hairline-3: #242c3a;
-
-  /* Ink (light on dark) */
-  --ink: #e8ecf3;
-  --ink-0: #d5dbe6;
-  --ink-2: #a3adbf;
-  --ink-3: #7d8799;
-  --ink-4: #545d6e;
-
-  /* Accents */
-  --purple: #a98ee0;
-  --lavender: #74b3f8;
-  --gold: #f0a92e;
-
-  /* Semantic — lifted for contrast */
-  --error: #f28b82;
-  --error-bg: rgba(242, 139, 130, 0.16);
-  --success: #6ddba0;
-  --success-bg: rgba(109, 219, 160, 0.14);
-  --warning: #f0a92e;
-  --warning-bg: rgba(240, 169, 46, 0.16);
-  --info: #74b3f8;
-
-  --sprout: #6ddba0;
-  --sprout-soft: rgba(109, 219, 160, 0.16);
-  --root: #f0a92e;
-  --root-soft: rgba(240, 169, 46, 0.16);
-  --palmyra: #a3adbf;
-
-  /* Gradients — the accent lifts with the theme */
-  --grad-primary: linear-gradient(135deg, #2f7fe0 0%, #4d9bff 100%);
-  --grad-join: linear-gradient(90deg, #2f7fe0 0%, #4d9bff 100%);
-  --grad-you: linear-gradient(135deg, #2f7fe0 0%, #4d9bff 100%);
-
-  /* Shadows (deep) */
-  --shadow-card: 0 6px 18px rgba(0, 0, 0, 0.45);
-  --shadow-nav: 0 -4px 24px rgba(0, 0, 0, 0.5);
-  --shadow-fab: 0 8px 22px -6px rgba(77, 155, 255, 0.45);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
-  --shadow-tile: 0 4px 14px rgba(0, 0, 0, 0.4);
-}
-
-/* ===========================================================================
    AUTHORITATIVE THEME — "என் மக்கள் · My People" institutional system.
 
-   This block is the single source of truth for the running app. It re-points
-   every legacy variable name (--maroon*, --grad-*, --ink*, --r-*) onto one
-   disciplined navy palette, so every screen re-themes without edits.
-
-   Colour has one meaning per hue (SGDS discipline):
-     navy   = brand / primary interaction        --primary / --maroon
-     teal   = optional secondary accent          --accent
-     green  = success only                       --success
-     amber  = warning only                       --warning
-     red    = destructive / error only           --error
-   The old five-colour "figure" gradients are collapsed to navy so nothing in
-   the UI reads as rainbow. Gradient is reserved for the ONE branded surface
-   (the membership card / a hero) via --grad-primary.
+   Single source of truth for the running app. Re-points legacy variable names
+   (--maroon*, --grad-*, --ink*, --r-*) onto a disciplined civic palette.
+   Light is the primary theme; dark mode adapts with high-contrast lifted tones.
 =========================================================================== */
 :root {
   /* --- Brand navy -------------------------------------------------------- */
   --primary: #14263d;
   --primary-mid: #203b59;
   --primary-light: #526a82;
+  --primary-container: #e9eef3;
+  --on-primary-container: #14263d;
+  --on-primary: #ffffff;
+
   --maroon: #14263d;
   --maroon-hover: #203b59;
   --maroon-pressed: #0f1d30;
-  --primary-container: #e9eef3;
-  --on-primary-container: #14263d;
-  --maroon-tint: rgba(20, 38, 61, 0.1);
-  --maroon-tint-soft: rgba(20, 38, 61, 0.05);
-  --maroon-tint-border: rgba(20, 38, 61, 0.24);
+  --maroon-tint: rgba(20, 38, 61, 0.08);
+  --maroon-tint-soft: rgba(20, 38, 61, 0.04);
+  --maroon-tint-border: rgba(20, 38, 61, 0.2);
 
   /* --- Blue secondary + accent (civic design-system spec) --------------- */
-  --secondary: #315b82; /* secondary blue */
+  --secondary: #1468d9;
   --secondary-container: #eef4fa;
-  --accent: #3b82f6; /* accent blue */
+  --on-secondary-container: #05305e;
+  --accent: #3b82f6;
   --accent-hover: #2f6fe0;
   --accent-container: #eef4fa;
   --on-accent-container: #1c3a63;
-  --tertiary: #315b82;
+  --tertiary: #2e9e22;
+  --tertiary-container: #dff4da;
 
   /* --- Surfaces (calm civic backgrounds) -------------------------------- */
-  --page: #f7f9fc; /* scaffold background */
-  --page-outer: #eef2f7; /* deepest / outer */
+  --page: #f7f9fc;
+  --page-outer: #eef2f7;
   --card: #ffffff;
-  --card-cream: #f5f7fa; /* soft neutral section */
+  --card-cream: #f5f7fa;
   --card-warm: #ffffff;
   --surface-variant: #f5f7fa;
-  --soft-blue: #eef4fa; /* very soft blue section */
+  --soft-blue: #eef4fa;
   --soft-gray: #f5f7fa;
   --soft-green: #f2f6f4;
 
   /* --- Ink ramp (spec text colours, WCAG 2.2 AA on white) --------------- */
-  --ink: #152033; /* primary text */
-  --ink-0: #14263d; /* headings / brand navy */
-  --ink-2: #3e4c5e; /* labels / strong secondary */
-  --ink-3: #667085; /* secondary text & placeholders */
-  --ink-4: #98a2b3; /* decorative / disabled only — do NOT use for text */
+  --ink: #152033;
+  --ink-0: #14263d;
+  --ink-2: #3e4c5e;
+  --ink-3: #667085;
+  --ink-4: #98a2b3;
 
   /* --- Lines ------------------------------------------------------------ */
-  --hairline: #e6eaf0; /* border */
+  --hairline: #e6eaf0;
   --hairline-2: #d3dae4;
   --hairline-3: #f0f3f7;
 
-  /* --- Semantic (one role each, spec values) ---------------------------- */
+  /* --- Semantic --------------------------------------------------------- */
   --success: #19764b;
   --success-bg: #e7f2ec;
   --warning: #b7791f;
   --warning-bg: #fbf2e0;
   --error: #c43d4b;
   --error-bg: #fbeaec;
-  --info: #315b82;
+  --info: #1468d9;
 
-  /* --- Tier accents (Sprout / Root / Palmyra — a legitimate semantic set) */
+  /* --- Tier accents ----------------------------------------------------- */
   --sprout: #166534;
   --sprout-soft: rgba(22, 101, 52, 0.12);
   --root: #9a5b00;
   --root-soft: rgba(154, 91, 0, 0.14);
   --palmyra: #526a82;
 
-  /* --- Gradients — navy only. --grad-primary is the one branded surface -- */
+  --purple: #7a5cc4;
+  --lavender: #017dfc;
+  --gold: #e08a00;
+
+  /* --- Gradients --------------------------------------------------------- */
   --grad-primary: linear-gradient(150deg, #14263d 0%, #26456b 100%);
   --grad-join: var(--grad-primary);
   --grad-you: var(--grad-primary);
@@ -309,15 +86,15 @@
   --grad-agriculture: #203b59;
   --green-gradient: var(--grad-primary);
 
-  /* --- Radii (civic spec: buttons/inputs 10–12, cards 12–16, no 24+) ---- */
-  --r-sm: 10px; /* inputs, buttons */
+  /* --- Radii ------------------------------------------------------------ */
+  --r-sm: 10px;
   --r-md: 12px;
-  --r-lg: 14px; /* standard card */
-  --r-xl: 16px; /* feature card */
-  --r-2xl: 18px; /* large feature card (kept restrained) */
+  --r-lg: 14px;
+  --r-xl: 16px;
+  --r-2xl: 18px;
   --r-pill: 999px;
 
-  /* --- Spacing (8px base + 4px steps) ----------------------------------- */
+  /* --- Spacing ---------------------------------------------------------- */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -326,73 +103,104 @@
   --space-8: 32px;
   --space-10: 40px;
   --space-12: 48px;
-  --gutter: 16px; /* mobile page horizontal margin (spec §4) */
+  --gutter: 16px;
 
   /* --- Control sizing --------------------------------------------------- */
-  --control-h: 56px; /* primary inputs / buttons */
-  --control-h-sm: 52px; /* compact buttons */
-  --touch-min: 44px; /* minimum comfortable touch target */
+  --control-h: 56px;
+  --control-h-sm: 52px;
+  --touch-min: 44px;
 
-  /* --- Shadows — subtle, elevation only --------------------------------- */
+  /* --- Shadows ---------------------------------------------------------- */
   --shadow-card: 0 1px 2px rgba(20, 38, 61, 0.06), 0 1px 3px rgba(20, 38, 61, 0.05);
   --shadow-nav: 0 -1px 0 rgba(20, 38, 61, 0.06);
   --shadow-fab: 0 6px 16px -6px rgba(20, 38, 61, 0.35);
   --shadow-lg: 0 8px 24px -8px rgba(20, 38, 61, 0.18);
   --shadow-tile: none;
+
+  /* --- Fonts ------------------------------------------------------------ */
+  --font-ui: 'Noto Sans Tamil', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-head: 'Noto Sans Tamil', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-ta: 'Noto Sans Tamil', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* --- Layout ----------------------------------------------------------- */
+  --app-max: 448px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* ---------------------------------------------------------------------------
+   DARK MODE — rich charcoal surfaces with lifted blue/semantic accents.
+   Activated via data-theme="dark" on <html> element.
+--------------------------------------------------------------------------- */
 :root[data-theme='dark'] {
-  --primary: #bbcddf;
-  --primary-mid: #94acc4;
-  --primary-light: #7e99b3;
-  --maroon: #bbcddf;
-  --maroon-hover: #d3e0ee;
-  --maroon-pressed: #a7bccf;
-  --primary-container: #26384a;
-  --on-primary-container: #e6edf5;
-  --maroon-tint: rgba(187, 205, 223, 0.16);
-  --maroon-tint-soft: rgba(187, 205, 223, 0.08);
-  --maroon-tint-border: rgba(187, 205, 223, 0.32);
+  --primary: #4d9bff;
+  --primary-mid: #2f7fe0;
+  --primary-light: #7ab6ff;
+  --primary-container: #102d55;
+  --on-primary-container: #d7e7ff;
+  --on-primary: #051930;
 
+  --maroon: #4d9bff;
+  --maroon-hover: #7ab6ff;
+  --maroon-pressed: #2f7fe0;
+  --maroon-tint: rgba(77, 155, 255, 0.16);
+  --maroon-tint-soft: rgba(77, 155, 255, 0.08);
+  --maroon-tint-border: rgba(77, 155, 255, 0.32);
+
+  --secondary: #74b3f8;
+  --secondary-container: #153250;
+  --on-secondary-container: #d7e7ff;
   --accent: #5fb3aa;
   --accent-hover: #7cc6be;
   --accent-container: #123c38;
   --on-accent-container: #cdeeea;
-  --secondary: #5fb3aa;
-  --secondary-container: #123c38;
-  --tertiary: #96c7a8;
+  --tertiary: #6fd05e;
+  --tertiary-container: #1c3c18;
 
-  --page: #131c26;
-  --page-outer: #0c131c;
-  --card: #1b2734;
-  --card-cream: #26384a;
-  --card-warm: #1b2734;
-  --surface-variant: #26384a;
+  --page: #0d141e;
+  --page-outer: #070b11;
+  --card: #151f2b;
+  --card-cream: #1c2837;
+  --card-warm: #151f2b;
+  --surface-variant: #1c2837;
+  --soft-blue: #142233;
+  --soft-gray: #1c2837;
+  --soft-green: #12281e;
 
   --ink: #e6edf5;
-  --ink-0: #f2f6fb;
-  --ink-2: #c2ceda;
-  --ink-3: #a2b1c2;
-  --ink-4: #7e8b9c;
-  --hairline: #344354;
-  --hairline-2: #46596d;
-  --hairline-3: #26384a;
+  --ink-0: #f4f7fb;
+  --ink-2: #c0cdda;
+  --ink-3: #8a9bb0;
+  --ink-4: #5d6f85;
 
-  --success: #96c7b0;
-  --success-bg: rgba(150, 199, 176, 0.14);
-  --warning: #e4bf89;
-  --warning-bg: rgba(228, 191, 137, 0.16);
-  --error: #f0acac;
-  --error-bg: rgba(240, 172, 172, 0.16);
-  --info: #bbcddf;
+  --hairline: #243242;
+  --hairline-2: #384a5e;
+  --hairline-3: #1a2533;
 
-  --sprout: #96c7b0;
-  --sprout-soft: rgba(150, 199, 176, 0.16);
-  --root: #e4bf89;
-  --root-soft: rgba(228, 191, 137, 0.16);
-  --palmyra: #a2b1c2;
+  --success: #6ddba0;
+  --success-bg: rgba(109, 219, 160, 0.15);
+  --warning: #f0a92e;
+  --warning-bg: rgba(240, 169, 46, 0.16);
+  --error: #f28b82;
+  --error-bg: rgba(242, 139, 130, 0.16);
+  --info: #74b3f8;
 
-  --grad-primary: linear-gradient(150deg, #1b2b41 0%, #2c445f 100%);
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
-  --shadow-nav: 0 -1px 0 rgba(255, 255, 255, 0.06);
+  --sprout: #6ddba0;
+  --sprout-soft: rgba(109, 219, 160, 0.16);
+  --root: #f0a92e;
+  --root-soft: rgba(240, 169, 46, 0.16);
+  --palmyra: #a3adbf;
+
+  --purple: #a98ee0;
+  --lavender: #74b3f8;
+  --gold: #f0a92e;
+
+  --grad-primary: linear-gradient(150deg, #16263a 0%, #284260 100%);
+  --grad-join: var(--grad-primary);
+  --grad-you: var(--grad-primary);
+
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-nav: 0 -1px 0 rgba(255, 255, 255, 0.08);
+  --shadow-fab: 0 8px 24px -6px rgba(77, 155, 255, 0.45);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
 }

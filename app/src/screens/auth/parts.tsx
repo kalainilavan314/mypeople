@@ -156,14 +156,14 @@ export function Field({
 }
 
 /* ------------------------------------------------------------- FieldLabel */
-export function FieldLabel({ ta, en }: { ta: string; en?: string }) {
-  // Show the English sub-label only when it differs from the primary label
-  // (in English mode the two are identical — avoid printing it twice).
-  const showEn = en && en !== ta;
+export function FieldLabel({ ta }: { ta: string; en?: string }) {
+  // `ta` is already the current language's translated label (despite the prop
+  // name) — show only it. A hardcoded `en` fallback used to be appended after
+  // a slash regardless of the selected language, so Tamil mode always showed
+  // both languages while English mode only looked right by coincidence.
   return (
-    <div style={{ marginBottom: 9 }}>
-      <span style={{ font: `600 13px/1 ${font.ta}`, color: authC.text2 }}>{ta}</span>
-      {showEn && <span style={{ font: `400 12px/1 ${font.ui}`, color: authC.text3, marginLeft: 7 }}>{en}</span>}
+    <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+      <span style={{ font: `700 13.5px/1.2 var(--font-ta, 'Noto Sans Tamil', sans-serif)`, color: '#1E293B' }}>{ta}</span>
     </div>
   );
 }
@@ -190,24 +190,37 @@ export function GreenButton({
       disabled={off}
       style={{
         width: '100%',
-        height: 56,
-        border: 'none',
+        height: 52,
         borderRadius: radius.pill,
-        cursor: off ? 'default' : 'pointer',
-        background: off ? authC.surface2 : authC.greenGrad,
-        color: off ? authC.text3 : authC.onGreen,
-        font: `700 15px/1 ${font.ui}`,
-        letterSpacing: '.02em',
-        boxShadow: off ? 'none' : authC.greenGlow,
+        border: 'none',
+        background: off ? '#94A3B8' : '#14263D',
+        color: '#ffffff',
+        font: `700 15.5px/1 var(--font-ui, sans-serif)`,
+        letterSpacing: 'normal',
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        transition: 'all 160ms cubic-bezier(.22,.61,.36,1)',
+        cursor: off ? 'not-allowed' : 'pointer',
+        boxShadow: off ? 'none' : '0 10px 24px -4px rgba(20, 38, 61, 0.42)',
+        transition: 'transform 120ms ease, box-shadow 120ms ease',
         ...style,
       }}
     >
-      {loading && <span className="auth-spin" style={{ width: 18, height: 18, border: '2.5px solid rgba(255,255,255,.4)', borderTopColor: '#fff', borderRadius: '50%', display: 'inline-block', animation: 'authSpin 700ms linear infinite' }} />}
+      {loading && (
+        <span
+          className="auth-spin"
+          style={{
+            width: 18,
+            height: 18,
+            border: '2.5px solid rgba(255,255,255,.4)',
+            borderTopColor: '#fff',
+            borderRadius: '50%',
+            display: 'inline-block',
+            animation: 'authSpin 700ms linear infinite',
+          }}
+        />
+      )}
       {children}
       <style>{'@keyframes authSpin{to{transform:rotate(360deg)}}'}</style>
     </button>
@@ -255,21 +268,42 @@ export function LinkText({ children, onClick }: { children: ReactNode; onClick: 
 }
 
 /* ------------------------------------------------------------------- Steps */
-export function Steps({ step, total }: { step: number; total: number }) {
+export function Steps({ step, total = 3 }: { step: number; total?: number }) {
   return (
     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-      {Array.from({ length: total }, (_, i) => (
-        <span
-          key={i}
-          style={{
-            height: 4,
-            width: i === step ? 24 : 14,
-            borderRadius: 999,
-            background: i <= step ? authC.green : '#DCE3EE',
-            transition: 'all 200ms',
-          }}
-        />
-      ))}
+      {Array.from({ length: total }, (_, i) => {
+        const active = i === step;
+        const done = i < step;
+        return (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: '50%',
+                background: active ? '#14263D' : done ? '#2563EB' : '#E2E8F0',
+                color: active || done ? '#ffffff' : '#64748B',
+                font: '700 11px/22px var(--font-ui, sans-serif)',
+                display: 'grid',
+                placeItems: 'center',
+                textAlign: 'center',
+                transition: 'all 200ms ease',
+              }}
+            >
+              {i + 1}
+            </span>
+            {i < total - 1 && (
+              <span
+                style={{
+                  width: 14,
+                  height: 1.5,
+                  background: done ? '#2563EB' : '#E2E8F0',
+                }}
+              />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

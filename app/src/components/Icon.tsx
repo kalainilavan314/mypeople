@@ -20,6 +20,7 @@ export type IconName =
   | 'star'
   | 'flag'
   | 'users'
+  | 'usersGroup'
   | 'bars'
   | 'sprout'
   | 'megaphone'
@@ -57,6 +58,7 @@ export type IconName =
   | 'settings'
   | 'pencil'
   | 'coins'
+  | 'fileText'
   | 'landmark'
   | 'gradCap'
   | 'road'
@@ -146,12 +148,6 @@ const paths: Record<IconName, React.ReactNode> = {
       <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
     </>
   ),
-  pencil: (
-    <>
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
-    </>
-  ),
   bell: (
     <>
       <path d="M6 16v-5a6 6 0 0112 0v5l2 2H4l2-2z" />
@@ -232,6 +228,16 @@ const paths: Record<IconName, React.ReactNode> = {
       <circle cx="10" cy="8" r="3.4" />
       <path d="M4 20c1.2-3.6 10.8-3.6 12 0" />
       <path d="M19 7v6M16 10h6" />
+    </>
+  ),
+  usersGroup: (
+    <>
+      <circle cx="12" cy="7.5" r="3.2" fill="currentColor" stroke="none" />
+      <path d="M12 12.2c-3.2 0-7 1.6-7 4.3v1c0 .3.2.5.5.5h13c.3 0 .5-.2.5-.5v-1c0-2.7-3.8-4.3-7-4.3z" fill="currentColor" stroke="none" />
+      <circle cx="18.5" cy="9" r="2.4" fill="currentColor" stroke="none" />
+      <path d="M18.5 12.8c1.8.3 3.5 1.4 3.5 3.2v.8c0 .2-.1.2-.2.2h-2.3c.3-.5.5-1.1.5-1.7 0-1-.4-1.9-1.5-2.5z" fill="currentColor" stroke="none" />
+      <circle cx="5.5" cy="9" r="2.4" fill="currentColor" stroke="none" />
+      <path d="M5.5 12.8c-1.8.3-3.5 1.4-3.5 3.2v.8c0 .2.1.2.2.2h2.3c-.3-.5-.5-1.1-.5-1.7 0-1 .4-1.9 1.5-2.5z" fill="currentColor" stroke="none" />
     </>
   ),
   bars: <path d="M5 20V11M12 20V5M19 20v-6" />,
@@ -316,6 +322,15 @@ const paths: Record<IconName, React.ReactNode> = {
       <path d="M12 3v12" />
       <path d="M7.5 10.5 12 15l4.5-4.5" />
       <path d="M4 17.5v1.5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1.5" />
+    </>
+  ),
+  fileText: (
+    <>
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" />
+      <path d="M14 2v6h6" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <line x1="10" y1="9" x2="8" y2="9" />
     </>
   ),
   crown: (
