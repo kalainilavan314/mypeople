@@ -2283,4 +2283,88 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   opacity: 0.9;
 }
 
+/* Shared Profile Setup & Edit Form Components */
+.profile-chip {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1.5px solid var(--hairline-2, #E2E8F0);
+  background: var(--card, #FFFFFF);
+  color: var(--ink-1, #334155);
+  font: 600 13px/1 var(--font-ui, sans-serif);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 140ms ease;
+}
+.profile-chip.active {
+  background: var(--navy-900, #14263D);
+  border-color: var(--navy-900, #14263D);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(20, 38, 61, 0.22);
+}
+.profile-gender-pill {
+  flex: 1;
+  height: 44px;
+  border-radius: 12px;
+  border: 1.5px solid var(--hairline-2, #E2E8F0);
+  background: var(--card, #FFFFFF);
+  color: var(--ink-2, #475569);
+  font: 700 14px/1 var(--font-ta, 'Noto Sans Tamil', sans-serif);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+.profile-gender-pill.active {
+  background: var(--navy-900, #14263D);
+  border-color: var(--navy-900, #14263D);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(20, 38, 61, 0.22);
+}
+.profile-select-btn {
+  width: 100%;
+  min-height: 56px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--surface-variant, #F8FAFC);
+  border: 1.5px solid var(--hairline-2, #E2E8F0);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 140ms ease;
+  box-sizing: border-box;
+}
+.profile-select-btn:active {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+}
+
+/* Shimmer Loader Skeleton Styles */
+@keyframes nuSkeletonSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.nu-skeleton-box {
+  background-color: var(--hairline-2, #E2E8F0);
+}
+
+:root[data-theme='dark'] .nu-skeleton-box {
+  background-color: #1E293B;
+}
+
+:root[data-theme='dark'] .nu-skeleton-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%) !important;
+}
+
 

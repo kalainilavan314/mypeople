@@ -2,11 +2,12 @@
 // EmptyState, QueryBoundary. Kept together to reduce file sprawl; each is independent.
 
 import type { ReactNode, CSSProperties } from 'react';
-import { useId } from 'react';
+import { useId, useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { c, font, ease, radius, shadow, control, tier as tierMap, type Tier } from '../theme/tokens';
 import { Icon, type IconName } from './Icon';
+import { SkeletonCard } from './ui/loaders-skeleton';
 
 /* ---------------------------------------------------------------- Button */
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'success' | 'danger';
@@ -326,15 +327,24 @@ export function EmptyState({ icon = 'report', title, sub }: { icon?: IconName; t
 }
 
 /* ---------------------------------------------------------- QueryBoundary */
-export function QueryBoundary<T>({ query, children, label }: { query: UseQueryResult<T>; children: (data: T) => ReactNode; label?: string }) {
+export function QueryBoundary<T>({
+  query,
+  children,
+  fallback,
+}: {
+  query: UseQueryResult<T>;
+  children: (data: T) => ReactNode;
+  label?: string;
+  fallback?: ReactNode;
+}) {
   const { i18n } = useTranslation();
   const ta = i18n.language === 'ta';
   if (query.isLoading) {
+    if (fallback) return <>{fallback}</>;
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '56px 24px' }}>
-        <span className="npm-spinner" style={{ width: 28, height: 28, border: `3px solid ${c.hairline}`, borderTopColor: c.maroon, borderRadius: '50%', display: 'inline-block', animation: 'npmSpin 800ms linear infinite' }} />
-        <span style={{ font: `500 13px/1 ${font.ui}`, color: c.ink3 }}>{label ?? 'Loading…'}</span>
-        <style>{'@keyframes npmSpin{to{transform:rotate(360deg)}}'}</style>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 0' }}>
+        <SkeletonCard height={130} />
+        <SkeletonCard height={130} />
       </div>
     );
   }
@@ -343,3 +353,212 @@ export function QueryBoundary<T>({ query, children, label }: { query: UseQueryRe
   }
   return <>{children(query.data)}</>;
 }
+
+/* ----------------------------------------------------------- CustomSelect */
+export interface CustomSelectOption {
+  value: string;
+  label: string;
+}
+
+export function CustomSelect({
+  value,
+  onChange,
+  options,
+  placeholder = 'Select…',
+  ariaLabel,
+  disabled = false,
+  style,
+}: {
+  value: string | null | undefined;
+  onChange: (val: string) => void;
+  options: CustomSelectOption[];
+  placeholder?: string;
+  ariaLabel?: string;
+  disabled?: boolean;
+  style?: CSSProperties;
+}) {
+  const [open, setOpen] = useState(false);
+  const [openUpwards, setOpenUpwards] = useState(false);
+  const [menuMaxHeight, setMenuMaxHeight] = useState(220);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const updatePosition = () => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+
+    // Check bottom boundary considering .work-nav if present, or scroll container
+    const nav = document.querySelector('.work-nav');
+    const screenEl = containerRef.current.closest('.screen') || containerRef.current.closest('.app-shell');
+
+    let bottomLimit = window.innerHeight;
+    if (nav) {
+      bottomLimit = nav.getBoundingClientRect().top;
+    } else if (screenEl) {
+      bottomLimit = screenEl.getBoundingClientRect().bottom;
+    }
+
+    const topLimit = screenEl ? screenEl.getBoundingClientRect().top : 0;
+
+    const spaceBelow = bottomLimit - rect.bottom;
+    const spaceAbove = rect.top - topLimit;
+
+    // Approximate height required for the options list
+    const neededHeight = Math.min(240, options.length * 44 + 12);
+
+    // If space below cannot comfortably fit the menu, or is tighter than space above, open upwards
+    const shouldOpenUp =
+      (spaceBelow < neededHeight + 20 && spaceAbove > 140) ||
+      (spaceBelow < 200 && spaceAbove > spaceBelow);
+
+    setOpenUpwards(shouldOpenUp);
+
+    // Constrain max-height dynamically so the dropdown never overflows into nav or header
+    const availableSpace = shouldOpenUp ? spaceAbove - 16 : spaceBelow - 16;
+    setMenuMaxHeight(Math.max(120, Math.min(240, availableSpace)));
+  };
+
+  const toggle = () => {
+    if (disabled) return;
+    if (!open) {
+      updatePosition();
+      setTimeout(() => {
+        containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 50);
+    }
+    setOpen((o) => !o);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    updatePosition();
+
+    const handleScrollOrResize = () => {
+      updatePosition();
+    };
+
+    const handleDown = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener('mousedown', handleDown);
+    window.addEventListener('resize', handleScrollOrResize);
+    window.addEventListener('scroll', handleScrollOrResize, true);
+
+    return () => {
+      window.removeEventListener('mousedown', handleDown);
+      window.removeEventListener('resize', handleScrollOrResize);
+      window.removeEventListener('scroll', handleScrollOrResize, true);
+    };
+  }, [open, options.length]);
+
+  const selectedOpt = options.find((o) => o.value === value);
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', ...style }}>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={toggle}
+        aria-label={ariaLabel}
+        aria-expanded={open}
+        className="press"
+        style={{
+          width: '100%',
+          boxSizing: 'border-box',
+          padding: '13px 14px',
+          border: open ? '1.5px solid #14263D' : `1px solid ${c.hairline2}`,
+          borderRadius: radius.md,
+          background: c.card,
+          color: selectedOpt ? c.ink : c.ink3,
+          font: `500 14px/1.4 ${font.ta}`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          textAlign: 'left',
+          boxShadow: open ? '0 0 0 3px rgba(20, 38, 61, 0.08)' : 'none',
+          transition: 'border-color 140ms ease, box-shadow 140ms ease',
+          opacity: disabled ? 0.6 : 1,
+        }}
+      >
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: 10 }}>
+          {selectedOpt ? selectedOpt.label : placeholder}
+        </span>
+        <Icon
+          name="chevron"
+          size={16}
+          color={open ? '#14263D' : c.ink3}
+          style={{
+            transform: open ? 'rotate(270deg)' : 'rotate(90deg)',
+            transition: 'transform 180ms ease',
+            flexShrink: 0,
+          }}
+        />
+      </button>
+
+      {open && (
+        <div
+          style={{
+            position: 'absolute',
+            ...(openUpwards ? { bottom: 'calc(100% + 6px)' } : { top: 'calc(100% + 6px)' }),
+            left: 0,
+            right: 0,
+            zIndex: 100,
+            background: c.card,
+            border: `1.5px solid ${c.hairline2}`,
+            borderRadius: radius.md,
+            boxShadow: openUpwards
+              ? '0 -12px 36px rgba(16, 45, 85, 0.16), 0 -2px 8px rgba(16, 45, 85, 0.06)'
+              : '0 12px 36px rgba(16, 45, 85, 0.16), 0 2px 8px rgba(16, 45, 85, 0.06)',
+            maxHeight: menuMaxHeight,
+            overflowY: 'auto',
+            padding: 4,
+          }}
+        >
+          {options.map((opt) => {
+            const isSelected = opt.value === value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => {
+                  onChange(opt.value);
+                  setOpen(false);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: radius.sm,
+                  border: 'none',
+                  background: isSelected ? 'rgba(20, 38, 61, 0.08)' : 'transparent',
+                  color: isSelected ? '#14263D' : c.ink,
+                  font: `${isSelected ? '700' : '500'} 13.5px/1.4 ${font.ta}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  transition: 'background 120ms ease',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSelected) e.currentTarget.style.background = 'rgba(0,0,0,0.04)';
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelected) e.currentTarget.style.background = 'transparent';
+                }}
+              >
+                <span>{opt.label}</span>
+                {isSelected && <Icon name="check" size={14} color="#14263D" strokeWidth={2.6} />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Re-export LoaderSkeleton for easy discovery
+export { LoaderSkeleton, SkeletonCard, SkeletonProfileHeader } from './ui/loaders-skeleton';

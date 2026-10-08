@@ -68,6 +68,9 @@ export type IconName =
   | 'leaf'
   | 'dotsHorizontal'
   | 'send'
+  | 'male'
+  | 'female'
+  | 'genderOther'
   | 'x';
 
 const paths: Record<IconName, React.ReactNode> = {
@@ -158,14 +161,17 @@ const paths: Record<IconName, React.ReactNode> = {
   chevronLeft: <path d="M15 6l-6 6 6 6" />,
   home: (
     <>
-      <path d="M3.5 10.5L12 3.5l8.5 7" />
-      <path d="M6 9.6V20h12V9.6" />
+      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+      <polyline points="9 22 9 12 15 12 15 22" />
     </>
   ),
   calendar: (
     <>
-      <rect x="3.5" y="5" width="17" height="15.5" rx="3" />
-      <path d="M8 3v4M16 3v4M3.5 10h17" />
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+      <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" />
     </>
   ),
   card: (
@@ -183,8 +189,8 @@ const paths: Record<IconName, React.ReactNode> = {
   ),
   user: (
     <>
-      <circle cx="12" cy="8" r="3.5" />
-      <path d="M5 20c1.4-4 11.6-4 14 0" />
+      <path d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
     </>
   ),
   mic: (
@@ -225,9 +231,10 @@ const paths: Record<IconName, React.ReactNode> = {
   ),
   users: (
     <>
-      <circle cx="10" cy="8" r="3.4" />
-      <path d="M4 20c1.2-3.6 10.8-3.6 12 0" />
-      <path d="M19 7v6M16 10h6" />
+      <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 00-3-3.87" />
+      <path d="M16 3.13a4 4 0 010 7.75" />
     </>
   ),
   usersGroup: (
@@ -430,6 +437,29 @@ const paths: Record<IconName, React.ReactNode> = {
   sparkles: (
     <>
       <path d="M12 3v4M12 17v4M3 12h4M17 12h4M6.3 6.3l2.9 2.9M14.8 14.8l2.9 2.9M6.3 17.7l2.9-2.9M14.8 9.2l2.9-2.9" />
+    </>
+  ),
+  male: (
+    <>
+      <circle cx="10" cy="14" r="5" />
+      <path d="M19 5l-5.4 5.4" />
+      <path d="M19 5h-5" />
+      <path d="M19 5v5" />
+    </>
+  ),
+  female: (
+    <>
+      <circle cx="12" cy="9" r="5" />
+      <path d="M12 14v7" />
+      <path d="M9 18h6" />
+    </>
+  ),
+  genderOther: (
+    <>
+      <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 00-3-3.87" />
+      <path d="M16 3.13a4 4 0 010 7.75" />
     </>
   ),
 };
