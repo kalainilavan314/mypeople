@@ -255,17 +255,6 @@ export function Login() {
           >
             {t('auth.welcomeBack', 'Welcome back')}
           </h1>
-          <p
-            style={{
-              font: `450 13.5px/1.5 var(--font-ui, 'Inter', sans-serif)`,
-              color: '#4B5563',
-              margin: '8px 0 0',
-              maxWidth: 350,
-            }}
-          >
-            {t('auth.welcomeBackSub', 'Securely login to access community services, local updates, and participation features for the Northern and Eastern community.')}
-          </p>
-
           {/* Segmented Pill Tabs: Login / Create Account */}
           <div
             style={{

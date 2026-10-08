@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { radius } from '../../theme/tokens';
@@ -21,6 +21,10 @@ const QUESTIONS: SurveyQuestion[] = [
   { id: 'blood_group', options: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'], layout: 'grid' },
 ];
 
+
+
+
+
 export function Questions() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
@@ -29,6 +33,11 @@ export function Questions() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
+  }, []);
 
   const total = QUESTIONS.length;
   const q = QUESTIONS[step];
@@ -76,6 +85,14 @@ export function Questions() {
   const choose = (val: string) => {
     const next = { ...answers, [q.id]: val };
     setAnswers(next);
+    // Auto-advance after a beat so the selection highlight is visible before
+    // the next question appears (Typeform-style). Back still works normally
+    // to revisit and change an earlier answer.
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
+    advanceTimer.current = setTimeout(() => {
+      if (step === total - 1) void finish(next);
+      else setStep((s) => s + 1);
+    }, 320);
   };
 
   const advance = () => {
@@ -84,6 +101,14 @@ export function Questions() {
     } else {
       setStep((s) => s + 1);
     }
+  };
+
+  // Cancel a pending auto-advance before stepping back — otherwise tapping
+  // Back right after selecting an option still gets yanked forward once the
+  // scheduled timer fires.
+  const goBack = (to: number) => {
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
+    setStep(Math.max(0, to));
   };
 
   const selectedVal = answers[q.id];
@@ -135,67 +160,87 @@ export function Questions() {
           flex: 1;
           padding: 18px 22px calc(24px + var(--safe-bottom, 0px));
         }
-        .question-pair-card {
-          flex: 1;
-          min-height: 110px;
-          border-radius: 20px;
+        .question-stacked-card {
+          width: 100%;
+          min-height: 72px;
+          border-radius: 18px;
           border: 1.5px solid #E2E8F0;
           background: #FFFFFF;
           cursor: pointer;
           display: flex;
-          flex-direction: column;
           align-items: center;
-          justify-content: center;
-          gap: 12px;
-          padding: 16px 12px;
-          transition: all 160ms ease;
+          justify-content: space-between;
+          padding: 14px 18px;
+          transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
           box-shadow: 0 2px 8px rgba(20, 38, 61, 0.03);
+          text-align: left;
         }
-        .question-pair-card.active {
-          border: 2px solid #2563EB;
-          background: #FFFFFF;
-          box-shadow: 0 6px 18px rgba(37, 99, 235, 0.12);
+        .question-stacked-card:hover {
+          border-color: #CBD5E1;
+          box-shadow: 0 4px 12px rgba(20, 38, 61, 0.06);
         }
-        .question-pair-card:active {
-          transform: scale(0.98);
+        .question-stacked-card.active {
+          border: 2px solid #14263D;
+          background: #F8FAFC;
+          box-shadow: 0 6px 20px rgba(20, 38, 61, 0.12);
+          transform: translateY(-1px);
         }
-        .question-radio-outer {
+        .question-stacked-card:active {
+          transform: scale(0.985);
+        }
+        .question-key-chip {
+          width: 34px;
+          height: 34px;
+          border-radius: 10px;
+          background: #F1F5F9;
+          border: 1.5px solid #E2E8F0;
+          color: #475569;
+          font: 700 13px/34px var(--font-ui, sans-serif);
+          display: grid;
+          place-items: center;
+          text-align: center;
+          transition: all 160ms ease;
+          flex-shrink: 0;
+        }
+        .question-key-chip.active {
+          background: #14263D;
+          border-color: #14263D;
+          color: #FFFFFF;
+        }
+        .question-check-circle {
           width: 24px;
           height: 24px;
           border-radius: 50%;
-          border: 2px solid #CBD5E1;
+          border: 1.5px solid #CBD5E1;
           display: grid;
           place-items: center;
           transition: all 160ms ease;
+          flex-shrink: 0;
         }
-        .question-radio-outer.active {
-          border-color: #2563EB;
-          background: #EFF6FF;
+        .question-check-circle.active {
+          border-color: #14263D;
+          background: #14263D;
         }
-        .question-radio-inner {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background: #2563EB;
-        }
-        .question-grid-card {
-          height: 54px;
-          border-radius: 14px;
+        .question-blood-card {
+          height: 58px;
+          border-radius: 16px;
           border: 1.5px solid #E2E8F0;
           background: #FFFFFF;
           color: #14263D;
-          font: 700 16px/1 var(--font-ui, sans-serif);
           cursor: pointer;
           display: flex;
           align-items: center;
-          justify-content: center;
+          justify-content: space-between;
+          padding: 0 14px;
           transition: all 140ms ease;
+          box-shadow: 0 2px 6px rgba(20, 38, 61, 0.03);
         }
-        .question-grid-card.active {
-          border-color: #2563EB;
+        .question-blood-card.active {
+          border: 2px solid #14263D;
           background: #14263D;
           color: #FFFFFF;
-          box-shadow: 0 4px 12px rgba(20, 38, 61, 0.25);
+          box-shadow: 0 6px 18px rgba(20, 38, 61, 0.22);
+          transform: translateY(-1px);
         }
         .question-cta-btn {
           flex: 1;
@@ -232,7 +277,7 @@ export function Questions() {
         <div className="question-content">
           {/* Top Bar */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <BackChip onClick={() => (step === 0 ? navigate('/signup/profile') : setStep((s) => s - 1))} />
+            <BackChip onClick={() => (step === 0 ? navigate('/signup/profile') : goBack(step - 1))} />
             <button
               type="button"
               onClick={() => void finish(answers)}
@@ -335,31 +380,38 @@ export function Questions() {
             {t('survey.privacyNote')}
           </p>
 
-          {/* Options Display */}
+          {/* Options Display - Clean Professional Stacked Cards */}
           <div style={{ marginTop: 24 }}>
             {q.layout === 'pair' ? (
-              <div style={{ display: 'flex', gap: 14 }}>
-                {q.options.map((val) => {
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {q.options.map((val, idx) => {
                   const active = selectedVal === val;
+                  const isTa = i18n.language === 'ta';
                   return (
                     <button
                       key={val}
                       type="button"
                       onClick={() => choose(val)}
-                      className={`question-pair-card ${active ? 'active' : ''}`}
+                      className={`question-stacked-card ${active ? 'active' : ''}`}
                     >
-                      <div className={`question-radio-outer ${active ? 'active' : ''}`}>
-                        {active && <div className="question-radio-inner" />}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                        <span className={`question-key-chip ${active ? 'active' : ''}`}>
+                          {idx === 0 ? 'A' : 'B'}
+                        </span>
+                        <span
+                          style={{
+                            font: `700 17px/1.2 ${isTa ? 'var(--font-ta, sans-serif)' : 'var(--font-ui, sans-serif)'}`,
+                            color: '#0F172A',
+                          }}
+                        >
+                          {t(`survey.opt.${val}`)}
+                        </span>
                       </div>
-                      <span
-                        style={{
-                          font: `800 18px/1 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
-                          color: '#14263D',
-                          letterSpacing: 'normal',
-                        }}
-                      >
-                        {t(`survey.opt.${val}`)}
-                      </span>
+
+                      {/* Right Indicator: Clean checkmark badge */}
+                      <div className={`question-check-circle ${active ? 'active' : ''}`}>
+                        {active && <Icon name="check" size={13} color="#FFFFFF" strokeWidth={3} />}
+                      </div>
                     </button>
                   );
                 })}
@@ -373,9 +425,10 @@ export function Questions() {
                       key={val}
                       type="button"
                       onClick={() => choose(val)}
-                      className={`question-grid-card ${active ? 'active' : ''}`}
+                      className={`question-blood-card ${active ? 'active' : ''}`}
                     >
-                      {val}
+                      <span style={{ font: `800 16px/1 var(--font-ui, sans-serif)` }}>{val}</span>
+                      <Icon name="droplet" size={14} color={active ? '#FFFFFF' : '#94A3B8'} strokeWidth={2} />
                     </button>
                   );
                 })}
@@ -401,13 +454,12 @@ export function Questions() {
 
           <div style={{ flex: 1, minHeight: 32 }} />
 
-          {/* Bottom Action Row: Back Button + Navy CTA */}
+          {/* Bottom Action Row: Back only — picking an option auto-advances
+              (see choose()), so a separate Next/Finish button here just
+              duplicated the "Skip this question" link below for the
+              no-selection case. Keeping one clear way to move on, not two. */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <BackChip onClick={() => setStep((s) => Math.max(0, s - 1))} />
-            <button type="button" className="question-cta-btn" onClick={advance} disabled={busy}>
-              <span>{isLast ? t('questions.finish', 'முடிவுசெய்') : t('common.next', 'அடுத்து')}</span>
-              <Icon name="arrowRight" size={18} color="#ffffff" strokeWidth={2.4} />
-            </button>
+            <BackChip onClick={() => goBack(step - 1)} />
           </div>
 
           {/* Sub-Action: Skip This Question */}
