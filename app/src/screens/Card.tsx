@@ -7,7 +7,7 @@ import { c, font, radius } from '../theme/tokens';
 import { pick } from '../i18n';
 import { Icon, type IconName } from '../components/Icon';
 import { MembershipIdCard } from '../components/MembershipIdCard';
-import { Button, QueryBoundary } from '../components/ui';
+import { QueryBoundary } from '../components/ui';
 import { QR } from '../lib/qr';
 import { useBadges, useMember } from '../data/queries';
 import { useMe } from '../hooks/useMe';
@@ -120,6 +120,11 @@ export function Card() {
           const joined = new Date(me?.joinedAt ?? m.joinedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
           const prog = me?.tierProgress;
 
+          // Never fabricate a QR payload: a signed token or nothing. An
+          // unsigned, made-up code would look scannable but fail verification
+          // at a gate — showing "unavailable" is the honest state instead.
+          const effectiveQr = cardTokenQ.data ?? null;
+
           return (
             <>
               {/* ========================= Page header ========================= */}
@@ -163,34 +168,23 @@ export function Card() {
                         : t('verify.unverified', 'Not verified')
                   }
                   avatarUrl={avatarUrl}
-                  qrValue={cardTokenQ.data}
+                  qrValue={effectiveQr}
                 />
               </div>
 
               {/* ===================== Enlarged QR (View QR) ==================== */}
               {showQr && (
                 <div style={{ marginTop: 14, background: c.card, border: `1px solid ${c.hairline}`, borderRadius: radius.xl, padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                  {cardTokenQ.data ? (
-                    <>
-                      <div style={{ background: '#fff', padding: 14, borderRadius: 14, border: `1px solid ${c.hairline}` }}>
-                        <QR value={cardTokenQ.data} size={200} />
-                      </div>
-                      <div style={{ font: `400 12px/1.4 ${font.ui}`, color: c.ink3, textAlign: 'center' }}>{t('card.checkInQr')}</div>
-                    </>
-                  ) : cardTokenQ.isLoading ? (
-                    <div style={{ minHeight: 160, display: 'grid', placeItems: 'center', font: `500 13px/1.4 ${font.ui}`, color: c.ink3 }}>
-                      {t('card.qrLoading', 'Generating your secure code…')}
-                    </div>
-                  ) : (
-                    <div style={{ minHeight: 160, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, textAlign: 'center' }}>
-                      <Icon name="idCard" size={30} color={c.ink3} />
-                      <div style={{ font: `600 14px/1.4 ${font.ta}`, color: c.ink }}>{t('card.qrUnavailableTitle', 'Check-in code unavailable')}</div>
-                      <div style={{ font: `400 12px/1.5 ${font.ui}`, color: c.ink3, maxWidth: 240 }}>{t('card.qrUnavailableBody', "We couldn't create your secure code. Please try again.")}</div>
-                      <div style={{ marginTop: 4 }}>
-                        <Button variant="secondary" onClick={() => cardTokenQ.refetch()}>{t('common.retry', 'Try again')}</Button>
-                      </div>
-                    </div>
-                  )}
+                  <div style={{ background: '#fff', padding: 14, borderRadius: 14, border: `1px solid ${c.hairline}`, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200, minWidth: 200 }}>
+                    {effectiveQr ? (
+                      <QR value={effectiveQr} size={200} />
+                    ) : (
+                      <Icon name="idCard" size={48} color={c.ink3} />
+                    )}
+                  </div>
+                  <div style={{ font: `400 12px/1.4 ${font.ui}`, color: c.ink3, textAlign: 'center' }}>
+                    {effectiveQr ? t('card.checkInQr') : t('card.qrUnavailable', 'Check-in code unavailable right now. Try again shortly.')}
+                  </div>
                 </div>
               )}
 

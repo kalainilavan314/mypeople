@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { font } from '../theme/tokens';
-import { useMe } from '../hooks/useMe';
-import { useEvents, useAnnouncements } from '../data/queries';
+import { c, font } from '../theme/tokens';
+import { useMeQuery } from '../hooks/useMe';
+import { useEvents, useAnnouncements, useMember } from '../data/queries';
 import { authApi } from '../data/authApi';
 import { QueryBoundary } from '../components/ui';
 import { Icon, type IconName } from '../components/Icon';
 import { QR } from '../lib/qr';
+import { displayMemberName, displayMemberCode } from '../lib/memberDisplay';
 import { useWorkspaceText } from '../components/MemberWorkspace';
 import { HomeTopBar } from '../components/HomeTopBar';
 
@@ -34,14 +35,6 @@ const QUICK: { to: string; icon: IconName; en: string; ta: string; sub: string; 
   { to: '/community', icon: 'users', en: 'Community', ta: 'சமூகம்', sub: 'Join in', subTa: 'இணைக', bg: '#F0FDF4', fg: '#16A34A' },
 ];
 
-// Community Highlights carousel cards
-const HIGHLIGHTS: { to: string; titleEn: string; titleTa: string; subEn: string; subTa: string; icon: IconName; bg: string; fg: string }[] = [
-  { to: '/skills', titleEn: 'Grow Your Community', titleTa: 'சமூகத்தை வளருங்கள்', subEn: 'Volunteer your skills', subTa: 'திறன்களைப் பகிருங்கள்', icon: 'sprout', bg: '#ECFDF5', fg: '#059669' },
-  { to: '/survey', titleEn: 'Make Your Voice Heard', titleTa: 'உங்கள் குரல் ஒலிக்கட்டும்', subEn: 'Take part in surveys', subTa: 'கருத்துக்கணிப்பில் இணையுங்கள்', icon: 'forum', bg: '#FEF3C7', fg: '#D97706' },
-  { to: '/reports', titleEn: 'Report & Improve', titleTa: 'சிக்கல்களைத் தீருங்கள்', subEn: 'Raise local issues', subTa: 'பிரச்சினைகளை தெரிவியுங்கள்', icon: 'report', bg: '#FFF1F2', fg: '#E11D48' },
-  { to: '/courses', titleEn: 'Learn Together', titleTa: 'இணைந்து கற்போம்', subEn: 'Build new skills', subTa: 'புதிய திறன்களைக் கற்க', icon: 'book', bg: '#EEF2FF', fg: '#4F46E5' },
-];
-
 function verify(t: (en: string, ta: string) => string, s?: string): { label: string; good: boolean; statusClass: string } {
   if (s === 'identity_confirmed') return { label: t('Identity verified', 'அடையாளம் உறுதி'), good: true, statusClass: 'verified' };
   if (s === 'review_pending') return { label: t('Review pending', 'மதிப்பாய்வு நிலுவை'), good: false, statusClass: 'pending' };
@@ -59,7 +52,10 @@ function fmtAgo(iso: string, t: (en: string, ta: string) => string): string {
 }
 
 export function Home() {
-  const me = useMe();
+  const meQ = useMeQuery();
+  const me = meQ.data ?? null;
+  const memberQ = useMember();
+  const member = memberQ.data ?? null;
   const navigate = useNavigate();
   const events = useEvents();
   const announcements = useAnnouncements();
@@ -77,15 +73,24 @@ export function Home() {
     .filter((e) => Date.parse(e.startsAt) >= Date.now())
     .sort((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt));
 
+  const [avatarError, setAvatarError] = useState(false);
+  // A broken-image flag from one photo must not stick around once a
+  // different (e.g. newly re-uploaded) avatarUrl arrives.
+  useEffect(() => setAvatarError(false), [me?.avatarUrl]);
   const v = verify(t, me?.verificationStatus);
-  const firstName = me ? me.fullName.split(' ')[0] : 'Kalainilavan';
+  const userName =
+    displayMemberName(me) ||
+    member?.fullName?.trim() ||
+    localStorage.getItem('npm.name')?.trim() ||
+    'Kalainilavan';
+  const memberCode = displayMemberCode(me) || member?.memberCode || null;
 
   const handleShareQR = async () => {
     if (navigator.share && cardTokenQ.data) {
       try {
         await navigator.share({
           title: `NorthUnity — ${me?.fullName || 'Member Card'}`,
-          text: `Member ID: ${me?.memberCode || ''}`,
+          text: `Member ID: ${memberCode}`,
           url: window.location.origin + '/card',
         });
       } catch {
@@ -104,14 +109,14 @@ export function Home() {
         <section className="home-hero-redesign" aria-label={t('Welcome', 'வரவேற்பு')}>
           <div className="home-hero-overlay-redesign" aria-hidden="true" />
           <div className="home-hero-content">
-            <p style={{ font: `700 14px/1.3 ${font.ui}`, color: '#102D55', margin: 0 }}>
-              {t('Hello', 'வணக்கம்')}, {firstName} 👋
+            <p style={{ font: `700 14px/1.3 ${font.ui}`, color: c.ink, margin: 0 }}>
+              {t('Hello', 'வணக்கம்')}, {userName}
             </p>
-            <h1 style={{ font: `800 24px/1.18 ${font.head}`, letterSpacing: '-0.02em', color: '#102D55', margin: '6px 0 0' }}>
+            <h1 style={{ font: `800 24px/1.18 ${font.head}`, letterSpacing: '-0.02em', color: c.ink, margin: '6px 0 0' }}>
               {t('Together for', 'ஒன்றாக')}<br />{t('stronger communities', 'வலிமையான சமூகங்கள்')}
             </h1>
-            <p style={{ font: `500 12.5px/1.45 ${font.ui}`, color: '#3B5B82', margin: '7px 0 0', maxWidth: 260 }}>
-              {t('Your membership, community services, events and local updates all in one place.', 'உங்கள் உறுப்பினர், சேவைகள், நிகழ்வுகள் மற்றும் உள்ளூர் புதுப்பிப்புகள் ஒரே இடத்தில்.')}
+            <p style={{ font: `500 12.5px/1.45 ${font.ui}`, color: c.ink2, margin: '7px 0 0', maxWidth: 260 }}>
+              {t('Your membership, services, events and updates all in one place.', 'உங்கள் உறுப்பினர், சேவைகள், நிகழ்வுகள் மற்றும் புதுப்பிப்புகள் ஒரே இடத்தில்.')}
             </p>
           </div>
           <div className="home-hero-btns">
@@ -125,14 +130,14 @@ export function Home() {
               className="home-hero-btn-primary"
             >
               <span>{t('Explore Updates', 'புதுப்பிப்புகளைப் பார்')}</span>
-              <Icon name="arrowRight" size={14} color="#ffffff" strokeWidth={2.4} />
+              <Icon name="arrowRight" size={14} color={c.onPrimary} strokeWidth={2.4} />
             </button>
             <button
               type="button"
               onClick={() => navigate('/gallery')}
               className="home-hero-btn-secondary"
             >
-              <Icon name="play" size={13} color="#102D55" strokeWidth={2.4} fill="#102D55" />
+              <Icon name="play" size={13} color={c.ink} strokeWidth={2.4} fill={c.ink} />
               <span>{t('Watch Video', 'காணொளி')}</span>
             </button>
           </div>
@@ -160,17 +165,26 @@ export function Home() {
 
           <div className="home-membership-body">
             <div className="home-member-avatar">
-              {me?.avatarUrl ? (
-                <img src={me.avatarUrl} alt="" />
+              {me?.avatarUrl && !avatarError ? (
+                <img
+                  src={me.avatarUrl}
+                  alt=""
+                  onError={() => setAvatarError(true)}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                />
               ) : (
                 <Icon name="user" size={26} color="#4B6382" />
               )}
             </div>
             <div className="home-member-meta">
-              <div className="home-member-name">{me?.fullName || 'Kalainilavan'}</div>
+              <div className="home-member-name" style={meQ.isLoading ? { opacity: 0.45 } : undefined}>
+                {meQ.isLoading ? t('Loading…', 'ஏற்றுகிறது…') : displayMemberName(me) ?? t('Member', 'உறுப்பினர்')}
+              </div>
               <div className="home-member-id-row">
                 <span className="home-member-id-label">{t('Member ID', 'உறுப்பினர் எண்')}</span>
-                <span className="home-member-id-val">{me?.memberCode || 'WTL-26-3800415'}</span>
+                <span className="home-member-id-val" style={meQ.isLoading ? { opacity: 0.45 } : undefined}>
+                  {meQ.isLoading ? '—' : memberCode ?? '—'}
+                </span>
               </div>
             </div>
             <Link to="/card" aria-label={t('My QR', 'எனது QR')} className="home-member-qr-box">
@@ -210,7 +224,7 @@ export function Home() {
               <span>{t('View Membership Card', 'அட்டையைப் பார்')}</span>
             </Link>
             <button type="button" onClick={handleShareQR} className="home-card-btn-secondary">
-              <Icon name="share" size={15} color="#102D55" strokeWidth={2.2} />
+              <Icon name="share" size={15} color={c.ink} strokeWidth={2.2} />
               <span>{t('Share QR', 'QR பகிர்')}</span>
             </button>
           </div>
@@ -241,7 +255,7 @@ export function Home() {
         {/* ---- Upcoming Events Section ---- */}
         <section className="work-section" style={{ marginTop: 22 }}>
           <div className="home-section-head">
-            <h2>{t('Upcoming Events', 'வரவிருக்கும் நிகழ்வுகள்')}</h2>
+            <h2>{t('Upcoming', 'வரவிருப்பவை')}</h2>
             <Link to="/events">
               <span>{t('See all', 'அனைத்தும்')}</span>
               <Icon name="chevron" size={14} strokeWidth={2.4} />
@@ -251,14 +265,14 @@ export function Home() {
             {() => {
               const activeEvent = upcoming[activeEventIndex] || upcoming[0];
               if (!activeEvent && upcoming.length === 0) {
-                // Friendly empty state
+                // Image 2 approved empty state card
                 return (
-                  <div className="home-empty">
-                    <Icon name="calendar" size={26} color="var(--ink-3)" />
-                    <div style={{ font: `600 14px/1.4 ${font.ta}`, color: 'var(--ink)' }}>
+                  <div className="home-empty-card">
+                    <Icon name="calendar" size={30} color="var(--ink-3)" strokeWidth={1.8} />
+                    <div className="home-empty-card-title">
                       {t('No upcoming events', 'வரவிருக்கும் நிகழ்வுகள் இல்லை')}
                     </div>
-                    <Link to="/events" className="home-hero-btn-primary" style={{ marginTop: 8 }}>
+                    <Link to="/events" className="home-empty-card-btn">
                       {t('Explore Events', 'நிகழ்வுகளைப் பார்')}
                     </Link>
                   </div>
@@ -330,117 +344,63 @@ export function Home() {
         </section>
 
         {/* ---- Local Updates Section ---- */}
-        <section id="local-updates-section" className="work-section" style={{ marginTop: 22 }}>
+        <section id="local-updates-section" className="work-section" style={{ marginTop: 22, paddingBottom: 24 }}>
           <div className="home-section-head">
             <h2>{t('Local Updates', 'உள்ளூர் புதுப்பிப்புகள்')}</h2>
-            <Link to="/area">
-              <span>{t('See all', 'அனைத்தும்')}</span>
-              <Icon name="chevron" size={14} strokeWidth={2.4} />
-            </Link>
           </div>
           <QueryBoundary query={announcements} label={t('Loading…', 'ஏற்றுகிறது…')}>
-            {(list) =>
-              list.length ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {list.slice(0, 2).map((a) => (
-                    <button key={a.id} onClick={() => navigate('/announcement/' + a.id)} className="home-update">
-                      {a.photoUrl ? (
-                        <img src={a.photoUrl} alt="" loading="lazy" className="home-update-thumb" />
-                      ) : (
-                        <span className="home-update-thumb" style={{ display: 'grid', placeItems: 'center', background: '#E8F0F9' }}>
-                          <Icon name="megaphone" size={22} color="#2563EB" />
+            {(list) => {
+              const displayList = list.length ? list.slice(0, 2) : [
+                {
+                  id: 'ann-1',
+                  scope: 'district',
+                  titleEn: 'District members’ convention — August 17',
+                  titleTa: 'யாழ். மாவட்ட உறுப்பினர் மாநாடு — ஆகஸ்ட் 17',
+                  authorName: 'Leadership',
+                  publishedAt: new Date(Date.now() - 430 * 86400000).toISOString(),
+                },
+                {
+                  id: 'ann-2',
+                  scope: 'ward',
+                  titleEn: 'Nallur water supply scheme announcement',
+                  titleTa: 'நல்லூர் நீர் விநியோகத் திட்டம் அறிவிப்பு',
+                  authorName: 'Media unit',
+                  publishedAt: new Date(Date.now() - 427 * 86400000).toISOString(),
+                },
+              ];
+
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {displayList.map((a) => (
+                    <button
+                      key={a.id}
+                      type="button"
+                      onClick={() => navigate('/announcement/' + a.id)}
+                      className="home-update-card"
+                    >
+                      <div className="home-update-icon-thumb">
+                        <Icon name="megaphone" size={24} color="var(--ink-3)" strokeWidth={1.8} />
+                      </div>
+                      <div className="home-update-content">
+                        <span className="home-update-badge">
+                          {a.scope || 'general'}
                         </span>
-                      )}
-                      <span style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
-                        <span style={{ display: 'inline-block', font: `600 10px/1 ${font.ui}`, color: '#2563EB', background: '#EFF6FF', padding: '3px 8px', borderRadius: 999, textTransform: 'lowercase' }}>
-                          {a.scope || 'ward'}
-                        </span>
-                        <span style={{ font: `700 13.5px/1.35 ${font.ta}`, color: 'var(--ink-0)', marginTop: 5, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                          {t(a.titleEn, a.titleTa)}
-                        </span>
-                        <span style={{ display: 'block', font: `500 11.5px/1.4 ${font.ui}`, color: 'var(--ink-3)', marginTop: 3 }}>
-                          {a.authorName || 'Leadership'} • {fmtAgo(a.publishedAt, t)}
-                        </span>
-                      </span>
-                      <Icon name="chevron" size={16} color="var(--ink-3)" strokeWidth={2.2} />
+                        <div className="home-update-title">
+                          {t(a.titleEn, a.titleTa) || a.titleTa || a.titleEn}
+                        </div>
+                        <div className="home-update-meta">
+                          {a.authorName || 'Leadership'} · {fmtAgo(a.publishedAt, t)}
+                        </div>
+                      </div>
+                      <div className="home-update-arrow">
+                        <Icon name="chevron" size={16} color="var(--ink-3)" strokeWidth={2.2} />
+                      </div>
                     </button>
                   ))}
                 </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {/* Default verified announcements */}
-                  <button onClick={() => navigate('/area')} className="home-update">
-                    <img src="/hero-north.webp" alt="" className="home-update-thumb" />
-                    <span style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
-                      <span style={{ display: 'inline-block', font: `600 10px/1 ${font.ui}`, color: '#2563EB', background: '#EFF6FF', padding: '3px 8px', borderRadius: 999 }}>
-                        ward
-                      </span>
-                      <span style={{ font: `700 13.5px/1.35 ${font.ta}`, color: 'var(--ink-0)', marginTop: 5, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                        {t('Nallur water supply scheme announced', 'நல்லூர் குடிநீர் வழங்கல் திட்டம் அறிவிக்கப்பட்டது')}
-                      </span>
-                      <span style={{ display: 'block', font: `500 11.5px/1.4 ${font.ui}`, color: 'var(--ink-3)', marginTop: 3 }}>
-                        Media unit • 2 hours ago
-                      </span>
-                    </span>
-                    <Icon name="chevron" size={16} color="var(--ink-3)" strokeWidth={2.2} />
-                  </button>
-                  <button onClick={() => navigate('/events')} className="home-update">
-                    <img src="/profile-hero.webp" alt="" className="home-update-thumb" />
-                    <span style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
-                      <span style={{ display: 'inline-block', font: `600 10px/1 ${font.ui}`, color: '#2563EB', background: '#EFF6FF', padding: '3px 8px', borderRadius: 999 }}>
-                        district
-                      </span>
-                      <span style={{ font: `700 13.5px/1.35 ${font.ta}`, color: 'var(--ink-0)', marginTop: 5, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                        {t('District members’ convention — August 17', 'மாவட்ட உறுப்பினர்கள் மாநாடு — ஆகஸ்ட் 17')}
-                      </span>
-                      <span style={{ display: 'block', font: `500 11.5px/1.4 ${font.ui}`, color: 'var(--ink-3)', marginTop: 3 }}>
-                        Leadership • 5 hours ago
-                      </span>
-                    </span>
-                    <Icon name="chevron" size={16} color="var(--ink-3)" strokeWidth={2.2} />
-                  </button>
-                </div>
-              )
-            }
+              );
+            }}
           </QueryBoundary>
-        </section>
-
-        {/* ---- Community Highlights Carousel ---- */}
-        <section className="work-section" style={{ marginTop: 22 }}>
-          <div className="home-section-head">
-            <h2>{t('Community Highlights', 'சமூக சிறப்பம்சங்கள்')}</h2>
-            <Link to="/community">
-              <span>{t('See all', 'அனைத்தும்')}</span>
-              <Icon name="chevron" size={14} strokeWidth={2.4} />
-            </Link>
-          </div>
-          <div className="home-highlights-scroll">
-            {HIGHLIGHTS.map((h, i) => (
-              <Link key={h.to + i} to={h.to} className="home-highlight-card">
-                <div className="home-highlight-img" style={{ display: 'grid', placeItems: 'center', background: h.bg }}>
-                  <Icon name={h.icon} size={32} color={h.fg} strokeWidth={1.8} />
-                </div>
-                <div className="home-highlight-body">
-                  <div className="home-highlight-title">{t(h.titleEn, h.titleTa)}</div>
-                  <div className="home-highlight-sub">{t(h.subEn, h.subTa)}</div>
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          {/* Be Part of the Change Promo Banner */}
-          <Link to="/skills" className="home-promo-banner">
-            <div className="home-promo-icon-box">
-              <Icon name="sparkles" size={24} color="#1468D9" strokeWidth={2.2} />
-            </div>
-            <div className="home-promo-text">
-              <div className="home-promo-title">{t('Be part of the change', 'மாற்றத்தின் அங்கமாக இருங்கள்')}</div>
-              <div className="home-promo-sub">{t('Stronger communities, brighter tomorrow.', 'வலிமையான சமூகங்கள், பிரகாசமான எதிர்காலம்.')}</div>
-            </div>
-            <div className="home-promo-arrow">
-              <Icon name="chevron" size={16} strokeWidth={2.6} />
-            </div>
-          </Link>
         </section>
       </main>
     </>

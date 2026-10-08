@@ -12,7 +12,7 @@ import { QR } from '../lib/qr';
 const NAVY = '#14263D';
 const GOLD = '#C9A227';
 const INK = '#1b2a44';
-const UI = "'Inter', ui-sans-serif, system-ui, sans-serif";
+const UI = "'Noto Sans Tamil', 'Inter', ui-sans-serif, system-ui, sans-serif";
 const TA = "'Noto Sans Tamil', 'Inter', sans-serif";
 const SIGN = '"Segoe Script", "Bradley Hand", "Snell Roundhand", cursive';
 const CARD_W = 680;
@@ -49,6 +49,10 @@ function DivRow({ icon, value, sub }: { icon: IconName; value: string; sub?: str
 export function MembershipIdCard(p: MembershipIdCardProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.5);
+  const [imgError, setImgError] = useState(false);
+  // Don't let a broken-image flag from one photo persist after a different
+  // (e.g. newly re-uploaded) avatarUrl arrives.
+  useEffect(() => setImgError(false), [p.avatarUrl]);
 
   useEffect(() => {
     const el = wrapRef.current;
@@ -59,6 +63,11 @@ export function MembershipIdCard(p: MembershipIdCardProps) {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  // Never fabricate a QR payload from the member ID — an unsigned, made-up
+  // code looks scannable but will fail verification at a gate. No token means
+  // no QR; the card shows a plain icon in its place instead.
+  const effectiveQr = p.qrValue || null;
 
   return (
     <div
@@ -83,10 +92,6 @@ export function MembershipIdCard(p: MembershipIdCardProps) {
         {/* ---- content (above the bottom band) ---- */}
         <div style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 30, padding: '15px 18px 10px', display: 'flex', flexDirection: 'column' }}>
           {/* header: brand + member type */}
-          {/* paddingLeft clears the navy swoosh. The brand is navy text, and at 58 it
-              sat on top of the navy fill — the Tamil wordmark read as clipped
-              because it was navy-on-navy, not because it was cut off. The swoosh
-              reaches x=208 at the top edge, so the block starts past it. */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, paddingLeft: 202 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
               <Logo size={40} style={{ borderRadius: 9 }} />
@@ -108,7 +113,16 @@ export function MembershipIdCard(p: MembershipIdCardProps) {
             {/* left: photo + signature */}
             <div style={{ flex: 'none', width: 132, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={{ width: 128, height: 148, borderRadius: 10, overflow: 'hidden', background: '#dfe5ee', border: '3px solid #fff', boxShadow: '0 3px 12px rgba(11,20,36,.22)', display: 'grid', placeItems: 'center' }}>
-                {p.avatarUrl ? <img src={p.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <Icon name="user" size={54} color="#b7c0cf" />}
+                {p.avatarUrl && !imgError ? (
+                  <img
+                    src={p.avatarUrl}
+                    alt=""
+                    onError={() => setImgError(true)}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <Icon name="user" size={54} color="#b7c0cf" />
+                )}
               </div>
               <div style={{ font: `400 20px/1.1 ${SIGN}`, color: NAVY, marginTop: 8, paddingBottom: 2, borderBottom: `1.5px solid ${NAVY}`, maxWidth: 128, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center' }}>{p.fullName}</div>
               <div style={{ font: `700 8px/1 ${UI}`, letterSpacing: '.14em', color: '#6b7688', marginTop: 5 }}>AUTHORIZED MEMBER</div>
@@ -131,9 +145,15 @@ export function MembershipIdCard(p: MembershipIdCardProps) {
             {/* right: watermark + QR */}
             <div style={{ flex: 'none', width: 136, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
               <PalmyraMark size={120} stroke={NAVY} opacity={0.08} style={{ position: 'absolute', right: 6, top: 6 }} />
-              <div style={{ position: 'relative', background: '#fff', padding: 8, borderRadius: 10, boxShadow: '0 3px 12px rgba(11,20,36,.16)' }}>
-                {p.qrValue ? <QR value={p.qrValue} size={92} /> : <span style={{ width: 92, height: 92, display: 'grid', placeItems: 'center' }}><Icon name="idCard" size={28} color="#b7c0cf" /></span>}
-                <div style={{ font: `800 8px/1 ${UI}`, letterSpacing: '.1em', color: NAVY, textAlign: 'center', marginTop: 6 }}>SCAN TO VERIFY</div>
+              <div style={{ position: 'relative', background: '#fff', padding: 8, borderRadius: 10, boxShadow: '0 3px 12px rgba(11,20,36,.16)', minWidth: 92, minHeight: 92, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {effectiveQr ? (
+                  <>
+                    <QR value={effectiveQr} size={92} />
+                    <div style={{ font: `800 8px/1 ${UI}`, letterSpacing: '.1em', color: NAVY, textAlign: 'center', marginTop: 6 }}>SCAN TO VERIFY</div>
+                  </>
+                ) : (
+                  <Icon name="idCard" size={32} color="#94A3B8" />
+                )}
               </div>
             </div>
           </div>

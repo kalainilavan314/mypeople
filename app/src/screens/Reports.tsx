@@ -67,7 +67,7 @@ export function Reports() {
           aria-label={t('common.back', 'Back')}
           className="cr-back-btn"
         >
-          <Icon name="chevronLeft" size={20} color="#102D55" strokeWidth={2.5} />
+          <Icon name="chevronLeft" size={20} color={c.ink} strokeWidth={2.5} />
         </button>
 
         <div className="cr-header-text">
@@ -83,7 +83,7 @@ export function Reports() {
           className="cr-my-reports-btn"
           aria-label={t('creport.tabMine', 'My Reports')}
         >
-          <Icon name="report" size={20} color="#1468D9" strokeWidth={2} />
+          <Icon name="report" size={20} color={c.primary} strokeWidth={2} />
           <span className="cr-my-reports-btn-label">{t('creport.tabMine', 'My Reports')}</span>
         </button>
       </header>
@@ -451,8 +451,8 @@ function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
                 border: 'none',
                 borderRadius: radius.lg,
                 cursor: 'pointer',
-                background: '#102D55',
-                color: '#fff',
+                background: c.primary,
+                color: c.onPrimary,
                 font: `700 15px/1 ${font.ui}`,
               }}
             >
@@ -477,11 +477,11 @@ function MyReports() {
         {(reports) =>
           reports.length === 0 ? (
             <div style={{ textAlign: 'center', paddingTop: 60 }}>
-              <Icon name="report" size={64} color="#1468D9" strokeWidth={1.4} style={{ opacity: 0.35 }} />
-              <div style={{ font: `600 18px/1.2 ${font.ui}`, color: '#102D55', marginTop: 16 }}>
+              <Icon name="report" size={64} color={c.primary} strokeWidth={1.4} style={{ opacity: 0.35 }} />
+              <div style={{ font: `600 18px/1.2 ${font.ui}`, color: c.ink, marginTop: 16 }}>
                 {t('creport.emptyTitle', 'No Reports Yet')}
               </div>
-              <div style={{ font: `400 14px/1.5 ${font.ui}`, color: '#64748B', marginTop: 8 }}>
+              <div style={{ font: `400 14px/1.5 ${font.ui}`, color: c.ink3, marginTop: 8 }}>
                 {t('creport.emptyBody', 'Your submitted reports and their progress will appear here.')}
               </div>
             </div>
@@ -507,7 +507,7 @@ function ReportItem({ report }: { report: CommunityReport }) {
   return (
     <div
       style={{
-        background: '#ffffff',
+        background: c.card,
         border: `1px solid ${c.hairline}`,
         borderRadius: radius.lg,
         boxShadow: shadow.card,
@@ -534,7 +534,7 @@ function ReportItem({ report }: { report: CommunityReport }) {
             flex: 1,
             minWidth: 0,
             font: `700 15px/1.35 ${font.ui}`,
-            color: '#102D55',
+            color: c.ink,
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
@@ -558,13 +558,13 @@ function ReportItem({ report }: { report: CommunityReport }) {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 10 }}>
-        <Icon name="mapPin" size={13} color="#64748B" strokeWidth={2.2} />
-        <span style={{ font: `400 12px/1 ${font.ui}`, color: '#64748B' }}>
+        <Icon name="mapPin" size={13} color={c.ink3} strokeWidth={2.2} />
+        <span style={{ font: `400 12px/1 ${font.ui}`, color: c.ink3 }}>
           {report.districtName ?? 'Jaffna'}
         </span>
         <span style={{ flex: 1 }} />
-        <Icon name="calendar" size={12} color="#64748B" strokeWidth={2.2} />
-        <span style={{ font: `400 12px/1 ${font.ui}`, color: '#64748B' }}>
+        <Icon name="calendar" size={12} color={c.ink3} strokeWidth={2.2} />
+        <span style={{ font: `400 12px/1 ${font.ui}`, color: c.ink3 }}>
           {fmtDate(report.createdAt)}
         </span>
       </div>
@@ -590,15 +590,15 @@ function ReportItem({ report }: { report: CommunityReport }) {
                     height: 10,
                     borderRadius: 999,
                     boxSizing: 'border-box',
-                    background: done ? '#1468D9' : c.hairline2,
-                    border: current ? `2px solid #1468D9` : 'none',
-                    boxShadow: current ? `0 0 0 2px #fff, 0 0 0 3.5px rgba(20, 104, 217, 0.3)` : 'none',
+                    background: done ? c.primary : c.hairline2,
+                    border: current ? `2px solid ${c.primary}` : 'none',
+                    boxShadow: current ? `0 0 0 2px ${c.card}, 0 0 0 3.5px var(--maroon-tint-border)` : 'none',
                   }}
                 />
                 <span
                   style={{
                     font: `${current ? 700 : 400} 9px/1.25 ${font.ui}`,
-                    color: done ? '#1468D9' : '#94A3B8',
+                    color: done ? c.primary : c.ink4,
                     marginTop: 4,
                     textAlign: 'center',
                   }}
@@ -611,7 +611,7 @@ function ReportItem({ report }: { report: CommunityReport }) {
                   style={{
                     flex: 1,
                     height: 2,
-                    background: i < stageIndex ? '#1468D9' : c.hairline2,
+                    background: i < stageIndex ? c.primary : c.hairline2,
                     marginTop: 4,
                   }}
                 />

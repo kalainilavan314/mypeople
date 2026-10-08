@@ -8,6 +8,7 @@ import { NetImage } from '../components/nn';
 import { Toggle, StatusPill, QueryBoundary } from '../components/ui';
 import { useMember, useMyCommunityReports, useEvents } from '../data/queries';
 import { useMe } from '../hooks/useMe';
+import { displayDistrict } from '../lib/memberDisplay';
 import { useAuth } from '../state/auth';
 import { useTheme } from '../state/theme';
 import { authApi } from '../data/authApi';
@@ -126,11 +127,11 @@ export function Profile() {
               </div>
 
               <div className="pf-identity-meta">
-                <div className="pf-user-name">{member.fullName || 'dabi'}</div>
+                <div className="pf-user-name">{member.fullName}</div>
                 <div className="pf-user-loc">
                   <Icon name="mapPin" size={14} color="rgba(255,255,255,0.9)" strokeWidth={2} style={{ flex: 'none' }} />
                   <span>
-                    {[me?.districtName ?? member.electorateNameEn ?? 'Nallur', t('profile.northernProvince', 'Northern & Eastern Province')]
+                    {[displayDistrict(me, member), t('profile.northernProvince', 'Northern & Eastern Province')]
                       .filter(Boolean)
                       .join(' · ')}
                   </span>
@@ -161,7 +162,7 @@ export function Profile() {
                 {t('profile.editProfileSub', 'Update your information, photo and preferences')}
               </span>
             </div>
-            <Icon name="chevron" size={18} color="#94A3B8" />
+            <Icon name="chevron" size={18} color={c.ink4} />
           </button>
 
           <VerificationSheet
@@ -175,29 +176,29 @@ export function Profile() {
           <section className="pf-stats-card">
             <StatItem
               icon="report"
-              bg="#EBF3FC"
-              color="#1468D9"
+              bg="var(--maroon-tint)"
+              color="var(--primary)"
               value={reportsQ.data ? String(reportsQ.data.length) : '—'}
               label={t('profile.myReports', 'My Reports')}
             />
             <StatItem
               icon="users"
-              bg="#EAF7F0"
-              color="#16835D"
+              bg="var(--success-bg)"
+              color="var(--success)"
               value={me?.recruitCount !== undefined ? String(me.recruitCount) : '—'}
               label={t('profile.myReferrals', 'My Referrals')}
             />
             <StatItem
               icon="calendar"
-              bg="#FFF5E8"
-              color="#D97706"
+              bg="var(--warning-bg)"
+              color="var(--warning)"
               value={activities !== undefined ? String(activities) : '0'}
               label={t('profile.activities', 'Activities')}
             />
             <StatItem
               icon="star"
-              bg="#F3E8FF"
-              color="#7C3AED"
+              bg="var(--maroon-tint)"
+              color="var(--purple)"
               value={fmtYear(me?.joinedAt ?? member.joinedAt) || 'Nov 2024'}
               label={t('profile.memberSinceShort', 'Member since')}
             />
@@ -245,10 +246,10 @@ export function Profile() {
                             width: 38,
                             height: 38,
                             borderRadius: '10px',
-                            background: '#EBF3FC',
+                            background: 'var(--maroon-tint)',
                             display: 'grid',
                             placeItems: 'center',
-                            color: '#1468D9',
+                            color: 'var(--primary)',
                           }}
                         >
                           <Icon name={it.icon} size={18} />
@@ -258,7 +259,7 @@ export function Profile() {
                             style={{
                               display: 'block',
                               font: `600 13.5px/1.35 ${font.ui}`,
-                              color: '#102D55',
+                              color: c.ink,
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap',
@@ -270,7 +271,7 @@ export function Profile() {
                             style={{
                               display: 'block',
                               font: `400 11.5px/1.4 ${font.ui}`,
-                              color: '#64748B',
+                              color: c.ink3,
                               marginTop: 2,
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
@@ -281,7 +282,7 @@ export function Profile() {
                           </span>
                         </span>
                         <StatusPill label={it.badge.label} tone={it.badge.tone} />
-                        <Icon name="chevron" size={15} color="#94A3B8" />
+                        <Icon name="chevron" size={15} color={c.ink4} />
                       </button>
                     ))}
                   </div>
@@ -400,10 +401,10 @@ export function Profile() {
                 <span className="pf-menu-title">{t('profile.about', 'About My People')}</span>
                 <span className="pf-menu-sub">{t('profile.aboutSub', 'App information and version details')}</span>
               </div>
-              <span style={{ font: `600 12.5px/1 ${font.ui}`, color: '#94A3B8', marginRight: 4 }}>
+              <span style={{ font: `600 12.5px/1 ${font.ui}`, color: c.ink4, marginRight: 4 }}>
                 v1.0.0
               </span>
-              <Icon name="chevron" size={16} color="#94A3B8" />
+              <Icon name="chevron" size={16} color={c.ink4} />
             </div>
           </section>
 
@@ -539,7 +540,7 @@ function MenuRow({
         <span className="pf-menu-title">{title}</span>
         {sub && <span className="pf-menu-sub">{sub}</span>}
       </div>
-      <Icon name="chevron" size={17} color="#94A3B8" />
+      <Icon name="chevron" size={17} color={c.ink4} />
     </button>
   );
 }
