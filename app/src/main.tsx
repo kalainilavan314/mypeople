@@ -14,6 +14,8 @@ import '@fontsource/noto-sans-tamil/400.css';
 import '@fontsource/noto-sans-tamil/500.css';
 import '@fontsource/noto-sans-tamil/600.css';
 import '@fontsource/noto-sans-tamil/700.css';
+import '@fontsource/noto-serif-tamil/700.css';
+import '@fontsource/noto-serif-tamil/900.css';
 import '@fontsource/jetbrains-mono/400.css';
 import '@fontsource/jetbrains-mono/500.css';
 import './styles/global.css';
