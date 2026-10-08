@@ -14,6 +14,12 @@ export interface SignupDraft {
   referralId: string; // referral code the user was invited with (optional)
   answers: Record<string, string>; // onboarding question id -> answer
   inviteCode: string; // closed-pilot gate; unused when the server has none set
+  // Compressed data: URLs (see lib/image.ts) of the two NIC card photos,
+  // captured during sign-up. Where/whether these are stored server-side is a
+  // separate, not-yet-decided piece of work — this only carries them across
+  // the sign-up screens so they aren't lost before that is built.
+  nicFrontPhoto: string | null;
+  nicBackPhoto: string | null;
 }
 
 const empty = (): SignupDraft => ({
@@ -29,6 +35,8 @@ const empty = (): SignupDraft => ({
   referralId: '',
   answers: {},
   inviteCode: '',
+  nicFrontPhoto: null,
+  nicBackPhoto: null,
 });
 
 let draft: SignupDraft = empty();

@@ -5,6 +5,21 @@ import { authApi, cachedMember, type ServerMember } from '../data/authApi';
 export const meKey = ['me'] as const;
 
 /**
+ * The underlying React Query result for the signed-in member. Exposes
+ * isLoading/isError so a screen can tell "still fetching" apart from
+ * "fetched, no member" instead of collapsing both into null.
+ */
+export function useMeQuery() {
+  return useQuery<ServerMember | null>({
+    queryKey: meKey,
+    queryFn: () => authApi.me(),
+    placeholderData: () => cachedMember() ?? undefined,
+    staleTime: 30_000,
+    retry: 1,
+  });
+}
+
+/**
  * The signed-in member from the backend, with the locally cached copy shown
  * instantly while the request is in flight.
  *
@@ -21,14 +36,11 @@ export const meKey = ['me'] as const;
  * initialData it would be treated as fresh and suppress the refetch for the
  * whole staleTime — meaning a member whose tier or recruit count had changed
  * would keep seeing the stale numbers.
+ *
+ * Callers that need to tell "loading" apart from "no member" (e.g. to avoid
+ * showing a placeholder identity) should use useMeQuery() instead.
  */
 export function useMe(): ServerMember | null {
-  const { data } = useQuery<ServerMember | null>({
-    queryKey: meKey,
-    queryFn: () => authApi.me(),
-    placeholderData: () => cachedMember() ?? undefined,
-    staleTime: 30_000,
-    retry: 1,
-  });
+  const { data } = useMeQuery();
   return data ?? null;
 }

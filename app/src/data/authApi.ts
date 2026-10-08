@@ -190,8 +190,10 @@ export const authApi = {
   },
 
   // Signed, opaque, short-lived membership credential for the card QR. Carries
-  // no personal data; the server resolves it. Falls back to null on failure so
-  // the card can degrade to its non-QR content.
+  // no personal data; the server resolves it. Falls back to null on failure —
+  // never a fabricated payload — so the card can degrade to its non-QR
+  // content instead of showing a fake, unsigned code that looks real but will
+  // fail verification at a gate.
   async cardToken(): Promise<string | null> {
     try {
       const r = await get<{ token: string }>('/me/card-token');
