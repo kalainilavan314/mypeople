@@ -35,7 +35,7 @@ export function SignUp() {
     setTouched(true);
     if (name.trim().length < 2) return;
     if (!nicInfo.valid) return;
-    if (password.length < 15) return;
+    if (password.length < 6) return;
     signupDraft.patch({
       name: name.trim(),
       nic: nicInfo.normalized,
@@ -102,6 +102,8 @@ export function SignUp() {
           display: flex;
           flex-direction: column;
           flex: 1;
+          min-height: 0;
+          overflow-y: auto;
           padding: 18px 22px calc(24px + var(--safe-bottom, 0px));
         }
         .signup-topbar {
@@ -194,7 +196,7 @@ export function SignUp() {
                   onChange={setPassword}
                   placeholder={t('auth.passwordHint')}
                   password
-                  error={touched && password.length < 15}
+                  error={touched && password.length < 6}
                   ariaLabel={t('auth.passwordLabel')}
                 />
                 <PasswordHint password={password} touched={touched} />
@@ -300,7 +302,7 @@ export function SignUp() {
 
 function PasswordHint({ password, touched }: { password: string; touched: boolean }) {
   const { t } = useTranslation();
-  const isError = touched && password.length < 15;
+  const isError = touched && password.length < 6;
   return (
     <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', marginTop: 10, color: isError ? authC.error : '#475569' }}>
       <Icon name="shield" size={16} color={isError ? authC.error : '#64748B'} style={{ marginTop: 2, flexShrink: 0 }} />

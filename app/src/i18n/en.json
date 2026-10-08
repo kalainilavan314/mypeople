@@ -17,7 +17,7 @@
     "nicLabel": "NIC number",
     "passwordLabel": "Password",
     "passwordHint": "Create a password",
-    "passwordRule": "Use at least 15 characters for better security.",
+    "passwordRule": "Use at least 6 characters.",
     "rememberMe": "Remember me",
     "forgot": "Forgot Password?",
     "login": "Login",

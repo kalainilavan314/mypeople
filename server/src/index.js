@@ -15,9 +15,11 @@ import { putObject, getObject, deleteObject, mimeFor, backend as storageBackend 
 
 const PROD = process.env.NODE_ENV === 'production';
 
-// Password policy (NIST SP 800-63B, single password factor): length is the
-// strength lever — a long minimum, a generous maximum, no composition rules.
-const MIN_PASSWORD = 15;
+// Password policy: length is the strength lever, no composition rules.
+// Lowered from the original NIST SP 800-63B-recommended 15-character minimum
+// to 6 at product request — this is a real reduction in brute-force
+// resistance, not a cosmetic change.
+const MIN_PASSWORD = 6;
 const MAX_PASSWORD = 64;
 
 // Registration is OPEN. There is no invite/referral gate anywhere — not in
