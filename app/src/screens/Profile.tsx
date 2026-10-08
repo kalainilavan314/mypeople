@@ -6,6 +6,7 @@ import { pick } from '../i18n';
 import { Icon, type IconName } from '../components/Icon';
 import { NetImage } from '../components/nn';
 import { Toggle, StatusPill, QueryBoundary } from '../components/ui';
+import { ProfileSkeleton } from '../components/ui/loaders-skeleton';
 import { useMember, useMyCommunityReports, useEvents } from '../data/queries';
 import { useMe } from '../hooks/useMe';
 import { displayDistrict } from '../lib/memberDisplay';
@@ -68,7 +69,7 @@ export function Profile() {
     .slice(0, 4);
 
   return (
-    <QueryBoundary query={memberQ}>
+    <QueryBoundary query={memberQ} fallback={<ProfileSkeleton />}>
       {(member) => (
         <main className="workspace" style={{ paddingTop: 0, paddingBottom: 80 }}>
           {/* ---- Hero header (regional cover image behind) ---- */}
@@ -640,3 +641,4 @@ function VerificationSheet({
     </dialog>
   );
 }
+

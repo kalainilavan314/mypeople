@@ -1,5 +1,5 @@
 import { useCallback, useEffect, lazy, Suspense } from 'react';
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { savedLang } from './i18n';
 import { BottomNav } from './components/BottomNav';
@@ -8,6 +8,7 @@ import { useAuth } from './state/auth';
 import { useMember } from './data/queries';
 import { api } from './data';
 import { c, font } from './theme/tokens';
+import { RouteSkeleton } from './components/ui/loaders-skeleton';
 
 // Eager screens: the first paint after auth (Home) and the pre-auth entry
 // points. Everything else is route-split (below) so the initial bundle stays
@@ -65,18 +66,10 @@ function prefetchMemberRoutes() {
   load.forEach((fn, i) => setTimeout(() => { void fn().catch(() => {}); }, i * 140));
 }
 
-/** Lightweight fallback while a route chunk loads. */
+/** Smart route-aware shimmering skeleton fallback while a route chunk loads. */
 function ScreenFallback() {
-  return (
-    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 48 }}>
-      <span
-        aria-label="Loading"
-        role="status"
-        style={{ width: 26, height: 26, border: `3px solid ${c.hairline}`, borderTopColor: c.maroon, borderRadius: '50%', display: 'inline-block', animation: 'npmSpin 800ms linear infinite' }}
-      />
-      <style>{'@keyframes npmSpin{to{transform:rotate(360deg)}}'}</style>
-    </div>
-  );
+  const { pathname } = useLocation();
+  return <RouteSkeleton pathname={pathname} />;
 }
 
 function OfflineBanner() {
