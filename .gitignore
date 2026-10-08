@@ -16,6 +16,9 @@ app/dev-dist/
 # deployed environment these live in object storage, not in the repo.
 server/uploads/
 
+# Local-only audit/review notes — not meant to be pushed or shared on branches.
+audit/
+
 # Editor / OS
 .vscode/
 .idea/
