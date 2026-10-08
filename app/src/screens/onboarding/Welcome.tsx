@@ -1,18 +1,20 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { authC, font, radius } from '../../theme/tokens';
-import { LangToggle } from '../auth/parts';
+import { font, radius } from '../../theme/tokens';
 import { Logo } from '../../components/Logo';
+import { Icon } from '../../components/Icon';
+import { setSavedLang } from '../../i18n';
 
 /**
- * First-launch welcome (NorthUnity reference): light warm-paper screen with the
- * brand row on top, an animated palmyrah path drawing inside a radial glow —
- * five pulsing district dots and their connection lines — then the province
- * badge, the "Every person is a part of the North." tagline and the gold
- * "Join the Community" call to action.
- *
- * Shown once — `markWelcomeSeen()` sets the flag and the router skips straight
- * to /login afterwards.
+ * Modern Civic Welcome Landing Screen
+ * Pixel-accurate implementation matching the official launch design:
+ * - Brand header with logo, title ("என் மக்கள் / My People"), and language switch pill
+ * - Scenic North & East district network illustration (/welcome-hero-map.png)
+ * - Northern & Eastern Province location badge pill
+ * - Signature Tamil headline typography: "இலக்கு ஒன்றுதான் / இனத்தின் விடிவு"
+ * - Decorative 3-petal lotus flourish divider
+ * - Deep navy gradient CTA button ("Join the Community →")
+ * - Direct member sign-in link ("Already a member? Sign In")
  */
 const WELCOME_SEEN = 'npm.seenWelcome';
 
@@ -20,9 +22,10 @@ export function hasSeenWelcome(): boolean {
   try {
     return localStorage.getItem(WELCOME_SEEN) === '1';
   } catch {
-    return true; // storage blocked — don't trap the user on the splash
+    return true;
   }
 }
+
 export function markWelcomeSeen(): void {
   try {
     localStorage.setItem(WELCOME_SEEN, '1');
@@ -31,181 +34,336 @@ export function markWelcomeSeen(): void {
   }
 }
 
-/* District dots — positions and colours from the NorthUnity reference. */
-const DISTRICTS = [
-  { name: 'Jaffna', color: '#14263D', x: 0.5, y: 0.18 },
-  { name: 'Kilinochchi', color: '#526A82', x: 0.52, y: 0.38 },
-  { name: 'Mannar', color: '#526A82', x: 0.2, y: 0.42 },
-  { name: 'Mullaitivu', color: '#526A82', x: 0.72, y: 0.35 },
-  { name: 'Vavuniya', color: '#526A82', x: 0.5, y: 0.6 },
-] as const;
-
-/* Connection lines radiate from the centre at these angles (degrees). */
-const CONNECTION_ANGLES = [-60, -20, 20, 60, 100];
-
-const GOLD = '#14263D';
-const INK = '#1C1917';
-
 export function Welcome() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { i18n } = useTranslation();
+  const activeLang = i18n.language === 'ta' ? 'ta' : 'en';
 
   const go = (to: '/signup' | '/login') => {
     markWelcomeSeen();
+    // Replace, not push: Welcome is a splash, not a step to come back to —
+    // without this, the back button loops Login -> Welcome -> Login forever.
     navigate(to, { replace: true });
   };
 
   return (
-    <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', background: authC.bg }}>
-      {/* Scoped animations: path draw, dot pulse, staggered fades. */}
+    <div
+      style={{
+        minHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        background: '#FFFFFF',
+        position: 'relative',
+        overflowX: 'hidden',
+      }}
+    >
       <style>{`
-        @keyframes nuDraw { to { stroke-dashoffset: 0; } }
-        @keyframes nuFade { to { opacity: 1; transform: none; } }
-        @keyframes nuPulse {
-          0%, 100% { transform: scale(.6); opacity: .55; }
-          50% { transform: scale(1); opacity: 0; }
+        .welcome-hero-wrap {
+          position: relative;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background: #FFFFFF;
         }
-        .nu-path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: nuDraw 1s cubic-bezier(.65,0,.35,1) forwards; }
-        .nu-fade { opacity: 0; transform: translateY(12px); animation: nuFade .7s cubic-bezier(.22,.61,.36,1) forwards; }
-        .nu-dot { opacity: 0; animation: nuFade .5s ease-out forwards; }
-        .nu-ring { animation: nuPulse 1.6s ease-in-out infinite; }
-        @media (prefers-reduced-motion: reduce) {
-          .nu-path { animation-duration: 1ms; }
-          .nu-fade, .nu-dot { animation-duration: 1ms; }
-          .nu-ring { animation: none; opacity: 0; }
+        .welcome-hero-img {
+          width: 100%;
+          max-width: 480px;
+          height: auto;
+          display: block;
+          max-height: 380px;
+          object-fit: contain;
+        }
+        .welcome-hero-fade {
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 48px;
+          background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+          pointer-events: none;
+        }
+        .welcome-cta-btn {
+          width: 100%;
+          max-width: 350px;
+          height: 54px;
+          border-radius: 999px;
+          border: none;
+          cursor: pointer;
+          background: linear-gradient(180deg, #182E4B 0%, #0F1E32 100%);
+          color: #FFFFFF;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          box-shadow: 0 10px 25px -4px rgba(15, 30, 50, 0.42), 0 3px 8px rgba(15, 30, 50, 0.2);
+          transition: transform 120ms ease, box-shadow 120ms ease;
+          font-weight: 700;
+          font-size: 16.5px;
+          letter-spacing: 0.01em;
+        }
+        .welcome-cta-btn:active {
+          transform: scale(0.98);
+          box-shadow: 0 4px 14px rgba(15, 30, 50, 0.3);
         }
       `}</style>
 
-      {/* ---------- brand row ---------- */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '24px 24px 0' }}>
-        <Logo size={36} style={{ borderRadius: 10 }} />
-        <span style={{ flex: 1, minWidth: 0 }}>
-          <span style={{ display: 'block', font: `800 18px/1.1 ${font.ta}`, letterSpacing: '-0.2px', color: INK }}>
-            {t('brand.nameTa')}
-          </span>
-          <span style={{ display: 'block', font: `600 12px/1.2 ${font.head}`, letterSpacing: '-0.2px', color: INK, opacity: 0.72, marginTop: 2 }}>
-            {t('brand.name')}
-          </span>
-        </span>
-        <LangToggle />
-      </div>
+      {/* ---------- Brand Header ---------- */}
+      <header
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: 'calc(14px + var(--safe-top, 0px)) 20px 10px',
+          background: '#FFFFFF',
+          zIndex: 10,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Logo size={42} style={{ borderRadius: 10 }} />
+          <div>
+            <span
+              style={{
+                display: 'block',
+                font: `800 18.5px/1.15 ${font.ta}`,
+                letterSpacing: '-0.2px',
+                color: '#0F2137',
+              }}
+            >
+              என் மக்கள்
+            </span>
+            <span
+              style={{
+                display: 'block',
+                font: `600 12.5px/1.2 ${font.head}`,
+                letterSpacing: '0.02em',
+                color: '#64748B',
+                marginTop: 1,
+              }}
+            >
+              My People
+            </span>
+          </div>
+        </div>
 
-      {/* ---------- animation area ---------- */}
-      <div style={{ flex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 0, padding: '12px 0' }}>
-        <div style={{ position: 'relative', width: 'min(85vw, 340px)', aspectRatio: '1' }}>
-          {/* radial glow */}
+        {/* Clean Pill Language Switcher */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            padding: 3,
+            borderRadius: radius.pill,
+            background: '#EFF6FF',
+            border: '1px solid rgba(191, 219, 254, 0.6)',
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => setSavedLang('ta')}
+            style={{
+              height: 32,
+              padding: '0 14px',
+              borderRadius: radius.pill,
+              cursor: 'pointer',
+              border: 'none',
+              background: activeLang === 'ta' ? '#14263D' : 'transparent',
+              color: activeLang === 'ta' ? '#FFFFFF' : '#1D4ED8',
+              font: `600 13px/1 ${font.ta}`,
+              transition: 'all 160ms ease',
+            }}
+          >
+            தமிழ்
+          </button>
+          <button
+            type="button"
+            onClick={() => setSavedLang('en')}
+            style={{
+              height: 32,
+              padding: '0 14px',
+              borderRadius: radius.pill,
+              cursor: 'pointer',
+              border: 'none',
+              background: activeLang === 'en' ? '#14263D' : 'transparent',
+              color: activeLang === 'en' ? '#FFFFFF' : '#1D4ED8',
+              font: `600 13px/1 ${font.ui}`,
+              transition: 'all 160ms ease',
+            }}
+          >
+            English
+          </button>
+        </div>
+      </header>
+
+      {/* ---------- Main Content ---------- */}
+      <main
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
+        {/* Scenic Map Hero Illustration */}
+        <div className="welcome-hero-wrap">
+          <img
+            src="/welcome-hero-map.png"
+            alt="Northern & Eastern Province Map with District Network"
+            className="welcome-hero-img"
+            loading="eager"
+          />
+          <div className="welcome-hero-fade" />
+        </div>
+
+        {/* Content Section below Map */}
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: '4px 20px 24px',
+            position: 'relative',
+            zIndex: 2,
+          }}
+        >
+          {/* Province Location Pill Badge - Compact & Refined */}
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '5px 14px',
+              background: '#EFF6FF',
+              border: '1px solid #BFDBFE',
+              borderRadius: radius.pill,
+              boxShadow: '0 1px 3px rgba(37, 99, 235, 0.05)',
+            }}
+          >
+            <Icon name="mapPin" size={13} color="#0F2137" strokeWidth={2.4} />
+            <span
+              style={{
+                font: `600 12px/1.2 ${font.ui}`,
+                color: '#0F2137',
+                letterSpacing: '0.01em',
+              }}
+            >
+              {activeLang === 'ta'
+                ? 'வடக்கு, கிழக்கு மாகாணம், இலங்கை'
+                : 'Northern & Eastern Province, Sri Lanka'}
+            </span>
+          </div>
+
+          {/* Slogan Core Headline */}
+          <h1
+            style={{
+              font: `800 32px/1.28 ${font.taSerif}`,
+              color: '#0F2137',
+              margin: '22px 0 0',
+              textAlign: 'center',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            இலக்கு ஒன்றுதான்
+            <br />
+            இனத்தின் விடிவு
+          </h1>
+
+          {/* Decorative 3-Petal Lotus Divider */}
           <div
             aria-hidden="true"
             style={{
-              position: 'absolute', inset: 0, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(20,38,61,.10) 0%, rgba(74,144,217,.05) 55%, transparent 75%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 12,
+              width: '100%',
+              maxWidth: 190,
+              margin: '18px auto 0',
             }}
-          />
+          >
+            <div style={{ flex: 1, height: 1, background: '#BFDBFE' }} />
+            <svg width="22" height="15" viewBox="0 0 24 18" fill="none" style={{ display: 'block', flex: 'none' }}>
+              <path
+                d="M12 2C12 2 8.5 7.5 8.5 12C8.5 14.5 10 16.5 12 16.5C14 16.5 15.5 14.5 15.5 12C15.5 7.5 12 2 12 2Z"
+                fill="#2563EB"
+              />
+              <path
+                d="M9.5 13C8 13 3.5 12 2 8C2 8 5.5 7 8 9.5C9.2 10.7 9.5 12 9.5 13Z"
+                fill="#60A5FA"
+              />
+              <path
+                d="M14.5 13C16 13 20.5 12 22 8C22 8 18.5 7 16 9.5C14.8 10.7 14.5 12 14.5 13Z"
+                fill="#60A5FA"
+              />
+            </svg>
+            <div style={{ flex: 1, height: 1, background: '#BFDBFE' }} />
+          </div>
 
-          {/* palmyrah path drawing — trunk, fronds, district connection lines */}
-          <svg viewBox="0 0 100 100" fill="none" style={{ position: 'absolute', inset: '7.5%', width: '85%', height: '85%' }} aria-hidden="true">
-            {/* province boundary ring */}
-            <circle cx="50" cy="50" r="42" stroke="rgba(20,38,61,.14)" strokeWidth="1" className="nu-path" pathLength={1} style={{ animationDelay: '.2s', animationDuration: '1.4s' }} />
-            {/* community connection lines */}
-            {CONNECTION_ANGLES.map((a, i) => {
-              const rad = (a * Math.PI) / 180;
-              const x2 = 50 + 38 * Math.cos(rad);
-              const y2 = 50 + 38 * Math.sin(rad);
-              return (
-                <line
-                  key={a}
-                  x1="50"
-                  y1="50"
-                  x2={x2}
-                  y2={y2}
-                  stroke="rgba(74,144,217,.5)"
-                  strokeWidth="0.8"
-                  strokeLinecap="round"
-                  className="nu-path"
-                  pathLength={1}
-                  style={{ animationDelay: `${1.4 + i * 0.06}s`, animationDuration: '.6s' }}
-                />
-              );
-            })}
-          </svg>
-
-          {/* district dots + labels */}
-          {DISTRICTS.map((d, i) => (
-            <div
-              key={d.name}
-              className="nu-dot"
-              style={{
-                position: 'absolute',
-                left: `${d.x * 100}%`,
-                top: `${d.y * 100}%`,
-                transform: 'translate(-50%, -50%)',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                animationDelay: `${1.7 + i * 0.12}s`,
-              }}
+          {/* Call to Action Button */}
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 36 }}>
+            <button
+              type="button"
+              onClick={() => go('/signup')}
+              className="welcome-cta-btn"
             >
-              <span style={{ position: 'relative', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span aria-hidden="true" className="nu-ring" style={{ position: 'absolute', inset: 0, borderRadius: 999, background: d.color, animationDelay: `${i * 0.2}s` }} />
-                <span style={{ width: 12, height: 12, borderRadius: 999, background: d.color, boxShadow: `0 0 6px 1px ${d.color}66` }} />
+              <span style={{ font: `700 16px/1 ${activeLang === 'ta' ? font.ta : font.ui}` }}>
+                {activeLang === 'ta' ? 'சமூகத்தில் இணையுங்கள்' : 'Join the Community'}
               </span>
-              <span
-                style={{
-                  font: `600 9px/1 ${font.ui}`, color: d.color, background: '#fff',
-                  padding: '3px 6px', borderRadius: 4, boxShadow: '0 1px 4px rgba(0,0,0,.08)', whiteSpace: 'nowrap',
-                }}
-              >
-                {d.name}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+              <Icon name="arrowRight" size={18} color="#FFFFFF" strokeWidth={2.4} />
+            </button>
+          </div>
 
-      {/* ---------- tagline + CTA ---------- */}
-      <div style={{ flex: 4, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 28px calc(24px + var(--safe-bottom))' }}>
-        <div className="nu-fade" style={{ textAlign: 'center', animationDelay: '2s' }}>
-          {/* province badge */}
-          <span
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px',
-              background: '#E4EDFB', border: '1px solid rgba(4,48,116,.22)', borderRadius: radius.pill,
-            }}
-          >
-            <span style={{ width: 6, height: 6, borderRadius: 999, background: GOLD }} />
-            <span style={{ font: `600 12px/1.2 ${font.ui}`, color: GOLD, letterSpacing: '.3px' }}>{t('welcome.badge')}</span>
-          </span>
-
-          <h1 style={{ font: `800 28px/1.25 ${font.head}`, letterSpacing: '-0.5px', color: INK, margin: '16px 0 0' }}>
-            {t('welcome.line1')}
-            <br />
-            {t('welcome.line2')}
-          </h1>
-
-          <div style={{ font: `400 16px/1.5 ${font.ui}`, color: '#6B6560', marginTop: 12 }}>{t('welcome.sub')}</div>
-        </div>
-
-        <div className="nu-fade" style={{ marginTop: 36, animationDelay: '2.3s' }}>
-          <button
-            type="button"
-            onClick={() => go('/signup')}
-            className="press"
-            style={{
-              width: '100%', padding: '16px 0', borderRadius: 14, border: 'none', cursor: 'pointer',
-              background: GOLD, color: '#fff', font: `700 17px/1 ${font.head}`, letterSpacing: '.3px',
-              boxShadow: '0 10px 24px -10px rgba(20,38,61,.45)',
-            }}
-          >
-            {t('welcome.cta')}
-          </button>
-
+          {/* Already a member? Sign In */}
           <button
             type="button"
             onClick={() => go('/login')}
-            style={{ display: 'block', margin: '16px auto 0', background: 'none', border: 'none', cursor: 'pointer', font: `400 14px/1 ${font.ui}`, color: '#9E9E9E' }}
+            style={{
+              display: 'block',
+              margin: '18px auto 0',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '6px 12px',
+              font: `500 14px/1.3 ${activeLang === 'ta' ? font.ta : font.ui}`,
+              color: '#4B5563',
+            }}
           >
-            {t('welcome.member')} <span style={{ color: GOLD, fontWeight: 600 }}>{t('welcome.signIn')}</span>
+            {activeLang === 'ta' ? 'ஏற்கனவே உறுப்பினரா? ' : 'Already a member? '}
+            <span style={{ color: '#0F2137', fontWeight: 800 }}>
+              {activeLang === 'ta' ? 'உள்நுழைக' : 'Sign In'}
+            </span>
           </button>
         </div>
-      </div>
+      </main>
+
+      {/* Decorative subtle blue bottom wave swoosh matching the screenshot */}
+      <svg
+        viewBox="0 0 500 130"
+        preserveAspectRatio="none"
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          width: '100%',
+          height: 130,
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+        aria-hidden="true"
+      >
+        <path
+          d="M0 65 Q130 35 250 65 T500 45 L500 130 L0 130 Z"
+          fill="rgba(224, 242, 254, 0.4)"
+        />
+        <path
+          d="M0 85 Q140 55 280 80 T500 65 L500 130 L0 130 Z"
+          fill="rgba(191, 219, 254, 0.28)"
+        />
+      </svg>
     </div>
   );
 }

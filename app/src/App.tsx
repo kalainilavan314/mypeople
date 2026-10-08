@@ -179,21 +179,32 @@ function RequireAuth() {
   return <TabLayout />;
 }
 
+/** Guard for /welcome and /login: a member with a live session who lands
+ * here (stale bookmark, back button, link from an old chat) goes straight
+ * to the app instead of being shown the splash or login form again. */
+function RedirectIfAuthed() {
+  const { authed } = useAuth();
+  if (authed) return <Navigate to="/" replace />;
+  return <Outlet />;
+}
+
 export function App() {
   return (
     <Routes>
-      {/* First launch */}
-      <Route element={<OnboardingLayout />}>
-        <Route path="/welcome" element={<Welcome />} />
-      </Route>
+      {/* First launch — a live session skips straight past this to the app */}
+      <Route element={<RedirectIfAuthed />}>
+        <Route element={<OnboardingLayout />}>
+          <Route path="/welcome" element={<Welcome />} />
+        </Route>
 
-      {/* Auth (NIC + password — no mobile number, no OTP) */}
-      <Route element={<OnboardingLayout />}>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/signup/profile" element={<ProfileSetup />} />
-        <Route path="/signup/questions" element={<Questions />} />
-        <Route path="/forgot" element={<Forgot />} />
+        {/* Auth (NIC + password — no mobile number, no OTP) */}
+        <Route element={<OnboardingLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/signup/profile" element={<ProfileSetup />} />
+          <Route path="/signup/questions" element={<Questions />} />
+          <Route path="/forgot" element={<Forgot />} />
+        </Route>
       </Route>
 
       {/* Legacy phone-OTP onboarding — superseded by the NIC flow above, kept
