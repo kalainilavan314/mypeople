@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { c, font, radius, shadow } from '../theme/tokens';
 import { Icon, type IconName } from '../components/Icon';
-import { QueryBoundary } from '../components/ui';
+import { QueryBoundary, CustomSelect } from '../components/ui';
 import { DISTRICTS } from '../data/divisions';
 import { useMember, useMyCommunityReports, useSubmitCommunityReport } from '../data/queries';
 import type { CommunityReport, CommunityReportCategory, CommunityReportPriority, CommunityReportStatus } from '../data/types';
@@ -266,25 +266,17 @@ function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
           </div>
         </div>
 
-        <div className="cr-location-card">
-          <Icon name="mapPin" size={20} color="#64748B" />
-          <div style={{ flex: 1 }}>
-            <span style={{ display: 'block', font: `500 11px/1 ${font.ui}`, color: '#64748B' }}>
-              {t('creport.district', 'District')}
-            </span>
-            <select
-              value={districtVal}
-              onChange={(e) => setDistrict(e.target.value)}
-              className="cr-location-select"
-            >
-              {DISTRICTS.map((d) => (
-                <option key={d.code} value={d.code}>
-                  {d.name_en}
-                </option>
-              ))}
-            </select>
-          </div>
-          <Icon name="chevron" size={16} color="#64748B" style={{ transform: 'rotate(90deg)' }} />
+        <div style={{ marginTop: 12 }}>
+          <span style={{ display: 'block', font: `600 12px/1 ${font.ui}`, color: '#64748B', marginBottom: 6 }}>
+            {t('creport.district', 'District')}
+          </span>
+          <CustomSelect
+            value={districtVal}
+            onChange={(val) => setDistrict(val)}
+            placeholder={t('creport.district', 'District')}
+            ariaLabel={t('creport.district', 'District')}
+            options={DISTRICTS.map((d) => ({ value: d.code, label: d.name_en }))}
+          />
         </div>
 
         <button

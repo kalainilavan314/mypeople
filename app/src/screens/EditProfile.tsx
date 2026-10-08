@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { c, font, radius } from '../theme/tokens';
 import { Icon } from '../components/Icon';
 import { NetImage } from '../components/nn';
+import { DsSheet, GsSheet } from '../components/DivisionBottomSheet';
 import { authApi, type ServerMember } from '../data/authApi';
 import { keys } from '../data/queries';
 import { useMe, meKey } from '../hooks/useMe';
@@ -46,6 +47,8 @@ function EditForm({ me }: { me: ServerMember }) {
   const [districtCode, setDistrictCode] = useState<string | null>(me.districtCode);
   const [dsCode, setDsCode] = useState<string | null>(me.dsCode);
   const [gsCode, setGsCode] = useState<string | null>(me.gsCode);
+  const [dsSheetOpen, setDsSheetOpen] = useState(false);
+  const [gsSheetOpen, setGsSheetOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -56,6 +59,7 @@ function EditForm({ me }: { me: ServerMember }) {
 
   const district = useMemo(() => DISTRICTS.find((d) => d.code === districtCode) ?? null, [districtCode]);
   const ds = useMemo(() => district?.ds.find((x) => x.code === dsCode) ?? null, [district, dsCode]);
+  const gs = useMemo(() => ds?.gn.find((g) => g.code === gsCode) ?? null, [ds, gsCode]);
 
   const onFile = async (f: File | undefined | null) => {
     setError(null);
@@ -104,12 +108,6 @@ function EditForm({ me }: { me: ServerMember }) {
     borderRadius: radius.md, background: c.card, color: c.ink, font: `500 14px/1.4 ${font.ta}`,
   };
   const labelStyle: React.CSSProperties = { font: `600 12px/1 ${font.ta}`, color: c.ink2, margin: '16px 0 7px', display: 'block' };
-  const selectWrap: React.CSSProperties = { position: 'relative' };
-  const chev = (
-    <span style={{ position: 'absolute', right: 14, top: 15, pointerEvents: 'none' }}>
-      <Icon name="chevron" size={16} color={c.ink3} style={{ transform: 'rotate(90deg)' }} />
-    </span>
-  );
 
   return (
     <div className="fade-up" style={{ background: c.page, minHeight: '100%' }}>
@@ -165,7 +163,7 @@ function EditForm({ me }: { me: ServerMember }) {
       </div>
 
       {/* form */}
-      <div style={{ padding: '18px 16px calc(28px + var(--safe-bottom))' }}>
+      <div style={{ padding: '18px 16px calc(120px + var(--safe-bottom))' }}>
         <label style={{ ...labelStyle, marginTop: 0 }} htmlFor="ep-name">{t('auth.nameLabel')}</label>
         <input id="ep-name" value={name} onChange={(e) => setName(e.target.value)} style={fieldStyle} />
 
@@ -173,22 +171,24 @@ function EditForm({ me }: { me: ServerMember }) {
         <input id="ep-dob" type="date" value={dob} onChange={(e) => setDob(e.target.value)} max={new Date().toISOString().slice(0, 10)} style={fieldStyle} />
 
         <span style={labelStyle}>{t('editProfile.gender')}</span>
-        <div style={{ display: 'flex', gap: 8 }}>
-          {(['male', 'female', 'other'] as const).map((g) => {
-            const on = gender === g;
+        <div style={{ display: 'flex', gap: 10 }}>
+          {(
+            [
+              { id: 'male', label: t('profileSetup.male', 'ஆண்'), icon: 'male' as const },
+              { id: 'female', label: t('profileSetup.female', 'பெண்'), icon: 'female' as const },
+              { id: 'other', label: t('profileSetup.other', 'மற்றவை'), icon: 'genderOther' as const },
+            ] as const
+          ).map((g) => {
+            const on = gender === g.id;
             return (
               <button
-                key={g}
-                onClick={() => setGender(on ? null : g)}
-                aria-pressed={on}
-                style={{
-                  flex: 1, padding: '11px 0', cursor: 'pointer', textAlign: 'center',
-                  background: on ? c.maroonTint : c.cardCream,
-                  border: `${on ? 2 : 1}px solid ${on ? c.maroon : c.hairline2}`, borderRadius: 10,
-                  font: `${on ? 700 : 400} 13px/1 ${font.ta}`, color: on ? c.maroon : c.ink2,
-                }}
+                key={g.id}
+                type="button"
+                onClick={() => setGender(on ? null : g.id)}
+                className={`profile-gender-pill ${on ? 'active' : ''}`}
               >
-                {t(`editProfile.g_${g}`)}
+                <Icon name={g.icon} size={16} color={on ? '#FFFFFF' : '#64748B'} strokeWidth={2.2} />
+                <span>{g.label}</span>
               </button>
             );
           })}
@@ -198,45 +198,131 @@ function EditForm({ me }: { me: ServerMember }) {
         <input id="ep-phone" value={phone} onChange={(e) => setPhone(e.target.value.replace(/[^\d+ ]/g, ''))} placeholder="07X XXX XXXX" inputMode="tel" style={fieldStyle} />
 
         <span style={labelStyle}>{t('editProfile.division')}</span>
-        <div style={selectWrap}>
-          <select
-            value={districtCode ?? ''}
-            onChange={(e) => { setDistrictCode(e.target.value || null); setDsCode(null); setGsCode(null); }}
-            aria-label={t('creport.district')}
-            style={{ ...fieldStyle, appearance: 'none', cursor: 'pointer' }}
-          >
-            <option value="">{t('creport.district')}…</option>
-            {DISTRICTS.map((d) => <option key={d.code} value={d.code}>{d.name_en}</option>)}
-          </select>
-          {chev}
+
+        {/* District Pill Wrap */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', margin: '4px 0 12px' }}>
+          {DISTRICTS.map((dist) => (
+            <button
+              key={dist.code}
+              type="button"
+              onClick={() => {
+                setDistrictCode(dist.code);
+                setDsCode(null);
+                setGsCode(null);
+              }}
+              className={`profile-chip ${districtCode === dist.code ? 'active' : ''}`}
+            >
+              {dist.name_en}
+            </button>
+          ))}
         </div>
-        {district && (
-          <div style={{ ...selectWrap, marginTop: 8 }}>
-            <select
-              value={dsCode ?? ''}
-              onChange={(e) => { setDsCode(e.target.value || null); setGsCode(null); }}
-              aria-label={t('editProfile.ds')}
-              style={{ ...fieldStyle, appearance: 'none', cursor: 'pointer' }}
+
+        {/* DS Division Selector Card */}
+        <button
+          type="button"
+          className="profile-select-btn"
+          onClick={() => district && setDsSheetOpen(true)}
+          style={{ opacity: district ? 1 : 0.6 }}
+        >
+          <span
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: 10,
+              background: '#EFF6FF',
+              display: 'grid',
+              placeItems: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <Icon name="landmark" size={18} color="#14263D" />
+          </span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ font: `700 13px/1.2 ${font.ta}`, color: '#1E293B' }}>
+              {t('editProfile.ds')}
+            </div>
+            <div
+              style={{
+                font: `500 13px/1.3 ${font.ta}`,
+                color: ds ? '#14263D' : '#64748B',
+                marginTop: 3,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
             >
-              <option value="">{t('editProfile.ds')}…</option>
-              {district.ds.map((x) => <option key={x.code} value={x.code}>{x.name_en}</option>)}
-            </select>
-            {chev}
+              {ds ? ds.name_en : (district ? 'DS பிரிவைத் தேர்ந்தெடுக்கவும்' : 'முதலில் மாவட்டத்தைத் தேர்ந்தெடுக்கவும்')}
+            </div>
           </div>
+          <Icon name="chevron" size={16} color="#94A3B8" />
+        </button>
+
+        {/* GS Division Selector Card */}
+        <button
+          type="button"
+          className="profile-select-btn"
+          onClick={() => dsCode && setGsSheetOpen(true)}
+          style={{ opacity: dsCode ? 1 : 0.6, marginTop: 10 }}
+        >
+          <span
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: 10,
+              background: '#EFF6FF',
+              display: 'grid',
+              placeItems: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <Icon name="mapPin" size={18} color="#14263D" />
+          </span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ font: `700 13px/1.2 ${font.ta}`, color: '#1E293B' }}>
+              {t('editProfile.gs')}
+            </div>
+            <div
+              style={{
+                font: `500 13px/1.3 ${font.ta}`,
+                color: gs ? '#14263D' : '#64748B',
+                marginTop: 3,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {gs ? `${gs.name} (${gs.ref})` : (dsCode ? 'GS பிரிவைத் தேர்ந்தெடுக்கவும்' : 'முதலில் DS பிரிவைத் தேர்ந்தெடுக்கவும்')}
+            </div>
+          </div>
+          <Icon name="chevron" size={16} color="#94A3B8" />
+        </button>
+
+        {/* DS Division Bottom Sheet */}
+        {dsSheetOpen && district && (
+          <DsSheet
+            district={district}
+            selectedCode={dsCode}
+            onPick={(code) => {
+              setDsCode(code);
+              setGsCode(null);
+              setDsSheetOpen(false);
+            }}
+            onClose={() => setDsSheetOpen(false)}
+          />
         )}
-        {ds && (
-          <div style={{ ...selectWrap, marginTop: 8 }}>
-            <select
-              value={gsCode ?? ''}
-              onChange={(e) => setGsCode(e.target.value || null)}
-              aria-label={t('editProfile.gs')}
-              style={{ ...fieldStyle, appearance: 'none', cursor: 'pointer' }}
-            >
-              <option value="">{t('editProfile.gs')}…</option>
-              {ds.gn.map((g) => <option key={g.code} value={g.code}>{g.name} ({g.ref})</option>)}
-            </select>
-            {chev}
-          </div>
+
+        {/* GS Division Bottom Sheet */}
+        {gsSheetOpen && districtCode && dsCode && (
+          <GsSheet
+            districtCode={districtCode}
+            dsCode={dsCode}
+            selectedCode={gsCode}
+            onPick={(g) => {
+              setGsCode(g.code);
+              setGsSheetOpen(false);
+            }}
+            onClose={() => setGsSheetOpen(false)}
+          />
         )}
 
         {error && (
