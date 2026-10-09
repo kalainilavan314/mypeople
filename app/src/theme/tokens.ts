@@ -81,10 +81,13 @@ export const grad = {
   you: 'var(--grad-you)',
 } as const;
 
+// Latin-first everywhere so English never renders in Noto Sans Tamil; Tamil
+// glyphs fall back to Noto per-glyph. `taSerif` stays Tamil-serif-first because
+// it is only ever applied to pure-Tamil display slogans.
 export const font = {
-  ui: "'Inter', 'Noto Sans Tamil', -apple-system, BlinkMacSystemFont, sans-serif",
-  head: "'Inter', 'Noto Sans Tamil', -apple-system, BlinkMacSystemFont, sans-serif",
-  ta: "'Noto Sans Tamil', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+  ui: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Tamil', sans-serif",
+  head: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Tamil', sans-serif",
+  ta: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Tamil', sans-serif",
   taSerif: "'Noto Serif Tamil', 'Noto Sans Tamil', serif",
   mono: "'JetBrains Mono', ui-monospace, monospace",
 } as const;
@@ -99,73 +102,73 @@ export const font = {
 // working unchanged; they now hold navy values.
 // ----------------------------------------------------------------------------
 
-// Accent scale (logo navy + variants). Name kept as `green` for back-compat.
+// Accent scale (Civic Navy #0F2942 + variants). Name kept as `green` for back-compat.
 export const green = {
-  50: '#F5F9FF',
-  100: '#E4EDFB',
-  200: '#C3D8F4',
-  300: '#8FB4E6',
-  bright: '#203B59',
-  400: '#0F57BC',
-  base: '#14263D',
-  500: '#14263D',
-  deep: '#032B68',
-  600: '#032B68',
-  700: '#021D47',
+  50: '#F4F8FC',
+  100: '#E8EDF3',
+  200: '#C6D3E0',
+  300: '#8CA0B6',
+  bright: '#1B3A57',
+  400: '#2563EB',
+  base: '#0F2942',
+  500: '#0F2942',
+  deep: '#091D30',
+  600: '#091D30',
+  700: '#061320',
   ink: '#FFFFFF',
 } as const;
 
-// Brand button gradient (logo navy) — used on CTAs / active tab.
-export const greenGradient = 'linear-gradient(135deg, #14263D 0%, #203B59 100%)';
+// Brand button gradient (Civic Navy) — used on CTAs / active tab.
+export const greenGradient = 'linear-gradient(135deg, #0F2942 0%, #1B3A57 100%)';
 
 export const authC = {
-  // Surfaces — white and near-white with a faint cool cast.
-  bg: '#F7FAFD',
+  // Surfaces — white and near-white with a faint cool cast (spec §2.1).
+  bg: '#F8FAFC',
   bgDeep: '#EEF3F9',
   surface: '#FFFFFF',
-  surface2: '#EFF4FA',
-  field: '#F2F6FC', // input fill — Material "filled" style
-  fieldBorder: '#E4EAF2',
-  fieldFocus: '#14263D',
-  line: '#E4EAF2',
+  surface2: '#F1F5F9',
+  field: '#F8FAFC', // input fill
+  fieldBorder: '#CBD5E1', // spec input border
+  fieldFocus: '#0F2942',
+  line: '#E2E8F0',
   glass: 'rgba(255,255,255,.85)',
   glassBorder: 'rgba(255,255,255,.7)',
 
-  // Accent (logo navy)
-  green: '#14263D',
-  greenBright: '#203B59',
-  greenDeep: '#032B68',
-  greenSoft: '#E4EDFB',
+  // Accent (Civic Navy #0F2942)
+  green: '#0F2942',
+  greenBright: '#1B3A57',
+  greenDeep: '#091D30',
+  greenSoft: '#E8EDF3',
   greenGrad: greenGradient,
-  greenGradPressed: 'linear-gradient(135deg, #032B68 0%, #14263D 100%)',
-  greenGlow: '0 8px 24px -6px rgba(4,48,116,.38)',
+  greenGradPressed: 'linear-gradient(135deg, #091D30 0%, #0F2942 100%)',
+  greenGlow: '0 8px 24px -6px rgba(15,41,66,.38)',
 
-  // Accent purple / blue
-  purple: '#7A5CC4',
-  lavender: '#017DFC',
+  // Accent blue (spec Civic Blue)
+  purple: '#2563EB',
+  lavender: '#2563EB',
 
-  // Text
-  text: '#0B1B3A',
-  text2: '#4A5A78',
-  text3: '#687481', // muted / placeholder
+  // Text (spec §2.1)
+  text: '#0F172A',
+  text2: '#334155',
+  text3: '#475569', // muted / placeholder
   onGreen: '#FFFFFF',
 
-  // Semantic
-  error: '#C10504',
-  errorSoft: '#FDE4E4',
-  success: '#1F8B34',
+  // Semantic (spec §2.1)
+  error: '#DC2626',
+  errorSoft: '#FEF2F2',
+  success: '#059669',
 } as const;
 
 export const ease = 'cubic-bezier(.22,.61,.36,1)';
 export const dur = { fast: 160, mid: 260, slow: 480 } as const;
 
-// Radii mirror tokens.css --r-* (civic spec): buttons/inputs 10–12, cards 12–16.
+// Radii mirror tokens.css --r-* (spec §8.2): inputs/buttons 6pt, cards ~12.
 export const radius = {
-  sm: 10, // inputs, buttons
-  md: 12,
-  lg: 14, // standard card
+  sm: 6, // inputs, buttons
+  md: 8,
+  lg: 12, // standard card
   xl: 16, // feature card
-  xxl: 18, // large feature card
+  xxl: 20, // large feature card
   pill: 999,
 } as const;
 
@@ -182,20 +185,22 @@ export const space = {
   gutter: 20, // mobile page horizontal padding
 } as const;
 
-// Control heights (civic spec §23/§24: inputs 48–52, buttons large 48 / medium 44).
-export const control = { h: 52, hSm: 48, touchMin: 44 } as const;
+// Control heights (spec §8.2: input 44pt, primary button 40pt; we use 48 for
+// comfortable touch, 44 inputs — both ≥ the 44px WCAG 2.5.5 target).
+export const control = { h: 48, hSm: 44, touchMin: 44 } as const;
 
-// Typography scale (px). `lh` = line-height px, `ls` = letter-spacing.
-// Tamil should not inherit negative tracking — pass the `.ta`/lang override in CSS.
+// Typography scale (px) derived from spec §2.3 (pt → px). `lh` = line-height px,
+// `ls` = letter-spacing. Tamil must not inherit negative tracking — the
+// `:lang(ta)`/`.ta` override in global.css resets it and relaxes line-height.
 export const type = {
-  page: { size: 28, lh: 36, weight: 700, ls: '-0.02em' },
-  section: { size: 22, lh: 28, weight: 700, ls: '-0.01em' },
-  card: { size: 18, lh: 24, weight: 600, ls: 'normal' },
-  body: { size: 16, lh: 24, weight: 400, ls: 'normal' },
-  label: { size: 14, lh: 20, weight: 600, ls: 'normal' },
-  secondary: { size: 14, lh: 20, weight: 400, ls: 'normal' },
-  caption: { size: 12, lh: 16, weight: 500, ls: 'normal' },
-  nav: { size: 12, lh: 16, weight: 600, ls: 'normal' },
+  page: { size: 28, lh: 36, weight: 700, ls: '-0.01em' }, // Display greeting / titles
+  section: { size: 20, lh: 27, weight: 700, ls: '-0.005em' }, // Section headers
+  card: { size: 16, lh: 22, weight: 600, ls: 'normal' }, // Card headlines
+  body: { size: 15, lh: 22, weight: 400, ls: 'normal' }, // Body / inputs
+  label: { size: 13, lh: 18, weight: 600, ls: 'normal' }, // Input labels
+  secondary: { size: 13, lh: 20, weight: 400, ls: 'normal' }, // Metadata
+  caption: { size: 12, lh: 16, weight: 600, ls: 'normal' }, // Badges, pills, Case IDs
+  nav: { size: 12, lh: 16, weight: 600, ls: 'normal' }, // Tab labels
 } as const;
 
 export const shadow = {
