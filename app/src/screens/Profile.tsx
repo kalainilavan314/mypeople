@@ -87,7 +87,8 @@ export function Profile() {
             {/* ---------- Primary navigation ---------- */}
             <nav aria-label={t('profile.sections', 'Profile sections')} style={{ marginTop: 16 }}>
               <div style={cardListStyle}>
-                <Row icon="mapPin" title={t('profile.myArea', 'My area')} sub={area} onClick={() => navigate('/area')} first />
+                <Row icon="idCard" title={t('profile.myCard', 'My card')} sub={t('profile.myCardSub', 'Member credential and QR')} onClick={() => navigate('/card')} first />
+                <Row icon="mapPin" title={t('profile.myArea', 'My area')} sub={area} onClick={() => navigate('/area')} />
                 <Row icon="trending" title={t('profile.myActivity', 'My activity')} sub={t('profile.myActivitySub2', 'Reports, events, surveys and learning')} onClick={() => navigate('/reports')} />
                 <Row icon="pencil" title={t('profile.editProfile', 'Edit profile')} sub={t('profile.editProfileSub2', 'Update personal and contact details')} onClick={() => navigate('/profile/edit')} />
                 <Row icon="shield" title={t('profile.verificationDetails', 'Verification details')} sub={t('profile.verificationSub', 'Identity and membership status')} onClick={() => setVerifyOpen(true)} />

@@ -422,6 +422,40 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   background: var(--soft-blue);
   color: var(--primary);
 }
+/* Elevated centre Report FAB */
+.work-nav .work-nav-fab-btn {
+  position: relative;
+  top: -12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+}
+.work-nav-fab {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 18px -4px rgba(15, 41, 66, 0.45);
+  border: 4px solid var(--card);
+  transition: transform 140ms var(--ease), box-shadow 140ms var(--ease);
+}
+.work-nav-fab-btn:active .work-nav-fab {
+  transform: scale(0.92);
+  box-shadow: 0 3px 10px rgba(15, 41, 66, 0.3);
+}
+.work-nav-fab-label {
+  font: 700 12px/1 var(--font-ui);
+  color: var(--ink-2);
+}
 @media (max-width: 360px) {
   .workspace {
     padding: 16px 12px;
@@ -431,6 +465,10 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   }
   .work-nav button {
     font-size: 11px;
+  }
+  .work-nav-fab {
+    width: 50px;
+    height: 50px;
   }
 }
 
