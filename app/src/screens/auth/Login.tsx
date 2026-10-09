@@ -137,7 +137,7 @@ export function Login() {
           box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
         }
         .login-input-box.error {
-          border-color: #EF4444;
+          border-color: #DC2626;
           background: #FEF2F2;
         }
         .login-native-input {
@@ -316,7 +316,7 @@ export function Login() {
                 />
               </div>
               {touched && nic.length > 0 && !nicOk && (
-                <div style={{ marginTop: 6, font: `600 12px/1.3 var(--font-ui, 'Inter', sans-serif)`, color: '#EF4444' }}>
+                <div style={{ marginTop: 6, font: `600 12px/1.3 var(--font-ui, 'Inter', sans-serif)`, color: '#DC2626' }}>
                   {t('auth.errNic')}
                 </div>
               )}

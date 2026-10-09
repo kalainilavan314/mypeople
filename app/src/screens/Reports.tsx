@@ -19,14 +19,17 @@ const CATEGORIES: {
   color: string;
   label: string;
 }[] = [
-  { key: 'road', icon: 'road', bg: '#EBF3FC', color: '#102D55', label: 'Road' },
-  { key: 'water', icon: 'droplet', bg: '#E0F2FE', color: '#0284C7', label: 'Water' },
-  { key: 'waste', icon: 'trash', bg: '#F3E8FF', color: '#9333EA', label: 'Waste' },
-  { key: 'electricity', icon: 'bolt', bg: '#FEF3C7', color: '#D97706', label: 'Electricity' },
-  { key: 'agriculture', icon: 'sprout', bg: '#DCFCE7', color: '#16A34A', label: 'Agriculture' },
-  { key: 'environment', icon: 'leaf', bg: '#D1FAE5', color: '#059669', label: 'Environment' },
-  { key: 'public_facility', icon: 'landmark', bg: '#FFE4E6', color: '#E11D48', label: 'Public Facility' },
-  { key: 'other', icon: 'dotsHorizontal', bg: '#F1F5F9', color: '#475569', label: 'Other' },
+  // Issue categories are a controlled vocabulary; the icon + label carries the
+  // meaning, so every chip uses the same restrained navy-on-soft-blue (no
+  // rainbow category colours) per the spec.
+  { key: 'road', icon: 'road', bg: 'var(--soft-blue)', color: 'var(--primary)', label: 'Road' },
+  { key: 'water', icon: 'droplet', bg: 'var(--soft-blue)', color: 'var(--primary)', label: 'Water' },
+  { key: 'waste', icon: 'trash', bg: 'var(--soft-blue)', color: 'var(--primary)', label: 'Waste' },
+  { key: 'electricity', icon: 'bolt', bg: 'var(--soft-blue)', color: 'var(--primary)', label: 'Electricity' },
+  { key: 'agriculture', icon: 'sprout', bg: 'var(--soft-blue)', color: 'var(--primary)', label: 'Agriculture' },
+  { key: 'environment', icon: 'leaf', bg: 'var(--soft-blue)', color: 'var(--primary)', label: 'Environment' },
+  { key: 'public_facility', icon: 'landmark', bg: 'var(--soft-blue)', color: 'var(--primary)', label: 'Public Facility' },
+  { key: 'other', icon: 'dotsHorizontal', bg: 'var(--soft-blue)', color: 'var(--primary)', label: 'Other' },
 ];
 
 const PRIORITIES: {
@@ -35,9 +38,11 @@ const PRIORITIES: {
   color: string;
   label: string;
 }[] = [
-  { key: 'low', bg: '#EAF7F0', color: '#16835D', label: 'Low' },
-  { key: 'medium', bg: '#FFF5E8', color: '#D97706', label: 'Medium' },
-  { key: 'high', bg: '#FEE2E2', color: '#DC2626', label: 'High' },
+  // Priority maps to urgency, so semantic colour here is meaningful (not
+  // decorative): success / warning / alert from the token system.
+  { key: 'low', bg: 'var(--success-bg)', color: 'var(--success)', label: 'Low' },
+  { key: 'medium', bg: 'var(--warning-bg)', color: 'var(--warning)', label: 'Medium' },
+  { key: 'high', bg: 'var(--error-bg)', color: 'var(--error)', label: 'High' },
 ];
 
 const STAGES: CommunityReportStatus[] = ['submitted', 'under_review', 'in_progress', 'resolved'];
@@ -172,7 +177,7 @@ function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
             {t('creport.calloutSub', 'All submissions are reviewed by local authorities.')}
           </span>
         </div>
-        <Icon name="chevron" size={16} color="#1468D9" strokeWidth={2.4} />
+        <Icon name="chevron" size={16} color="var(--accent)" strokeWidth={2.4} />
       </div>
 
       {/* Step 1: What would you like to report? */}
@@ -293,7 +298,7 @@ function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
             }
           }}
         >
-          <Icon name="mapPin" size={16} color="#1468D9" strokeWidth={2.4} />
+          <Icon name="mapPin" size={16} color="var(--accent)" strokeWidth={2.4} />
           <span>{t('creport.useCurrentLoc', 'Use Current Location')}</span>
         </button>
       </section>
