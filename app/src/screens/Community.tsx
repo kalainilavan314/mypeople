@@ -22,58 +22,62 @@ type InvolvedItem = {
   ta: [string, string];
 };
 
+// Restrained palette (spec §2.1): every service tile uses the same navy icon on
+// soft-blue — the icon + label carry the meaning, not colour (WCAG 1.4.1).
+const TILE_BG = 'var(--soft-blue)';
+const TILE_FG = 'var(--primary)';
 const INVOLVED_TILES: InvolvedItem[] = [
   {
     to: '/reports',
     icon: 'report',
-    bg: '#EBF3FC',
-    color: '#1468D9',
-    glow: '#EBF3FC',
+    bg: TILE_BG,
+    color: TILE_FG,
+    glow: 'transparent',
     en: ['Community reporting', 'Submit an issue and follow its status'],
     ta: ['சமூக அறிக்கை', 'பிரச்சினையைப் பதிவு செய்து நிலையைப் பாருங்கள்'],
   },
   {
     to: '/skills',
     icon: 'handHeart',
-    bg: '#E8F7EE',
-    color: '#16835D',
-    glow: '#E8F7EE',
+    bg: TILE_BG,
+    color: TILE_FG,
+    glow: 'transparent',
     en: ['Volunteer', 'Offer your skills and time locally'],
     ta: ['தன்னார்வ சேவை', 'உங்கள் திறனையும் நேரத்தையும் வழங்குங்கள்'],
   },
   {
     to: '/events',
     icon: 'calendar',
-    bg: '#FFF5E8',
-    color: '#D97706',
-    glow: '#FFF5E8',
+    bg: TILE_BG,
+    color: TILE_FG,
+    glow: 'transparent',
     en: ['Local activities', 'Meetings and events near you'],
     ta: ['உள்ளூர் நிகழ்வுகள்', 'உங்கள் பகுதியில் கூட்டங்களும் நிகழ்வுகளும்'],
   },
   {
     to: '/fund',
     icon: 'coins',
-    bg: '#F3E8FF',
-    color: '#7C3AED',
-    glow: '#F3E8FF',
+    bg: TILE_BG,
+    color: TILE_FG,
+    glow: 'transparent',
     en: ['Party Fund', 'Contribute to movement operations'],
     ta: ['கட்சி நிதி', 'இயக்கச் செயற்பாடுகளுக்கு பங்களியுங்கள்'],
   },
   {
     to: '/referral',
     icon: 'users',
-    bg: '#FCE7F3',
-    color: '#DB2777',
-    glow: '#FCE7F3',
+    bg: TILE_BG,
+    color: TILE_FG,
+    glow: 'transparent',
     en: ['Invite a member', 'Share your referral and grow the roll'],
     ta: ['உறுப்பினரை அழையுங்கள்', 'உங்கள் பரிந்துரைக் குறியீட்டைப் பகிருங்கள்'],
   },
   {
     to: '/gallery',
     icon: 'image',
-    bg: '#E6FFFA',
-    color: '#0D9488',
-    glow: '#E6FFFA',
+    bg: TILE_BG,
+    color: TILE_FG,
+    glow: 'transparent',
     en: ['Community gallery', 'Photos from across the five districts'],
     ta: ['சமூகப் படங்கள்', 'ஐந்து மாவட்டங்களிலிருந்து படங்கள்'],
   },
@@ -92,24 +96,24 @@ const EXPLORE_TILES: ExploreItem[] = [
   {
     to: '/ideas',
     icon: 'bulb',
-    bg: '#EBF3FC',
-    color: '#1468D9',
+    bg: TILE_BG,
+    color: TILE_FG,
     en: ['Community ideas', 'Share and explore ideas for a better tomorrow'],
     ta: ['சமூகக் கருத்துகள்', 'சிறந்த நாளைக்கான கருத்துகளைப் பகிருங்கள்'],
   },
   {
     to: '/survey',
     icon: 'trending',
-    bg: '#E8F7EE',
-    color: '#16835D',
+    bg: TILE_BG,
+    color: TILE_FG,
     en: ['Surveys', 'Your opinion shapes change'],
     ta: ['கருத்துக்கணிப்புகள்', 'உங்கள் கருத்து மாற்றத்தை உருவாக்கும்'],
   },
   {
     to: '/courses',
     icon: 'gradCap',
-    bg: '#F3E8FF',
-    color: '#7C3AED',
+    bg: TILE_BG,
+    color: TILE_FG,
     en: ['Learning', 'Resources and knowledge for our community'],
     ta: ['கற்றல்', 'எங்கள் சமூகத்திற்கான வளங்களும் அறிவும்'],
   },
@@ -131,7 +135,7 @@ export function Community() {
       <header className="cm-head-redesign">
         <div>
           <div className="cm-eyebrow-row">
-            <Icon name="users" size={17} color="#1468D9" strokeWidth={2.4} />
+            <Icon name="users" size={17} color="var(--accent)" strokeWidth={2.4} />
             <span>My People / என் மக்கள்</span>
           </div>
           <h1 className="cm-title">{t('Community', 'Community')}</h1>
@@ -203,7 +207,7 @@ export function Community() {
           </div>
 
           <div className="cm-hero-map-pin">
-            <Icon name="mapPin" size={18} color="#1468D9" strokeWidth={2.5} />
+            <Icon name="mapPin" size={18} color="var(--accent)" strokeWidth={2.5} />
           </div>
         </div>
       </section>
@@ -259,7 +263,7 @@ export function Community() {
       <section>
         <div className="cm-section-header-row">
           <div className="cm-section-title-wrap">
-            <Icon name="book" size={18} color="#1468D9" strokeWidth={2.2} />
+            <Icon name="book" size={18} color="var(--accent)" strokeWidth={2.2} />
             <h2 className="cm-section-heading">{t('Explore & Learn', 'Explore & Learn')}</h2>
           </div>
           <Link to="/ideas" className="cm-section-see-all">
