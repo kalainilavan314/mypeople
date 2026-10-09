@@ -1,408 +1,270 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { c, font } from '../theme/tokens';
+import { Link } from 'react-router-dom';
+import { c, font, radius, type as ty } from '../theme/tokens';
 import { useMeQuery } from '../hooks/useMe';
-import { useEvents, useAnnouncements, useMember } from '../data/queries';
-import { authApi } from '../data/authApi';
+import { useEvents } from '../data/queries';
 import { QueryBoundary } from '../components/ui';
 import { Icon, type IconName } from '../components/Icon';
-import { QR } from '../lib/qr';
-import { displayMemberName, displayMemberCode } from '../lib/memberDisplay';
+import { displayMemberName } from '../lib/memberDisplay';
 import { useWorkspaceText } from '../components/MemberWorkspace';
-import { HomeTopBar } from '../components/HomeTopBar';
 
-/* ============================================================== Home Redesign
-   Modern Civic Dashboard:
-   - Sticky brand top bar with quick language switch and notifications
-   - Regional hero with welcome greeting & quick exploration actions
-   - Elevated Membership Card with dynamic real signed QR & honest verification
-   - 4x2 Quick Access pastel grid
-   - Featured live upcoming events with date chip & attendee badge
-   - Real local updates feed with scope tags and relative timestamps
-   - Community Highlights horizontal card carousel & movement banner
+/* ================================================================= Home — H01
+   The next-action desk (spec §3 / wireframe H01–H02):
+   - Header: time-of-day greeting + assigned GN division + notifications bell
+   - "Your next step" priority card (navy accent) — or, while identity review is
+     pending, the H02 "Verification in progress" amber state with locked actions
+   - 2×2 quick action grid: Report · Volunteer · My area · Community
+   - "Coming up nearby" — the next relevant event with a date chip
+   - Mission tagline footer
+   No giant cover image and no competing dashboards (spec guardrail); the member
+   credential and QR live on the Card tab (C01), not here.
 ============================================================================= */
 
-// Quick Access — 8 core civic destinations with curated pastel tones
-const QUICK: { to: string; icon: IconName; en: string; ta: string; sub: string; subTa: string; bg: string; fg: string }[] = [
-  { to: '/area', icon: 'mapPin', en: 'My Area', ta: 'எனது பகுதி', sub: 'Local updates', subTa: 'உள்ளூர்', bg: '#EEF5FF', fg: '#2563EB' },
-  { to: '/reports', icon: 'report', en: 'Report Issue', ta: 'பிரச்சினை', sub: 'Raise an issue', subTa: 'பதிவு செய்', bg: '#FFF8EC', fg: '#D97706' },
-  { to: '/events', icon: 'calendar', en: 'Events', ta: 'நிகழ்வுகள்', sub: 'Upcoming', subTa: 'வரவிருப்பவை', bg: '#EEF4FF', fg: '#3B82F6' },
-  { to: '/skills', icon: 'handHeart', en: 'Volunteer', ta: 'தன்னார்வம்', sub: 'Your skills', subTa: 'திறன்கள்', bg: '#ECFDF5', fg: '#059669' },
-  { to: '/card', icon: 'idCard', en: 'Membership', ta: 'உறுப்பினர்', sub: 'Your card', subTa: 'அட்டை', bg: '#FFF1F2', fg: '#E11D48' },
-  { to: '/survey', icon: 'clipboard', en: 'Surveys', ta: 'கருத்து', sub: 'Your opinion', subTa: 'கருத்து', bg: '#F5F3FF', fg: '#7C3AED' },
-  { to: '/courses', icon: 'book', en: 'Learning', ta: 'கற்றல்', sub: 'New skills', subTa: 'கற்றல்', bg: '#F0F9FF', fg: '#0284C7' },
-  { to: '/community', icon: 'users', en: 'Community', ta: 'சமூகம்', sub: 'Join in', subTa: 'இணைக', bg: '#F0FDF4', fg: '#16A34A' },
+type Action = { to: string; icon: IconName; en: string; ta: string; subEn: string; subTa: string };
+const ACTIONS: Action[] = [
+  { to: '/reports', icon: 'report', en: 'Report issue', ta: 'பிரச்சினை பதிவு', subEn: 'Local concerns', subTa: 'உள்ளூர் பிரச்சினைகள்' },
+  { to: '/skills', icon: 'handHeart', en: 'Volunteer', ta: 'தன்னார்வம்', subEn: 'Share skills', subTa: 'திறன்களைப் பகிர்' },
+  { to: '/area', icon: 'mapPin', en: 'My area', ta: 'எனது பகுதி', subEn: 'GN updates', subTa: 'பகுதி புதுப்பிப்புகள்' },
+  { to: '/community', icon: 'users', en: 'Community', ta: 'சமூகம்', subEn: 'Hub & services', subTa: 'சேவைகள்' },
 ];
 
-function verify(t: (en: string, ta: string) => string, s?: string): { label: string; good: boolean; statusClass: string } {
-  if (s === 'identity_confirmed') return { label: t('Identity verified', 'அடையாளம் உறுதி'), good: true, statusClass: 'verified' };
-  if (s === 'review_pending') return { label: t('Review pending', 'மதிப்பாய்வு நிலுவை'), good: false, statusClass: 'pending' };
-  if (s === 'nic_format') return { label: t('NIC format checked', 'தே.அ.அ சரிபார்க்கப்பட்டது'), good: true, statusClass: 'verified' };
-  return { label: t('Not verified', 'சரிபார்க்கப்படவில்லை'), good: false, statusClass: 'unverified' };
-}
-
-function fmtAgo(iso: string, t: (en: string, ta: string) => string): string {
-  const diff = Date.now() - Date.parse(iso);
-  const h = Math.floor(diff / 3_600_000);
-  if (h < 1) return t('Just now', 'இப்போது');
-  if (h < 24) return `${h} ${t(h === 1 ? 'hour ago' : 'hours ago', 'மணி முன்')}`;
-  const d = Math.floor(h / 24);
-  return `${d} ${t(d === 1 ? 'day ago' : 'days ago', 'நாள் முன்')}`;
+function greeting(t: (en: string, ta: string) => string): string {
+  const h = new Date().getHours();
+  if (h < 12) return t('Good morning', 'காலை வணக்கம்');
+  if (h < 17) return t('Good afternoon', 'மதிய வணக்கம்');
+  return t('Good evening', 'மாலை வணக்கம்');
 }
 
 export function Home() {
   const meQ = useMeQuery();
   const me = meQ.data ?? null;
-  const memberQ = useMember();
-  const member = memberQ.data ?? null;
-  const navigate = useNavigate();
   const events = useEvents();
-  const announcements = useAnnouncements();
   const t = useWorkspaceText();
-  const [activeEventIndex, setActiveEventIndex] = useState(0);
 
-  const cardTokenQ = useQuery({
-    queryKey: ['cardToken'],
-    queryFn: () => authApi.cardToken(),
-    staleTime: 5 * 60 * 1000,
-    refetchInterval: 8 * 60 * 1000,
-  });
+  const name = displayMemberName(me) ?? localStorage.getItem('npm.name')?.trim() ?? 'Member';
+  const firstName = name.split(' ')[0];
+  const location =
+    [me?.districtName, me?.gsName].filter(Boolean).join(' / ') ||
+    t('Your GN division', 'உங்கள் கிராம சேவகர் பிரிவு');
+  const awaitingReview = me?.verificationStatus === 'review_pending';
 
   const upcoming = (events.data ?? [])
     .filter((e) => Date.parse(e.startsAt) >= Date.now())
     .sort((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt));
+  const nextEvent = upcoming[0];
 
-  const [avatarError, setAvatarError] = useState(false);
-  // A broken-image flag from one photo must not stick around once a
-  // different (e.g. newly re-uploaded) avatarUrl arrives.
-  useEffect(() => setAvatarError(false), [me?.avatarUrl]);
-  const v = verify(t, me?.verificationStatus);
-  const userName =
-    displayMemberName(me) ||
-    member?.fullName?.trim() ||
-    localStorage.getItem('npm.name')?.trim() ||
-    'Kalainilavan';
-  const memberCode = displayMemberCode(me) || member?.memberCode || null;
+  const label = (en: string, ta: string, extra?: React.CSSProperties) => (
+    <span className={t('en', 'ta') === 'ta' ? 'ta' : undefined} style={extra}>{t(en, ta)}</span>
+  );
 
-  const handleShareQR = async () => {
-    if (navigator.share && cardTokenQ.data) {
-      try {
-        await navigator.share({
-          title: `NorthUnity — ${me?.fullName || 'Member Card'}`,
-          text: `Member ID: ${memberCode}`,
-          url: window.location.origin + '/card',
-        });
-      } catch {
-        navigate('/card');
-      }
-    } else {
-      navigate('/card');
-    }
+  const fmtDate = (iso: string) => {
+    const d = new Date(iso);
+    return {
+      month: d.toLocaleDateString('en-GB', { month: 'short', timeZone: 'Asia/Colombo' }).toUpperCase(),
+      day: d.toLocaleDateString('en-GB', { day: 'numeric', timeZone: 'Asia/Colombo' }),
+      time: d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Colombo' }),
+      rel: d.toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'Asia/Colombo' }),
+    };
   };
 
   return (
-    <>
-      <HomeTopBar />
-      <main className="workspace" style={{ paddingTop: 'calc(64px + var(--safe-top, 0px))' }}>
-        {/* ---- Hero (Regional Cover Banner + Welcome) ---- */}
-        <section className="home-hero-redesign" aria-label={t('Welcome', 'வரவேற்பு')}>
-          <div className="home-hero-overlay-redesign" aria-hidden="true" />
-          <div className="home-hero-content">
-            <p style={{ font: `700 14px/1.3 ${font.ui}`, color: c.ink, margin: 0 }}>
-              {t('Hello', 'வணக்கம்')}, {userName}
-            </p>
-            <h1 style={{ font: `800 24px/1.18 ${font.head}`, letterSpacing: '-0.02em', color: c.ink, margin: '6px 0 0' }}>
-              {t('Together for', 'ஒன்றாக')}<br />{t('stronger communities', 'வலிமையான சமூகங்கள்')}
-            </h1>
-            <p style={{ font: `500 12.5px/1.45 ${font.ui}`, color: c.ink2, margin: '7px 0 0', maxWidth: 260 }}>
-              {t('Your membership, services, events and updates all in one place.', 'உங்கள் உறுப்பினர், சேவைகள், நிகழ்வுகள் மற்றும் புதுப்பிப்புகள் ஒரே இடத்தில்.')}
-            </p>
+    <main className="workspace" style={{ paddingTop: 'calc(12px + var(--safe-top, 0px))' }}>
+      {/* ---------- Header: greeting + GN scope + bell ---------- */}
+      <header style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ font: `${ty.secondary.weight} ${ty.secondary.size}px/1.3 ${font.ui}`, color: c.ink3 }}>
+            {greeting(t)},
           </div>
-          <div className="home-hero-btns">
-            <button
-              type="button"
-              onClick={() => {
-                const el = document.getElementById('local-updates-section');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-                else navigate('/area');
+          <h1 style={{ font: `700 ${ty.page.size}px/1.15 ${font.head}`, letterSpacing: '-0.01em', color: c.ink0, margin: '2px 0 0' }}>
+            {firstName}
+          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 6 }}>
+            <Icon name="mapPin" size={14} color={c.accent} strokeWidth={2.2} />
+            <span style={{ font: `500 ${ty.secondary.size}px/1.3 ${font.ui}`, color: c.ink2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {location}
+            </span>
+          </div>
+        </div>
+        <Link
+          to="/notifications"
+          aria-label={t('Notifications', 'அறிவிப்புகள்')}
+          style={{
+            position: 'relative', flex: 'none', width: 44, height: 44, borderRadius: radius.md,
+            border: `1px solid ${c.hairline}`, background: c.card, display: 'grid', placeItems: 'center', color: c.ink0,
+          }}
+        >
+          <Icon name="bell" size={20} strokeWidth={2} />
+          <span aria-hidden="true" style={{ position: 'absolute', top: 10, right: 11, width: 8, height: 8, borderRadius: '50%', background: c.error, border: `2px solid ${c.card}` }} />
+        </Link>
+      </header>
+
+      {/* ---------- Your next step / Verification in progress ---------- */}
+      {awaitingReview ? (
+        <section
+          aria-label={t('Verification in progress', 'சரிபார்ப்பு நடைபெறுகிறது')}
+          style={{
+            marginTop: 20, borderRadius: radius.lg, overflow: 'hidden',
+            background: c.warningBg, border: `1px solid ${c.warning}`,
+          }}
+        >
+          <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Icon name="info" size={16} color={c.warning} strokeWidth={2.6} />
+              {label('VERIFICATION IN PROGRESS', 'சரிபார்ப்பு நடைபெறுகிறது', { font: `700 11px/1 ${font.ui}`, letterSpacing: '0.04em', color: c.warning })}
+            </div>
+            {label('Documents received. The team will notify you after review.', 'ஆவணங்கள் பெறப்பட்டன. மதிப்பாய்வுக்குப் பின் அறிவிப்போம்.', { font: `500 ${ty.body.size}px/1.5 ${font.ui}`, color: c.ink2 })}
+            <Link
+              to="/profile"
+              style={{ marginTop: 6, alignSelf: 'flex-start', font: `600 ${ty.label.size}px/1 ${font.ui}`, color: c.accent, display: 'inline-flex', alignItems: 'center', gap: 4 }}
+            >
+              {t('View verification', 'சரிபார்ப்பைப் பார்')} <Icon name="arrowRight" size={14} strokeWidth={2.4} />
+            </Link>
+          </div>
+          <div style={{ padding: '12px 16px', borderTop: `1px solid ${c.warning}`, background: 'rgba(217,119,6,0.06)', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+            <Icon name="lock" size={15} color={c.warning} strokeWidth={2.2} style={{ marginTop: 1, flexShrink: 0 }} />
+            {label('Your active card and restricted actions appear after approval.', 'உங்கள் அட்டை மற்றும் கட்டுப்படுத்தப்பட்ட செயல்கள் ஒப்புதலுக்குப் பின் தோன்றும்.', { font: `500 ${ty.secondary.size}px/1.45 ${font.ui}`, color: c.ink2 })}
+          </div>
+        </section>
+      ) : (
+        <section
+          aria-label={t('Your next step', 'உங்கள் அடுத்த படி')}
+          style={{
+            marginTop: 20, position: 'relative', borderRadius: radius.lg,
+            background: c.card, border: `1px solid ${c.hairline}`, boxShadow: 'var(--shadow-card)', overflow: 'hidden',
+          }}
+        >
+          <div aria-hidden="true" style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, background: c.primary }} />
+          <div style={{ padding: '16px 16px 16px 20px' }}>
+            {label('YOUR NEXT STEP', 'உங்கள் அடுத்த படி', { font: `700 11px/1 ${font.ui}`, letterSpacing: '0.05em', color: c.accent })}
+            {nextEvent ? (
+              <>
+                <h2 style={{ font: `700 ${ty.section.size}px/1.25 ${font.head}`, color: c.ink0, margin: '8px 0 4px' }}>
+                  {t(nextEvent.titleEn, nextEvent.titleTa) || nextEvent.titleEn || nextEvent.titleTa}
+                </h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, font: `500 ${ty.secondary.size}px/1.4 ${font.ui}`, color: c.ink2 }}>
+                  <Icon name="mapPin" size={14} color={c.ink3} strokeWidth={2} />
+                  <span>{nextEvent.venue || t('Meeting point in details', 'விவரங்களில் சந்திப்பு இடம்')}</span>
+                </div>
+                <Link
+                  to={'/events/' + nextEvent.id}
+                  style={{
+                    marginTop: 14, height: 44, borderRadius: radius.sm, background: c.primary, color: c.onPrimary,
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '0 20px',
+                    font: `700 ${ty.card.size}px/1 ${font.ui}`,
+                  }}
+                >
+                  {t('View event', 'நிகழ்வைப் பார்')} <Icon name="arrowRight" size={16} color={c.onPrimary} strokeWidth={2.4} />
+                </Link>
+              </>
+            ) : (
+              <>
+                <h2 style={{ font: `700 ${ty.section.size}px/1.25 ${font.head}`, color: c.ink0, margin: '8px 0 4px' }}>
+                  {t('Complete your profile', 'உங்கள் சுயவிவரத்தை நிறைவு செய்யுங்கள்')}
+                </h2>
+                {label('Add your details so your community can reach you.', 'உங்கள் சமூகம் உங்களைத் தொடர்பு கொள்ள விவரங்களைச் சேர்க்கவும்.', { font: `500 ${ty.secondary.size}px/1.4 ${font.ui}`, color: c.ink2 })}
+                <Link
+                  to="/profile"
+                  style={{
+                    marginTop: 14, height: 44, borderRadius: radius.sm, background: c.primary, color: c.onPrimary,
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '0 20px',
+                    font: `700 ${ty.card.size}px/1 ${font.ui}`,
+                  }}
+                >
+                  {t('Go to profile', 'சுயவிவரத்திற்கு')} <Icon name="arrowRight" size={16} color={c.onPrimary} strokeWidth={2.4} />
+                </Link>
+              </>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ---------- 2×2 quick action grid ---------- */}
+      <section style={{ marginTop: 24 }} aria-label={t('Actions', 'செயல்கள்')}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          {ACTIONS.map((a) => (
+            <Link
+              key={a.to}
+              to={a.to}
+              style={{
+                display: 'flex', flexDirection: 'column', gap: 8, padding: 14, minHeight: 92,
+                borderRadius: radius.lg, background: c.card, border: `1px solid ${c.hairline}`, boxShadow: 'var(--shadow-card)',
               }}
-              className="home-hero-btn-primary"
             >
-              <span>{t('Explore Updates', 'புதுப்பிப்புகளைப் பார்')}</span>
-              <Icon name="arrowRight" size={14} color={c.onPrimary} strokeWidth={2.4} />
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/gallery')}
-              className="home-hero-btn-secondary"
-            >
-              <Icon name="play" size={13} color={c.ink} strokeWidth={2.4} fill={c.ink} />
-              <span>{t('Watch Video', 'காணொளி')}</span>
-            </button>
-          </div>
-        </section>
-
-        {/* ---- Membership Summary Card ---- */}
-        <section className="home-membership-card" aria-label={t('Your Membership', 'உங்கள் உறுப்பினர்')}>
-          <div className="home-membership-head">
-            <span className="home-membership-title">{t('Your Membership', 'உங்கள் உறுப்பினர்')}</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span className={`home-status-badge ${v.statusClass}`}>
-                <Icon name={v.good ? 'check' : 'info'} size={12} strokeWidth={2.5} />
-                {v.label}
+              <span style={{ width: 40, height: 40, borderRadius: radius.md, display: 'grid', placeItems: 'center', color: c.primary, background: 'var(--soft-blue)' }}>
+                <Icon name={a.icon} size={20} color={c.primary} strokeWidth={2.2} />
               </span>
-              <button
-                type="button"
-                onClick={() => navigate('/card')}
-                aria-label={t('Options', 'விருப்பங்கள்')}
-                style={{ background: 'none', border: 'none', padding: 2, cursor: 'pointer', color: 'var(--ink-3)' }}
-              >
-                <Icon name="dotsVertical" size={16} strokeWidth={2} />
-              </button>
-            </div>
-          </div>
-
-          <div className="home-membership-body">
-            <div className="home-member-avatar">
-              {me?.avatarUrl && !avatarError ? (
-                <img
-                  src={me.avatarUrl}
-                  alt=""
-                  onError={() => setAvatarError(true)}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
-                />
-              ) : (
-                <Icon name="user" size={26} color="#4B6382" />
-              )}
-            </div>
-            <div className="home-member-meta">
-              <div className="home-member-name" style={meQ.isLoading ? { opacity: 0.45 } : undefined}>
-                {meQ.isLoading ? t('Loading…', 'ஏற்றுகிறது…') : displayMemberName(me) ?? t('Member', 'உறுப்பினர்')}
+              <div>
+                <div className={t('en', 'ta') === 'ta' ? 'ta' : undefined} style={{ font: `600 ${ty.card.size}px/1.2 ${font.ui}`, color: c.ink0 }}>{t(a.en, a.ta)}</div>
+                <div className={t('en', 'ta') === 'ta' ? 'ta' : undefined} style={{ font: `400 ${ty.secondary.size}px/1.3 ${font.ui}`, color: c.ink3, marginTop: 2 }}>{t(a.subEn, a.subTa)}</div>
               </div>
-              <div className="home-member-id-row">
-                <span className="home-member-id-label">{t('Member ID', 'உறுப்பினர் எண்')}</span>
-                <span className="home-member-id-val" style={meQ.isLoading ? { opacity: 0.45 } : undefined}>
-                  {meQ.isLoading ? '—' : memberCode ?? '—'}
-                </span>
-              </div>
-            </div>
-            <Link to="/card" aria-label={t('My QR', 'எனது QR')} className="home-member-qr-box">
-              <div className="home-member-qr-plate">
-                {cardTokenQ.data ? (
-                  <QR value={cardTokenQ.data} size={46} />
-                ) : (
-                  <div style={{ width: 46, height: 46, display: 'grid', placeItems: 'center' }}>
-                    <Icon name="idCard" size={22} color="var(--ink-4)" />
-                  </div>
-                )}
-              </div>
-              <span className="home-member-qr-label">{t('My QR', 'எனது QR')}</span>
             </Link>
-          </div>
+          ))}
+        </div>
+      </section>
 
-          {/* Badges Row */}
-          <div className="home-pills-row">
-            <span className="home-pill home-pill-verified">
-              <Icon name="check" size={11} strokeWidth={2.8} />
-              {t('Verified Member', 'உறுதிப்படுத்தப்பட்ட உறுப்பினர்')}
-            </span>
-            <span className="home-pill home-pill-tier">
-              <Icon name="crown" size={11} strokeWidth={2.4} />
-              {t('Volunteer Tier', 'தன்னார்வலர் அடுக்கு')}
-            </span>
-            <span className="home-pill home-pill-since">
-              <Icon name="calendar" size={11} strokeWidth={2.2} />
-              {t('Since Aug 2025', 'ஆகஸ்ட் 2025 முதல்')}
-            </span>
-          </div>
-
-          {/* Card Actions */}
-          <div className="home-member-actions-row">
-            <Link to="/card" className="home-card-btn-primary">
-              <Icon name="idCard" size={17} color="#ffffff" strokeWidth={2.2} />
-              <span>{t('View Membership Card', 'அட்டையைப் பார்')}</span>
-            </Link>
-            <button type="button" onClick={handleShareQR} className="home-card-btn-secondary">
-              <Icon name="share" size={15} color={c.ink} strokeWidth={2.2} />
-              <span>{t('Share QR', 'QR பகிர்')}</span>
-            </button>
-          </div>
-        </section>
-
-        {/* ---- Quick Access 4x2 Grid ---- */}
-        <section className="work-section" style={{ marginTop: 22 }}>
-          <div className="home-section-head">
-            <h2>{t('Quick Access', 'விரைவு அணுகல்')}</h2>
-            <Link to="/community">
-              <span>{t('See all', 'அனைத்தும்')}</span>
-              <Icon name="chevron" size={14} strokeWidth={2.4} />
-            </Link>
-          </div>
-          <div className="home-qa-grid-redesign">
-            {QUICK.map((a) => (
-              <Link key={a.to + a.en} to={a.to} className="home-qa-tile" style={{ background: a.bg }}>
-                <span className="home-qa-tile-icon" style={{ color: a.fg }}>
-                  <Icon name={a.icon} size={20} strokeWidth={2.2} />
-                </span>
-                <span className="home-qa-tile-title">{t(a.en, a.ta)}</span>
-                <span className="home-qa-tile-sub">{t(a.sub, a.subTa)}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* ---- Upcoming Events Section ---- */}
-        <section className="work-section" style={{ marginTop: 22 }}>
-          <div className="home-section-head">
-            <h2>{t('Upcoming', 'வரவிருப்பவை')}</h2>
-            <Link to="/events">
-              <span>{t('See all', 'அனைத்தும்')}</span>
-              <Icon name="chevron" size={14} strokeWidth={2.4} />
-            </Link>
-          </div>
-          <QueryBoundary query={events}>
-            {() => {
-              const activeEvent = upcoming[activeEventIndex] || upcoming[0];
-              if (!activeEvent && upcoming.length === 0) {
-                // Image 2 approved empty state card
-                return (
-                  <div className="home-empty-card">
-                    <Icon name="calendar" size={30} color="var(--ink-3)" strokeWidth={1.8} />
-                    <div className="home-empty-card-title">
-                      {t('No upcoming events', 'வரவிருக்கும் நிகழ்வுகள் இல்லை')}
-                    </div>
-                    <Link to="/events" className="home-empty-card-btn">
-                      {t('Explore Events', 'நிகழ்வுகளைப் பார்')}
-                    </Link>
-                  </div>
-                );
-              }
-
-              const d = new Date(activeEvent?.startsAt || Date.now() + 86400000 * 3);
-              const monthStr = d.toLocaleDateString('en-GB', { month: 'short', timeZone: 'Asia/Colombo' });
-              const dayStr = d.toLocaleDateString('en-GB', { day: 'numeric', timeZone: 'Asia/Colombo' });
-              const timeStr = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Colombo' });
-              const dateFull = d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Colombo' });
-
+      {/* ---------- Coming up nearby ---------- */}
+      <section style={{ marginTop: 28 }} aria-label={t('Coming up nearby', 'அருகில் வரவிருப்பவை')}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <h2 style={{ font: `700 ${ty.section.size}px/1.2 ${font.head}`, color: c.ink0, margin: 0 }}>
+            {t('Coming up nearby', 'அருகில் வரவிருப்பவை')}
+          </h2>
+          <Link to="/events" style={{ font: `600 ${ty.label.size}px/1 ${font.ui}`, color: c.accent, display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+            {t('See all', 'அனைத்தும்')} <Icon name="chevron" size={14} strokeWidth={2.4} />
+          </Link>
+        </div>
+        <QueryBoundary query={events}>
+          {() => {
+            if (!nextEvent) {
               return (
-                <>
-                  <Link to={'/events/' + (activeEvent?.id || 'featured')} className="home-featured-event-card">
-                    <div className="home-event-thumb-wrap">
-                      <img src="/hero-north.webp" alt="" className="home-event-thumb-img" />
-                      <div className="home-event-date-chip">
-                        <span className="home-event-date-month">{monthStr}</span>
-                        <span className="home-event-date-day">{dayStr}</span>
-                      </div>
-                    </div>
-                    <div className="home-event-details">
-                      <span className="home-event-category-tag">
-                        {t('Community', 'சமூகம்')}
-                      </span>
-                      <div className="home-event-title">
-                        {t(activeEvent?.titleEn, activeEvent?.titleTa) || activeEvent?.titleEn || activeEvent?.titleTa || 'District members’ convention'}
-                      </div>
-                      <div className="home-event-meta-row">
-                        <Icon name="mapPin" size={13} color="#EF4444" />
-                        <span>{activeEvent?.venue || 'Jaffna, Town Hall'}</span>
-                      </div>
-                      <div className="home-event-meta-row">
-                        <Icon name="clock" size={13} color="var(--ink-3)" />
-                        <span>{dateFull} • {timeStr}</span>
-                      </div>
-                      <div className="home-event-attendees-row">
-                        <div className="home-event-avatar-stack">
-                          <span className="home-event-mini-avatar" style={{ background: '#3B82F6' }} />
-                          <span className="home-event-mini-avatar" style={{ background: '#10B981' }} />
-                          <span className="home-event-mini-avatar" style={{ background: '#F59E0B' }} />
-                        </div>
-                        <span className="home-event-going-text">+120 going</span>
-                      </div>
-                    </div>
-                    <div style={{ color: 'var(--ink-3)' }}>
-                      <Icon name="chevron" size={18} strokeWidth={2.4} />
-                    </div>
+                <div style={{ borderRadius: radius.lg, border: `1px solid ${c.hairline}`, background: c.card, padding: '28px 16px', textAlign: 'center' }}>
+                  <Icon name="calendar" size={28} color={c.ink3} strokeWidth={1.8} />
+                  <div style={{ font: `600 ${ty.card.size}px/1.3 ${font.ui}`, color: c.ink2, margin: '10px 0 12px' }}>
+                    {t('No events nearby this week', 'இந்த வாரம் அருகில் நிகழ்வுகள் இல்லை')}
+                  </div>
+                  <Link to="/events" style={{ font: `600 ${ty.label.size}px/1 ${font.ui}`, color: c.accent }}>
+                    {t('Browse all events', 'அனைத்து நிகழ்வுகளையும் பார்')}
                   </Link>
-                  {upcoming.length > 1 && (
-                    <div className="home-paging-dots">
-                      {upcoming.slice(0, 3).map((_, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={(e) => { e.preventDefault(); setActiveEventIndex(idx); }}
-                          className={`home-dot ${activeEventIndex === idx ? 'active' : ''}`}
-                          aria-label={`Event slide ${idx + 1}`}
-                          style={{ border: 'none', cursor: 'pointer', padding: 0 }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </>
-              );
-            }}
-          </QueryBoundary>
-        </section>
-
-        {/* ---- Local Updates Section ---- */}
-        <section id="local-updates-section" className="work-section" style={{ marginTop: 22, paddingBottom: 24 }}>
-          <div className="home-section-head">
-            <h2>{t('Local Updates', 'உள்ளூர் புதுப்பிப்புகள்')}</h2>
-          </div>
-          <QueryBoundary query={announcements} label={t('Loading…', 'ஏற்றுகிறது…')}>
-            {(list) => {
-              const displayList = list.length ? list.slice(0, 2) : [
-                {
-                  id: 'ann-1',
-                  scope: 'district',
-                  titleEn: 'District members’ convention — August 17',
-                  titleTa: 'யாழ். மாவட்ட உறுப்பினர் மாநாடு — ஆகஸ்ட் 17',
-                  authorName: 'Leadership',
-                  publishedAt: new Date(Date.now() - 430 * 86400000).toISOString(),
-                },
-                {
-                  id: 'ann-2',
-                  scope: 'ward',
-                  titleEn: 'Nallur water supply scheme announcement',
-                  titleTa: 'நல்லூர் நீர் விநியோகத் திட்டம் அறிவிப்பு',
-                  authorName: 'Media unit',
-                  publishedAt: new Date(Date.now() - 427 * 86400000).toISOString(),
-                },
-              ];
-
-              return (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {displayList.map((a) => (
-                    <button
-                      key={a.id}
-                      type="button"
-                      onClick={() => navigate('/announcement/' + a.id)}
-                      className="home-update-card"
-                    >
-                      <div className="home-update-icon-thumb">
-                        <Icon name="megaphone" size={24} color="var(--ink-3)" strokeWidth={1.8} />
-                      </div>
-                      <div className="home-update-content">
-                        <span className="home-update-badge">
-                          {a.scope || 'general'}
-                        </span>
-                        <div className="home-update-title">
-                          {t(a.titleEn, a.titleTa) || a.titleTa || a.titleEn}
-                        </div>
-                        <div className="home-update-meta">
-                          {a.authorName || 'Leadership'} · {fmtAgo(a.publishedAt, t)}
-                        </div>
-                      </div>
-                      <div className="home-update-arrow">
-                        <Icon name="chevron" size={16} color="var(--ink-3)" strokeWidth={2.2} />
-                      </div>
-                    </button>
-                  ))}
                 </div>
               );
-            }}
-          </QueryBoundary>
-        </section>
-      </main>
-    </>
+            }
+            const d = fmtDate(nextEvent.startsAt);
+            return (
+              <Link
+                to={'/events/' + nextEvent.id}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 14, padding: 14,
+                  borderRadius: radius.lg, background: c.card, border: `1px solid ${c.hairline}`, boxShadow: 'var(--shadow-card)',
+                }}
+              >
+                <div style={{ flex: 'none', width: 52, borderRadius: radius.md, background: c.primary, color: c.onPrimary, textAlign: 'center', padding: '8px 0' }}>
+                  <div style={{ font: `700 11px/1 ${font.ui}`, letterSpacing: '0.04em', opacity: 0.85 }}>{d.month}</div>
+                  <div style={{ font: `700 22px/1.1 ${font.ui}`, marginTop: 2 }}>{d.day}</div>
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ font: `600 ${ty.card.size}px/1.25 ${font.ui}`, color: c.ink0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {t(nextEvent.titleEn, nextEvent.titleTa) || nextEvent.titleEn || nextEvent.titleTa}
+                  </div>
+                  <div style={{ font: `400 ${ty.secondary.size}px/1.4 ${font.ui}`, color: c.ink3, marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {d.rel}, {d.time} · {nextEvent.venue || t('Venue in details', 'இடம் விவரங்களில்')}
+                  </div>
+                </div>
+                <span style={{ flex: 'none', font: `600 ${ty.caption.size}px/1 ${font.ui}`, color: c.accent, background: 'var(--soft-blue)', borderRadius: radius.pill, padding: '6px 12px' }}>
+                  {t('Open', 'திற')}
+                </span>
+              </Link>
+            );
+          }}
+        </QueryBoundary>
+      </section>
+
+      {/* ---------- Mission footer ---------- */}
+      <footer style={{ marginTop: 28, paddingBottom: 8, textAlign: 'center' }}>
+        <div className={t('en', 'ta') === 'ta' ? 'ta' : undefined} style={{ font: `500 ${ty.secondary.size}px/1.5 ${font.ui}`, color: c.ink3 }}>
+          {t('Mission: local needs, shared action, visible progress.', 'நோக்கம்: உள்ளூர் தேவைகள், கூட்டு செயல், தெரியும் முன்னேற்றம்.')}
+        </div>
+        <div style={{ font: `600 ${ty.caption.size}px/1.4 ${font.ui}`, color: c.ink4, marginTop: 4 }}>
+          {t('Northern Province Civic Network', 'வட மாகாண சமூக வலையமைப்பு')}
+        </div>
+      </footer>
+    </main>
   );
 }

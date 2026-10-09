@@ -400,7 +400,7 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   gap: 3px;
   color: var(--ink-3);
   padding: 4px 0;
-  font: 600 11px/14px var(--font-ui);
+  font: 600 12px/16px var(--font-ui);
   cursor: pointer;
   min-height: 52px;
   border-radius: 12px;
@@ -419,46 +419,8 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   font-weight: 700;
 }
 .work-nav button[aria-current] .work-nav-icon {
-  background: var(--maroon-tint);
+  background: var(--soft-blue);
   color: var(--primary);
-}
-/* Elevated Center Report FAB */
-.work-nav .work-nav-fab-btn {
-  position: relative;
-  top: -12px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  z-index: 2;
-}
-.work-nav-fab {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #1468D9 0%, #102D55 100%);
-  display: grid;
-  place-items: center;
-  box-shadow: 0 6px 16px rgba(20, 104, 217, 0.38);
-  border: 3.5px solid var(--card);
-  transition: transform 140ms var(--ease), box-shadow 140ms var(--ease);
-}
-:root[data-theme='dark'] .work-nav-fab {
-  background: linear-gradient(135deg, #4d9bff 0%, #102d55 100%);
-  box-shadow: 0 6px 18px rgba(77, 155, 255, 0.35);
-}
-.work-nav-fab-btn:active .work-nav-fab {
-  transform: scale(0.92);
-  box-shadow: 0 2px 8px rgba(20, 104, 217, 0.25);
-}
-.work-nav-fab-label {
-  font: 700 10.5px/1 var(--font-ui);
-  color: var(--ink);
 }
 @media (max-width: 360px) {
   .workspace {
@@ -468,11 +430,7 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
     font-size: 22px;
   }
   .work-nav button {
-    font-size: 10px;
-  }
-  .work-nav-fab {
-    width: 46px;
-    height: 46px;
+    font-size: 11px;
   }
 }
 
