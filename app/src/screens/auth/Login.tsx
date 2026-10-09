@@ -58,12 +58,14 @@ export function Login() {
   return (
     <div
       style={{
-        minHeight: '100vh',
+        height: '100%',
+        maxHeight: '100%',
+        overflow: 'hidden',
         background: '#EDF4FC',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '16px 12px calc(24px + var(--safe-bottom, 0px))',
+        padding: '10px 12px calc(12px + var(--safe-bottom, 0px))',
       }}
     >
       <style>{`
@@ -71,8 +73,9 @@ export function Login() {
           position: relative;
           width: 100%;
           max-width: 440px;
+          max-height: 100%;
           background: #ffffff;
-          border-radius: 36px;
+          border-radius: 28px;
           overflow: hidden;
           box-shadow: 0 16px 48px rgba(16, 45, 85, 0.12), 0 2px 10px rgba(16, 45, 85, 0.04);
           display: flex;
@@ -205,9 +208,9 @@ export function Login() {
         </div>
 
         {/* Content Body */}
-        <div style={{ position: 'relative', zIndex: 2, padding: '24px 24px 28px', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ position: 'relative', zIndex: 2, padding: '16px 22px 18px', display: 'flex', flexDirection: 'column' }}>
           {/* Top Bar: Back button & Language toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <button
               type="button"
               onClick={() => navigate('/welcome')}
@@ -247,10 +250,10 @@ export function Login() {
           {/* Headline & Description */}
           <h1
             style={{
-              font: `900 28px/1.2 var(--font-ui, 'Inter', sans-serif)`,
+              font: `900 25px/1.2 var(--font-ui, 'Inter', sans-serif)`,
               letterSpacing: '-0.025em',
               color: '#0F2137',
-              margin: '18px 0 0',
+              margin: '14px 0 0',
             }}
           >
             {t('auth.welcomeBack', 'Welcome back')}
@@ -262,7 +265,7 @@ export function Login() {
               background: '#F1F5F9',
               padding: 4,
               borderRadius: 999,
-              marginTop: 22,
+              marginTop: 14,
               border: '1px solid rgba(20, 38, 61, 0.04)',
             }}
           >
@@ -284,7 +287,7 @@ export function Login() {
               e.preventDefault();
               if (canSubmit) void doLogin(nic, password);
             }}
-            style={{ marginTop: 22, display: 'flex', flexDirection: 'column', gap: 16 }}
+            style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 13 }}
           >
             {/* NIC Field */}
             <div>
@@ -431,7 +434,7 @@ export function Login() {
           </form>
 
           {/* Sign Up Link */}
-          <div style={{ marginTop: 18, textAlign: 'center', font: `500 13px/1.4 var(--font-ui, 'Inter', sans-serif)`, color: '#4B5563' }}>
+          <div style={{ marginTop: 13, textAlign: 'center', font: `500 13px/1.4 var(--font-ui, 'Inter', sans-serif)`, color: '#4B5563' }}>
             {t('auth.noAccount', "Don't have an account?")}{' '}
             <button
               type="button"
@@ -453,9 +456,9 @@ export function Login() {
           {/* Flat Trust & Security Icons (Unified Bluish Gray Theme) */}
           <div
             style={{
-              marginTop: 22,
-              paddingTop: 18,
-              paddingBottom: 4,
+              marginTop: 14,
+              paddingTop: 12,
+              paddingBottom: 2,
               borderTop: '1px solid rgba(20, 38, 61, 0.08)',
               display: 'flex',
               alignItems: 'center',

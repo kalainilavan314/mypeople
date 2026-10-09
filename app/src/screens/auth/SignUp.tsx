@@ -49,12 +49,14 @@ export function SignUp() {
   return (
     <div
       style={{
-        minHeight: '100vh',
+        height: '100%',
+        maxHeight: '100%',
+        overflow: 'hidden',
         background: '#EDF4FC',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '16px 12px calc(24px + var(--safe-bottom, 0px))',
+        padding: '10px 12px calc(10px + var(--safe-bottom, 0px))',
       }}
     >
       <style>{`
@@ -62,9 +64,10 @@ export function SignUp() {
           position: relative;
           width: 100%;
           max-width: 440px;
-          min-height: min(100vh - 32px, 880px);
+          height: 100%;
+          max-height: 100%;
           background: #ffffff;
-          border-radius: 36px;
+          border-radius: 28px;
           overflow: hidden;
           box-shadow: 0 16px 48px rgba(16, 45, 85, 0.12), 0 2px 10px rgba(16, 45, 85, 0.04);
           display: flex;
@@ -104,7 +107,7 @@ export function SignUp() {
           flex: 1;
           min-height: 0;
           overflow-y: auto;
-          padding: 18px 22px calc(24px + var(--safe-bottom, 0px));
+          padding: 14px 22px calc(16px + var(--safe-bottom, 0px));
         }
         .signup-topbar {
           display: flex;
