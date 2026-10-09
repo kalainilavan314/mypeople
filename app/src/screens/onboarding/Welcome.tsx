@@ -49,29 +49,33 @@ export function Welcome() {
   return (
     <div
       style={{
-        minHeight: '100%',
+        height: '100%',
+        maxHeight: '100%',
         display: 'flex',
         flexDirection: 'column',
         background: '#FFFFFF',
         position: 'relative',
-        overflowX: 'hidden',
+        overflow: 'hidden',
       }}
     >
       <style>{`
         .welcome-hero-wrap {
           position: relative;
           width: 100%;
+          flex: 1 1 0;
+          min-height: 0;
           display: flex;
           justify-content: center;
           align-items: center;
           background: #FFFFFF;
+          overflow: hidden;
         }
         .welcome-hero-img {
           width: 100%;
           max-width: 480px;
-          height: auto;
+          height: 100%;
+          max-height: 100%;
           display: block;
-          max-height: 380px;
           object-fit: contain;
         }
         .welcome-hero-fade {
@@ -199,6 +203,7 @@ export function Welcome() {
       <main
         style={{
           flex: 1,
+          minHeight: 0,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -221,10 +226,11 @@ export function Welcome() {
         <div
           style={{
             width: '100%',
+            flex: 'none',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            padding: '4px 20px 24px',
+            padding: '2px 20px calc(16px + var(--safe-bottom, 0px))',
             position: 'relative',
             zIndex: 2,
           }}
@@ -259,9 +265,9 @@ export function Welcome() {
           {/* Slogan Core Headline */}
           <h1
             style={{
-              font: `800 32px/1.28 ${font.taSerif}`,
+              font: `800 30px/1.26 ${font.taSerif}`,
               color: '#0F2137',
-              margin: '22px 0 0',
+              margin: '12px 0 0',
               textAlign: 'center',
               letterSpacing: '-0.01em',
             }}
@@ -281,7 +287,7 @@ export function Welcome() {
               gap: 12,
               width: '100%',
               maxWidth: 190,
-              margin: '18px auto 0',
+              margin: '10px auto 0',
             }}
           >
             <div style={{ flex: 1, height: 1, background: '#BFDBFE' }} />
@@ -303,7 +309,7 @@ export function Welcome() {
           </div>
 
           {/* Call to Action Button */}
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 36 }}>
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 18 }}>
             <button
               type="button"
               onClick={() => go('/signup')}
@@ -322,7 +328,7 @@ export function Welcome() {
             onClick={() => go('/login')}
             style={{
               display: 'block',
-              margin: '18px auto 0',
+              margin: '12px auto 0',
               background: 'none',
               border: 'none',
               cursor: 'pointer',
