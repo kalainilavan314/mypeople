@@ -14,24 +14,28 @@ import type { NpmEvent } from '../data/types';
 
 const eventPin = L.divIcon({
   className: '',
-  html: `<div style="width:26px;height:26px;border-radius:50% 50% 50% 0;background:#14263D;transform:rotate(-45deg);border:2px solid #FFFFFF;box-shadow:0 2px 8px rgba(4,48,116,.5)"></div>`,
+  html: `<div style="width:26px;height:26px;border-radius:50% 50% 50% 0;background:#0F2942;transform:rotate(-45deg);border:2px solid #FFFFFF;box-shadow:0 2px 8px rgba(15,41,66,.5)"></div>`,
   iconSize: [26, 26],
   iconAnchor: [13, 26],
   popupAnchor: [0, -24],
 });
 
-/* Category → accessible badge + thumbnail colour. Each badge carries an icon AND
-   text, so meaning never rests on colour alone (WCAG 1.4.1). */
+/* Category → accessible badge + thumbnail. The spec keeps a restrained navy
+   palette (no rainbow category colours): every thumbnail is the same navy, and
+   the category is carried by an icon AND a text label on a soft-blue badge, so
+   meaning never rests on colour alone (WCAG 1.4.1). */
 type Cat = { label: string; fg: string; bg: string; grad: string; icon: IconName };
+const NAVY_GRAD = 'linear-gradient(135deg,#1b3a57,#0f2942)';
+const badge = (label: string, icon: IconName): Cat => ({ label, fg: 'var(--primary)', bg: 'var(--soft-blue)', grad: NAVY_GRAD, icon });
 const CATS: Record<string, Cat> = {
-  volunteer: { label: 'Volunteer', fg: '#16835D', bg: '#E7F3EC', grad: 'linear-gradient(135deg,#1f9e6e,#0f5c40)', icon: 'handHeart' },
-  community: { label: 'Community', fg: '#315B82', bg: '#EAF1F9', grad: 'linear-gradient(135deg,#3f6da0,#1c3a5e)', icon: 'users' },
-  learning: { label: 'Learning', fg: '#6D4AC4', bg: '#EFEAFA', grad: 'linear-gradient(135deg,#7d5cd0,#4a2f93)', icon: 'book' },
-  environment: { label: 'Environment', fg: '#16835D', bg: '#E7F3EC', grad: 'linear-gradient(135deg,#3aa06a,#14633f)', icon: 'sprout' },
-  health: { label: 'Health', fg: '#C43D4B', bg: '#FBEAEC', grad: 'linear-gradient(135deg,#d9545f,#9c2531)', icon: 'heart' },
+  volunteer: badge('Volunteer', 'handHeart'),
+  community: badge('Community', 'users'),
+  learning: badge('Learning', 'book'),
+  environment: badge('Environment', 'sprout'),
+  health: badge('Health', 'heart'),
 };
 function catOf(cat?: string | null): Cat {
-  return (cat && CATS[cat.toLowerCase()]) || { label: 'Event', fg: '#315B82', bg: '#EAF1F9', grad: 'linear-gradient(135deg,#2f507a,#14263D)', icon: 'calendar' };
+  return (cat && CATS[cat.toLowerCase()]) || badge('Event', 'calendar');
 }
 
 /* Locally-saved (bookmarked) events — per device, no backend needed. */
@@ -69,7 +73,7 @@ export function Events() {
       <header style={{ padding: '18px 16px 0' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
           <div style={{ minWidth: 0 }}>
-            <h1 style={{ font: `800 28px/1.1 ${font.head}`, letterSpacing: '-0.01em', color: c.ink0, margin: 0 }}>{t('events.title')}</h1>
+            <h1 style={{ font: `700 28px/1.15 ${font.head}`, letterSpacing: '-0.01em', color: c.ink0, margin: 0 }}>{t('events.title')}</h1>
             <p style={{ font: `400 13px/1.45 ${font.ui}`, color: c.ink2, margin: '6px 0 0' }}>
               {t('events.subtitle', 'Community events, programs and opportunities near you')}
             </p>
