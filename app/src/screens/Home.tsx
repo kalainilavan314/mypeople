@@ -6,6 +6,7 @@ import { QueryBoundary } from '../components/ui';
 import { Icon, type IconName } from '../components/Icon';
 import { displayMemberName } from '../lib/memberDisplay';
 import { useWorkspaceText } from '../components/MemberWorkspace';
+import { HomeTopBar } from '../components/HomeTopBar';
 
 /* ================================================================= Home — H01
    The next-action desk (spec §3 / wireframe H01–H02):
@@ -67,34 +68,20 @@ export function Home() {
   };
 
   return (
-    <main className="workspace" style={{ paddingTop: 'calc(12px + var(--safe-top, 0px))' }}>
-      {/* ---------- Header: greeting + GN scope + bell ---------- */}
-      <header style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-        <div style={{ minWidth: 0 }}>
-          <div style={{ font: `${ty.secondary.weight} ${ty.secondary.size}px/1.3 ${font.ui}`, color: c.ink3 }}>
-            {greeting(t)},
-          </div>
-          <h1 style={{ font: `700 ${ty.page.size}px/1.15 ${font.head}`, letterSpacing: '-0.01em', color: c.ink0, margin: '2px 0 0' }}>
-            {firstName}
-          </h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 6 }}>
-            <Icon name="mapPin" size={14} color={c.accent} strokeWidth={2.2} />
-            <span style={{ font: `500 ${ty.secondary.size}px/1.3 ${font.ui}`, color: c.ink2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {location}
-            </span>
-          </div>
+    <>
+      <HomeTopBar />
+      <main className="workspace" style={{ paddingTop: 'calc(72px + var(--safe-top, 0px))' }}>
+      {/* ---------- Greeting + assigned GN division ---------- */}
+      <header>
+        <h1 style={{ font: `700 ${ty.section.size}px/1.2 ${font.head}`, letterSpacing: '-0.005em', color: c.ink0, margin: 0 }}>
+          {greeting(t)}, {firstName}
+        </h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
+          <Icon name="mapPin" size={14} color={c.accent} strokeWidth={2.2} style={{ flex: 'none' }} />
+          <span style={{ font: `500 ${ty.secondary.size}px/1.3 ${font.ui}`, color: c.ink2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {location}
+          </span>
         </div>
-        <Link
-          to="/notifications"
-          aria-label={t('Notifications', 'அறிவிப்புகள்')}
-          style={{
-            position: 'relative', flex: 'none', width: 44, height: 44, borderRadius: radius.md,
-            border: `1px solid ${c.hairline}`, background: c.card, display: 'grid', placeItems: 'center', color: c.ink0,
-          }}
-        >
-          <Icon name="bell" size={20} strokeWidth={2} />
-          <span aria-hidden="true" style={{ position: 'absolute', top: 10, right: 11, width: 8, height: 8, borderRadius: '50%', background: c.error, border: `2px solid ${c.card}` }} />
-        </Link>
       </header>
 
       {/* ---------- Your next step / Verification in progress ---------- */}
@@ -265,6 +252,7 @@ export function Home() {
           {t('Northern Province Civic Network', 'வட மாகாண சமூக வலையமைப்பு')}
         </div>
       </footer>
-    </main>
+      </main>
+    </>
   );
 }
