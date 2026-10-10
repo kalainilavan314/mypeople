@@ -21,6 +21,7 @@ export interface ServerMember {
   tier: 'volunteer' | 'diamond' | 'gold' | 'platinum';
   // Honest verification state from the server (migration 0009). The UI shows a
   // badge from this and never implies more than the state warrants.
+  membershipStatus?: 'pending' | 'active' | 'suspended' | 'inactive';
   verificationStatus?: 'unverified' | 'nic_format' | 'review_pending' | 'identity_confirmed';
   verifiedAt?: string | null;
   referralCode: string;

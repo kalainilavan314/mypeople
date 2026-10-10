@@ -25,3 +25,10 @@ audit/
 .DS_Store
 Thumbs.db
 *.log
+
+# Local deployment packages and fetched reference bundles.
+deployment/artifacts/
+deployment/reference*
+deployment/outfit-font.css
+deployment/.ssh-runtime/
+design/qa/overflow.png

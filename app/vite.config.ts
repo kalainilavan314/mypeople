@@ -21,7 +21,7 @@ export default defineConfig({
       injectRegister: 'auto',
       includeAssets: ['favicon.png', 'logo.png', 'offline.html'],
       injectManifest: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2}'],
       },
       manifest: {
         name: 'என் மக்கள் · My People',
@@ -33,8 +33,8 @@ export default defineConfig({
         scope: '/',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#F4F6F8',
-        theme_color: '#14263D',
+        background_color: '#F8FAFC',
+        theme_color: '#0F2942',
         categories: ['social', 'government', 'productivity'],
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },

@@ -1,0 +1,41 @@
+import {createRequire} from 'node:module';
+import {fileURLToPath} from 'node:url';
+import fs from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const require=createRequire(import.meta.url);
+const {chromium}=require(process.env.MY_PEOPLE_PLAYWRIGHT_MODULE||'playwright');
+const out=new URL('../design/qa/medtech/',import.meta.url);await fs.mkdir(out,{recursive:true});
+const member={id:'fixture',fullName:'Kalai',memberCode:'WTL-26-5401749',districtName:'Jaffna',dsName:'Islands North (Kayts)',gsName:'Analaitivu North',tier:'volunteer',verificationStatus:'identity_confirmed',membershipStatus:'active',language:'en',recruitCount:0,joinedAt:'2026-10-03T00:00:00Z'};
+const events=[{id:'fixture-event',titleEn:'Nallur water scheme — volunteer mapping',titleTa:'நல்லூர் நீர் திட்டம் — தன்னார்வப் பதிவு',venue:'Kandaswamy Kovil, Nallur',startsAt:'2026-10-11T08:00:00+05:30',endsAt:'2026-10-11T11:00:00+05:30',lat:9.674,lng:80.03,agenda:[],rsvpCount:1,isMine:true,myStatus:'going'}];
+const browser=await chromium.launch({headless:true,channel:'msedge'});
+const ctx=await browser.newContext({viewport:{width:375,height:812}});
+await ctx.addInitScript(m=>{localStorage.setItem('npm.authed','1');localStorage.setItem('npm.member',JSON.stringify(m));localStorage.setItem('npm.name',m.fullName);if(!localStorage.getItem('npm.lang'))localStorage.setItem('npm.lang','en');},member);
+const page=await ctx.newPage(),errors=[],checks=[];page.on('pageerror',e=>errors.push(e.message));
+await page.route('**/api/**',async route=>{const url=new URL(route.request().url());if(url.pathname.startsWith('/api/gallery/')){const r=await fetch('http://127.0.0.1:8788'+url.pathname);return route.fulfill({status:r.status,contentType:'application/json',body:await r.text()});}return route.fulfill({json:url.pathname==='/api/me'?{member}:url.pathname==='/api/me/card-token'?{token:'fixture-credential-for-local-qa-only'}:url.pathname==='/api/events'?{events}:url.pathname==='/api/reports/mine'?{reports:[]}:{}});});
+await page.clock.install({time:new Date('2026-10-10T08:00:00Z')});
+await page.goto('http://127.0.0.1:5175/');await page.locator('.medtech-nav').waitFor();await page.waitForTimeout(500);
+const geometry=await page.evaluate(()=>{const nav=document.querySelector('.medtech-nav').getBoundingClientRect(),orb=document.querySelector('.medtech-nav-orb').getBoundingClientRect();return{raised:orb.top<nav.top,circular:Math.abs(orb.width-orb.height)<1,buttons:document.querySelectorAll('.medtech-nav button').length};});
+assert(geometry.raised&&geometry.circular&&geometry.buttons===5);checks.push('Five tabs retain a circular centre control raised above the bar');
+assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('.member-shell')).getPropertyValue('--page').trim()),'#07172d');
+await page.screenshot({path:fileURLToPath(new URL('home.png',out))});
+const navRect=await page.locator('.medtech-nav').boundingBox();await page.screenshot({path:fileURLToPath(new URL('navigation.png',out)),clip:{x:0,y:navRect.y-30,width:375,height:812-(navRect.y-30)}});
+for(const [name,path]of[['Events','/events'],['Card and check-in QR','/card?qr=1'],['Gallery','/gallery'],['Profile','/profile'],['Home','/']]){await page.getByRole('navigation').getByRole('button',{name,exact:true}).click();await page.waitForURL('http://127.0.0.1:5175'+path);assert.equal(await page.locator('.medtech-nav button[aria-current="page"]').count(),1);}
+checks.push('All five navigation destinations work and exactly one tab is active');
+await page.getByRole('button',{name:'Card and check-in QR',exact:true}).click();await page.getByRole('img',{name:'QR code',exact:true}).waitFor();
+await page.getByRole('button',{name:'Hide check-in code',exact:true}).click();await page.getByRole('img',{name:'QR code',exact:true}).waitFor({state:'detached'});
+await page.getByRole('button',{name:'Card and check-in QR',exact:true}).click();await page.getByRole('img',{name:'QR code',exact:true}).waitFor();checks.push('Centre control opens the QR and reopens it when already on the card screen');
+await page.screenshot({path:fileURLToPath(new URL('card.png',out))});
+await page.goto('http://127.0.0.1:5175/');await page.locator('.unity-footer').waitFor();
+for(const lang of ['en','ta'])for(const width of [320,430]){
+ await page.setViewportSize({width,height:812});await page.evaluate(l=>localStorage.setItem('npm.lang',l),lang);await page.reload();await page.locator('.unity-footer').waitFor();await page.waitForTimeout(100);
+ await page.evaluate(()=>document.documentElement.style.fontSize='200%');
+ await page.waitForTimeout(100);
+ await page.locator('.screen').evaluate(e=>e.scrollTop=e.scrollHeight);
+ const state=await page.evaluate(()=>{const s=document.querySelector('.screen'),nav=document.querySelector('.medtech-nav').getBoundingClientRect(),foot=document.querySelector('.unity-footer').getBoundingClientRect();return{overflow:s.scrollWidth>s.clientWidth,clear:foot.bottom<=nav.top,targets:[...document.querySelectorAll('.medtech-nav button')].map(b=>{const r=b.getBoundingClientRect();return[r.width,r.height];})};});
+ assert(!state.overflow,'Horizontal overflow '+lang+' '+width);assert(state.targets.every(([w,h])=>w>=44&&h>=44),'Touch targets '+lang+' '+width);assert(state.clear,'Footer obscured by enlarged navigation '+lang+' '+width);
+ await page.screenshot({path:fileURLToPath(new URL('nav-'+lang+'-'+width+'-200.png',out))});
+}
+checks.push('English and Tamil navigation fit 320/430px at 200% text with accessible targets and clear content');
+await page.setViewportSize({width:375,height:812});await page.evaluate(()=>localStorage.setItem('npm.lang','en'));await page.goto('http://127.0.0.1:5175/profile');
+await page.getByRole('switch',{name:'Deeper navy mode'}).click();assert.equal(await page.evaluate(()=>document.documentElement.dataset.theme),'dark');checks.push('Deeper navy preference remains functional');
+assert.deepEqual(errors,[]);await browser.close();await fs.writeFile(new URL('results.json',out),JSON.stringify({fixtureOnly:true,geometry,checks},null,2));console.log('Passed',checks.length,'MedTech checks');

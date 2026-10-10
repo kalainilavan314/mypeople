@@ -1,2 +1,2 @@
-commit=4f8d0b5
-note=regenerated on each release to verify which build is live
+release=civic-20261010T110720Z
+base_commit=7139917fb07e88c54b29443939b599996adf2302

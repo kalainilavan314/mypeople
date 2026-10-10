@@ -1,0 +1,62 @@
+[
+  {
+    "label": "Navy on white",
+    "foreground": "#0F2942",
+    "background": "#FFFFFF",
+    "ratio": "14.83"
+  },
+  {
+    "label": "Primary text on canvas",
+    "foreground": "#0F172A",
+    "background": "#F8FAFC",
+    "ratio": "17.06"
+  },
+  {
+    "label": "Muted on white",
+    "foreground": "#475569",
+    "background": "#FFFFFF",
+    "ratio": "7.58"
+  },
+  {
+    "label": "Emerald on white",
+    "foreground": "#059669",
+    "background": "#FFFFFF",
+    "ratio": "3.77"
+  },
+  {
+    "label": "Amber on white",
+    "foreground": "#D97706",
+    "background": "#FFFFFF",
+    "ratio": "3.19"
+  },
+  {
+    "label": "Verified text on tint",
+    "foreground": "#047857",
+    "background": "#ECFDF5",
+    "ratio": "5.21"
+  },
+  {
+    "label": "Pending text on tint",
+    "foreground": "#92400E",
+    "background": "#FFFBEB",
+    "ratio": "6.84"
+  },
+  {
+    "label": "Pass metadata on navy",
+    "foreground": "#CBD5E1",
+    "background": "#0F2942",
+    "ratio": "9.99"
+  },
+  {
+    "label": "Pass verified pill",
+    "foreground": "#A7F3D0",
+    "background": "#064E3B",
+    "ratio": "7.58"
+  },
+  {
+    "label": "Silver tier",
+    "foreground": "#0F2942",
+    "background": "#E2E8F0",
+    "ratio": "12.03"
+  }
+]

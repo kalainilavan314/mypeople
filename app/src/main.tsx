@@ -19,6 +19,8 @@ import '@fontsource/noto-serif-tamil/900.css';
 import '@fontsource/jetbrains-mono/400.css';
 import '@fontsource/jetbrains-mono/500.css';
 import './styles/global.css';
+import './styles/civic.css';
+import './styles/member.css';
 import { App } from './App';
 import { UpdatePrompt } from './components/UpdatePrompt';
 import { applyTheme, getTheme } from './state/theme';

@@ -13,7 +13,7 @@ import { RouteSkeleton } from './components/ui/loaders-skeleton';
 // Eager screens: the first paint after auth (Home) and the pre-auth entry
 // points. Everything else is route-split (below) so the initial bundle stays
 // small — Home no longer pulls Gallery, the Leaflet map or PartyFund on load.
-import { Home } from './screens/Home';
+import { Home } from './screens/NorthUnityHome';
 import { Welcome, hasSeenWelcome } from './screens/onboarding/Welcome';
 import { Login } from './screens/auth/Login';
 
@@ -133,7 +133,7 @@ function TabLayout() {
   }, []);
 
   return (
-    <div className="app-shell">
+    <div className="app-shell member-shell">
       {!online && <OfflineBanner />}
       <div className="screen">
         <Suspense fallback={<ScreenFallback />}>

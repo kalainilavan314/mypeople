@@ -51,7 +51,7 @@ export function Button({
     primary: { background: disabled ? c.hairline3 : c.maroon, color: disabled ? c.ink4 : '#FFFFFF', boxShadow: disabled ? 'none' : shadow.card },
     secondary: { background: c.card, color: c.ink0, border: `1px solid ${c.hairline2}` },
     ghost: { background: 'transparent', color: c.maroon },
-    success: { background: c.success, color: '#FFFFFF' },
+    success: { background: 'var(--success-text)', color: c.onPrimary },
     danger: { background: c.error, color: '#FFFFFF' },
   };
   return (
@@ -108,7 +108,7 @@ export function Field({
     minHeight: textarea ? 112 : undefined,
     width: '100%',
     borderRadius: radius.sm,
-    border: `1px solid ${error ? c.error : c.hairline2}`,
+    border: `1px solid ${error ? c.error : 'var(--control-border)'}`,
     background: disabled ? c.cardCream : c.card,
     color: c.ink,
     font: `400 16px/1.4 ${font.ui}`,
@@ -243,10 +243,11 @@ export function Toggle({ on, onChange, ariaLabel }: { on: boolean; onChange: (v:
       onClick={() => onChange(!on)}
       style={{
         width: 48,
-        height: 28,
+        height: 44,
         borderRadius: radius.pill,
         background: on ? c.maroon : c.hairline2,
-        padding: 3,
+        padding: 11,
+        alignItems: 'center',
         border: 'none',
         boxSizing: 'border-box',
         display: 'flex',
@@ -306,7 +307,7 @@ export function StatusPill({ label, tone = 'neutral', icon }: { label: string; t
   };
   const s = tones[tone];
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 11px', borderRadius: radius.pill, background: s.bg, color: s.fg, font: `600 12px/1 ${font.ui}` }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderRadius: radius.xs, background: s.bg, color: s.fg, font: `600 12px/1 ${font.ui}` }}>
       {icon && <Icon name={icon} size={13} color={s.fg} strokeWidth={2.2} />}
       {label}
     </span>

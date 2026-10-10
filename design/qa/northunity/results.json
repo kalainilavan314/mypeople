@@ -1,0 +1,39 @@
+{
+  "fixtureOnly": true,
+  "checks": [
+    "All twelve existing feature entry points are retained",
+    "Reference hero, event cover photos and self-hosted Outfit font load",
+    "Last content remains visible above navigation",
+    "Home search finds Surveys and opens the existing survey screen",
+    "Phone and tablet home layouts remain within the viewport",
+    "Action label and caption contrast exceeds 4.5:1 at both gradient ends",
+    "Dark mode adapts the signed-in surfaces",
+    "Authentication retains the existing theme and layout"
+  ],
+  "contrasts": [
+    {
+      "name": "action title",
+      "minRatio": 9.446195502443757
+    },
+    {
+      "name": "action caption",
+      "minRatio": 6.771157400638613
+    },
+    {
+      "name": "nav active",
+      "minRatio": 7.948426384931825
+    },
+    {
+      "name": "nav inactive",
+      "minRatio": 6.9625023025567225
+    },
+    {
+      "name": "centre QR icon",
+      "minRatio": 5.739667857139022
+    },
+    {
+      "name": "primary button",
+      "minRatio": 8.932391403435593
+    }
+  ]
+}

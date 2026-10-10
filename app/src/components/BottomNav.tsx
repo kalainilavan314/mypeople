@@ -1,38 +1,54 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, CalendarDays, Plus, Users, User, type LucideIcon } from 'lucide-react';
+import { useLayoutEffect, useRef } from 'react';
+import { Home, CalendarDays, ScanLine, Images, User, type LucideIcon } from 'lucide-react';
 import { useWorkspaceText } from './MemberWorkspace';
 
-// Primary navigation — Home | Events | centre Report FAB | Community | Profile.
-// The raised centre button is the quickest path to filing a community report;
-// Card and Gallery are reached from Profile (My card) and the Community hub.
+// Five stable destinations from the member wireframes.
 type Tab = {
   to: string;
   label: string;
   icon: LucideIcon;
   match: string[];
-  isFab?: boolean;
+  raised?: boolean;
 };
 
 export function BottomNav() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const t = useWorkspaceText();
+  const navRef = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    const shell = nav?.closest<HTMLElement>('.member-shell');
+    if (!nav || !shell) return;
+    const measure = () => {
+      const bar = nav.getBoundingClientRect();
+      const orb = nav.querySelector('.medtech-nav-orb')?.getBoundingClientRect();
+      const rise = orb ? Math.max(0, bar.top - orb.top) : 0;
+      shell.style.setProperty('--member-nav-clearance', `${Math.ceil(bar.height + rise + 26)}px`);
+    };
+    measure();
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure);
+    observer?.observe(nav);
+    window.addEventListener('resize', measure);
+    return () => { observer?.disconnect(); window.removeEventListener('resize', measure); };
+  }, []);
 
   const tabs: Tab[] = [
-    { to: '/', label: t('Home', 'முகப்பு'), icon: Home, match: ['/'] },
+    { to: '/', label: t('Home', 'முகப்பு'), icon: Home, match: ['/', '/reports', '/community', '/area', '/fund', '/ideas', '/skills', '/courses', '/survey', '/announcement'] },
     { to: '/events', label: t('Events', 'நிகழ்வுகள்'), icon: CalendarDays, match: ['/events'] },
-    { to: '/reports', label: t('Report', 'பதிவு'), icon: Plus, match: ['/reports'], isFab: true },
+    { to: '/card', label: t('Card', 'அட்டை'), icon: ScanLine, match: ['/card', '/milestones'], raised: true },
     {
-      to: '/community',
-      label: t('Community', 'சமூகம்'),
-      icon: Users,
-      match: ['/community', '/area', '/fund', '/ideas', '/skills', '/courses', '/survey', '/gallery', '/announcement'],
+      to: '/gallery',
+      label: t('Gallery', 'படங்கள்'),
+      icon: Images,
+      match: ['/gallery'],
     },
     {
       to: '/profile',
       label: t('Profile', 'சுயவிவரம்'),
       icon: User,
-      match: ['/profile', '/card', '/milestones', '/referral', '/privacy', '/language', '/notifications'],
+      match: ['/profile', '/referral', '/privacy', '/language', '/notifications'],
     },
   ];
 
@@ -40,38 +56,25 @@ export function BottomNav() {
     tab.match.some((p) => (p === '/' ? pathname === '/' : pathname === p || pathname.startsWith(p + '/')));
 
   return (
-    <nav className="work-nav" aria-label={t('Primary navigation', 'முக்கிய வழிசெலுத்தல்')}>
+    <nav ref={navRef} className="work-nav medtech-nav" aria-label={t('Primary navigation', 'முக்கிய வழிசெலுத்தல்')}>
       {tabs.map((tab) => {
         const active = isActive(tab);
         const IconComp = tab.icon;
-
-        if (tab.isFab) {
-          return (
-            <button
-              key={tab.to}
-              type="button"
-              className="work-nav-fab-btn"
-              onClick={() => navigate(tab.to)}
-              aria-current={active ? 'page' : undefined}
-              aria-label={tab.label}
-            >
-              <span className="work-nav-fab">
-                <IconComp size={25} color="#ffffff" strokeWidth={2.8} aria-hidden="true" />
-              </span>
-              <span className={`work-nav-fab-label ${t('en', 'ta') === 'ta' ? 'ta' : ''}`}>{tab.label}</span>
-            </button>
-          );
-        }
 
         return (
           <button
             key={tab.to}
             type="button"
-            onClick={() => navigate(tab.to)}
+            className={tab.raised ? 'medtech-nav-center' : undefined}
+            onClick={() => {
+              navigate(tab.raised ? '/card?qr=1' : tab.to);
+              document.querySelector<HTMLElement>('.screen')?.scrollTo({ top: 0 });
+            }}
             aria-current={active ? 'page' : undefined}
+            aria-label={tab.raised ? t('Card and check-in QR', 'அட்டை மற்றும் வருகைப் பதிவு குறியீடு') : undefined}
           >
-            <span className="work-nav-icon">
-              <IconComp size={24} strokeWidth={active ? 2.4 : 1.8} aria-hidden="true" />
+            <span className={tab.raised ? 'medtech-nav-orb' : 'work-nav-icon'}>
+              <IconComp size={tab.raised ? 26 : 23} strokeWidth={active ? 2.4 : 1.8} aria-hidden="true" />
             </span>
             <span className={t('en', 'ta') === 'ta' ? 'ta' : undefined}>{tab.label}</span>
           </button>

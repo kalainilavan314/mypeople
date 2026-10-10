@@ -40,9 +40,11 @@ export const c = {
 
   gold: 'var(--gold)',
 
-  success: 'var(--success)',
+  success: 'var(--success-text)',
+  successAccent: 'var(--success)',
   successBg: 'var(--success-bg)',
-  warning: 'var(--warning)',
+  warning: 'var(--warning-text)',
+  warningAccent: 'var(--warning)',
   warningBg: 'var(--warning-bg)',
   error: 'var(--error)',
   errorBg: 'var(--error-bg)',
@@ -119,7 +121,7 @@ export const green = {
 } as const;
 
 // Brand button gradient (Civic Navy) — used on CTAs / active tab.
-export const greenGradient = 'linear-gradient(135deg, #0F2942 0%, #1B3A57 100%)';
+export const greenGradient = '#0F2942';
 
 export const authC = {
   // Surfaces — white and near-white with a faint cool cast (spec §2.1).
@@ -140,7 +142,7 @@ export const authC = {
   greenDeep: '#091D30',
   greenSoft: '#E8EDF3',
   greenGrad: greenGradient,
-  greenGradPressed: 'linear-gradient(135deg, #091D30 0%, #0F2942 100%)',
+  greenGradPressed: '#091D30',
   greenGlow: '0 8px 24px -6px rgba(15,41,66,.38)',
 
   // Accent blue (spec Civic Blue)
@@ -164,11 +166,12 @@ export const dur = { fast: 160, mid: 260, slow: 480 } as const;
 
 // Radii mirror tokens.css --r-* (spec §8.2): inputs/buttons 6pt, cards ~12.
 export const radius = {
-  sm: 6, // inputs, buttons
+  xs: 4, // status tags
+  sm: 8, // inputs, buttons
   md: 8,
   lg: 12, // standard card
-  xl: 16, // feature card
-  xxl: 20, // large feature card
+  xl: 12,
+  xxl: 12,
   pill: 999,
 } as const;
 
@@ -182,25 +185,25 @@ export const space = {
   8: 32,
   10: 40,
   12: 48,
-  gutter: 20, // mobile page horizontal padding
+  gutter: 16,
 } as const;
 
 // Control heights (spec §8.2: input 44pt, primary button 40pt; we use 48 for
 // comfortable touch, 44 inputs — both ≥ the 44px WCAG 2.5.5 target).
 export const control = { h: 48, hSm: 44, touchMin: 44 } as const;
 
-// Typography scale (px) derived from spec §2.3 (pt → px). `lh` = line-height px,
+// Typography uses logical UI units, with no assumed pt-to-px multiplier. `lh` = line height,
 // `ls` = letter-spacing. Tamil must not inherit negative tracking — the
 // `:lang(ta)`/`.ta` override in global.css resets it and relaxes line-height.
 export const type = {
-  page: { size: 28, lh: 36, weight: 700, ls: '-0.01em' }, // Display greeting / titles
-  section: { size: 20, lh: 27, weight: 700, ls: '-0.005em' }, // Section headers
-  card: { size: 16, lh: 22, weight: 600, ls: 'normal' }, // Card headlines
+  page: { size: 22, lh: 30, weight: 700, ls: 'normal' }, // Greeting / page title
+  section: { size: 16, lh: 24, weight: 700, ls: 'normal' },
+  card: { size: 13, lh: 20, weight: 600, ls: 'normal' },
   body: { size: 15, lh: 22, weight: 400, ls: 'normal' }, // Body / inputs
   label: { size: 13, lh: 18, weight: 600, ls: 'normal' }, // Input labels
   secondary: { size: 13, lh: 20, weight: 400, ls: 'normal' }, // Metadata
-  caption: { size: 12, lh: 16, weight: 600, ls: 'normal' }, // Badges, pills, Case IDs
-  nav: { size: 12, lh: 16, weight: 600, ls: 'normal' }, // Tab labels
+  caption: { size: 11, lh: 17, weight: 600, ls: 'normal' },
+  nav: { size: 10, lh: 15, weight: 600, ls: 'normal' },
 } as const;
 
 export const shadow = {

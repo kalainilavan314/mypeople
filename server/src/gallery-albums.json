@@ -1,0 +1,117 @@
+[
+  {
+    "id": "library",
+    "titleEn": "Jaffna library",
+    "titleTa": "யாழ்ப்பாண நூலகம்",
+    "category": "community",
+    "publishedAt": "2026-10-09T12:00:00+05:30",
+    "place": "Jaffna library",
+    "publisher": "Sample collection · Wikimedia Commons",
+    "sample": true,
+    "photos": [
+      {
+        "id": "library",
+        "src": "/gallery/library.webp",
+        "altEn": "Jaffna Public Library",
+        "altTa": "யாழ்ப்பாணப் பொது நூலகம்",
+        "credit": "Thamizhpparithi Maari / Wikimedia Commons. Resized and converted to WebP.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jaffna_Public_Library.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    ],
+    "publicationState": "published"
+  },
+  {
+    "id": "reading",
+    "titleEn": "Spaces for learning",
+    "titleTa": "கற்றல் இடங்கள்",
+    "category": "events",
+    "publishedAt": "2026-10-09T12:00:00+05:30",
+    "place": "Spaces for learning",
+    "publisher": "Sample collection · Wikimedia Commons",
+    "sample": true,
+    "photos": [
+      {
+        "id": "reading",
+        "src": "/gallery/reading.webp",
+        "altEn": "Inside Jaffna Public Library",
+        "altTa": "யாழ்ப்பாண நூலகத்தின் உள்ளே",
+        "credit": "Adam Jones / Wikimedia Commons. Resized and converted to WebP.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Interior_of_Public_Library,_Jaffna.jpg",
+        "license": "CC BY-SA 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+      }
+    ],
+    "publicationState": "published"
+  },
+  {
+    "id": "nallur",
+    "titleEn": "Nallur heritage",
+    "titleTa": "நல்லூர் மரபு",
+    "category": "community",
+    "publishedAt": "2026-10-09T12:00:00+05:30",
+    "place": "Nallur heritage",
+    "publisher": "Sample collection · Wikimedia Commons",
+    "sample": true,
+    "photos": [
+      {
+        "id": "nallur",
+        "src": "/gallery/nallur.webp",
+        "altEn": "Nallur Kandaswamy temple",
+        "altTa": "நல்லூர் கந்தசுவாமி கோவில்",
+        "credit": "Lucas105 / Wikimedia Commons. Resized and converted to WebP.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nallur_Kandaswamy_temple.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      }
+    ],
+    "publicationState": "published"
+  },
+  {
+    "id": "fields",
+    "titleEn": "Northern landscapes",
+    "titleTa": "வடக்கின் இயற்கை",
+    "category": "community",
+    "publishedAt": "2026-10-09T12:00:00+05:30",
+    "place": "Northern landscapes",
+    "publisher": "Sample collection · Wikimedia Commons",
+    "sample": true,
+    "photos": [
+      {
+        "id": "fields",
+        "src": "/gallery/fields.webp",
+        "altEn": "Jaffna landscape",
+        "altTa": "யாழ்ப்பாணத்தின் இயற்கை",
+        "credit": "Ganeswaran Thivyasagar / Wikimedia Commons. Resized and converted to WebP.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jaffna_beauty.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    ],
+    "publicationState": "published"
+  },
+  {
+    "id": "kilinochchi",
+    "titleEn": "Kilinochchi green spaces",
+    "titleTa": "கிளிநொச்சியின் பசுமை",
+    "category": "events",
+    "publishedAt": "2026-10-09T12:00:00+05:30",
+    "place": "Kilinochchi green spaces",
+    "publisher": "Sample collection · Wikimedia Commons",
+    "sample": true,
+    "photos": [
+      {
+        "id": "kilinochchi",
+        "src": "/gallery/kilinochchi.webp",
+        "altEn": "Kilinochchi landscape",
+        "altTa": "கிளிநொச்சியின் இயற்கை",
+        "credit": "Keapriyan / Wikimedia Commons. Resized and converted to WebP.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kilinochchi_Nature.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    ],
+    "publicationState": "published"
+  }
+]

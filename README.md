@@ -3,12 +3,20 @@
 வடமாகாண மக்கள் இயக்கம் · Jaffna, Sri Lanka
 Tamil-first membership platform for budget Android phones.
 
+The current member UI follows the NorthUnity home layout with a navy/cyan theme
+and raised MedTech-style QR navigation. See `design/medtech-navigation-specification.md`
+and `design/northunity-ui-specification.md`; the earlier screen specifications and
+React, Flutter and React Native component trees are retained in `design/`.
+The five tabs are Home / Events / Card / Gallery / Profile. The public gallery API
+reads `server/src/gallery-albums.json` and licensed sample WebP assets. Login and
+registration retain their existing theme. Deployment instructions are in `deployment/README.md`.
+
 This repo now holds two things:
 
 | Folder / file | What it is |
 |---|---|
-| **`app/`** | **The production app.** Installable React + TypeScript PWA (Vite). Runs today against a mock data layer; offline-first; bilingual. |
-| **`server/`** | Backend foundation — the Postgres 16 schema + implementation notes. |
+| **`app/`** | **The production app.** Installable React + TypeScript PWA (Vite), bilingual, with live APIs and retained mock adapters for planned features. |
+| **`server/`** | Express API, Postgres migrations, authentication, member profiles, events/RSVP, reports, donations, and gallery metadata. |
 | `PROJECT.md` | Feature scope + the canonical Postgres data model. |
 | `NPM App Prototype.dc.html` | Original design-tool **prototype** — the design reference. |
 | `NPM Movement App.dc.html` | 5 core screens side-by-side (design reference). |
@@ -24,9 +32,10 @@ npm install
 npm run dev
 ```
 
-Open the printed URL (default `http://localhost:5173`). It works with **zero backend** — all
-data comes from the in-memory mock adapter, and field reports flow through a real IndexedDB
-offline queue.
+Open the printed URL (default `http://localhost:5173`). Run the backend on port 8787
+for authentication and live content; follow `server/README.md` for configuration and
+migrations. Surveys, ideas, courses, skills, and some activity views retain their
+existing mock adapters while their production APIs are planned.
 
 Other scripts: `npm run build` (production bundle + service worker), `npm run preview`
 (serve the build), `npm run typecheck`.
@@ -36,13 +45,13 @@ Other scripts: `npm run build` (production bundle + service worker), `npm run pr
 ```
 app/src/
   main.tsx / App.tsx      React Query + Router + bottom-tab shell, language sync, outbox flush
-  theme/tokens.ts         design tokens (maroon/cream palette, fonts, radii) as TS constants
-  styles/                 tokens.css + global.css (CSS-variable mirror of the tokens)
+  theme/tokens.ts         shared CSS-variable references, fonts and control sizing
+  styles/                 base tokens/global styles, civic components and scoped navy member theme
   i18n/                   i18next; ta.json + en.json string sets, si.json stub (fallback → ta)
   data/
     types.ts              TypeScript types mirroring the Postgres schema (server/migrations)
     api.ts                ApiClient interface — the single contract screens depend on
-    index.ts              `export const api = mockClient`  ← swap point for the real HTTP client
+    index.ts              composite of mockClient and backend-backed httpContent methods
     mock/                 in-memory adapter + seed data (lifted from the prototype)
     queue.ts              IndexedDB outbox, client_uuid idempotency (offline-first reports)
     queries.ts            React Query hooks (queries + mutations)
@@ -52,14 +61,17 @@ app/src/
 ```
 
 ### Design fidelity
-Palette, type, radii and motion come straight from `PROJECT.md §Design foundations`
-(deep maroon `#7B1E2B`, cream `#FBF6EE`, Noto Sans Tamil / Inter / JetBrains Mono, Tamil label
-first with an English sub-label). The Palmyra frond emblem is `components/PalmyraMark`.
+The signed-in theme uses navy `#07172D`, cyan `#57D9FF`, and self-hosted Outfit with
+Noto Sans Tamil fallback. The NorthUnity photo-led layout preserves all existing
+feature links. The MedTech navigation has a raised centre control that opens the
+server-issued check-in QR. The Palmyra emblem remains `components/PalmyraMark`.
 
 ### Data flow / swapping in the real backend
 Screens call **hooks** (`data/queries.ts`) → the **`api`** singleton (`data/index.ts`) →
-which is the **mock adapter** today. When the backend exists, implement `ApiClient`
-(`data/api.ts`) as an HTTP client and change one line in `data/index.ts`. No screen changes.
+which combines mock and HTTP methods. Authentication/profile/QR use `authApi`,
+events and RSVP use `httpContent`, and the gallery uses its public read-only API.
+Remaining planned features can replace individual mock methods with API-backed
+implementations while preserving their hooks and screens.
 
 ### Offline-first
 `data/queue.ts` is an IndexedDB outbox. `submitReport` enqueues with a client-generated

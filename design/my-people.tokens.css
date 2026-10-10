@@ -1,0 +1,240 @@
+/* ===========================================================================
+   AUTHORITATIVE THEME — "என் மக்கள் · My People" institutional system.
+
+   Single source of truth for the running app. Re-points legacy variable names
+   (--maroon*, --grad-*, --ink*, --r-*) onto a disciplined civic palette.
+   Light is the primary theme; dark mode adapts with high-contrast lifted tones.
+=========================================================================== */
+:root {
+  /* Brand navy: #0F2942 on white measures 14.83:1. */
+  --primary: #0f2942;
+  --primary-dark: #091d30;
+  --primary-mid: #1b3a57;
+  --primary-light: #4a627c;
+  --primary-container: #e8edf3;
+  --on-primary-container: #0f2942;
+  --on-primary: #ffffff;
+
+  --maroon: #0f2942;
+  --maroon-hover: #1b3a57;
+  --maroon-pressed: #091d30;
+  --maroon-tint: rgba(15, 41, 66, 0.08);
+  --maroon-tint-soft: rgba(15, 41, 66, 0.04);
+  --maroon-tint-border: rgba(15, 41, 66, 0.2);
+
+  /* Legacy accent aliases resolve to the single navy authority color. */
+  --secondary: #0f2942;
+  --secondary-container: #f1f5f9;
+  --on-secondary-container: #0f2942;
+  --accent: #0f2942;
+  --accent-hover: #091d30;
+  --accent-container: #f1f5f9;
+  --on-accent-container: #0f2942;
+  --tertiary: #059669;
+  --tertiary-container: #dcf3ea;
+
+  /* --- Surfaces (spec §2.1) --------------------------------------------- */
+  --page: #f8fafc;
+  --page-outer: #eef2f7;
+  --card: #ffffff;
+  --card-cream: #f8fafc;
+  --card-warm: #ffffff;
+  --surface-variant: #f1f5f9;
+  --soft-blue: #f1f5f9;
+  --soft-gray: #f1f5f9;
+  --soft-green: #ecfdf5;
+
+  /* --- Ink ramp (spec text colours, WCAG AAA/AA on white) --------------- */
+  --ink: #0f172a;
+  --ink-0: #0f172a;
+  --ink-2: #334155;
+  --ink-3: #475569;
+  --ink-4: #475569;
+  --icon-muted: #94a3b8;
+
+  /* --- Lines (spec border #E2E8F0 / divider #F1F5F9) -------------------- */
+  --hairline: #e2e8f0;
+  --hairline-2: #cbd5e1;
+  --hairline-3: #f1f5f9;
+  --control-border: #64748b;
+
+  /* --- Semantic (spec §2.1: verified/pending/alert) -------------------- */
+  --success: #059669;
+  --success-text: #047857;
+  --success-bg: #ecfdf5;
+  --warning: #d97706;
+  --warning-text: #92400e;
+  --warning-bg: #fffbeb;
+  --error: #dc2626;
+  --error-bg: #fef2f2;
+  --info: #0f2942;
+
+  /* --- Tier accents ----------------------------------------------------- */
+  --sprout: #047857;
+  --sprout-soft: rgba(5, 150, 105, 0.12);
+  --root: #92400e;
+  --root-soft: rgba(217, 119, 6, 0.14);
+  --palmyra: #4a627c;
+
+  --purple: #0f2942;
+  --lavender: #0f2942;
+  --gold: #b7791f;
+
+  /* Legacy gradient aliases are solid fills. Photo counter scrims are local. */
+  --grad-primary: #0f2942;
+  --grad-join: var(--grad-primary);
+  --grad-you: var(--grad-primary);
+  --grad-volunteer: #203b59;
+  --grad-survey: #203b59;
+  --grad-community: #203b59;
+  --grad-events: #203b59;
+  --grad-agriculture: #203b59;
+  --green-gradient: var(--grad-primary);
+
+  /* --- Radii (tags 4, inputs/buttons 8, cards 12) ----------------------- */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 12px;
+  --r-2xl: 12px;
+  --r-pill: 999px;
+
+  /* --- Spacing ---------------------------------------------------------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --gutter: 16px;
+
+  /* --- Control sizing (spec §8.2: input 44, primary btn 40, touch 44) --- */
+  --control-h: 48px;
+  --control-h-sm: 44px;
+  --touch-min: 44px;
+
+  /* --- Shadows ---------------------------------------------------------- */
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-nav: 0 -1px 0 rgba(20, 38, 61, 0.06);
+  --shadow-fab: 0 6px 16px -6px rgba(20, 38, 61, 0.35);
+  --shadow-lg: 0 8px 24px -8px rgba(20, 38, 61, 0.18);
+  --shadow-tile: none;
+
+  /* --- Fonts ------------------------------------------------------------
+     Latin-first so English never renders in Noto Sans Tamil; Tamil glyphs
+     fall back to Noto per-glyph. Noto has no Latin ambiguity this way. ---- */
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Tamil', sans-serif;
+  --font-head: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Tamil', sans-serif;
+  --font-ta: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Tamil', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --text-page: 1.375rem;
+  --text-section: 1rem;
+  --text-hero: .875rem;
+  --text-label: .8125rem;
+  --text-body: .9375rem;
+  --text-meta: .6875rem;
+  --text-caption: .625rem;
+  --line-latin: 1.5;
+  --line-tamil: 1.65;
+
+  /* --- Layout ----------------------------------------------------------- */
+  --app-max: 448px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --radius-tag: 4px;
+  --radius-chip: 999px;
+  --pass-bg: #0f2942;
+  --pass-text: #ffffff;
+  --pass-muted: #cbd5e1;
+  --pass-verified-bg: #064e3b;
+  --pass-verified-text: #a7f3d0;
+  --tier-bg: #e2e8f0;
+  --tier-text: #0f2942;
+  --focus-ring: #0f2942;
+}
+
+/* ---------------------------------------------------------------------------
+   DARK MODE — rich charcoal surfaces with lifted blue/semantic accents.
+   Activated via data-theme="dark" on <html> element.
+--------------------------------------------------------------------------- */
+:root[data-theme='dark'] {
+  --primary: #4d9bff;
+  --primary-mid: #2f7fe0;
+  --primary-light: #7ab6ff;
+  --primary-container: #102d55;
+  --on-primary-container: #d7e7ff;
+  --on-primary: #051930;
+
+  --maroon: #4d9bff;
+  --maroon-hover: #7ab6ff;
+  --maroon-pressed: #2f7fe0;
+  --maroon-tint: rgba(77, 155, 255, 0.16);
+  --maroon-tint-soft: rgba(77, 155, 255, 0.08);
+  --maroon-tint-border: rgba(77, 155, 255, 0.32);
+
+  --secondary: #74b3f8;
+  --secondary-container: #153250;
+  --on-secondary-container: #d7e7ff;
+  --accent: #74b3f8;
+  --accent-hover: #93c6ff;
+  --accent-container: #153250;
+  --on-accent-container: #d7e7ff;
+  --tertiary: #6ddba0;
+  --tertiary-container: #123c2c;
+
+  --page: #0d141e;
+  --page-outer: #070b11;
+  --card: #151f2b;
+  --card-cream: #1c2837;
+  --card-warm: #151f2b;
+  --surface-variant: #1c2837;
+  --soft-blue: #142233;
+  --soft-gray: #1c2837;
+  --soft-green: #12281e;
+
+  --ink: #e6edf5;
+  --ink-0: #f4f7fb;
+  --ink-2: #c0cdda;
+  --ink-3: #8a9bb0;
+  --ink-4: #5d6f85;
+
+  --hairline: #243242;
+  --hairline-2: #384a5e;
+  --hairline-3: #1a2533;
+  --control-border: #8a9bb0;
+
+  --success: #6ddba0;
+  --success-text: #a7f3d0;
+  --success-bg: rgba(109, 219, 160, 0.15);
+  --warning: #f0a92e;
+  --warning-text: #fcd34d;
+  --warning-bg: rgba(240, 169, 46, 0.16);
+  --error: #f28b82;
+  --error-bg: rgba(242, 139, 130, 0.16);
+  --info: #74b3f8;
+
+  --sprout: #6ddba0;
+  --sprout-soft: rgba(109, 219, 160, 0.16);
+  --root: #f0a92e;
+  --root-soft: rgba(240, 169, 46, 0.16);
+  --palmyra: #a3adbf;
+
+  --purple: #74b3f8;
+  --lavender: #74b3f8;
+  --gold: #f0a92e;
+
+  --grad-primary: #0f2942;
+  --grad-join: var(--grad-primary);
+  --grad-you: var(--grad-primary);
+
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-nav: 0 -1px 0 rgba(255, 255, 255, 0.08);
+  --shadow-fab: 0 8px 24px -6px rgba(77, 155, 255, 0.45);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+  --focus-ring: #d7e7ff;
+}

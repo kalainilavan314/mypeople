@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import { galleryRouter } from './gallery.js';
 import bcrypt from 'bcryptjs';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -454,6 +455,10 @@ app.get('/api/me/card-token', wrap(async (req, res) => {
 }));
 
 // --- Events -----------------------------------------------------------------
+// Published gallery is public, matching the public event calendar. Uploads and
+// private evidence are deliberately outside this read-only API.
+app.use('/api/gallery', galleryRouter);
+
 // Signature-only: it does NOT check whether the session has been revoked, so it
 // must not be used to authorise a request. requireMember() is the entry point
 // for that. Kept because signCardToken's verifier needs the same token shape.
@@ -506,7 +511,11 @@ async function reqContext(req) {
 app.get('/api/events', wrap(async (req, res) => {
   const ctx = await reqContext(req);
   const r = await pool.query(`${EVENT_SELECT} ORDER BY e.starts_at ASC`);
-  res.json({ events: r.rows.map((e) => mapEvent(e, ctx)) });
+  const responses = ctx.memberId
+    ? (await pool.query('SELECT event_id, status FROM npm.event_rsvp WHERE member_id=$1', [ctx.memberId])).rows
+    : [];
+  const myResponses = new Map(responses.map(r => [r.event_id, r.status]));
+  res.json({ events: r.rows.map((e) => mapEvent(e, { ...ctx, myStatus: myResponses.get(e.id) ?? null })) });
 }));
 
 app.get('/api/events/:id', wrap(async (req, res) => {

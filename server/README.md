@@ -1,9 +1,14 @@
-# NPM — backend foundation
+# NPM — membership API
 
-Postgres 16 schema for the membership app. This is the **data foundation**; the API service
-(Fastify/Express/PostgREST — TBD) is not built yet. The frontend runs today against the mock
-adapter (`app/src/data/mock`) and will swap to a real HTTP client implementing the same
-`ApiClient` interface (`app/src/data/api.ts`) with no screen changes.
+Express service backed by Postgres. Implemented routes include authentication,
+member profiles, signed QR credentials, events/RSVP, community reports, donations,
+and public gallery metadata. Some planned frontend features still use mock adapters.
+
+For local development, install dependencies, copy `.env.example` to `.env`, and
+configure a local database and secrets. Never commit real environment values.
+Run `npm run migrate` followed by `npm run dev` from this folder. The default API
+port is 8787, matching the frontend Vite proxy. Production configuration is kept
+on the server; see `../deployment/README.md` for the release workflow.
 
 ## Run the schema
 

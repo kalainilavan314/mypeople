@@ -1,0 +1,207 @@
+{
+  "fixtureOnly": true,
+  "productionServerContacted": false,
+  "checks": [
+    {
+      "screen": "home",
+      "width": 375,
+      "overflow": false
+    },
+    {
+      "screen": "events",
+      "width": 375,
+      "overflow": false
+    },
+    {
+      "screen": "card",
+      "width": 375,
+      "overflow": false
+    },
+    {
+      "screen": "gallery",
+      "width": 375,
+      "overflow": false
+    },
+    {
+      "screen": "profile",
+      "width": 375,
+      "overflow": false
+    },
+    {
+      "test": "Failed RSVP preserves confirmed status",
+      "pass": true
+    },
+    {
+      "test": "Gallery loads API photos and dialog closes with Escape",
+      "pass": true
+    },
+    {
+      "test": "Wallet availability and public-share disclosure are honest",
+      "pass": true
+    },
+    {
+      "screen": "/",
+      "width": 320,
+      "lang": "en",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/events",
+      "width": 320,
+      "lang": "en",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/card",
+      "width": 320,
+      "lang": "en",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/gallery",
+      "width": 320,
+      "lang": "en",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/profile",
+      "width": 320,
+      "lang": "en",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/",
+      "width": 430,
+      "lang": "en",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/events",
+      "width": 430,
+      "lang": "en",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/card",
+      "width": 430,
+      "lang": "en",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/gallery",
+      "width": 430,
+      "lang": "en",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/profile",
+      "width": 430,
+      "lang": "en",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/",
+      "width": 320,
+      "lang": "ta",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/events",
+      "width": 320,
+      "lang": "ta",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/card",
+      "width": 320,
+      "lang": "ta",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/gallery",
+      "width": 320,
+      "lang": "ta",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/profile",
+      "width": 320,
+      "lang": "ta",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/",
+      "width": 430,
+      "lang": "ta",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/events",
+      "width": 430,
+      "lang": "ta",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/card",
+      "width": 430,
+      "lang": "ta",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/gallery",
+      "width": 430,
+      "lang": "ta",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "screen": "/profile",
+      "width": 430,
+      "lang": "ta",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "test": "Long legal name and enlarged Tamil pass have no vertical overlap",
+      "pass": true
+    },
+    {
+      "endpoint": "/api/gallery/albums",
+      "status": 200
+    },
+    {
+      "endpoint": "/api/gallery/albums?category=events",
+      "status": 200
+    },
+    {
+      "endpoint": "/api/gallery/albums?category=bogus",
+      "status": 400
+    },
+    {
+      "endpoint": "/api/gallery/albums/library",
+      "status": 200
+    },
+    {
+      "endpoint": "/api/gallery/albums/missing",
+      "status": 404
+    }
+  ]
+}

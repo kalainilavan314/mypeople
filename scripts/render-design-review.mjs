@@ -1,0 +1,11 @@
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+const require=createRequire(import.meta.url);
+const {chromium}=require(process.env.MY_PEOPLE_PLAYWRIGHT_MODULE || 'playwright');
+const browser=await chromium.launch({headless:true,channel:'msedge'});
+const page=await browser.newPage({viewport:{width:1240,height:1000},deviceScaleFactor:1});
+await page.goto(new URL('../design/review.html',import.meta.url).href);
+await page.locator('img').last().waitFor();
+await page.evaluate(()=>Promise.all([...document.images].map(i=>i.decode())));
+await page.screenshot({path:fileURLToPath(new URL('../design/qa/overview.png',import.meta.url)),fullPage:true});
+await browser.close();

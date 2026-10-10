@@ -1,0 +1,15 @@
+{
+  "fixtureOnly": true,
+  "geometry": {
+    "raised": true,
+    "circular": true,
+    "buttons": 5
+  },
+  "checks": [
+    "Five tabs retain a circular centre control raised above the bar",
+    "All five navigation destinations work and exactly one tab is active",
+    "Centre control opens the QR and reopens it when already on the card screen",
+    "English and Tamil navigation fit 320/430px at 200% text with accessible targets and clear content",
+    "Deeper navy preference remains functional"
+  ]
+}

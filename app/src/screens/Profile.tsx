@@ -44,15 +44,15 @@ export function Profile() {
           || t('profile.areaUnset', 'Area not set');
 
         return (
-          <main className="workspace" style={{ paddingTop: 'calc(12px + var(--safe-top, 0px))' }}>
-            <h1 style={{ font: `700 ${ty.page.size}px/1.15 ${font.head}`, letterSpacing: '-0.01em', color: c.ink0, margin: '0 0 16px' }}>
+          <main className="civic-page">
+            <h1 style={{ font: `700 1.375rem/1.4 ${font.head}`, letterSpacing: '-0.01em', color: c.ink0, margin: '0 0 16px' }}>
               {t('profile.titleMy', 'My Profile')}
             </h1>
 
             {/* ---------- Compact identity block ---------- */}
             <section
               style={{
-                display: 'flex', alignItems: 'center', gap: 14, padding: 16,
+                display: 'flex', alignItems: 'center', gap: 12, padding: 12,
                 borderRadius: radius.lg, background: c.card, border: `1px solid ${c.hairline}`, boxShadow: 'var(--shadow-card)',
               }}
             >
@@ -62,13 +62,13 @@ export function Profile() {
                 aria-label={t('profile.editProfile', 'Edit profile')}
                 style={{ flex: 'none', position: 'relative', border: 'none', background: 'none', padding: 0, cursor: 'pointer', borderRadius: '50%' }}
               >
-                <span style={{ display: 'block', width: 64, height: 64, borderRadius: '50%', overflow: 'hidden', background: c.surfaceVariant }}>
-                  <NetImage src={me?.avatarUrl ?? undefined} alt={name} width={64} height={64} radius={999} fallbackIcon="user" />
+                <span style={{ display: 'block', width: 48, height: 48, borderRadius: '50%', overflow: 'hidden', background: c.surfaceVariant }}>
+                  <NetImage src={me?.avatarUrl ?? undefined} alt={name} width={48} height={48} radius={999} fallbackIcon="user" />
                 </span>
               </button>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ font: `700 ${ty.section.size}px/1.2 ${font.head}`, color: c.ink0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
-                <div style={{ font: `500 ${ty.secondary.size}px/1.3 ${font.ui}`, color: c.ink3, marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>
+                <div style={{ font: `700 1rem/1.5 ${font.head}`, color: c.ink0, overflowWrap: 'anywhere' }}>{name}</div>
+                <div style={{ font: `500 ${ty.secondary.size / 16}rem/1.3 ${font.ui}`, color: c.ink3, marginTop: 4, overflowWrap: 'anywhere', fontVariantNumeric: 'tabular-nums' }}>
                   {t('profile.memberShort', 'Member')} {code} · {tier.nameEn}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
@@ -77,7 +77,7 @@ export function Profile() {
                     warn={pending}
                     label={verified ? t('verify.confirmed', 'Identity verified') : pending ? t('verify.reviewPending', 'Review pending') : t('verify.unverified', 'Not verified')}
                   />
-                  {verified && (
+                  {me?.membershipStatus === 'active' && (
                     <StatusChip good label={t('profile.membershipActive', 'Membership active')} />
                   )}
                 </div>
@@ -87,9 +87,8 @@ export function Profile() {
             {/* ---------- Primary navigation ---------- */}
             <nav aria-label={t('profile.sections', 'Profile sections')} style={{ marginTop: 16 }}>
               <div style={cardListStyle}>
-                <Row icon="idCard" title={t('profile.myCard', 'My card')} sub={t('profile.myCardSub', 'Member credential and QR')} onClick={() => navigate('/card')} first />
-                <Row icon="mapPin" title={t('profile.myArea', 'My area')} sub={area} onClick={() => navigate('/area')} />
-                <Row icon="trending" title={t('profile.myActivity', 'My activity')} sub={t('profile.myActivitySub2', 'Reports, events, surveys and learning')} onClick={() => navigate('/reports')} />
+                <Row icon="mapPin" title={t('profile.myArea', 'My area')} sub={area} onClick={() => navigate('/area')} first />
+                <Row icon="trending" title={t('profile.myActivity', 'My activity')} sub={t('profile.reportActivity', 'Reports and receipts')} onClick={() => navigate('/reports')} />
                 <Row icon="pencil" title={t('profile.editProfile', 'Edit profile')} sub={t('profile.editProfileSub2', 'Update personal and contact details')} onClick={() => navigate('/profile/edit')} />
                 <Row icon="shield" title={t('profile.verificationDetails', 'Verification details')} sub={t('profile.verificationSub', 'Identity and membership status')} onClick={() => setVerifyOpen(true)} />
                 <Row icon="users" title={t('profile.communityHub', 'Community hub')} sub={t('profile.communityHubSub', 'Invites, skills, ideas and contributions')} onClick={() => navigate('/community')} />
@@ -98,7 +97,7 @@ export function Profile() {
 
             {/* ---------- Account settings ---------- */}
             <div className="pf-section-head" style={{ marginTop: 20, marginBottom: 10 }}>
-              <h2 style={{ font: `700 ${ty.section.size}px/1.2 ${font.head}`, color: c.ink0, margin: 0 }}>
+              <h2 style={{ font: `700 1rem/1.5 ${font.head}`, color: c.ink0, margin: 0 }}>
                 {t('profile.accountSettings', 'Account settings')}
               </h2>
             </div>
@@ -106,13 +105,13 @@ export function Profile() {
               <Row icon="globe" title={t('profile.language', 'Language')} sub={lang === 'ta' ? 'தமிழ்' : 'English'} onClick={() => navigate('/language')} first />
               <Row icon="bell" title={t('profile.notifications', 'Notifications')} sub={t('profile.notificationsSub', 'Event and review preferences')} onClick={() => navigate('/notifications')} />
               <Row icon="lock" title={t('profile.privacy', 'Privacy and consent')} sub={t('profile.privacySub', 'Control participation details')} onClick={() => navigate('/privacy')} />
-              <div className="pf-menu-row" style={{ cursor: 'default', borderTop: `1px solid ${c.hairline3}` }}>
-                <div className="pf-menu-icon-circle"><Icon name="moon" size={19} strokeWidth={2} /></div>
+              <div className="civic-profile-row" style={{ cursor: 'default' }}>
+                <Icon name="moon" size={20} strokeWidth={2} />
                 <div className="pf-menu-text">
                   <span className="pf-menu-title">{t('profile.appearance', 'Appearance')}</span>
-                  <span className="pf-menu-sub">{isDark ? t('profile.dark', 'Dark') : t('profile.light', 'Light')}</span>
+                  <span className="pf-menu-sub">{isDark ? t('profile.midnightNavy', 'Midnight navy') : t('profile.civicNavy', 'Civic navy')}</span>
                 </div>
-                <Toggle on={isDark} onChange={() => toggleTheme()} ariaLabel={t('profile.darkMode', 'Dark mode')} />
+                <Toggle on={isDark} onChange={() => toggleTheme()} ariaLabel={t('profile.deeperNavy', 'Deeper navy mode')} />
               </div>
               <Row icon="info" title={t('profile.helpAbout', 'Help and about')} sub="v1.0.0" onClick={() => navigate('/privacy')} />
             </div>
@@ -153,7 +152,7 @@ function StatusChip({ good, warn, label }: { good?: boolean; warn?: boolean; lab
   const color = good ? c.success : warn ? c.warning : c.ink3;
   const bg = good ? c.successBg : warn ? c.warningBg : c.surfaceVariant;
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 9px', borderRadius: radius.pill, background: bg, color, font: `600 ${ty.caption.size}px/1.3 ${font.ui}` }}>
+    <span style={{ display: 'inline-flex', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', alignItems: 'center', gap: 4, padding: '4px 8px', borderRadius: radius.xs, background: bg, color, font: `600 ${ty.caption.size / 16}rem/1.65 ${font.ui}` }}>
       <Icon name={good ? 'check' : 'info'} size={12} strokeWidth={2.6} />
       {label}
     </span>
@@ -161,27 +160,12 @@ function StatusChip({ good, warn, label }: { good?: boolean; warn?: boolean; lab
 }
 
 /* ---------------------------------------------------------------------- Row */
-function Row({ icon, title, sub, onClick, first }: { icon: IconName; title: string; sub?: string; onClick: () => void; first?: boolean }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      style={{
-        width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '14px 14px',
-        background: 'none', border: 'none', borderTop: first ? 'none' : `1px solid ${c.hairline3}`,
-        cursor: 'pointer', textAlign: 'left', minHeight: 56,
-      }}
-    >
-      <span style={{ flex: 'none', width: 40, height: 40, borderRadius: radius.md, background: 'var(--soft-blue)', display: 'grid', placeItems: 'center', color: c.primary }}>
-        <Icon name={icon} size={19} strokeWidth={2} />
-      </span>
-      <span style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ display: 'block', font: `600 ${ty.card.size}px/1.3 ${font.ui}`, color: c.ink0 }}>{title}</span>
-        {sub && <span style={{ display: 'block', font: `400 ${ty.secondary.size}px/1.35 ${font.ui}`, color: c.ink3, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sub}</span>}
-      </span>
-      <Icon name="chevron" size={17} color={c.ink4} />
-    </button>
-  );
+function Row({ icon, title, sub, onClick }: { icon: IconName; title: string; sub?: string; onClick: () => void; first?: boolean }) {
+  return <button type="button" className="civic-profile-row" onClick={onClick}>
+    <Icon name={icon} size={20} strokeWidth={2} />
+    <span><strong>{title}</strong>{sub && <small className="sr-only">{sub}</small>}</span>
+    <Icon name="chevron" size={20} color="var(--icon-muted)" strokeWidth={2} />
+  </button>;
 }
 
 /* ------------------------------------------------------------ VerificationSheet */
@@ -235,10 +219,10 @@ function VerificationSheet({
               <Icon name={icon(r.state)} size={16} strokeWidth={2.2} />
             </span>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ font: `600 14px/1.3 ${font.ui}`, color: c.ink }}>{r.label}</div>
+              <div style={{ font: `600 0.875rem/1.3 ${font.ui}`, color: c.ink }}>{r.label}</div>
               <div className="t-caption" style={{ marginTop: 2 }}>{r.hint}</div>
             </div>
-            <span style={{ font: `600 12px/1 ${font.ui}`, color: color(r.state), flex: 'none', marginTop: 4 }}>
+            <span style={{ font: `600 0.75rem/1 ${font.ui}`, color: color(r.state), flex: 'none', marginTop: 4 }}>
               {r.state === 'done' ? t('verify.done', 'Done') : r.state === 'active' ? t('verify.pending', 'Pending') : t('verify.todo', 'Not yet')}
             </span>
           </div>
