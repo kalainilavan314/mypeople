@@ -1,7 +1,7 @@
 {
   "fixtureOnly": true,
   "checks": [
-    "Proportional card and no horizontal page overflow at 320, 390 and 768 pixels",
+    "Readable digital pass and no horizontal page overflow at 320, 390 and 768 pixels",
     "Enlarged viewer, zoom, fit and Escape close",
     "QR, wallet availability and private-data-free share preview",
     "PDF generated from canonical card",

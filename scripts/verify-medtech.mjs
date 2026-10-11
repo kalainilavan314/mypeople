@@ -16,7 +16,7 @@ await page.clock.install({time:new Date('2026-10-10T08:00:00Z')});
 await page.goto('http://127.0.0.1:5175/');await page.locator('.medtech-nav').waitFor();await page.waitForTimeout(500);
 const geometry=await page.evaluate(()=>{const nav=document.querySelector('.medtech-nav').getBoundingClientRect(),orb=document.querySelector('.medtech-nav-orb').getBoundingClientRect();return{raised:orb.top<nav.top,circular:Math.abs(orb.width-orb.height)<1,buttons:document.querySelectorAll('.medtech-nav button').length};});
 assert(geometry.raised&&geometry.circular&&geometry.buttons===5);checks.push('Five tabs retain a circular centre control raised above the bar');
-assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('.member-shell')).getPropertyValue('--page').trim()),'#07172d');
+assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('.member-shell')).getPropertyValue('--page').trim()),'#f8fafc');
 await page.screenshot({path:fileURLToPath(new URL('home.png',out))});
 const navRect=await page.locator('.medtech-nav').boundingBox();await page.screenshot({path:fileURLToPath(new URL('navigation.png',out)),clip:{x:0,y:navRect.y-30,width:375,height:812-(navRect.y-30)}});
 for(const [name,path]of[['Events','/events'],['Card and check-in QR','/card?qr=1'],['Gallery','/gallery'],['Profile','/profile'],['Home','/']]){await page.getByRole('navigation').getByRole('button',{name,exact:true}).click();await page.waitForURL('http://127.0.0.1:5175'+path);assert.equal(await page.locator('.medtech-nav button[aria-current="page"]').count(),1);if(path.includes('qr=1'))await page.getByRole('button',{name:'Close',exact:true}).click();}
@@ -25,17 +25,17 @@ await page.getByRole('button',{name:'Card and check-in QR',exact:true}).click();
 await page.getByRole('button',{name:'Close',exact:true}).click();await page.getByRole('img',{name:'QR code',exact:true}).waitFor({state:'detached'});
 await page.getByRole('button',{name:'Card and check-in QR',exact:true}).click();await page.getByRole('img',{name:'QR code',exact:true}).waitFor();checks.push('Centre control opens the QR and reopens it when already on the card screen');
 await page.screenshot({path:fileURLToPath(new URL('card.png',out))});
-await page.goto('http://127.0.0.1:5175/');await page.locator('.unity-footer').waitFor();
+await page.goto('http://127.0.0.1:5175/');await page.locator('.civic-footer').waitFor();
 for(const lang of ['en','ta'])for(const width of [320,430]){
- await page.setViewportSize({width,height:812});await page.evaluate(l=>localStorage.setItem('npm.lang',l),lang);await page.reload();await page.locator('.unity-footer').waitFor();await page.waitForTimeout(100);
+ await page.setViewportSize({width,height:812});await page.evaluate(l=>localStorage.setItem('npm.lang',l),lang);await page.reload();await page.locator('.civic-footer').waitFor();await page.waitForTimeout(100);
  await page.evaluate(()=>document.documentElement.style.fontSize='200%');
  await page.waitForTimeout(100);
  await page.locator('.screen').evaluate(e=>e.scrollTop=e.scrollHeight);
- const state=await page.evaluate(()=>{const s=document.querySelector('.screen'),nav=document.querySelector('.medtech-nav').getBoundingClientRect(),foot=document.querySelector('.unity-footer').getBoundingClientRect();return{overflow:s.scrollWidth>s.clientWidth,clear:foot.bottom<=nav.top,targets:[...document.querySelectorAll('.medtech-nav button')].map(b=>{const r=b.getBoundingClientRect();return[r.width,r.height];})};});
+ const state=await page.evaluate(()=>{const s=document.querySelector('.screen'),nav=document.querySelector('.medtech-nav').getBoundingClientRect(),foot=document.querySelector('.civic-footer').getBoundingClientRect();return{overflow:s.scrollWidth>s.clientWidth,clear:foot.bottom<=nav.top,targets:[...document.querySelectorAll('.medtech-nav button')].map(b=>{const r=b.getBoundingClientRect();return[r.width,r.height];})};});
  assert(!state.overflow,'Horizontal overflow '+lang+' '+width);assert(state.targets.every(([w,h])=>w>=44&&h>=44),'Touch targets '+lang+' '+width);assert(state.clear,'Footer obscured by enlarged navigation '+lang+' '+width);
  await page.screenshot({path:fileURLToPath(new URL('nav-'+lang+'-'+width+'-200.png',out))});
 }
 checks.push('English and Tamil navigation fit 320/430px at 200% text with accessible targets and clear content');
 await page.setViewportSize({width:375,height:812});await page.evaluate(()=>localStorage.setItem('npm.lang','en'));await page.goto('http://127.0.0.1:5175/profile');
-await page.getByRole('switch',{name:'Deeper navy mode'}).click();assert.equal(await page.evaluate(()=>document.documentElement.dataset.theme),'dark');checks.push('Deeper navy preference remains functional');
+await page.getByRole('switch',{name:'Dark mode'}).click();assert.equal(await page.evaluate(()=>document.documentElement.dataset.theme),'dark');checks.push('Optional dark appearance remains functional');
 assert.deepEqual(errors,[]);await browser.close();await fs.writeFile(new URL('results.json',out),JSON.stringify({fixtureOnly:true,geometry,checks},null,2));console.log('Passed',checks.length,'MedTech checks');

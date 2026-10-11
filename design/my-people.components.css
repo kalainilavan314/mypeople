@@ -59,12 +59,12 @@
 .civic-pass-identity { display:flex; gap:12px; align-items:center; }
 .civic-pass-portrait { width:48px; height:48px; border-radius:50%; background:#1b3a57; display:grid; place-items:center; flex:none; overflow:hidden; }
 .civic-pass-portrait img { width:100%; height:100%; object-fit:cover; }
-.civic-pass-identity > div { min-width:0; flex:1; }
+.civic-pass-identity > div:not(.civic-pass-portrait) { min-width:0; flex:1; }
 .civic-pass-name { font-size:1rem; line-height:1.5; font-weight:700; overflow-wrap:anywhere; }
 .civic-pass-id, .civic-pass-area { font-size:.6875rem; line-height:1.5; color:var(--pass-muted); margin-top:4px; overflow-wrap:anywhere; }
 .civic-pass-id { font-family:var(--font-mono); }
 .civic-pass-bottom { display:flex; align-items:center; justify-content:space-between; gap:8px; }
-.civic-pass-status { display:inline-flex; min-width:0; overflow-wrap:anywhere; align-items:flex-start; gap:4px; font-size:.625rem; line-height:1.5; padding:4px 8px; border-radius:999px; background:var(--pass-verified-bg); color:var(--pass-verified-text); }
+.civic-pass-status { display:inline-flex; min-width:0; overflow-wrap:anywhere; align-items:flex-start; gap:4px; font-size:.625rem; line-height:1.5; padding:4px 8px; border-radius:4px; background:var(--pass-verified-bg); color:var(--pass-verified-text); }
 .civic-pass-status svg { flex:none; margin-top:2px; }
 .civic-pass-status--pending { background:#78350f; color:#fde68a; }
 .civic-pass-qr { width:44px; height:44px; flex:none; display:grid; place-items:center; border:0; background:white; color:#0f2942; border-radius:8px; cursor:pointer; }
@@ -85,9 +85,9 @@
 .civic-album-photo { aspect-ratio:4/3; background:var(--surface-variant); position:relative; overflow:hidden; }
 .civic-album-photo img { width:100%; height:100%; object-fit:cover; display:block; }
 .civic-photo-fallback { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:8px; color:var(--ink-3); font-size:.6875rem; line-height:1.5; padding:12px; }
-.civic-photo-counter { position:absolute; inset:auto 0 0; padding:24px 8px 8px; background:linear-gradient(transparent,rgba(15,23,42,.92)); color:white; font-size:.6875rem; line-height:1.5; display:flex; align-items:center; gap:4px; }
+.civic-photo-counter { position:absolute; inset:auto 0 0; padding:24px 8px 8px; background:linear-gradient(transparent,rgba(15,23,42,.88) 40%,rgba(15,23,42,.92)); color:white; font-size:.6875rem; line-height:1.5; display:flex; align-items:center; gap:4px; }
 .civic-album-caption { padding:12px; }
-.civic-album-caption strong { font-size:.8125rem; line-height:1.5; font-weight:600; display:block; color:var(--ink); }
+.civic-album-caption strong { font-size:.6875rem; line-height:1.5; font-weight:600; display:block; color:var(--ink); }
 .civic-album-caption small { font-size:.6875rem; line-height:1.5; display:block; color:var(--ink-3); margin-top:4px; }
 .civic-dialog { border:1px solid var(--hairline); border-radius:12px; background:var(--card); color:var(--ink); padding:16px; width:min(calc(100% - 32px),416px); max-height:calc(100dvh - 32px); overflow:auto; }
 .civic-dialog::backdrop { background:rgba(15,23,42,.6); }
@@ -115,3 +115,43 @@
 :lang(ta) .civic-card-actions { grid-template-columns:repeat(2,minmax(0,1fr)); }
 @media(max-width:359px) { .civic-card-actions { grid-template-columns:repeat(2,minmax(0,1fr)); } .civic-event-preview { flex-wrap:wrap; } }
 @media(prefers-reduced-motion:reduce) { .civic-page { animation:none; } }
+
+/* Screen adaptations preserve normal 2-column geometry and reflow for enlarged text. */
+.civic-greeting h1{overflow-wrap:anywhere}.civic-location>span{min-width:0;overflow-wrap:anywhere}
+.civic-pass-portrait{color:#cbd5e1}.civic-pass-identity>.civic-pass-portrait{flex:none}
+.civic-pass-status--neutral{background:#1b3a57;color:#fff}.civic-pass-header>span:first-child{min-width:0;overflow-wrap:anywhere}
+.civic-pass-status>span{min-width:0;overflow-wrap:anywhere}.civic-pass-status{font-size:.6875rem;line-height:1.6}
+.civic-pass-tier{font-size:.6875rem}.civic-pass-status--pending{background:#78350f;color:#fde68a}
+.civic-section>h2{font-size:1rem;line-height:1.5;margin:0 0 12px;font-weight:700;overflow-wrap:anywhere}
+.civic-service-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,8rem),1fr));gap:12px}
+.civic-service{display:flex;align-items:center;gap:8px;color:var(--ink);min-height:56px}.civic-service>svg{flex:none;color:var(--primary)}
+.civic-service strong{font-size:.8125rem;line-height:1.5;font-weight:500;flex:1;min-width:0;overflow-wrap:anywhere}
+.civic-activity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,6rem),1fr));gap:8px}
+.civic-activity-grid>a{display:flex;flex-direction:column;gap:8px;color:var(--ink)}.civic-activity-grid strong{font-size:1rem;line-height:1.5;color:var(--primary)}.civic-activity-grid span{font-size:.6875rem;line-height:1.5;overflow-wrap:anywhere;color:var(--ink-3)}
+.civic-quick-action strong,.civic-quick-action small,.civic-album-caption strong{overflow-wrap:anywhere}
+.civic-album-caption :is(strong,small){color:var(--ink)}
+.civic-profile-row strong{overflow-wrap:anywhere}.civic-profile-row>svg:last-child{color:#94a3b8}
+.civic-pass{min-height:calc(100cqw / 1.586)}
+@container(max-width:17rem){.civic-action-grid,.civic-service-grid,.civic-album-grid{grid-template-columns:1fr}}
+
+.civic-service-search{width:100%;min-height:44px;margin:0 0 12px;padding:12px;border:1px solid var(--control-border);border-radius:8px;background:var(--card);color:var(--ink);font:inherit;font-size:1rem}
+
+/* Member shell: civic surfaces; authentication has its own existing theme.
+   Retain the requested MedTech centre affordance without decorative gradients. */
+.member-shell{background:var(--page);color:var(--ink);font-family:var(--font-ui);color-scheme:light}
+.member-shell .screen{scrollbar-gutter:auto;padding-bottom:calc(var(--member-nav-clearance,116px) + var(--safe-bottom));scroll-padding-bottom:calc(var(--member-nav-clearance,116px) + var(--safe-bottom))}
+.member-shell .medtech-nav{position:absolute;left:50%;right:auto;bottom:calc(8px + var(--safe-bottom));transform:translateX(-50%);width:calc(100% - 24px);max-width:448px;padding:8px 4px;min-height:72px;border:1px solid var(--hairline);border-radius:12px;background:var(--card);box-shadow:var(--shadow-card);z-index:50;overflow:visible;align-items:end}
+.member-shell .medtech-nav button{min-height:56px;min-width:44px;gap:4px;padding:4px 0;justify-content:flex-end;font-family:var(--font-ui);font-size:.625rem;font-weight:500;color:var(--ink-3);border-radius:8px}
+.member-shell .medtech-nav .work-nav-icon{width:44px;max-width:100%;height:32px;border-radius:8px;background:transparent}
+.member-shell .medtech-nav button[aria-current]{color:var(--primary);font-weight:700}
+.member-shell .medtech-nav button[aria-current] .work-nav-icon{background:var(--surface-variant)}
+.member-shell .medtech-nav button:hover{background:var(--surface-variant)}
+.member-shell .medtech-nav-orb{width:60px;max-width:100%;height:auto;aspect-ratio:1;margin-top:-28px;display:grid;place-items:center;flex:none;border-radius:50%;border:5px solid var(--page);background:#0f2942;color:#fff;box-shadow:var(--shadow-card)}
+.member-shell .medtech-nav button>span:last-child{max-width:100%;overflow-wrap:anywhere;line-height:1.5}
+.member-shell .ev-iconbtn{border-radius:8px}
+.member-shell .pf-logout-btn{min-height:48px;height:auto;padding:12px;border-radius:8px;box-shadow:none;background:var(--primary);color:var(--on-primary);font-size:.8125rem;line-height:1.5}
+.member-shell .civic-profile-row>.pf-menu-text{flex:1;min-width:0}
+.member-shell .civic-profile-row .pf-menu-title{font-size:.8125rem;line-height:1.5;font-weight:500}
+.member-shell .civic-profile-row .pf-menu-sub{display:none}
+:root[data-theme='dark'] .member-shell{color-scheme:dark}
+@media(prefers-reduced-motion:reduce){.member-shell *{scroll-behavior:auto}}

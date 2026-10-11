@@ -1,17 +1,12 @@
-# Verification evidence
+# Civic design verification · 11 October 2026
 
-The five screenshots use an isolated synthetic member and event. Gallery content comes from the new local gallery router and the bundled licensed sample photographs. No production database or deployed host is contacted.
+The current reference screenshots are in `civic-system/`: Home, Events, native digital pass, Gallery, Profile and the unchanged login. They use synthetic member and event data. Sample gallery images retain their source/credit metadata and explicit sample labels.
 
-Run the app on 127.0.0.1:5175 and the isolated gallery router on 127.0.0.1:8788:
+- `verify-civic.mjs`: 34 checks for the five destinations, English/Tamil at 320/430px with 200% text, failed RSVP state, gallery data and actions.
+- `verify-civic-system.mjs`: computed palette/surface values, rendered-text contrast across five primary screens in light/dark, preserved twelve feature entry points, survey search, profile row geometry and authentication isolation.
+- `verify-medtech.mjs`: stable five tabs, raised Card/QR action, repeat QR opening, 44px targets and measured navigation clearance.
+- `verify-membership-card.mjs`: readable wallet pass at normal proportion, narrow-screen growth, long Tamil content, separate printable-ID viewer, QR, honest Wallet availability/public-share preview, optional real PDF download.
 
-```powershell
-npm run dev --prefix app -- --host 127.0.0.1 --port 5175 --strictPort
-node scripts/gallery-preview.mjs
-node scripts/verify-civic.mjs
-```
+The DOM contrast audit handles solid and translucent backgrounds and the painted 40px action surface. Its photo scrim and decorative/print artwork exclusions are recorded separately in `../contrast-audit.json` and the production specification. It is evidence for supported scenarios, not formal WCAG certification. Native component trees/theme starters are design handoff files, not tested native binaries.
 
-The browser script requires Playwright and an installed Edge browser. If Playwright is supplied by the Codex runtime, set MY_PEOPLE_PLAYWRIGHT_MODULE to that package directory. This is a test-only dependency; it is not part of the client bundle.
-
-Coverage: five normal mobile layouts; all visible core button targets; gallery API list/detail/category/404 behavior and local asset attribution/counts; failed RSVP retention; album dialog Escape dismissal; wallet availability and public-share preview; English and Tamil at 320px/430px and 200% text. The JSON report records each scenario. Native starter themes were not compiled as native projects.
-
-For release, also test with real member status/permission data, a physical Android/iOS device, screen readers, and the intended production API. This evidence does not claim app-wide accessibility certification.
+Previous `northunity/` screenshots describe the superseded visual reference; they are retained as history. `membership/` includes the detailed printable ID and PDF checks, which are separate from the primary wallet pass. Public release checks use actual health/gallery HTTP responses and production asset hashes; browser UI checks use isolated fixtures.

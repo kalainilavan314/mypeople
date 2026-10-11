@@ -3,60 +3,77 @@
     "label": "Navy on white",
     "foreground": "#0F2942",
     "background": "#FFFFFF",
-    "ratio": "14.83"
+    "ratio": 14.829,
+    "normalTextAA": true
   },
   {
     "label": "Primary text on canvas",
     "foreground": "#0F172A",
     "background": "#F8FAFC",
-    "ratio": "17.06"
+    "ratio": 17.063,
+    "normalTextAA": true
   },
   {
     "label": "Muted on white",
     "foreground": "#475569",
     "background": "#FFFFFF",
-    "ratio": "7.58"
+    "ratio": 7.578,
+    "normalTextAA": true
   },
   {
     "label": "Emerald on white",
     "foreground": "#059669",
     "background": "#FFFFFF",
-    "ratio": "3.77"
+    "ratio": 3.768,
+    "normalTextAA": false
   },
   {
     "label": "Amber on white",
     "foreground": "#D97706",
     "background": "#FFFFFF",
-    "ratio": "3.19"
+    "ratio": 3.186,
+    "normalTextAA": false
   },
   {
     "label": "Verified text on tint",
     "foreground": "#047857",
     "background": "#ECFDF5",
-    "ratio": "5.21"
+    "ratio": 5.206,
+    "normalTextAA": true
   },
   {
     "label": "Pending text on tint",
     "foreground": "#92400E",
     "background": "#FFFBEB",
-    "ratio": "6.84"
+    "ratio": 6.837,
+    "normalTextAA": true
   },
   {
     "label": "Pass metadata on navy",
     "foreground": "#CBD5E1",
     "background": "#0F2942",
-    "ratio": "9.99"
+    "ratio": 9.988,
+    "normalTextAA": true
   },
   {
     "label": "Pass verified pill",
     "foreground": "#A7F3D0",
     "background": "#064E3B",
-    "ratio": "7.58"
+    "ratio": 7.578,
+    "normalTextAA": true
   },
   {
     "label": "Silver tier",
     "foreground": "#0F2942",
     "background": "#E2E8F0",
-    "ratio": "12.03"
+    "ratio": 12.029,
+    "normalTextAA": true
+  },
+  {
+    "label": "White counter text over guaranteed 88% scrim, white-image worst case",
+    "foreground": "#FFFFFF",
+    "background": "#2c3344",
+    "ratio": 12.619,
+    "normalTextAA": true
   }
 ]

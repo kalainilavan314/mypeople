@@ -328,6 +328,12 @@
     }
   },
   "profile": {
+    "membershipPending": "உறுப்பினர் பதிவு நிலுவையில்",
+    "membershipSuspended": "உறுப்பினர் பதிவு இடைநிறுத்தப்பட்டது",
+    "membershipInactive": "உறுப்பினர் பதிவு செயலற்றது",
+    "membershipUnknown": "உறுப்பினர் நிலை கிடைக்கவில்லை",
+    "lightMode": "ஒளிர் பயன்முறை",
+    "darkModeSwitch": "இருண்ட பயன்முறை",
     "title": "சுயவிவரம்",
     "titleMy": "என் சுயவிவரம்",
     "editProfile": "சுயவிவரத்தைத் திருத்த",

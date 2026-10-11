@@ -84,11 +84,11 @@
   --grad-primary: #0f2942;
   --grad-join: var(--grad-primary);
   --grad-you: var(--grad-primary);
-  --grad-volunteer: #203b59;
-  --grad-survey: #203b59;
-  --grad-community: #203b59;
-  --grad-events: #203b59;
-  --grad-agriculture: #203b59;
+  --grad-volunteer: #0f2942;
+  --grad-survey: #0f2942;
+  --grad-community: #0f2942;
+  --grad-events: #0f2942;
+  --grad-agriculture: #0f2942;
   --green-gradient: var(--grad-primary);
 
   /* --- Radii (tags 4, inputs/buttons 8, cards 12) ----------------------- */

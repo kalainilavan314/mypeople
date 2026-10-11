@@ -4,7 +4,7 @@
 // Colour tokens reference CSS variables (defined in styles/tokens.css) so the
 // whole app re-themes at runtime: light by default, dark when the <html> element
 // carries data-theme="dark". Values for both themes live in tokens.css.
-// `maroon*` = accent (lavender), `page/card` = surfaces, `ink*` = text.
+// Legacy `maroon*` = civic navy aliases, `page/card` = surfaces, `ink*` = text.
 export const c = {
   maroon: 'var(--maroon)',
   maroonPressed: 'var(--maroon-pressed)',
@@ -71,7 +71,7 @@ export const c = {
   onAccentContainer: 'var(--on-accent-container)',
 } as const;
 
-/** Gradients from the NorthUnity reference (action cards, CTAs, impact strip). */
+/** Backward-compatible names: decorative gradients resolve to solid civic fills. */
 export const grad = {
   primary: 'var(--grad-primary)',
   join: 'var(--grad-join)',

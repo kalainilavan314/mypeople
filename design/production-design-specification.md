@@ -1,6 +1,6 @@
 # My People · என் மக்கள்
 ## Production mobile design specification
-Version 3.0 · 9 October 2026 · Northern Province People's Movement
+Version 4.0 · 11 October 2026 · Northern Province People's Movement
 
 This specification governs the five member destinations and their shared components. The current application is a React 18 / TypeScript PWA, built with Vite and backed by Express. The implementation uses that stack. Flutter and React Native mappings are supplied separately; they describe the same components, data contracts and behavior.
 
@@ -49,11 +49,11 @@ Conflicts resolved:
 | Pending text / tint | --warning-text / --warning-bg | #92400E / #FFFBEB |
 | Error | --error / --error-bg | #DC2626 / #FEF2F2 |
 | Cards / controls / tags | radii | 12px / 8px / 4px |
-| Chips / avatar / security pill | shape exceptions | capsule / circle / capsule |
+| Chips / avatar / raised QR button | shape exceptions | capsule / circle / circle; security status uses 4px tag radius |
 | Card shadow | --shadow-card | 0 1px 2px rgba(15,23,42,0.04) |
 | Gutters / card padding / label gap | spacing | 16px / 12px / 8px |
 | Hit area / list row | minimum | 44×44px / 48px |
-| Bottom navigation | height | 56px minimum + bottom safe inset |
+| Bottom navigation | height | 72px bar minimum; 56px tab targets; measured raised-control clearance + bottom safe inset |
 
 No decorative gradients on cards, navigation, passes or hero surfaces. The gallery image counter may use a localized bottom scrim over a photograph. State is communicated with icon and words, not color alone. Hairline containment borders are decorative; actionable fields and focus indicators need sufficient non-text contrast.
 
@@ -97,7 +97,7 @@ Small metadata follows the explicit compact brief, has high contrast, and suppor
 
 ### 3. Shared layout and components
 
-Baseline 375×812 CSS pixels; verify at 320, 375, 390 and 430 logical widths. A 375px screen has 343px content width. Two equal columns with a 12px gap produce 165.5px cells. Pages use one vertical scroll container; chips have an independent horizontal scroll only. Bottom navigation participates in the app shell layout so it never covers content.
+Baseline 375×812 CSS pixels; verify at 320, 375, 390 and 430 logical widths. A 375px screen has 343px content width. Two equal columns with a 12px gap produce 165.5px cells. Pages use one vertical scroll container; chips have an independent horizontal scroll only. The existing MedTech navigation remains a five-destination bar with a raised circular Card/QR control. Its surfaces are solid white and navy, with a 12px outer radius and the card micro-shadow. A ResizeObserver measures its full height including the raised control and reserves scroll clearance; its floating position never covers the final content.
 
 Respect safe top and bottom insets. Top content starts 16px below the safe status area. At 200% text, fixed-height content becomes a minimum, grids can collapse to one column, title/action groups can wrap, and passes expand.
 
@@ -122,7 +122,8 @@ Button states: default navy; hover #1B3A57; pressed #091D30; busy retains label 
 3. Quick actions: 2×2, 12px gaps, 24px section separation. Tiles use 36×36px #F1F5F9 icon wells, 20px navy icons, 13px semibold labels and 10px muted captions. Report issue / Volunteer / My area / Community. Whole tiles remain large touch targets.
 4. Coming up nearby: 16px section heading and “See all” 44px link. White event preview with DateBadge, 13px title, time and venue metadata, and Going ✓ only from confirmed member RSVP.
 5. Empty event result: offer the Community hub and an explicit Browse all events link; do not imply the profile is incomplete without profile-completeness data.
-6. Pending verification: amber notice with darker pending text; review explanation and View verification action. Server permission checks remain authoritative for restricted participation.
+6. Service continuity: below the nearby preview, a compact service grid keeps Surveys, Events, Ideas, Courses, Referrals, Party Fund, Gallery and Membership Card reachable. Search filters this service grid with an explicit no-results state. A small activity summary keeps existing event/report/referral counts and shows “—” for unavailable data.
+7. Pending verification: amber notice with darker pending text; review explanation and View verification action. Server permission checks remain authoritative for restricted participation.
 
 Next-step selection currently prefers an upcoming event marked as the member's area, then the earliest upcoming event. Production prioritization can add actual missing-document and report-action records; it must not manufacture tasks.
 
@@ -132,18 +133,18 @@ Replace the reduced PVC artwork with native UI text and a native digital pass. U
 
 Pass anatomy:
 - Solid #0F2942, 12px radius, 12px padding, micro shadow.
-- Bilingual “MY PEOPLE • என் மக்கள்”, 11px bold. TIER 0 in a flat silver badge (#E2E8F0 with navy text), 4px radius. Display the server-assigned tier level; do not derive staff access from badge styling.
+- Bilingual “MY PEOPLE • என் மக்கள்”, 11px bold. TIER 0 in a flat silver badge (#E2E8F0 with navy text), 4px radius. Map the actual server membership recognition value (`volunteer`, `diamond`, `gold`, `platinum`) to recognition levels 0–3. TIER 0 is the Volunteer recognition tier. This is not the governance Tier 1–5 hierarchy. The current member API has no assigned governance role field; do not invent one or derive staff access from recruits or badge styling.
 - 48×48px circular portrait; request an image suitable for at least 144×144px pixels at 3×. A missing portrait gets a neutral person silhouette, never an invented likeness.
 - Legal name 16px white bold, followed by the actual member ID (example WTL-26-5401749) and district / DS / GN hierarchy in 11px slate #CBD5E1. Wrap the full legal name; no ellipsis that hides identity.
 - Bottom status pill: ✓ Identity Verified • Active Member only when both fields explicitly support it. Otherwise show the supported identity state; absent membership state is an integration gap, not an active assertion.
 - Bottom-right 44px white QR entry affordance. It opens the enlarged secure code. Do not shrink a complex signed token into an unreliable tiny QR.
 
 Action row:
-View QR / Download PDF / Add to Wallet / Share each has a 44px control with a 20px shared-weight icon and label below. Default is four equal columns; use two columns below 360px or when text requires it. The title and accessible label are identical. Buttons have 8px radius.
+View QR / Download PDF / Add to Wallet / Share each has a minimum 44px control with a shared-weight 19–20px icon and a wrapping label in the same control. Default is four equal columns; use two columns below 360px or when text requires it. The title and accessible label are identical. Buttons have 8px radius.
 
-QR: black modules on white with an adequate quiet zone and large display. Use only the backend-issued opaque token. Display a retry/unavailable state if the token cannot be issued. A refresh interval must come from server expiry, not invented timing. The existing endpoint currently issues a short-lived token; changing its lifetime or scanner behavior is a backend integration task.
+QR: black modules on white with an adequate quiet zone and large display. Use only the backend-issued opaque token. Display a retry/unavailable state if the token cannot be issued. The current endpoint issues an opaque signed token; the app refreshes it every eight minutes against the existing ten-minute backend lifetime. It refetches stale credentials when the browser reconnects. Four QR modules of white quiet zone are used in both the enlarged QR and printable ID. Changing token lifetime, scanner acceptance or revocation policy is backend integration work.
 
-PDF: download a CR80 85.6×53.98mm copy. Never stretch an expanded accessible pass into the ratio; capture a separate standard-size export layout when UI text has enlarged. No active QR token in a static public export. Sharing uses a preview disclosing name, member ID and identity status; the native share sheet or explicitly confirmed clipboard fallback follows.
+PDF: preserve the detailed ID from the separate `ID_Sample.png` brief as a private printable artifact, at 85.6mm × (85.6 × 1000/1573)mm. This separate 1573:1000 composition is rendered offscreen at canonical coordinates; it never substitutes for the mobile wallet pass. A “View printable ID” action opens its zoom/pan viewer. Download waits for fonts, member portrait and QR, then embeds a high-resolution, losslessly compressed image in a one-page PDF. The private copy contains the currently displayed short-lived QR; the result message explains its limited validity. Public Share discloses and sends only name, member ID and identity status, excluding portrait and QR. Portrait comes from the member profile; an authorized signature must be supplied through a real data contract before being displayed. Missing assets are explicitly marked.
 
 Wallet: the current backend has no Apple/Google Wallet provisioning service. The UI explains availability rather than claiming an added pass. Production integrations require signed provider assets and success/cancel/error responses. Offline cached presentation is labeled with freshness; it is not a guarantee of accepted check-in.
 
@@ -161,7 +162,7 @@ Events detail, comprehensive filters, three-state RSVP sheets and scoped event c
 
 ### 7. Gallery · G01–G03
 
-Grid: two columns with 12px gap; each white card has a 4:3 photo region and a separate clean caption. Radius 12px on the exterior. Real image data uses object-fit:cover. Count sits over a localized bottom scrim; counter text is white over sufficiently dark pixels. Caption uses 13px title and 11px publication metadata in dark text. Loading reserves the 4:3 region to prevent layout shifts.
+Grid: two columns with 12px gap; each white card has a 4:3 photo region and a separate clean caption. Radius 12px on the exterior. Real image data uses object-fit:cover. Count sits over a localized bottom scrim; counter text is white over sufficiently dark pixels. Caption uses 11px semibold title and 11px publication metadata in #0F172A. Loading reserves the 4:3 region to prevent layout shifts.
 
 Album detail/photo viewer: show title, publisher, location, sample designation where relevant, actual photo count, bilingual alt/caption and source attribution. Previous / next / close controls are 44px. Dialog supports Escape, focus containment and focus return. Image failure gets a light neutral “Photo unavailable” region, not dark artwork pretending to be a photo.
 
@@ -181,7 +182,7 @@ Removal requests need a real retained request/receipt service before the app pro
 
 ### 8. Profile and settings · P01–P06
 
-Compact SurfaceCard: 48px avatar, 12px spacing, 16px bold legal/display name, 11–13px member ID + assigned tier, then separate identity and membership status tags. No decorative cover. Full area hierarchy is accessible from My area.
+Compact SurfaceCard: 48px avatar, 12px spacing, 16px bold legal/display name, 11–13px member ID + membership recognition type, then separate identity and membership status tags. No decorative cover. Full area hierarchy is accessible from My area.
 
 Five primary menu rows: My Area / My Activity / Edit Profile / Verification / Community Hub. Each has minimum 48px height, 20px navy monochrome icon, 13px medium label and 20px decorative #94A3B8 chevron. One #E2E8F0 separator between rows; no extra first/last divider. Optional longer hints belong in the destination or accessible description rather than increasing standard row size.
 
@@ -207,19 +208,34 @@ The current My Activity destination exposes Reports and receipts, not a complete
 
 Implemented locally: tokens; shared Civic primitives; Home; compact Events and server-confirmed RSVP state; native-style Card pass and honest wallet/share behavior; API-backed photo Gallery; compact Profile; five stable bottom tabs; public gallery read API and licensed local sample assets.
 
-Production dependencies still needing backend/product work: independent membership activation in /api/me; authenticated identity-gated credential issuance policy; provider-signed Wallet services; full activity ledger; photo-removal receipt/SLA service; complete coordinator/publishing workflows. Preserve those distinctions during release review.
+Production dependencies still needing backend/product work: an assigned governance role contract separate from membership recognition; authorized signature storage/approval; any additional identity-gated credential issuance policy; provider-signed Wallet services; full activity ledger; photo-removal receipt/SLA service; complete coordinator/publishing workflows. Independent identity and membership states already come from /api/me. Preserve those distinctions during release review.
 
-The provided server handover is access context. No production SSH session or deployment was performed for this design change. Existing worktree edits were retained and extended.
+Release status: the preceding detailed-ID release `civic-20261011T062725Z` was deployed and verified. This newer civic revision is validated locally before release. The corresponding live release and public asset verification are recorded separately in deployment/artifacts/*-live.json; a preceding release is not proof that a newer revision is live. Authentication routes and server data contracts remain intact.
 
 Validation results and screenshots are in design/qa. Browser tests use synthetic member/event fixtures; gallery HTTP tests use the new real local router and local assets. Production member records and database were not contacted by those tests. A passed typecheck/build and these tests are release evidence, not accessibility certification.
 
-### 11. Benchmark sources
+### 11. Benchmark rationale and primary references
 
-The following are supporting design references, not claims of equivalent identity authority or technical capability:
-- [GOV.UK button guidance](https://design-system.service.gov.uk/components/button/): clear action labels and purposeful button hierarchy.
-- [GOV.UK colour guidance](https://design-system.service.gov.uk/styles/colour/): functional color and contrast.
-- [LifeSG](https://www.life.gov.sg/): personalized services, inbox and appointments as task organization.
-- [myGov app](https://my.gov.au/en/about/help/mygov-app): a digital wallet for supported cards.
-- [myGov QR guidance](https://my.gov.au/en/about/help/mygov-app/using-qr-codes-in-the-mygov-app): card QR interactions.
-- [Singpass brochure](https://www.tech.gov.sg/files/products-and-services/Singpass___English_Brochure___Feb_2022.pdf): native digital identity presentation as visual reference.
-- [WCAG 2.1 contrast](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html) and [target size](https://www.w3.org/WAI/WCAG21/Understanding/target-size): actual criteria and levels.
+These references inform the design decisions; they do not imply issuer equivalence, government affiliation, identity assurance or a copied proprietary UI.
+
+- [GOV.UK functional colour guidance](https://design-system.service.gov.uk/styles/colour/): give each semantic colour a stable purpose and validate text/interactive contrast. Here the brief's navy is the authority anchor; green and amber communicate supported states.
+- [myGov accessibility](https://my.gov.au/en/about/accessibility): accessibility and usable service journeys are baseline concerns. Here the dashboard prioritizes the member's next task and uses descriptive labels, clear states and consistent actions.
+- [Singapore Government Design System accessibility](https://v2.designsystem.tech.gov.sg/foundations/accessibility): support keyboard operation and responsive layouts. Here the pass uses native rendered text, reflows at large type, and QR is a deliberate accessible action. This is our adaptation for the Singpass/LifeSG benchmark, not a claim of their implementation details.
+- [WCAG 2.1 contrast minimum](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html): 4.5:1 for normal text. The stricter all-text target in the brief is retained even for large titles.
+- [WCAG 2.1 target size](https://www.w3.org/WAI/WCAG21/Understanding/target-size): 44×44 is AAA under WCAG 2.1; the project adopts it beyond the requested AA baseline.
+
+### 12. Defect resolution and review evidence
+
+| Reported defect | Production resolution | Acceptance evidence |
+| --- | --- | --- |
+| Stark white canvas / heavy floating blocks | Canvas #F8FAFC, white card, 1px #E2E8F0, exact micro-shadow | Computed runtime styles + screenshots |
+| Navy/cyan gradients overriding civic tokens | Replace member shell overrides; native navy pass; solid navigation | Active route/theme checks |
+| Home promotional photo hero | Task-led Next Step card with navy left rule | First screen and preserved service links |
+| Miniature printed card unreadable on mobile | DigitalMemberPass with 48px portrait and live text | Ratio, long names, 200% type and real state fixtures |
+| Split event artwork | DateBadge + white content; confirmed RSVP updates | Failed-mutation regression |
+| Photo placeholders / dark albums | Local licensed photos with 4:3 covers and separate captions | API photo counts, image load/error and alt text checks |
+| Profile spacing / mixed menu styles | Compact identity, independent badges, 48px menu rows | Geometry, focus and route checks |
+
+Automated checks cover the primary English/Tamil flows, 320–430px mobile widths, large text, keyboard dialogs, relevant touch areas, documented contrast pairs, retained feature entry points and authentication isolation. Browser tests use synthetic identities/events; existing sample gallery assets are expressly labeled. Review screenshots are fixtures, not production identity records.
+
+Release gates: TypeScript, production build, civic regressions, wallet/QR/PDF checks and five-tab navigation checks. Manual screen-reader testing on iOS/Android, human Tamil review and user testing remain necessary before a formal accessibility-conformance claim. Native Flutter/React Native trees and theme starters are a migration handoff; the running app remains React/TypeScript.

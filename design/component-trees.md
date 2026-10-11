@@ -1,5 +1,5 @@
 # Updated component trees · React PWA, React Native and Flutter
-9 October 2026 · My People
+11 October 2026 · My People
 
 These are equivalent implementations of one system. The React PWA tree below describes the updated source. The native trees are a migration handoff, not a claim that a Flutter or React Native app was built or tested.
 
@@ -20,7 +20,9 @@ type AsyncState<T> =
 interface MemberPresentation {
   legalName:string; memberId:string; portraitUrl?:string;
   district:string; dsDivision:string; gnDivision:string;
-  tierLevel:number; identity:IdentityState; membership:MembershipState;
+  recognitionTier:'volunteer'|'diamond'|'gold'|'platinum';
+  governanceAssignment?:{tier:1|2|3|4|5;title:string;scope:string};
+  identity:IdentityState; membership:MembershipState;
 }
 interface Photo {
   id:string; src:string; altEn:string; altTa:string;
@@ -46,7 +48,7 @@ QueryClientProvider
             ├─ OfflineBanner [conditional]
             ├─ ScrollViewport (.screen)
             │  └─ Suspense → route screen
-            └─ BottomNav [Home / Events / Card / Gallery / Profile]
+            └─ BottomNav [Home / Events / raised Card QR / Gallery / Profile; measured clearance]
 
 Home (.civic-page)
 ├─ GreetingHeader
@@ -58,6 +60,8 @@ Home (.civic-page)
 ├─ QuickActionGrid → QuickAction × 4
 ├─ NearbySection → QueryBoundary → EventPreview
 │  └─ DateBadge / EventText / StatusTag
+├─ ServiceGrid + Search [surveys / events / ideas / courses / referrals / fund / gallery / card]
+├─ ActivitySummary [existing event / report / referral counts]
 └─ MissionFooter
 
 Events (.civic-page)
@@ -73,17 +77,19 @@ Events (.civic-page)
    │  └─ ErrorMessage / ConfirmationLiveRegion
    └─ EventsMap [alternate]
 
-Card (.civic-page)
+Card (.membership-page)
 └─ QueryBoundary
-   ├─ Header / IconButton × 2
-   ├─ WalletPass (.civic-pass)
+   ├─ Header / ProfileOptionsButton
+   ├─ DigitalMemberPass (.civic-pass)
    │  ├─ BilingualBrand / TierTag
    │  ├─ Portrait / LegalName / MemberId / Hierarchy
    │  └─ SecurityPill / QrEntryButton
-   ├─ QrDisplay [conditional; signed backend token]
+   ├─ QrDialog [conditional; signed backend token; white quiet zone]
    ├─ CardActionRow → ActionTile × 4
    ├─ WalletAvailabilityNotice [conditional]
    ├─ PublicShareDialog [preview → device share / copy]
+   ├─ PrintableIdAction → CardViewer [separate zoom/pan dialog]
+   ├─ Offscreen MembershipCredential [canonical ID layout → private PDF]
    ├─ MembershipDetails (dl / dt / dd)
    └─ ExistingProgress / Milestones
 
@@ -122,7 +128,7 @@ Use a safe area provider and a tab navigator with equal destinations; a native s
 SafeAreaProvider
 └─ CivicThemeProvider + QueryClientProvider + LocaleProvider
    └─ NavigationContainer
-      └─ MemberTabs
+      └─ MemberTabs(custom solid-surface bar; centre Card/QR action)
          ├─ HomeStack
          ├─ EventsStack
          ├─ CardStack
@@ -138,6 +144,7 @@ HomeScreen
       ├─ ActionGrid(View, flexWrap) → QuickAction(Pressable) × 4
       ├─ SectionHeader / EventPreview(Pressable)
       │  └─ CalendarBadge / EventSummary / StatusTag
+      ├─ ServiceGrid / SearchField / ActivitySummary
       └─ MissionText
 
 EventsScreen
@@ -156,6 +163,7 @@ MemberCardScreen
    ├─ DigitalPass(View, aspectRatio1.586; minHeight and flexible content)
    │  └─ BilingualText / TierTag / Portrait48 / Name16 / Id11 / Geography11 / SecurityPill / QrPressable44
    ├─ ActionGrid(4 columns, 2 when narrow) → CardAction44 × 4
+   ├─ PrintableIdAction / SeparatePrivatePdfExporter
    ├─ MembershipDetails
    └─ QrModal | WalletAvailabilitySheet | PublicSharePreviewModal
 QrModal → native QR view + server expiry controller + unavailable/retry
@@ -188,7 +196,7 @@ ProviderScope / application state provider
    └─ MemberShell
       └─ Scaffold
          ├─ body: StatefulNavigationShell / IndexedStack
-         └─ NavigationBar(destinations5,minHeight56 + safe inset)
+         └─ CivicMedTechNavigation(destinations5,raised Card/QR,minHeight72 + safe inset)
 
 HomeScreen
 └─ SafeArea
@@ -200,6 +208,7 @@ HomeScreen
       │     │  └─ TaskText / VenueRow / CivicAction(44 target,40 painted)
       │     ├─ LayoutBuilder → Wrap(2 columns,gap12) → QuickAction × 4
       │     ├─ SectionHeader / EventPreview(InkWell)
+      │     ├─ ServiceGrid / SearchField / ActivitySummary
       │     └─ MissionText
       └─ loading/error/empty slivers as required
 
@@ -219,7 +228,8 @@ MemberCardScreen
       │  └─ BrandRow / IdentityRow(CircleAvatar48,Expanded(Name/ID/Hierarchy))
       │     / SecurityRow(SecurityPill,QR entry44)
       ├─ Wrap → CardAction44 × 4
-      ├─ MembershipDetails
+      ├─ PrintableIdAction / SeparatePrivatePdfExporter
+   ├─ MembershipDetails
       └─ showModalBottomSheet → QR / Wallet availability / Share preview
 
 GalleryScreen
@@ -246,3 +256,17 @@ Implementation rules: use MediaQuery.textScaler, retain system text settings, us
 Reuse existing cookie-authenticated HTTP contracts for the PWA. A native client needs an explicitly supported secure session contract; do not assume web cookies can be copied into native storage. Backend APIs own authorization and scope.
 
 The implemented gallery API is read-only and serves published public assets. The member activation field is optional in the current PWA adapter and maps absent values to unknown in a native adapter. Wallet services and photo removal receipts remain separate integration work. Native QR tooling must render server tokens faithfully and keep its quiet zone.
+
+## Native layout contracts
+
+| Component | Flutter | React Native | Shared acceptance |
+| --- | --- | --- | --- |
+| Card | DecoratedBox + Padding | View with border/shadow | 12 radius, 12 padding, white, 1px border |
+| Next step | Border(left:4) + Column | View with borderLeftWidth:4 | 14px title; 44 target around 40 visual button |
+| Quick action | InkWell + Column | Pressable + View | 36 well; 13 label; 10 caption; entire card target |
+| Pass | LayoutBuilder + constrained minimum height | View with minimum height from measured width | Width / 1.586 at default type; allow growth |
+| Photo album | AspectRatio(4/3) + caption | Image with aspectRatio:4/3 + caption | Keep caption outside image and full height at large type |
+| Menu | constrained minHeight48 + Row/Expanded | Pressable minHeight48 + flexShrink | 20px icons; 13px label; no text clipping |
+| Centre QR | Custom navigation item + Semantics | Custom tabBar Pressable | One Card destination, explicit QR affordance, no extra sixth tab |
+
+Tier mapping is recognition only: Volunteer→0, Diamond→1, Gold→2, Platinum→3. The governance diagram's Tier 1–5 remains separate; the current API has no assigned role field. Neither adapter may authorize a staff action from recognition, referrals or a rendered badge. Native themes should be validated in their actual SDKs before use; no native application compilation is claimed here.

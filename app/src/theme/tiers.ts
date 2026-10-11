@@ -21,22 +21,22 @@ export const TIERS: Record<MemberTier, TierDef> = {
   volunteer: {
     key: 'volunteer', level: 0, nameEn: 'Volunteer', nameTa: 'தன்னார்வலர்',
     adminLevel: 'none', seatLimit: null, requirementEn: 'Join the movement',
-    color: '#8E98B7', grad: 'linear-gradient(135deg,#3E4470,#2A3154)',
+    color: '#8E98B7', grad: '#0F2942',
   },
   diamond: {
     key: 'diamond', level: 1, nameEn: 'Diamond', nameTa: 'வைரம்',
     adminLevel: 'gs', seatLimit: 2, requirementEn: 'Recruit 20% of your GS division',
-    color: '#6EC6FF', grad: 'linear-gradient(135deg,#7FD8FF,#3E9BE0)',
+    color: '#6EC6FF', grad: '#0F2942',
   },
   gold: {
     key: 'gold', level: 2, nameEn: 'Gold', nameTa: 'தங்கம்',
     adminLevel: 'ds', seatLimit: 3, requirementEn: 'Recruit 500 volunteers',
-    color: '#FFCB6B', grad: 'linear-gradient(135deg,#FFDC8A,#E0A63C)',
+    color: '#FFCB6B', grad: '#0F2942',
   },
   platinum: {
     key: 'platinum', level: 3, nameEn: 'Platinum', nameTa: 'பிளாட்டினம்',
     adminLevel: 'district', seatLimit: 5, requirementEn: 'Recruit 1,000 people',
-    color: '#D9E1F2', grad: 'linear-gradient(135deg,#EEF2FA,#AEB9D6)',
+    color: '#D9E1F2', grad: '#0F2942',
   },
 };
 

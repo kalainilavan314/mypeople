@@ -285,6 +285,12 @@
     }
   },
   "profile": {
+    "membershipPending": "Membership pending",
+    "membershipSuspended": "Membership suspended",
+    "membershipInactive": "Membership inactive",
+    "membershipUnknown": "Membership status unavailable",
+    "lightMode": "Light",
+    "darkModeSwitch": "Dark mode",
     "title": "Profile",
     "titleMy": "My Profile",
     "editProfile": "Edit Profile",

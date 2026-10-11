@@ -5,9 +5,7 @@ import { c, font, radius, type as ty } from '../theme/tokens';
 import { Icon, type IconName } from '../components/Icon';
 import { NetImage } from '../components/nn';
 import { Toggle, QueryBoundary } from '../components/ui';
-import { ProfileSkeleton } from '../components/ui/loaders-skeleton';
-import { useMember } from '../data/queries';
-import { useMe } from '../hooks/useMe';
+import { useMeQuery } from '../hooks/useMe';
 import { displayMemberName, displayMemberCode } from '../lib/memberDisplay';
 import { useAuth } from '../state/auth';
 import { useTheme } from '../state/theme';
@@ -24,8 +22,8 @@ export function Profile() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
-  const memberQ = useMember();
-  const me = useMe();
+  const meQ = useMeQuery();
+  const me = meQ.data;
   const { logout } = useAuth();
   const { isDark, toggle: toggleTheme } = useTheme();
   const [verifyOpen, setVerifyOpen] = useState(false);
@@ -35,8 +33,9 @@ export function Profile() {
   const pending = status === 'review_pending';
 
   return (
-    <QueryBoundary query={memberQ} fallback={<ProfileSkeleton />}>
+    <QueryBoundary query={meQ}>
       {(member) => {
+        if(!member)return <main className="civic-page"><h1>{t('profile.unavailable','Membership information unavailable')}</h1></main>;
         const name = displayMemberName(me) ?? member.fullName;
         const code = displayMemberCode(me) ?? member.memberCode ?? '—';
         const tier = tierDef(me?.tier ?? 'volunteer');
@@ -69,7 +68,7 @@ export function Profile() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ font: `700 1rem/1.5 ${font.head}`, color: c.ink0, overflowWrap: 'anywhere' }}>{name}</div>
                 <div style={{ font: `500 ${ty.secondary.size / 16}rem/1.3 ${font.ui}`, color: c.ink3, marginTop: 4, overflowWrap: 'anywhere', fontVariantNumeric: 'tabular-nums' }}>
-                  {t('profile.memberShort', 'Member')} {code} · {tier.nameEn}
+                  {t('profile.memberShort', 'Member')} {code} · {lang==='ta'?tier.nameTa:tier.nameEn}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
                   <StatusChip
@@ -77,9 +76,7 @@ export function Profile() {
                     warn={pending}
                     label={verified ? t('verify.confirmed', 'Identity verified') : pending ? t('verify.reviewPending', 'Review pending') : t('verify.unverified', 'Not verified')}
                   />
-                  {me?.membershipStatus === 'active' && (
-                    <StatusChip good label={t('profile.membershipActive', 'Membership active')} />
-                  )}
+                  <StatusChip good={me?.membershipStatus==='active'} warn={me?.membershipStatus==='pending'} label={me?.membershipStatus==='active'?t('profile.membershipActive','Membership active'):me?.membershipStatus==='pending'?t('profile.membershipPending','Membership pending'):me?.membershipStatus==='suspended'?t('profile.membershipSuspended','Membership suspended'):me?.membershipStatus==='inactive'?t('profile.membershipInactive','Membership inactive'):t('profile.membershipUnknown','Membership status unavailable')} />
                 </div>
               </div>
             </section>
@@ -109,9 +106,9 @@ export function Profile() {
                 <Icon name="moon" size={20} strokeWidth={2} />
                 <div className="pf-menu-text">
                   <span className="pf-menu-title">{t('profile.appearance', 'Appearance')}</span>
-                  <span className="pf-menu-sub">{isDark ? t('profile.midnightNavy', 'Midnight navy') : t('profile.civicNavy', 'Civic navy')}</span>
+                  <span className="pf-menu-sub">{isDark ? t('profile.darkMode', 'Dark mode') : t('profile.lightMode', 'Light')}</span>
                 </div>
-                <Toggle on={isDark} onChange={() => toggleTheme()} ariaLabel={t('profile.deeperNavy', 'Deeper navy mode')} />
+                <Toggle on={isDark} onChange={() => toggleTheme()} ariaLabel={t('profile.darkModeSwitch', 'Dark mode')} />
               </div>
               <Row icon="info" title={t('profile.helpAbout', 'Help and about')} sub="v1.0.0" onClick={() => navigate('/privacy')} />
             </div>

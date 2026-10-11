@@ -43,6 +43,7 @@ ThemeData buildCivicTheme() => ThemeData(
     error: Color(0xFFDC2626), onError: Colors.white,
   ),
   // Bundle the font and use script-aware TextStyles for Latin/Tamil.
+  fontFamily: 'Inter',
   fontFamilyFallback: const ['Noto Sans Tamil'],
   materialTapTargetSize: MaterialTapTargetSize.padded,
   textTheme: const TextTheme(
