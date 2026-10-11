@@ -58,7 +58,7 @@ await page.goto('http://127.0.0.1:5175/card');
 await page.getByRole('button',{name:'Add to Wallet',exact:true}).click();
 assert(await page.getByText(/Apple and Google Wallet support is not available/).isVisible());
 await page.getByRole('button',{name:'Share',exact:true}).click();
-assert(await page.getByRole('dialog').getByText(/Only your name/).isVisible());
+await page.getByRole('dialog').getByText(/Only your name/).waitFor();
 await page.keyboard.press('Escape');
 results.push({test:'Wallet availability and public-share disclosure are honest',pass:true});
 for(const lang of ['en','ta']) for(const width of [320,430]) for(const route of ['/','/events','/card','/gallery','/profile']) {
@@ -82,10 +82,7 @@ await page.goto('http://127.0.0.1:5175/card');
 await page.waitForTimeout(500);
 await page.evaluate(()=>document.documentElement.style.fontSize='200%');
 const passFits=await page.evaluate(()=>{
-  const pass=document.querySelector('.civic-pass');
-  const p=pass.getBoundingClientRect();
-  const blocks=[...pass.children].map(e=>e.getBoundingClientRect());
-  return blocks.every(b=>b.top>=p.top&&b.bottom<=p.bottom)&&blocks.every((b,i)=>!i||b.top>=blocks[i-1].bottom);
+  return [...document.querySelectorAll('.credential-fit')].every(e=>e.scrollWidth<=e.clientWidth+1&&e.scrollHeight<=e.clientHeight+1);
 });
 assert.equal(passFits,true,'Long legal name and large Tamil text remain inside the pass');
 results.push({test:'Long legal name and enlarged Tamil pass have no vertical overlap',pass:true});

@@ -19,10 +19,10 @@ assert(geometry.raised&&geometry.circular&&geometry.buttons===5);checks.push('Fi
 assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('.member-shell')).getPropertyValue('--page').trim()),'#07172d');
 await page.screenshot({path:fileURLToPath(new URL('home.png',out))});
 const navRect=await page.locator('.medtech-nav').boundingBox();await page.screenshot({path:fileURLToPath(new URL('navigation.png',out)),clip:{x:0,y:navRect.y-30,width:375,height:812-(navRect.y-30)}});
-for(const [name,path]of[['Events','/events'],['Card and check-in QR','/card?qr=1'],['Gallery','/gallery'],['Profile','/profile'],['Home','/']]){await page.getByRole('navigation').getByRole('button',{name,exact:true}).click();await page.waitForURL('http://127.0.0.1:5175'+path);assert.equal(await page.locator('.medtech-nav button[aria-current="page"]').count(),1);}
-checks.push('All five navigation destinations work and exactly one tab is active');
+for(const [name,path]of[['Events','/events'],['Card and check-in QR','/card?qr=1'],['Gallery','/gallery'],['Profile','/profile'],['Home','/']]){await page.getByRole('navigation').getByRole('button',{name,exact:true}).click();await page.waitForURL('http://127.0.0.1:5175'+path);assert.equal(await page.locator('.medtech-nav button[aria-current="page"]').count(),1);if(path.includes('qr=1'))await page.getByRole('button',{name:'Close',exact:true}).click();}
+await page.keyboard.press('Escape');checks.push('All five navigation destinations work and exactly one tab is active');
 await page.getByRole('button',{name:'Card and check-in QR',exact:true}).click();await page.getByRole('img',{name:'QR code',exact:true}).waitFor();
-await page.getByRole('button',{name:'Hide check-in code',exact:true}).click();await page.getByRole('img',{name:'QR code',exact:true}).waitFor({state:'detached'});
+await page.getByRole('button',{name:'Close',exact:true}).click();await page.getByRole('img',{name:'QR code',exact:true}).waitFor({state:'detached'});
 await page.getByRole('button',{name:'Card and check-in QR',exact:true}).click();await page.getByRole('img',{name:'QR code',exact:true}).waitFor();checks.push('Centre control opens the QR and reopens it when already on the card screen');
 await page.screenshot({path:fileURLToPath(new URL('card.png',out))});
 await page.goto('http://127.0.0.1:5175/');await page.locator('.unity-footer').waitFor();

@@ -1,489 +1,139 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useMeQuery } from '../hooks/useMe';
+import { useWorkspaceText } from '../components/MemberWorkspace';
 import { authApi } from '../data/authApi';
-import { c, font, radius } from '../theme/tokens';
-import { pick } from '../i18n';
+import { useBadges } from '../data/queries';
 import { Icon, type IconName } from '../components/Icon';
 import { QueryBoundary } from '../components/ui';
 import { QR } from '../lib/qr';
-import { useBadges, useMember } from '../data/queries';
-import { useMe } from '../hooks/useMe';
-import { IconButton } from '../components/Civic';
 import { tierDef } from '../theme/tiers';
-
-/* ============================================================== Card screen
-
-   A government-style membership record: the ID itself, the actions that act on
-   it, then the underlying details, standing and progress.
-
-   Accessibility notes that shape the markup rather than decorate it:
-   - every control is a real <button> with a text label; the two header controls
-     are icon-only and carry aria-label
-   - the tier bar is a real progressbar with aria-valuenow/min/max, so the
-     position is available without seeing the fill
-   - milestone state is carried by a word ("Completed", "Locked"), never by
-     colour or icon alone (WCAG 1.4.1)
-   - section headings are real h2s under one h1, so the screen can be navigated
-     by headings
-*/
+import { ScaledMembershipCredential, CREDENTIAL_WIDTH, CREDENTIAL_HEIGHT, type MembershipCredentialData } from '../components/MembershipCredential';
+import '../styles/membership-card.css';
 
 export function Card() {
-  const navigate = useNavigate();
-  const [params] = useSearchParams();
-  const location = useLocation();
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language;
-  const memberQ = useMember();
-  const badgesQ = useBadges();
-  const me = useMe();
-  const [wallet, setWallet] = useState(false);
-  const [shareOpen, setShareOpen] = useState(false);
-  const [showQr, setShowQr] = useState(params.get('qr') === '1');
-  useEffect(() => { if (params.get('qr') === '1') setShowQr(true); }, [params, location.key]);
-  const [copied, setCopied] = useState(false);
-  const [pdfBusy, setPdfBusy] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const meQ=useMeQuery(), badgesQ=useBadges(), t=useWorkspaceText();
+  const navigate=useNavigate(), location=useLocation(), [params]=useSearchParams();
+  const [showQr,setShowQr]=useState(params.get('qr')==='1');
+  const [viewer,setViewer]=useState(false),[wallet,setWallet]=useState(false),[share,setShare]=useState(false);
+  const [pdfBusy,setPdfBusy]=useState(false),[feedback,setFeedback]=useState('');
+  const cardHost=useRef<HTMLDivElement>(null);
+  useEffect(()=>{if(params.get('qr')==='1')setShowQr(true);},[params,location.key]);
+  const token=useQuery({queryKey:['cardToken'],queryFn:()=>authApi.cardToken(),staleTime:5*60*1000,refetchInterval:8*60*1000});
 
-  // Render the ID card to a PDF at true ID-card size (CR80 landscape, 85.6×54mm).
-  // The on-screen card is scaled down; we render it unscaled at 680×428 for crispness.
-  const downloadPdf = async () => {
-    const el = cardRef.current?.querySelector('.wallet-pass') as HTMLElement | null;
-    if (!el || pdfBusy) return;
-    setPdfBusy(true);
-    try {
-      const [{ toPng }, jspdf] = await Promise.all([import('html-to-image'), import('jspdf')]);
-      // The pass is already the ID-1 (CR80) aspect ratio (1.586:1), so capture
-      // it at its natural size and drop it straight onto an 85.6×53.98 mm page.
-      // Capture a fixed export layout so a pass expanded for large text is never
-      // distorted into a printed CR80 rectangle. The export contains no QR token.
-      const exportHost = document.createElement('div');
-      exportHost.style.cssText = 'position:fixed;left:-10000px;top:0;width:343px;pointer-events:none';
-      const exportPass = el.cloneNode(true) as HTMLElement;
-      exportPass.classList.add('civic-pass--export');
-      exportPass.querySelector('.civic-pass-qr')?.remove();
-      exportHost.appendChild(exportPass);
-      document.body.appendChild(exportHost);
-      let dataUrl: string;
-      try { dataUrl = await toPng(exportPass, { pixelRatio: 3, cacheBust: true }); }
-      finally { exportHost.remove(); }
-      const pdf = new jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 53.98] });
-      pdf.addImage(dataUrl, 'PNG', 0, 0, 85.6, 53.98);
-
-      const blob = pdf.output('blob');
-      const file = new File([blob], 'my-people-membership-id.pdf', { type: 'application/pdf' });
-
-      // Mobile browsers ignore <a download> for blobs, so prefer the native
-      // share/save sheet where available; fall back to a download link.
-      if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'My People Membership ID' });
-      } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = file.name;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 4000);
+  const downloadPdf=async()=>{
+    const el=cardHost.current?.querySelector<HTMLElement>('.membership-credential');
+    if(!el||pdfBusy)return;
+    setPdfBusy(true);setFeedback('');
+    try{
+      await document.fonts.ready;
+      await Promise.all([...el.querySelectorAll('img')].map(img=>img.decode().catch(()=>{})));
+      const started=Date.now();
+      while(el.querySelector('canvas[data-ready="false"]')&&Date.now()-started<4000)await new Promise(resolve=>setTimeout(resolve,50));
+      if(el.querySelector('canvas[data-ready="false"]'))throw new Error('QR still preparing');
+      const [{toPng},{jsPDF}]=await Promise.all([import('html-to-image'),import('jspdf')]);
+      const png=await toPng(el,{width:CREDENTIAL_WIDTH,height:CREDENTIAL_HEIGHT,pixelRatio:3.146,preferredFontFormat:'woff2',cacheBust:false,style:{transform:'none'},backgroundColor:'#f7fbff'});
+      const widthMm=85.6,heightMm=widthMm*1000/1573;
+      const pdf=new jsPDF({orientation:'landscape',unit:'mm',format:[widthMm,heightMm],compress:true});
+      pdf.addImage(png,'PNG',0,0,widthMm,heightMm,undefined,'FAST');
+      const blob=pdf.output('blob'),file=new File([blob],'my-people-membership-id.pdf',{type:'application/pdf'});
+      if(navigator.canShare?.({files:[file]}))await navigator.share({files:[file],title:'My People Membership ID'});
+      else{
+        const url=URL.createObjectURL(blob),a=document.createElement('a');
+        a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
       }
-    } catch (err) {
-      // Don't warn when the user simply dismisses the share sheet.
-      if (!(err instanceof Error && err.name === 'AbortError')) {
-        alert(t('card.pdfError', 'Could not create the PDF. Please try again.'));
-      }
-    } finally {
-      setPdfBusy(false);
-    }
+      setFeedback(t('Your PDF is ready. Its QR has the same short-lived validity as the displayed code.','உங்கள் PDF தயார். அதிலுள்ள QR தற்போது காட்டப்படும் குறியீட்டின் அதே குறுகிய காலச் செல்லுபடியைக் கொண்டது.'));
+    }catch(err){
+      console.warn('Membership PDF export failed',err);
+      if(!(err instanceof Error&&err.name==='AbortError'))setFeedback(t('Could not create the PDF. Please try again.','PDF உருவாக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.'));
+    }finally{setPdfBusy(false);}
+  };
+  const copyReferral=async(code:string)=>{
+    try{await navigator.clipboard.writeText(code);setFeedback(t('Referral ID copied.','அழைப்புக் குறியீடு நகலெடுக்கப்பட்டது.'));}
+    catch{setFeedback(t('Could not copy the referral ID. Please try again.','அழைப்புக் குறியீட்டை நகலெடுக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.'));}
   };
 
-  // Opaque, server-signed membership credential for the QR — carries no personal
-  // data. Refreshed before its 10-minute expiry; falls back to nothing if the
-  // endpoint is unreachable (offline / preview).
-  const cardTokenQ = useQuery({
-    queryKey: ['cardToken'],
-    queryFn: () => authApi.cardToken(),
-    staleTime: 5 * 60 * 1000,
-    refetchInterval: 8 * 60 * 1000,
-  });
+  return <main className="membership-page">
+    <QueryBoundary query={meQ}>{me=>{
+      if(!me)return <section className="mp-section"><h1>{t('Membership information unavailable','உறுப்பினர் விவரங்கள் கிடைக்கவில்லை')}</h1><Link to="/login">{t('Sign in again','மீண்டும் உள்நுழையுங்கள்')}</Link></section>;
+      const confirmed=me.verificationStatus==='identity_confirmed',active=me.membershipStatus==='active';
+      const verification=confirmed?(active?t('Verified Member','சரிபார்க்கப்பட்ட உறுப்பினர்'):t('Identity verified','அடையாளம் சரிபார்க்கப்பட்டது')):me.verificationStatus==='review_pending'?t('Under review','மதிப்பாய்வில்'):me.verificationStatus==='nic_format'?t('NIC format checked','அடையாள எண் வடிவம் சரிபார்க்கப்பட்டது'):t('Not verified','சரிபார்க்கப்படவில்லை');
+      const joined=new Date(me.joinedAt),memberSince=Number.isNaN(joined.getTime())?'—':joined.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric',timeZone:'Asia/Colombo'});
+      const tier=tierDef(me.tier),prog=me.tierProgress;
+      const data:MembershipCredentialData={name:me.fullName,memberId:me.memberCode,district:me.districtName||'—',gsDivision:me.gsName||'—',memberSince,membershipType:t(tier.nameEn,tier.nameTa),referralId:me.referralCode||'—',verified:confirmed,verificationLabel:verification,avatarUrl:me.avatarUrl,qrValue:token.data};
+      const status=me.membershipStatus==='active'?t('Active','செயலில்'):me.membershipStatus==='suspended'?t('Suspended','இடைநிறுத்தப்பட்டது'):me.membershipStatus==='inactive'?t('Inactive','செயலற்றது'):t('Pending','நிலுவையில்');
+      return <>
+        <header className="mp-header"><div><h1>{t('My Membership Card','எனது உறுப்பினர் அட்டை')}</h1><p>{t('Your community membership','உங்கள் சமூக உறுப்பினர் பதிவு')}</p></div><button className="mp-close" type="button" onClick={()=>navigate('/profile')} aria-label={t('More options','மேலும் விருப்பங்கள்')}><Icon name="menu" size={20}/></button></header>
+        <figure className="mp-card-figure"><div className="mp-preview-stage" ref={cardHost}><ScaledMembershipCredential data={data}/><button className="mp-open-card" type="button" aria-label={t('Open enlarged membership card','பெரிதாக்கப்பட்ட உறுப்பினர் அட்டையைத் திற')} aria-haspopup="dialog" onClick={()=>setViewer(true)}/></div><figcaption><Icon name="eye" size={14}/>{t('Tap your card to enlarge','அட்டையைப் பெரிதாக்கத் தட்டவும்')}</figcaption></figure>
+        <div className="mp-actions" aria-label={t('Card actions','அட்டைச் செயல்கள்')}>
+          <Action icon="idCard" label={t('View QR','QR பார்க்க')} onClick={()=>setShowQr(true)} active={showQr}/>
+          <Action icon="download" label={pdfBusy?t('Preparing PDF…','PDF தயாராகிறது…'):t('Download PDF','PDF பதிவிறக்கம்')} onClick={()=>void downloadPdf()} disabled={pdfBusy}/>
+          <Action icon="card" label={t('Add to Wallet','வாலட்டில் சேர்')} onClick={()=>setWallet(true)}/>
+          <Action icon="share" label={t('Share','பகிர்')} onClick={()=>setShare(true)}/>
+        </div>
+        {feedback&&<p className="mp-feedback" role="status">{feedback}</p>}
+        {wallet&&<div className="mp-availability" role="status">{t('Apple and Google Wallet support is not available yet. You can download a PDF copy.','Apple மற்றும் Google Wallet இன்னும் கிடைக்கவில்லை. PDF நகலைப் பதிவிறக்கலாம்.')}<button type="button" onClick={()=>setWallet(false)}>{t('Dismiss','மூடு')}</button></div>}
+        <section className="mp-section"><div className="mp-section-heading"><h2>{t('Membership Details','உறுப்பினர் விவரங்கள்')}</h2><button type="button" onClick={()=>navigate('/profile/edit')}><Icon name="pencil" size={16}/>{t('Edit','திருத்து')}</button></div><dl className="mp-details">
+          <Detail icon="user" label={t('Full name','முழுப் பெயர்')} value={me.fullName}/>
+          <Detail icon="idCard" label={t('Member ID','உறுப்பினர் எண்')} value={me.memberCode} mono/>
+          <Detail icon="globe" label={t('District','மாவட்டம்')} value={me.districtName||'—'}/>
+          <Detail icon="home" label={t('DS Division','பிரதேச செயலகப் பிரிவு')} value={me.dsName||'—'}/>
+          <Detail icon="mapPin" label={t('GS Division','கிராம சேவகர் பிரிவு')} value={me.gsName||'—'}/>
+          <Detail icon="calendar" label={t('Member since','உறுப்பினரான நாள்')} value={memberSince}/>
+          <Detail icon="star" label={t('Membership type','உறுப்பினர் வகை')} value={t(tier.nameEn,tier.nameTa)}/>
+          <Detail icon="shield" label={t('Identity verification','அடையாளச் சரிபார்ப்பு')} value={verification}/>
+          <Detail icon="checkCircle" label={t('Membership status','உறுப்பினர் நிலை')} value={status}/>
+          <div className="mp-detail"><dt><Icon name="users" size={16}/>{t('Referral ID','அழைப்புக் குறியீடு')}</dt><dd><span className="mp-mono">{me.referralCode||'—'}</span><button className="mp-copy" type="button" aria-label={t('Copy referral ID','அழைப்புக் குறியீட்டை நகலெடு')} onClick={()=>void copyReferral(me.referralCode)}><Icon name="share" size={17}/></button></dd></div>
+        </dl></section>
+        {prog&&<section className="mp-section"><div className="mp-section-heading"><h2>{t('Community progress','சமூகப் பங்களிப்பு முன்னேற்றம்')}</h2><button type="button" onClick={()=>navigate('/referral')}>{prog.next?t('View referrals','அழைப்புகளைப் பார்'):t('Membership recognition','உறுப்பினர் அங்கீகாரம்')}<Icon name="chevron" size={16}/></button></div>{prog.next&&prog.need?<><p className="mp-note">{Math.max(0,prog.need-prog.have)} {t('more to','மேலும்')} {t(tierDef(prog.next).nameEn,tierDef(prog.next).nameTa)}</p><div className="mp-progress" role="progressbar" aria-label={t('Community progress','சமூகப் பங்களிப்பு முன்னேற்றம்')} aria-valuemin={0} aria-valuemax={prog.need} aria-valuenow={Math.min(prog.need,Math.max(0,prog.have))}><span style={{width:Math.min(100,Math.max(0,prog.pct))+'%'}}/></div><p className="mp-progress-caption">{prog.have} / {prog.need} {t('recruits','அழைப்புகள்')}</p></>:<p className="mp-note">{t('Highest membership recognition reached.','உயர்ந்த உறுப்பினர் அங்கீகாரத்தை அடைந்துள்ளீர்கள்.')}</p>}<p className="mp-note">{t('Community recognition is separate from assigned organisational responsibilities.','சமூக அங்கீகாரமும் ஒதுக்கப்பட்ட அமைப்புப் பொறுப்புகளும் தனித்தனியானவை.')}</p></section>}
+        <section className="mp-section"><div className="mp-section-heading"><h2>{t('Milestones','சாதனைகள்')}</h2><button type="button" onClick={()=>navigate('/milestones')}>{t('View All','அனைத்தையும் பார்')}<Icon name="chevron" size={16}/></button></div><QueryBoundary query={badgesQ}>{badges=><ul className="mp-milestones">{badges.map(b=>{
+          // Badge definitions are still seeded. Never publish their demo earned
+          // flags as the signed-in member's recorded accomplishments.
+          const state=b.key==='refer_5'?(me.recruitCount>=5?'completed':'locked'):'unavailable';
+          return <li key={b.id} data-status={state}><span><Icon name={state==='completed'?'checkCircle':state==='locked'?'lock':'info'} size={19}/></span><strong>{t(b.nameEn,b.nameTa)}</strong><small>{state==='completed'?t('Completed','நிறைவு'):state==='locked'?t('Locked','பூட்டப்பட்டது'):t('Not recorded','பதிவு இல்லை')}</small></li>;
+        })}</ul>}</QueryBoundary></section>
+        {viewer&&<CardViewer data={data} onClose={()=>setViewer(false)} t={t}/>}
+        {showQr&&<QrDialog value={token.data} pending={token.isPending} name={me.fullName} code={me.memberCode} onRetry={()=>void token.refetch()} onClose={()=>setShowQr(false)} t={t}/>}
+        {share&&<ShareDialog data={data} onClose={()=>setShare(false)} t={t}/>}
+      </>;
+    }}</QueryBoundary>
+  </main>;
+}
 
-  const copyReferral = (code: string) => {
-    navigator.clipboard?.writeText(code).catch(() => {});
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1600);
+function Action({icon,label,onClick,active,disabled}:{icon:IconName;label:string;onClick:()=>void;active?:boolean;disabled?:boolean}){
+  return <button className="mp-action" type="button" aria-pressed={active} disabled={disabled} onClick={onClick}><Icon name={icon} size={19}/><span>{label}</span></button>;
+}
+function Detail({icon,label,value,mono}:{icon:IconName;label:string;value:string;mono?:boolean}){
+  return <div className="mp-detail"><dt><Icon name={icon} size={16}/>{label}</dt><dd className={mono?'mp-mono':undefined}>{value}</dd></div>;
+}
+type Text=(en:string,ta:string)=>string;
+function Close({onClose,t}:{onClose:()=>void;t:Text}){
+  return <button className="mp-close" type="button" onClick={onClose} aria-label={t('Close','மூடு')}><Icon name="x" size={20}/></button>;
+}
+function CardViewer({data,onClose,t}:{data:MembershipCredentialData;onClose:()=>void;t:Text}){
+  const dialog=useRef<HTMLDialogElement>(null),viewport=useRef<HTMLDivElement>(null);
+  const [zoom,setZoom]=useState(1.8),[fit,setFit]=useState(700);
+  const points=useRef(new Map<number,{x:number;y:number}>()),gesture=useRef({distance:0,zoom:1});
+  useEffect(()=>{dialog.current?.showModal();const el=viewport.current;if(!el)return;const measure=()=>setFit(Math.max(100,el.clientWidth-24));measure();const obs=new ResizeObserver(measure);obs.observe(el);return()=>obs.disconnect();},[]);
+  const applyZoom=(value:number,x?:number,y?:number)=>{
+    const el=viewport.current;if(!el)return;const next=Math.min(4,Math.max(.5,value)),r=el.getBoundingClientRect(),ax=x===undefined?el.clientWidth/2:x-r.left,ay=y===undefined?el.clientHeight/2:y-r.top;
+    const cx=(el.scrollLeft+ax)/zoom,cy=(el.scrollTop+ay)/zoom;setZoom(next);
+    requestAnimationFrame(()=>{el.scrollLeft=cx*next-ax;el.scrollTop=cy*next-ay;});
   };
-
-  return (
-    <main className="civic-page">
-      <QueryBoundary query={memberQ}>
-        {(m) => {
-          // Prefer the real backend member; fall back to the mock member.
-          const name = me?.fullName ?? m.fullName;
-          const code = me?.memberCode ?? m.memberCode;
-          const districtName = me?.districtName ?? pick(lang, m.electorateNameTa ?? '', m.electorateNameEn ?? '');
-          const dsName = me?.dsName ?? '—';
-          const gsName = me?.gsName ?? '—';
-          const avatarUrl = me?.avatarUrl ?? null;
-          const referral = me?.referralCode ?? m.referralCode ?? '—';
-          const recruit = me?.recruitCount ?? 0;
-          const tier = tierDef(me?.tier ?? 'volunteer');
-          const joined = new Date(me?.joinedAt ?? m.joinedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-          const prog = me?.tierProgress;
-
-          // Never fabricate a QR payload: a signed token or nothing. An
-          // unsigned, made-up code would look scannable but fail verification
-          // at a gate — showing "unavailable" is the honest state instead.
-          const effectiveQr = cardTokenQ.data ?? null;
-
-          return (
-            <>
-              {/* ========================= Page header ========================= */}
-              <header className="civic-screen-title" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', gap: 12, marginBottom: 16 }}>
-                <div style={{ flex: '1 1 12rem', minWidth: 0 }}>
-                  <h1 style={{ margin: 0, font: `700 1.375rem/1.4 ${font.head}`, letterSpacing: '-.02em', color: c.ink }}>
-                    {t('card.title', 'My Membership Card')}
-                  </h1>
-                  <p style={{ margin: '4px 0 0', font: `400 0.84375rem/1.45 ${font.ui}`, color: c.ink2 }}>
-                    {t('card.subtitle', 'Your participation makes stronger communities')}
-                  </p>
-                </div>
-                <div style={{ display: 'flex', gap: 8, flex: 'none', paddingTop: 2 }}>
-                  <RoundButton
-                    icon="idCard"
-                    label={showQr ? t('card.hideQr', 'Hide check-in code') : t('card.showQr', 'Show check-in code')}
-                    onClick={() => setShowQr((v) => !v)}
-                    pressed={showQr}
-                  />
-                  <RoundButton icon="menu" label={t('card.moreOptions', 'More options')} onClick={() => navigate('/profile')} />
-                </div>
-              </header>
-              {/* ===================== Digital wallet pass ===================== */}
-              <div ref={cardRef}>
-                <WalletPass
-                  name={name}
-                  memberId={code}
-                  district={districtName}
-                  dsDivision={dsName}
-                  gsDivision={gsName}
-                  tier={tier.level}
-                  membershipActive={me?.membershipStatus === 'active'}
-                  onViewQr={() => setShowQr(true)}
-                  qrLabel={t('card.viewQr', 'View QR')}
-                  verified={me?.verificationStatus === 'identity_confirmed'}
-                  statusLabel={
-                    me?.verificationStatus === 'review_pending'
-                      ? t('verify.reviewPending', 'Review pending')
-                      : me?.verificationStatus === 'nic_format'
-                        ? t('verify.nicFormat', 'NIC checked')
-                        : t('verify.unverified', 'Not verified')
-                  }
-                  verifiedText={t('card.identityVerifiedActive', 'Identity Verified • Active Member')}
-                  avatarUrl={avatarUrl}
-
-                />
-              </div>
-
-              {/* ===================== Enlarged QR (View QR) ==================== */}
-              {showQr && (
-                <div style={{ marginTop: 14, background: c.card, border: `1px solid ${c.hairline}`, borderRadius: radius.xl, padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                  <div style={{ background: '#fff', padding: 12, borderRadius: 12, border: `1px solid ${c.hairline}`, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200, minWidth: 200 }}>
-                    {effectiveQr ? (
-                      <QR value={effectiveQr} size={200} />
-                    ) : (
-                      <Icon name="idCard" size={48} color={c.ink3} />
-                    )}
-                  </div>
-                  <div style={{ font: `400 0.75rem/1.4 ${font.ui}`, color: c.ink3, textAlign: 'center' }}>
-                    {effectiveQr ? t('card.checkInQr') : t('card.qrUnavailable', 'Check-in code unavailable right now. Try again shortly.')}
-                  </div>
-                </div>
-              )}
-
-              {/* ========================== Actions ============================ */}
-              <h2 className="sr-only">{t('card.actions', 'Card actions')}</h2>
-              <div className="civic-card-actions">
-                <ActionTile
-                  icon="idCard"
-                  title={t('card.viewQr', 'View QR')}
-                  sub={showQr ? t('common.hide', 'Hide') : t('card.showQrSub', 'Show QR code')}
-                  active={showQr}
-                  onClick={() => setShowQr((v) => !v)}
-                />
-                <ActionTile
-                  icon="download"
-                  title={t('card.downloadPdf', 'Download PDF')}
-                  sub={pdfBusy ? t('card.preparingPdf', 'Preparing…') : t('card.idCardPdf', 'ID Card (PDF)')}
-                  onClick={downloadPdf}
-                  disabled={pdfBusy}
-                />
-                <ActionTile
-                  icon="card"
-                  title={t('card.addToWalletShort', 'Add to Wallet')}
-                  sub={t('card.walletInfo', 'Wallet availability')}
-                  onClick={() => setWallet(true)}
-                />
-                <ActionTile
-                  icon="share"
-                  title={t('card.share', 'Share')}
-                  sub={t('card.shareYourCard', 'Share your card')}
-                  onClick={() => setShareOpen(true)}
-                />
-              </div>
-
-              {wallet && <div className="civic-card civic-section" role="status">{t('card.walletUnavailable', 'Apple and Google Wallet support is not available yet. You can download a PDF copy.')}<button type="button" className="civic-text-action" onClick={() => setWallet(false)}>{t('common.dismiss', 'Dismiss')}</button></div>}
-              {shareOpen && <PublicShareDialog name={name} code={code} verified={me?.verificationStatus === 'identity_confirmed'} onClose={() => setShareOpen(false)} t={t} />}
-              {/* ===================== Membership details ====================== */}
-              <section style={{ marginTop: 18, background: c.card, border: `1px solid ${c.hairline}`, borderRadius: radius.xl, padding: '14px 14px 6px' }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                  <span aria-hidden="true" style={{ flex: 'none', width: 36, height: 36, borderRadius: 8, background: c.maroonTint, display: 'grid', placeItems: 'center' }}>
-                    <Icon name="idCard" size={17} color={c.maroon} strokeWidth={2} />
-                  </span>
-                  <h2 style={{ flex: 1, margin: 0, font: `700 1rem/1.2 ${font.ta}`, color: c.ink }}>
-                    {t('card.membershipDetails', 'Membership Details')}
-                  </h2>
-                  <button
-                    onClick={() => navigate('/profile/edit')}
-                    style={{
-                      flex: 'none', display: 'inline-flex', alignItems: 'center', gap: 6,
-                      minHeight: 44, padding: '8px 12px', borderRadius: 8,
-                      border: `1px solid ${c.maroonTintBorder}`, background: c.maroonTintSoft,
-                      color: c.maroon, font: `600 0.78125rem/1 ${font.ui}`, cursor: 'pointer',
-                    }}
-                  >
-                    <Icon name="wrench" size={13} color={c.maroon} strokeWidth={2.2} />
-                    {t('common.edit', 'Edit')}
-                  </button>
-                </div>
-
-                <dl style={{ margin: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,9rem),1fr))', gap: '8px 12px' }}>
-                  <DetailCell icon="user" label={t('card.fullName', 'Full name')} value={name} />
-                  <DetailCell icon="globe" label={t('card.district')} value={districtName} />
-                  <DetailCell icon="idCard" label={t('card.memberId')} value={code} mono />
-                  <DetailCell icon="home" label={t('card.dsDivision', 'DS Division')} value={dsName} />
-                  <DetailCell icon="calendar" label={t('card.memberSince')} value={joined} />
-                  <DetailCell icon="mapPin" label={t('card.gsDivision')} value={gsName} />
-                  <DetailCell icon="star" label={t('card.tier', 'Tier')} value={tier.nameEn} />
-                  <DetailCell
-                    icon="users"
-                    label={t('card.referralId')}
-                    value={referral}
-                    mono
-                    action={{
-                      label: copied ? t('common.copied', 'Copied') : t('card.copyReferral', 'Copy referral ID'),
-                      icon: copied ? 'check' : 'share',
-                      onClick: () => copyReferral(referral),
-                      done: copied,
-                    }}
-                  />
-                </dl>
-              </section>
-
-              {/* ======================== Tier progress ======================== */}
-              {prog?.next ? (
-                <section style={{ marginTop: 14, background: c.card, border: `1px solid ${c.hairline}`, borderRadius: radius.xl, padding: 16 }}>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                    <span aria-hidden="true" style={{ flex: 'none' }}>
-                      <Icon name="crown" size={20} color={c.gold} strokeWidth={2} />
-                    </span>
-                    <h2 style={{ flex: 1, margin: 0, font: `700 1rem/1.2 ${font.ta}`, color: c.ink }}>{t('card.tierProgress')}</h2>
-                    <button
-                      onClick={() => navigate('/milestones')}
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: 3, border: 'none', background: 'none', cursor: 'pointer', font: `600 0.78125rem/1 ${font.ui}`, color: c.maroon }}
-                    >
-                      {t('card.toNextTier', { n: Math.max(0, (prog.need ?? 0) - prog.have), tier: tierDef(prog.next).nameEn })}
-                      <Icon name="chevron" size={13} color={c.maroon} strokeWidth={2.4} />
-                    </button>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        role="progressbar"
-                        aria-valuenow={prog.have}
-                        aria-valuemin={0}
-                        aria-valuemax={prog.need ?? 0}
-                        aria-label={t('card.tierProgress')}
-                        style={{ height: 10, borderRadius: 999, background: c.cardCream, overflow: 'hidden' }}
-                      >
-                        <div style={{ height: '100%', width: `${prog.pct}%`, background: c.maroon, borderRadius: 999, transition: 'width 480ms cubic-bezier(.22,.61,.36,1)' }} />
-                      </div>
-                      <p style={{ margin: '8px 0 0', font: `500 0.78125rem/1 ${font.ui}`, color: c.ink2, fontVariantNumeric: 'tabular-nums' }}>
-                        {t('card.pointsOf', { have: prog.have, need: prog.need ?? 0, defaultValue: '{{have}} / {{need}} recruits' })}
-                      </p>
-                    </div>
-                    <div style={{ flex: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
-                      <span aria-hidden="true" style={{ width: 44, height: 44, borderRadius: 8, background: c.maroonTint, display: 'grid', placeItems: 'center' }}>
-                        <Icon name="star" size={21} color={tierDef(prog.next).color} fill={tierDef(prog.next).color} strokeWidth={2} />
-                      </span>
-                      <span style={{ font: `600 0.6875rem/1 ${font.ui}`, color: c.ink2 }}>{tierDef(prog.next).nameEn}</span>
-                    </div>
-                  </div>
-                </section>
-              ) : prog ? (
-                <section style={{ marginTop: 14, background: c.card, border: `1px solid ${c.hairline}`, borderRadius: radius.xl, padding: 16, textAlign: 'center' }}>
-                  <h2 style={{ margin: 0, font: `700 0.875rem/1.4 ${font.ta}`, color: c.ink }}>{t('card.topTier')}</h2>
-                </section>
-              ) : null}
-
-              {/* ========================= Milestones ========================== */}
-              <section style={{ marginTop: 14 }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                  <span aria-hidden="true" style={{ flex: 'none' }}>
-                    <Icon name="flag" size={19} color={c.maroon} strokeWidth={2} />
-                  </span>
-                  <h2 style={{ flex: 1, margin: 0, font: `700 1rem/1.2 ${font.ta}`, color: c.ink }}>{t('card.milestones')}</h2>
-                  <button
-                    onClick={() => navigate('/milestones')}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 3, border: 'none', background: 'none', cursor: 'pointer', font: `600 0.78125rem/1 ${font.ui}`, color: c.maroon }}
-                  >
-                    {t('common.viewAll', 'View All')}
-                    <Icon name="chevron" size={13} color={c.maroon} strokeWidth={2.4} />
-                  </button>
-                </div>
-
-                <QueryBoundary query={badgesQ}>
-                  {(badges) => (
-                    <ul
-                      style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,8rem),1fr))', gap: 8 }}
-                    >
-                      {badges.map((b) => (
-                        <MilestoneTile
-                          key={b.id}
-                          name={pick(lang, b.nameTa, b.nameEn)}
-                          earned={b.earned}
-                          earnedLabel={t('card.completed', 'Completed')}
-                          lockedLabel={t('card.locked', 'Locked')}
-                        />
-                      ))}
-                    </ul>
-                  )}
-                </QueryBoundary>
-              </section>
-
-              {/* recruit count retained for tier logic; surfaced in Referral. */}
-              <span hidden>{recruit}</span>
-            </>
-          );
-        }}
-      </QueryBoundary>
-    </main>
-  );
+  return <dialog ref={dialog} className="mp-dialog" aria-labelledby="card-view-title" onCancel={onClose} onClose={onClose}><div className="mp-dialog-header"><h2 id="card-view-title">{t('Your membership card','உங்கள் உறுப்பினர் அட்டை')}</h2><Close t={t} onClose={onClose}/></div><div className="mp-zoom-toolbar"><button type="button" aria-label={t('Zoom out','சிறிதாக்கு')} onClick={()=>applyZoom(zoom-.25)} disabled={zoom<=.5}>−</button><span aria-live="polite">{Math.round(zoom*100)}%</span><button type="button" aria-label={t('Zoom in','பெரிதாக்கு')} onClick={()=>applyZoom(zoom+.25)} disabled={zoom>=4}>+</button><button type="button" onClick={()=>applyZoom(1)}>{t('Fit','முழு அட்டை')}</button><span>{t('Drag or pinch to explore','இழுத்து அல்லது விரல்களால் பெரிதாக்கிப் பார்')}</span></div><div ref={viewport} className="mp-viewer-viewport" tabIndex={0} role="region" aria-label={t('Zoomable membership card','பெரிதாக்கக்கூடிய உறுப்பினர் அட்டை')}
+    onPointerDown={e=>{if(e.pointerType==='mouse'&&e.button!==0)return;e.currentTarget.setPointerCapture(e.pointerId);points.current.set(e.pointerId,{x:e.clientX,y:e.clientY});if(points.current.size===2){const[a,b]=[...points.current.values()];gesture.current={distance:Math.hypot(a.x-b.x,a.y-b.y),zoom};}}}
+    onPointerMove={e=>{const previous=points.current.get(e.pointerId);if(!previous)return;points.current.set(e.pointerId,{x:e.clientX,y:e.clientY});if(points.current.size===2){const[a,b]=[...points.current.values()];applyZoom(gesture.current.zoom*Math.hypot(a.x-b.x,a.y-b.y)/Math.max(1,gesture.current.distance),(a.x+b.x)/2,(a.y+b.y)/2);}else{e.currentTarget.scrollLeft-=e.clientX-previous.x;e.currentTarget.scrollTop-=e.clientY-previous.y;}}}
+    onPointerUp={e=>points.current.delete(e.pointerId)} onPointerCancel={e=>points.current.delete(e.pointerId)}>
+      <div className="mp-viewer-inner" style={{width:fit*zoom}}><ScaledMembershipCredential data={data}/></div>
+    </div><p className="mp-note">{t('Your membership details remain readable below the card on the main page.','முதன்மைப் பக்கத்தில் அட்டைக்குக் கீழுள்ள உறுப்பினர் விவரங்களை எளிதாகப் படிக்கலாம்.')}</p></dialog>;
 }
-
-/* -------------------------------------------------------------- WalletPass
-   A native-style digital wallet pass (Singpass / Apple Wallet idiom), not a
-   miniature printed PVC card: solid navy, ID-1 (CR80) aspect 1.586:1, bilingual
-   header, circular portrait, legal name, member ID, GN/DS hierarchy, a green
-   verified pill and a mini QR affordance. Never shows the raw NIC/passport. */
-function WalletPass({
-  name, memberId, district, dsDivision, gsDivision, tier, verified, membershipActive, statusLabel, verifiedText, avatarUrl, onViewQr, qrLabel,
-}: {
-  name: string; memberId: string; district: string; dsDivision: string; gsDivision: string;
-  tier: number; verified: boolean; membershipActive: boolean; statusLabel: string; verifiedText: string;
-  avatarUrl: string | null; onViewQr: () => void; qrLabel: string;
-}) {
-  const [portraitFailed,setPortraitFailed] = useState(false);
-  const hierarchy = [district, dsDivision, gsDivision].filter(x => x && x !== '—').join(' / ');
-  return <div className="wallet-pass civic-pass">
-    <div className="civic-pass-header"><span><span lang="en">MY PEOPLE</span> • <span lang="ta">என் மக்கள்</span></span><span className="civic-pass-tier">TIER {tier}</span></div>
-    <div className="civic-pass-identity"><span className="civic-pass-portrait">
-      {avatarUrl && !portraitFailed ? <img src={avatarUrl} alt="" onError={() => setPortraitFailed(true)} /> : <Icon name="user" size={24} color="#CBD5E1" />}
-    </span><div><div className="civic-pass-name">{name}</div><div className="civic-pass-id">{memberId}</div><div className="civic-pass-area">{hierarchy}</div></div></div>
-    <div className="civic-pass-bottom"><span className={'civic-pass-status' + (verified ? '' : ' civic-pass-status--pending')}><Icon name={verified ? 'check' : 'clock'} size={12} />{verified ? membershipActive ? verifiedText : verifiedText.split('•')[0].trim() : statusLabel}</span><button type="button" className="civic-pass-qr" onClick={onViewQr} aria-label={qrLabel}><Icon name="idCard" size={24} /></button></div>
-  </div>;
+function QrDialog({value,pending,name,code,onRetry,onClose,t}:{value?:string|null;pending:boolean;name:string;code:string;onRetry:()=>void;onClose:()=>void;t:Text}){
+  const ref=useRef<HTMLDialogElement>(null);useEffect(()=>{ref.current?.showModal();},[]);
+  return <dialog ref={ref} className="mp-dialog mp-qr-dialog" aria-labelledby="qr-title" onCancel={onClose} onClose={onClose}><div className="mp-dialog-header"><h2 id="qr-title">{t('Membership verification','உறுப்பினர் சரிபார்ப்பு')}</h2><Close t={t} onClose={onClose}/></div><div className="mp-qr-content">{value?<div className="mp-qr-paper"><QR value={value} size={240} margin={4}/></div>:<p role="status">{pending?t('Preparing your code…','குறியீடு தயாராகிறது…'):t('Check-in code unavailable right now. Try again shortly.','வருகைப் பதிவுக் குறியீடு தற்போது கிடைக்கவில்லை. விரைவில் மீண்டும் முயற்சிக்கவும்.')}</p>}<strong>{name}</strong><span>{code}</span>{value?<p>{t('Show this QR to check in','வருகைப் பதிவுக்கு இந்த QR ஐக் காட்டுங்கள்')}</p>:<button className="mp-action" type="button" onClick={onRetry}>{t('Try again','மீண்டும் முயற்சி')}</button>}</div></dialog>;
 }
-
-function RoundButton({ icon, label, onClick, pressed }: { icon: IconName; label: string; onClick: () => void; pressed?: boolean }) {
-  return <IconButton icon={icon} label={label} onClick={onClick} pressed={pressed} />;
-}
-
-function ActionTile({ icon, title, sub, onClick, active, disabled }: { icon: IconName; title: string; sub: string; onClick: () => void; active?: boolean; disabled?: boolean }) {
-  return <div><button type="button" className="civic-card-action" onClick={onClick} disabled={disabled} aria-pressed={active} aria-label={title} title={sub}><Icon name={icon} size={20} strokeWidth={2} /></button><span className="civic-card-action-label" aria-hidden="true">{title}</span></div>;
-}
-
-function PublicShareDialog({ name, code, verified, onClose, t }: { name: string; code: string; verified: boolean; onClose: () => void; t: (key: string, fallback: string) => string }) {
-  const ref = useRef<HTMLDialogElement>(null);
-  const [message,setMessage] = useState('');
-  useEffect(() => { ref.current?.showModal(); },[]);
-  const status = verified ? t('verify.confirmed', 'Identity verified') : t('verify.unverified', 'Not verified');
-  const share = async () => {
-    try {
-      const text = ['My People',name,code,status].join('\n');
-      if(navigator.share) await navigator.share({ title:'My People',text });
-      else { await navigator.clipboard.writeText(text); setMessage(t('common.copied','Copied')); }
-    } catch(e) { if(!(e instanceof Error && e.name==='AbortError')) setMessage(t('card.shareError','Could not share. Please try again.')); }
-  };
-  return <dialog ref={ref} className="civic-dialog" aria-labelledby="share-title" onCancel={onClose} onClose={onClose}>
-    <div className="civic-dialog-head"><h2 id="share-title">{t('card.sharePreview','Share preview')}</h2><IconButton icon="x" label={t('common.dismiss','Dismiss')} onClick={onClose} /></div>
-    <p>{name}<br />{code}<br />{status}</p><p>{t('card.shareDisclosure','Only your name, member ID and identity status will be shared.')}</p>
-    <button type="button" className="civic-primary" onClick={() => void share()}>{t('card.share','Share')}</button><p role="status">{message}</p>
-  </dialog>;
-}
-
-/* -------------------------------------------------------------- DetailCell */
-function DetailCell({
-  icon, label, value, mono, action,
-}: {
-  icon: IconName; label: string; value: string; mono?: boolean;
-  action?: { label: string; icon: IconName; onClick: () => void; done?: boolean };
-}) {
-  // dt and dd must be DIRECT children of this wrapping div for the list to be a
-  // valid definition list. An earlier version nested them one level deeper to
-  // get the icon beside the text, which broke the dt/dd association that a
-  // screen reader relies on to read "Full name: Kalainilavan" as a pair.
-  // The icon lives inside the dt instead.
-  return (
-    <div style={{ padding: '9px 0', minWidth: 0 }}>
-      <dt style={{ display: 'flex', alignItems: 'center', gap: 8, font: `400 0.71875rem/1.3 ${font.ui}`, color: c.ink3 }}>
-        <span aria-hidden="true" style={{ flex: 'none', display: 'grid', placeItems: 'center' }}>
-          <Icon name={icon} size={15} color={c.ink3} strokeWidth={2} />
-        </span>
-        {label}
-      </dt>
-      <dd style={{ margin: '3px 0 0 23px', display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-        <span style={{ font: `600 0.8125rem/1.35 ${mono ? font.mono : font.ta}`, color: c.ink, wordBreak: 'break-word', minWidth: 0 }}>
-          {value}
-        </span>
-        {action && (
-          <button
-            onClick={action.onClick}
-            aria-label={action.label}
-            style={{ flex: 'none', minWidth: 44, minHeight: 44, border: 'none', background: 'none', cursor: 'pointer', padding: 8, display: 'grid', placeItems: 'center' }}
-          >
-            <Icon name={action.icon} size={13} color={action.done ? c.success : c.ink3} strokeWidth={2.2} />
-          </button>
-        )}
-      </dd>
-    </div>
-  );
-}
-
-/* ----------------------------------------------------------- MilestoneTile */
-function MilestoneTile({
-  name, earned, earnedLabel, lockedLabel,
-}: { name: string; earned: boolean; earnedLabel: string; lockedLabel: string }) {
-  return (
-    <li
-      style={{
-        background: c.card, border: `1px solid ${c.hairline}`, borderRadius: radius.lg,
-        padding: '12px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, textAlign: 'center',
-      }}
-    >
-      <span
-        aria-hidden="true"
-        style={{
-          width: 38, height: 38, borderRadius: 999, display: 'grid', placeItems: 'center',
-          background: earned ? c.successBg : c.cardCream,
-        }}
-      >
-        <Icon name={earned ? 'checkCircle' : 'lock'} size={18} color={earned ? c.success : c.ink3} strokeWidth={2} />
-      </span>
-      <span style={{ font: `600 0.71875rem/1.3 ${font.ta}`, color: c.ink }}>{name}</span>
-      {/* The state is a word, not only a colour or an icon — WCAG 1.4.1. */}
-      <span style={{ font: `500 0.65625rem/1 ${font.ui}`, color: earned ? c.success : c.ink3 }}>
-        {earned ? earnedLabel : lockedLabel}
-      </span>
-    </li>
-  );
+function ShareDialog({data,onClose,t}:{data:MembershipCredentialData;onClose:()=>void;t:Text}){
+  const ref=useRef<HTMLDialogElement>(null),[message,setMessage]=useState('');useEffect(()=>{ref.current?.showModal();},[]);
+  const share=async()=>{try{const text=['My People',data.name,data.memberId,data.verificationLabel].join('\n');if(navigator.share)await navigator.share({title:'My People',text});else{await navigator.clipboard.writeText(text);setMessage(t('Copied','நகலெடுக்கப்பட்டது'));}}catch(e){if(!(e instanceof Error&&e.name==='AbortError'))setMessage(t('Could not share. Please try again.','பகிர முடியவில்லை. மீண்டும் முயற்சிக்கவும்.'));}};
+  return <dialog ref={ref} className="mp-dialog mp-qr-dialog" aria-labelledby="share-title" onCancel={onClose} onClose={onClose}><div className="mp-dialog-header"><h2 id="share-title">{t('Share preview','பகிர்வதற்கு முன்')}</h2><Close t={t} onClose={onClose}/></div><p>{data.name}<br/>{data.memberId}<br/>{data.verificationLabel}</p><p>{t('Only your name, member ID and identity status will be shared. Your private QR and portrait are excluded.','உங்கள் பெயர், உறுப்பினர் எண் மற்றும் அடையாள நிலை மட்டுமே பகிரப்படும். தனிப்பட்ட QR மற்றும் புகைப்படம் பகிரப்படாது.')}</p><button className="mp-share-submit" type="button" onClick={()=>void share()}>{t('Share','பகிர்')}</button><p role="status">{message}</p></dialog>;
 }
