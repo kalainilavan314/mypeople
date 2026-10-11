@@ -78,20 +78,20 @@ Events (.civic-page)
    └─ EventsMap [alternate]
 
 Card (.membership-page)
-└─ QueryBoundary
+└─ QueryBoundary(useMeQuery)
    ├─ Header / ProfileOptionsButton
-   ├─ DigitalMemberPass (.civic-pass)
-   │  ├─ BilingualBrand / TierTag
-   │  ├─ Portrait / LegalName / MemberId / Hierarchy
-   │  └─ SecurityPill / QrEntryButton
-   ├─ QrDialog [conditional; signed backend token; white quiet zone]
-   ├─ CardActionRow → ActionTile × 4
-   ├─ WalletAvailabilityNotice [conditional]
-   ├─ PublicShareDialog [preview → device share / copy]
-   ├─ PrintableIdAction → CardViewer [separate zoom/pan dialog]
-   ├─ Offscreen MembershipCredential [canonical ID layout → private PDF]
-   ├─ MembershipDetails (dl / dt / dd)
-   └─ ExistingProgress / Milestones
+   ├─ ScaledMembershipCredential (1573:1000 reference ID)
+   │  └─ MembershipCredential(canonical1000)
+   │     ├─ SVG waves / line art / map / palms
+   │     ├─ Portrait / SignatureArea / BilingualBrand
+   │     ├─ MemberName / FieldColumns / OfficialLogo
+   │     └─ QR panel / SupportingCaptions
+   ├─ CardActionRow → ViewQR / DownloadPDF / Wallet / Share
+   ├─ MembershipDetails / RecognitionProgress / Milestones
+   ├─ CardViewer [zoom / pinch / pan / Fit / Close]
+   ├─ QrDialog [opaque backend token]
+   ├─ WalletAvailabilityNotice
+   └─ PublicShareDialog
 
 Gallery (.civic-page)
 ├─ ScreenTitle
@@ -270,3 +270,30 @@ The implemented gallery API is read-only and serves published public assets. The
 | Centre QR | Custom navigation item + Semantics | Custom tabBar Pressable | One Card destination, explicit QR affordance, no extra sixth tab |
 
 Tier mapping is recognition only: Volunteer→0, Diamond→1, Gold→2, Platinum→3. The governance diagram's Tier 1–5 remains separate; the current API has no assigned role field. Neither adapter may authorize a staff action from recognition, referrals or a rendered badge. Native themes should be validated in their actual SDKs before use; no native application compilation is claimed here.
+
+## Current Card override · 11 October user correction
+
+The user restored the detailed ID design after reviewing the wallet pass. The native DigitalPass tree above is now an inactive alternative. For the current Card destination, use these primary trees instead:
+
+```text
+React Native MemberCardScreen
+└─ ScrollView
+   ├─ ScreenTitle
+   ├─ ScaledCredential(View with measured width and 1573:1000 bounds)
+   │  └─ CredentialComposition(canonical1000; SVG art + native text/images + QR)
+   ├─ CardActionGrid44
+   ├─ ReadableMembershipDetails / RecognitionProgress / Milestones
+   └─ CredentialViewerModal | QrModal | WalletNotice | SharePreview
+
+Flutter MemberCardScreen
+└─ SafeArea → SingleChildScrollView → Column
+   ├─ ScreenTitle
+   ├─ LayoutBuilder → AspectRatio(1573/1000)
+   │  └─ FittedBox → SizedBox(canonical1000×635.728) → Stack
+   │     └─ SVG art / portrait / typography / fields / logo / QR
+   ├─ CardActionWrap44
+   ├─ ReadableMembershipDetails / RecognitionProgress / Milestones
+   └─ InteractiveViewerDialog | QrDialog | WalletNotice | SharePreview
+```
+
+Keep the full member details readable outside the scaled credential. Use an independent canonical exporter rather than distorting a large-type layout into a PDF. These are implementation mappings; the running production source is React/TypeScript.

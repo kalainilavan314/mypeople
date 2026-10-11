@@ -5,7 +5,6 @@ import { useMeQuery } from '../hooks/useMe';
 import { useWorkspaceText } from '../components/MemberWorkspace';
 import { authApi } from '../data/authApi';
 import { useBadges } from '../data/queries';
-import { DigitalMemberPass } from '../components/DigitalMemberPass';
 import { Icon, type IconName } from '../components/Icon';
 import { QueryBoundary } from '../components/ui';
 import { QR } from '../lib/qr';
@@ -66,9 +65,7 @@ export function Card() {
       const status=me.membershipStatus==='active'?t('Active','செயலில்'):me.membershipStatus==='suspended'?t('Suspended','இடைநிறுத்தப்பட்டது'):me.membershipStatus==='inactive'?t('Inactive','செயலற்றது'):t('Pending','நிலுவையில்');
       return <>
         <header className="mp-header"><div><h1>{t('My Membership Card','எனது உறுப்பினர் அட்டை')}</h1><p>{t('Your community membership','உங்கள் சமூக உறுப்பினர் பதிவு')}</p></div><button className="mp-close" type="button" onClick={()=>navigate('/profile')} aria-label={t('More options','மேலும் விருப்பங்கள்')}><Icon name="menu" size={20}/></button></header>
-        <DigitalMemberPass member={me} onShowQr={()=>setShowQr(true)}/>
-        <div className="mp-export-layout" aria-hidden="true"><div ref={cardHost}><ScaledMembershipCredential data={data}/></div></div>
-        <div className="mp-print-link"><button className="civic-text-action" type="button" onClick={()=>setViewer(true)}>{t('View printable ID','அச்சிடக்கூடிய அட்டையைப் பார்')}</button></div>
+        <figure className="mp-card-figure"><div className="mp-preview-stage" ref={cardHost}><ScaledMembershipCredential data={data}/><button className="mp-open-card" type="button" aria-label={t('Open enlarged membership card','பெரிதாக்கப்பட்ட உறுப்பினர் அட்டையைத் திற')} aria-haspopup="dialog" onClick={()=>setViewer(true)}/></div><figcaption><Icon name="eye" size={14}/>{t('Tap your card to enlarge','அட்டையைப் பெரிதாக்கத் தட்டவும்')}</figcaption></figure>
         <div className="mp-actions" aria-label={t('Card actions','அட்டைச் செயல்கள்')}>
           <Action icon="idCard" label={t('View QR','QR பார்க்க')} onClick={()=>setShowQr(true)} active={showQr}/>
           <Action icon="download" label={pdfBusy?t('Preparing PDF…','PDF தயாராகிறது…'):t('Download PDF','PDF பதிவிறக்கம்')} onClick={()=>void downloadPdf()} disabled={pdfBusy}/>

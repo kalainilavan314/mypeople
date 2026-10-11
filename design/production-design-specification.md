@@ -1,6 +1,6 @@
 # My People · என் மக்கள்
 ## Production mobile design specification
-Version 4.0 · 11 October 2026 · Northern Province People's Movement
+Version 4.1 · 11 October 2026 · Northern Province People's Movement
 
 This specification governs the five member destinations and their shared components. The current application is a React 18 / TypeScript PWA, built with Vite and backed by Express. The implementation uses that stack. Flutter and React Native mappings are supplied separately; they describe the same components, data contracts and behavior.
 
@@ -127,26 +127,19 @@ Button states: default navy; hover #1B3A57; pressed #091D30; busy retains label 
 
 Next-step selection currently prefers an upcoming event marked as the member's area, then the earliest upcoming event. Production prioritization can add actual missing-document and report-action records; it must not manufacture tasks.
 
-### 5. Digital member card · C01–C06
+### 5. Membership ID card · current user-approved restoration
 
-Replace the reduced PVC artwork with native UI text and a native digital pass. Use 1.586:1 at normal type. At 343px width, nominal height is approximately 216px.
+The user's later correction on 11 October restores the reference ID card section from commit `21cefef`. This overrides the wallet-pass presentation requested in the preceding civic brief. Home, Events, Gallery, Profile and shared navigation retain the civic revision.
 
-Pass anatomy:
-- Solid #0F2942, 12px radius, 12px padding, micro shadow.
-- Bilingual “MY PEOPLE • என் மக்கள்”, 11px bold. TIER 0 in a flat silver badge (#E2E8F0 with navy text), 4px radius. Map the actual server membership recognition value (`volunteer`, `diamond`, `gold`, `platinum`) to recognition levels 0–3. TIER 0 is the Volunteer recognition tier. This is not the governance Tier 1–5 hierarchy. The current member API has no assigned governance role field; do not invent one or derive staff access from recruits or badge styling.
-- 48×48px circular portrait; request an image suitable for at least 144×144px pixels at 3×. A missing portrait gets a neutral person silhouette, never an invented likeness.
-- Legal name 16px white bold, followed by the actual member ID (example WTL-26-5401749) and district / DS / GN hierarchy in 11px slate #CBD5E1. Wrap the full legal name; no ellipsis that hides identity.
-- Bottom status pill: ✓ Identity Verified • Active Member only when both fields explicitly support it. Otherwise show the supported identity state; absent membership state is an integration gap, not an active assertion.
-- Bottom-right 44px white QR entry affordance. It opens the enlarged secure code. Do not shrink a complex signed token into an unreliable tiny QR.
+The primary Card page again shows the rendered 1573:1000 ID composition from `ID_Sample.png`: navy wave bands, icy centre, subtle line artwork, tall framed portrait, authorized-signature area, bilingual title, aligned member fields, official logo, map/palms and QR panel. The reusable MembershipCredential has a 1000px canonical coordinate system. ScaledMembershipCredential scales its composition proportionally without treating a screenshot as the card.
 
-Action row:
-View QR / Download PDF / Add to Wallet / Share each has a minimum 44px control with a shared-weight 19–20px icon and a wrapping label in the same control. Default is four equal columns; use two columns below 360px or when text requires it. The title and accessible label are identical. Buttons have 8px radius.
+Actual member fields come from /api/me. Portrait uses the member profile asset; missing portrait/signature are explicitly marked. Membership recognition, identity verification and membership activation remain independent; staff responsibilities are not derived from recognition or recruit counts.
 
-QR: black modules on white with an adequate quiet zone and large display. Use only the backend-issued opaque token. Display a retry/unavailable state if the token cannot be issued. The current endpoint issues an opaque signed token; the app refreshes it every eight minutes against the existing ten-minute backend lifetime. It refetches stale credentials when the browser reconnects. Four QR modules of white quiet zone are used in both the enlarged QR and printable ID. Changing token lifetime, scanner acceptance or revocation policy is backend integration work.
+Tap the card to open its zoom/pan viewer with pinch, drag, zoom buttons, Fit, Escape and Close. Readable full membership details remain below the preview. The four actions remain View QR, Download PDF, Add to Wallet and Share, with 44px minimum targets and wrapping labels. The MedTech centre action opens the large QR dialog.
 
-PDF: preserve the detailed ID from the separate `ID_Sample.png` brief as a private printable artifact, at 85.6mm × (85.6 × 1000/1573)mm. This separate 1573:1000 composition is rendered offscreen at canonical coordinates; it never substitutes for the mobile wallet pass. A “View printable ID” action opens its zoom/pan viewer. Download waits for fonts, member portrait and QR, then embeds a high-resolution, losslessly compressed image in a one-page PDF. The private copy contains the currently displayed short-lived QR; the result message explains its limited validity. Public Share discloses and sends only name, member ID and identity status, excluding portrait and QR. Portrait comes from the member profile; an authorized signature must be supplied through a real data contract before being displayed. Missing assets are explicitly marked.
+PDF uses the same canonical ID composition, waits for fonts/images/QR, and exports a compressed high-resolution 85.6mm × (85.6 × 1000/1573)mm private copy. The QR remains the existing opaque ten-minute credential, refreshed at eight minutes, with a four-module white quiet zone. The result message explains the short validity. Public Share previews and sends only name, member ID and identity status, excluding portrait/QR. Wallet provisioning remains unavailable until provider-signed services are integrated; its action explains this accurately.
 
-Wallet: the current backend has no Apple/Google Wallet provisioning service. The UI explains availability rather than claiming an added pass. Production integrations require signed provider assets and success/cancel/error responses. Offline cached presentation is labeled with freshness; it is not a guarantee of accepted check-in.
+The reference artwork and restored Card-page proportions are an explicit visual exception to the civic card recipe. The separate DigitalMemberPass component remains an inactive alternative; it is not the current primary Card presentation.
 
 ### 6. Events · E01–E06
 
@@ -206,7 +199,7 @@ The current My Activity destination exposes Reports and receipts, not a complete
 
 ### 10. Delivery status and release requirements
 
-Implemented locally: tokens; shared Civic primitives; Home; compact Events and server-confirmed RSVP state; native-style Card pass and honest wallet/share behavior; API-backed photo Gallery; compact Profile; five stable bottom tabs; public gallery read API and licensed local sample assets.
+Implemented locally: tokens; shared Civic primitives; Home; compact Events and server-confirmed RSVP state; restored reference-ID Card and honest wallet/share behavior; API-backed photo Gallery; compact Profile; five stable bottom tabs; public gallery read API and licensed local sample assets.
 
 Production dependencies still needing backend/product work: an assigned governance role contract separate from membership recognition; authorized signature storage/approval; any additional identity-gated credential issuance policy; provider-signed Wallet services; full activity ledger; photo-removal receipt/SLA service; complete coordinator/publishing workflows. Independent identity and membership states already come from /api/me. Preserve those distinctions during release review.
 
@@ -231,7 +224,7 @@ These references inform the design decisions; they do not imply issuer equivalen
 | Stark white canvas / heavy floating blocks | Canvas #F8FAFC, white card, 1px #E2E8F0, exact micro-shadow | Computed runtime styles + screenshots |
 | Navy/cyan gradients overriding civic tokens | Replace member shell overrides; native navy pass; solid navigation | Active route/theme checks |
 | Home promotional photo hero | Task-led Next Step card with navy left rule | First screen and preserved service links |
-| Miniature printed card unreadable on mobile | DigitalMemberPass with 48px portrait and live text | Ratio, long names, 200% type and real state fixtures |
+| Membership presentation | Restore the user-selected reference ID; enlarged viewer and readable details support mobile access | Exact prior page/style source, QR, viewer, PDF and long-name fixtures |
 | Split event artwork | DateBadge + white content; confirmed RSVP updates | Failed-mutation regression |
 | Photo placeholders / dark albums | Local licensed photos with 4:3 covers and separate captions | API photo counts, image load/error and alt text checks |
 | Profile spacing / mixed menu styles | Compact identity, independent badges, 48px menu rows | Geometry, focus and route checks |

@@ -30,7 +30,7 @@ for(const mode of ['light','dark'])for(const path of ['/','/events','/card','/ga
   const s=getComputedStyle(document.querySelector('.member-shell')),card=document.querySelector('.civic-card');return {tokens:{canvas:s.getPropertyValue('--page').trim(),primary:s.getPropertyValue('--primary').trim(),border:s.getPropertyValue('--hairline').trim(),shadow:s.getPropertyValue('--shadow-card').trim()},card:card?{radius:getComputedStyle(card).borderRadius,padding:getComputedStyle(card).padding}:null,results};
  });
  const failures=audit.results.filter(x=>x.ratio<4.5);assert.deepEqual(failures,[],mode+' '+path+' contrast');contrasts.push({mode,path,...audit});
- if(mode==='light'){assert.equal(audit.tokens.canvas,'#f8fafc');assert.equal(audit.tokens.primary,'#0f2942');assert.equal(audit.tokens.border,'#e2e8f0');assert.equal(audit.tokens.shadow,'0 1px 2px rgba(15, 23, 42, 0.04)');if(audit.card)assert.equal(audit.card.radius,'12px');await page.screenshot({path:out+'/'+(path==='/'?'home':path.slice(1))+'.png'});}
+ if(mode==='light'){assert.equal(audit.tokens.canvas,'#f8fafc');assert.equal(audit.tokens.primary,'#0f2942');assert.equal(audit.tokens.border,'#e2e8f0');assert.equal(audit.tokens.shadow.replace(/\s+/g,'').replace('0.04','.04'),'01px2pxrgba(15,23,42,.04)');if(audit.card)assert.equal(audit.card.radius,'12px');await page.screenshot({path:out+'/'+(path==='/'?'home':path.slice(1))+'.png'});}
 }
 checks.push('Rendered text contrast >= 4.5:1 across the five main screens in light and dark appearance');
 checks.push('Computed civic canvas, authority color, hairline border and micro-shadow match the brief');
