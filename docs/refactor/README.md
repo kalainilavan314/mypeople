@@ -1,6 +1,6 @@
 # Refactor handoff
 
-The implementation is in the working tree on `codex/feature-first`. It has not been deployed. Home and its feature cards follow the latest uploaded MedTech reference. The other four tab sections and authentication retain their behaviour and appearance.
+The implementation is pushed to `codex/feature-first` and deployed as `civic-20261012T045612Z` at https://178.128.126.35.nip.io. The production source commit is `834cccf`. Home and its feature cards follow the latest uploaded MedTech reference. The other four tab sections and authentication retain their behaviour and appearance. Draft pull request #2 contains the default-branch review; `main` has not been updated.
 
 ## Terminal commands
 

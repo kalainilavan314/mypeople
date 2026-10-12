@@ -6,7 +6,7 @@ const {chromium}=require(process.env.MY_PEOPLE_PLAYWRIGHT_MODULE||'playwright');
 const base=process.env.MY_PEOPLE_BASE_URL||'http://127.0.0.1:5175';
 const out=process.env.MY_PEOPLE_QA_OUT||'docs/refactor/after';await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({headless:true,channel:'msedge'});
-const context=await browser.newContext({viewport:{width:390,height:844}});
+const context=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});
 const member={id:'fixture',fullName:'Kalaiyarasan Sinnathamby Thiruchelvam',memberCode:'WTL-26-5401749',districtName:'Jaffna',dsName:'Islands North (Kayts)',gsName:'Analaitivu North',tier:'volunteer',verificationStatus:'identity_confirmed',membershipStatus:'active',recruitCount:0,language:'en',joinedAt:'2026-10-03T00:00:00Z'};
 await context.addInitScript(m=>{localStorage.setItem('npm.authed','1');localStorage.setItem('npm.member',JSON.stringify(m));localStorage.setItem('npm.name',m.fullName);},member);
 const page=await context.newPage(),errors=[],checks=[];
@@ -28,6 +28,10 @@ for(const lang of ['en','ta'])for(const width of [320,375,390,768,1280]){
     throw e;
   }
   await page.waitForTimeout(400);
+  await page.waitForFunction(()=>{
+    const img=document.querySelector('.home-community-photo img');
+    return img&&img.complete&&img.naturalWidth>0;
+  });
   assert(await page.locator('.home-community-photo img').evaluate(img=>img.complete&&img.naturalWidth>0),'Community picture must load');
   const layout=await page.evaluate(()=>{
     const screen=document.querySelector('.screen'),nav=document.querySelector('nav.work-nav');
@@ -53,6 +57,7 @@ await page.evaluate(()=>localStorage.setItem('npm.lang','en'));await page.reload
 await page.setViewportSize({width:390,height:844});
 await page.locator('.home-service-grid').scrollIntoViewIfNeeded();
 await page.waitForTimeout(500);
+await page.waitForFunction(()=>[...document.querySelectorAll('.home-service-photo img')].every(img=>img.complete&&img.naturalWidth>0));
 assert(await page.locator('.home-service-photo img').evaluateAll(images=>images.every(img=>img.complete&&img.naturalWidth>0)), 'Home feature photos must load');
 await page.screenshot({path:`${out}/home-features-en-390.png`});
 await page.evaluate(()=>document.querySelector('.screen').scrollTop=0);
@@ -65,6 +70,10 @@ assert.equal(await page.locator('.home-service-grid a').count(),7);
 await page.getByRole('button',{name:'Card and check-in QR'}).click();
 assert.equal(new URL(page.url()).pathname,'/card');assert.equal(new URL(page.url()).search,'?qr=1');
 await page.getByRole('dialog').waitFor();
+await page.waitForFunction(()=>{
+  const active=document.querySelector('nav.work-nav button[aria-current]');
+  return active&&getComputedStyle(active).color==='rgb(185, 87, 22)';
+});
 assert.equal(await page.locator('nav.work-nav button[aria-current]').evaluate(e=>getComputedStyle(e).color),'rgb(185, 87, 22)','Other tabs retain their current navigation styling');
 assert.deepEqual(errors,[]);
 await fs.writeFile(`${out}/home-results.json`,JSON.stringify({fixtureOnly:true,checks,search:true,cardQr:true},null,2));
