@@ -1,6 +1,7 @@
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.MY_PEOPLE_PLAYWRIGHT_MODULE || 'playwright');
+const base=process.env.MY_PEOPLE_BASE_URL||'http://127.0.0.1:5175';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
@@ -11,7 +12,7 @@ const member={id:'design-member',fullName:'Kalai',memberCode:'WTL-26-5401749',di
 const events=[{id:'sample-event',titleEn:'Nallur water scheme — volunteer mapping',titleTa:'நல்லூர் நீர் திட்டம் — தன்னார்வப் பதிவு',venue:'Kandaswamy Kovil, Nallur',startsAt:'2026-10-11T08:00:00+05:30',endsAt:'2026-10-11T11:00:00+05:30',lat:9.674,lng:80.03,electorateId:null,agenda:[],rsvpCount:1,isMine:true,myStatus:'going'}];
 const browser=await chromium.launch({headless:true,channel:'msedge'});
 const results=[];
-const context=await browser.newContext({viewport:{width:375,height:812},deviceScaleFactor:1});
+const context=await browser.newContext({viewport:{width:375,height:812},deviceScaleFactor:1,serviceWorkers:'block'});
 await context.addInitScript(m=>{localStorage.setItem('npm.authed','1');localStorage.setItem('npm.member',JSON.stringify(m));localStorage.setItem('npm.name',m.fullName);if(!localStorage.getItem('npm.lang')) localStorage.setItem('npm.lang','en');},member);
 const page=await context.newPage();
 let errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -32,7 +33,7 @@ await page.route('**/api/**',async route=>{
 });
 await page.clock.install({time:new Date('2026-10-09T11:00:00Z')});
 for(const [name,route] of [['home','/'],['events','/events'],['card','/card'],['gallery','/gallery'],['profile','/profile']]) {
-  await page.goto('http://127.0.0.1:5175'+route);
+  await page.goto(base+route);
   await page.locator('nav.work-nav').waitFor();
   await page.getByRole('heading',{level:1}).waitFor();
   await page.waitForTimeout(1000);
@@ -43,19 +44,19 @@ for(const [name,route] of [['home','/'],['events','/events'],['card','/card'],['
   await page.screenshot({path:fileURLToPath(new URL(name+'.png',out))});
   results.push({screen:name,width:375,overflow});
 }
-await page.goto('http://127.0.0.1:5175/events');
+await page.goto(base+'/events');
 await page.getByRole('button',{name:/Going/}).click();
 await page.getByRole('alert').filter({hasText:'Your response could not be saved'}).waitFor();
 assert(await page.getByRole('button',{name:/Going/}).getAttribute('aria-pressed')==='true');
 results.push({test:'Failed RSVP preserves confirmed status',pass:true});
-await page.goto('http://127.0.0.1:5175/gallery');
+await page.goto(base+'/gallery');
 await page.locator('.civic-album-card').first().click();
 await page.getByRole('dialog').waitFor();
 assert(await page.getByRole('dialog').getByText('Sample imagery',{exact:true}).isVisible());
 await page.keyboard.press('Escape');
 await page.getByRole('dialog').waitFor({state:'detached'});
 results.push({test:'Gallery loads API photos and dialog closes with Escape',pass:true});
-await page.goto('http://127.0.0.1:5175/card');
+await page.goto(base+'/card');
 await page.getByRole('button',{name:'Add to Wallet',exact:true}).click();
 assert(await page.getByText(/Apple and Google Wallet support is not available/).isVisible());
 await page.getByRole('button',{name:'Share',exact:true}).click();
@@ -64,7 +65,7 @@ await page.keyboard.press('Escape');
 results.push({test:'Wallet availability and public-share disclosure are honest',pass:true});
 for(const lang of ['en','ta']) for(const width of [320,430]) for(const route of ['/','/events','/card','/gallery','/profile']) {
   await page.setViewportSize({width,height:812});
-  await page.goto('http://127.0.0.1:5175'+route);
+  await page.goto(base+route);
   await page.evaluate(l=>localStorage.setItem('npm.lang',l),lang);await page.reload();
   await page.getByRole('heading',{level:1}).waitFor();await page.waitForTimeout(500);
   await page.evaluate(()=>document.documentElement.style.fontSize='200%');
@@ -79,7 +80,7 @@ for(const lang of ['en','ta']) for(const width of [320,430]) for(const route of 
 }
 assert.deepEqual(errors,[]);
 member.fullName='Kalaiyarasan Sinnathamby Thiruchelvam';
-await page.goto('http://127.0.0.1:5175/card');
+await page.goto(base+'/card');
 await page.waitForTimeout(500);
 await page.evaluate(()=>document.documentElement.style.fontSize='200%');
 const passFits=await page.evaluate(()=>{

@@ -373,6 +373,13 @@
     "needName": "Please enter your name",
     "badImage": "Could not read that image — please try another photo",
     "phoneExists": "That mobile number is already registered to another member",
+    "badName": "Enter a name between 2 and 150 characters.",
+    "badDob": "Enter a valid birth date from 1900 to today.",
+    "badDivision": "Choose your GN division again before saving.",
+    "sessionExpired": "Your session has expired. Sign in again to save your changes.",
+    "imageTooLarge": "That photo is too large. Choose a smaller image and try again.",
+    "photoError": "Could not save your photo. Please try Save again.",
+    "photoPartial": "Your details were saved, but your photo could not be saved. Try Save again to upload it.",
     "error": "Could not save your changes. Please try again."
   },
   "fund": {

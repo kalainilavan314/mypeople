@@ -103,14 +103,22 @@ export function EditFormDiv2({
         accept="image/*"
         capture="user"
         style={{ display: 'none' }}
-        onChange={(e) => onFile(e.target.files?.[0])}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = '';
+          void onFile(file);
+        }}
       />
       <input
         ref={galleryRef}
         type="file"
         accept="image/*"
         style={{ display: 'none' }}
-        onChange={(e) => onFile(e.target.files?.[0])}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = '';
+          void onFile(file);
+        }}
       />
     </div>
   );

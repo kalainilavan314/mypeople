@@ -1,0 +1,163 @@
+.profile-page {
+  --profile-ink: #172439;
+  --profile-muted: #596a81;
+  --profile-accent: #0f2942;
+  --profile-group: #f3f5f7;
+  --profile-line: #dfe5ec;
+  min-height: 100%;
+  background: #ffffff;
+  color: var(--profile-ink);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+.profile-page * { box-sizing: border-box; }
+.profile-page .profile-account-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 8px 26px;
+  text-align: center;
+}
+.profile-page .profile-account-avatar {
+  flex: none;
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 50%;
+  background: #e3eaf2;
+  padding: 0;
+  cursor: pointer;
+}
+.profile-page .profile-account-avatar svg { width: 32px; height: 32px; }
+.profile-page .profile-account-identity h2 {
+  margin: 14px 0 4px;
+  max-width: 100%;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -.03em;
+  overflow-wrap: anywhere;
+}
+.profile-page .profile-account-code,
+.profile-page .profile-account-contact {
+  margin: 2px 0;
+  color: var(--profile-muted);
+  font-size: .8125rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.profile-page .profile-account-tier {
+  margin-top: 5px;
+  color: var(--profile-muted);
+  font-size: .75rem;
+  line-height: 1.6;
+}
+.profile-page .profile-account-status {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 100%;
+  margin-top: 10px;
+}
+.profile-page .profile-account-edit {
+  min-height: 44px;
+  max-width: 100%;
+  margin-top: 18px;
+  padding: 10px 24px;
+  border: 1px solid var(--profile-accent);
+  border-radius: 24px;
+  background: transparent;
+  color: var(--profile-accent);
+  font: 600 .8125rem/1.6 var(--font-ui);
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.profile-page .profile-account-groups { display: grid; gap: 16px; }
+.profile-page .profile-account-group {
+  min-width: 0;
+  padding: 14px 14px 8px;
+  border-radius: 18px;
+  background: var(--profile-group);
+}
+.profile-page .profile-account-group h2 {
+  margin: 0 0 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.6;
+  letter-spacing: -.02em;
+  overflow-wrap: anywhere;
+}
+.profile-page .profile-account-row {
+  width: 100%;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border: 0;
+  background: transparent;
+  color: var(--profile-ink);
+  text-align: left;
+  font: 400 .875rem/1.65 var(--font-ui);
+  cursor: pointer;
+}
+.profile-page .profile-account-row > svg { flex: none; }
+.profile-page .profile-account-row > svg:last-child { color: var(--profile-muted); }
+.profile-page .profile-account-label { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.profile-page .profile-account-value {
+  max-width: 37%;
+  color: var(--profile-muted);
+  font-size: .8125rem;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.profile-page .profile-account-switch {
+  flex: none;
+  display: flex;
+  width: 30px;
+  height: 18px;
+  padding: 2px;
+  border-radius: 12px;
+  background: #b2bcc9;
+}
+.profile-page .profile-account-switch > span { width: 14px; height: 14px; border-radius: 50%; background: #fff; }
+.profile-page .profile-account-theme[aria-checked='true'] .profile-account-switch {
+  background: var(--profile-accent);
+  justify-content: flex-end;
+}
+.profile-page .profile-account-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px;
+  margin-top: 18px;
+  border: 1px solid var(--profile-line);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--profile-accent);
+  font: 500 .875rem/1.6 var(--font-ui);
+  cursor: pointer;
+}
+.profile-page .profile-account-row:hover { color: var(--profile-accent); }
+.profile-page button:focus-visible {
+  outline: 2px solid var(--profile-accent);
+  outline-offset: 3px;
+}
+:root[data-theme='dark'] .profile-page {
+  --profile-ink: #e6edf5;
+  --profile-muted: #aab9cb;
+  --profile-accent: #bdd9f5;
+  --profile-group: #1c2837;
+  --profile-line: #344659;
+  background: #0d141e;
+}
+@media (min-width: 600px) {
+  .profile-page { padding-inline: 24px; }
+  .profile-page .profile-account-identity { padding-top: 18px; }
+}

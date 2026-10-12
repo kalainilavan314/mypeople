@@ -1,7 +1,5 @@
-import { authApi, type ServerMember } from '@/core/api/authApi';
+import { type ServerMember } from '@/core/api/authApi';
 import { DISTRICTS } from '@/core/api/divisions';
-import { keys } from '@/core/api/queries';
-import { compressImage } from '@/core/lib/image';
 import { EditFormDiv2 } from '@/features/profile/components/EditFormSections/EditFormDiv2';
 import { EditFormDiv3 } from '@/features/profile/components/EditFormSections/EditFormDiv3';
 import { EditFormPress } from '@/features/profile/components/EditFormSections/EditFormPress';
@@ -10,16 +8,14 @@ import { EditFormProfileSelectBtn2 } from '@/features/profile/components/EditFor
 import { DsSheet, GsSheet } from '@/shared/components/DivisionBottomSheet';
 import { FormError } from '@/shared/components/FormError';
 import { c } from '@/core/theme/tokens';
-import { meKey } from '@/shared/hooks/useMe';
-import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { fieldStyle, labelStyle } from '../profileFormStyles';
+import { useProfileSave } from './useProfileSave';
 export function EditForm({ me }: { me: ServerMember }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const qc = useQueryClient();
   const [name, setName] = useState(me.fullName);
   const [dob, setDob] = useState(me.dob ? String(me.dob).slice(0, 10) : '');
   const [gender, setGender] = useState<string | null>(me.gender);
@@ -29,10 +25,7 @@ export function EditForm({ me }: { me: ServerMember }) {
   const [gsCode, setGsCode] = useState<string | null>(me.gsCode);
   const [dsSheetOpen, setDsSheetOpen] = useState(false);
   const [gsSheetOpen, setGsSheetOpen] = useState(false);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const { avatarPreview, error, saving, saved, onFile, save } = useProfileSave(me);
 
   const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
@@ -43,49 +36,6 @@ export function EditForm({ me }: { me: ServerMember }) {
   );
   const ds = useMemo(() => district?.ds.find((x) => x.code === dsCode) ?? null, [district, dsCode]);
   const gs = useMemo(() => ds?.gn.find((g) => g.code === gsCode) ?? null, [ds, gsCode]);
-
-  const onFile = async (f: File | undefined | null) => {
-    setError(null);
-    if (!f) return;
-    try {
-      setAvatarPreview(await compressImage(f, 512, 0.85));
-    } catch {
-      setError(t('editProfile.badImage'));
-    }
-  };
-
-  const save = async () => {
-    setError(null);
-    if (!name.trim()) return setError(t('editProfile.needName'));
-    setSaving(true);
-    try {
-      if (avatarPreview) await authApi.uploadAvatar(avatarPreview);
-      await authApi.updateProfile({
-        name: name.trim(),
-        dob: dob || null,
-        gender: gender || null,
-        gsCode: gsCode || null,
-        phone: phone.trim() || null,
-      });
-
-      await qc.invalidateQueries({ queryKey: keys.member });
-
-      await qc.invalidateQueries({ queryKey: meKey });
-      setSaved(true);
-      setTimeout(() => navigate('/profile', { replace: true }), 900);
-    } catch (e) {
-      const code = e instanceof Error ? e.message : '';
-      setError(
-        code === 'phone_exists'
-          ? t('editProfile.phoneExists')
-          : navigator.onLine
-            ? t('editProfile.error')
-            : t('creport.offline'),
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
 
   return (
     <div className="fade-up" style={{ background: c.page, minHeight: '100%' }}>
@@ -193,7 +143,12 @@ export function EditForm({ me }: { me: ServerMember }) {
 
         <FormError message={error} />
 
-        <EditFormPress save={save} saving={saving} saved={saved} t={t} />
+        <EditFormPress
+          save={() => save({ name, dob: dob || null, gender: gender || null, gsCode: gsCode || null, phone: phone.trim() || null })}
+          saving={saving}
+          saved={saved}
+          t={t}
+        />
       </div>
     </div>
   );

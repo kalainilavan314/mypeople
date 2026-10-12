@@ -12,7 +12,8 @@ import { pool, poolConfig, memberById, memberByNicHash, memberByPhone } from './
 import { nicHash, signToken, verifyToken, tokenIsStale, otpCode, memberCode, referralCode, publicMember, verifyAvatarUrl, hashOtp, isNicFormat, signCardToken } from './lib.js';
 import { recomputeTier, tierProgress } from './tier.js';
 import { clientIp, checkOtpRequest, issueOtp, consumeOtp, checkLogin, recordLogin, sleep } from './throttle.js';
-import { putObject, getObject, deleteObject, mimeFor, backend as storageBackend } from './storage.js';
+import { putObject, getObject, mimeFor, backend as storageBackend } from './storage.js';
+import { replaceAvatar } from './avatar.js';
 
 const PROD = process.env.NODE_ENV === 'production';
 
@@ -635,7 +636,7 @@ app.patch('/api/me', wrap(async (req, res) => {
     districtCode = r.rows[0].district_code;
   }
 
-  const phone = b.phone !== undefined ? (String(b.phone).trim() || null) : undefined;
+  const phone = b.phone !== undefined ? (b.phone === null ? null : String(b.phone).trim() || null) : undefined;
   if (phone) {
     const dup = await pool.query(`SELECT id FROM npm.member WHERE phone=$1 AND id<>$2`, [phone, m.id]);
     if (dup.rows[0]) throw bad('phone_exists', 409);
@@ -658,16 +659,12 @@ app.patch('/api/me', wrap(async (req, res) => {
   res.json({ ok: true, member: await withProgress(full) });
 }));
 
-// Profile photo: base64 upload -> file on disk, old file removed.
+// Profile photos are replaced only after their new object is persisted.
 app.post('/api/me/avatar', wrap(async (req, res) => {
   const m = await requireMember(req);
-
   const { buf, ext } = decodeImage(req.body?.image, MAX_AVATAR_BYTES);
-  const fname = `${crypto.randomUUID()}.${ext}`;
-  await putObject('avatars', fname, buf);
-  if (m.avatar_path) await deleteObject('avatars', m.avatar_path);
-  await pool.query(`UPDATE npm.member SET avatar_path=$1 WHERE id=$2`, [fname, id]);
-  const full = await memberById(id);
+  await replaceAvatar(m.id, { buf, ext });
+  const full = await memberById(m.id);
   res.json({ ok: true, member: await withProgress(full) });
 }));
 

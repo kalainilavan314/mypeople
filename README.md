@@ -2,7 +2,7 @@
 
 Tamil-first membership and community PWA for the Northern Province People's Movement.
 
-The frontend uses Vite, React and TypeScript. The existing backend uses Express and PostgreSQL. Home follows the supplied MedTech reference: navy panels, pale blue activity surfaces, compact Inter/Noto Sans Tamil type and short feature captions. Its navigation colours are scoped to Home. Events, Card, Gallery, Profile and authentication retain their existing appearance and behaviour, including Card's `/card?qr=1` entry.
+The frontend uses Vite, React and TypeScript. The backend uses Express and PostgreSQL. Home follows the supplied MedTech reference with navy panels, pale blue activity surfaces, compact Inter/Noto Sans Tamil type, short captions and photos on all six service cards. Shared navigation uses a raised navy centre QR button, retaining Card's `/card?qr=1` entry. Profile uses a centred identity and pale gray grouped account menus. Events, the restored detailed Card, Gallery and authentication keep their existing content and behaviour.
 
 ## Run locally
 
@@ -51,15 +51,16 @@ Screens own feature orchestration; local components render feature sections. Sha
 
 Authentication, member profiles, card credentials, events/RSVP, community reports, donations and gallery retain their existing HTTP adapters. Surveys, ideas, skills, courses and some historical activity views retain the existing prototype adapter while their production APIs are planned. This refactor preserves those flows; it does not make prototype data server-backed.
 
-Gallery photos are licensed sample assets. Their credits and licences are recorded in `app/public/gallery/ATTRIBUTION.json` and exposed through the existing gallery API. Home labels its photo as illustrative.
+Gallery photos are licensed sample assets. Their credits and licences are recorded in `app/public/gallery/ATTRIBUTION.json` and exposed through the existing gallery API. Home labels its images as illustrative; generated photo prompts and originals are recorded in `docs/assets/`.
 
 ## Documentation and verification
 
 - [Architecture](docs/architecture.md)
 - [Home and navigation specification](docs/home-design.md)
+- [Profile layout and safe photo replacement](docs/profile-design.md)
 - [Migration commands and code handoff](docs/refactor/README.md)
 - [Deployment, backup and rollback](deployment/README.md)
 
-Local browser checks live in `scripts/verify-home.mjs`, `scripts/verify-civic.mjs` and `scripts/verify-membership-card.mjs`. They use fixture members and mocked API responses. The Home matrix covers English/Tamil at 320, 375, 390, 768 and 1280 pixels, search, long names, navigation alignment and clearance. Membership checks include viewer/QR behaviour, long Tamil text and PDF export.
+Browser checks use fixture members and mocked API responses and can target a production preview with `MY_PEOPLE_BASE_URL`. Home covers English/Tamil at 320, 375, 390, 768 and 1280 pixels, all six photo cards, search, long names, raised navigation alignment and clearance. Profile checks cover its layout, settings and upload/save/retry flow. `scripts/verify-avatar.mjs` checks authenticated image replacement and failure cleanup without production member data. Civic, feature-route and membership checks preserve the other flows, viewer/QR behaviour and long Tamil text.
 
 The initial directory moves are already applied. Do not rerun `docs/refactor/move-files.ps1` on this checkout. Deployment artifacts and the unused Flutter/React Native design folders were removed as requested. Backend migrations, runtime certificates, uploads and deployment scripts were preserved.

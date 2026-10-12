@@ -22,7 +22,12 @@ export function BottomNav() {
     if (!nav || !shell) return;
     const measure = () => {
       const bar = nav.getBoundingClientRect();
-      shell.style.setProperty('--member-nav-clearance', `${Math.ceil(bar.height + 16)}px`);
+      const icons = [...nav.querySelectorAll('.work-nav-icon')].map(
+        (icon) => icon.getBoundingClientRect().top,
+      );
+      const top = Math.min(bar.top, ...icons);
+      const clearance = shell.getBoundingClientRect().bottom - top + 16;
+      shell.style.setProperty('--member-nav-clearance', `${Math.ceil(clearance)}px`);
     };
     measure();
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure);
@@ -93,6 +98,7 @@ export function BottomNav() {
           <button
             key={tab.to}
             type="button"
+            className={tab.destination ? 'medtech-nav-card' : undefined}
             onClick={() => {
               navigate(tab.destination ?? tab.to);
               document.querySelector<HTMLElement>('.screen')?.scrollTo({ top: 0 });

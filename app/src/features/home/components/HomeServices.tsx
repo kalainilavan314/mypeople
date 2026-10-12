@@ -50,7 +50,15 @@ const more: Service[] = [
     captionEn: 'Local updates',
     captionTa: 'உள்ளூர் செய்திகள்',
   },
-  { to: '/ideas', icon: Lightbulb, en: 'My ideas', ta: 'எனது யோசனைகள்' },
+  {
+    to: '/ideas',
+    icon: Lightbulb,
+    en: 'My ideas',
+    ta: 'எனது யோசனைகள்',
+    image: '/member/home-ideas-v1.webp',
+    captionEn: 'Share a solution',
+    captionTa: 'ஒரு தீர்வைப் பகிருங்கள்',
+  },
   {
     to: '/courses',
     icon: BookOpen,
@@ -60,7 +68,15 @@ const more: Service[] = [
     captionEn: 'Learn and grow',
     captionTa: 'கற்றல் மற்றும் வளர்ச்சி',
   },
-  { to: '/referral', icon: UserPlus, en: 'Invite people', ta: 'மக்களை அழையுங்கள்' },
+  {
+    to: '/referral',
+    icon: UserPlus,
+    en: 'Invite people',
+    ta: 'மக்களை அழையுங்கள்',
+    image: '/member/community-hero-v1.webp',
+    captionEn: 'Grow our community',
+    captionTa: 'சமூகத்தை வளர்ப்போம்',
+  },
   {
     to: '/gallery',
     icon: Images,
@@ -68,7 +84,15 @@ const more: Service[] = [
     ta: 'படத்தொகுப்பு',
     image: '/gallery/fields.webp',
   },
-  { to: '/card', icon: CreditCard, en: 'Membership card', ta: 'உறுப்பினர் அட்டை' },
+  {
+    to: '/card',
+    icon: CreditCard,
+    en: 'Membership card',
+    ta: 'உறுப்பினர் அட்டை',
+    image: '/member/home-membership-v1.webp',
+    captionEn: 'Your member ID',
+    captionTa: 'உங்கள் உறுப்பினர் அடையாளம்',
+  },
 ];
 export function HomeServices({ search }: { search: string }) {
   const t = useWorkspaceText();

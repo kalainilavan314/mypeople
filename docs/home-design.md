@@ -1,6 +1,6 @@
 # Home reference design
 
-Home and its dashboard feature cards follow the user's uploaded three-screen MedTech reference. Changes are scoped to `features/home/`, `core/theme/home.css` and Home-specific shell selectors. Events, Card, Gallery, Profile, authentication and the shared navigation component were not edited for this redesign.
+Home and its dashboard feature cards follow the user's uploaded three-screen MedTech reference. The latest update adds images to all six requested Home service cards and replaces the shared navigation with the user's raised centre QR reference. Profile now follows the separately supplied centred account layout; see `profile-design.md`. Events, the restored detailed Card and Gallery content remain preserved, as do sign-in and registration.
 
 ## Visual system
 
@@ -37,16 +37,16 @@ Keep English descriptions to a few words. Tamil labels are shortened without rem
 
 Activity metrics use existing query results and actual member recruit counts. Unavailable data displays an em dash. No fabricated ratings, medical content, statistics, profile photos or filter controls are added.
 
-The community hero uses a generated illustrative photograph of neighbours working together, fitted to the previous card dimensions with a navy text overlay. Its prompt and original asset are recorded in `docs/assets/community-hero.md`. Local updates, courses and gallery use existing licensed Nallur/library/fields photographs. Those cards link to existing features and are identified as illustrative, with gallery credits available below.
+The community hero uses a generated illustrative photograph of neighbours working together, fitted to the previous card dimensions with a navy text overlay. Its prompt and original asset are recorded in `docs/assets/community-hero.md`. My area, courses and gallery use existing licensed Nallur/library/fields photographs. Ideas uses a new collaboration/notebook photograph; Invite people uses the community photo; Membership card uses a new blank navy-card product photograph without identity data. New images and prompts are recorded in `docs/assets/home-services.md`. All six cards keep their feature routes and short descriptions. These photos illustrate the services rather than document actual movement events.
 
 ## Scope and accessibility
 
-Home's active navigation icon uses a navy pill with a white glyph; its label is navy. The CSS requires `.member-shell--home`, so entering another tab restores that tab's existing styling. The shared five-destination navigation and `/card?qr=1` behaviour remain unchanged.
+The shared five-destination navigation uses a floating white bar, pale active-tab surface, navy labels and a 64px raised navy centre circle with a white scanning icon. The centre action retains `/card?qr=1`. All label baselines align; the four ordinary icons share a baseline. Navigation clearance measures the raised circle as well as the bar so scrolling content stays accessible above it.
 
 The existing measured navigation clearance and safe-area support remain in effect. Keyboard focus rings and accessible names are retained. Transitions last 180ms and respect reduced motion. Tamil quick actions wrap into fewer columns where needed; activity values remain aligned across different label lengths.
 
 ## Verification
 
-The production TypeScript/Vite/PWA build and `scripts/verify-home.mjs` validate English/Tamil layouts at 320, 375, 390, 768 and 1280 pixels, long names, search, icon/stat alignment, touch targets, footer clearance, photo loading and Card QR entry. The test confirms that Card navigation restores the existing colour outside Home.
+The production TypeScript/Vite/PWA build and `scripts/verify-home.mjs` validate English/Tamil layouts at 320, 375, 390, 768 and 1280 pixels, long names, search, ordinary-icon/label/stat alignment, raised centre styling, touch targets, footer clearance, all six photo cards and Card QR entry.
 
-`docs/refactor/home-protected-baseline.json` records source fingerprints for the excluded sections, authentication, root router and shared navigation styles/component. All 108 protected source files remained unchanged during this redesign. Screenshots use local fixture data and do not contact production.
+`docs/refactor/home-protected-baseline.json` records the earlier Home-only change's 108 protected source fingerprints. Profile and shared navigation are intentionally changed by the subsequent user request. Screenshots use fixture data; verification scripts can target a local production preview or deployed assets without updating member data.
