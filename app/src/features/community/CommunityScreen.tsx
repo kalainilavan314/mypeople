@@ -1,0 +1,188 @@
+import { useMember } from '@/core/api/queries';
+import { EXPLORE_TILES } from '@/features/community/Community.model';
+import { INVOLVED_TILES } from '@/features/community/Community.model';
+import { Icon } from '@/shared/components/Icon';
+import { useWorkspaceText } from '@/shared/components/MemberWorkspace';
+import { useMe } from '@/shared/hooks/useMe';
+import { Link } from 'react-router-dom';
+export function Community() {
+  const t = useWorkspaceText();
+  const lang: 'en' | 'ta' = t('en', 'ta') as 'en' | 'ta';
+  const me = useMe();
+  const memberQ = useMember();
+
+  const district = me?.districtName ?? memberQ.data?.electorateNameEn ?? 'Jaffna District';
+  const ds = me?.dsName ?? 'Chavakachcheri DS';
+  const gs = me?.gsName ?? 'Alaveddy GN';
+
+  return (
+    <main className="workspace" style={{ paddingBottom: 80 }}>
+      <header className="cm-head-redesign">
+        <div>
+          <div className="cm-eyebrow-row">
+            <Icon name="users" size={17} color="var(--accent)" strokeWidth={2.4} />
+            <span>My People / என் மக்கள்</span>
+          </div>
+          <h1 className="cm-title">{t('Community', 'Community')}</h1>
+          <p className="cm-sub-ta">நம் மக்கள். நம் பகுதி. நம் முன்னேற்றம்.</p>
+          <p className="cm-sub-en">
+            {t(
+              'Your local connections, opportunities and participation.',
+              'Your local connections, opportunities and participation.',
+            )}
+          </p>
+        </div>
+        <div className="cm-actions-group">
+          <Link className="cm-action-circle-btn" to="/events" aria-label={t('Search', 'தேடுங்கள்')}>
+            <Icon name="search" size={18} strokeWidth={2.2} />
+          </Link>
+          <Link
+            className="cm-action-circle-btn"
+            to="/area"
+            aria-label={t('Filters', 'வடிகட்டிகள்')}
+          >
+            <Icon name="sliders" size={18} strokeWidth={2.2} />
+          </Link>
+        </div>
+      </header>
+
+      <section className="cm-hero-banner">
+        <div className="cm-hero-banner-overlay" aria-hidden="true" />
+
+        <div className="cm-hero-left">
+          <div>
+            <div className="cm-hero-badge">
+              <span className="cm-hero-badge-icon">
+                <Icon name="shield" size={11} color="#ffffff" strokeWidth={2.5} />
+              </span>
+              <span>{t('MY AREA', 'MY AREA')}</span>
+            </div>
+            <h2 className="cm-hero-h2">
+              {t('Your district, DS and GN connection', 'Your district, DS and GN connection')}
+            </h2>
+            <p className="cm-hero-desc">
+              {t(
+                'Access local information, representatives, services and key updates for your area.',
+                'Access local information, representatives, services and key updates for your area.',
+              )}
+            </p>
+          </div>
+          <Link to="/area" className="cm-hero-cta">
+            <span>{t('View my area', 'View my area')}</span>
+            <Icon name="arrowRight" size={14} strokeWidth={2.5} />
+          </Link>
+        </div>
+
+        <div className="cm-hero-right">
+          <div className="cm-location-glass-box">
+            <div className="cm-location-item">
+              <Icon name="landmark" size={13} color="#ffffff" strokeWidth={2} />
+              <span>{district}</span>
+            </div>
+            <div className="cm-location-item">
+              <Icon name="user" size={13} color="#ffffff" strokeWidth={2} />
+              <span>{ds}</span>
+            </div>
+            <div className="cm-location-item">
+              <Icon name="mapPin" size={13} color="#ffffff" strokeWidth={2} />
+              <span>{gs}</span>
+            </div>
+          </div>
+
+          <div className="cm-hero-map-pin">
+            <Icon name="mapPin" size={18} color="var(--accent)" strokeWidth={2.5} />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div className="cm-section-header-row">
+          <div className="cm-section-title-wrap">
+            <span className="cm-section-bar-pill" aria-hidden="true" />
+            <h2 className="cm-section-heading">{t('Get Involved', 'Get Involved')}</h2>
+          </div>
+          <Link to="/events" className="cm-section-see-all">
+            <span>{t('See all', 'See all')}</span>
+            <Icon name="arrowRight" size={13} strokeWidth={2.4} />
+          </Link>
+        </div>
+        <p className="cm-section-subtext">
+          {t(
+            'Take part, make a difference in your community.',
+            'Take part, make a difference in your community.',
+          )}
+        </p>
+
+        <div className="cm-involved-grid">
+          {INVOLVED_TILES.map((tile) => {
+            const [title, detail] = tile[lang];
+            return (
+              <Link key={tile.to} to={tile.to} className="cm-involved-card">
+                <div
+                  className="cm-involved-card-glow"
+                  style={{ background: tile.glow }}
+                  aria-hidden="true"
+                />
+                <div className="cm-involved-top">
+                  <div
+                    className="cm-involved-icon-wrap"
+                    style={{ background: tile.bg, color: tile.color }}
+                  >
+                    <Icon name={tile.icon} size={20} strokeWidth={2} />
+                  </div>
+                  <div className="cm-involved-chevron">
+                    <Icon name="chevron" size={13} color="#94A3B8" strokeWidth={2.4} />
+                  </div>
+                </div>
+                <div className="cm-involved-content">
+                  <h3 className="cm-involved-title">{title}</h3>
+                  <p className="cm-involved-sub">{detail}</p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section>
+        <div className="cm-section-header-row">
+          <div className="cm-section-title-wrap">
+            <Icon name="book" size={18} color="var(--accent)" strokeWidth={2.2} />
+            <h2 className="cm-section-heading">{t('Explore & Learn', 'Explore & Learn')}</h2>
+          </div>
+          <Link to="/ideas" className="cm-section-see-all">
+            <span>{t('See all', 'See all')}</span>
+            <Icon name="arrowRight" size={13} strokeWidth={2.4} />
+          </Link>
+        </div>
+        <p className="cm-section-subtext">
+          {t(
+            'Ideas, surveys and learning for a stronger community.',
+            'Ideas, surveys and learning for a stronger community.',
+          )}
+        </p>
+
+        <div className="cm-explore-list">
+          {EXPLORE_TILES.map((tile) => {
+            const [title, detail] = tile[lang];
+            return (
+              <Link key={tile.to} to={tile.to} className="cm-explore-card">
+                <div
+                  className="cm-explore-icon-wrap"
+                  style={{ background: tile.bg, color: tile.color }}
+                >
+                  <Icon name={tile.icon} size={20} strokeWidth={2} />
+                </div>
+                <div className="cm-explore-content">
+                  <strong className="cm-explore-title">{title}</strong>
+                  <span className="cm-explore-sub">{detail}</span>
+                </div>
+                <Icon name="chevron" size={16} color="#94A3B8" strokeWidth={2} />
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+    </main>
+  );
+}

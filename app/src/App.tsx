@@ -1,240 +1,37 @@
-import { useCallback, useEffect, lazy, Suspense } from 'react';
-import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { savedLang } from './i18n';
-import { BottomNav } from './components/BottomNav';
-import { useOnline } from './hooks/useOnline';
-import { useAuth } from './state/auth';
-import { useMember } from './data/queries';
-import { api } from './data';
-import { c, font } from './theme/tokens';
-import { RouteSkeleton } from './components/ui/loaders-skeleton';
-
-// Eager screens: the first paint after auth (Home) and the pre-auth entry
-// points. Everything else is route-split (below) so the initial bundle stays
-// small — Home no longer pulls Gallery, the Leaflet map or PartyFund on load.
-import { Home } from './screens/Home';
-import { Welcome, hasSeenWelcome } from './screens/onboarding/Welcome';
-import { Login } from './screens/auth/Login';
-
-// Route-split screens. Named exports are adapted to the default export React
-// .lazy expects. Each becomes its own chunk, fetched on navigation (and PWA-
-// precached, so subsequent visits are instant).
-const named = <M, K extends keyof M>(p: Promise<M>, k: K) => p.then((m) => ({ default: m[k] as React.ComponentType }));
-const Community = lazy(() => named(import('./screens/Community'), 'Community'));
-const MyArea = lazy(() => named(import('./screens/MyArea'), 'MyArea'));
-const Card = lazy(() => named(import('./screens/Card'), 'Card'));
-const Events = lazy(() => named(import('./screens/Events'), 'Events'));
-const Reports = lazy(() => named(import('./screens/Reports'), 'Reports'));
-const Gallery = lazy(() => named(import('./screens/Gallery'), 'Gallery'));
-const Profile = lazy(() => named(import('./screens/Profile'), 'Profile'));
-const Announcement = lazy(() => named(import('./screens/Announcement'), 'Announcement'));
-const Survey = lazy(() => named(import('./screens/Survey'), 'Survey'));
-const EventDetail = lazy(() => named(import('./screens/EventDetail'), 'EventDetail'));
-const Referral = lazy(() => named(import('./screens/Referral'), 'Referral'));
-const Milestones = lazy(() => named(import('./screens/Milestones'), 'Milestones'));
-const Notifications = lazy(() => named(import('./screens/Notifications'), 'Notifications'));
-const Courses = lazy(() => named(import('./screens/Courses'), 'Courses'));
-const Ideas = lazy(() => named(import('./screens/Ideas'), 'Ideas'));
-const Skills = lazy(() => named(import('./screens/Skills'), 'Skills'));
-const PartyFund = lazy(() => named(import('./screens/PartyFund'), 'PartyFund'));
-const EditProfile = lazy(() => named(import('./screens/EditProfile'), 'EditProfile'));
-const Privacy = lazy(() => named(import('./screens/Privacy'), 'Privacy'));
-const Language = lazy(() => named(import('./screens/Language'), 'Language'));
-const Join = lazy(() => named(import('./screens/onboarding/Join'), 'Join'));
-const Otp = lazy(() => named(import('./screens/onboarding/Otp'), 'Otp'));
-const Nic = lazy(() => named(import('./screens/onboarding/Nic'), 'Nic'));
-const Pending = lazy(() => named(import('./screens/onboarding/Pending'), 'Pending'));
-const SignUp = lazy(() => named(import('./screens/auth/SignUp'), 'SignUp'));
-const Forgot = lazy(() => named(import('./screens/auth/Forgot'), 'Forgot'));
-const ProfileSetup = lazy(() => named(import('./screens/auth/ProfileSetup'), 'ProfileSetup'));
-const Questions = lazy(() => named(import('./screens/auth/Questions'), 'Questions'));
-
-// Warm the common member route chunks during idle time, spaced out so it never
-// competes with the current screen. After this runs, tapping a tab or a Home
-// tile opens instantly instead of downloading a chunk on first click.
-function prefetchMemberRoutes() {
-  const load = [
-    () => import('./screens/Card'), () => import('./screens/Events'), () => import('./screens/Gallery'),
-    () => import('./screens/Profile'), () => import('./screens/Reports'), () => import('./screens/Community'),
-    () => import('./screens/MyArea'), () => import('./screens/Skills'), () => import('./screens/PartyFund'),
-    () => import('./screens/EditProfile'), () => import('./screens/Referral'), () => import('./screens/Milestones'),
-    () => import('./screens/Notifications'), () => import('./screens/Survey'), () => import('./screens/Ideas'),
-    () => import('./screens/Courses'), () => import('./screens/Language'), () => import('./screens/Privacy'),
-    () => import('./screens/EventDetail'),
-  ];
-  load.forEach((fn, i) => setTimeout(() => { void fn().catch(() => {}); }, i * 140));
-}
-
-/** Smart route-aware shimmering skeleton fallback while a route chunk loads. */
-function ScreenFallback() {
-  const { pathname } = useLocation();
-  return <RouteSkeleton pathname={pathname} />;
-}
-
-function OfflineBanner() {
-  const { t } = useTranslation();
-  return (
-    <div
-      role="status"
-      style={{
-        flex: 'none',
-        background: c.warningBg,
-        color: c.warning,
-        font: `600 12px/1.4 ${font.ui}`,
-        textAlign: 'center',
-        padding: '6px 12px',
-      }}
-    >
-      {t('common.offline')} · {t('reports.willSync')}
-    </div>
-  );
-}
-
-/** Main app layout: language sync, outbox flush on reconnect, offline banner, tabs. */
-function TabLayout() {
-  const { data: member } = useMember();
-  const { i18n } = useTranslation();
-
-  // Drive UI language from the member's stored preference — but only when the
-  // user has not made an explicit choice. Otherwise logging in would snap the UI
-  // back to the account's language and undo the toggle they just used.
-  useEffect(() => {
-    if (savedLang()) return;
-    if (member && member.language !== i18n.language) {
-      void i18n.changeLanguage(member.language);
-    }
-  }, [member, i18n]);
-
-  const flush = useCallback(() => {
-    void api.flushOutbox();
-  }, []);
-  const online = useOnline(flush);
-
-  // Attempt a flush on first mount too (queued items from a previous session).
-  useEffect(() => {
-    if (navigator.onLine) void api.flushOutbox();
-  }, []);
-
-  // Prefetch member route chunks while the browser is idle, so navigation feels
-  // instant rather than downloading a chunk on the first tap of each button.
-  useEffect(() => {
-    let idleId: number | undefined;
-    let timeoutId: ReturnType<typeof setTimeout> | undefined;
-    if (typeof window.requestIdleCallback === 'function') {
-      idleId = window.requestIdleCallback(prefetchMemberRoutes, { timeout: 2500 });
-    } else {
-      timeoutId = setTimeout(prefetchMemberRoutes, 1200);
-    }
-    return () => {
-      if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') window.cancelIdleCallback(idleId);
-      if (timeoutId !== undefined) clearTimeout(timeoutId);
-    };
-  }, []);
-
-  return (
-    <div className="app-shell member-shell">
-      {!online && <OfflineBanner />}
-      <div className="screen">
-        <Suspense fallback={<ScreenFallback />}>
-          <Outlet />
-        </Suspense>
-      </div>
-      <BottomNav />
-    </div>
-  );
-}
-
-/** Onboarding layout: no tabs. */
-function OnboardingLayout() {
-  return (
-    <div className="app-shell">
-      <div className="screen">
-        <Suspense fallback={<ScreenFallback />}>
-          <Outlet />
-        </Suspense>
-      </div>
-    </div>
-  );
-}
-
-/**
- * Gate for the tabbed app. A first-time visitor sees the NorthNadu welcome screen;
- * after that, unauthenticated visitors go straight to login.
- *
- * This decision must live here rather than in an App-level effect: this component
- * renders a redirect synchronously on the very first paint, so any effect-based
- * branch would always lose the race and every visitor would land on /login.
- */
-function RequireAuth() {
-  const { authed } = useAuth();
-  if (!authed) return <Navigate to={hasSeenWelcome() ? '/login' : '/welcome'} replace />;
-  return <TabLayout />;
-}
-
-/** Guard for /welcome and /login: a member with a live session who lands
- * here (stale bookmark, back button, link from an old chat) goes straight
- * to the app instead of being shown the splash or login form again. */
-function RedirectIfAuthed() {
-  const { authed } = useAuth();
-  if (authed) return <Navigate to="/" replace />;
-  return <Outlet />;
-}
-
-export function App() {
-  return (
-    <Routes>
-      {/* First launch — a live session skips straight past this to the app */}
-      <Route element={<RedirectIfAuthed />}>
-        <Route element={<OnboardingLayout />}>
-          <Route path="/welcome" element={<Welcome />} />
-        </Route>
-
-        {/* Auth (NIC + password — no mobile number, no OTP) */}
-        <Route element={<OnboardingLayout />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/signup/profile" element={<ProfileSetup />} />
-          <Route path="/signup/questions" element={<Questions />} />
-          <Route path="/forgot" element={<Forgot />} />
-        </Route>
-      </Route>
-
-      {/* Legacy phone-OTP onboarding — superseded by the NIC flow above, kept
-          mounted so any old bookmark/deep link still resolves. */}
-      <Route element={<OnboardingLayout />}>
-        <Route path="/onboarding/join" element={<Join />} />
-        <Route path="/onboarding/otp" element={<Otp />} />
-        <Route path="/onboarding/nic" element={<Nic />} />
-        <Route path="/onboarding/pending" element={<Pending />} />
-      </Route>
-
-      {/* Main app */}
-      <Route element={<RequireAuth />}>
-        <Route path="/" element={<Home />} />
-<Route path="/community" element={<Community />} />
-<Route path="/area" element={<MyArea />} />
-        <Route path="/announcement/:id" element={<Announcement />} />
-        <Route path="/survey" element={<Survey />} />
-        <Route path="/events" element={<Events />} />
-        <Route path="/events/:id" element={<EventDetail />} />
-        <Route path="/card" element={<Card />} />
-        <Route path="/milestones" element={<Milestones />} />
-        <Route path="/referral" element={<Referral />} />
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/gallery" element={<Gallery />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/profile/edit" element={<EditProfile />} />
-        <Route path="/courses" element={<Courses />} />
-        <Route path="/ideas" element={<Ideas />} />
-        <Route path="/skills" element={<Skills />} />
-        <Route path="/fund" element={<PartyFund />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/language" element={<Language />} />
-      </Route>
-
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  );
-}
+export { App } from '@/App/App';
+export { OfflineBanner } from '@/App/OfflineBanner';
+export { OnboardingLayout } from '@/App/OnboardingLayout';
+export { RedirectIfAuthed } from '@/App/RedirectIfAuthed';
+export { RequireAuth } from '@/App/RequireAuth';
+export { ScreenFallback } from '@/App/ScreenFallback';
+export { TabLayout } from '@/App/TabLayout';
+export { Announcement } from '@/core/router/screens';
+export { Card } from '@/core/router/screens';
+export { Community } from '@/core/router/screens';
+export { Courses } from '@/core/router/screens';
+export { EditProfile } from '@/core/router/screens';
+export { EventDetail } from '@/core/router/screens';
+export { Events } from '@/core/router/screens';
+export { Forgot } from '@/core/router/screens';
+export { Gallery } from '@/core/router/screens';
+export { Ideas } from '@/core/router/screens';
+export { Join } from '@/core/router/screens';
+export { Language } from '@/core/router/screens';
+export { Milestones } from '@/core/router/screens';
+export { MyArea } from '@/core/router/screens';
+export { named } from '@/core/router/screens';
+export { Nic } from '@/core/router/screens';
+export { Notifications } from '@/core/router/screens';
+export { Otp } from '@/core/router/screens';
+export { PartyFund } from '@/core/router/screens';
+export { Pending } from '@/core/router/screens';
+export { prefetchMemberRoutes } from '@/core/router/screens';
+export { Privacy } from '@/core/router/screens';
+export { Profile } from '@/core/router/screens';
+export { ProfileSetup } from '@/core/router/screens';
+export { Questions } from '@/core/router/screens';
+export { Referral } from '@/core/router/screens';
+export { Reports } from '@/core/router/screens';
+export { SignUp } from '@/core/router/screens';
+export { Skills } from '@/core/router/screens';
+export { Survey } from '@/core/router/screens';

@@ -1,0 +1,13 @@
+export { announcements } from '@/core/api/prototype/seedModel/announcements';
+export { badges } from '@/core/api/prototype/seedModel/badges';
+export { courses } from '@/core/api/prototype/seedModel/courses';
+export { currentMember } from '@/core/api/prototype/seedModel/currentMember';
+export { electorates } from '@/core/api/prototype/seedModel/electorates';
+export { events } from '@/core/api/prototype/seedModel/events';
+export { ideas } from '@/core/api/prototype/seedModel/ideas';
+export { notifications } from '@/core/api/prototype/seedModel/notifications';
+export { referredList } from '@/core/api/prototype/seedModel/referredList';
+export { reports } from '@/core/api/prototype/seedModel/reports';
+export { skills } from '@/core/api/prototype/seedModel/skills';
+export { survey } from '@/core/api/prototype/seedModel/survey';
+export { wards } from '@/core/api/prototype/seedModel/wards';

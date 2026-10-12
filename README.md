@@ -1,101 +1,65 @@
-# Northern Province People's Movement — Membership App
+# My People / என் மக்கள்
 
-வடமாகாண மக்கள் இயக்கம் · Jaffna, Sri Lanka
-Tamil-first membership platform for budget Android phones.
+Tamil-first membership and community PWA for the Northern Province People's Movement.
 
-The current member UI follows the NorthUnity home layout with a navy/cyan theme
-and raised MedTech-style QR navigation. See `design/medtech-navigation-specification.md`
-and `design/northunity-ui-specification.md`; the earlier screen specifications and
-React, Flutter and React Native component trees are retained in `design/`.
-The five tabs are Home / Events / Card / Gallery / Profile. The public gallery API
-reads `server/src/gallery-albums.json` and licensed sample WebP assets. Login and
-registration retain their existing theme. Deployment instructions are in `deployment/README.md`.
+The frontend uses Vite, React and TypeScript. The existing backend uses Express and PostgreSQL. Home follows the supplied MedTech reference: navy panels, pale blue activity surfaces, compact Inter/Noto Sans Tamil type and short feature captions. Its navigation colours are scoped to Home. Events, Card, Gallery, Profile and authentication retain their existing appearance and behaviour, including Card's `/card?qr=1` entry.
 
-This repo now holds two things:
+## Run locally
 
-| Folder / file | What it is |
-|---|---|
-| **`app/`** | **The production app.** Installable React + TypeScript PWA (Vite), bilingual, with live APIs and retained mock adapters for planned features. |
-| **`server/`** | Express API, Postgres migrations, authentication, member profiles, events/RSVP, reports, donations, and gallery metadata. |
-| `PROJECT.md` | Feature scope + the canonical Postgres data model. |
-| `NPM App Prototype.dc.html` | Original design-tool **prototype** — the design reference. |
-| `NPM Movement App.dc.html` | 5 core screens side-by-side (design reference). |
-| `android-frame.jsx`, `support.js` | Prototype runtime only. Not used by `app/`. |
-
-## Run the app
-
-> Requires **Node.js 18+** (`node -v`). If you don't have it: `winget install OpenJS.NodeJS.LTS`, then reopen your terminal.
-
-```bash
-cd app
-npm install
-npm run dev
+```powershell
+npm --prefix app install
+npm --prefix app run dev
 ```
 
-Open the printed URL (default `http://localhost:5173`). Run the backend on port 8787
-for authentication and live content; follow `server/README.md` for configuration and
-migrations. Surveys, ideas, courses, skills, and some activity views retain their
-existing mock adapters while their production APIs are planned.
+Vite prints its local URL. Run the backend using the configuration and migrations in [server/README.md](server/README.md). Authentication and live content require that backend.
 
-Other scripts: `npm run build` (production bundle + service worker), `npm run preview`
-(serve the build), `npm run typecheck`.
-
-## Architecture
-
-```
-app/src/
-  main.tsx / App.tsx      React Query + Router + bottom-tab shell, language sync, outbox flush
-  theme/tokens.ts         shared CSS-variable references, fonts and control sizing
-  styles/                 base tokens/global styles, civic components and scoped navy member theme
-  i18n/                   i18next; ta.json + en.json string sets, si.json stub (fallback → ta)
-  data/
-    types.ts              TypeScript types mirroring the Postgres schema (server/migrations)
-    api.ts                ApiClient interface — the single contract screens depend on
-    index.ts              composite of mockClient and backend-backed httpContent methods
-    mock/                 in-memory adapter + seed data (lifted from the prototype)
-    queue.ts              IndexedDB outbox, client_uuid idempotency (offline-first reports)
-    queries.ts            React Query hooks (queries + mutations)
-  components/             Icon, PalmyraMark, ui.tsx primitives, BottomNav, ScreenHeader
-  screens/                one file per screen; onboarding/ holds Join/OTP/NIC/Pending
-  lib/qr.tsx              real scannable QR (membership card + rotating check-in token)
+```powershell
+npm --prefix app run typecheck
+npm --prefix app run build
+npm --prefix app run preview
 ```
 
-### Design fidelity
-The signed-in theme uses navy `#07172D`, cyan `#57D9FF`, and self-hosted Outfit with
-Noto Sans Tamil fallback. The NorthUnity photo-led layout preserves all existing
-feature links. The MedTech navigation has a raised centre control that opens the
-server-issued check-in QR. The Palmyra emblem remains `components/PalmyraMark`.
+## Project layout
 
-### Data flow / swapping in the real backend
-Screens call **hooks** (`data/queries.ts`) → the **`api`** singleton (`data/index.ts`) →
-which combines mock and HTTP methods. Authentication/profile/QR use `authApi`,
-events and RSVP use `httpContent`, and the gallery uses its public read-only API.
-Remaining planned features can replace individual mock methods with API-backed
-implementations while preserving their hooks and screens.
+```text
+app/
+  public/                 logos, fonts/images, licensed gallery assets and PWA metadata
+  src/
+    main.tsx              providers, language, fonts and viewport setup
+    App.tsx               route entry
+    core/
+      theme/              CSS and TypeScript design tokens
+      i18n/               English/Tamil resources and retained Sinhala resource
+      lib/                QR, images, NIC and viewport helpers
+      api/                HTTP contracts/adapters, models, queries and outbox
+    shared/
+      components/         navigation, primitives, icons and shared overlays
+      hooks/              authentication, member, theme and network hooks
+    features/
+      home/ events/ card/ gallery/ profile/ auth/
+      community/ reports/ surveys/ ideas/ learning/ fundraising/ referrals/
+server/                   existing API, database migrations and gallery metadata
+docs/                     architecture, Home specification and refactor handoff
+scripts/                  local browser checks and refactor tooling
+deployment/               existing deployment, backup and rollback tooling
+design/                   retained design history and fixture QA outputs
+```
 
-### Offline-first
-`data/queue.ts` is an IndexedDB outbox. `submitReport` enqueues with a client-generated
-`client_uuid`, optimistically shows the report with a **"saved — will sync"** pill, and flushes
-when back online (`App.tsx` listens for `online` and calls `api.flushOutbox()`). The server
-upserts on `client_uuid`, so a replayed queue can't duplicate. Same pattern applies to RSVPs
-and survey votes.
+Screens own feature orchestration; local components render feature sections. Shared components and core services remain independent of screen entry points. Vite and TypeScript resolve `@/` to `app/src/`. Theme CSS loads through a single entry point preserving its original cascade.
 
-## Adding / finishing a screen (the pattern)
+## Feature status
 
-Every screen follows the same shape, so the remaining detail screens are mechanical:
+Authentication, member profiles, card credentials, events/RSVP, community reports, donations and gallery retain their existing HTTP adapters. Surveys, ideas, skills, courses and some historical activity views retain the existing prototype adapter while their production APIs are planned. This refactor preserves those flows; it does not make prototype data server-backed.
 
-1. Add a route in `app/src/App.tsx`.
-2. Read data with a hook from `data/queries.ts` (add one if needed; it just calls `api`).
-3. Wrap async data in `<QueryBoundary>` for loading/error states.
-4. Compose from `components/ui.tsx` primitives (`Button`, `Chip`, `Card`, `Toggle`,
-   `StatusPill`, `TierBadge`, `LabelPair`, `EmptyState`) + `Icon` + tokens from `theme/tokens`.
-5. Bilingual UI strings via `useTranslation()`; bilingual **content** via `pick(lang, ta, en)`.
+Gallery photos are licensed sample assets. Their credits and licences are recorded in `app/public/gallery/ATTRIBUTION.json` and exposed through the existing gallery API. Home labels its photo as illustrative.
 
-## Status
+## Documentation and verification
 
-Ported end-to-end: onboarding (Join → OTP → NIC → Pending), Home, Card, Events (list + map),
-Reports + composer, Profile, Announcement, Survey, Event detail, Report detail, Referral,
-Milestones, Notifications, Courses, Ideas, Skills, Privacy, Language.
+- [Architecture](docs/architecture.md)
+- [Home and navigation specification](docs/home-design.md)
+- [Migration commands and code handoff](docs/refactor/README.md)
+- [Deployment, backup and rollback](deployment/README.md)
 
-Not yet done (next passes): real SMS/OTP + NIC review backend, ward-coordinator app, push
-delivery, live Postgres deployment, automated tests, full Sinhala translation.
+Local browser checks live in `scripts/verify-home.mjs`, `scripts/verify-civic.mjs` and `scripts/verify-membership-card.mjs`. They use fixture members and mocked API responses. The Home matrix covers English/Tamil at 320, 375, 390, 768 and 1280 pixels, search, long names, navigation alignment and clearance. Membership checks include viewer/QR behaviour, long Tamil text and PDF export.
+
+The initial directory moves are already applied. Do not rerun `docs/refactor/move-files.ps1` on this checkout. Deployment artifacts and the unused Flutter/React Native design folders were removed as requested. Backend migrations, runtime certificates, uploads and deployment scripts were preserved.

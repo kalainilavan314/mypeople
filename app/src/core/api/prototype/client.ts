@@ -1,0 +1,11 @@
+export { applyRsvpCounts } from '@/core/api/prototype/clientModel/applyRsvpCounts';
+export { categoryTitle } from '@/core/api/prototype/clientModel/categoryTitle';
+export { clone } from '@/core/api/prototype/clientModel/clone';
+export { currentRsvp } from '@/core/api/prototype/clientModel/currentRsvp';
+export { delay } from '@/core/api/prototype/clientModel/delay';
+export { initials } from '@/core/api/prototype/clientModel/initials';
+export { isSeedGoing } from '@/core/api/prototype/clientModel/isSeedGoing';
+export { mockClient } from '@/core/api/prototype/clientModel/mockClient';
+export { state } from '@/core/api/prototype/clientModel/state';
+export { votedOption } from '@/core/api/prototype/clientModel/votedOption';
+export { withVotes } from '@/core/api/prototype/clientModel/withVotes';

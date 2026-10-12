@@ -1,0 +1,144 @@
+
+        .question-card-container {
+          position: relative;
+          width: 100%;
+          max-width: 440px;
+          min-height: min(100vh - 32px, 860px);
+          background: #FFFFFF;
+          border-radius: 36px;
+          overflow: hidden;
+          box-shadow: 0 16px 48px rgba(16, 45, 85, 0.12), 0 2px 10px rgba(16, 45, 85, 0.04);
+          display: flex;
+          flex-direction: column;
+        }
+        .question-bottom-art {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          width: 100%;
+          height: 240px;
+          object-fit: cover;
+          object-position: center bottom;
+          opacity: 0.85;
+          pointer-events: none;
+          z-index: 0;
+          mask-image: linear-gradient(to top, black 40%, transparent 100%);
+          -webkit-mask-image: linear-gradient(to top, black 40%, transparent 100%);
+        }
+        .question-content {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          padding: 18px 22px calc(24px + var(--safe-bottom, 0px));
+        }
+        .question-stacked-card {
+          width: 100%;
+          min-height: 72px;
+          border-radius: 18px;
+          border: 1.5px solid #E2E8F0;
+          background: #FFFFFF;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 14px 18px;
+          transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 2px 8px rgba(20, 38, 61, 0.03);
+          text-align: left;
+        }
+        .question-stacked-card:hover {
+          border-color: #CBD5E1;
+          box-shadow: 0 4px 12px rgba(20, 38, 61, 0.06);
+        }
+        .question-stacked-card.active {
+          border: 2px solid #14263D;
+          background: #F8FAFC;
+          box-shadow: 0 6px 20px rgba(20, 38, 61, 0.12);
+          transform: translateY(-1px);
+        }
+        .question-stacked-card:active {
+          transform: scale(0.985);
+        }
+        .question-key-chip {
+          width: 34px;
+          height: 34px;
+          border-radius: 10px;
+          background: #F1F5F9;
+          border: 1.5px solid #E2E8F0;
+          color: #475569;
+          font: 700 13px/34px var(--font-ui, sans-serif);
+          display: grid;
+          place-items: center;
+          text-align: center;
+          transition: all 160ms ease;
+          flex-shrink: 0;
+        }
+        .question-key-chip.active {
+          background: #14263D;
+          border-color: #14263D;
+          color: #FFFFFF;
+        }
+        .question-check-circle {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          border: 1.5px solid #CBD5E1;
+          display: grid;
+          place-items: center;
+          transition: all 160ms ease;
+          flex-shrink: 0;
+        }
+        .question-check-circle.active {
+          border-color: #14263D;
+          background: #14263D;
+        }
+        .question-blood-card {
+          height: 58px;
+          border-radius: 16px;
+          border: 1.5px solid #E2E8F0;
+          background: #FFFFFF;
+          color: #14263D;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 14px;
+          transition: all 140ms ease;
+          box-shadow: 0 2px 6px rgba(20, 38, 61, 0.03);
+        }
+        .question-blood-card.active {
+          border: 2px solid #14263D;
+          background: #14263D;
+          color: #FFFFFF;
+          box-shadow: 0 6px 18px rgba(20, 38, 61, 0.22);
+          transform: translateY(-1px);
+        }
+        .question-cta-btn {
+          flex: 1;
+          height: 52px;
+          border-radius: 999px;
+          border: none;
+          background: #14263D;
+          color: #ffffff;
+          font: 800 16px/1 var(--font-ta, 'Noto Sans Tamil', sans-serif);
+          letter-spacing: normal;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          cursor: pointer;
+          box-shadow: 0 10px 24px -4px rgba(20, 38, 61, 0.42);
+          transition: transform 120ms ease, box-shadow 120ms ease;
+        }
+        .question-cta-btn:active {
+          transform: scale(0.98);
+        }
+        .question-cta-btn:disabled {
+          background: #94A3B8;
+          opacity: 0.65;
+          cursor: not-allowed;
+          box-shadow: none;
+        }

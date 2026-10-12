@@ -1,0 +1,347 @@
+{
+  "moves": [
+    {
+      "from": "app/src/App.tsx",
+      "to": "app/src/App.tsx"
+    },
+    {
+      "from": "app/src/components/BottomNav.tsx",
+      "to": "app/src/shared/components/BottomNav.tsx"
+    },
+    {
+      "from": "app/src/components/Civic.tsx",
+      "to": "app/src/shared/components/Civic.tsx"
+    },
+    {
+      "from": "app/src/components/DivisionBottomSheet.tsx",
+      "to": "app/src/shared/components/DivisionBottomSheet.tsx"
+    },
+    {
+      "from": "app/src/components/Icon.tsx",
+      "to": "app/src/shared/components/Icon.tsx"
+    },
+    {
+      "from": "app/src/components/Logo.tsx",
+      "to": "app/src/shared/components/Logo.tsx"
+    },
+    {
+      "from": "app/src/components/MembershipCredential.tsx",
+      "to": "app/src/features/card/components/MembershipCredential.tsx"
+    },
+    {
+      "from": "app/src/components/MemberWorkspace.tsx",
+      "to": "app/src/shared/components/MemberWorkspace.tsx"
+    },
+    {
+      "from": "app/src/components/nn.tsx",
+      "to": "app/src/shared/components/nn.tsx"
+    },
+    {
+      "from": "app/src/components/PalmyraMark.tsx",
+      "to": "app/src/features/card/components/PalmyraMark.tsx"
+    },
+    {
+      "from": "app/src/components/ScreenHeader.tsx",
+      "to": "app/src/shared/components/ScreenHeader.tsx"
+    },
+    {
+      "from": "app/src/components/ui/loaders-skeleton.tsx",
+      "to": "app/src/shared/components/ui/loaders-skeleton.tsx"
+    },
+    {
+      "from": "app/src/components/ui.tsx",
+      "to": "app/src/shared/components/ui.tsx"
+    },
+    {
+      "from": "app/src/components/UpdatePrompt.tsx",
+      "to": "app/src/shared/components/UpdatePrompt.tsx"
+    },
+    {
+      "from": "app/src/data/api.ts",
+      "to": "app/src/core/api/api.ts"
+    },
+    {
+      "from": "app/src/data/authApi.ts",
+      "to": "app/src/core/api/authApi.ts"
+    },
+    {
+      "from": "app/src/data/divisions.ts",
+      "to": "app/src/core/api/divisions.ts"
+    },
+    {
+      "from": "app/src/data/gallery.ts",
+      "to": "app/src/core/api/gallery.ts"
+    },
+    {
+      "from": "app/src/data/httpContent.ts",
+      "to": "app/src/core/api/httpContent.ts"
+    },
+    {
+      "from": "app/src/data/index.ts",
+      "to": "app/src/core/api/index.ts"
+    },
+    {
+      "from": "app/src/data/mock/client.ts",
+      "to": "app/src/core/api/prototype/client.ts"
+    },
+    {
+      "from": "app/src/data/mock/seed.ts",
+      "to": "app/src/core/api/prototype/seed.ts"
+    },
+    {
+      "from": "app/src/data/np-divisions.json",
+      "to": "app/src/core/api/np-divisions.json"
+    },
+    {
+      "from": "app/src/data/queries.ts",
+      "to": "app/src/core/api/queries.ts"
+    },
+    {
+      "from": "app/src/data/queue.ts",
+      "to": "app/src/core/api/queue.ts"
+    },
+    {
+      "from": "app/src/data/types.ts",
+      "to": "app/src/core/api/types.ts"
+    },
+    {
+      "from": "app/src/hooks/useMe.ts",
+      "to": "app/src/shared/hooks/useMe.ts"
+    },
+    {
+      "from": "app/src/hooks/useOnline.ts",
+      "to": "app/src/shared/hooks/useNetworkStatus.ts"
+    },
+    {
+      "from": "app/src/i18n/en.json",
+      "to": "app/src/core/i18n/en.json"
+    },
+    {
+      "from": "app/src/i18n/index.ts",
+      "to": "app/src/core/i18n/index.ts"
+    },
+    {
+      "from": "app/src/i18n/si.json",
+      "to": "app/src/core/i18n/si.json"
+    },
+    {
+      "from": "app/src/i18n/ta.json",
+      "to": "app/src/core/i18n/ta.json"
+    },
+    {
+      "from": "app/src/lib/image.ts",
+      "to": "app/src/core/lib/image.ts"
+    },
+    {
+      "from": "app/src/lib/memberDisplay.ts",
+      "to": "app/src/core/lib/memberDisplay.ts"
+    },
+    {
+      "from": "app/src/lib/nic.ts",
+      "to": "app/src/core/lib/nic.ts"
+    },
+    {
+      "from": "app/src/lib/qr.tsx",
+      "to": "app/src/core/lib/qr.tsx"
+    },
+    {
+      "from": "app/src/lib/utils.ts",
+      "to": "app/src/core/lib/utils.ts"
+    },
+    {
+      "from": "app/src/lib/viewport.ts",
+      "to": "app/src/core/lib/viewport.ts"
+    },
+    {
+      "from": "app/src/main.tsx",
+      "to": "app/src/main.tsx"
+    },
+    {
+      "from": "app/src/screens/Announcement.tsx",
+      "to": "app/src/features/community/AnnouncementScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/auth/Forgot.tsx",
+      "to": "app/src/features/auth/ForgotScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/auth/Login.tsx",
+      "to": "app/src/features/auth/LoginScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/auth/parts.tsx",
+      "to": "app/src/features/auth/components/parts.tsx"
+    },
+    {
+      "from": "app/src/screens/auth/ProfileSetup.tsx",
+      "to": "app/src/features/auth/ProfileSetupScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/auth/Questions.tsx",
+      "to": "app/src/features/auth/QuestionsScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/auth/SignUp.tsx",
+      "to": "app/src/features/auth/RegisterScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Card.tsx",
+      "to": "app/src/features/card/CardScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Community.tsx",
+      "to": "app/src/features/community/CommunityScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Courses.tsx",
+      "to": "app/src/features/learning/CoursesScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/EditProfile.tsx",
+      "to": "app/src/features/profile/EditProfileScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/EventDetail.tsx",
+      "to": "app/src/features/events/EventDetailScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Events.tsx",
+      "to": "app/src/features/events/EventsScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Gallery.tsx",
+      "to": "app/src/features/gallery/GalleryScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Home.tsx",
+      "to": "app/src/features/home/HomeScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Ideas.tsx",
+      "to": "app/src/features/ideas/IdeasScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Language.tsx",
+      "to": "app/src/features/profile/LanguageScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Milestones.tsx",
+      "to": "app/src/features/card/MilestonesScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/MyArea.tsx",
+      "to": "app/src/features/community/MyAreaScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Notifications.tsx",
+      "to": "app/src/features/profile/NotificationsScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/onboarding/Join.tsx",
+      "to": "app/src/features/auth/onboarding/JoinScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/onboarding/Nic.tsx",
+      "to": "app/src/features/auth/onboarding/NicScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/onboarding/Otp.tsx",
+      "to": "app/src/features/auth/onboarding/OtpScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/onboarding/Pending.tsx",
+      "to": "app/src/features/auth/onboarding/PendingScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/onboarding/Welcome.tsx",
+      "to": "app/src/features/auth/onboarding/WelcomeScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/PartyFund.tsx",
+      "to": "app/src/features/fundraising/PartyFundScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Privacy.tsx",
+      "to": "app/src/features/profile/PrivacyScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Profile.tsx",
+      "to": "app/src/features/profile/ProfileScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Referral.tsx",
+      "to": "app/src/features/referrals/ReferralScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Reports.tsx",
+      "to": "app/src/features/reports/ReportsScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Skills.tsx",
+      "to": "app/src/features/learning/SkillsScreen.tsx"
+    },
+    {
+      "from": "app/src/screens/Survey.tsx",
+      "to": "app/src/features/surveys/SurveyScreen.tsx"
+    },
+    {
+      "from": "app/src/state/auth.ts",
+      "to": "app/src/shared/hooks/useAuth.ts"
+    },
+    {
+      "from": "app/src/state/signupDraft.ts",
+      "to": "app/src/features/auth/state/signupDraft.ts"
+    },
+    {
+      "from": "app/src/state/theme.ts",
+      "to": "app/src/shared/hooks/useTheme.ts"
+    },
+    {
+      "from": "app/src/styles/civic.css",
+      "to": "app/src/core/theme/civic.css"
+    },
+    {
+      "from": "app/src/styles/global.css",
+      "to": "app/src/core/theme/global.css"
+    },
+    {
+      "from": "app/src/styles/member.css",
+      "to": "app/src/core/theme/member.css"
+    },
+    {
+      "from": "app/src/styles/membership-card.css",
+      "to": "app/src/core/theme/membership-card.css"
+    },
+    {
+      "from": "app/src/styles/tokens.css",
+      "to": "app/src/core/theme/tokens.css"
+    },
+    {
+      "from": "app/src/sw.ts",
+      "to": "app/src/sw.ts"
+    },
+    {
+      "from": "app/src/theme/tiers.ts",
+      "to": "app/src/core/theme/tiers.ts"
+    },
+    {
+      "from": "app/src/theme/tokens.ts",
+      "to": "app/src/core/theme/tokens.ts"
+    },
+    {
+      "from": "app/src/vite-env.d.ts",
+      "to": "app/src/vite-env.d.ts"
+    }
+  ],
+  "deletes": [
+    "app/src/components/DigitalMemberPass.tsx",
+    "app/src/components/HomeTopBar.tsx",
+    "app/src/components/MembershipIdCard.tsx",
+    "app/src/components/MemberVisuals.tsx",
+    "app/src/components/ui/demo.tsx",
+    "app/src/lib/memberDisplay.manualtest.mjs",
+    "app/src/screens/NorthUnityHome.tsx",
+    "app/src/screens/ReportDetail.tsx",
+    "app/src/screens/ReportNew.tsx"
+  ]
+}

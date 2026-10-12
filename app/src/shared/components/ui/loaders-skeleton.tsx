@@ -1,0 +1,10 @@
+export { CommunitySkeleton } from '@/shared/components/ui/loaders-skeleton/CommunitySkeleton';
+export { EventsSkeleton } from '@/shared/components/ui/loaders-skeleton/EventsSkeleton';
+export { HomeSkeleton } from '@/shared/components/ui/loaders-skeleton/HomeSkeleton';
+export { LoaderSkeleton } from '@/shared/components/ui/loaders-skeleton/LoaderSkeleton';
+export { ProfileSkeleton } from '@/shared/components/ui/loaders-skeleton/ProfileSkeleton';
+export { ReportsSkeleton } from '@/shared/components/ui/loaders-skeleton/ReportsSkeleton';
+export { RouteSkeleton } from '@/shared/components/ui/loaders-skeleton/RouteSkeleton';
+export { SkeletonCard } from '@/shared/components/ui/loaders-skeleton/SkeletonCard';
+export { SkeletonProfileHeader } from '@/shared/components/ui/loaders-skeleton/SkeletonProfileHeader';
+export type { LoaderSkeletonProps } from '@/shared/components/ui/loaders-skeletonModel/LoaderSkeletonProps';

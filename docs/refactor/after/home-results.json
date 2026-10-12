@@ -1,0 +1,227 @@
+{
+  "fixtureOnly": true,
+  "checks": [
+    {
+      "lang": "en",
+      "width": 320,
+      "overflow": false,
+      "icons": [
+        784,
+        784,
+        784,
+        784,
+        784
+      ],
+      "targets": true,
+      "clearance": true,
+      "background": "rgb(244, 246, 250)",
+      "navBackground": "rgb(255, 255, 255)",
+      "active": 1,
+      "metricBaselines": [
+        -340,
+        -340,
+        -340
+      ]
+    },
+    {
+      "lang": "en",
+      "width": 375,
+      "overflow": false,
+      "icons": [
+        784,
+        784,
+        784,
+        784,
+        784
+      ],
+      "targets": true,
+      "clearance": true,
+      "background": "rgb(244, 246, 250)",
+      "navBackground": "rgb(255, 255, 255)",
+      "active": 1,
+      "metricBaselines": [
+        -340.3125,
+        -340.3125,
+        -340.3125
+      ]
+    },
+    {
+      "lang": "en",
+      "width": 390,
+      "overflow": false,
+      "icons": [
+        784,
+        784,
+        784,
+        784,
+        784
+      ],
+      "targets": true,
+      "clearance": true,
+      "background": "rgb(244, 246, 250)",
+      "navBackground": "rgb(255, 255, 255)",
+      "active": 1,
+      "metricBaselines": [
+        -340.3125,
+        -340.3125,
+        -340.3125
+      ]
+    },
+    {
+      "lang": "en",
+      "width": 768,
+      "overflow": false,
+      "icons": [
+        783,
+        783,
+        783,
+        783,
+        783
+      ],
+      "targets": true,
+      "clearance": true,
+      "background": "rgb(244, 246, 250)",
+      "navBackground": "rgb(255, 255, 255)",
+      "active": 1,
+      "metricBaselines": [
+        -211.390625,
+        -211.390625,
+        -211.390625
+      ]
+    },
+    {
+      "lang": "en",
+      "width": 1280,
+      "overflow": false,
+      "icons": [
+        783,
+        783,
+        783,
+        783,
+        783
+      ],
+      "targets": true,
+      "clearance": true,
+      "background": "rgb(244, 246, 250)",
+      "navBackground": "rgb(255, 255, 255)",
+      "active": 1,
+      "metricBaselines": [
+        -211.390625,
+        -211.390625,
+        -211.390625
+      ]
+    },
+    {
+      "lang": "ta",
+      "width": 320,
+      "overflow": false,
+      "icons": [
+        767.5,
+        767.5,
+        767.5,
+        767.5,
+        767.5
+      ],
+      "targets": true,
+      "clearance": true,
+      "background": "rgb(244, 246, 250)",
+      "navBackground": "rgb(255, 255, 255)",
+      "active": 1,
+      "metricBaselines": [
+        -535.625,
+        -535.625,
+        -535.625
+      ]
+    },
+    {
+      "lang": "ta",
+      "width": 375,
+      "overflow": false,
+      "icons": [
+        784,
+        784,
+        784,
+        784,
+        784
+      ],
+      "targets": true,
+      "clearance": true,
+      "background": "rgb(244, 246, 250)",
+      "navBackground": "rgb(255, 255, 255)",
+      "active": 1,
+      "metricBaselines": [
+        -434.40625,
+        -434.40625,
+        -434.40625
+      ]
+    },
+    {
+      "lang": "ta",
+      "width": 390,
+      "overflow": false,
+      "icons": [
+        784,
+        784,
+        784,
+        784,
+        784
+      ],
+      "targets": true,
+      "clearance": true,
+      "background": "rgb(244, 246, 250)",
+      "navBackground": "rgb(255, 255, 255)",
+      "active": 1,
+      "metricBaselines": [
+        -434.40625,
+        -434.40625,
+        -434.40625
+      ]
+    },
+    {
+      "lang": "ta",
+      "width": 768,
+      "overflow": false,
+      "icons": [
+        783,
+        783,
+        783,
+        783,
+        783
+      ],
+      "targets": true,
+      "clearance": true,
+      "background": "rgb(244, 246, 250)",
+      "navBackground": "rgb(255, 255, 255)",
+      "active": 1,
+      "metricBaselines": [
+        -216.703125,
+        -216.703125,
+        -216.703125
+      ]
+    },
+    {
+      "lang": "ta",
+      "width": 1280,
+      "overflow": false,
+      "icons": [
+        783,
+        783,
+        783,
+        783,
+        783
+      ],
+      "targets": true,
+      "clearance": true,
+      "background": "rgb(244, 246, 250)",
+      "navBackground": "rgb(255, 255, 255)",
+      "active": 1,
+      "metricBaselines": [
+        -206.703125,
+        -206.703125,
+        -206.703125
+      ]
+    }
+  ],
+  "search": true,
+  "cardQr": true
+}

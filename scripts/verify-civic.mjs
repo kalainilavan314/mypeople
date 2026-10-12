@@ -17,6 +17,7 @@ const page=await context.newPage();
 let errors=[];page.on('pageerror',e=>errors.push(e.message));
 await page.route('**/api/**',async route=>{
   const url=new URL(route.request().url());
+  if(!url.pathname.startsWith('/api/')) return route.continue();
   if(url.pathname.startsWith('/api/gallery/')) {
     const response=await fetch('http://127.0.0.1:8788'+url.pathname+url.search);
     return route.fulfill({status:response.status,contentType:'application/json',body:await response.text()});

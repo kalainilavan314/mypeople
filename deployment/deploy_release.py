@@ -4,7 +4,7 @@ Install paramiko in deployment/.ssh-runtime. Supply the key passphrase through
 the process environment MY_PEOPLE_KEY_PASSPHRASE; it is never saved or printed.
 """
 from pathlib import Path
-import hashlib, os, re, sys, time
+import getpass, hashlib, os, re, sys, time
 
 root=Path(__file__).resolve().parent.parent
 sys.path.insert(0,str(root/'deployment/.ssh-runtime'))
@@ -16,6 +16,8 @@ if not re.fullmatch(r'civic-\d{8}T\d{6}Z',release):
 archive=root/'deployment/artifacts'/(release+'.tar.gz')
 if not archive.is_file(): raise SystemExit('Release package missing')
 passphrase=os.environ.pop('MY_PEOPLE_KEY_PASSPHRASE',None)
+if not passphrase and sys.stdin.isatty():
+    passphrase=getpass.getpass('Encrypted SSH key passphrase: ')
 if not passphrase: raise SystemExit('Provide the encrypted-key passphrase in the process environment')
 client=paramiko.SSHClient()
 client.load_host_keys(str(Path.home()/'.ssh/known_hosts'))

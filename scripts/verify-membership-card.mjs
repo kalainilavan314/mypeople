@@ -9,7 +9,7 @@ const browser=await chromium.launch({headless:true,channel:'msedge'});
 const ctx=await browser.newContext({viewport:{width:390,height:844},acceptDownloads:true});
 await ctx.addInitScript(m=>{Object.defineProperty(navigator,'canShare',{value:()=>false,configurable:true});localStorage.setItem('npm.authed','1');localStorage.setItem('npm.member',JSON.stringify(m));localStorage.setItem('npm.lang','en');},member);
 const page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='warning'||m.type()==='error')console.log(m.text());});
-await page.route('**/api/**',r=>r.fulfill({json:new URL(r.request().url()).pathname==='/api/me'?{member}:new URL(r.request().url()).pathname==='/api/me/card-token'?{token:'fixture-credential-local-qa-only'}:{}}));
+await page.route('**/api/**',r=>{const p=new URL(r.request().url()).pathname;if(!p.startsWith('/api/'))return r.continue();return r.fulfill({json:p==='/api/me'?{member}:p==='/api/me/card-token'?{token:'fixture-credential-local-qa-only'}:{}});});
 const checks=[];
 await page.goto('http://127.0.0.1:5175/card');await page.locator('.credential-qr-canvas[data-ready=true]').waitFor();await page.evaluate(()=>document.fonts.ready);
 for(const width of [320,390,768]){await page.setViewportSize({width,height:844});await page.waitForTimeout(200);const g=await page.locator('.credential-scale-wrap').first().boundingBox();assert(Math.abs(g.width/g.height-1.573)<.01);assert(await page.evaluate(()=>document.querySelector('.screen').scrollWidth<=document.querySelector('.screen').clientWidth));await page.screenshot({path:out+'/page-'+width+'.png'});}
