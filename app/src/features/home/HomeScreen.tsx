@@ -19,9 +19,6 @@ export function Home() {
   const t = useWorkspaceText();
   const [search, setSearch] = useState('');
   const name = displayMemberName(me ?? null) || t('Member', 'உறுப்பினர்');
-  const location =
-    [me?.districtName, me?.gsName].filter(Boolean).join(' / ') ||
-    t('Your GN division', 'உங்கள் கிராம சேவகர் பிரிவு');
   const upcoming = (events.data ?? [])
     .filter((e) => Date.parse(e.startsAt) >= Date.now())
     .sort((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt))
@@ -31,7 +28,6 @@ export function Home() {
       <HomeHeader
         name={name}
         avatarUrl={me?.avatarUrl}
-        location={location}
         search={search}
         onSearch={setSearch}
       />

@@ -1,28 +1,15 @@
 import { useWorkspaceText } from '@/shared/components/MemberWorkspace';
-import { Bell, MapPin, Search, UserRound, X } from 'lucide-react';
+import { Bell, Search, UserRound, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 type Props = {
   name: string;
   avatarUrl?: string | null;
-  location: string;
   search: string;
   onSearch: (value: string) => void;
 };
-export function HomeHeader({ name, avatarUrl, location, search, onSearch }: Props) {
+export function HomeHeader({ name, avatarUrl, search, onSearch }: Props) {
   const t = useWorkspaceText();
-  const hour = Number(
-    new Intl.DateTimeFormat('en-GB', {
-      hour: '2-digit',
-      hourCycle: 'h23',
-      timeZone: 'Asia/Colombo',
-    }).format(new Date()),
-  );
-  const greeting =
-    hour < 12
-      ? t('Good morning', 'காலை வணக்கம்')
-      : hour < 17
-        ? t('Good afternoon', 'மதிய வணக்கம்')
-        : t('Good evening', 'மாலை வணக்கம்');
+  const greeting = t('Welcome', 'வணக்கம்');
   return (
     <header className="home-header">
       <div className="home-header-row">
@@ -45,10 +32,6 @@ export function HomeHeader({ name, avatarUrl, location, search, onSearch }: Prop
         <div className="home-greeting">
           <span className="home-brand">{greeting}</span>
           <h1>{name}</h1>
-          <p>
-            <MapPin size={13} aria-hidden="true" />
-            <span>{location}</span>
-          </p>
         </div>
         <div className="home-header-controls">
           <Link to="/notifications" aria-label={t('Notifications', 'அறிவிப்புகள்')}>
