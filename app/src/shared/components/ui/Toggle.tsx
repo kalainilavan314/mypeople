@@ -17,10 +17,10 @@ export function Toggle({
       onClick={() => onChange(!on)}
       style={{
         width: 48,
-        height: 44,
+        height: 28,
         borderRadius: radius.pill,
         background: on ? c.maroon : c.hairline2,
-        padding: 11,
+        padding: 3,
         alignItems: 'center',
         border: 'none',
         boxSizing: 'border-box',
