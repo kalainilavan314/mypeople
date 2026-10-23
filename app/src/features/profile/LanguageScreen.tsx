@@ -1,6 +1,6 @@
 import { useSetLanguage } from '@/core/api/queries';
 import type { Lang } from '@/core/api/types';
-import { SUPPORTED_LANGS } from '@/core/i18n';
+import { SUPPORTED_LANGS, setSavedLang } from '@/core/i18n';
 import { c, font, radius } from '@/core/theme/tokens';
 import { Icon } from '@/shared/components/Icon';
 import { ScreenHeader } from '@/shared/components/ScreenHeader';
@@ -12,10 +12,16 @@ export function Language() {
   const navigate = useNavigate();
   const setLang = useSetLanguage();
 
-  const choose = async (l: Lang) => {
-    await setLang.mutateAsync(l);
-    await i18n.changeLanguage(l);
+  const choose = (l: Lang) => {
+    // Switch the UI instantly — don't make the member wait on a server round
+    // trip to see their own language change. setSavedLang (not a raw
+    // i18n.changeLanguage) also marks this as an explicit choice in
+    // localStorage, so a refresh doesn't get synced back to the account's
+    // saved language. Saving the preference to their profile happens in the
+    // background.
+    setSavedLang(l);
     navigate(-1);
+    setLang.mutate(l);
   };
 
   return (
