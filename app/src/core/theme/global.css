@@ -64,7 +64,15 @@ select:focus {
   overflow: hidden;
 }
 
-@media (min-width: 480px) {
+/* The "phone-in-a-browser-window" card frame is for desktop/tablet browsers
+   viewing the site, not for real phones. Width alone can't tell those apart —
+   plenty of real phones report a CSS viewport >= 480px (display-zoom
+   settings, large-screen Android devices), and those phones were getting this
+   frame too, showing a border/gap around what should be a full-bleed screen.
+   (hover: hover) and (pointer: fine) are true for mouse-driven desktop
+   browsers and false for touch-primary phones/tablets, so gating on both
+   width AND those keeps the frame where it belongs. */
+@media (min-width: 480px) and (hover: hover) and (pointer: fine) {
   .app-shell {
     height: min(var(--app-h, 100dvh), 940px);
     margin-top: max(0px, calc((var(--app-h, 100dvh) - 940px) / 2));
@@ -327,7 +335,10 @@ p { text-wrap: pretty; }
 input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   font-variant-numeric: tabular-nums;
 }
-@media (min-width: 480px) {
+/* Same reasoning as the other .app-shell desktop-frame rule above: gate on
+   hover/pointer too, not just width, so a real phone with a wide CSS
+   viewport doesn't get a border drawn around its own full-bleed screen. */
+@media (min-width: 480px) and (hover: hover) and (pointer: fine) {
   .app-shell {
     border: 1px solid var(--hairline);
     box-shadow: 0 16px 56px rgba(4, 48, 116, .12);
@@ -368,7 +379,9 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
 }
 /* Keep page content clear of the fixed bar. */
 .screen { padding-bottom: calc(76px + var(--safe-bottom)); }
-@media (min-width: 480px) {
+/* Tied to the same desktop-frame condition as .app-shell above: this nav
+   positioning only makes sense once the shell is actually framed. */
+@media (min-width: 480px) and (hover: hover) and (pointer: fine) {
   .work-nav { position: absolute; left: 0; right: 0; width: auto; max-width: none; transform: none; }
 }
 .work-nav {
@@ -493,7 +506,8 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   background: var(--card);
   border-bottom: 1px solid var(--hairline);
 }
-@media (min-width: 480px) {
+/* Same desktop-frame condition as .app-shell above. */
+@media (min-width: 480px) and (hover: hover) and (pointer: fine) {
   .home-topbar { position: absolute; left: 0; right: 0; width: auto; max-width: none; transform: none; }
 }
 .topbar-group { display: flex; gap: 8px; flex: none; }

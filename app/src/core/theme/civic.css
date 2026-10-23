@@ -110,7 +110,9 @@
 .work-nav button[aria-current] .work-nav-icon { background:var(--surface-variant); }
 .work-nav button > span:last-child { max-width:100%; overflow-wrap:anywhere; }
 .civic-section-heading { flex-wrap:wrap; }
-@media(min-width:480px) { .work-nav { position:relative; left:auto; right:auto; transform:none; width:100%; } }
+/* Same desktop-frame condition as .app-shell in global.css — a real phone
+   with a wide CSS viewport must keep the nav full-bleed, not framed. */
+@media(min-width:480px) and (hover:hover) and (pointer:fine) { .work-nav { position:relative; left:auto; right:auto; transform:none; width:100%; } }
 :lang(ta) :is(.civic-screen-title h1,.civic-greeting h1,.civic-pass-name,.civic-event-title h3,.civic-quick-action strong,.civic-card-action-label,.civic-chip,.civic-profile-row strong) { line-height:1.65; letter-spacing:normal; }
 :lang(ta) .civic-card-actions { grid-template-columns:repeat(2,minmax(0,1fr)); }
 @media(max-width:359px) { .civic-card-actions { grid-template-columns:repeat(2,minmax(0,1fr)); } .civic-event-preview { flex-wrap:wrap; } }
