@@ -8,6 +8,12 @@
       "port": 5173
     },
     {
+      "name": "my-people-express",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:api"],
+      "port": 8787
+    },
+    {
       "name": "my-people-api",
       "runtimeExecutable": "services/api/.venv/Scripts/python.exe",
       "runtimeArgs": ["-m", "uvicorn", "app.main:create_app", "--factory", "--app-dir", "services/api", "--env-file", "services/api/.env", "--port", "8000"],
