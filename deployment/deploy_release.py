@@ -1,10 +1,12 @@
-"""Deploy an approved release with a strict host-key check and an encrypted SSH key.
+"""Deploy an approved release with a strict host-key check, using the SSH agent.
 
-Install paramiko in deployment/.ssh-runtime. Supply the key passphrase through
-the process environment MY_PEOPLE_KEY_PASSPHRASE; it is never saved or printed.
+Install paramiko in deployment/.ssh-runtime. Load the deploy key into the
+Windows OpenSSH agent first (ssh-add, typing the passphrase yourself); this
+script authenticates through the agent and never reads the key file or its
+passphrase.
 """
 from pathlib import Path
-import getpass, hashlib, os, re, sys, time
+import hashlib, re, sys, time
 
 root=Path(__file__).resolve().parent.parent
 sys.path.insert(0,str(root/'deployment/.ssh-runtime'))
@@ -15,10 +17,7 @@ if not re.fullmatch(r'civic-\d{8}T\d{6}Z',release):
     raise SystemExit('Invalid release name')
 archive=root/'deployment/artifacts'/(release+'.tar.gz')
 if not archive.is_file(): raise SystemExit('Release package missing')
-passphrase=os.environ.pop('MY_PEOPLE_KEY_PASSPHRASE',None)
-if not passphrase and sys.stdin.isatty():
-    passphrase=getpass.getpass('Encrypted SSH key passphrase: ')
-if not passphrase: raise SystemExit('Provide the encrypted-key passphrase in the process environment')
+if not paramiko.Agent().get_keys(): raise SystemExit('No key in the SSH agent; run ssh-add first')
 client=paramiko.SSHClient()
 client.load_host_keys(str(Path.home()/'.ssh/known_hosts'))
 client.set_missing_host_key_policy(paramiko.RejectPolicy())
@@ -33,8 +32,7 @@ def run(command):
     return result.strip()
 
 try:
-    client.connect('178.128.126.35',username='deploy',key_filename=str(Path.home()/'Downloads/karan-server-handover/karan-server-admin'),passphrase=passphrase,allow_agent=False,look_for_keys=False,timeout=20,auth_timeout=30,banner_timeout=20)
-    passphrase=None
+    client.connect('178.128.126.35',username='deploy',allow_agent=True,look_for_keys=False,timeout=20,auth_timeout=30,banner_timeout=20)
     client.get_transport().set_keepalive(15)
     print('Connected; server host key verified.',flush=True)
     run('sudo -n systemctl start --no-block karan-backup.service')
@@ -56,5 +54,4 @@ try:
         raise RuntimeError('Backup did not complete successfully; release remains staged')
     run(f'sudo -n bash /home/deploy/activate-ui-release.sh {release}')
 finally:
-    passphrase=None
     client.close()

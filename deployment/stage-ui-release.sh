@@ -30,6 +30,17 @@ for rel,digest in m['files'].items():
     assert hashlib.sha256((p/rel).read_bytes()).hexdigest()==digest,rel
 print('Verified',len(m['files']),'release files')
 PY
+# Install the API's packages from this release's lockfile. The stage starts as
+# a copy of the previous release, node_modules included, so without this a
+# changed server/package-lock.json (a security patch, say) would never reach
+# production. --ignore-scripts: none of these packages needs an install
+# script, and this runs as root.
+npm_cache=$(mktemp -d)
+npm ci --prefix "$stage/server" --omit=dev --ignore-scripts --no-audit --no-fund --cache "$npm_cache" >/dev/null
+rm -rf "$npm_cache"
+npm ls --prefix "$stage/server" --omit=dev >/dev/null
+chown -hR app:app "$stage/server/node_modules"
+(cd "$stage/server" && node -p "'Installed ' + ['express','body-parser','proxy-addr','qs'].map((n) => n + '@' + require(n + '/package.json').version).join(' ')")
 unit="mypeople-preflight-$release"
 systemctl stop "$unit.service" >/dev/null 2>&1 || true
 cp -p "$old/server/.env" "$stage/server/.env"
