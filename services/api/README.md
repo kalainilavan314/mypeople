@@ -12,30 +12,55 @@ Current scope:
 | `GET /v1/health` | the process is running (no database access) |
 | `GET /v1/health/db` | a query runs on PostgreSQL; `503 {"status":"unavailable"}` otherwise |
 | `GET /v1/members/me` | the signed-in member's profile; `401` without a valid session |
+| `POST /v1/auth/sign-in` | `{nic, password}` → sets the session cookie, returns `{token, member}`; `401 invalid_credentials`, `429 too_many_attempts` |
+| `POST /v1/auth/sign-out` | ends every session of the member (`204`) and clears the cookie |
 
 ## Sessions
 
-Members still sign in and out through the Express API (`/api/auth/login`,
-`/api/auth/logout`). It sets the `mp_session` cookie, and this API accepts that
-cookie, or the same token in an `Authorization: Bearer` header. Both APIs use
-the same `JWT_SECRET`, so a session works in both:
+Members can sign in through either API (`/api/auth/login` or
+`/v1/auth/sign-in`). Both set the same HttpOnly, SameSite=Lax `mp_session`
+cookie (Secure outside development), and both accept that cookie or the same
+token in an `Authorization: Bearer` header. Both use the same `JWT_SECRET` and
+`NIC_PEPPER`, so a session from either works in both:
 
 - the token is an HS256 JWT `{sub: member id, sv: session version}`, valid for 30 days;
-- signing out increments `npm.member.session_version`, and both APIs then
-  refuse older tokens (`401 session_expired`);
+- signing out through either API increments `npm.member.session_version`, and
+  both then refuse every older token (`401 session_expired`);
 - deleted members are refused (`401 unauthorized`).
 
-`app/core/security.py` also ports the NIC hash and bcrypt password checks.
-They are used by sign-in, which moves here in a later batch together with the
-sign-in throttling from `server/src/throttle.js`.
+Sign-in throttling follows `server/src/throttle.js`, and both APIs count the
+same `npm.auth_attempt` rows. Failures are counted per NIC hash and client IP
+together over 15 minutes: from 5 failures each attempt waits 0.4 s more (up to
+2 s), from 10 attempts are refused for 15 minutes with `Retry-After: 900`. A
+correct password clears the failures. The wait is asynchronous, so throttled
+attempts do not tie up the server.
+
+Two deliberate differences from the Express API:
+
+- An unknown NIC still runs a bcrypt check, so the response time does not
+  reveal which NICs are registered.
+- The client IP is not read from `X-Forwarded-For` directly, because a client
+  can forge it and get unlimited attempts. **Behind Nginx, start uvicorn with
+  `--proxy-headers --forwarded-allow-ips=127.0.0.1`** (Nginx's address), so the
+  real client address is used. Without that, every request appears to come
+  from Nginx, and ten wrong passwords for one NIC would lock that member out
+  for everyone.
+
+Cookie-authenticated `POST`/`PUT`/`PATCH`/`DELETE` requests from another site
+are refused with `403 csrf_origin_mismatch`, as in the Express API. Requests
+without the cookie (mobile apps) or without an `Origin` header are not
+affected; `ALLOWED_ORIGINS` adds trusted origins. Every `/v1` response carries
+`Cache-Control: no-store` and the Express API's security headers.
 
 ### Compatibility with the Express API
 
 `tests/test_security.py` checks the Python code against fixed vectors that
 `server/src/lib.js` produced (`tests/express/auth_vectors.json`).
-`tests/test_express_compat.py` runs `lib.js` and bcryptjs live in both
-directions; it needs Node and `npm ci --prefix server`, and is skipped
-otherwise. Regenerate the vectors after any change to `lib.js`:
+`tests/test_express_compat.py` runs `lib.js`, `throttle.js` and bcryptjs live:
+tokens and password hashes in both directions, and the throttle decision for 0
+to 11 failures against the same database rows. It needs Node and
+`npm ci --prefix server`, and is skipped otherwise. Regenerate the vectors
+after any change to `lib.js`:
 
 ```powershell
 node tests/express/auth_helpers.mjs --write-vectors
@@ -105,6 +130,8 @@ Settings are read from environment variables, falling back to `services/api/.env
 | `APP_ENV` | `development` (default), `staging`, `production` | `production` hides `/docs` and `/openapi.json` |
 | `DATABASE_URL` | PostgreSQL URL (required) | The same value the Express API uses; `postgres://` and `postgresql://` both work |
 | `JWT_SECRET` | long random string (required) | Must equal the Express API's `JWT_SECRET`; production refuses the `dev-secret` fallback |
+| `NIC_PEPPER` | string (required) | Must equal the Express API's `NIC_PEPPER`, and never change; production refuses `dev-pepper` |
+| `ALLOWED_ORIGINS` | comma-separated origins (optional) | Other sites allowed to send cookie-authenticated writes |
 
 ## Layout
 
@@ -114,10 +141,11 @@ app/
   health.py            /v1/health and /v1/health/db
   core/config.py       environment settings
   core/security.py     NIC hash, bcrypt, session tokens (shared with Express)
+  core/middleware.py   cross-origin write check and security headers
   db/session.py        engine and per-request sessions (get_db)
   db/base.py           ORM base class and the autogenerate table filter
   db/express_baseline.py   the Express migrations behind revision 0001
-  modules/auth/        session check: repository, service, CurrentMember dependency
+  modules/auth/        sign-in, sign-out, throttle, CurrentMember dependency
   modules/membership/  /v1/members/me: router, schemas, repository
 alembic/               Alembic environment and revisions
 tests/                 pytest tests

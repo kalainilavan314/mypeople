@@ -12,6 +12,8 @@
 //   {"command": "verify", "token": ...}             the claims, or {"error": ...}
 //   {"command": "bcrypt-compare", "password": ..., "hash": ...}   true or false
 //   {"command": "bcrypt-hash", "password": ...}     a hash made as the Express signup does
+//   {"command": "check-login", "identifier": ..., "ip": ...}
+//                                                   throttle.js checkLogin against DATABASE_URL
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 
@@ -76,8 +78,21 @@ function vectors({ secrets, nics, passwords, memberId, issuedAt }) {
   };
 }
 
-function run(request) {
+async function checkLogin({ identifier, ip }) {
+  // Imported only here: db.js opens a connection pool to DATABASE_URL.
+  const { checkLogin } = await import(new URL('../../../../server/src/throttle.js', import.meta.url));
+  const { pool } = await import(new URL('../../../../server/src/db.js', import.meta.url));
+  try {
+    return await checkLogin(identifier, ip);
+  } finally {
+    await pool.end();
+  }
+}
+
+async function run(request) {
   switch (request.command) {
+    case 'check-login':
+      return checkLogin(request);
     case 'sign':
       return { token: lib.signToken(request.memberId, request.sessionVersion) };
     case 'verify':
@@ -101,5 +116,5 @@ if (writeVectors) {
   console.log('wrote auth_vectors.json');
 } else {
   const text = fs.readFileSync(0, 'utf8');
-  process.stdout.write(JSON.stringify(run(JSON.parse(text))) + '\n');
+  process.stdout.write(JSON.stringify(await run(JSON.parse(text))) + '\n');
 }

@@ -14,6 +14,7 @@ from datetime import UTC, datetime, timedelta
 import bcrypt
 import jwt
 
+SESSION_COOKIE = "mp_session"  # the cookie name the Express API uses
 SESSION_LIFETIME = timedelta(days=30)  # lib.js signToken: expiresIn "30d"
 BCRYPT_COST = 10  # the Express signup uses bcrypt.hash(password, 10)
 BCRYPT_MAX_BYTES = 72

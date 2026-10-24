@@ -6,10 +6,10 @@ started from that folder. The real .env is never committed; .env.example lists
 the names.
 """
 
-from typing import Literal, Self
+from typing import Annotated, Literal, Self
 
-from pydantic import SecretStr, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import SecretStr, field_validator, model_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -29,11 +29,34 @@ class Settings(BaseSettings):
     # signed in to both. Changing it signs every member out.
     jwt_secret: SecretStr
 
+    # Salts every stored NIC hash; must be the Express API's NIC_PEPPER. If it
+    # ever changes, no existing member can sign in by NIC again.
+    nic_pepper: SecretStr
+
+    # Other origins allowed to send cookie-authenticated writes, as in the
+    # Express API's ALLOWED_ORIGINS (comma-separated). Empty means same-origin only.
+    allowed_origins: Annotated[list[str], NoDecode] = []
+
+    @field_validator("allowed_origins", mode="before")
+    @classmethod
+    def split_comma_separated(cls, value: object) -> object:
+        if isinstance(value, str):
+            return [origin.strip() for origin in value.split(",") if origin.strip()]
+        return value
+
     @model_validator(mode="after")
-    def refuse_dev_secret_in_production(self) -> Self:
-        # lib.js falls back to "dev-secret" when JWT_SECRET is unset, and the
-        # Express API refuses to run in production with it. Do the same here,
-        # in case that value is ever copied across.
-        if self.app_env == "production" and self.jwt_secret.get_secret_value() == "dev-secret":
-            raise ValueError("JWT_SECRET must not be the development fallback in production")
+    def refuse_dev_secrets_in_production(self) -> Self:
+        # lib.js falls back to "dev-secret" and "dev-pepper" when the variables
+        # are unset, and the Express API refuses to run in production with
+        # them. Do the same here, in case those values are ever copied across.
+        if self.app_env == "production":
+            if self.jwt_secret.get_secret_value() == "dev-secret":
+                raise ValueError("JWT_SECRET must not be the development fallback in production")
+            if self.nic_pepper.get_secret_value() == "dev-pepper":
+                raise ValueError("NIC_PEPPER must not be the development fallback in production")
         return self
+
+    @property
+    def secure_cookies(self) -> bool:
+        """Cookies need HTTPS everywhere except local development."""
+        return self.app_env != "development"

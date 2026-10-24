@@ -15,7 +15,9 @@ from sqlalchemy.orm import sessionmaker
 
 from app import health
 from app.core.config import Settings
+from app.core.middleware import add_security_headers, refuse_cross_origin_writes
 from app.db.session import create_database_engine
+from app.modules.auth import router as auth
 from app.modules.membership import router as membership
 
 API_VERSION = "0.1.0"
@@ -50,6 +52,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = settings
     app.state.session_factory = sessionmaker(bind=engine, expire_on_commit=False)
     app.include_router(health.router)
+    app.include_router(auth.router)
     app.include_router(membership.router)
+
+    # The middleware added last runs first, so the security headers are also
+    # set on the 403 that the origin check returns.
+    app.middleware("http")(refuse_cross_origin_writes)
+    app.middleware("http")(add_security_headers)
 
     return app

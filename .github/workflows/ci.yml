@@ -41,6 +41,7 @@ jobs:
       # Throwaway database and signing key for CI only, not real credentials.
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/my_people_ci
       JWT_SECRET: ci-only-jwt-secret-not-used-anywhere-else
+      NIC_PEPPER: ci-only-nic-pepper-not-used-anywhere-else
     defaults:
       run:
         working-directory: services/api

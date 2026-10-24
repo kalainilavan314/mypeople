@@ -419,6 +419,7 @@ services/api/
     core/
       __init__.py
       config.py
+      middleware.py
       security.py
     db/
       __init__.py
@@ -431,7 +432,10 @@ services/api/
         __init__.py
         dependencies.py
         repository.py
+        router.py
+        schemas.py
         service.py
+        throttle.py
       membership/
         __init__.py
         repository.py
@@ -450,7 +454,10 @@ services/api/
     test_express_compat.py
     test_health.py
     test_members_me.py
+    test_origin_check.py
     test_security.py
+    test_sign_in.py
+    test_throttle.py
 .github/workflows/
   ci.yml
 ```
