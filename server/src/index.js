@@ -11,7 +11,7 @@ import pg from 'pg';
 import { pool, poolConfig, memberById, memberByNicHash, memberByPhone } from './db.js';
 import { nicHash, signToken, verifyToken, tokenIsStale, otpCode, memberCode, referralCode, publicMember, verifyAvatarUrl, hashOtp, isNicFormat, signCardToken } from './lib.js';
 import { recomputeTier, tierProgress } from './tier.js';
-import { clientIp, checkOtpRequest, issueOtp, consumeOtp, checkLogin, recordLogin, sleep } from './throttle.js';
+import { clientIp, checkOtpRequest, issueOtp, consumeOtp, checkLogin, recordLogin, sleep, TRUSTED_PROXIES } from './throttle.js';
 import { putObject, getObject, mimeFor, backend as storageBackend } from './storage.js';
 import { replaceAvatar } from './avatar.js';
 
@@ -56,6 +56,8 @@ if (MISSING_ENV.length) {
 
 const app = express();
 app.disable('x-powered-by');
+// Only the local Nginx may say who the client is (see TRUSTED_PROXIES).
+app.set('trust proxy', TRUSTED_PROXIES);
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');

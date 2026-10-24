@@ -12,14 +12,19 @@
 import { pool } from './db.js';
 import { hashOtp } from './lib.js';
 
-/** Client address, honouring a reverse proxy but never trusting it blindly. */
+// The proxies allowed to report the client's address: only Nginx, which runs on
+// the same machine. index.js gives this to Express as 'trust proxy'.
+//
+// Express then reads X-Forwarded-For from the RIGHT, skipping these trusted
+// proxies, and stops at the first address that is not one of them. That is the
+// address Nginx appended. Reading the first entry instead (as this file used
+// to) let a client choose its own address simply by sending the header, and
+// with limits per NIC + address that meant unlimited password guesses.
+export const TRUSTED_PROXIES = 'loopback';
+
+/** The client address the rate limits count against. */
 export function clientIp(req) {
-  // Only the FIRST hop in x-forwarded-for is meaningful, and only when the app
-  // sits behind a proxy we control (nginx, Vercel). A client can append entries,
-  // so later ones are attacker-controlled and must not be used.
-  const fwd = req.headers['x-forwarded-for'];
-  const first = typeof fwd === 'string' ? fwd.split(',')[0].trim() : null;
-  return first || req.socket?.remoteAddress || 'unknown';
+  return req.ip || req.socket?.remoteAddress || 'unknown';
 }
 
 /* ------------------------------------------------------------------ OTP */
