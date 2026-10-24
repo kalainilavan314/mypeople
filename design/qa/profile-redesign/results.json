@@ -1,0 +1,48 @@
+{
+  "fixtureOnly": true,
+  "results": [
+    {
+      "lang": "en",
+      "width": 320,
+      "enlargedText": true,
+      "fits": true
+    },
+    {
+      "lang": "en",
+      "width": 390,
+      "enlargedText": true,
+      "fits": true
+    },
+    {
+      "lang": "en",
+      "width": 768,
+      "enlargedText": true,
+      "fits": true
+    },
+    {
+      "lang": "ta",
+      "width": 320,
+      "enlargedText": true,
+      "fits": true
+    },
+    {
+      "lang": "ta",
+      "width": 390,
+      "enlargedText": true,
+      "fits": true
+    },
+    {
+      "lang": "ta",
+      "width": 768,
+      "enlargedText": true,
+      "fits": true
+    },
+    {
+      "verificationDialog": true,
+      "themeToggle": true,
+      "realContact": true,
+      "longName": true,
+      "editDestination": true
+    }
+  ]
+}

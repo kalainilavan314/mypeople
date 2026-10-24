@@ -1,10 +1,9 @@
 {
   "fixtureOnly": true,
   "checks": [
-    "Readable digital pass and no horizontal page overflow at 320, 390 and 768 pixels",
+    "Proportional card and no horizontal page overflow at 320, 390 and 768 pixels",
     "Enlarged viewer, zoom, fit and Escape close",
     "QR, wallet availability and private-data-free share preview",
-    "PDF generated from canonical card",
     "Long Tamil fields fit; pending status is accurate; 200% page text fits at 320 pixels"
   ],
   "fits": [
