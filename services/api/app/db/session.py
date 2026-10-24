@@ -24,12 +24,16 @@ def create_database_engine(database_url: str) -> Engine:
     # Keep the pool small. Every API instance holds its own pool, while the
     # database caps connections across all of them (see server/src/db.js).
     # pool_pre_ping replaces connections the database closed while idle.
+    #
+    # timezone=UTC: the database's default zone (Asia/Colombo locally) would
+    # otherwise put a +05:30 offset on every timestamp in API responses. UTC
+    # matches the Express API's "...Z" timestamps.
     return create_engine(
         to_sqlalchemy_url(database_url),
         pool_size=5,
         max_overflow=5,
         pool_pre_ping=True,
-        connect_args={"connect_timeout": 5},
+        connect_args={"connect_timeout": 5, "options": "-c timezone=UTC"},
     )
 
 

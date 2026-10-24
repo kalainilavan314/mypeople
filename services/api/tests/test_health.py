@@ -17,11 +17,19 @@ def test_database_health_reports_unavailable_without_details(make_client):
     assert response.json() == {"status": "unavailable"}
 
 
-def test_openapi_documents_health_under_v1(make_client):
+def test_openapi_documents_every_path_under_v1(make_client):
     schema = make_client("production").app.openapi()
 
     assert schema["openapi"].startswith("3.1")
-    assert {"/v1/health", "/v1/health/db"} <= set(schema["paths"])
+    assert {"/v1/health", "/v1/health/db", "/v1/members/me"} <= set(schema["paths"])
+    assert all(path.startswith("/v1/") for path in schema["paths"])
+
+
+def test_openapi_shows_which_endpoints_need_a_session(make_client):
+    paths = make_client().app.openapi()["paths"]
+
+    assert paths["/v1/members/me"]["get"]["security"] == [{"APIKeyCookie": []}, {"HTTPBearer": []}]
+    assert "security" not in paths["/v1/health"]["get"]
 
 
 def test_development_publishes_docs(make_client):

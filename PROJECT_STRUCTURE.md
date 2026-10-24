@@ -419,18 +419,38 @@ services/api/
     core/
       __init__.py
       config.py
+      security.py
     db/
       __init__.py
       base.py
       express_baseline.py
       session.py
+    modules/
+      __init__.py
+      auth/
+        __init__.py
+        dependencies.py
+        repository.py
+        service.py
+      membership/
+        __init__.py
+        repository.py
+        router.py
+        schemas.py
   tests/
     conftest.py
+    express/
+      auth_helpers.mjs
+      auth_vectors.json
+      vectors-request.json
     test_config.py
     test_database.py
     test_db_session.py
     test_express_baseline.py
+    test_express_compat.py
     test_health.py
+    test_members_me.py
+    test_security.py
 .github/workflows/
   ci.yml
 ```

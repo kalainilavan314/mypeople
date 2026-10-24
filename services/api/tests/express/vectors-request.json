@@ -1,0 +1,10 @@
+{
+  "secrets": {
+    "jwtSecret": "test-only-jwt-secret-not-for-production",
+    "nicPepper": "test-only-nic-pepper"
+  },
+  "nics": ["123456789V", " 123456789v ", "987654321x", "200012345678"],
+  "passwords": ["correct horse battery", "kalai-2026"],
+  "memberId": "3f1c2a9e-5b7d-4e8a-9c0f-1a2b3c4d5e6f",
+  "issuedAt": 1792843200
+}

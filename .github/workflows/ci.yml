@@ -38,8 +38,9 @@ jobs:
           --health-timeout 5s
           --health-retries 10
     env:
-      # Throwaway database inside the CI container, not a real credential.
+      # Throwaway database and signing key for CI only, not real credentials.
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/my_people_ci
+      JWT_SECRET: ci-only-jwt-secret-not-used-anywhere-else
     defaults:
       run:
         working-directory: services/api
@@ -54,7 +55,9 @@ jobs:
         with:
           python-version: "3.12"
       # A new database is built the way the README describes: the Express
-      # migrations first, then Alembic from its baseline.
+      # migrations first, then Alembic from its baseline. The installed server
+      # packages also let the tests run server/src/lib.js for the
+      # cross-language auth checks.
       - name: Apply the Express migrations
         run: npm ci --prefix ../../server && npm run migrate --prefix ../../server
       - run: python -m pip install -e ".[dev]"
