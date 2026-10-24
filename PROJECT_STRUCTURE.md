@@ -406,13 +406,30 @@ services/api/
   pyproject.toml
   README.md
   .env.example
+  alembic.ini
+  alembic/
+    env.py
+    script.py.mako
+    versions/
+      0001_baseline_express_schema.py
   app/
     __init__.py
     main.py
+    health.py
     core/
       __init__.py
       config.py
+    db/
+      __init__.py
+      base.py
+      express_baseline.py
+      session.py
   tests/
+    conftest.py
+    test_config.py
+    test_database.py
+    test_db_session.py
+    test_express_baseline.py
     test_health.py
 .github/workflows/
   ci.yml

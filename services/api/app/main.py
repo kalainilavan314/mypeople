@@ -1,26 +1,37 @@
 """Entry point for the My People API.
 
 Run locally from services/api with:
-    uvicorn app.main:app --reload --port 8000
+    uvicorn app.main:create_app --factory --reload --port 8000
+
+--factory makes uvicorn call create_app() at startup, so importing this module
+(for example in tests) does not need a DATABASE_URL.
 """
 
-from typing import Literal
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from pydantic import BaseModel
+from sqlalchemy.orm import sessionmaker
 
+from app import health
 from app.core.config import Settings
+from app.db.session import create_database_engine
 
 API_VERSION = "0.1.0"
-
-
-class HealthStatus(BaseModel):
-    status: Literal["ok"]
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     """Build the API. Tests pass their own Settings; the server uses the environment."""
     settings = settings or Settings()
+
+    # The engine connects lazily, so the API starts even while the database is
+    # down; /v1/health/db reports that state instead.
+    engine = create_database_engine(settings.database_url.get_secret_value())
+
+    @asynccontextmanager
+    async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+        yield
+        engine.dispose()
 
     # The interactive docs and the OpenAPI document list every endpoint, so
     # production does not publish them. The schema can still be produced
@@ -33,14 +44,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         docs_url="/docs" if publish_docs else None,
         redoc_url=None,
         openapi_url="/openapi.json" if publish_docs else None,
+        lifespan=lifespan,
     )
-
-    @app.get("/v1/health", tags=["health"])
-    def check_health() -> HealthStatus:
-        """Confirm the API process is running. This does not check the database."""
-        return HealthStatus(status="ok")
+    app.state.session_factory = sessionmaker(bind=engine, expire_on_commit=False)
+    app.include_router(health.router)
 
     return app
-
-
-app = create_app()

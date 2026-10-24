@@ -23,13 +23,40 @@ jobs:
   api:
     name: API tests
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: my_people_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Throwaway database inside the CI container, not a real credential.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/my_people_ci
     defaults:
       run:
         working-directory: services/api
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: server/package-lock.json
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # A new database is built the way the README describes: the Express
+      # migrations first, then Alembic from its baseline.
+      - name: Apply the Express migrations
+        run: npm ci --prefix ../../server && npm run migrate --prefix ../../server
       - run: python -m pip install -e ".[dev]"
+      - run: python -m alembic upgrade head
       - run: python -m pytest

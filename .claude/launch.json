@@ -10,7 +10,7 @@
     {
       "name": "my-people-api",
       "runtimeExecutable": "services/api/.venv/Scripts/python.exe",
-      "runtimeArgs": ["-m", "uvicorn", "app.main:app", "--app-dir", "services/api", "--port", "8000"],
+      "runtimeArgs": ["-m", "uvicorn", "app.main:create_app", "--factory", "--app-dir", "services/api", "--env-file", "services/api/.env", "--port", "8000"],
       "port": 8000
     }
   ]
