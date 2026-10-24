@@ -5,6 +5,13 @@ node_modules/
 app/dist/
 app/dev-dist/
 
+# Python (services/*): virtual environments, bytecode, test and build caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
 # Secrets — DATABASE_URL, JWT_SECRET, NIC_PEPPER, invite codes.
 # Never commit these: NIC_PEPPER in particular is the salt protecting every
 # stored NIC hash. Deployment secrets belong in the host's env-var settings.

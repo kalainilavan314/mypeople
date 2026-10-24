@@ -390,6 +390,7 @@ app/src/
   sw.ts
   vite-env.d.ts
 server/src/
+  avatar.js
   db.js
   gallery-albums.json
   gallery.js
@@ -401,6 +402,20 @@ server/src/
   supabase-ca.js
   throttle.js
   tier.js
+services/api/
+  pyproject.toml
+  README.md
+  .env.example
+  app/
+    __init__.py
+    main.py
+    core/
+      __init__.py
+      config.py
+  tests/
+    test_health.py
+.github/workflows/
+  ci.yml
 ```
 
 See docs/architecture.md and docs/refactor/README.md for boundaries and commands.

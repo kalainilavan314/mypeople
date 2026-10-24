@@ -39,11 +39,15 @@ app/
       home/ events/ card/ gallery/ profile/ auth/
       community/ reports/ surveys/ ideas/ learning/ fundraising/ referrals/
 server/                   existing API, database migrations and gallery metadata
+services/api/             new FastAPI backend (/v1), built alongside server/ (see its README)
+.github/workflows/        CI: PWA build and API tests
 docs/                     architecture, Home specification and refactor handoff
 scripts/                  local browser checks and refactor tooling
 deployment/               existing deployment, backup and rollback tooling
 design/                   retained design history and fixture QA outputs
 ```
+
+The root `package.json` declares npm workspaces for the future `apps/*` and `packages/*` projects. `app/` and `server/` stay outside them, with their own lockfiles, until they are retired, because production releases run from those paths. The Python API is set up separately; see [services/api/README.md](services/api/README.md).
 
 Screens own feature orchestration; local components render feature sections. Shared components and core services remain independent of screen entry points. Vite and TypeScript resolve `@/` to `app/src/`. Theme CSS loads through a single entry point preserving its original cascade.
 

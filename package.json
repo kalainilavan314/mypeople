@@ -3,18 +3,28 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "NorthUnity — Tamil-first membership PWA for the Northern Province, Sri Lanka",
+  "description": "My People (என் மக்கள்) — monorepo root for the member PWA, API services and shared packages",
   "engines": {
     "node": ">=18"
   },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "comment": [
-    "This root manifest exists for the serverless deployment. Vercel installs",
-    "from the repository root, and api/[...path].js pulls in server/src, so the",
-    "API's runtime dependencies have to be resolvable from here. They are kept",
-    "identical to server/package.json — update both together.",
+    "npm workspaces cover only the new apps/* and packages/* projects. The",
+    "current PWA (app/) and Express API (server/) keep their own manifests and",
+    "lockfiles and stay outside the workspaces until they are retired: app/ is",
+    "on React 18, and hoisting it beside newer React apps would install two",
+    "copies of React. Production releases run server/src/index.js and serve",
+    "app/dist, so those folders must not move.",
     "",
-    "The frontend keeps its own manifest in app/ and is built by buildCommand in",
-    "vercel.json. Nothing is installed from app/ at the root."
+    "The dependencies below mirror server/package.json and date from the old",
+    "Vercel deployment, which resolved the API's packages from the root. They",
+    "stay until we confirm no running host installs them from here; update",
+    "both manifests together until then.",
+    "",
+    "The Python API in services/api is not an npm workspace; see its README."
   ],
   "scripts": {
     "dev": "npm run dev --prefix app",
