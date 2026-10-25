@@ -8,12 +8,15 @@ database is configured. CI always provides one. Those tests run inside one
 transaction that is rolled back afterwards, so nothing they write remains.
 Staff tests build on `area` (a real GN division and the areas above it),
 `assign` (inserts an assignment), `auth` (a Bearer header) and `super_admin`.
+Identity tests add `identity_client` (with a temporary evidence store),
+`member_in`, `upload` and `open_review`.
 
 Tests that compare behaviour with the Express API take `express_auth`, which
 runs server/src code through tests/express/auth_helpers.mjs. They are skipped
 when Node or the server's packages are missing.
 """
 
+import base64
 import json
 import os
 import random
@@ -24,7 +27,7 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
-from pydantic import ValidationError
+from pydantic import SecretStr, ValidationError
 from sqlalchemy import Row, text
 from sqlalchemy.orm import Session
 
@@ -38,6 +41,7 @@ from app.modules.access.permissions import default_permissions
 UNREACHABLE_DATABASE_URL = "postgresql://nobody@127.0.0.1:1/unreachable"
 TEST_JWT_SECRET = "test-only-jwt-secret-for-unit-tests"
 TEST_NIC_PEPPER = "test-only-nic-pepper-for-unit-tests"
+SAMPLE_JPEG = b"\xff\xd8\xff\xe0\x00\x10JFIF\x00" + os.urandom(512)
 
 EXPRESS_HELPER = Path(__file__).parent / "express" / "auth_helpers.mjs"
 SERVER_NODE_MODULES = Path(__file__).resolve().parents[3] / "server" / "node_modules"
@@ -177,6 +181,72 @@ def super_admin(create_member, assign) -> Row:
     member = create_member(verified=True)
     assign(member, "5", "platform", None, [*default_permissions("5"), "members.verify"])
     return member
+
+
+@pytest.fixture
+def evidence_dir(tmp_path: Path) -> Path:
+    return tmp_path / "evidence"
+
+
+@pytest.fixture
+def identity_client(database_settings: Settings, db_session: Session, evidence_dir: Path) -> TestClient:
+    """A client for the real API with a temporary encrypted evidence store."""
+    key = base64.b64encode(os.urandom(32)).decode()
+    settings = database_settings.model_copy(
+        update={"evidence_storage_dir": evidence_dir, "evidence_encryption_key": SecretStr(key)}
+    )
+    app = create_app(settings)
+    app.dependency_overrides[get_db] = lambda: db_session
+    return TestClient(app)
+
+
+@pytest.fixture
+def member_in(db_session: Session, create_member: Callable[..., Row]) -> Callable[..., Row]:
+    """A member registered in a GN division (a row of the `area` fixture), as sign-up records them."""
+
+    def create(gn: Row, **options) -> Row:
+        member = create_member(**options)
+        db_session.execute(
+            text("UPDATE npm.member SET gs_code = :gn, ds_code = :ds, district_code = :district WHERE id = :id"),
+            {"gn": gn.gn, "ds": gn.ds, "district": gn.district, "id": member.id},
+        )
+        return member
+
+    return create
+
+
+@pytest.fixture
+def upload(identity_client: TestClient, auth: Callable[[Row], dict[str, str]]) -> Callable[..., dict]:
+    def put(person: Row, kind: str = "nic_front", data: bytes = SAMPLE_JPEG, content_type: str = "image/jpeg") -> dict:
+        response = identity_client.put(
+            f"/v1/identity/me/documents/{kind}", content=data, headers={**auth(person), "Content-Type": content_type}
+        )
+        assert response.status_code == 201, response.text
+        return response.json()
+
+    return put
+
+
+@pytest.fixture
+def open_review(db_session: Session) -> Callable[..., str]:
+    """Put a member's identity review in review with a reviewer, as claiming it does, so the
+    reviewer can open the member's evidence (PRM-03). Returns the review id."""
+
+    def insert(member: Row, reviewer: Row, route: str = "nic") -> str:
+        return str(
+            db_session.scalar(
+                text(
+                    """
+                    INSERT INTO identity.identity_review (member_id, route, state, area_path, claimed_by, claimed_at)
+                    VALUES (:member_id, :route, 'in_review', '{platform}', :reviewer_id, now())
+                    RETURNING id
+                    """
+                ),
+                {"member_id": member.id, "route": route, "reviewer_id": reviewer.id},
+            )
+        )
+
+    return insert
 
 
 @pytest.fixture

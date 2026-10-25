@@ -436,6 +436,7 @@ services/api/
       0001_baseline_express_schema.py
       0002_access_and_audit.py
       0003_identity_documents.py
+      0004_identity_reviews.py
   app/
     __init__.py
     main.py
@@ -493,6 +494,13 @@ services/api/
         schemas.py
         service.py
         vault.py
+      verification/
+        __init__.py
+        repository.py
+        router.py
+        rules.py
+        schemas.py
+        service.py
   tests/
     conftest.py
     express/
@@ -515,6 +523,8 @@ services/api/
     test_security.py
     test_sign_in.py
     test_throttle.py
+    test_verification_api.py
+    test_verification_rules.py
 services/ai-worker/
   README.md
 packages/

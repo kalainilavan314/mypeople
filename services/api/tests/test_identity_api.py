@@ -3,16 +3,12 @@
 Database changes are rolled back afterwards; the store lives in pytest's tmp_path.
 """
 
-import base64
 import os
 import uuid
-from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
-from pydantic import SecretStr
 from sqlalchemy import Row, text
 
 from app.db.session import get_db
@@ -20,15 +16,9 @@ from app.main import create_app
 from app.modules.audit.service import verify_chain
 from app.modules.identity import links
 
-KEY = os.urandom(32)
 JPEG = b"\xff\xd8\xff\xe0\x00\x10JFIF\x00" + os.urandom(2048)
 PNG = b"\x89PNG\r\n\x1a\n" + os.urandom(1024)
 VIEW = "members.view_identity_evidence"
-
-
-@pytest.fixture
-def evidence_dir(tmp_path) -> Path:
-    return tmp_path / "evidence"
 
 
 def _client(settings, db_session) -> TestClient:
@@ -38,26 +28,8 @@ def _client(settings, db_session) -> TestClient:
 
 
 @pytest.fixture
-def client(database_settings, db_session, evidence_dir) -> TestClient:
-    settings = database_settings.model_copy(
-        update={"evidence_storage_dir": evidence_dir, "evidence_encryption_key": SecretStr(base64.b64encode(KEY).decode())}
-    )
-    return _client(settings, db_session)
-
-
-@pytest.fixture
-def member_in(db_session, create_member) -> Callable[..., Row]:
-    """A member registered in a GN division, as sign-up records them."""
-
-    def create(gn: Row, **options) -> Row:
-        member = create_member(**options)
-        db_session.execute(
-            text("UPDATE npm.member SET gs_code = :gn, ds_code = :ds, district_code = :district WHERE id = :id"),
-            {"gn": gn.gn, "ds": gn.ds, "district": gn.district, "id": member.id},
-        )
-        return member
-
-    return create
+def client(identity_client) -> TestClient:
+    return identity_client
 
 
 @pytest.fixture
@@ -66,23 +38,13 @@ def member(member_in, area) -> Row:
 
 
 @pytest.fixture
-def reviewer(create_member, assign, super_admin, area) -> Row:
-    """A district coordinator allowed to see identity evidence in the member's district."""
+def reviewer(create_member, assign, super_admin, area, member, open_review) -> Row:
+    """A district coordinator allowed to see identity evidence in the member's district,
+    holding the member's identity review (PRM-03)."""
     person = create_member(verified=True)
     assign(person, "3A", "district", area.district, [VIEW, "members.verify"], granted_by=super_admin)
+    open_review(member, person)
     return person
-
-
-@pytest.fixture
-def upload(client, auth) -> Callable[..., dict]:
-    def put(person: Row, kind: str = "nic_front", data: bytes = JPEG, content_type: str = "image/jpeg") -> dict:
-        response = client.put(
-            f"/v1/identity/me/documents/{kind}", content=data, headers={**auth(person), "Content-Type": content_type}
-        )
-        assert response.status_code == 201, response.text
-        return response.json()
-
-    return put
 
 
 def audit_entries(db_session, action: str) -> list[Row]:
@@ -105,7 +67,7 @@ def last_audit(db_session) -> Row:
 
 
 def test_a_member_uploads_both_sides_and_replaces_one(client, db_session, auth, upload, member, area):
-    front = upload(member, "nic_front")
+    front = upload(member, "nic_front", JPEG)
     back = upload(member, "nic_back", PNG, "image/png")
     assert (front["kind"], front["version"], front["contentType"], front["byteSize"]) == (
         "nic_front", 1, "image/jpeg", len(JPEG)
@@ -129,7 +91,7 @@ def test_a_member_uploads_both_sides_and_replaces_one(client, db_session, auth, 
 
 
 def test_the_stored_file_is_encrypted(upload, member, evidence_dir):
-    document = upload(member)
+    document = upload(member, data=JPEG)
 
     [stored] = [path for path in evidence_dir.rglob("*") if path.is_file()]
     assert stored.name == f"{document['id']}.bin"
@@ -185,7 +147,7 @@ def test_without_storage_settings_uploads_answer_503(database_settings, db_sessi
 def test_a_reviewer_views_evidence_through_a_short_lived_link_and_each_view_is_logged(
     client, db_session, auth, upload, member, reviewer, area
 ):
-    document = upload(member)
+    document = upload(member, data=JPEG)
 
     listed = client.get(f"/v1/identity/members/{member.id}/documents", headers=auth(reviewer)).json()
     assert [d["id"] for d in listed] == [document["id"]]
@@ -318,18 +280,50 @@ def test_a_reviewer_from_another_district_is_refused_and_logged(
 
 
 def test_a_member_without_an_area_is_visible_only_to_platform_scope(
-    client, auth, assign, create_member, super_admin, upload, reviewer
+    client, auth, assign, create_member, super_admin, upload, reviewer, open_review
 ):
     unplaced = create_member()
     document = upload(unplaced)
     national = create_member(verified=True)
     assign(national, "5", "platform", None, [VIEW], granted_by=super_admin)
+    open_review(unplaced, national)
 
     district = client.post(f"/v1/identity/documents/{document['id']}/view-link", headers=auth(reviewer))
     platform = client.post(f"/v1/identity/documents/{document['id']}/view-link", headers=auth(national))
 
     assert (district.status_code, district.json()) == (403, {"detail": "outside_your_area"})
     assert platform.status_code == 200
+
+
+def test_evidence_opens_only_inside_the_viewers_open_review(
+    client, db_session, auth, assign, create_member, super_admin, upload, member, area, open_review
+):
+    document = upload(member)
+    reviewer = create_member(verified=True)
+    colleague = create_member(verified=True)
+    for person in (reviewer, colleague):
+        assign(person, "3A", "district", area.district, [VIEW, "members.verify"], granted_by=super_admin)
+    view_link = f"/v1/identity/documents/{document['id']}/view-link"
+
+    without_review = client.post(view_link, headers=auth(reviewer))
+    assert (without_review.status_code, without_review.json()) == (403, {"detail": "no_open_review"})
+    entry = last_audit(db_session)
+    assert (entry.action, entry.actor_id, entry.details["reason"]) == ("access.denied", reviewer.id, "no_open_review")
+
+    review_id = open_review(member, colleague)
+    assert client.post(view_link, headers=auth(reviewer)).json() == {"detail": "no_open_review"}  # held by someone else
+
+    db_session.execute(
+        text("UPDATE identity.identity_review SET claimed_by = :reviewer WHERE id = :id"),
+        {"reviewer": reviewer.id, "id": review_id},
+    )
+    url = client.post(view_link, headers=auth(reviewer)).json()["url"]
+    assert client.get(url, headers=auth(reviewer)).status_code == 200
+
+    # The review leaves "in review" (a correction was asked for): the link already issued stops working.
+    db_session.execute(text("UPDATE identity.identity_review SET state = 'needs_update' WHERE id = :id"), {"id": review_id})
+    closed = client.get(url, headers=auth(reviewer))
+    assert (closed.status_code, closed.json()) == (403, {"detail": "no_open_review"})
 
 
 def test_nobody_opens_their_own_identity_evidence(client, auth, upload, member_in, assign, super_admin, area):

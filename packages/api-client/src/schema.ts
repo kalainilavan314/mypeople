@@ -319,7 +319,7 @@ export interface paths {
         /**
          * List Member Documents
          * @description A member's current identity images, without the images. Needs members.view_identity_evidence
-         *     over the member's area, and never for one's own record (BR-085).
+         *     over the member's area and an open review held by the caller (PRM-03); never one's own record (BR-085).
          */
         get: operations["list_member_documents_v1_identity_members__member_id__documents_get"];
         put?: never;
@@ -341,7 +341,8 @@ export interface paths {
         put?: never;
         /**
          * Create View Link
-         * @description Open one image: a link for the caller alone that expires after 5 minutes (FR-ARCH-007). Logged.
+         * @description Open one image: a link for the caller alone that expires after 5 minutes (FR-ARCH-007), only
+         *     inside the caller's open review of that member (PRM-03). Logged.
          */
         post: operations["create_view_link_v1_identity_documents__document_id__view_link_post"];
         delete?: never;
@@ -364,6 +365,160 @@ export interface paths {
         get: operations["view_evidence_v1_identity_evidence__token__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/me/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Review
+         * @description The member's latest identity review: reference, state and decisions (A10, A11, C06, P03).
+         *     null before the first submission. Reviewers are shown by tier only.
+         */
+        get: operations["read_my_review_v1_identity_me_review_get"];
+        put?: never;
+        /**
+         * Submit My Review
+         * @description Send the identity images for team review (A09), or a correction back to the same review (A11).
+         *
+         *     Needs every image of the route already received (NIC: front, back and
+         *     selfie; passport: photo page and selfie) and the declaration (BR-011).
+         *     Sending again while the review is open returns the same review.
+         */
+        post: operations["submit_my_review_v1_identity_me_review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Reviews
+         * @description W01: identity reviews in the caller's areas, oldest waiting first (FR-WEB-001, 002).
+         *     Open reviews unless states are given; mine=true for the caller's claimed reviews.
+         */
+        get: operations["list_reviews_v1_identity_reviews_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/reviews/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Count Reviews
+         * @description The W01 counts: awaiting review, needs update, assigned to me (FR-WEB-001).
+         */
+        get: operations["count_reviews_v1_identity_reviews_counts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/reviews/{review_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Review
+         * @description One review for W02: the member's details, which images exist and every decision so far.
+         */
+        get: operations["read_review_v1_identity_reviews__review_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/reviews/{review_id}/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Claim Review
+         * @description Take the review (FR-WEB-003). While the caller holds it in review, they can open its evidence (PRM-03).
+         */
+        post: operations["claim_review_v1_identity_reviews__review_id__claim_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/reviews/{review_id}/release": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Release Review
+         * @description Give a claimed review back to the queue; its evidence closes for the caller.
+         */
+        post: operations["release_review_v1_identity_reviews__review_id__release_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/reviews/{review_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Review
+         * @description Approve identity, request an update or record unable to verify (FR-WEB-008 to 011).
+         *
+         *     Only the reviewer holding the review decides. Approve needs every
+         *     checklist item and every required image opened by this reviewer.
+         *     Approval confirms identity only; membership is a separate decision (BR-014).
+         */
+        post: operations["decide_review_v1_identity_reviews__review_id__decision_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -493,6 +648,71 @@ export interface components {
             /** Firstbrokenid */
             firstBrokenId: number | null;
         };
+        /** DecisionInput */
+        DecisionInput: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approve" | "request_update" | "unable_to_verify";
+            /**
+             * Checklist
+             * @default []
+             */
+            checklist: string[];
+            /**
+             * Items
+             * @default []
+             */
+            items: string[];
+            /** Reasoncategory */
+            reasonCategory?: string | null;
+            /** Note */
+            note?: string | null;
+        };
+        /** DecisionOut */
+        DecisionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approve" | "request_update" | "unable_to_verify";
+            /**
+             * Reviewerid
+             * Format: uuid
+             */
+            reviewerId: string;
+            /**
+             * Reviewertier
+             * @enum {string}
+             */
+            reviewerTier: "1" | "2A" | "2B" | "3A" | "3B" | "4" | "5";
+            /**
+             * Decidedat
+             * Format: date-time
+             */
+            decidedAt: string;
+            /** Checklist */
+            checklist: string[];
+            /** Requesteditems */
+            requestedItems: string[];
+            /** Reasoncategory */
+            reasonCategory: string | null;
+            /** Note */
+            note: string | null;
+            /**
+             * Evidence
+             * @description The images the decision was made on (BR-082)
+             */
+            evidence: {
+                [key: string]: components["schemas"]["EvidenceVersion"];
+            };
+        };
         /**
          * DocumentOut
          * @description An identity image the server holds (BR-020). Never the image itself.
@@ -519,6 +739,16 @@ export interface components {
              * Format: date-time
              */
             serverAckAt: string;
+        };
+        /** EvidenceVersion */
+        EvidenceVersion: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Version */
+            version: number;
         };
         /**
          * EvidenceViewOut
@@ -551,6 +781,33 @@ export interface components {
              * @enum {string}
              */
             status: "ok" | "unavailable";
+        };
+        /**
+         * MemberDecisionOut
+         * @description A decision as the member sees it: the reviewer's tier, never their name (FR-PROF-006).
+         */
+        MemberDecisionOut: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approve" | "request_update" | "unable_to_verify";
+            /**
+             * Decidedat
+             * Format: date-time
+             */
+            decidedAt: string;
+            /**
+             * Reviewertier
+             * @enum {string}
+             */
+            reviewerTier: "1" | "2A" | "2B" | "3A" | "3B" | "4" | "5";
+            /** Requesteditems */
+            requestedItems: string[];
+            /** Reasoncategory */
+            reasonCategory: string | null;
+            /** Note */
+            note: string | null;
         };
         /**
          * MemberProfile
@@ -604,6 +861,33 @@ export interface components {
             joinedAt: string;
         };
         /**
+         * MyReviewOut
+         * @description A10, A11, C06: the review reference and state, and what to correct when a correction is asked for.
+         */
+        MyReviewOut: {
+            /** Reviewref */
+            reviewRef: string;
+            /**
+             * Route
+             * @enum {string}
+             */
+            route: "nic" | "passport";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "submitted" | "in_review" | "needs_update" | "verified" | "unable_to_verify";
+            /**
+             * Submittedat
+             * Format: date-time
+             */
+            submittedAt: string;
+            /** Decidedat */
+            decidedAt: string | null;
+            /** History */
+            history: components["schemas"]["MemberDecisionOut"][];
+        };
+        /**
          * PreviewOut
          * @description What W09 shows before saving (RB-06). Each problem is a code the dashboard explains.
          */
@@ -614,6 +898,140 @@ export interface components {
             problems: string[];
             /** Reviewdueat */
             reviewDueAt: string | null;
+        };
+        /** QueueCountsOut */
+        QueueCountsOut: {
+            /** Awaitingreview */
+            awaitingReview: number;
+            /** Needsupdate */
+            needsUpdate: number;
+            /** Assignedtome */
+            assignedToMe: number;
+        };
+        /**
+         * ReviewFileOut
+         * @description W02 without the images: they open one at a time through view links, once the review is claimed.
+         */
+        ReviewFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Reviewref */
+            reviewRef: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /**
+             * Route
+             * @enum {string}
+             */
+            route: "nic" | "passport";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "submitted" | "in_review" | "needs_update" | "verified" | "unable_to_verify";
+            /**
+             * Area
+             * @description The member's area when submitted, e.g. gn:LK4103005
+             */
+            area: string;
+            /**
+             * Submittedat
+             * Format: date-time
+             */
+            submittedAt: string;
+            /** Resubmittedat */
+            resubmittedAt: string | null;
+            /** Claimedby */
+            claimedBy: string | null;
+            /**
+             * Claimedbyname
+             * @description Shown as "In review by …" (FR-WEB-003)
+             */
+            claimedByName: string | null;
+            /** Claimedat */
+            claimedAt: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+            member: components["schemas"]["ReviewMemberOut"];
+            /** Documents */
+            documents: components["schemas"]["DocumentOut"][];
+            /** Decisions */
+            decisions: components["schemas"]["DecisionOut"][];
+        };
+        /**
+         * ReviewMemberOut
+         * @description The profile details a reviewer compares with the documents (FR-WEB-007).
+         */
+        ReviewMemberOut: {
+            /** Membercode */
+            memberCode: string;
+            /** Fullname */
+            fullName: string;
+            /** Dob */
+            dob: string | null;
+            /** Districtcode */
+            districtCode: string | null;
+            /** Dscode */
+            dsCode: string | null;
+            /** Gscode */
+            gsCode: string | null;
+        };
+        /**
+         * ReviewSummaryOut
+         * @description One row of the W01 queue.
+         */
+        ReviewSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Reviewref */
+            reviewRef: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /**
+             * Route
+             * @enum {string}
+             */
+            route: "nic" | "passport";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "submitted" | "in_review" | "needs_update" | "verified" | "unable_to_verify";
+            /**
+             * Area
+             * @description The member's area when submitted, e.g. gn:LK4103005
+             */
+            area: string;
+            /**
+             * Submittedat
+             * Format: date-time
+             */
+            submittedAt: string;
+            /** Resubmittedat */
+            resubmittedAt: string | null;
+            /** Claimedby */
+            claimedBy: string | null;
+            /**
+             * Claimedbyname
+             * @description Shown as "In review by …" (FR-WEB-003)
+             */
+            claimedByName: string | null;
+            /** Claimedat */
+            claimedAt: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
         };
         /** RevokeInput */
         RevokeInput: {
@@ -635,6 +1053,19 @@ export interface components {
             /** Token */
             token: string;
             member: components["schemas"]["MemberProfile"];
+        };
+        /** SubmissionInput */
+        SubmissionInput: {
+            /**
+             * Route
+             * @enum {string}
+             */
+            route: "nic" | "passport";
+            /**
+             * Declaration
+             * @constant
+             */
+            declaration: true;
         };
         /** TierInfo */
         TierInfo: {
@@ -1160,7 +1591,7 @@ export interface operations {
                     "application/json": components["schemas"]["DocumentOut"][];
                 };
             };
-            /** @description forbidden, own_record, outside_your_area, link_expired, link_invalid or link_not_yours */
+            /** @description forbidden, own_record, outside_your_area, no_open_review, link_expired, link_invalid or link_not_yours */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -1205,7 +1636,7 @@ export interface operations {
                     "application/json": components["schemas"]["ViewLinkOut"];
                 };
             };
-            /** @description forbidden, own_record, outside_your_area, link_expired, link_invalid or link_not_yours */
+            /** @description forbidden, own_record, outside_your_area, no_open_review, link_expired, link_invalid or link_not_yours */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -1252,7 +1683,7 @@ export interface operations {
                     "image/heic": string;
                 };
             };
-            /** @description forbidden, own_record, outside_your_area, link_expired, link_invalid or link_not_yours */
+            /** @description forbidden, own_record, outside_your_area, no_open_review, link_expired, link_invalid or link_not_yours */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -1277,6 +1708,331 @@ export interface operations {
             };
             /** @description evidence_storage_not_configured */
             503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_my_review_v1_identity_me_review_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReviewOut"] | null;
+                };
+            };
+        };
+    };
+    submit_my_review_v1_identity_me_review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmissionInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReviewOut"];
+                };
+            };
+            /** @description {"code": "submission_refused", "problems": [...]} */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_reviews_v1_identity_reviews_get: {
+        parameters: {
+            query?: {
+                state?: ("submitted" | "in_review" | "needs_update" | "verified" | "unable_to_verify")[] | null;
+                mine?: boolean;
+                /** @description A review reference, e.g. VR-00421 */
+                ref?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    count_reviews_v1_identity_reviews_counts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueueCountsOut"];
+                };
+            };
+        };
+    };
+    read_review_v1_identity_reviews__review_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                review_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    claim_review_v1_identity_reviews__review_id__claim_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                review_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    release_review_v1_identity_reviews__review_id__release_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                review_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_review_v1_identity_reviews__review_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                review_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "decision_refused", "problems": [...]} */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };

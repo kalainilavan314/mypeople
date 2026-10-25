@@ -7,13 +7,14 @@ there is never a grant without a record of who made it.
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from typing import NoReturn
 
 from sqlalchemy.orm import Session
 
 from app.modules.access import repository, rules
 from app.modules.access.permissions import Tier, default_permissions, grant_for
 from app.modules.access.repository import StoredAssignment
-from app.modules.access.rules import Area, AssignmentRequest, Grantee
+from app.modules.access.rules import Area, AreaPath, AssignmentRequest, Grantee
 from app.modules.audit import service as audit
 
 
@@ -25,6 +26,14 @@ class AssignmentRefused(Exception):
 
 class AssignmentNotFound(Exception):
     pass
+
+
+class AccessRefused(Exception):
+    """A staff action refused for one record: own_record, outside_your_area, or a module's own reason."""
+
+    def __init__(self, code: str) -> None:
+        super().__init__(code)
+        self.code = code
 
 
 @dataclass(frozen=True)
@@ -171,12 +180,57 @@ def bootstrap_super_administrator(db: Session, member_id: uuid.UUID, extra_permi
     return assignment
 
 
-def visible_audit_areas(staff: Staff) -> list[str] | None:
-    """None when the person may read every audit entry; otherwise the areas they may read."""
-    areas = [a.area for a in staff.assignments if "audit.view" in a.permissions]
+def refuse(
+    db: Session, staff: Staff, permission: str, reason: str, ip: str, *, target: tuple[str, str], area_path: AreaPath | None
+) -> NoReturn:
+    """Record a refused staff action, then raise it. Logged so that probing for access is visible (FR-ARCH-002)."""
+    audit.record(
+        db,
+        actor_id=staff.member_id,
+        action="access.denied",
+        target_type=target[0],
+        target_id=target[1],
+        area_path=area_path,
+        details={"permission": permission, "reason": reason},
+        ip=ip,
+    )
+    db.commit()
+    raise AccessRefused(reason)
+
+
+def check_record_scope(
+    db: Session,
+    staff: Staff,
+    permission: str,
+    *,
+    member_id: uuid.UUID,
+    area_path: AreaPath,
+    target: tuple[str, str],
+    ip: str,
+) -> None:
+    """For an action on one member's record: never the person's own record (BR-085),
+    and the permission over the record's area (RB-01). Refusals are audited."""
+    if member_id == staff.member_id:
+        refuse(db, staff, permission, "own_record", ip, target=target, area_path=area_path)
+    if not rules.holds(staff.rule_assignments(), permission, area_path):
+        refuse(db, staff, permission, "outside_your_area", ip, target=target, area_path=area_path)
+
+
+def visible_areas(staff: Staff, permission: str) -> list[str] | None:
+    """None when the person holds the permission over the whole platform; otherwise the area keys where they hold it."""
+    areas = [a.area for a in staff.assignments if permission in a.permissions]
     if any(area.level == "platform" for area in areas):
         return None
     return [area.key for area in areas]
+
+
+def visible_audit_areas(staff: Staff) -> list[str] | None:
+    """None when the person may read every audit entry; otherwise the areas they may read."""
+    return visible_areas(staff, "audit.view")
+
+
+def has_permission_over(staff: Staff, permission: str, area_path: AreaPath) -> bool:
+    return rules.holds(staff.rule_assignments(), permission, area_path)
 
 
 def has_platform_permission(staff: Staff, permission: str) -> bool:

@@ -23,6 +23,13 @@ export type IdentityDocumentKind = IdentityDocument['kind'];
 export type IdentityImageType = keyof operations['upload_my_document_v1_identity_me_documents__kind__put']['requestBody']['content'];
 export type EvidenceLink = Schemas['ViewLinkOut'];
 export type EvidenceView = Schemas['EvidenceViewOut'];
+export type IdentityReview = Schemas['MyReviewOut'];
+export type IdentityRoute = IdentityReview['route'];
+export type ReviewSummary = Schemas['ReviewSummaryOut'];
+export type ReviewState = ReviewSummary['state'];
+export type ReviewFile = Schemas['ReviewFileOut'];
+export type ReviewCounts = Schemas['QueueCountsOut'];
+export type ReviewDecisionInput = Schemas['DecisionInput'];
 
 /** A response other than 2xx. `code` is the API's error code, e.g. "invalid_credentials". */
 export class ApiError extends Error {
@@ -60,6 +67,16 @@ export interface AuditFilters {
   action?: string;
   /** For paging: entries older than this id. */
   beforeId?: number;
+  limit?: number;
+}
+
+export interface ReviewFilters {
+  /** Open reviews (submitted, in review, needs update) when left out. */
+  states?: ReviewState[];
+  /** Only reviews the caller has claimed. */
+  mine?: boolean;
+  /** A review reference, e.g. "VR-00421". */
+  ref?: string;
   limit?: number;
 }
 
@@ -137,6 +154,31 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
       );
       return { ...link, url: `${root}${link.url}` };
     },
+
+    /** The member's latest identity review, or null before the first submission. */
+    getMyIdentityReview: () => request<IdentityReview | null>('GET', '/v1/identity/me/review'),
+    /**
+     * Sends the images for team review, or a correction back to the same review. Pass `declaration: true`
+     * only after the member confirms the documents are theirs and correct (BR-011). Throws ApiError
+     * "submission_refused" (409) with `problems` such as "missing:selfie" or "not_updated:nic_back".
+     */
+    submitIdentityReview: (route: IdentityRoute, declaration: true) =>
+      request<IdentityReview>('POST', '/v1/identity/me/review', { route, declaration }),
+
+    /** W01: reviews in the caller's areas, oldest waiting first. Needs members.verify. */
+    listIdentityReviews: (filters: ReviewFilters = {}) =>
+      request<ReviewSummary[]>('GET', `/v1/identity/reviews${toReviewQuery(filters)}`),
+    getIdentityReviewCounts: () => request<ReviewCounts>('GET', '/v1/identity/reviews/counts'),
+    /** W02 without the images. Throws ApiError "own_record" or "outside_your_area" (403). */
+    getIdentityReview: (reviewId: string) => request<ReviewFile>('GET', `/v1/identity/reviews/${encodeURIComponent(reviewId)}`),
+    /** Takes the review and opens its evidence to the caller. Throws ApiError "claimed_by_another" (409). */
+    claimIdentityReview: (reviewId: string) =>
+      request<ReviewFile>('POST', `/v1/identity/reviews/${encodeURIComponent(reviewId)}/claim`),
+    releaseIdentityReview: (reviewId: string) =>
+      request<ReviewFile>('POST', `/v1/identity/reviews/${encodeURIComponent(reviewId)}/release`),
+    /** Throws ApiError "decision_refused" (422) with `problems`, e.g. "checklist_incomplete:readable". */
+    decideIdentityReview: (reviewId: string, input: ReviewDecisionInput) =>
+      request<ReviewFile>('POST', `/v1/identity/reviews/${encodeURIComponent(reviewId)}/decision`, input),
   };
 }
 
@@ -147,6 +189,16 @@ function toQuery(filters: AuditFilters): string {
   if (filters.actorId) params.set('actor_id', filters.actorId);
   if (filters.action) params.set('action', filters.action);
   if (filters.beforeId !== undefined) params.set('before_id', String(filters.beforeId));
+  if (filters.limit !== undefined) params.set('limit', String(filters.limit));
+  const query = params.toString();
+  return query ? `?${query}` : '';
+}
+
+function toReviewQuery(filters: ReviewFilters): string {
+  const params = new URLSearchParams();
+  for (const state of filters.states ?? []) params.append('state', state);
+  if (filters.mine) params.set('mine', 'true');
+  if (filters.ref) params.set('ref', filters.ref);
   if (filters.limit !== undefined) params.set('limit', String(filters.limit));
   const query = params.toString();
   return query ? `?${query}` : '';

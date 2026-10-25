@@ -6,37 +6,34 @@ check), BR-086 and FR-WEB-005 (every view logged), FR-AUTH-024 (members see
 when their evidence was viewed), BR-021 (no member download), BR-085 (nobody
 reviews their own record), PRM-03 members.view_identity_evidence.
 
-Not yet enforced here, because the modules they need do not exist yet:
-PRM-03's "only inside an open review" (arrives with the identity
-verification workflow), BR-085's "or a declared relative" (no relatives are
-recorded yet), and the OD-03 retention period (nothing is deleted).
+PRM-03 "only inside an open review": a reviewer sees a member's evidence
+only while they hold that member's identity review in review (claimed in
+W01, see app/modules/verification).
+
+Not yet enforced, because what they need does not exist yet: BR-085's "or a
+declared relative" (no relatives are recorded) and the OD-03 retention
+period (nothing is deleted).
 """
 
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
-from typing import NoReturn
 
 from sqlalchemy.orm import Session
 
 from app.modules.access import repository as access_repository
-from app.modules.access import rules
+from app.modules.access import service as access
 from app.modules.access.rules import AreaPath
-from app.modules.access.service import Staff
+from app.modules.access.service import AccessRefused, Staff
 from app.modules.audit import service as audit
 from app.modules.identity import links, repository
 from app.modules.identity.links import ViewLink
 from app.modules.identity.repository import DocumentKind, StoredDocument
 from app.modules.identity.vault import EvidenceVault
+from app.modules.verification import repository as verification_repository
 
 PERMISSION = "members.view_identity_evidence"  # PRM-03
 VIEWED = "identity.evidence.viewed"
-
-
-class EvidenceRefused(Exception):
-    def __init__(self, code: str) -> None:
-        super().__init__(code)
-        self.code = code
 
 
 class DocumentNotFound(Exception):
@@ -90,28 +87,14 @@ def my_documents(db: Session, member_id: uuid.UUID) -> list[StoredDocument]:
     return repository.current_documents(db, member_id)
 
 
-def _refuse(db: Session, staff: Staff, reason: str, ip: str, *, target: tuple[str, str], area_path: AreaPath | None) -> NoReturn:
-    audit.record(
-        db,
-        actor_id=staff.member_id,
-        action="access.denied",
-        target_type=target[0],
-        target_id=target[1],
-        area_path=area_path,
-        details={"permission": PERMISSION, "reason": reason},
-        ip=ip,
-    )
-    db.commit()
-    raise EvidenceRefused(reason)
-
-
 def _check_reviewer(db: Session, staff: Staff, member_id: uuid.UUID, ip: str) -> AreaPath:
-    """Not the reviewer's own record (BR-085), and the permission over the member's area (PRM-03)."""
+    """Not the reviewer's own record (BR-085), the permission over the member's area,
+    and an open review of this member held by this reviewer (PRM-03)."""
     area_path = access_repository.member_area_path(db, member_id)
-    if member_id == staff.member_id:
-        _refuse(db, staff, "own_record", ip, target=("member", str(member_id)), area_path=area_path)
-    if not rules.holds(staff.rule_assignments(), PERMISSION, area_path):
-        _refuse(db, staff, "outside_your_area", ip, target=("member", str(member_id)), area_path=area_path)
+    target = ("member", str(member_id))
+    access.check_record_scope(db, staff, PERMISSION, member_id=member_id, area_path=area_path, target=target, ip=ip)
+    if not verification_repository.has_open_review_claimed_by(db, member_id, staff.member_id):
+        access.refuse(db, staff, PERMISSION, "no_open_review", ip, target=target, area_path=area_path)
     return area_path
 
 
@@ -162,17 +145,18 @@ def open_evidence(
     try:
         link = links.read_view_link(token, jwt_secret)
     except links.LinkExpired:
-        raise EvidenceRefused("link_expired") from None
+        raise AccessRefused("link_expired") from None
     except links.LinkInvalid:
-        raise EvidenceRefused("link_invalid") from None
+        raise AccessRefused("link_invalid") from None
     if link.viewer_id != staff.member_id:
         # A link passed to someone else: refused and logged, even though they are staff.
-        _refuse(db, staff, "link_not_yours", ip, target=("identity_document", str(link.document_id)), area_path=None)
+        target = ("identity_document", str(link.document_id))
+        access.refuse(db, staff, PERMISSION, "link_not_yours", ip, target=target, area_path=None)
 
     document = repository.find_document(db, link.document_id)
     if document is None:
         raise DocumentNotFound()
-    # Checked again: a permission revoked since the link was issued applies now (FR-WEB-033).
+    # Checked again: a permission revoked or a review closed since the link was issued applies now (FR-WEB-033).
     area_path = _check_reviewer(db, staff, document.member_id, ip)
     data = vault.read(document.id, document.key_id)
     audit.record(

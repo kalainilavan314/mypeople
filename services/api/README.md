@@ -19,7 +19,9 @@ Current scope:
 | `GET /v1/audit`, `GET /v1/audit/verify` | the audit log and its hash-chain check; need `audit.view` |
 | `GET /v1/identity/me/documents`, `PUT /v1/identity/me/documents/{kind}` | which identity images the server holds for the member; upload or replace one (the body is the image) |
 | `GET /v1/identity/me/evidence-views` | when a reviewer viewed the member's evidence: date and role only |
-| `GET /v1/identity/members/{id}/documents`, `POST /v1/identity/documents/{id}/view-link`, `GET /v1/identity/evidence/{token}` | reviewers list, open (5-minute link) and view identity images; need `members.view_identity_evidence` over the member's area |
+| `GET /v1/identity/members/{id}/documents`, `POST /v1/identity/documents/{id}/view-link`, `GET /v1/identity/evidence/{token}` | reviewers list, open (5-minute link) and view identity images; need `members.view_identity_evidence` over the member's area and their own open review of the member |
+| `GET /v1/identity/me/review`, `POST /v1/identity/me/review` | the member's identity review (VR reference, state, decisions); submit it, or send a correction |
+| `GET /v1/identity/reviews`, `GET /v1/identity/reviews/counts`, `GET /v1/identity/reviews/{id}`, `POST .../claim`, `.../release`, `.../decision` | the reviewers' queue and decisions (W01, W02); need `members.verify` over the member's area |
 
 ## Staff access (BRD §9)
 
@@ -66,10 +68,45 @@ from what the client claims.
 - **No member download** (BR-021): members see which images the server
   holds, not the images.
 
-Not yet: viewing only inside an open review (PRM-03) arrives with the
-identity verification workflow; relatives (BR-085) are not recorded yet;
-nothing is deleted until the retention period is decided (OD-03). Without
-the two settings the endpoints answer `503 evidence_storage_not_configured`.
+- **Only inside an open review** (PRM-03): a reviewer opens a member's
+  images only while they hold that member's identity review in review.
+
+Not yet: relatives (BR-085) are not recorded; nothing is deleted until the
+retention period is decided (OD-03). Without the two settings the endpoints
+answer `503 evidence_storage_not_configured`.
+
+## Identity verification (BRD W01, W02, §9.3)
+
+A member uploads the images of one route (NIC: front, back and selfie;
+passport: photo page and selfie) and submits them with a declaration
+(BR-011). That creates a review with a `VR-` reference in state `submitted`;
+submitting again while it is open returns the same review.
+
+1. **Queue (W01).** Holders of `members.verify` see the reviews in their
+   areas, oldest waiting first, with counts for awaiting review, needs update
+   and assigned to me. The area is the member's area when they submitted.
+2. **Claim.** A reviewer claims a review (`in_review`), so nobody else
+   decides it; others see who holds it. Claiming opens the member's evidence
+   to that reviewer. A claim held by someone who has since lost
+   `members.verify` there can be taken over. Nobody claims their own record.
+3. **Decision (W02).** The claimant chooses one of three, each stored
+   immutably with the reviewer, their tier, the time and the document
+   versions (FR-WEB-011, BR-082):
+   - *Approve identity* needs the whole checklist and every required image
+     opened by this reviewer in its current version.
+   - *Request an update* names the items and a reason category; the member
+     replaces only those, and the correction returns to the same review and
+     reviewer (FR-REG-022, 023).
+   - *Unable to verify* needs a reason category; the member can submit again.
+4. **Status.** Approval confirms identity only; membership stays a separate
+   decision (BR-014, OD-02). `npm.member.verification_status` is kept in step
+   (`review_pending`, `identity_confirmed`) for the live member app and the
+   Express API.
+
+The reason categories are proposed, not from the BRD, and need sponsor
+confirmation. Not built yet: appeals to a different reviewer (FR-IDV-013),
+automated screening (D03), duplicate flags (FR-WEB-012), notifications to the
+member (FR-REG-021) and consent records (BR-008).
 
 ## Sessions
 
@@ -168,7 +205,7 @@ Check the state with `python -m alembic current`. From now on, every schema
 change is a new Alembic revision, never a new file in `server/migrations`:
 
 ```powershell
-python -m alembic revision --rev-id 0004 -m "describe the change"
+python -m alembic revision --rev-id 0005 -m "describe the change"
 python -m alembic upgrade head --sql    # review the SQL before applying it
 python -m alembic upgrade head
 ```
@@ -209,6 +246,7 @@ app/
   modules/access/      staff tiers, permissions, areas, assignments, bootstrap command
   modules/audit/       append-only, hash-chained audit log
   modules/identity/    identity images: encrypted vault, upload, signed view links
+  modules/verification/  identity reviews: submit, queue, claim, decide
 alembic/               Alembic environment and revisions
 tests/                 pytest tests
 tests/express/         Node helper and vectors from server/src/lib.js

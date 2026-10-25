@@ -50,6 +50,14 @@ PLATFORM = Area("platform")
 AreaPath = tuple[Area, ...]
 
 
+def area_from_key(key: str) -> Area:
+    """The reverse of Area.key, for area paths stored as text."""
+    if key == "platform":
+        return PLATFORM
+    level, code = key.split(":", 1)
+    return Area(level, code)  # type: ignore[arg-type]
+
+
 def contains(outer: Area, inner_path: AreaPath) -> bool:
     return outer.level == "platform" or outer in inner_path
 

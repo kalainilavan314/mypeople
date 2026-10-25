@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.core.request_info import client_ip
 from app.db.session import get_db
 from app.modules.access.dependencies import require_permission
-from app.modules.access.service import Staff
+from app.modules.access.service import AccessRefused, Staff
 from app.modules.auth.dependencies import CurrentMember
 from app.modules.identity import service
 from app.modules.identity.dependencies import Image, Vault
@@ -26,7 +26,10 @@ IMAGE_BODY: dict[str, Any] = {
     "requestBody": {"required": True, "content": {media_type: _BINARY for media_type in ACCEPTED_TYPES}}
 }
 REFUSED = {
-    403: {"description": "forbidden, own_record, outside_your_area, link_expired, link_invalid or link_not_yours"},
+    403: {
+        "description": "forbidden, own_record, outside_your_area, no_open_review, link_expired, link_invalid"
+        " or link_not_yours"
+    },
     404: {"description": "not_found"},
 }
 NOT_CONFIGURED = {503: {"description": "evidence_storage_not_configured"}}
@@ -41,7 +44,7 @@ EVIDENCE_HEADERS = {
 }
 
 
-def _refused(error: service.EvidenceRefused) -> HTTPException:
+def _refused(error: AccessRefused) -> HTTPException:
     return HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.code)
 
 
@@ -88,25 +91,26 @@ def list_my_evidence_views(member: CurrentMember, db: Db) -> list[EvidenceViewOu
 @router.get("/members/{member_id}/documents", responses=REFUSED)
 def list_member_documents(member_id: uuid.UUID, staff: CanViewEvidence, request: Request, db: Db) -> list[DocumentOut]:
     """A member's current identity images, without the images. Needs members.view_identity_evidence
-    over the member's area, and never for one's own record (BR-085)."""
+    over the member's area and an open review held by the caller (PRM-03); never one's own record (BR-085)."""
     try:
         documents = service.member_documents(db, staff, member_id, client_ip(request))
     except service.DocumentNotFound:
         raise _not_found() from None
-    except service.EvidenceRefused as error:
+    except AccessRefused as error:
         raise _refused(error) from None
     return [DocumentOut.from_stored(d) for d in documents]
 
 
 @router.post("/documents/{document_id}/view-link", responses=REFUSED)
 def create_view_link(document_id: uuid.UUID, staff: CanViewEvidence, request: Request, db: Db) -> ViewLinkOut:
-    """Open one image: a link for the caller alone that expires after 5 minutes (FR-ARCH-007). Logged."""
+    """Open one image: a link for the caller alone that expires after 5 minutes (FR-ARCH-007), only
+    inside the caller's open review of that member (PRM-03). Logged."""
     jwt_secret = request.app.state.settings.jwt_secret.get_secret_value()
     try:
         token, link = service.issue_view_link(db, staff, document_id, jwt_secret, client_ip(request))
     except service.DocumentNotFound:
         raise _not_found() from None
-    except service.EvidenceRefused as error:
+    except AccessRefused as error:
         raise _refused(error) from None
     return ViewLinkOut(url=f"{router.prefix}/evidence/{token}", expires_at=link.expires_at)
 
@@ -129,7 +133,7 @@ def view_evidence(
         document, data = service.open_evidence(db, vault, staff, token, jwt_secret, client_ip(request))
     except service.DocumentNotFound:
         raise _not_found() from None
-    except service.EvidenceRefused as error:
+    except AccessRefused as error:
         raise _refused(error) from None
     except EvidenceUnreadable:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="evidence_unreadable") from None

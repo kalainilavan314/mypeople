@@ -33,7 +33,13 @@ v1.1 contains 466 functional requirements, 160 business rules, 174 screens, 70 d
 | FR-AUTH-024 (API) | Members see the date of each view and "Identity reviewer" | `/v1/identity/me/evidence-views` |
 | FR-REG-004, 005, 010, BR-020 (API) | NIC front and back (also passport page and selfie) uploaded separately, one side replaceable; JPEG, PNG or HEIC up to 10 MB; the response is the acknowledgement | `/v1/identity/me/documents` |
 | BR-021, FR-PROF-007 (API) | No way for a member to fetch their identity images | `/v1/identity` |
-| BR-085 (part) | Nobody opens their own identity evidence; relatives are not recorded yet | `identity/service.py` |
+| BR-085 (part) | Nobody opens, claims or decides their own identity review or evidence; relatives are not recorded yet | `access/service.py` (`check_record_scope`) |
+| PRM-03, PRM-04 | Evidence opens only inside the reviewer's own open review; decisions need `members.verify` over the member's area | `identity`, `verification` |
+| FR-REG-019, 020, 022, 023, 025 (API) | Submission with a VR reference and no duplicates; states; the exact items to correct with the note; a correction returns to the same review; the reason category for Unable to verify | `/v1/identity/me/review` |
+| FR-WEB-001 to 004 (API) | Queue limited to the reviewer's areas with counts; search by review reference; claim with the owner shown; no bulk decision | `/v1/identity/reviews` |
+| FR-WEB-007 to 011, 013 (API) | Checklist before Approve; exactly three decisions; items and reason for Request an update; reason for Unable to verify; immutable decision with reviewer, time, reason and evidence versions; no deciding one's own record | `verification/rules.py`, Alembic `0004` |
+| BR-011 to 014, BR-081, BR-082 | Declaration; only a human with `members.verify` decides; corrections name the item; identity, membership and access stay separate | `verification` |
+| FR-PROF-006 (API) | The member's review history with decision, reviewer tier and date | `/v1/identity/me/review` |
 | FR-AUTH-027 (part) | An assignment with an overdue review stops counting; the review workflow is not built | `access/repository.py` |
 | FR-ARCH-003, NFR-ARCH-02 | Versioned `/v1` REST API documented in OpenAPI 3.1 | `services/api`, `packages/api-client/openapi.json` |
 | FR-ARCH-006 (part) | CI runs builds and tests; security scans and the production approval gate are still missing | `.github/workflows/ci.yml` |
@@ -48,7 +54,7 @@ v1.1 contains 466 functional requirements, 160 business rules, 174 screens, 70 d
 | Decision | Blocks |
 |---|---|
 | OD-26 One role-aware app or two published apps | Staff app distribution (built as a separate app for now, as the BRD recommends) |
-| OD-01, OD-02 Who verifies identity; how membership is activated | Identity verification workflow |
+| OD-01, OD-02 Who verifies identity; how membership is activated | Assigning reviewers in production; membership activation (approval confirms identity only) |
 | OD-03 Retention of ID images, selfies, decisions | Deleting identity images (FR-IDV-015); every version is kept until decided |
 | OD-28, OD-29 Acceptable biometric processing and retention | Liveness and face comparison |
 | OD-42 AI provider and hosting | `services/ai-worker` |

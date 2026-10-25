@@ -196,3 +196,26 @@ test('openEvidence returns an absolute link on the API', async () => {
   assert.equal(sent[0].method, 'POST');
   assert.deepEqual(link, { url: 'https://api.example/v1/identity/evidence/abc.def.ghi', expiresAt: '2026-10-25T00:05:00Z' });
 });
+
+test('review filters repeat each state and keep the reference', async () => {
+  const { fetch, sent } = fakeFetch(200, []);
+  const client = createApiClient({ baseUrl: 'https://api.example', fetch });
+
+  await client.listIdentityReviews({ states: ['submitted', 'needs_update'], mine: true, ref: 'VR-00421' });
+  await client.listIdentityReviews();
+
+  assert.equal(sent[0].url, 'https://api.example/v1/identity/reviews?state=submitted&state=needs_update&mine=true&ref=VR-00421');
+  assert.equal(sent[1].url, 'https://api.example/v1/identity/reviews');
+});
+
+test('a refused submission carries the missing items', async () => {
+  const { fetch, sent } = fakeFetch(409, { detail: { code: 'submission_refused', problems: ['missing:selfie'] } });
+
+  const error = await createApiClient({ baseUrl: 'https://api.example', fetch })
+    .submitIdentityReview('nic', true)
+    .catch((e: unknown) => e);
+
+  assert.ok(error instanceof ApiError);
+  assert.deepEqual([error.status, error.code, error.problems], [409, 'submission_refused', ['missing:selfie']]);
+  assert.equal(sent[0].body, JSON.stringify({ route: 'nic', declaration: true }));
+});
