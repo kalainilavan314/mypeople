@@ -40,6 +40,12 @@ export type AppealSummary = Schemas['AppealSummaryOut'];
 export type AppealState = AppealSummary['state'];
 export type AppealFile = Schemas['AppealFileOut'];
 export type AppealDecisionInput = Schemas['AppealDecisionInput'];
+export type DuplicateCase = Schemas['CaseSummaryOut'];
+export type DuplicateCaseState = DuplicateCase['state'];
+export type DuplicateCaseFile = Schemas['CaseFileOut'];
+export type DuplicateReportInput = Schemas['ReportInput'];
+export type DuplicateDecisionInput = Schemas['CaseDecisionInput'];
+export type DuplicateFlag = Schemas['DuplicateFlagOut'];
 
 /** A response other than 2xx. `code` is the API's error code, e.g. "invalid_credentials". */
 export class ApiError extends Error {
@@ -215,7 +221,7 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
       request<IdentityReview>('POST', '/v1/identity/me/review/appeal', { statement }),
     /** D05: appeals in the caller's areas, oldest first. Needs idv.appeal.decide. */
     listIdentityAppeals: (filters: AppealFilters = {}) =>
-      request<AppealSummary[]>('GET', `/v1/identity/appeals${toAppealQuery(filters)}`),
+      request<AppealSummary[]>('GET', `/v1/identity/appeals${toQueueQuery(filters)}`),
     getIdentityAppeal: (appealId: string) => request<AppealFile>('GET', `/v1/identity/appeals/${encodeURIComponent(appealId)}`),
     /** Throws ApiError "original_reviewer" (409) for the person who made the decision under appeal. */
     claimIdentityAppeal: (appealId: string) =>
@@ -225,6 +231,20 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     /** Uphold or overturn, with a reason the member sees. Overturning sends the review back for a fresh decision. */
     decideIdentityAppeal: (appealId: string, input: AppealDecisionInput) =>
       request<AppealFile>('POST', `/v1/identity/appeals/${encodeURIComponent(appealId)}/decision`, input),
+
+    /** Report that a member may hold another account (needs members.verify). An existing pair returns its case. */
+    reportDuplicate: (input: DuplicateReportInput) => request<DuplicateCase>('POST', '/v1/identity/duplicates', input),
+    /** D04: open duplicate investigations in the caller's areas. Needs idv.duplicate.investigate. */
+    listDuplicateCases: (filters: { states?: DuplicateCaseState[]; mine?: boolean; limit?: number } = {}) =>
+      request<DuplicateCase[]>('GET', `/v1/identity/duplicates${toQueueQuery(filters)}`),
+    getDuplicateCase: (caseId: string) => request<DuplicateCaseFile>('GET', `/v1/identity/duplicates/${encodeURIComponent(caseId)}`),
+    claimDuplicateCase: (caseId: string) =>
+      request<DuplicateCaseFile>('POST', `/v1/identity/duplicates/${encodeURIComponent(caseId)}/claim`),
+    releaseDuplicateCase: (caseId: string) =>
+      request<DuplicateCaseFile>('POST', `/v1/identity/duplicates/${encodeURIComponent(caseId)}/release`),
+    /** Record the finding with a reason. It changes neither account. */
+    decideDuplicateCase: (caseId: string, input: DuplicateDecisionInput) =>
+      request<DuplicateCaseFile>('POST', `/v1/identity/duplicates/${encodeURIComponent(caseId)}/decision`, input),
   };
 }
 
@@ -250,7 +270,7 @@ function toReviewQuery(filters: ReviewFilters): string {
   return query ? `?${query}` : '';
 }
 
-function toAppealQuery(filters: AppealFilters): string {
+function toQueueQuery(filters: { states?: readonly string[]; mine?: boolean; limit?: number }): string {
   const params = new URLSearchParams();
   for (const state of filters.states ?? []) params.append('state', state);
   if (filters.mine) params.set('mine', 'true');

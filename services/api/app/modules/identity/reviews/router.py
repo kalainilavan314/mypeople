@@ -15,6 +15,7 @@ from app.modules.identity.reviews.rules import VERIFY, ReviewState
 from app.modules.identity.reviews.schemas import (
     DecisionInput,
     DecisionOut,
+    DuplicateFlagOut,
     MyReviewOut,
     QueueCountsOut,
     ReviewFileOut,
@@ -114,6 +115,9 @@ def _file(db: Session, staff: Staff, review_id: uuid.UUID, request: Request) -> 
         member=ReviewMemberOut.from_stored(review_file.member),
         documents=[DocumentOut.from_stored(d) for d in review_file.documents],
         decisions=[DecisionOut.from_stored(d, review_file.appeals) for d in review_file.decisions],
+        duplicate_flags=[
+            DuplicateFlagOut.from_case(case, review_file.review.member_id) for case in review_file.duplicate_cases
+        ],
     )
 
 

@@ -732,6 +732,109 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/identity/duplicates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Cases
+         * @description D04: duplicate investigations in the caller's areas, oldest first. Open cases unless states are given.
+         */
+        get: operations["list_cases_v1_identity_duplicates_get"];
+        put?: never;
+        /**
+         * Report Duplicate
+         * @description Report that a member may hold another account. Needs members.verify over the member's area.
+         *     Reporting a pair that already has a case returns that case.
+         */
+        post: operations["report_duplicate_v1_identity_duplicates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/duplicates/{case_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Case
+         * @description Both accounts side by side. Needs idv.duplicate.investigate over both accounts' areas.
+         */
+        get: operations["read_case_v1_identity_duplicates__case_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/duplicates/{case_id}/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Claim Case
+         * @description Take the case. While held, both accounts' evidence opens to the caller (PRM-03).
+         */
+        post: operations["claim_case_v1_identity_duplicates__case_id__claim_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/duplicates/{case_id}/release": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Release Case */
+        post: operations["release_case_v1_identity_duplicates__case_id__release_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/duplicates/{case_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Case
+         * @description Record whether the two accounts belong to one person, with a reason. Final, and it changes
+         *     neither account: inactivating one is a separate membership change (BR-015, BR-094).
+         */
+        post: operations["decide_case_v1_identity_duplicates__case_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1009,6 +1112,113 @@ export interface components {
             /** Area */
             area: string;
         };
+        /** CaseDecisionInput */
+        CaseDecisionInput: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "not_duplicate" | "duplicate_confirmed";
+            /** Reason */
+            reason: string;
+        };
+        /**
+         * CaseFileOut
+         * @description D04: both accounts side by side, without the images; they open through view links once the case is claimed.
+         */
+        CaseFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Caseref */
+            caseRef: string;
+            /** Memberids */
+            memberIds: string[];
+            /**
+             * Signal
+             * @enum {string}
+             */
+            signal: "profile_match" | "reported";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "in_review" | "not_duplicate" | "duplicate_confirmed";
+            /**
+             * Openedat
+             * Format: date-time
+             */
+            openedAt: string;
+            /** Claimedby */
+            claimedBy: string | null;
+            /** Claimedbyname */
+            claimedByName: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+            /** Openedby */
+            openedBy: string | null;
+            /** Openedreason */
+            openedReason: string | null;
+            /** Decidedby */
+            decidedBy: string | null;
+            /** Outcomereason */
+            outcomeReason: string | null;
+            /** Members */
+            members: components["schemas"]["CaseMemberOut"][];
+        };
+        /** CaseMemberOut */
+        CaseMemberOut: {
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            details: components["schemas"]["ReviewMemberOut"];
+            /** Verificationstatus */
+            verificationStatus: string;
+            /** Membershipstate */
+            membershipState: string;
+            /** Documents */
+            documents: components["schemas"]["DocumentOut"][];
+        };
+        /**
+         * CaseSummaryOut
+         * @description One row of the D04 queue.
+         */
+        CaseSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Caseref */
+            caseRef: string;
+            /** Memberids */
+            memberIds: string[];
+            /**
+             * Signal
+             * @enum {string}
+             */
+            signal: "profile_match" | "reported";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "in_review" | "not_duplicate" | "duplicate_confirmed";
+            /**
+             * Openedat
+             * Format: date-time
+             */
+            openedAt: string;
+            /** Claimedby */
+            claimedBy: string | null;
+            /** Claimedbyname */
+            claimedByName: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+        };
         /**
          * Catalogue
          * @description The tiers and the permission matrix, for building the W09 form.
@@ -1124,6 +1334,23 @@ export interface components {
              * Format: date-time
              */
             serverAckAt: string;
+        };
+        /**
+         * DuplicateFlagOut
+         * @description A possible duplicate account (FR-WEB-012): a flag for the reviewer, never a decision.
+         */
+        DuplicateFlagOut: {
+            /** Caseref */
+            caseRef: string;
+            /** State */
+            state: string;
+            /** Signal */
+            signal: string;
+            /**
+             * Othermemberid
+             * Format: uuid
+             */
+            otherMemberId: string;
         };
         /** EvidenceVersion */
         EvidenceVersion: {
@@ -1374,6 +1601,21 @@ export interface components {
             /** Assignedtome */
             assignedToMe: number;
         };
+        /** ReportInput */
+        ReportInput: {
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /**
+             * Othermemberid
+             * Format: uuid
+             */
+            otherMemberId: string;
+            /** Reason */
+            reason: string;
+        };
         /**
          * ReviewFileOut
          * @description W02 without the images: they open one at a time through view links, once the review is claimed.
@@ -1429,6 +1671,8 @@ export interface components {
             documents: components["schemas"]["DocumentOut"][];
             /** Decisions */
             decisions: components["schemas"]["DecisionOut"][];
+            /** Duplicateflags */
+            duplicateFlags: components["schemas"]["DuplicateFlagOut"][];
         };
         /**
          * ReviewMemberOut
@@ -2917,6 +3161,303 @@ export interface operations {
                 content?: never;
             };
             /** @description not_open, original_reviewer, claimed_by_another or not_claimed_by_you */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_cases_v1_identity_duplicates_get: {
+        parameters: {
+            query?: {
+                state?: ("open" | "in_review" | "not_duplicate" | "duplicate_confirmed")[] | null;
+                mine?: boolean;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_duplicate_v1_identity_duplicates_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseSummaryOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "report_refused", "problems": ["same_member" | "own_record"]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_case_v1_identity_duplicates__case_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    claim_case_v1_identity_duplicates__case_id__claim_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    release_case_v1_identity_duplicates__case_id__release_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_case_v1_identity_duplicates__case_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CaseDecisionInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open, claimed_by_another or not_claimed_by_you */
             409: {
                 headers: {
                     [name: string]: unknown;

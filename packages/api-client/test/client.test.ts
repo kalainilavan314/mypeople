@@ -244,3 +244,11 @@ test('a membership change posts the action and reason to the member', async () =
   assert.equal(sent[0].url, 'https://api.example/v1/membership/members/m1/changes');
   assert.equal(sent[0].body, JSON.stringify({ action: 'suspend', reasonCode: 'conduct_investigation' }));
 });
+
+test('duplicate cases are listed with the same state filters as appeals', async () => {
+  const { fetch, sent } = fakeFetch(200, []);
+
+  await createApiClient({ baseUrl: 'https://api.example', fetch }).listDuplicateCases({ states: ['open'], mine: true });
+
+  assert.equal(sent[0].url, 'https://api.example/v1/identity/duplicates?state=open&mine=true');
+});

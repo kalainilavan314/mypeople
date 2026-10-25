@@ -26,6 +26,8 @@ Current scope:
 | `GET /v1/identity/reviews`, `GET /v1/identity/reviews/counts`, `GET /v1/identity/reviews/{id}`, `POST .../claim`, `.../release`, `.../decision` | the reviewers' queue and decisions (W01, W02); need `members.verify` over the member's area |
 | `POST /v1/identity/me/review/appeal` | the member appeals their latest Request-update or Unable-to-verify decision, once |
 | `GET /v1/identity/appeals`, `GET /v1/identity/appeals/{id}`, `POST .../claim`, `.../release`, `.../decision` | the appeals queue (D05); need `idv.appeal.decide` over the member's area |
+| `POST /v1/identity/duplicates` | a reviewer reports a suspected duplicate account (needs `members.verify`) |
+| `GET /v1/identity/duplicates`, `GET /v1/identity/duplicates/{id}`, `POST .../claim`, `.../release`, `.../decision` | duplicate investigations (D04); need `idv.duplicate.investigate` over both accounts' areas |
 
 ## Staff access (BRD §9)
 
@@ -154,6 +156,29 @@ never claim it, and nobody decides their own appeal.
 A decided appeal cannot be changed or deleted (database trigger). The
 10-working-day target is not tracked yet.
 
+### Duplicate accounts (FR-IDV-010, FR-WEB-012, BR-094, D04)
+
+NIC hashes and phone numbers are already unique among active members, so
+the same NIC or phone cannot be registered twice (BR-007, enforced at
+sign-up). Other signs that one person holds two accounts open an
+investigation instead of any automatic action:
+
+- When a review is submitted, any other active account with the same name
+  (ignoring case and spacing) and date of birth opens a case. This signal is
+  an assumption; the BRD names keyed hashes, contact details and approved
+  face similarity.
+- A reviewer can report a suspected duplicate with a reason.
+
+The reviewer sees each case as a flag on the review file. A holder of
+`idv.duplicate.investigate` over both accounts' areas claims the case, can
+open both accounts' evidence while holding it, and records "not a
+duplicate" or "duplicate confirmed" with a reason. The finding changes
+neither account; inactivating one is a separate membership change. Decided
+cases cannot be edited.
+
+Not yet: passport numbers and device signals (registration batch), and
+keyed-hash rotation with KMS-held keys (FR-IDV-006, OD-20).
+
 ## Sessions
 
 Members can sign in through either API (`/api/auth/login` or
@@ -251,7 +276,7 @@ Check the state with `python -m alembic current`. From now on, every schema
 change is a new Alembic revision, never a new file in `server/migrations`:
 
 ```powershell
-python -m alembic revision --rev-id 0007 -m "describe the change"
+python -m alembic revision --rev-id 0008 -m "describe the change"
 python -m alembic upgrade head --sql    # review the SQL before applying it
 python -m alembic upgrade head
 ```
@@ -295,6 +320,7 @@ app/
   modules/identity/documents/  identity images: encrypted vault, upload, signed view links
   modules/identity/reviews/    identity reviews: submit, queue, claim, decide
   modules/identity/appeals/    appeals against identity decisions
+  modules/identity/duplicates/ duplicate account investigations
   modules/<households, assistance, community, events, engagement, finance, content, messaging, ai>/
                        README only: not built yet
   integrations/, tasks/  README only: not built yet

@@ -444,6 +444,7 @@ services/api/
       0004_identity_reviews.py
       0005_verification_appeals.py
       0006_membership_states.py
+      0007_duplicate_investigations.py
   app/
     __init__.py
     main.py
@@ -519,6 +520,13 @@ services/api/
           rules.py
           schemas.py
           service.py
+        duplicates/        duplicate account investigations (D04)
+          __init__.py
+          repository.py
+          router.py
+          rules.py
+          schemas.py
+          service.py
       households/          README only: not built yet
       assistance/          README only: not built yet
       community/           README only: not built yet
@@ -541,6 +549,8 @@ services/api/
     test_audit_log.py
     test_config.py
     test_database.py
+    test_duplicate_rules.py
+    test_duplicates_api.py
     test_db_session.py
     test_express_baseline.py
     test_express_compat.py

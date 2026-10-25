@@ -1966,6 +1966,402 @@
           }
         }
       }
+    },
+    "/v1/identity/duplicates": {
+      "post": {
+        "tags": [
+          "duplicate investigations"
+        ],
+        "summary": "Report Duplicate",
+        "description": "Report that a member may hold another account. Needs members.verify over the member's area.\nReporting a pair that already has a case returns that case.",
+        "operationId": "report_duplicate_v1_identity_duplicates_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseSummaryOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_open, claimed_by_another or not_claimed_by_you"
+          },
+          "422": {
+            "description": "{\"code\": \"report_refused\", \"problems\": [\"same_member\" | \"own_record\"]}"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "duplicate investigations"
+        ],
+        "summary": "List Cases",
+        "description": "D04: duplicate investigations in the caller's areas, oldest first. Open cases unless states are given.",
+        "operationId": "list_cases_v1_identity_duplicates_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "open",
+                      "in_review",
+                      "not_duplicate",
+                      "duplicate_confirmed"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "mine",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Mine"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CaseSummaryOut"
+                  },
+                  "title": "Response List Cases V1 Identity Duplicates Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/duplicates/{case_id}": {
+      "get": {
+        "tags": [
+          "duplicate investigations"
+        ],
+        "summary": "Read Case",
+        "description": "Both accounts side by side. Needs idv.duplicate.investigate over both accounts' areas.",
+        "operationId": "read_case_v1_identity_duplicates__case_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_open, claimed_by_another or not_claimed_by_you"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/duplicates/{case_id}/claim": {
+      "post": {
+        "tags": [
+          "duplicate investigations"
+        ],
+        "summary": "Claim Case",
+        "description": "Take the case. While held, both accounts' evidence opens to the caller (PRM-03).",
+        "operationId": "claim_case_v1_identity_duplicates__case_id__claim_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_open, claimed_by_another or not_claimed_by_you"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/duplicates/{case_id}/release": {
+      "post": {
+        "tags": [
+          "duplicate investigations"
+        ],
+        "summary": "Release Case",
+        "operationId": "release_case_v1_identity_duplicates__case_id__release_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_open, claimed_by_another or not_claimed_by_you"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/duplicates/{case_id}/decision": {
+      "post": {
+        "tags": [
+          "duplicate investigations"
+        ],
+        "summary": "Decide Case",
+        "description": "Record whether the two accounts belong to one person, with a reason. Final, and it changes\nneither account: inactivating one is a separate membership change (BR-015, BR-094).",
+        "operationId": "decide_case_v1_identity_duplicates__case_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaseDecisionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_open, claimed_by_another or not_claimed_by_you"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2728,6 +3124,310 @@
         ],
         "title": "AwaitingMemberOut"
       },
+      "CaseDecisionInput": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "not_duplicate",
+              "duplicate_confirmed"
+            ],
+            "title": "Outcome"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcome",
+          "reason"
+        ],
+        "title": "CaseDecisionInput"
+      },
+      "CaseFileOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "caseRef": {
+            "type": "string",
+            "title": "Caseref"
+          },
+          "memberIds": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Memberids"
+          },
+          "signal": {
+            "type": "string",
+            "enum": [
+              "profile_match",
+              "reported"
+            ],
+            "title": "Signal"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "in_review",
+              "not_duplicate",
+              "duplicate_confirmed"
+            ],
+            "title": "State"
+          },
+          "openedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Openedat"
+          },
+          "claimedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedby"
+          },
+          "claimedByName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedbyname"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          },
+          "openedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Openedby"
+          },
+          "openedReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Openedreason"
+          },
+          "decidedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedby"
+          },
+          "outcomeReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcomereason"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/CaseMemberOut"
+            },
+            "type": "array",
+            "title": "Members"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caseRef",
+          "memberIds",
+          "signal",
+          "state",
+          "openedAt",
+          "claimedBy",
+          "claimedByName",
+          "decidedAt",
+          "openedBy",
+          "openedReason",
+          "decidedBy",
+          "outcomeReason",
+          "members"
+        ],
+        "title": "CaseFileOut",
+        "description": "D04: both accounts side by side, without the images; they open through view links once the case is claimed."
+      },
+      "CaseMemberOut": {
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "details": {
+            "$ref": "#/components/schemas/ReviewMemberOut"
+          },
+          "verificationStatus": {
+            "type": "string",
+            "title": "Verificationstatus"
+          },
+          "membershipState": {
+            "type": "string",
+            "title": "Membershipstate"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentOut"
+            },
+            "type": "array",
+            "title": "Documents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberId",
+          "details",
+          "verificationStatus",
+          "membershipState",
+          "documents"
+        ],
+        "title": "CaseMemberOut"
+      },
+      "CaseSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "caseRef": {
+            "type": "string",
+            "title": "Caseref"
+          },
+          "memberIds": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Memberids"
+          },
+          "signal": {
+            "type": "string",
+            "enum": [
+              "profile_match",
+              "reported"
+            ],
+            "title": "Signal"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "in_review",
+              "not_duplicate",
+              "duplicate_confirmed"
+            ],
+            "title": "State"
+          },
+          "openedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Openedat"
+          },
+          "claimedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedby"
+          },
+          "claimedByName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedbyname"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caseRef",
+          "memberIds",
+          "signal",
+          "state",
+          "openedAt",
+          "claimedBy",
+          "claimedByName",
+          "decidedAt"
+        ],
+        "title": "CaseSummaryOut",
+        "description": "One row of the D04 queue."
+      },
       "Catalogue": {
         "properties": {
           "tiers": {
@@ -3006,6 +3706,36 @@
         ],
         "title": "DocumentOut",
         "description": "An identity image the server holds (BR-020). Never the image itself."
+      },
+      "DuplicateFlagOut": {
+        "properties": {
+          "caseRef": {
+            "type": "string",
+            "title": "Caseref"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "signal": {
+            "type": "string",
+            "title": "Signal"
+          },
+          "otherMemberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Othermemberid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "caseRef",
+          "state",
+          "signal",
+          "otherMemberId"
+        ],
+        "title": "DuplicateFlagOut",
+        "description": "A possible duplicate account (FR-WEB-012): a flag for the reviewer, never a decision."
       },
       "EvidenceVersion": {
         "properties": {
@@ -3680,6 +4410,33 @@
         ],
         "title": "QueueCountsOut"
       },
+      "ReportInput": {
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "otherMemberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Othermemberid"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberId",
+          "otherMemberId",
+          "reason"
+        ],
+        "title": "ReportInput"
+      },
       "ReviewFileOut": {
         "properties": {
           "id": {
@@ -3801,6 +4558,13 @@
             },
             "type": "array",
             "title": "Decisions"
+          },
+          "duplicateFlags": {
+            "items": {
+              "$ref": "#/components/schemas/DuplicateFlagOut"
+            },
+            "type": "array",
+            "title": "Duplicateflags"
           }
         },
         "type": "object",
@@ -3819,7 +4583,8 @@
           "decidedAt",
           "member",
           "documents",
-          "decisions"
+          "decisions",
+          "duplicateFlags"
         ],
         "title": "ReviewFileOut",
         "description": "W02 without the images: they open one at a time through view links, once the review is claimed."

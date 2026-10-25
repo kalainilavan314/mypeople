@@ -9,7 +9,7 @@ A batch builds the API module first (rules, service, endpoints, tests, audit), t
 | Batch | Scope | BRD | Waiting on |
 |---|---|---|---|
 | 11 (done) | Membership states and activation; staff need Active membership | FR-ADM-003, PRM-05, BR-014, BR-015, BR-097, FR-REG-024, FR-CARD-014 | OD-02 (auto-activation stays off until decided) |
-| 12 | Duplicate identities by keyed hash, investigations | FR-IDV-005, 006, 010, FR-WEB-012, BR-007, BR-094, PRM-28, D04 | KMS for the key (OD-20) |
+| 12 (done) | Duplicate identities by keyed hash, investigations | FR-IDV-005, 006, 010, FR-WEB-012, BR-007, BR-094, PRM-28, D04 | KMS for the key (OD-20) |
 | 13 | Registration in FastAPI: route, consent, profile, area, referral, survey; SMS one-time codes behind an interface | FR-AUTH-001 to 017, FR-REG remaining, BR-001 to BR-019 | SMS vendor (INT-01) |
 | 14 | Account security: staff MFA, sessions list and revoke, step-up, recovery delay, access reviews | FR-AUTH-018 to 027, FR-STF-010 | Staff identity provider (INT-09) |
 | 15 | Member card: rotating signed QR, scanning, revocation | FR-CARD-001 to 015, FR-ADM-001, 002, FR-STF-005 | Wallet passes (INT-03), OD-08 |

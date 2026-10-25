@@ -25,6 +25,8 @@ from app.modules.access.service import Staff, load_staff
 from app.modules.audit import service as audit
 from app.modules.identity.documents import repository as identity_repository
 from app.modules.identity.documents.service import VIEWED
+from app.modules.identity.duplicates import service as duplicates
+from app.modules.identity.duplicates.repository import StoredCase
 from app.modules.identity.reviews import repository, rules
 from app.modules.identity.reviews.repository import ReviewMember, StoredDecision, StoredReview
 from app.modules.identity.reviews.rules import VERIFY, Decision, Route
@@ -74,6 +76,7 @@ class ReviewFile:
     documents: list[identity_repository.StoredDocument]
     decisions: list[StoredDecision]
     appeals: list[StoredAppeal]
+    duplicate_cases: list[StoredCase]
 
 
 def _area_path(review: StoredReview) -> AreaPath:
@@ -139,6 +142,9 @@ def submit(db: Session, member_id: uuid.UUID, route: Route, ip: str) -> StoredRe
         db, member_id=member_id, status="review_pending", changed_by=member_id, review_ref=review.review_ref
     )
     _record(db, member_id, "identity.review.submitted", review, ip, route=route)
+    # Another account with the same name and date of birth opens an investigation; the
+    # review goes ahead and the reviewer sees the flag (FR-IDV-010, FR-WEB-012, BR-094).
+    duplicates.open_profile_matches(db, member_id)
     db.commit()
     return review
 
@@ -199,6 +205,7 @@ def review_file(db: Session, staff: Staff, review_id: uuid.UUID, ip: str) -> Rev
         documents=identity_repository.current_documents(db, review.member_id),
         decisions=repository.decisions(db, review.id),
         appeals=appeals_repository.appeals_for_review(db, review.id),
+        duplicate_cases=duplicates.flags_for_member(db, review.member_id),
     )
 
 

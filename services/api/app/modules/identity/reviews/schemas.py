@@ -10,6 +10,7 @@ from app.modules.identity.documents.schemas import DocumentOut
 from app.modules.identity.reviews.repository import ReviewMember, StoredDecision, StoredReview
 from app.modules.identity.reviews.rules import Decision, ReviewState, Route
 from app.modules.identity.appeals.repository import StoredAppeal
+from app.modules.identity.duplicates.repository import StoredCase
 from app.modules.identity.appeals.rules import AppealState
 
 
@@ -194,12 +195,27 @@ class DecisionOut(CamelModel):
         )
 
 
+class DuplicateFlagOut(CamelModel):
+    """A possible duplicate account (FR-WEB-012): a flag for the reviewer, never a decision."""
+
+    case_ref: str
+    state: str
+    signal: str
+    other_member_id: uuid.UUID
+
+    @classmethod
+    def from_case(cls, case: StoredCase, member_id: uuid.UUID) -> Self:
+        other = case.member_b if case.member_a == member_id else case.member_a
+        return cls(case_ref=case.case_ref, state=case.state, signal=case.signal, other_member_id=other)
+
+
 class ReviewFileOut(ReviewSummaryOut):
     """W02 without the images: they open one at a time through view links, once the review is claimed."""
 
     member: ReviewMemberOut
     documents: list[DocumentOut]
     decisions: list[DecisionOut]
+    duplicate_flags: list[DuplicateFlagOut]
 
 
 class QueueCountsOut(CamelModel):
