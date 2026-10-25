@@ -1,70 +1,60 @@
 # My People / என் மக்கள்
 
-Tamil-first membership and community PWA for the Northern Province People's Movement.
+Tamil-first membership and community platform for the Northern Province People's Movement. Requirements: BRD v1.1 (MP-BRD-001), summarised in [docs/requirements](docs/requirements/README.md).
 
-The frontend uses Vite, React and TypeScript. The backend uses Express and PostgreSQL. Home follows the supplied MedTech reference with navy panels, pale blue activity surfaces, compact Inter/Noto Sans Tamil type, short captions and photos on all six service cards. Shared navigation uses a raised navy centre QR button, retaining Card's `/card?qr=1` entry. Profile uses a centred identity and pale gray grouped account menus. Events, the restored detailed Card, Gallery and authentication keep their existing content and behaviour.
+Production today is the member PWA (`app/`, Vite + React) served by the Express API (`server/`) on PostgreSQL. The repository is becoming a monorepo for the BRD's target platform, one tested batch at a time: Expo member and staff apps, a Next.js admin dashboard and a FastAPI backend. See [docs/architecture/system-overview.md](docs/architecture/system-overview.md).
 
-## Run locally
-
-```powershell
-npm --prefix app install
-npm --prefix app run dev
-```
-
-Vite prints its local URL. Run the backend using the configuration and migrations in [server/README.md](server/README.md). Authentication and live content require that backend.
-
-```powershell
-npm --prefix app run typecheck
-npm --prefix app run build
-npm --prefix app run preview
-```
-
-## Project layout
+## Repository layout
 
 ```text
-app/
-  public/                 logos, fonts/images, licensed gallery assets and PWA metadata
-  src/
-    main.tsx              providers, language, fonts and viewport setup
-    App.tsx               route entry
-    core/
-      theme/              CSS and TypeScript design tokens
-      i18n/               English/Tamil resources and retained Sinhala resource
-      lib/                QR, images, NIC and viewport helpers
-      api/                HTTP contracts/adapters, models, queries and outbox
-    shared/
-      components/         navigation, primitives, icons and shared overlays
-      hooks/              authentication, member, theme and network hooks
-    features/
-      home/ events/ card/ gallery/ profile/ auth/
-      community/ reports/ surveys/ ideas/ learning/ fundraising/ referrals/
-server/                   existing API, database migrations and gallery metadata
-services/api/             new FastAPI backend (/v1), built alongside server/ (see its README)
-.github/workflows/        CI: PWA build and API tests
-docs/                     architecture, Home specification and refactor handoff
-scripts/                  local browser checks and refactor tooling
-deployment/               existing deployment, backup and rollback tooling
-design/                   retained design history and fixture QA outputs
+app/                  live member PWA (production; do not move)
+server/               live Express API /api and SQL migrations 0000-0011 (production; do not move)
+services/
+  api/                FastAPI modular monolith /v1, Alembic, pytest
+  ai-worker/          planned private AI worker (README only, BRD Phase 3)
+packages/
+  design-tokens/      colours, spacing, type scale, locked fonts
+  i18n/               Tamil, English and Sinhala UI text
+  api-client/         typed /v1 client generated from OpenAPI
+apps/                 Expo member and staff apps, Next.js admin (being added)
+docs/                 architecture, development, api, database, security, requirements
+deployment/           release packaging, staging, activation and verification
+design/               design history and fixture QA screenshots
+scripts/              PWA browser checks
+.github/workflows/    CI
 ```
 
-The root `package.json` declares npm workspaces for the future `apps/*` and `packages/*` projects. `app/` and `server/` stay outside them, with their own lockfiles, until they are retired, because production releases run from those paths. The Python API is set up separately; see [services/api/README.md](services/api/README.md).
+`app/` and `server/` stay outside the npm workspaces and keep their own lockfiles. Production releases run from those exact paths, and the PWA uses React 18. Full tree: [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md). Conventions for contributors and AI agents: [CLAUDE.md](CLAUDE.md).
 
-Screens own feature orchestration; local components render feature sections. Shared components and core services remain independent of screen entry points. Vite and TypeScript resolve `@/` to `app/src/`. Theme CSS loads through a single entry point preserving its original cascade.
+## Quick start
 
-## Feature status
+```powershell
+npm install
+npm --prefix app install
+npm --prefix server install
+npm run dev        # PWA on http://localhost:5173
+npm run dev:api    # Express API on http://localhost:8787
+```
 
-Authentication, member profiles, card credentials, events/RSVP, community reports, donations and gallery retain their existing HTTP adapters. Surveys, ideas, skills, courses and some historical activity views retain the existing prototype adapter while their production APIs are planned. This refactor preserves those flows; it does not make prototype data server-backed.
+Database, FastAPI and test setup: [docs/development/setup.md](docs/development/setup.md).
 
-Gallery photos are licensed sample assets. Their credits and licences are recorded in `app/public/gallery/ATTRIBUTION.json` and exposed through the existing gallery API. Home labels its images as illustrative; generated photo prompts and originals are recorded in `docs/assets/`.
+## Documentation
 
-## Documentation and verification
-
-- [Architecture](docs/architecture.md)
-- [Home and navigation specification](docs/home-design.md)
-- [Profile layout and safe photo replacement](docs/profile-design.md)
-- [Migration commands and code handoff](docs/refactor/README.md)
+- [System overview](docs/architecture/system-overview.md) and [member PWA structure](docs/architecture/member-pwa.md)
+- [Development setup](docs/development/setup.md)
+- [API reference](docs/api/api-reference.md)
+- [Database guide](docs/database/database-guide.md)
+- [Security rules](docs/security/security-rules.md)
+- [Requirements and status](docs/requirements/README.md)
 - [Deployment, backup and rollback](deployment/README.md)
+- [Home and navigation specification](docs/home-design.md), [Profile layout](docs/profile-design.md)
 
-Browser checks use fixture members and mocked API responses and can target a production preview with `MY_PEOPLE_BASE_URL`. Home covers English/Tamil at 320, 375, 390, 768 and 1280 pixels, all six photo cards, search, long names, raised navigation alignment and clearance. Profile checks cover its layout, settings and upload/save/retry flow. `scripts/verify-avatar.mjs` checks authenticated image replacement and failure cleanup without production member data. Civic, feature-route and membership checks preserve the other flows, viewer/QR behaviour and long Tamil text.
+## Member PWA notes
 
-The initial directory moves are already applied. Do not rerun `docs/refactor/move-files.ps1` on this checkout. Deployment artifacts and the unused Flutter/React Native design folders were removed as requested. Backend migrations, runtime certificates, uploads and deployment scripts were preserved.
+Authentication, member profiles, card credentials, events/RSVP, community reports, donations and gallery use the Express API. Surveys, ideas, skills, courses and some activity views still use the prototype adapter until their APIs are built; they are not server-backed.
+
+Gallery photos are licensed sample assets; credits are in `app/public/gallery/ATTRIBUTION.json`. Home labels its images as illustrative; prompts and originals are in `docs/assets/`.
+
+Browser checks (`scripts/verify-*.mjs`) use fixture members and mocked API responses, and can target a production preview with `MY_PEOPLE_BASE_URL`. They cover Home in English and Tamil at five widths, Profile and photo upload, membership card, civic system and feature routes.
+
+The initial directory moves are already applied. Do not rerun `docs/refactor/move-files.ps1` on this checkout.

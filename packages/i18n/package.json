@@ -1,0 +1,14 @@
+{
+  "name": "@my-people/i18n",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tamil, English and Sinhala UI text shared by the My People apps (i18next resources)",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "node --test",
+    "typecheck": "tsc --noEmit"
+  }
+}

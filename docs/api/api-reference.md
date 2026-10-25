@@ -1,0 +1,48 @@
+# API reference
+
+Two APIs share one origin, one PostgreSQL database and one session:
+
+| Prefix | Service | Status |
+|---|---|---|
+| `/v1/...` | FastAPI, `services/api` | Built and tested; not yet deployed |
+| `/api/...` | Express, `server/` | Live; routes move to `/v1` one group at a time |
+
+The complete, current `/v1` contract is the OpenAPI 3.1 document: `packages/api-client/openapi.json` (also served at `/docs` and `/openapi.json` outside production). Apps call it through `@my-people/api-client`.
+
+## Sessions
+
+Signing in sets an HttpOnly, SameSite=Lax cookie `mp_session` (Secure outside development) holding an HS256 token `{sub: member id, sv: session version}` valid for 30 days. Browsers send the cookie; mobile apps send the same token as `Authorization: Bearer <token>`. Signing out through either API increments the member's session version, which ends every session of that member in both APIs.
+
+Writes that carry the session cookie and come from another website are refused with `403 csrf_origin_mismatch`. Every `/v1` response has `Cache-Control: no-store`.
+
+## /v1 (FastAPI)
+
+| Method and path | Session | Success | Errors |
+|---|---|---|---|
+| `GET /v1/health` | no | `200 {"status":"ok"}` | none |
+| `GET /v1/health/db` | no | `200 {"status":"ok"}` | `503 {"status":"unavailable"}` |
+| `POST /v1/auth/sign-in` body `{nic, password}` | no | `200 {token, member}` and the session cookie | `401 invalid_credentials`, `429 too_many_attempts` with `Retry-After`, `422` invalid body |
+| `POST /v1/auth/sign-out` | optional | `204`, cookie cleared, all sessions ended | `403 csrf_origin_mismatch` |
+| `GET /v1/members/me` | yes | `200` member profile (camelCase) | `401 unauthorized`, `401 session_expired` |
+
+Error bodies are `{"detail": "<code>"}`.
+
+Sign-in throttling (shared with Express): failures are counted per NIC hash and client IP over 15 minutes. From 5 failures each attempt waits 0.4 s more (up to 2 s); from 10, attempts are refused for 15 minutes.
+
+The member profile never contains the NIC, its hash, the password hash or staff review notes. Fields: `id, memberCode, fullName, phone, dob, gender, language, tier, referralCode, verificationStatus, verifiedAt, districtCode, districtName, dsCode, dsName, gsCode, gsName, joinedAt`. Express's `/api/me` also returns `avatarUrl`, `tierProgress`, `recruitCount`, `referredBy`, `nicStatus` and `isAdmin`; those move with their features.
+
+## /api (Express, live)
+
+| Area | Routes | Session |
+|---|---|---|
+| Health and config | `GET /api/health`, `GET /api/config` | no |
+| Auth | `POST /api/auth/request-otp`, `verify-otp`, `signup`, `login`, `logout` | no |
+| Own profile | `GET /api/me`, `PATCH /api/me`, `GET /api/me/card-token`, `POST /api/me/avatar` | yes |
+| Avatars | `GET /api/avatars/:memberId` (signed, expiring URL) | signature |
+| Gallery | `GET /api/gallery/albums`, `GET /api/gallery/albums/:id` | no |
+| Events | `GET /api/events`, `GET /api/events/:id`, `POST /api/events/:id/rsvp` | yes |
+| Community reports | `GET /api/reports/mine`, `POST /api/reports` | yes |
+| Party fund | `GET /api/donations`, `GET /api/donations/mine`, `POST /api/donations/card/start`, `POST /api/donations/card/confirm` (sandbox only), `POST /api/donations/slip` | yes |
+| Staff (`is_admin`) | `POST /api/members/:id/verification`, `GET /api/donations/pending`, `GET /api/donations/:id/slip`, `POST /api/donations/:id/review` | admin |
+
+`is_admin` is a single flag. It is replaced by roles, permissions and geographic scope (BRD §9, RB-01 to RB-07) in the access module.

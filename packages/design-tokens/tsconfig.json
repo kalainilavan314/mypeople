@@ -1,0 +1,4 @@
+{
+  "extends": "../../tsconfig.packages.json",
+  "include": ["src", "test", "../../app/src/core/theme/tokens.ts"]
+}

@@ -2,6 +2,24 @@
 
 Generated from the working tree. Dependency folders, credentials, build output and temporary QA artifacts are omitted.
 
+## Top level
+
+```text
+app/                  live member PWA (Vite, React 18) - production, do not move
+server/               live Express API (/api) and migrations 0000-0011 - production, do not move
+services/api/         FastAPI modular monolith (/v1), Alembic, pytest
+services/ai-worker/   planned private AI worker (README only)
+packages/             design-tokens, i18n, api-client (npm workspaces)
+apps/                 Expo member and staff apps, Next.js admin (npm workspaces, being added)
+docs/                 architecture, development, api, database, security, requirements
+deployment/           release package, stage, activate and verify scripts
+design/               design history and fixture QA screenshots
+scripts/              PWA browser checks
+.github/workflows/    CI
+```
+
+## Detail
+
 ```text
 Northern Province People's Movement app/
 app/src/
@@ -402,10 +420,14 @@ server/src/
   supabase-ca.js
   throttle.js
   tier.js
+server/test/
+  client-ip.test.js
 services/api/
   pyproject.toml
   README.md
   .env.example
+  scripts/
+    export_openapi.py
   alembic.ini
   alembic/
     env.py
@@ -458,8 +480,46 @@ services/api/
     test_security.py
     test_sign_in.py
     test_throttle.py
+services/ai-worker/
+  README.md
+packages/
+  design-tokens/
+    package.json
+    tsconfig.json
+    src/index.ts
+    test/matches-pwa.test.ts
+  i18n/
+    package.json
+    tsconfig.json
+    src/
+      index.ts
+      en.json
+      ta.json
+      si.json
+    test/
+      known-gaps.json
+      resources.test.ts
+  api-client/
+    package.json
+    tsconfig.json
+    openapi.json
+    src/
+      index.ts
+      schema.ts            generated from openapi.json, do not edit
+    test/client.test.ts
+docs/
+  architecture/
+    system-overview.md
+    member-pwa.md
+  development/setup.md
+  api/api-reference.md
+  database/database-guide.md
+  security/security-rules.md
+  requirements/README.md
+  assets/  home-design.md  profile-design.md  refactor/
+tsconfig.packages.json
 .github/workflows/
   ci.yml
 ```
 
-See docs/architecture.md and docs/refactor/README.md for boundaries and commands.
+See docs/architecture/system-overview.md for boundaries and docs/development/setup.md for commands.

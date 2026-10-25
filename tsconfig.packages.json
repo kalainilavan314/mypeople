@@ -1,0 +1,16 @@
+{
+  "//": "Shared settings for packages/*. Packages ship TypeScript source; Metro (Expo) and Next.js compile it, and Node runs the tests directly.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  }
+}

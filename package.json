@@ -32,7 +32,13 @@
     "build": "npm run build --prefix app",
     "typecheck": "npm run typecheck --prefix app",
     "migrate": "npm run migrate --prefix server",
-    "start": "node server/src/index.js"
+    "start": "node server/src/index.js",
+    "test:packages": "npm run test --workspace=packages",
+    "typecheck:packages": "npm run typecheck --workspace=packages"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "~5.9.3"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

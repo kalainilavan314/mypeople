@@ -1,0 +1,14 @@
+{
+  "name": "@my-people/design-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Colours, spacing, radii, type scale and locked fonts shared by the My People apps",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "node --test",
+    "typecheck": "tsc --noEmit"
+  }
+}
