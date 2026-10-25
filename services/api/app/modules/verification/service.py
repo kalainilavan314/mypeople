@@ -7,8 +7,8 @@ Each change and its audit entry are saved in one transaction. Approval
 confirms identity only: membership stays a separate decision (BR-014, OD-02).
 npm.member.verification_status is kept in step for the live member app.
 
-Not built yet: appeals to a different reviewer (FR-IDV-013, PRM-29),
-automated screening and overrides (FR-IDV-011, 012), duplicate flags
+Appeals against a decision are in app/modules/verification_appeals. Not
+built yet: automated screening and overrides (FR-IDV-011, 012), duplicate flags
 (FR-WEB-012), member notifications (FR-REG-021), consent records (BR-008)
 and declared relatives (BR-085).
 """
@@ -28,6 +28,8 @@ from app.modules.identity.service import VIEWED
 from app.modules.verification import repository, rules
 from app.modules.verification.repository import ReviewMember, StoredDecision, StoredReview
 from app.modules.verification.rules import VERIFY, Decision, Route
+from app.modules.verification_appeals import repository as appeals_repository
+from app.modules.verification_appeals.repository import StoredAppeal
 
 
 class ReviewNotFound(Exception):
@@ -71,6 +73,7 @@ class ReviewFile:
     member: ReviewMember
     documents: list[identity_repository.StoredDocument]
     decisions: list[StoredDecision]
+    appeals: list[StoredAppeal]
 
 
 def _area_path(review: StoredReview) -> AreaPath:
@@ -111,6 +114,9 @@ def submit(db: Session, member_id: uuid.UUID, route: Route, ip: str) -> StoredRe
 
     if review is not None and review.state in ("submitted", "in_review"):
         return review
+    if review is not None and appeals_repository.has_pending_appeal(db, review.id):
+        # The appeal decides what happens next; a new submission would overtake it.
+        raise SubmissionRefused(["appeal_pending"])
 
     if review is not None and review.state == "needs_update":
         last = repository.decisions(db, review.id)[-1]
@@ -137,11 +143,13 @@ def submit(db: Session, member_id: uuid.UUID, route: Route, ip: str) -> StoredRe
     return review
 
 
-def my_review(db: Session, member_id: uuid.UUID) -> tuple[StoredReview, list[StoredDecision]] | None:
+def my_review(
+    db: Session, member_id: uuid.UUID
+) -> tuple[StoredReview, list[StoredDecision], list[StoredAppeal]] | None:
     review = repository.latest_review(db, member_id)
     if review is None:
         return None
-    return review, repository.decisions(db, review.id)
+    return review, repository.decisions(db, review.id), appeals_repository.appeals_for_review(db, review.id)
 
 
 # --- The reviewer's side ----------------------------------------------------------------
@@ -190,6 +198,7 @@ def review_file(db: Session, staff: Staff, review_id: uuid.UUID, ip: str) -> Rev
         member=member,
         documents=identity_repository.current_documents(db, review.member_id),
         decisions=repository.decisions(db, review.id),
+        appeals=appeals_repository.appeals_for_review(db, review.id),
     )
 
 
@@ -199,7 +208,13 @@ def claim(db: Session, staff: Staff, review_id: uuid.UUID, ip: str) -> StoredRev
     claimant_still_authorised = review.claimed_by is not None and access.has_permission_over(
         load_staff(db, review.claimed_by), VERIFY, _area_path(review)
     )
-    problem = rules.check_claim(review.state, review.claimed_by, staff.member_id, claimant_still_authorised)  # type: ignore[arg-type]
+    problem = rules.check_claim(
+        review.state,  # type: ignore[arg-type]
+        review.claimed_by,
+        staff.member_id,
+        claimant_still_authorised,
+        overturned_on_appeal=staff.member_id in appeals_repository.overturned_reviewers(db, review.id),
+    )
     if problem:
         raise ReviewConflict(problem)
     if review.claimed_by == staff.member_id:

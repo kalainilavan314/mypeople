@@ -437,6 +437,7 @@ services/api/
       0002_access_and_audit.py
       0003_identity_documents.py
       0004_identity_reviews.py
+      0005_verification_appeals.py
   app/
     __init__.py
     main.py
@@ -501,6 +502,13 @@ services/api/
         rules.py
         schemas.py
         service.py
+      verification_appeals/
+        __init__.py
+        repository.py
+        router.py
+        rules.py
+        schemas.py
+        service.py
   tests/
     conftest.py
     express/
@@ -524,6 +532,8 @@ services/api/
     test_sign_in.py
     test_throttle.py
     test_verification_api.py
+    test_verification_appeal_rules.py
+    test_verification_appeals_api.py
     test_verification_rules.py
 services/ai-worker/
   README.md

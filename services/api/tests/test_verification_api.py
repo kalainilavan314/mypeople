@@ -3,8 +3,6 @@
 Database changes are rolled back afterwards; images go to a temporary evidence store.
 """
 
-from collections.abc import Callable
-
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import Row, text
@@ -27,18 +25,6 @@ def member(member_in, area) -> Row:
 
 
 @pytest.fixture
-def make_reviewer(create_member, assign, super_admin) -> Callable[..., Row]:
-    """A district coordinator who verifies identities and views evidence in one district."""
-
-    def create(district: str, permissions=(VERIFY, VIEW)) -> Row:
-        person = create_member(verified=True)
-        assign(person, "3A", "district", district, list(permissions), granted_by=super_admin)
-        return person
-
-    return create
-
-
-@pytest.fixture
 def reviewer(make_reviewer, area) -> Row:
     return make_reviewer(area.district)
 
@@ -46,20 +32,6 @@ def reviewer(make_reviewer, area) -> Row:
 @pytest.fixture
 def colleague(make_reviewer, area) -> Row:
     return make_reviewer(area.district)
-
-
-@pytest.fixture
-def submitted(client, auth, upload) -> Callable[[Row], dict]:
-    """Upload the NIC route's images and submit them; returns the member's review."""
-
-    def submit(person: Row) -> dict:
-        for kind in NIC_IMAGES:
-            upload(person, kind)
-        response = client.post("/v1/identity/me/review", json={"route": "nic", "declaration": True}, headers=auth(person))
-        assert response.status_code == 200, response.text
-        return response.json()
-
-    return submit
 
 
 def review_id(client, auth, staff: Row, review_ref: str) -> str:

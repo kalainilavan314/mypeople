@@ -113,7 +113,7 @@ def _file(db: Session, staff: Staff, review_id: uuid.UUID, request: Request) -> 
         **ReviewSummaryOut.from_stored(review_file.review).model_dump(),
         member=ReviewMemberOut.from_stored(review_file.member),
         documents=[DocumentOut.from_stored(d) for d in review_file.documents],
-        decisions=[DecisionOut.from_stored(d) for d in review_file.decisions],
+        decisions=[DecisionOut.from_stored(d, review_file.appeals) for d in review_file.decisions],
     )
 
 

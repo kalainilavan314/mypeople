@@ -9,7 +9,7 @@ transaction that is rolled back afterwards, so nothing they write remains.
 Staff tests build on `area` (a real GN division and the areas above it),
 `assign` (inserts an assignment), `auth` (a Bearer header) and `super_admin`.
 Identity tests add `identity_client` (with a temporary evidence store),
-`member_in`, `upload` and `open_review`.
+`member_in`, `upload`, `open_review`, `make_reviewer` and `submitted`.
 
 Tests that compare behaviour with the Express API take `express_auth`, which
 runs server/src code through tests/express/auth_helpers.mjs. They are skipped
@@ -247,6 +247,40 @@ def open_review(db_session: Session) -> Callable[..., str]:
         )
 
     return insert
+
+
+@pytest.fixture
+def make_reviewer(create_member: Callable[..., Row], assign: Callable[..., str], super_admin: Row) -> Callable[..., Row]:
+    """A staff member with identity permissions over one area: by default a district coordinator
+    who verifies identities and views evidence."""
+
+    def create(
+        code: str,
+        permissions: tuple[str, ...] = ("members.verify", "members.view_identity_evidence"),
+        tier: str = "3A",
+        level: str = "district",
+    ) -> Row:
+        person = create_member(verified=True)
+        assign(person, tier, level, code, list(permissions), granted_by=super_admin)
+        return person
+
+    return create
+
+
+@pytest.fixture
+def submitted(identity_client: TestClient, auth: Callable[[Row], dict[str, str]], upload: Callable[..., dict]) -> Callable[[Row], dict]:
+    """Upload the NIC route's images and submit them for review; returns the member's review."""
+
+    def submit(person: Row) -> dict:
+        for kind in ("nic_front", "nic_back", "selfie"):
+            upload(person, kind)
+        response = identity_client.post(
+            "/v1/identity/me/review", json={"route": "nic", "declaration": True}, headers=auth(person)
+        )
+        assert response.status_code == 200, response.text
+        return response.json()
+
+    return submit
 
 
 @pytest.fixture

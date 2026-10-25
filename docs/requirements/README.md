@@ -40,6 +40,7 @@ v1.1 contains 466 functional requirements, 160 business rules, 174 screens, 70 d
 | FR-WEB-007 to 011, 013 (API) | Checklist before Approve; exactly three decisions; items and reason for Request an update; reason for Unable to verify; immutable decision with reviewer, time, reason and evidence versions; no deciding one's own record | `verification/rules.py`, Alembic `0004` |
 | BR-011 to 014, BR-081, BR-082 | Declaration; only a human with `members.verify` decides; corrections name the item; identity, membership and access stay separate | `verification` |
 | FR-PROF-006 (API) | The member's review history with decision, reviewer tier and date | `/v1/identity/me/review` |
+| FR-IDV-013, PRM-29, M04 and D05 (API), §15B.4 | One appeal per Request-update or Unable-to-verify decision, up to 1,000 characters; decided by a holder of `idv.appeal.decide`, never the original reviewer; uphold or overturn with a reason the member sees; the 10-working-day target is not tracked yet | `services/api/app/modules/verification_appeals` |
 | FR-AUTH-027 (part) | An assignment with an overdue review stops counting; the review workflow is not built | `access/repository.py` |
 | FR-ARCH-003, NFR-ARCH-02 | Versioned `/v1` REST API documented in OpenAPI 3.1 | `services/api`, `packages/api-client/openapi.json` |
 | FR-ARCH-006 (part) | CI runs builds and tests; security scans and the production approval gate are still missing | `.github/workflows/ci.yml` |

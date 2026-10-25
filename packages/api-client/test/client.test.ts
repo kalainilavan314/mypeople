@@ -219,3 +219,16 @@ test('a refused submission carries the missing items', async () => {
   assert.deepEqual([error.status, error.code, error.problems], [409, 'submission_refused', ['missing:selfie']]);
   assert.equal(sent[0].body, JSON.stringify({ route: 'nic', declaration: true }));
 });
+
+test('an appeal sends the statement and a used appeal carries its reason', async () => {
+  const { fetch, sent } = fakeFetch(409, { detail: { code: 'appeal_refused', problems: ['appeal_used'] } });
+
+  const error = await createApiClient({ baseUrl: 'https://api.example', fetch })
+    .appealMyIdentityDecision('The card is mine.')
+    .catch((e: unknown) => e);
+
+  assert.equal(sent[0].url, 'https://api.example/v1/identity/me/review/appeal');
+  assert.equal(sent[0].body, JSON.stringify({ statement: 'The card is mine.' }));
+  assert.ok(error instanceof ApiError);
+  assert.deepEqual([error.code, error.problems], ['appeal_refused', ['appeal_used']]);
+});

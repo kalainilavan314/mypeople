@@ -525,10 +525,294 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/identity/me/review/appeal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Appeal My Decision
+         * @description Appeal the latest Request-update or Unable-to-verify decision, once (M04, FR-IDV-013).
+         *
+         *     Someone other than the original reviewer decides. Until then the member
+         *     cannot submit again.
+         */
+        post: operations["appeal_my_decision_v1_identity_me_review_appeal_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/appeals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Appeals
+         * @description D05: appeals in the caller's areas, oldest first. Open appeals unless states are given.
+         */
+        get: operations["list_appeals_v1_identity_appeals_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/appeals/{appeal_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Appeal
+         * @description One appeal for D05: the member's statement, the decision under appeal and the image records.
+         */
+        get: operations["read_appeal_v1_identity_appeals__appeal_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/appeals/{appeal_id}/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Claim Appeal
+         * @description Take the appeal. Never the original reviewer (PRM-29). While held, its evidence opens to the caller.
+         */
+        post: operations["claim_appeal_v1_identity_appeals__appeal_id__claim_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/appeals/{appeal_id}/release": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Release Appeal */
+        post: operations["release_appeal_v1_identity_appeals__appeal_id__release_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/appeals/{appeal_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Appeal
+         * @description Uphold or overturn the decision, with a reason the member sees (FR-IDV-013). Final.
+         *
+         *     Overturning sends the review back to the queue for a fresh decision by
+         *     someone other than the original reviewer.
+         */
+        post: operations["decide_appeal_v1_identity_appeals__appeal_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AppealDecisionInput */
+        AppealDecisionInput: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "uphold" | "overturn";
+            /** Reason */
+            reason: string;
+        };
+        /**
+         * AppealFileOut
+         * @description D05: the appeal, the decision under appeal, the review and the member's image records.
+         */
+        AppealFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Appealref */
+            appealRef: string;
+            /**
+             * Reviewid
+             * Format: uuid
+             */
+            reviewId: string;
+            /** Reviewref */
+            reviewRef: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /**
+             * Appealeddecision
+             * @enum {string}
+             */
+            appealedDecision: "approve" | "request_update" | "unable_to_verify";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "submitted" | "in_review" | "upheld" | "overturned";
+            /**
+             * Area
+             * @description The member's area when the review was submitted
+             */
+            area: string;
+            /**
+             * Submittedat
+             * Format: date-time
+             */
+            submittedAt: string;
+            /** Claimedby */
+            claimedBy: string | null;
+            /** Claimedbyname */
+            claimedByName: string | null;
+            /** Claimedat */
+            claimedAt: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+            /** Statement */
+            statement: string;
+            /** Decidedby */
+            decidedBy: string | null;
+            /** Decidertier */
+            deciderTier: ("1" | "2A" | "2B" | "3A" | "3B" | "4" | "5") | null;
+            /** Outcomereason */
+            outcomeReason: string | null;
+            decision: components["schemas"]["DecisionOut"];
+            review: components["schemas"]["ReviewSummaryOut"];
+            member: components["schemas"]["ReviewMemberOut"];
+            /** Documents */
+            documents: components["schemas"]["DocumentOut"][];
+        };
+        /** AppealInput */
+        AppealInput: {
+            /** Statement */
+            statement: string;
+        };
+        /**
+         * AppealOut
+         * @description An appeal against one decision (M04): the member's statement and the outcome with its reason.
+         *     The decider is shown by tier only.
+         */
+        AppealOut: {
+            /** Appealref */
+            appealRef: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "submitted" | "in_review" | "upheld" | "overturned";
+            /** Statement */
+            statement: string;
+            /**
+             * Submittedat
+             * Format: date-time
+             */
+            submittedAt: string;
+            /** Decidedat */
+            decidedAt: string | null;
+            /** Decidertier */
+            deciderTier: ("1" | "2A" | "2B" | "3A" | "3B" | "4" | "5") | null;
+            /** Outcomereason */
+            outcomeReason: string | null;
+        };
+        /**
+         * AppealSummaryOut
+         * @description One row of the D05 queue.
+         */
+        AppealSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Appealref */
+            appealRef: string;
+            /**
+             * Reviewid
+             * Format: uuid
+             */
+            reviewId: string;
+            /** Reviewref */
+            reviewRef: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /**
+             * Appealeddecision
+             * @enum {string}
+             */
+            appealedDecision: "approve" | "request_update" | "unable_to_verify";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "submitted" | "in_review" | "upheld" | "overturned";
+            /**
+             * Area
+             * @description The member's area when the review was submitted
+             */
+            area: string;
+            /**
+             * Submittedat
+             * Format: date-time
+             */
+            submittedAt: string;
+            /** Claimedby */
+            claimedBy: string | null;
+            /** Claimedbyname */
+            claimedByName: string | null;
+            /** Claimedat */
+            claimedAt: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+        };
         /**
          * AreaRef
          * @description An area: the whole platform, or a province, district, DS division or GN division by code.
@@ -712,6 +996,7 @@ export interface components {
             evidence: {
                 [key: string]: components["schemas"]["EvidenceVersion"];
             };
+            appeal: components["schemas"]["AppealOut"] | null;
         };
         /**
          * DocumentOut
@@ -808,6 +1093,7 @@ export interface components {
             reasonCategory: string | null;
             /** Note */
             note: string | null;
+            appeal: components["schemas"]["AppealOut"] | null;
         };
         /**
          * MemberProfile
@@ -2037,6 +2323,291 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    appeal_my_decision_v1_identity_me_review_appeal_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppealInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReviewOut"];
+                };
+            };
+            /** @description {"code": "appeal_refused", "problems": ["nothing_to_appeal" | "appeal_used"]} */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_appeals_v1_identity_appeals_get: {
+        parameters: {
+            query?: {
+                state?: ("submitted" | "in_review" | "upheld" | "overturned")[] | null;
+                mine?: boolean;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppealSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_appeal_v1_identity_appeals__appeal_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appeal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppealFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open, original_reviewer, claimed_by_another or not_claimed_by_you */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    claim_appeal_v1_identity_appeals__appeal_id__claim_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appeal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppealFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open, original_reviewer, claimed_by_another or not_claimed_by_you */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    release_appeal_v1_identity_appeals__appeal_id__release_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appeal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppealFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open, original_reviewer, claimed_by_another or not_claimed_by_you */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_appeal_v1_identity_appeals__appeal_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appeal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppealDecisionInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppealFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open, original_reviewer, claimed_by_another or not_claimed_by_you */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };

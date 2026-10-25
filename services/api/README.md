@@ -22,6 +22,8 @@ Current scope:
 | `GET /v1/identity/members/{id}/documents`, `POST /v1/identity/documents/{id}/view-link`, `GET /v1/identity/evidence/{token}` | reviewers list, open (5-minute link) and view identity images; need `members.view_identity_evidence` over the member's area and their own open review of the member |
 | `GET /v1/identity/me/review`, `POST /v1/identity/me/review` | the member's identity review (VR reference, state, decisions); submit it, or send a correction |
 | `GET /v1/identity/reviews`, `GET /v1/identity/reviews/counts`, `GET /v1/identity/reviews/{id}`, `POST .../claim`, `.../release`, `.../decision` | the reviewers' queue and decisions (W01, W02); need `members.verify` over the member's area |
+| `POST /v1/identity/me/review/appeal` | the member appeals their latest Request-update or Unable-to-verify decision, once |
+| `GET /v1/identity/appeals`, `GET /v1/identity/appeals/{id}`, `POST .../claim`, `.../release`, `.../decision` | the appeals queue (D05); need `idv.appeal.decide` over the member's area |
 
 ## Staff access (BRD §9)
 
@@ -104,9 +106,30 @@ submitting again while it is open returns the same review.
    Express API.
 
 The reason categories are proposed, not from the BRD, and need sponsor
-confirmation. Not built yet: appeals to a different reviewer (FR-IDV-013),
-automated screening (D03), duplicate flags (FR-WEB-012), notifications to the
-member (FR-REG-021) and consent records (BR-008).
+confirmation. Not built yet: automated screening (D03), duplicate flags
+(FR-WEB-012), notifications to the member (FR-REG-021) and consent records
+(BR-008).
+
+### Appeals (FR-IDV-013, PRM-29, M04, D05)
+
+A member may appeal a *Request an update* or *Unable to verify* decision
+once, in up to 1,000 characters, and gets a `VA-` reference. Until the appeal
+is decided they cannot submit again.
+
+Holders of `idv.appeal.decide` (Tier 4 or 5) over the member's area see the
+appeals queue. One person claims an appeal; while they hold it, the member's
+evidence opens to them. The reviewer who made the decision under appeal can
+never claim it, and nobody decides their own appeal.
+
+- *Uphold*: the decision stands; the member sees the outcome and the reason.
+- *Overturn*: the review goes back to the queue for a fresh decision by
+  anyone except the original reviewer. The appeal decider does not approve
+  identity themselves: approval still needs `members.verify`, the checklist
+  and the evidence (BR-012). This reading of "overturn" needs sponsor
+  confirmation.
+
+A decided appeal cannot be changed or deleted (database trigger). The
+10-working-day target is not tracked yet.
 
 ## Sessions
 
@@ -205,7 +228,7 @@ Check the state with `python -m alembic current`. From now on, every schema
 change is a new Alembic revision, never a new file in `server/migrations`:
 
 ```powershell
-python -m alembic revision --rev-id 0005 -m "describe the change"
+python -m alembic revision --rev-id 0006 -m "describe the change"
 python -m alembic upgrade head --sql    # review the SQL before applying it
 python -m alembic upgrade head
 ```
@@ -247,6 +270,7 @@ app/
   modules/audit/       append-only, hash-chained audit log
   modules/identity/    identity images: encrypted vault, upload, signed view links
   modules/verification/  identity reviews: submit, queue, claim, decide
+  modules/verification_appeals/  appeals against identity decisions
 alembic/               Alembic environment and revisions
 tests/                 pytest tests
 tests/express/         Node helper and vectors from server/src/lib.js

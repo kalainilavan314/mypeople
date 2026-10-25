@@ -99,6 +99,13 @@ def holds(assignments: list[Assignment], permission: str, area_path: AreaPath | 
     )
 
 
+def highest_tier(assignments: list[Assignment], permission: str, area_path: AreaPath) -> Tier | None:
+    """The highest tier through which someone holds the permission over the area, e.g. to show
+    "decided by a Tier 3A reviewer" without naming the person."""
+    tiers = [a.tier for a in assignments if permission in a.permissions and contains(a.area, area_path)]
+    return max(tiers, key=lambda tier: TIER_RANK[tier], default=None)
+
+
 def check_assignment(
     *,
     granter_id: uuid.UUID,

@@ -158,6 +158,20 @@ def release(db: Session, review_id: uuid.UUID) -> None:
     )
 
 
+def reopen_after_appeal(db: Session, review_id: uuid.UUID) -> None:
+    """An overturned decision: the review goes back to the queue, unclaimed, for a fresh decision."""
+    db.execute(
+        text(
+            """
+            UPDATE identity.identity_review
+            SET state = 'submitted', claimed_by = NULL, claimed_at = NULL, decided_at = NULL, resubmitted_at = now()
+            WHERE id = :id AND state IN ('needs_update', 'unable_to_verify')
+            """
+        ),
+        {"id": review_id},
+    )
+
+
 def set_state_after_decision(db: Session, review_id: uuid.UUID, state: str) -> None:
     db.execute(
         text(
@@ -188,10 +202,12 @@ def insert_decision(
     db.execute(
         text(
             """
-            INSERT INTO identity.review_decision (review_id, decision, reviewer_id, reviewer_tier, checklist,
+            INSERT INTO identity.review_decision (review_id, decision, reviewer_id, reviewer_tier, decided_at, checklist,
                                                   requested_items, reason_category, note, evidence)
-            VALUES (:review_id, :decision, :reviewer_id, :reviewer_tier, :checklist, :requested_items,
-                    :reason_category, :note, CAST(:evidence AS jsonb))
+            -- clock_timestamp(), not now(): the real time even inside a longer transaction, so
+            -- decisions on one review always sort in the order they were made.
+            VALUES (:review_id, :decision, :reviewer_id, :reviewer_tier, clock_timestamp(), :checklist,
+                    :requested_items, :reason_category, :note, CAST(:evidence AS jsonb))
             """
         ),
         {

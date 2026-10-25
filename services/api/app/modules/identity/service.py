@@ -8,7 +8,8 @@ reviews their own record), PRM-03 members.view_identity_evidence.
 
 PRM-03 "only inside an open review": a reviewer sees a member's evidence
 only while they hold that member's identity review in review (claimed in
-W01, see app/modules/verification).
+W01, see app/modules/verification), or the member's appeal (D05, see
+app/modules/verification_appeals).
 
 Not yet enforced, because what they need does not exist yet: BR-085's "or a
 declared relative" (no relatives are recorded) and the OD-03 retention
@@ -31,6 +32,7 @@ from app.modules.identity.links import ViewLink
 from app.modules.identity.repository import DocumentKind, StoredDocument
 from app.modules.identity.vault import EvidenceVault
 from app.modules.verification import repository as verification_repository
+from app.modules.verification_appeals import repository as appeals_repository
 
 PERMISSION = "members.view_identity_evidence"  # PRM-03
 VIEWED = "identity.evidence.viewed"
@@ -89,11 +91,14 @@ def my_documents(db: Session, member_id: uuid.UUID) -> list[StoredDocument]:
 
 def _check_reviewer(db: Session, staff: Staff, member_id: uuid.UUID, ip: str) -> AreaPath:
     """Not the reviewer's own record (BR-085), the permission over the member's area,
-    and an open review of this member held by this reviewer (PRM-03)."""
+    and an open review or appeal of this member held by this person (PRM-03)."""
     area_path = access_repository.member_area_path(db, member_id)
     target = ("member", str(member_id))
     access.check_record_scope(db, staff, PERMISSION, member_id=member_id, area_path=area_path, target=target, ip=ip)
-    if not verification_repository.has_open_review_claimed_by(db, member_id, staff.member_id):
+    if not (
+        verification_repository.has_open_review_claimed_by(db, member_id, staff.member_id)
+        or appeals_repository.has_open_appeal_claimed_by(db, member_id, staff.member_id)
+    ):
         access.refuse(db, staff, PERMISSION, "no_open_review", ip, target=target, area_path=area_path)
     return area_path
 

@@ -30,6 +30,11 @@ export type ReviewState = ReviewSummary['state'];
 export type ReviewFile = Schemas['ReviewFileOut'];
 export type ReviewCounts = Schemas['QueueCountsOut'];
 export type ReviewDecisionInput = Schemas['DecisionInput'];
+export type IdentityAppeal = Schemas['AppealOut'];
+export type AppealSummary = Schemas['AppealSummaryOut'];
+export type AppealState = AppealSummary['state'];
+export type AppealFile = Schemas['AppealFileOut'];
+export type AppealDecisionInput = Schemas['AppealDecisionInput'];
 
 /** A response other than 2xx. `code` is the API's error code, e.g. "invalid_credentials". */
 export class ApiError extends Error {
@@ -77,6 +82,14 @@ export interface ReviewFilters {
   mine?: boolean;
   /** A review reference, e.g. "VR-00421". */
   ref?: string;
+  limit?: number;
+}
+
+export interface AppealFilters {
+  /** Open appeals (submitted, in review) when left out. */
+  states?: AppealState[];
+  /** Only appeals the caller has claimed. */
+  mine?: boolean;
   limit?: number;
 }
 
@@ -179,6 +192,25 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     /** Throws ApiError "decision_refused" (422) with `problems`, e.g. "checklist_incomplete:readable". */
     decideIdentityReview: (reviewId: string, input: ReviewDecisionInput) =>
       request<ReviewFile>('POST', `/v1/identity/reviews/${encodeURIComponent(reviewId)}/decision`, input),
+
+    /**
+     * Appeals the member's latest Request-update or Unable-to-verify decision, once (M04), in up to
+     * 1,000 characters. Throws ApiError "appeal_refused" (409) with "nothing_to_appeal" or "appeal_used".
+     */
+    appealMyIdentityDecision: (statement: string) =>
+      request<IdentityReview>('POST', '/v1/identity/me/review/appeal', { statement }),
+    /** D05: appeals in the caller's areas, oldest first. Needs idv.appeal.decide. */
+    listIdentityAppeals: (filters: AppealFilters = {}) =>
+      request<AppealSummary[]>('GET', `/v1/identity/appeals${toAppealQuery(filters)}`),
+    getIdentityAppeal: (appealId: string) => request<AppealFile>('GET', `/v1/identity/appeals/${encodeURIComponent(appealId)}`),
+    /** Throws ApiError "original_reviewer" (409) for the person who made the decision under appeal. */
+    claimIdentityAppeal: (appealId: string) =>
+      request<AppealFile>('POST', `/v1/identity/appeals/${encodeURIComponent(appealId)}/claim`),
+    releaseIdentityAppeal: (appealId: string) =>
+      request<AppealFile>('POST', `/v1/identity/appeals/${encodeURIComponent(appealId)}/release`),
+    /** Uphold or overturn, with a reason the member sees. Overturning sends the review back for a fresh decision. */
+    decideIdentityAppeal: (appealId: string, input: AppealDecisionInput) =>
+      request<AppealFile>('POST', `/v1/identity/appeals/${encodeURIComponent(appealId)}/decision`, input),
   };
 }
 
@@ -199,6 +231,15 @@ function toReviewQuery(filters: ReviewFilters): string {
   for (const state of filters.states ?? []) params.append('state', state);
   if (filters.mine) params.set('mine', 'true');
   if (filters.ref) params.set('ref', filters.ref);
+  if (filters.limit !== undefined) params.set('limit', String(filters.limit));
+  const query = params.toString();
+  return query ? `?${query}` : '';
+}
+
+function toAppealQuery(filters: AppealFilters): string {
+  const params = new URLSearchParams();
+  for (const state of filters.states ?? []) params.append('state', state);
+  if (filters.mine) params.set('mine', 'true');
   if (filters.limit !== undefined) params.set('limit', String(filters.limit));
   const query = params.toString();
   return query ? `?${query}` : '';

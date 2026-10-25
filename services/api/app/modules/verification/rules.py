@@ -8,7 +8,7 @@ a short code the apps can explain (BR-089).
 from typing import Literal
 
 from app.modules.access import rules as access_rules
-from app.modules.access.permissions import TIER_RANK, Tier
+from app.modules.access.permissions import Tier
 from app.modules.access.rules import AreaPath, Assignment
 
 Route = Literal["nic", "passport"]  # BR-003: one route per account, NIC or passport
@@ -80,15 +80,23 @@ def check_correction(
 
 
 def check_claim(
-    state: ReviewState, claimed_by: object | None, actor_id: object, claimant_still_authorised: bool
+    state: ReviewState,
+    claimed_by: object | None,
+    actor_id: object,
+    claimant_still_authorised: bool,
+    overturned_on_appeal: bool = False,
 ) -> str | None:
     """FR-WEB-003: one reviewer at a time. None means the actor may claim it.
 
     A claim held by someone who no longer holds members.verify over the area
     may be taken over, so a review never stays stuck with a former reviewer.
+    A reviewer whose decision was overturned on appeal does not review it
+    again (FR-IDV-013).
     """
     if state not in ("submitted", "in_review"):
         return "not_open"  # needs_update waits for the member; verified and unable_to_verify are closed
+    if overturned_on_appeal:
+        return "overturned_on_appeal"
     if claimed_by is None or claimed_by == actor_id or not claimant_still_authorised:
         return None
     return "claimed_by_another"
@@ -129,9 +137,4 @@ def check_decision(
 
 def reviewer_tier(assignments: list[Assignment], area_path: AreaPath) -> Tier | None:
     """The highest tier through which the reviewer holds members.verify over the area (shown to the member, FR-PROF-006)."""
-    tiers = [
-        a.tier
-        for a in assignments
-        if VERIFY in a.permissions and access_rules.contains(a.area, area_path)
-    ]
-    return max(tiers, key=lambda tier: TIER_RANK[tier], default=None)
+    return access_rules.highest_tier(assignments, VERIFY, area_path)

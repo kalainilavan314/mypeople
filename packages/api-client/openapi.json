@@ -1360,10 +1360,843 @@
           }
         }
       }
+    },
+    "/v1/identity/me/review/appeal": {
+      "post": {
+        "tags": [
+          "verification appeals"
+        ],
+        "summary": "Appeal My Decision",
+        "description": "Appeal the latest Request-update or Unable-to-verify decision, once (M04, FR-IDV-013).\n\nSomeone other than the original reviewer decides. Until then the member\ncannot submit again.",
+        "operationId": "appeal_my_decision_v1_identity_me_review_appeal_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppealInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyReviewOut"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "{\"code\": \"appeal_refused\", \"problems\": [\"nothing_to_appeal\" | \"appeal_used\"]}"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/identity/appeals": {
+      "get": {
+        "tags": [
+          "verification appeals"
+        ],
+        "summary": "List Appeals",
+        "description": "D05: appeals in the caller's areas, oldest first. Open appeals unless states are given.",
+        "operationId": "list_appeals_v1_identity_appeals_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "submitted",
+                      "in_review",
+                      "upheld",
+                      "overturned"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "mine",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Mine"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AppealSummaryOut"
+                  },
+                  "title": "Response List Appeals V1 Identity Appeals Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/appeals/{appeal_id}": {
+      "get": {
+        "tags": [
+          "verification appeals"
+        ],
+        "summary": "Read Appeal",
+        "description": "One appeal for D05: the member's statement, the decision under appeal and the image records.",
+        "operationId": "read_appeal_v1_identity_appeals__appeal_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "appeal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Appeal Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppealFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_open, original_reviewer, claimed_by_another or not_claimed_by_you"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/appeals/{appeal_id}/claim": {
+      "post": {
+        "tags": [
+          "verification appeals"
+        ],
+        "summary": "Claim Appeal",
+        "description": "Take the appeal. Never the original reviewer (PRM-29). While held, its evidence opens to the caller.",
+        "operationId": "claim_appeal_v1_identity_appeals__appeal_id__claim_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "appeal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Appeal Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppealFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_open, original_reviewer, claimed_by_another or not_claimed_by_you"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/appeals/{appeal_id}/release": {
+      "post": {
+        "tags": [
+          "verification appeals"
+        ],
+        "summary": "Release Appeal",
+        "operationId": "release_appeal_v1_identity_appeals__appeal_id__release_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "appeal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Appeal Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppealFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_open, original_reviewer, claimed_by_another or not_claimed_by_you"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/appeals/{appeal_id}/decision": {
+      "post": {
+        "tags": [
+          "verification appeals"
+        ],
+        "summary": "Decide Appeal",
+        "description": "Uphold or overturn the decision, with a reason the member sees (FR-IDV-013). Final.\n\nOverturning sends the review back to the queue for a fresh decision by\nsomeone other than the original reviewer.",
+        "operationId": "decide_appeal_v1_identity_appeals__appeal_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "appeal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Appeal Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppealDecisionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppealFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_open, original_reviewer, claimed_by_another or not_claimed_by_you"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AppealDecisionInput": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "uphold",
+              "overturn"
+            ],
+            "title": "Outcome"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcome",
+          "reason"
+        ],
+        "title": "AppealDecisionInput"
+      },
+      "AppealFileOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "appealRef": {
+            "type": "string",
+            "title": "Appealref"
+          },
+          "reviewId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Reviewid"
+          },
+          "reviewRef": {
+            "type": "string",
+            "title": "Reviewref"
+          },
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "appealedDecision": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "request_update",
+              "unable_to_verify"
+            ],
+            "title": "Appealeddecision"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "submitted",
+              "in_review",
+              "upheld",
+              "overturned"
+            ],
+            "title": "State"
+          },
+          "area": {
+            "type": "string",
+            "title": "Area",
+            "description": "The member's area when the review was submitted"
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Submittedat"
+          },
+          "claimedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedby"
+          },
+          "claimedByName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedbyname"
+          },
+          "claimedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedat"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          },
+          "statement": {
+            "type": "string",
+            "title": "Statement"
+          },
+          "decidedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedby"
+          },
+          "deciderTier": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "1",
+                  "2A",
+                  "2B",
+                  "3A",
+                  "3B",
+                  "4",
+                  "5"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidertier"
+          },
+          "outcomeReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcomereason"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/DecisionOut"
+          },
+          "review": {
+            "$ref": "#/components/schemas/ReviewSummaryOut"
+          },
+          "member": {
+            "$ref": "#/components/schemas/ReviewMemberOut"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentOut"
+            },
+            "type": "array",
+            "title": "Documents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "appealRef",
+          "reviewId",
+          "reviewRef",
+          "memberId",
+          "appealedDecision",
+          "state",
+          "area",
+          "submittedAt",
+          "claimedBy",
+          "claimedByName",
+          "claimedAt",
+          "decidedAt",
+          "statement",
+          "decidedBy",
+          "deciderTier",
+          "outcomeReason",
+          "decision",
+          "review",
+          "member",
+          "documents"
+        ],
+        "title": "AppealFileOut",
+        "description": "D05: the appeal, the decision under appeal, the review and the member's image records."
+      },
+      "AppealInput": {
+        "properties": {
+          "statement": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Statement"
+          }
+        },
+        "type": "object",
+        "required": [
+          "statement"
+        ],
+        "title": "AppealInput"
+      },
+      "AppealOut": {
+        "properties": {
+          "appealRef": {
+            "type": "string",
+            "title": "Appealref"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "submitted",
+              "in_review",
+              "upheld",
+              "overturned"
+            ],
+            "title": "State"
+          },
+          "statement": {
+            "type": "string",
+            "title": "Statement"
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Submittedat"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          },
+          "deciderTier": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "1",
+                  "2A",
+                  "2B",
+                  "3A",
+                  "3B",
+                  "4",
+                  "5"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidertier"
+          },
+          "outcomeReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcomereason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "appealRef",
+          "state",
+          "statement",
+          "submittedAt",
+          "decidedAt",
+          "deciderTier",
+          "outcomeReason"
+        ],
+        "title": "AppealOut",
+        "description": "An appeal against one decision (M04): the member's statement and the outcome with its reason.\nThe decider is shown by tier only."
+      },
+      "AppealSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "appealRef": {
+            "type": "string",
+            "title": "Appealref"
+          },
+          "reviewId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Reviewid"
+          },
+          "reviewRef": {
+            "type": "string",
+            "title": "Reviewref"
+          },
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "appealedDecision": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "request_update",
+              "unable_to_verify"
+            ],
+            "title": "Appealeddecision"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "submitted",
+              "in_review",
+              "upheld",
+              "overturned"
+            ],
+            "title": "State"
+          },
+          "area": {
+            "type": "string",
+            "title": "Area",
+            "description": "The member's area when the review was submitted"
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Submittedat"
+          },
+          "claimedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedby"
+          },
+          "claimedByName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedbyname"
+          },
+          "claimedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedat"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "appealRef",
+          "reviewId",
+          "reviewRef",
+          "memberId",
+          "appealedDecision",
+          "state",
+          "area",
+          "submittedAt",
+          "claimedBy",
+          "claimedByName",
+          "claimedAt",
+          "decidedAt"
+        ],
+        "title": "AppealSummaryOut",
+        "description": "One row of the D05 queue."
+      },
       "AreaRef": {
         "properties": {
           "level": {
@@ -1850,6 +2683,16 @@
             "type": "object",
             "title": "Evidence",
             "description": "The images the decision was made on (BR-082)"
+          },
+          "appeal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AppealOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -1863,7 +2706,8 @@
           "requestedItems",
           "reasonCategory",
           "note",
-          "evidence"
+          "evidence",
+          "appeal"
         ],
         "title": "DecisionOut"
       },
@@ -2046,6 +2890,16 @@
               }
             ],
             "title": "Note"
+          },
+          "appeal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AppealOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -2055,7 +2909,8 @@
           "reviewerTier",
           "requestedItems",
           "reasonCategory",
-          "note"
+          "note",
+          "appeal"
         ],
         "title": "MemberDecisionOut",
         "description": "A decision as the member sees it: the reviewer's tier, never their name (FR-PROF-006)."
