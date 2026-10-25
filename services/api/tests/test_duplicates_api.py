@@ -103,9 +103,10 @@ def test_different_birth_dates_do_not_match(db_session, submitted, person, uniqu
     assert cases_between(db_session, first, second) == []
 
 
-def test_a_reviewer_reports_a_suspected_duplicate(client, db_session, auth, person, reviewer, unique_name):
+def test_a_reviewer_reports_a_suspected_duplicate(client, db_session, auth, person, reviewer, open_review, unique_name):
     first = person(unique_name)
     second = person("Someone Else")
+    open_review(first, reviewer)
     body = {"memberId": str(first.id), "otherMemberId": str(second.id), "reason": "The same NIC photo on both."}
 
     reported = client.post("/v1/identity/duplicates", json=body, headers=auth(reviewer))
@@ -122,15 +123,44 @@ def test_a_reviewer_reports_a_suspected_duplicate(client, db_session, auth, pers
     assert (same.status_code, same.json()["detail"]["problems"]) == (422, ["same_member"])
 
 
+def test_reports_come_only_from_a_review_the_reporter_holds(client, db_session, auth, person, reviewer, unique_name):
+    """The review finding: a report on any two members, then a claim, opened both members' evidence."""
+    first, second = person(unique_name), person("Someone Else")
+    body = {"memberId": str(first.id), "otherMemberId": str(second.id), "reason": "Looks like the same person."}
+
+    response = client.post("/v1/identity/duplicates", json=body, headers=auth(reviewer))
+
+    assert (response.status_code, response.json()) == (403, {"detail": "no_open_review"})
+    assert cases_between(db_session, first, second) == []
+    entry = last_audit(db_session)
+    assert (entry.action, entry.details["reason"]) == ("access.denied", "no_open_review")
+
+
+def test_whoever_reported_a_case_cannot_claim_it(client, auth, person, open_review, make_reviewer, area, unique_name):
+    # A reviewer who also investigates duplicates across the province.
+    both = make_reviewer(area.province, permissions=("members.verify", INVESTIGATE, VIEW), tier="4", level="province")
+    first, second = person(unique_name), person("Someone Else")
+    open_review(first, both)
+    body = {"memberId": str(first.id), "otherMemberId": str(second.id), "reason": "The same face on both."}
+    case = client.post("/v1/identity/duplicates", json=body, headers=auth(both)).json()
+
+    claim = client.post(f"/v1/identity/duplicates/{case['id']}/claim", headers=auth(both))
+
+    assert (claim.status_code, claim.json()) == (409, {"detail": "reported_by_you"})
+
+
 # --- Investigating (D04, PRM-28) ------------------------------------------------------------------
 
 
 @pytest.fixture
-def case_id(client, auth, upload, person, reviewer, investigator, unique_name) -> Callable[[], tuple[str, Row, Row]]:
+def case_id(
+    client, auth, upload, person, reviewer, investigator, open_review, unique_name
+) -> Callable[[], tuple[str, Row, Row]]:
     def open_case() -> tuple[str, Row, Row]:
         first, second = person(unique_name), person("Another Name")
         upload(first)
         upload(second)
+        open_review(first, reviewer)
         body = {"memberId": str(first.id), "otherMemberId": str(second.id), "reason": "Same face on both accounts."}
         client.post("/v1/identity/duplicates", json=body, headers=auth(reviewer))
         [listed] = client.get("/v1/identity/duplicates", headers=auth(investigator)).json()
@@ -193,10 +223,13 @@ def test_only_the_investigator_holding_the_case_decides(client, auth, case_id, i
     assert (released["state"], released["claimedBy"]) == ("open", None)
 
 
-def test_nobody_investigates_their_own_account(client, auth, person, reviewer, assign, super_admin, area, unique_name):
+def test_nobody_investigates_their_own_account(
+    client, auth, person, reviewer, assign, super_admin, area, open_review, unique_name
+):
     investigator = person(unique_name)
     assign(investigator, "4", "province", area.province, [INVESTIGATE, VIEW], granted_by=super_admin)
     other = person("Unrelated Name")
+    open_review(other, reviewer)
     body = {"memberId": str(other.id), "otherMemberId": str(investigator.id), "reason": "Looks like the same person."}
     client.post("/v1/identity/duplicates", json=body, headers=auth(reviewer))
     [listed] = client.get("/v1/identity/duplicates", headers=auth(investigator)).json()

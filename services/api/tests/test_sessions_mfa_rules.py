@@ -9,7 +9,7 @@ from pydantic import ValidationError
 from app.core import sealing
 from app.core.config import Settings
 from app.core.security import read_session_token, sign_session_token
-from app.modules.auth import totp
+from app.modules.auth import mfa_lockout, totp
 from app.modules.auth.device import describe
 
 RFC_SECRET = b"12345678901234567890"  # RFC 6238 appendix B, SHA-1
@@ -33,6 +33,14 @@ def test_one_step_of_drift_is_accepted_and_a_used_step_is_refused():
     assert totp.matching_step(RFC_SECRET, previous, now, last_used_step=step - 1) is None  # no replay
     assert totp.matching_step(RFC_SECRET, totp.code_for_step(RFC_SECRET, step - 2), now, None) is None
     assert totp.matching_step(RFC_SECRET, "12345", now, None) is None
+
+
+@pytest.mark.parametrize(
+    ("failures", "previous_lockouts", "seconds"),
+    [(4, 0, None), (5, 0, 15 * 60), (5, 1, 60 * 60), (5, 2, 4 * 60 * 60), (5, 3, 24 * 60 * 60), (6, 9, 24 * 60 * 60)],
+)
+def test_each_lockout_in_a_row_lasts_longer(failures, previous_lockouts, seconds):
+    assert mfa_lockout.lockout_seconds(failures, previous_lockouts) == seconds
 
 
 def test_secrets_are_shown_as_base32_and_a_scannable_uri():

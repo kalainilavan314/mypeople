@@ -207,19 +207,55 @@ class StoredFactor:
     secret_sealed: bytes
     enabled: bool
     last_used_step: int | None
+    failed_attempts: int
+    lockouts: int
+    locked_for: int  # seconds until the lockout ends; 0 when not locked
 
 
-def find_factor(db: Session, member_id: uuid.UUID) -> StoredFactor | None:
+def find_factor(db: Session, member_id: uuid.UUID, *, for_update: bool = False) -> StoredFactor | None:
+    """for_update holds the row until the caller commits, so two codes checked at the same
+    moment are counted and used one after the other."""
     row = db.execute(
         text(
-            """
-            SELECT secret_sealed, enabled_at IS NOT NULL AS enabled, last_used_step
-            FROM identity.mfa_factor WHERE member_id = :id
+            f"""
+            SELECT secret_sealed, enabled_at IS NOT NULL AS enabled, last_used_step, failed_attempts, lockouts,
+                   GREATEST(0, CEIL(EXTRACT(EPOCH FROM locked_until - clock_timestamp())))::int AS locked_for
+            FROM identity.mfa_factor WHERE member_id = :id {"FOR UPDATE" if for_update else ""}
             """
         ),
         {"id": member_id},
     ).one_or_none()
-    return StoredFactor(bytes(row.secret_sealed), row.enabled, row.last_used_step) if row else None
+    if row is None:
+        return None
+    return StoredFactor(
+        bytes(row.secret_sealed), row.enabled, row.last_used_step, row.failed_attempts, row.lockouts, row.locked_for
+    )
+
+
+def add_factor_failure(db: Session, member_id: uuid.UUID) -> int:
+    return db.scalar(
+        text(
+            """
+            UPDATE identity.mfa_factor SET failed_attempts = failed_attempts + 1
+            WHERE member_id = :id RETURNING failed_attempts
+            """
+        ),
+        {"id": member_id},
+    )
+
+
+def lock_factor(db: Session, member_id: uuid.UUID, seconds: int) -> None:
+    db.execute(
+        text(
+            """
+            UPDATE identity.mfa_factor
+            SET locked_until = clock_timestamp() + make_interval(secs => :seconds), lockouts = lockouts + 1,
+                failed_attempts = 0
+            WHERE member_id = :id
+            """
+        ),
+        {"id": member_id, "seconds": seconds},
+    )
 
 
 def save_pending_factor(db: Session, member_id: uuid.UUID, secret_sealed: bytes) -> None:
@@ -238,12 +274,14 @@ def save_pending_factor(db: Session, member_id: uuid.UUID, secret_sealed: bytes)
 
 
 def use_factor(db: Session, member_id: uuid.UUID, step: int) -> None:
-    """Record the step just used (so it cannot be used again) and enable a pending factor."""
+    """Record the step just used (so it cannot be used again), clear the failure counts and
+    enable a pending factor."""
     db.execute(
         text(
             """
             UPDATE identity.mfa_factor
-            SET last_used_step = :step, enabled_at = COALESCE(enabled_at, clock_timestamp())
+            SET last_used_step = :step, enabled_at = COALESCE(enabled_at, clock_timestamp()),
+                failed_attempts = 0, lockouts = 0, locked_until = NULL
             WHERE member_id = :id
             """
         ),

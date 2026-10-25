@@ -1,5 +1,5 @@
 import uuid
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.concurrency import run_in_threadpool
@@ -16,7 +16,7 @@ from app.modules.auth.schemas import MfaCodeInput, MfaStatusOut, SessionOut, Sig
 from app.modules.auth.device import describe
 from app.modules.auth.session_cookie import clear_session_cookie, set_session_cookie
 from app.modules.identity.recovery import service as recovery
-from app.modules.identity.recovery.rules import NEW_DEVICE_MESSAGE
+from app.modules.identity.recovery.rules import MFA_LOCKED_MESSAGE, NEW_DEVICE_MESSAGE
 from app.modules.membership.repository import find_member_profile
 from app.modules.membership.schemas import MemberProfile
 
@@ -122,6 +122,22 @@ def _mfa_error(error: service.MfaRefused) -> HTTPException:
     return HTTPException(status_code=status.HTTP_409_CONFLICT, detail=error.code)
 
 
+def _mfa_locked(error: service.MfaLocked, member_id: uuid.UUID, request: Request, db: Session) -> HTTPException:
+    if error.started_now:
+        # Someone with the password is guessing codes, or the staff member is: either way they should know.
+        recovery.notify_member(db, request.app.state.sms, member_id, MFA_LOCKED_MESSAGE)
+    return HTTPException(
+        status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="mfa_locked", headers={"Retry-After": str(error.retry_after)}
+    )
+
+
+_MFA_CODE_RESPONSES: dict[int | str, dict[str, Any]] = {
+    401: {"description": "invalid_code, or too_many_attempts (five in this session: the session is ended)"},
+    409: {"description": "not_enrolled, already_enabled or session_not_registered"},
+    429: {"description": "mfa_locked: too many wrong codes on this authenticator; see Retry-After"},
+}
+
+
 @router.post("/mfa/totp", responses={409: {"description": "already_enabled"}})
 def start_totp(member: CurrentMember, request: Request, db: Db) -> TotpEnrolmentOut:
     """Start adding an authenticator app: the secret to type or the URI to scan as a QR code."""
@@ -132,30 +148,26 @@ def start_totp(member: CurrentMember, request: Request, db: Db) -> TotpEnrolment
     return TotpEnrolmentOut(secret=secret, otpauth_uri=uri)
 
 
-@router.post(
-    "/mfa/totp/confirm",
-    status_code=status.HTTP_204_NO_CONTENT,
-    responses={401: {"description": "invalid_code or too_many_attempts"}, 409: {"description": "already_enabled"}},
-)
+@router.post("/mfa/totp/confirm", status_code=status.HTTP_204_NO_CONTENT, responses=_MFA_CODE_RESPONSES)
 def confirm_totp(body: MfaCodeInput, member: CurrentMember, request: Request, db: Db) -> None:
     """The first code from the app enables it, and counts as the second factor for this session."""
+    jwt_secret = request.app.state.settings.jwt_secret.get_secret_value()
     try:
-        service.confirm_totp(db, member, body.code, request.app.state.settings.jwt_secret.get_secret_value())
+        service.confirm_totp(db, member, body.code, jwt_secret, client_ip(request))
     except service.MfaRefused as error:
         raise _mfa_error(error) from None
+    except service.MfaLocked as error:
+        raise _mfa_locked(error, member.id, request, db) from None
 
 
-@router.post(
-    "/mfa/verify",
-    status_code=status.HTTP_204_NO_CONTENT,
-    responses={
-        401: {"description": "invalid_code, or too_many_attempts (the session is ended)"},
-        409: {"description": "not_enrolled or session_not_registered"},
-    },
-)
+@router.post("/mfa/verify", status_code=status.HTTP_204_NO_CONTENT, responses=_MFA_CODE_RESPONSES)
 def verify_mfa(body: MfaCodeInput, member: CurrentMember, request: Request, db: Db) -> None:
-    """Give the authenticator code for this session; staff endpoints need it (NFR-SEC-04)."""
+    """Give the authenticator code for this session; staff endpoints need it (NFR-SEC-04).
+    Wrong codes count against the authenticator in every session: five lock it, for longer each time."""
+    jwt_secret = request.app.state.settings.jwt_secret.get_secret_value()
     try:
-        service.verify_mfa(db, member, body.code, request.app.state.settings.jwt_secret.get_secret_value())
+        service.verify_mfa(db, member, body.code, jwt_secret, client_ip(request))
     except service.MfaRefused as error:
         raise _mfa_error(error) from None
+    except service.MfaLocked as error:
+        raise _mfa_locked(error, member.id, request, db) from None

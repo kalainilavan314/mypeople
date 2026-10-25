@@ -173,11 +173,14 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     /** The confirmed recovery number, or null. */
     getMyRecoveryPhone: () => request<{ phone: string } | null>('GET', '/v1/identity/me/phone'),
     /**
-     * Sends a code to a new number (FR-REG-028). Throws ApiError "phone_unavailable" (409),
-     * "too_many_requests" (429, retryAfter) or "sms_not_configured" (503).
+     * Sends a code to a new number (FR-REG-028), whether or not another account has it.
+     * Throws ApiError "too_many_requests" (429, retryAfter) or "sms_not_configured" (503).
      */
     requestPhoneConfirmation: (phone: string) => request<CodeSent>('POST', '/v1/identity/me/phone', { phone }),
-    /** The number becomes the recovery contact. Throws ApiError "invalid_code" or "too_many_attempts" (401). */
+    /**
+     * The number becomes the recovery contact. Throws ApiError "invalid_code" or "too_many_attempts" (401),
+     * or "phone_unavailable" (409) when another account already has the number.
+     */
     confirmPhone: (phone: string, code: string) =>
       request<{ phone: string }>('POST', '/v1/identity/me/phone/confirm', { phone, code }),
     /** A16: the answer is the same whether or not the number is registered (BR-023). */
@@ -213,11 +216,12 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     getMfaStatus: () => request<MfaStatus>('GET', '/v1/auth/mfa'),
     /** Starts adding an authenticator app; show the secret or the URI as a QR code once. */
     startTotpEnrolment: () => request<TotpEnrolment>('POST', '/v1/auth/mfa/totp'),
-    /** The first code enables the authenticator. Throws ApiError "invalid_code" (401). */
+    /** The first code enables the authenticator. Throws ApiError "invalid_code" (401) or "mfa_locked" (429, retryAfter). */
     confirmTotp: (code: string) => request<void>('POST', '/v1/auth/mfa/totp/confirm', { code }),
     /**
      * Gives the second factor for this session; staff endpoints answer "mfa_required" (403) until then.
-     * Throws ApiError "invalid_code" or "too_many_attempts" (401; the session is ended).
+     * Throws ApiError "invalid_code" or "too_many_attempts" (401; the session is ended), or "mfa_locked"
+     * (429, retryAfter): five wrong codes in any sessions lock the authenticator, for longer each time.
      */
     verifyMfa: (code: string) => request<void>('POST', '/v1/auth/mfa/verify', { code }),
     /** Throws ApiError "unauthorized" or "session_expired" (401) without a valid session. */

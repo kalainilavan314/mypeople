@@ -215,6 +215,7 @@ export interface paths {
         /**
          * Verify Mfa
          * @description Give the authenticator code for this session; staff endpoints need it (NFR-SEC-04).
+         *     Wrong codes count against the authenticator in every session: five lock it, for longer each time.
          */
         post: operations["verify_mfa_v1_auth_mfa_verify_post"];
         delete?: never;
@@ -947,8 +948,9 @@ export interface paths {
         put?: never;
         /**
          * Report Duplicate
-         * @description Report that a member may hold another account. Needs members.verify over the member's area.
-         *     Reporting a pair that already has a case returns that case.
+         * @description Report that a member may hold another account. Needs members.verify over the member's area and
+         *     the member's identity review, claimed by this reviewer (PRM-03). Reporting a pair that already
+         *     has a case returns that case. The reporter cannot investigate it.
          */
         post: operations["report_duplicate_v1_identity_duplicates_post"];
         delete?: never;
@@ -1134,6 +1136,7 @@ export interface paths {
         /**
          * Request Phone Confirmation
          * @description Send a code to a new number. It becomes the recovery contact only once the code is entered.
+         *     The answer is the same whether or not another account has the number; confirming says so.
          */
         post: operations["request_phone_confirmation_v1_identity_me_phone_post"];
         delete?: never;
@@ -2963,14 +2966,14 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description invalid_code or too_many_attempts */
+            /** @description invalid_code, or too_many_attempts (five in this session: the session is ended) */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description already_enabled */
+            /** @description not_enrolled, already_enabled or session_not_registered */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -2985,6 +2988,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+            /** @description mfa_locked: too many wrong codes on this authenticator; see Retry-After */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -3008,14 +3018,14 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description invalid_code, or too_many_attempts (the session is ended) */
+            /** @description invalid_code, or too_many_attempts (five in this session: the session is ended) */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description not_enrolled or session_not_registered */
+            /** @description not_enrolled, already_enabled or session_not_registered */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -3030,6 +3040,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+            /** @description mfa_locked: too many wrong codes on this authenticator; see Retry-After */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -4421,7 +4438,7 @@ export interface operations {
                     "application/json": components["schemas"]["CaseSummaryOut"];
                 };
             };
-            /** @description forbidden, own_record or outside_your_area */
+            /** @description forbidden, own_record, outside_your_area, or no_open_review (reporting) */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -4435,7 +4452,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            /** @description not_open, claimed_by_another, not_claimed_by_you or reported_by_you */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -4471,7 +4488,7 @@ export interface operations {
                     "application/json": components["schemas"]["CaseFileOut"];
                 };
             };
-            /** @description forbidden, own_record or outside_your_area */
+            /** @description forbidden, own_record, outside_your_area, or no_open_review (reporting) */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -4485,7 +4502,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            /** @description not_open, claimed_by_another, not_claimed_by_you or reported_by_you */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -4523,7 +4540,7 @@ export interface operations {
                     "application/json": components["schemas"]["CaseFileOut"];
                 };
             };
-            /** @description forbidden, own_record or outside_your_area */
+            /** @description forbidden, own_record, outside_your_area, or no_open_review (reporting) */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -4537,7 +4554,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            /** @description not_open, claimed_by_another, not_claimed_by_you or reported_by_you */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -4575,7 +4592,7 @@ export interface operations {
                     "application/json": components["schemas"]["CaseFileOut"];
                 };
             };
-            /** @description forbidden, own_record or outside_your_area */
+            /** @description forbidden, own_record, outside_your_area, or no_open_review (reporting) */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -4589,7 +4606,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            /** @description not_open, claimed_by_another, not_claimed_by_you or reported_by_you */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -4631,7 +4648,7 @@ export interface operations {
                     "application/json": components["schemas"]["CaseFileOut"];
                 };
             };
-            /** @description forbidden, own_record or outside_your_area */
+            /** @description forbidden, own_record, outside_your_area, or no_open_review (reporting) */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -4645,7 +4662,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            /** @description not_open, claimed_by_another, not_claimed_by_you or reported_by_you */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -4827,13 +4844,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CodeSentOut"];
                 };
-            };
-            /** @description phone_unavailable */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description invalid_phone */
             422: {

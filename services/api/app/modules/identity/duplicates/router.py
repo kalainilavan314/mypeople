@@ -28,9 +28,9 @@ CanInvestigate = Annotated[Staff, Depends(require_permission(INVESTIGATE))]
 
 OPEN_STATES: list[CaseState] = ["open", "in_review"]
 REFUSED = {
-    403: {"description": "forbidden, own_record or outside_your_area"},
+    403: {"description": "forbidden, own_record, outside_your_area, or no_open_review (reporting)"},
     404: {"description": "not_found"},
-    409: {"description": "not_open, claimed_by_another or not_claimed_by_you"},
+    409: {"description": "not_open, claimed_by_another, not_claimed_by_you or reported_by_you"},
 }
 
 
@@ -51,8 +51,9 @@ def _conflict(error: service.CaseConflict) -> HTTPException:
     responses={**REFUSED, 422: {"description": '{"code": "report_refused", "problems": ["same_member" | "own_record"]}'}},
 )
 def report_duplicate(body: ReportInput, staff: CanReport, request: Request, db: Db) -> CaseSummaryOut:
-    """Report that a member may hold another account. Needs members.verify over the member's area.
-    Reporting a pair that already has a case returns that case."""
+    """Report that a member may hold another account. Needs members.verify over the member's area and
+    the member's identity review, claimed by this reviewer (PRM-03). Reporting a pair that already
+    has a case returns that case. The reporter cannot investigate it."""
     try:
         case = service.report(db, staff, body.member_id, body.other_member_id, body.reason, client_ip(request))
     except service.CaseNotFound:

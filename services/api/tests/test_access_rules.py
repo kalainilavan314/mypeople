@@ -16,6 +16,7 @@ from app.modules.access.rules import (
     check_revocation,
     holds,
     review_due,
+    target_outranks,
 )
 
 PROVINCE = Area("province", "LK4")
@@ -198,3 +199,19 @@ def test_explicit_grants_are_due_for_review_within_a_year():  # RB-05
     now = datetime(2026, 10, 25, tzinfo=UTC)
     assert review_due("3A", frozenset({"members.verify"}), now) == now + timedelta(days=365)
     assert review_due("3A", frozenset({"cases.decide_district"}), now) is None
+
+
+def test_staff_act_on_a_staff_account_only_from_a_higher_tier():
+    """Suspending someone, or replacing their recovery number, needs a tier above all of theirs."""
+    district_activator = [Assignment("3A", DISTRICT, frozenset({"members.activate"}))]
+    regional_activator = [Assignment("4", PROVINCE, frozenset({"members.activate"}))]
+
+    assert target_outranks(district_activator, "members.activate", DISTRICT_PATH, []) is False  # not staff
+    assert target_outranks(district_activator, "members.activate", DISTRICT_PATH, ["2A"]) is False
+    assert target_outranks(district_activator, "members.activate", DISTRICT_PATH, ["3B"]) is True  # a peer
+    assert target_outranks(district_activator, "members.activate", DISTRICT_PATH, ["2A", "4"]) is True
+    assert target_outranks(regional_activator, "members.activate", DISTRICT_PATH, ["3A"]) is False
+    assert target_outranks(SUPER_ADMIN, "members.activate", DISTRICT_PATH, ["4"]) is False
+    assert target_outranks(SUPER_ADMIN, "members.activate", DISTRICT_PATH, ["5"]) is True  # nobody outranks Tier 5
+    # The rank counts only where the actor holds the permission over the person's area.
+    assert target_outranks(regional_activator, "members.activate", ELSEWHERE_PATH, ["1"]) is True

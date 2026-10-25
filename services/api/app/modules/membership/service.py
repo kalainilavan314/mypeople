@@ -86,6 +86,17 @@ def change(
     if status is None:
         raise MemberNotFound()
     _check_scope(db, staff, member_id, ip)
+    # Suspending a staff member ends their staff rights (BR-097), so a peer or junior must not be
+    # able to do it to them, nor reinstate someone a senior suspended.
+    access.check_rank(
+        db,
+        staff,
+        ACTIVATE,
+        member_id=member_id,
+        area_path=access_repository.member_area_path(db, member_id),
+        target=("membership", str(member_id)),
+        ip=ip,
+    )
 
     repository.lock_member(db, member_id)
     current = repository.current_state(db, member_id)

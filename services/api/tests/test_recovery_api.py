@@ -80,13 +80,39 @@ def test_changing_the_number_tells_the_old_one(client, auth, create_member, outb
     assert outbox.sent[-1].phone == e164(first) and "recovery number was changed" in outbox.sent[-1].text
 
 
-def test_a_number_on_another_account_is_refused(client, auth, create_member):
+def test_a_number_on_another_account_is_refused_only_after_its_code(client, db_session, auth, create_member, outbox):
+    """Asking for a code answers the same for any number, so it reveals nobody's (review finding);
+    only the person holding the phone, with its code, learns that another account has it."""
     phone = new_phone()
     confirm(client, auth, create_member(), phone)
+    member = create_member()
+    db_session.execute(  # past the one-minute wait for another code to the same number
+        text("UPDATE npm.otp SET created_at = created_at - interval '2 minutes' WHERE phone = :phone"),
+        {"phone": e164(phone)},
+    )
 
-    response = client.post("/v1/identity/me/phone", json={"phone": phone}, headers=auth(create_member()))
+    asked = client.post("/v1/identity/me/phone", json={"phone": phone}, headers=auth(member))
+    unused = client.post("/v1/identity/me/phone", json={"phone": new_phone()}, headers=auth(create_member()))
+    confirmed = client.post(
+        "/v1/identity/me/phone/confirm", json={"phone": phone, "code": asked.json()["devCode"]}, headers=auth(member)
+    )
 
-    assert (response.status_code, response.json()) == (409, {"detail": "phone_unavailable"})
+    assert (asked.status_code, unused.status_code) == (202, 202)
+    assert asked.json().keys() == unused.json().keys()
+    assert outbox.sent[-2].phone == e164(phone)  # the code went to the phone, not to the person asking
+    assert (confirmed.status_code, confirmed.json()) == (409, {"detail": "phone_unavailable"})
+    assert client.get("/v1/identity/me/phone", headers=auth(member)).json() is None
+
+
+def test_asking_for_codes_is_limited_before_anything_is_looked_up(client, auth, create_member):
+    phone = new_phone()
+    confirm(client, auth, create_member(), phone)
+    member = create_member()
+    client.post("/v1/identity/me/phone", json={"phone": phone}, headers=auth(member))
+
+    again = client.post("/v1/identity/me/phone", json={"phone": phone}, headers=auth(member))
+
+    assert (again.status_code, again.json()) == (429, {"detail": "too_many_requests"})
 
 
 def test_codes_are_rate_limited_like_the_express_api(client, auth, create_member):
@@ -217,6 +243,31 @@ def test_assisted_recovery_gives_a_reference_and_reaches_the_area_reviewers(
     assert (contact.phone, contact.confirmed_by) == (e164(new), reviewer.id)
     code = client.post("/v1/auth/recovery/request", json={"nic": nic}).json()["devCode"]
     assert outbox.sent[-1].phone == e164(new) and code  # the person now recovers normally
+
+
+def test_a_staff_members_recovery_number_is_replaced_only_by_a_higher_tier(
+    client, db_session, auth, member_in, make_reviewer, assign, super_admin, area
+):
+    """The review finding: a reviewer could give a peer's or a senior's account a number they hold,
+    then reset its password."""
+    nic = str(random.randrange(10**11, 10**12))
+    colleague = member_in(area, nic=nic, verified=True)
+    assign(colleague, "3A", "district", area.district, ["members.verify"], granted_by=super_admin)
+    reviewer = make_reviewer(area.district)
+    client.post("/v1/auth/recovery/assisted", json={"nic": nic, "contactMethod": "in_person"})
+    [request] = [
+        r for r in client.get("/v1/identity/recovery-requests", headers=auth(reviewer)).json()
+        if r["memberId"] == str(colleague.id)
+    ]
+    resolve = f"/v1/identity/recovery-requests/{request['id']}/resolve"
+    body = {"outcome": "contact_replaced", "newPhone": new_phone(), "note": "Identity checked at the office."}
+
+    by_peer = client.post(resolve, json=body, headers=auth(reviewer))
+    regional = make_reviewer(area.province, tier="4", level="province")
+    by_senior = client.post(resolve, json=body, headers=auth(regional))
+
+    assert (by_peer.status_code, by_peer.json()) == (403, {"detail": "target_outranks_you"})
+    assert (by_senior.status_code, by_senior.json()["state"]) == (200, "contact_replaced")
 
 
 def test_assisted_requests_are_limited_per_address(client):

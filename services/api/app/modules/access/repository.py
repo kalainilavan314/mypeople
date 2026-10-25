@@ -181,6 +181,16 @@ def revoke_assignment(db: Session, assignment_id: uuid.UUID, ended_by: uuid.UUID
     return stored
 
 
+def held_tiers(db: Session, member_id: uuid.UUID) -> list[Tier]:
+    """The tiers of every assignment not revoked, including ones paused by a suspended membership
+    or an overdue review: those come back, so they still rank the person."""
+    rows = db.scalars(
+        text("SELECT DISTINCT tier FROM access.staff_assignment WHERE member_id = :id AND state = 'active'"),
+        {"id": member_id},
+    )
+    return list(rows)
+
+
 def has_active_super_administrator(db: Session) -> bool:
     return bool(db.scalar(text("SELECT EXISTS (SELECT 1 FROM access.staff_assignment WHERE tier = '5' AND state = 'active')")))
 

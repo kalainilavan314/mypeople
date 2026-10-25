@@ -14,6 +14,7 @@ import { recomputeTier, tierProgress } from './tier.js';
 import { clientIp, checkOtpRequest, issueOtp, consumeOtp, checkLogin, recordLogin, sleep, TRUSTED_PROXIES } from './throttle.js';
 import { putObject, getObject, mimeFor, backend as storageBackend } from './storage.js';
 import { replaceAvatar } from './avatar.js';
+import { sessionIsLive } from './sessions.js';
 
 const PROD = process.env.NODE_ENV === 'production';
 
@@ -507,7 +508,7 @@ async function reqContext(req) {
   let payload;
   try { payload = verifyToken(token); } catch { return { memberId: null, district: null }; }
   const m = await memberById(payload.sub);
-  if (!m || tokenIsStale(payload, m)) return { memberId: null, district: null };
+  if (!m || tokenIsStale(payload, m) || !(await sessionIsLive(pool, payload))) return { memberId: null, district: null };
   return { memberId: m.id, district: m.district_code || null };
 }
 
@@ -717,6 +718,8 @@ async function requireMember(req) {
   // Issued before this member's sessions were last revoked (logout, password
   // change). A valid signature is not enough on its own.
   if (tokenIsStale(payload, m)) throw bad('session_expired', 401);
+  // A session ended or expired in the new API (its tokens name one).
+  if (!(await sessionIsLive(pool, payload))) throw bad('session_expired', 401);
   return m;
 }
 

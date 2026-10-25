@@ -42,11 +42,16 @@ def check_report(reporter_id: uuid.UUID, member_id: uuid.UUID, other_member_id: 
 
 
 def check_claim(
-    state: CaseState, claimed_by: object | None, actor_id: object, claimant_still_authorised: bool
+    state: CaseState, claimed_by: object | None, actor_id: object, claimant_still_authorised: bool, *, opened_by: object | None
 ) -> str | None:
-    """One investigator at a time; a claim held by someone who lost the permission can be taken over."""
+    """One investigator at a time; a claim held by someone who lost the permission can be taken over.
+
+    Whoever reported the suspicion never investigates it: claiming opens both accounts'
+    evidence, and a report must not be a way to reach a second member's images."""
     if state not in ("open", "in_review"):
         return "not_open"
+    if opened_by is not None and opened_by == actor_id:
+        return "reported_by_you"
     if claimed_by is None or claimed_by == actor_id or not claimant_still_authorised:
         return None
     return "claimed_by_another"

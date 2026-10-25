@@ -108,20 +108,20 @@ def open_profile_matches(db: Session, member_id: uuid.UUID) -> list[StoredCase]:
 def report(
     db: Session, staff: Staff, member_id: uuid.UUID, other_member_id: uuid.UUID, reason: str, ip: str
 ) -> StoredCase:
-    """A reviewer reports that the member they are reviewing may hold another account."""
+    """A reviewer reports that the member whose review they hold may hold another account.
+
+    Only from inside that open review (PRM-03): otherwise a report could name any two members
+    and open a case on them. The reporter never investigates the case (see claim).
+    """
     if access_repository.find_member_status(db, member_id) is None:
         raise CaseNotFound()
     if access_repository.find_member_status(db, other_member_id) is None:
         raise CaseNotFound()
-    access.check_record_scope(
-        db,
-        staff,
-        REPORT,
-        member_id=member_id,
-        area_path=access_repository.member_area_path(db, member_id),
-        target=("member", str(member_id)),
-        ip=ip,
-    )
+    area_path = access_repository.member_area_path(db, member_id)
+    target = ("member", str(member_id))
+    access.check_record_scope(db, staff, REPORT, member_id=member_id, area_path=area_path, target=target, ip=ip)
+    if not reviews_repository.has_open_review_claimed_by(db, member_id, staff.member_id):
+        access.refuse(db, staff, REPORT, "no_open_review", ip, target=target, area_path=area_path)
     problems = rules.check_report(staff.member_id, member_id, other_member_id)
     if problems:
         raise ReportRefused(problems)
@@ -195,7 +195,9 @@ def claim(db: Session, staff: Staff, case_id: uuid.UUID, ip: str) -> StoredCase:
         access.has_permission_over(load_staff(db, case.claimed_by), INVESTIGATE, access_repository.member_area_path(db, m))
         for m in case.members()
     )
-    problem = rules.check_claim(case.state, case.claimed_by, staff.member_id, claimant_still_authorised)  # type: ignore[arg-type]
+    problem = rules.check_claim(
+        case.state, case.claimed_by, staff.member_id, claimant_still_authorised, opened_by=case.opened_by  # type: ignore[arg-type]
+    )
     if problem:
         raise CaseConflict(problem)
     if case.claimed_by == staff.member_id:

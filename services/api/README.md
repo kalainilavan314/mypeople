@@ -96,15 +96,22 @@ and registration rate limits (account-security batch).
 - **Sessions.** Sign-in and registration record a row in
   `identity.session` (a coarse device label, never a location) and the token
   names it (`sid`). Members list their devices, end one, or end all others;
-  the next request from an ended session is refused. A session unused for
-  30 days expires. "Sign out" still ends every session in both APIs.
+  the next request from an ended session is refused, here and by the
+  Express API, which checks the same row for any token that names one. A
+  session unused for 30 days expires. "Sign out" still ends every session in
+  both APIs.
 - **New devices.** A sign-in from a device the member has not used before
   sends a notice to their confirmed number. Apps send a stable install id in
   `X-Device-Id`; browsers are told apart by their description.
 - **Staff MFA.** Staff add an authenticator app (TOTP, RFC 6238) once and
   give its code in each session; until then every staff endpoint answers
   `403 mfa_enrolment_required` or `mfa_required`, logged as refused access.
-  A code works once; five wrong codes end the session. The secret is
+  A code works once. Wrong codes count against the authenticator in every
+  session: five lock it (`429 mfa_locked` with `Retry-After`) for 15 minutes,
+  then 1 hour, 4 hours and 24 hours in a row, until a right code (figures
+  are assumptions). No code is checked while it is locked; each wrong code
+  and lockout is audited, and the confirmed number is told when it locks.
+  Five wrong codes in one session also end that session. The secret is
   encrypted with a key derived from `JWT_SECRET` (changing it means staff
   enrol again). `STAFF_MFA_REQUIRED=false` is allowed only in development.
 - **Express tokens** carry no session: they still work for member
@@ -120,6 +127,9 @@ and the quarterly access review (FR-AUTH-027).
 - **Recovery number.** A number becomes the recovery contact only after the
   member enters the code sent to it; it is also copied to `npm.member.phone`
   for the live app. Changing it later sends a notice to the old number.
+  Asking for the code answers the same whether or not another account has
+  the number, after the rate limits; only a correct code reveals the clash
+  (`409 phone_unavailable`), so nobody can probe which numbers are registered.
 - **One-time codes** use the Express table `npm.otp`, hashed the same way
   (HMAC under `JWT_SECRET`), with the same limits: one a minute, five an
   hour and ten a day per number, ten per address in ten minutes, five
@@ -131,7 +141,9 @@ and the quarterly access review (FR-AUTH-027).
 - **Assisted recovery.** Anyone can ask for help with an AR reference; the
   request reaches reviewers with `members.verify` over the member's area
   (an assumption: the BRD names no support permission). After checking the
-  person's identity a reviewer can replace the recovery number.
+  person's identity a reviewer can replace the recovery number, but only on
+  an account whose staff tiers all rank below the reviewer's
+  (`403 target_outranks_you`).
 - **SMS.** `app/integrations/sms.py` sends through an interface. No vendor is
   chosen (INT-01), so `SMS_PROVIDER=none` answers `503 sms_not_configured`;
   `SMS_PROVIDER=development` keeps messages in memory and returns the code
@@ -150,6 +162,9 @@ member nobody has activated is pending. A holder of `members.activate` over
 the member's area changes it, never on their own record, always with a
 reason code (and a note when the reason is "other"); each change is kept in
 `membership.membership_change`, which cannot be edited, and in the audit log.
+A staff member's membership is changed only by someone whose tier ranks
+above every tier they hold (`403 target_outranks_you`), so nobody suspends a
+peer or a senior; nobody outranks the Super Administrator.
 
 - Activation needs a confirmed identity; approval of identity does not
   activate membership by itself (BR-014). Automatic activation (OD-02's
@@ -279,7 +294,10 @@ investigation instead of any automatic action:
   (ignoring case and spacing) and date of birth opens a case. This signal is
   an assumption; the BRD names keyed hashes, contact details and approved
   face similarity.
-- A reviewer can report a suspected duplicate with a reason.
+- A reviewer can report a suspected duplicate with a reason, from inside the
+  member's identity review they hold (PRM-03). Whoever reported a case never
+  claims it (`409 reported_by_you`), so a report cannot open a second
+  member's evidence.
 
 The reviewer sees each case as a flag on the review file. A holder of
 `idv.duplicate.investigate` over both accounts' areas claims the case, can

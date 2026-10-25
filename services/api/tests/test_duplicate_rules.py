@@ -37,4 +37,9 @@ def test_reports_name_two_other_people():
     ],
 )
 def test_one_investigator_at_a_time(state, claimed_by, claimant_ok, expected):
-    assert rules.check_claim(state, claimed_by, ME, claimant_ok) == expected
+    assert rules.check_claim(state, claimed_by, ME, claimant_ok, opened_by=None) == expected
+
+
+def test_whoever_reported_a_case_never_investigates_it():
+    assert rules.check_claim("open", None, ME, False, opened_by=ME) == "reported_by_you"
+    assert rules.check_claim("open", None, ME, False, opened_by=OTHER) is None

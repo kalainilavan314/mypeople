@@ -106,3 +106,63 @@ def test_throttle_decisions_match_express(express_auth, database_settings):
         with engine.begin() as connection:
             connection.execute(text("DELETE FROM npm.auth_attempt WHERE identifier = :identifier"), {"identifier": identifier})
         engine.dispose()
+
+
+def test_express_refuses_sessions_ended_in_this_api(express_auth, database_settings):
+    """The review finding: ending a session here left the same cookie working against /api.
+
+    Express reads through its own connection, so the member and sessions here
+    are committed and deleted afterwards.
+    """
+    database_url = database_settings.database_url.get_secret_value()
+    engine = create_database_engine(database_url)
+    with engine.begin() as connection:
+        member_id = connection.scalar(
+            text(
+                """
+                INSERT INTO npm.member (member_code, full_name, password_hash, referral_code, nic_hash, language)
+                VALUES ('TEST-' || left(gen_random_uuid()::text, 8), 'Test Member', 'not-a-hash',
+                        'TEST-' || left(gen_random_uuid()::text, 8), 'test-' || gen_random_uuid(), 'ta')
+                RETURNING id
+                """
+            )
+        )
+
+        def session(**columns: str) -> uuid.UUID:
+            names = "".join(f", {name}" for name in columns)
+            values = "".join(f", {value}" for value in columns.values())
+            return connection.scalar(
+                text(
+                    f"""
+                    INSERT INTO identity.session (member_id, device_label, device_key{names})
+                    VALUES (:member, 'Test device', 'test-key'{values}) RETURNING id
+                    """
+                ),
+                {"member": member_id},
+            )
+
+        live = session(last_seen_at="now() - interval '10 minutes'")
+        ended = session(revoked_at="now()", revoked_reason="'member'")
+        idle = session(last_seen_at="now() - interval '31 days'")
+
+    def express_accepts(session_id: uuid.UUID | None, owner: uuid.UUID = member_id) -> bool:
+        token = sign_session_token(owner, 0, JWT_SECRET, session_id=session_id)
+        return express_auth({"command": "session-live", "token": token}, JWT_SECRET, database_url=database_url)["live"]
+
+    try:
+        assert None not in (live, ended, idle)
+        assert express_accepts(live) is True
+        assert express_accepts(ended) is False
+        assert express_accepts(idle) is False
+        assert express_accepts(live, owner=uuid.uuid4()) is False  # another member's session
+        assert express_accepts(None) is True  # an Express-style token names no session
+        with engine.connect() as connection:
+            touched = connection.scalar(
+                text("SELECT last_seen_at > now() - interval '1 minute' FROM identity.session WHERE id = :id"), {"id": live}
+            )
+        assert touched is True
+    finally:
+        with engine.begin() as connection:
+            connection.execute(text("DELETE FROM identity.session WHERE member_id = :id"), {"id": member_id})
+            connection.execute(text("DELETE FROM npm.member WHERE id = :id"), {"id": member_id})
+        engine.dispose()

@@ -116,11 +116,16 @@ def my_phone(db: Session, member_id: uuid.UUID) -> str | None:
 def request_phone_confirmation(
     db: Session, sms: SmsSender, member_id: uuid.UUID, raw_phone: str, ip: str, jwt_secret: str
 ) -> str | None:
+    """Send a code to the number, after the rate limits, whether or not another account has it.
+
+    Refusing a number in use here told anyone signed in which numbers are
+    registered (review finding, 25 October 2026). The clash is checked at
+    confirm, where only someone holding the phone, who received the code,
+    can learn it.
+    """
     phone = rules.normalise_phone(raw_phone)
     if phone is None:
         raise InvalidPhone()
-    if repository.phone_in_use(db, phone, member_id):
-        raise PhoneUnavailable()
     return _send_code(db, sms, phone=phone, purpose=rules.CONFIRM_PHONE, ip=ip, jwt_secret=jwt_secret)
 
 
@@ -298,6 +303,16 @@ def resolve_assisted(
     if outcome == "contact_replaced":
         if request.member_id is None:
             raise ResolutionRefused("no_matching_account")
+        # A new recovery number lets its holder reset the password: never for a peer or senior.
+        access.check_rank(
+            db,
+            staff,
+            rules.HANDLE_ASSISTED,
+            member_id=request.member_id,
+            area_path=tuple(area_from_key(key) for key in request.area_path),
+            target=("assisted_recovery", str(request.id)),
+            ip=ip,
+        )
         phone = rules.normalise_phone(new_phone or "")
         if phone is None:
             raise InvalidPhone()

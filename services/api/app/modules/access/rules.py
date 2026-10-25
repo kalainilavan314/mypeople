@@ -107,6 +107,18 @@ def highest_tier(assignments: list[Assignment], permission: str, area_path: Area
     return max(tiers, key=lambda tier: TIER_RANK[tier], default=None)
 
 
+def target_outranks(
+    actor_assignments: list[Assignment], permission: str, area_path: AreaPath, target_tiers: list[Tier]
+) -> bool:
+    """True when the person acted on holds a tier at or above the one through which the actor
+    holds the permission over their area: staff never suspend, or take over the recovery of,
+    a peer or someone above them (as RB-03 and revocations already rank grants)."""
+    actor_tier = highest_tier(actor_assignments, permission, area_path)
+    if actor_tier is None:
+        return True
+    return any(TIER_RANK[tier] >= TIER_RANK[actor_tier] for tier in target_tiers)
+
+
 def check_assignment(
     *,
     granter_id: uuid.UUID,

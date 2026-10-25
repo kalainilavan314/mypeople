@@ -14,6 +14,7 @@
 //   {"command": "bcrypt-hash", "password": ...}     a hash made as the Express signup does
 //   {"command": "check-login", "identifier": ..., "ip": ...}
 //                                                   throttle.js checkLogin against DATABASE_URL
+//   {"command": "session-live", "token": ...}       sessions.js sessionIsLive against DATABASE_URL
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 
@@ -89,10 +90,22 @@ async function checkLogin({ identifier, ip }) {
   }
 }
 
+async function sessionLive({ token }) {
+  const { sessionIsLive } = await import(new URL('../../../../server/src/sessions.js', import.meta.url));
+  const { pool } = await import(new URL('../../../../server/src/db.js', import.meta.url));
+  try {
+    return { live: await sessionIsLive(pool, lib.verifyToken(token)) };
+  } finally {
+    await pool.end();
+  }
+}
+
 async function run(request) {
   switch (request.command) {
     case 'check-login':
       return checkLogin(request);
+    case 'session-live':
+      return sessionLive(request);
     case 'sign':
       return { token: lib.signToken(request.memberId, request.sessionVersion) };
     case 'verify':

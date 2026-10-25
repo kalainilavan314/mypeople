@@ -12,7 +12,7 @@ import time
 import uuid
 from dataclasses import dataclass
 from functools import cache
-from typing import Literal
+from typing import Literal, NoReturn
 
 from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
@@ -25,7 +25,8 @@ from app.core.security import (
     verify_password,
 )
 from app.core.sealing import UnsealError, derived_key, seal, unseal
-from app.modules.auth import repository, throttle, totp
+from app.modules.audit import service as audit
+from app.modules.auth import mfa_lockout, repository, throttle, totp
 from app.modules.auth.device import Device
 from app.modules.auth.repository import (
     SessionMember,
@@ -41,7 +42,7 @@ from app.modules.auth.repository import (
 
 IDLE_LIMIT = "30 days"  # FR-AUTH-025 [ASSUMPTION in the BRD]
 TOUCH_INTERVAL = "5 minutes"  # how often a session's last use is written, to spare the database
-MAX_MFA_FAILURES = 5  # wrong codes before the session is ended and sign-in starts again
+MAX_MFA_FAILURES = 5  # wrong codes in one session before it is ended; the authenticator's own limit is in mfa_lockout
 
 
 class NotAuthenticated(Exception):
@@ -75,6 +76,15 @@ class MfaRefused(Exception):
     def __init__(self, code: str) -> None:
         super().__init__(code)
         self.code = code
+
+
+class MfaLocked(Exception):
+    """Too many wrong codes on this authenticator; no code is checked for retry_after seconds."""
+
+    def __init__(self, retry_after: int, *, started_now: bool) -> None:
+        super().__init__(f"retry after {retry_after}s")
+        self.retry_after = retry_after
+        self.started_now = started_now  # this request started the lockout: tell the member
 
 
 class SessionNotFound(Exception):
@@ -214,38 +224,69 @@ def start_totp(db: Session, member: SessionMember, jwt_secret: str) -> tuple[str
     return totp.secret_text(secret), totp.provisioning_uri(secret, label)
 
 
-def _check_code(db: Session, member: SessionMember, code: str, jwt_secret: str, *, enabled: bool) -> None:
-    factor = repository.find_factor(db, member.id)
+def _check_code(db: Session, member: SessionMember, code: str, jwt_secret: str, *, enabled: bool, ip: str) -> None:
+    factor = repository.find_factor(db, member.id, for_update=True)
     if factor is None or factor.enabled != enabled:
+        db.commit()
         raise MfaRefused("not_enrolled" if enabled else "already_enabled")
+    if factor.locked_for:
+        db.commit()
+        raise MfaLocked(factor.locked_for, started_now=False)  # not even checked: no guess counts while locked
     try:
         secret = unseal(_factor_key(jwt_secret), member.id.bytes, factor.secret_sealed)
     except UnsealError:
+        db.commit()
         raise MfaRefused("not_enrolled") from None  # sealed under an earlier JWT_SECRET: enrol again
     step = totp.matching_step(secret, code, time.time(), factor.last_used_step)
     if step is None:
-        if member.session_id is not None and repository.add_mfa_failure(db, member.session_id) >= MAX_MFA_FAILURES:
-            repository.revoke_session(db, member.session_id, "mfa_failures")
-            db.commit()
-            raise MfaRefused("too_many_attempts")
-        db.commit()
-        raise MfaRefused("invalid_code")
+        _record_wrong_code(db, member, factor, ip)
     repository.use_factor(db, member.id, step)
     if member.session_id is not None:
         repository.mark_session_mfa_verified(db, member.session_id)
     db.commit()
 
 
-def confirm_totp(db: Session, member: SessionMember, code: str, jwt_secret: str) -> None:
+def _record_wrong_code(db: Session, member: SessionMember, factor: repository.StoredFactor, ip: str) -> NoReturn:
+    """Count a wrong code against the authenticator, whichever session sent it, and lock it
+    after too many (see mfa_lockout). Five in one session also end that session."""
+    failures = repository.add_factor_failure(db, member.id)
+    _audit_mfa(db, member.id, "auth.mfa.failed", ip, failures=failures)
+    session_ended = False
+    if member.session_id is not None and repository.add_mfa_failure(db, member.session_id) >= MAX_MFA_FAILURES:
+        repository.revoke_session(db, member.session_id, "mfa_failures")
+        session_ended = True
+    seconds = mfa_lockout.lockout_seconds(failures, factor.lockouts)
+    if seconds is not None:
+        repository.lock_factor(db, member.id, seconds)
+        _audit_mfa(db, member.id, "auth.mfa.locked", ip, seconds=seconds, lockout=factor.lockouts + 1)
+    db.commit()
+    if seconds is not None:
+        raise MfaLocked(seconds, started_now=True)
+    raise MfaRefused("too_many_attempts" if session_ended else "invalid_code")
+
+
+def _audit_mfa(db: Session, member_id: uuid.UUID, action: str, ip: str, **details: object) -> None:
+    audit.record(
+        db,
+        actor_id=member_id,
+        action=action,
+        target_type="mfa_factor",
+        target_id=str(member_id),
+        details={"memberId": str(member_id), **details},
+        ip=ip,
+    )
+
+
+def confirm_totp(db: Session, member: SessionMember, code: str, jwt_secret: str, ip: str) -> None:
     """The first code enables the authenticator, and counts as the second factor for this session."""
-    _check_code(db, member, code, jwt_secret, enabled=False)
+    _check_code(db, member, code, jwt_secret, enabled=False, ip=ip)
 
 
-def verify_mfa(db: Session, member: SessionMember, code: str, jwt_secret: str) -> None:
+def verify_mfa(db: Session, member: SessionMember, code: str, jwt_secret: str, ip: str) -> None:
     """Give the second factor for this session, as staff must before any staff endpoint."""
     if member.session_id is None:
         raise MfaRefused("session_not_registered")  # an Express token: sign in through this API
-    _check_code(db, member, code, jwt_secret, enabled=True)
+    _check_code(db, member, code, jwt_secret, enabled=True, ip=ip)
 
 
 def has_enabled_factor(db: Session, member_id: uuid.UUID) -> bool:

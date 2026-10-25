@@ -15,6 +15,7 @@ A batch builds the API module first (rules, service, endpoints, tests, audit), t
 | 14b (done) | Sessions list and revoke, idle expiry, new-device notices, staff TOTP | FR-AUTH-019 to 021, 025 (part), FR-STF-001 (part), NFR-SEC-04, NFR-SEC-11 | — |
 | 14c | Step-up codes, suspicious sign-ins, refresh rotation, passkeys, lost-device wipe, quarterly access reviews | FR-AUTH-018, 022, 025, 027, FR-STF-010 | Push (INT-02), staff identity provider (INT-09) |
 | 15 (done) | Member card: rotating signed QR, scanning, revocation | FR-CARD-001 to 015, FR-ADM-001, 002, FR-STF-005 | Wallet passes (INT-03), OD-08 |
+| 15b (done) | Security fixes from the 25 October review: authenticator lockout per factor, Express honours ended sessions, no phone-number probing, duplicate reports only from an open review, staff actions ranked by tier | NFR-SEC-04, NFR-SEC-11, FR-STF-001, FR-REG-028, PRM-03, RB-03 | Low findings in `docs/security/security-rules.md`; lockout figures (sponsor) |
 | 16 | Events foundation | FR-EVT-001 to 018, FR-ADM-004, FR-STF-006 | — |
 | 17 | Home and gallery | FR-HOME-001 to 014, FR-GAL-001 to 007, FR-ADM-005, 006 | — |
 | 18 | Profile and data-subject rights | FR-PROF remaining | — |

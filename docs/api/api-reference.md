@@ -28,19 +28,19 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET /v1/identity/me/progress` | yes | `200 {route, steps: [{name, done}], nextStep, reviewState}` | `401` |
 | `GET /v1/geography/districts`, `/districts/{code}/ds-divisions`, `/ds-divisions/{code}/gn-divisions` | no | `200 [{code, nameEn, nameTa, nameSi}]` | `404 not_found` |
 | `GET /v1/identity/me/phone` | yes | `200 {phone}` or `null` | `401` |
-| `POST /v1/identity/me/phone` body `{phone}` | yes | `202 {sent, devCode}` (devCode only in development) | `409 phone_unavailable`, `422 invalid_phone`, `429 too_many_requests`, `503 sms_not_configured` |
-| `POST /v1/identity/me/phone/confirm` body `{phone, code}` | yes | `200 {phone}` | `401 invalid_code`, `too_many_attempts`; `409 phone_unavailable` |
+| `POST /v1/identity/me/phone` body `{phone}` | yes | `202 {sent, devCode}` (devCode only in development), whether or not another account has the number | `422 invalid_phone`, `429 too_many_requests`, `503 sms_not_configured` |
+| `POST /v1/identity/me/phone/confirm` body `{phone, code}` | yes | `200 {phone}` | `401 invalid_code`, `too_many_attempts`; `409 phone_unavailable` (another account has the number) |
 | `POST /v1/auth/recovery/request` body `{nic}` or `{passportNumber, passportCountry}` | no | `202 {sent: true}`, the same whether or not the number is registered | `503 sms_not_configured` |
 | `POST /v1/auth/recovery/verify` body: the number and `{code}` | no | `200 {resetToken, expiresInSeconds}` | `401 invalid_code`, `too_many_attempts` |
 | `POST /v1/auth/recovery/reset` body `{resetToken, newPassword}` | no | `204`; every session ends | `401 invalid_reset_token`, `422 {code: "password_refused", problems}` |
 | `POST /v1/auth/recovery/assisted` body: the number and `{contactMethod, contactValue?, message?}` | no | `202 {reference}` | `429 too_many_requests` |
-| `GET /v1/identity/recovery-requests`, `POST /v1/identity/recovery-requests/{id}/resolve` body `{outcome: "contact_replaced" \| "declined", newPhone?, note}` | `members.verify` over the member's area (platform scope for requests that matched no account) | `200` | `403`, `404`, `409 not_open`, `no_matching_account`, `phone_unavailable` |
+| `GET /v1/identity/recovery-requests`, `POST /v1/identity/recovery-requests/{id}/resolve` body `{outcome: "contact_replaced" \| "declined", newPhone?, note}` | `members.verify` over the member's area (platform scope for requests that matched no account) | `200` | `403`, `target_outranks_you` (replacing the number of a staff account at or above your tier); `404`, `409 not_open`, `no_matching_account`, `phone_unavailable` |
 | `POST /v1/auth/sign-out` | optional | `204`, cookie cleared, all sessions ended | `403 csrf_origin_mismatch` |
 | `GET /v1/auth/sessions` | yes | `200 [{id, deviceLabel, createdAt, lastSeenAt, current}]` | `401` |
 | `POST /v1/auth/sessions/{id}/revoke`, `POST /v1/auth/sessions/revoke-others` | yes | `204` | `404 not_found` |
 | `GET /v1/auth/mfa` | yes | `200 {enrolled, enabled, sessionVerified}` | `401` |
 | `POST /v1/auth/mfa/totp` | yes | `200 {secret, otpauthUri}` | `409 already_enabled` |
-| `POST /v1/auth/mfa/totp/confirm`, `POST /v1/auth/mfa/verify` body `{code}` | yes | `204`; the second factor is given for this session | `401 invalid_code`, `too_many_attempts`; `409 not_enrolled`, `session_not_registered` |
+| `POST /v1/auth/mfa/totp/confirm`, `POST /v1/auth/mfa/verify` body `{code}` | yes | `204`; the second factor is given for this session | `401 invalid_code`, `too_many_attempts` (five in this session; it is ended); `409 not_enrolled`, `session_not_registered`; `429 mfa_locked` with `Retry-After` (five wrong codes on the authenticator in any sessions) |
 | `GET /v1/members/me` | yes | `200` member profile (camelCase) | `401 unauthorized`, `401 session_expired` |
 | `GET /v1/membership/me` | yes | `200 {state, reasonCode, changedAt}`; `pending` until someone activates the member | `401` |
 | `GET /v1/membership/me/card` | yes | `200 {available, identityVerified, membershipState, reasonCode, displayName, memberCode, designation, districtName, gnName, memberSince, lastScannedAt, publicCard}` (card fields null unless available) | `401` |
@@ -48,7 +48,7 @@ Writes that carry the session cookie and come from another website are refused w
 | `POST /v1/membership/card/scan` body `{code}` | `events.checkin_scan` | `200 {result: "valid" \| "expired" \| "not_valid", displayName, memberCode}` | `403` |
 | `GET /v1/membership/awaiting-activation?limit` | `members.activate` | `200` verified members still pending in the caller's areas | `403 forbidden` |
 | `GET /v1/membership/members/{memberId}` | `members.activate` over the member's area | `200 {memberId, identityVerified, state, reasonCode, changedAt, history}` | `403 own_record`, `outside_your_area`; `404` |
-| `POST /v1/membership/members/{memberId}/changes` body `{action, reasonCode, note}` | as above | `200` the membership file | as above; `422 {code: "change_refused", problems}` |
+| `POST /v1/membership/members/{memberId}/changes` body `{action, reasonCode, note}` | as above | `200` the membership file | as above; `403 target_outranks_you` (a staff member at or above your tier); `422 {code: "change_refused", problems}` |
 | `GET /v1/access/me` | yes | `200` the caller's staff assignments that count now (empty for members) | `401` |
 | `GET /v1/access/catalogue` | `roles.assign` | `200` tiers, their area levels and the permission matrix | `403 forbidden` |
 | `POST /v1/access/assignments/preview` body `{memberId, tier, area, permissions}` | `roles.assign` | `200 {allowed, problems, reviewDueAt}`, nothing saved | `403 forbidden` |
@@ -74,10 +74,10 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET /v1/identity/appeals/{id}` | `idv.appeal.decide` over the member's area | `200` the appeal file: statement, the decision under appeal, the review, member details, image records | `403 own_record`, `outside_your_area`; `404` |
 | `POST /v1/identity/appeals/{id}/claim`, `/release` | as above | `200` the appeal file | as above; `409 original_reviewer`, `claimed_by_another`, `not_claimed_by_you`, `not_open` |
 | `POST /v1/identity/appeals/{id}/decision` body `{outcome: "uphold" \| "overturn", reason}` | the person holding the appeal | `200` the appeal file | as above; `422` without a reason |
-| `POST /v1/identity/duplicates` body `{memberId, otherMemberId, reason}` | `members.verify` over the member's area | `200` the case (an existing pair returns its case) | `403`, `404`, `422 {code: "report_refused", problems}` |
+| `POST /v1/identity/duplicates` body `{memberId, otherMemberId, reason}` | `members.verify` over the member's area, holding the member's identity review | `200` the case (an existing pair returns its case) | `403`, `no_open_review`; `404`, `422 {code: "report_refused", problems}` |
 | `GET /v1/identity/duplicates?state&mine&limit` | `idv.duplicate.investigate` | `200` cases in the caller's areas, oldest first | `403 forbidden` |
 | `GET /v1/identity/duplicates/{id}` | `idv.duplicate.investigate` over both accounts' areas | `200` both accounts with details, verification and membership state, image records | `403 own_record`, `outside_your_area`; `404` |
-| `POST /v1/identity/duplicates/{id}/claim`, `/release`, `/decision` body `{outcome: "not_duplicate" \| "duplicate_confirmed", reason}` | the investigator holding the case for decisions | `200` the case file | as above; `409 claimed_by_another`, `not_claimed_by_you`, `not_open` |
+| `POST /v1/identity/duplicates/{id}/claim`, `/release`, `/decision` body `{outcome: "not_duplicate" \| "duplicate_confirmed", reason}` | the investigator holding the case for decisions | `200` the case file | as above; `409 claimed_by_another`, `not_claimed_by_you`, `not_open`, `reported_by_you` (the reporter never investigates) |
 
 Error bodies are `{"detail": "<code>"}`, or for a refused assignment `{"detail": {"code": "assignment_refused", "problems": [...]}}`. Problem codes: `unknown_member`, `self_assignment`, `identity_not_verified`, `tier_5_by_bootstrap_only`, `area_does_not_match_tier`, `unknown_area`, `no_permissions`, `unknown_permission:<p>`, `permission_not_for_tier:<p>`, `outside_your_area`, `tier_not_below_yours`, `permission_not_held:<p>`, `separation_of_duties`, `own_assignment`.
 

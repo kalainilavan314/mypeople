@@ -80,6 +80,12 @@ CONTACT_CHANGED_MESSAGE = (
     "என் மக்கள்: உங்கள் மீட்பு தொலைபேசி எண் மாற்றப்பட்டது. இது நீங்கள் இல்லையெனில் உதவியை அணுகவும்.\n"
     "My People: your recovery number was changed. If this was not you, contact support."
 )
+MFA_LOCKED_MESSAGE = (
+    "என் மக்கள்: பல தவறான அங்கீகாரக் குறியீடுகள் காரணமாக உங்கள் அங்கீகாரி தற்காலிகமாகப் பூட்டப்பட்டது. "
+    "இது நீங்கள் இல்லையெனில் கடவுச்சொல்லை மாற்றவும்.\n"
+    "My People: your authenticator is locked for a while after several wrong codes. "
+    "If this was not you, reset your password."
+)
 NEW_DEVICE_MESSAGE = (
     "என் மக்கள்: புதிய சாதனத்தில் உங்கள் கணக்கில் உள்நுழைவு. இது நீங்கள் இல்லையெனில் கடவுச்சொல்லை மாற்றவும்.\n"
     "My People: a new device signed in to your account. If this was not you, reset your password."

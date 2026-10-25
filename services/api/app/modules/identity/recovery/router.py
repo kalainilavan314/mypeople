@@ -86,16 +86,15 @@ def read_my_phone(member: CurrentMember, db: Db) -> RecoveryContactOut | None:
 @router.post(
     "/v1/identity/me/phone",
     status_code=status.HTTP_202_ACCEPTED,
-    responses={**NOT_CONFIGURED, **LIMITED, 409: {"description": "phone_unavailable"}, 422: {"description": "invalid_phone"}},
+    responses={**NOT_CONFIGURED, **LIMITED, 422: {"description": "invalid_phone"}},
 )
 def request_phone_confirmation(body: PhoneInput, member: CurrentMember, request: Request, db: Db) -> CodeSentOut:
-    """Send a code to a new number. It becomes the recovery contact only once the code is entered."""
+    """Send a code to a new number. It becomes the recovery contact only once the code is entered.
+    The answer is the same whether or not another account has the number; confirming says so."""
     try:
         code = service.request_phone_confirmation(db, _sms(request), member.id, body.phone, client_ip(request), _secret(request))
     except service.InvalidPhone:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="invalid_phone") from None
-    except service.PhoneUnavailable:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="phone_unavailable") from None
     except service.TooManyRequests as error:
         raise _too_many(error) from None
     except SmsUnavailable:

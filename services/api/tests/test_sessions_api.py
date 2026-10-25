@@ -174,17 +174,88 @@ def test_staff_enrol_an_authenticator_before_acting_as_staff(client, db_session,
     assert client.get("/v1/auth/mfa", headers=second).json()["sessionVerified"] is True
 
 
-def test_five_wrong_codes_end_the_session(client, staff):
+@pytest.fixture
+def enrolled(client, staff) -> tuple[str, str]:
+    """A staff member with an enabled authenticator: (their NIC, its secret)."""
     _, nic = staff
     session = sign_in(client, nic, ANDROID)
     secret = client.post("/v1/auth/mfa/totp", headers=session).json()["secret"]
-    client.post("/v1/auth/mfa/totp/confirm", json={"code": code_now(secret)}, headers=session)
+    assert client.post("/v1/auth/mfa/totp/confirm", json={"code": code_now(secret)}, headers=session).status_code == 204
+    return nic, secret
+
+
+def wrong_code(client, session: dict[str, str]):
+    return client.post("/v1/auth/mfa/verify", json={"code": "000000"}, headers=session)
+
+
+def test_five_wrong_codes_lock_the_authenticator_and_end_the_session(client, enrolled):
+    nic, _ = enrolled
     second = sign_in(client, nic, IPHONE)
 
-    answers = [client.post("/v1/auth/mfa/verify", json={"code": "000000"}, headers=second).json() for _ in range(5)]
+    answers = [wrong_code(client, second) for _ in range(5)]
 
-    assert answers[:4] == [{"detail": "invalid_code"}] * 4 and answers[4] == {"detail": "too_many_attempts"}
+    assert [a.json() for a in answers[:4]] == [{"detail": "invalid_code"}] * 4
+    assert (answers[4].status_code, answers[4].json()) == (429, {"detail": "mfa_locked"})
+    assert answers[4].headers["Retry-After"] == "900"
     assert client.get("/v1/members/me", headers=second).json() == {"detail": "session_expired"}
+
+
+def test_wrong_codes_count_across_sessions(client, db_session, staff, enrolled):
+    """The review finding: signing in again used to start a fresh count, so codes could be guessed."""
+    member, _ = staff
+    nic, secret = enrolled
+    db_session.execute(
+        text("INSERT INTO identity.recovery_contact (member_id, phone) VALUES (:id, :phone)"),
+        {"id": member.id, "phone": f"+9477{random.randrange(10**6, 10**7)}"},
+    )
+    outbox: DevelopmentSms = client.app.state.sms
+    first, second = sign_in(client, nic, ANDROID), sign_in(client, nic, ANDROID)
+
+    early = [wrong_code(client, first).json()["detail"] for _ in range(3)]
+    late = [wrong_code(client, second) for _ in range(2)]
+    # Locked: even the right code is not checked, in this or a new session.
+    third = sign_in(client, nic, ANDROID)
+    right = client.post("/v1/auth/mfa/verify", json={"code": code_now(secret, 1)}, headers=third)
+
+    assert early == ["invalid_code"] * 3 and late[0].json() == {"detail": "invalid_code"}
+    assert (late[1].status_code, late[1].json()["detail"]) == (429, "mfa_locked")
+    assert (right.status_code, right.json()["detail"]) == (429, "mfa_locked")
+    assert 0 < int(right.headers["Retry-After"]) <= 900
+    assert client.get("/v1/members/me", headers=first).status_code == 200  # three wrong codes there: still signed in
+    assert len([m for m in outbox.sent if "authenticator is locked" in m.text]) == 1  # told once, when it locked
+    actions = db_session.execute(
+        text("SELECT action, details FROM ops.audit_log WHERE target_type = 'mfa_factor' AND target_id = :id ORDER BY id"),
+        {"id": str(member.id)},
+    ).all()
+    assert [a.action for a in actions] == ["auth.mfa.failed"] * 5 + ["auth.mfa.locked"]
+    assert (actions[-1].details["seconds"], actions[-1].details["lockout"]) == (900, 1)
+    assert "000000" not in str([a.details for a in actions])
+
+
+def test_each_lockout_lasts_longer_until_a_right_code(client, db_session, staff, enrolled):
+    member, _ = staff
+    nic, secret = enrolled
+
+    def lockout_ends() -> None:
+        db_session.execute(
+            text("UPDATE identity.mfa_factor SET locked_until = now() - interval '1 second' WHERE member_id = :id"),
+            {"id": member.id},
+        )
+
+    def five_wrong() -> str:
+        session = sign_in(client, nic, ANDROID)
+        return [wrong_code(client, session) for _ in range(5)][-1].headers["Retry-After"]
+
+    first = five_wrong()
+    lockout_ends()
+    second = five_wrong()
+    lockout_ends()
+    session = sign_in(client, nic, ANDROID)
+    right = client.post("/v1/auth/mfa/verify", json={"code": code_now(secret, 1)}, headers=session)
+    after_success = five_wrong()
+
+    assert (first, second, after_success) == ("900", "3600", "900")
+    assert right.status_code == 204
 
 
 def test_express_tokens_cannot_act_as_staff(client, database_settings, staff):

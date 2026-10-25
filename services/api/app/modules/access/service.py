@@ -243,6 +243,23 @@ def check_record_scope(
         refuse(db, staff, permission, "outside_your_area", ip, target=target, area_path=area_path)
 
 
+def check_rank(
+    db: Session,
+    staff: Staff,
+    permission: str,
+    *,
+    member_id: uuid.UUID,
+    area_path: AreaPath,
+    target: tuple[str, str],
+    ip: str,
+) -> None:
+    """For changes that could silence or take over a staff account (its membership state, its
+    recovery number): only someone of a higher tier may make them. Nobody outranks the Super
+    Administrator, so that account is not changed through the API at all. Refusals are audited."""
+    if rules.target_outranks(staff.rule_assignments(), permission, area_path, repository.held_tiers(db, member_id)):
+        refuse(db, staff, permission, "target_outranks_you", ip, target=target, area_path=area_path)
+
+
 def visible_areas(staff: Staff, permission: str) -> list[str] | None:
     """None when the person holds the permission over the whole platform; otherwise the area keys where they hold it."""
     areas = [a.area for a in staff.assignments if permission in a.permissions]

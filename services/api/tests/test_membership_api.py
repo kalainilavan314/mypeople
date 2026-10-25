@@ -84,19 +84,49 @@ def test_suspension_needs_a_reason_and_a_note_for_other(db_client, auth, activat
     assert db_client.get("/v1/membership/me", headers=auth(member)).json()["reasonCode"] == "other"
 
 
+@pytest.fixture
+def regional_activator(make_reviewer, area) -> Row:
+    """A regional coordinator (Tier 4) who may change memberships across the province."""
+    return make_reviewer(area.province, permissions=(ACTIVATE,), tier="4", level="province")
+
+
 def test_suspending_a_staff_member_stops_their_staff_rights(
-    db_client, auth, activator, member_in, assign, super_admin, area
+    db_client, auth, regional_activator, member_in, assign, super_admin, area
 ):
-    coordinator = member_in(area, verified=True)  # lives in the district the activator covers
+    coordinator = member_in(area, verified=True)  # a district coordinator, below the regional activator
     assign(coordinator, "3A", "district", area.district, ["members.verify"], granted_by=super_admin)
     assert db_client.get("/v1/access/me", headers=auth(coordinator)).json() != []
 
-    assert change(db_client, auth, activator, coordinator, "suspend", "conduct_investigation").status_code == 200
+    suspended = change(db_client, auth, regional_activator, coordinator, "suspend", "conduct_investigation")
+    assert suspended.status_code == 200
     assert db_client.get("/v1/access/me", headers=auth(coordinator)).json() == []  # BR-097
     assert db_client.get("/v1/identity/reviews", headers=auth(coordinator)).json() == {"detail": "forbidden"}
 
-    assert change(db_client, auth, activator, coordinator, "reinstate", "investigation_closed").status_code == 200
+    reinstated = change(db_client, auth, regional_activator, coordinator, "reinstate", "investigation_closed")
+    assert reinstated.status_code == 200
     assert db_client.get("/v1/access/me", headers=auth(coordinator)).json() != []
+
+
+def test_a_peer_or_junior_cannot_change_a_staff_members_membership(
+    db_client, db_session, auth, activator, regional_activator, member_in, assign, super_admin, area
+):
+    """The review finding: a district coordinator could suspend the regional coordinator above them."""
+    regional = member_in(area, verified=True)
+    assign(regional, "4", "province", area.province, ["members.verify"], granted_by=super_admin)
+    peer = member_in(area, verified=True)
+    assign(peer, "3A", "district", area.district, ["members.verify"], granted_by=super_admin)
+
+    above = change(db_client, auth, activator, regional, "suspend", "conduct_investigation")
+    audit = last_audit(db_session)
+    beside = change(db_client, auth, activator, peer, "suspend", "conduct_investigation")
+    # Suspended by a senior, a peer cannot reinstate them either.
+    change(db_client, auth, regional_activator, peer, "suspend", "conduct_investigation")
+    reinstate = change(db_client, auth, activator, peer, "reinstate", "investigation_closed")
+
+    for response in (above, beside, reinstate):
+        assert (response.status_code, response.json()) == (403, {"detail": "target_outranks_you"})
+    assert (audit.action, audit.details["reason"]) == ("access.denied", "target_outranks_you")
+    assert db_client.get("/v1/access/me", headers=auth(regional)).json() != []
 
 
 def test_staff_assignments_need_an_active_membership(db_client, auth, super_admin, member, area):

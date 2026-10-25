@@ -22,8 +22,8 @@ The rules every change must follow, and what is in place today. BRD references: 
 |---|---|
 | Sessions | HttpOnly, SameSite=Lax `mp_session` cookie (Secure in production); HS256 JWT `{sub, sv}`, 30 days, only HS256 accepted |
 | Sign-out | Increments `session_version`, ending every session of the member in both APIs |
-| Sessions (FastAPI) | Each session is a row the token names: listed with a coarse device label, ended one by one or all others, refused on its next request, expired after 30 days unused; a new device is announced on the confirmed number |
-| Staff MFA (FastAPI) | Authenticator codes (TOTP) required in each session before any staff endpoint; one use per code; five wrong codes end the session; secrets encrypted at rest; Express tokens never act as staff |
+| Sessions (FastAPI) | Each session is a row the token names: listed with a coarse device label, ended one by one or all others, refused on its next request by both APIs (Express checks the row for any token that names one, and refuses if it cannot), expired after 30 days unused; a new device is announced on the confirmed number |
+| Staff MFA (FastAPI) | Authenticator codes (TOTP) required in each session before any staff endpoint; one use per code, checked under a row lock so two requests cannot both use it; wrong codes counted per authenticator across every session: five lock it for 15 minutes, then 1 hour, 4 hours and 24 hours in a row until a right code, with no code checked while locked; each failure and lockout audited and the confirmed number told of a lockout; five wrong codes in one session also end it; secrets encrypted at rest; Express tokens never act as staff |
 | Passwords | bcrypt cost 10; the first 72 bytes count (as bcryptjs) |
 | NIC and passport | Stored only as SHA-256 of `NIC_PEPPER` + the normalised number (passports prefixed with their country); one unique index stops a second account for the same number |
 | Registration (FastAPI) | Passwords of at least 10 characters, not common, not containing the ID number; terms consent recorded with the notice version; identity-review consent required before any upload (BR-008); referrals never change anyone's tier (SG-03) |
@@ -35,7 +35,7 @@ The rules every change must follow, and what is in place today. BRD references: 
 | Mobile config | Only the public API address goes in `EXPO_PUBLIC_*` variables, which are readable inside the app |
 | Headers | `nosniff`, `Referrer-Policy`, `X-Frame-Options: SAMEORIGIN`; API responses `Cache-Control: no-store` |
 | OTP | Stored as HMACs; per-phone and per-IP limits; burned after 5 wrong guesses; the same table and rules in both APIs |
-| Recovery (FastAPI) | Codes only to a number the member confirmed by code; the same answer whether or not an ID number is registered; a reset token valid 10 minutes and single-use; a new password ends every session and the contact is told; a changed number tells the old one; assisted recovery handled by reviewers in the member's area |
+| Recovery (FastAPI) | Codes only to a number the member confirmed by code; asking to confirm a number answers the same whether or not another account has it (the clash shows only after a correct code); the same answer whether or not an ID number is registered; a reset token valid 10 minutes and single-use; a new password ends every session and the contact is told; a changed number tells the old one; assisted recovery handled by reviewers in the member's area, and a staff account's number replaced only by a higher tier |
 | Card QR | Express: an opaque, signed, 10-minute token, never NIC or date of birth. FastAPI: an opaque per-member reference, HMAC-SHA256, 60 seconds; scans check the live state, reveal only name and member ID, and are audited; suspension replaces the reference |
 | Avatars and slips | Served through signed, expiring URLs or admin-only routes |
 | Errors | 5xx details go to a private `error_log` table, never to the response |
@@ -45,8 +45,8 @@ The rules every change must follow, and what is in place today. BRD references: 
 | Identity evidence (FastAPI) | Images encrypted with AES-256-GCM, each bound to its document id, in a private directory; the database holds records only. Reviewers need `members.view_identity_evidence` over the member's area and must hold the member's identity review in review (PRM-03), never for their own record; each image opens through a link for one reviewer that expires after 5 minutes and still needs their session; the permission is checked again on every view. Links, views and refusals are audited; members see when (not who). No member download; uploads must be real JPEG, PNG or HEIC, at most 10 MB |
 | Identity decisions (FastAPI) | Only holders of `members.verify` over the member's area, one claimed review at a time, never their own record; no bulk decisions; approval needs the full checklist and every required image opened by the deciding reviewer; each decision is stored with reviewer, tier, time and document versions, and the database refuses to change or delete it. Approval confirms identity only, never membership or staff rights |
 | Identity appeals (FastAPI) | One appeal per adverse decision; decided only by holders of `idv.appeal.decide` over the member's area, never the original reviewer or the member; evidence opens only to the person holding the appeal; the outcome and reason are final (database trigger); an overturned decision is re-decided by someone other than the original reviewer |
-| Duplicate accounts (FastAPI) | NIC hashes and phone numbers unique among active members; other signals open an investigation, decided by a holder of `idv.duplicate.investigate` over both accounts, never one of them; the finding never changes an account by itself (BR-094) and cannot be edited |
-| Membership (FastAPI) | Activation, suspension, reinstatement and inactivation only by holders of `members.activate` over the member's area, never on their own record, always with a reason; history is append-only (database trigger) |
+| Duplicate accounts (FastAPI) | NIC hashes and phone numbers unique among active members; other signals open an investigation, decided by a holder of `idv.duplicate.investigate` over both accounts, never one of them; a reviewer reports a suspected duplicate only from the member's review they hold (PRM-03) and never investigates their own report; the finding never changes an account by itself (BR-094) and cannot be edited |
+| Membership (FastAPI) | Activation, suspension, reinstatement and inactivation only by holders of `members.activate` over the member's area, never on their own record, always with a reason; a staff member's membership only by someone whose tier ranks above all of theirs; history is append-only (database trigger) |
 | Audit log | `ops.audit_log`: append-only (database triggers) and hash-chained; regional auditors see only their region; grants, revocations and refused access are recorded with ids only |
 | Network | Firewall allows only 22, 80, 443; PostgreSQL listens on localhost |
 | Backups | Encrypted, off-server restic backups daily and before each release, integrity-checked |
@@ -61,7 +61,6 @@ The rules every change must follow, and what is in place today. BRD references: 
 | Automatic membership activation on identity approval (OD-02) and the migration of existing members at go-live | OD-02 |
 | Notifying the person on grant or revocation; the quarterly access-review workflow (FR-AUTH-027) | Messaging and admin dashboard |
 | Passkeys, step-up codes for new devices, refresh-token rotation, alerts to the old device | Later account-security work; push notifications |
-| Revoking one session does not reach the Express API, which still accepts that token until "sign out" or its 30 days end | Retiring Express |
 | The identity vault in its own database and storage account with separate credentials and managed keys (INT-08, §13.8); a key-rotation tool. Today: own schema, encrypted files on `/srv/secure`, one key in the API's settings | Hosting decision (OD-20) |
 | Relatives of a reviewer (BR-085); the reviewer screen's watermark (FR-WEB-006) | Relatives register, reviewer screen |
 | Express `POST /api/members/:id/verification` (`is_admin`) can still set a verification status without a review | Switch it off when `/v1` verification goes live |
@@ -75,18 +74,21 @@ The rules every change must follow, and what is in place today. BRD references: 
 | `npm audit`: 5 high findings in Expo's development CLI (`@expo/cli` via `node-forge`, `zod`), not in app bundles; npm's only fix is a downgrade | Next Expo patch release |
 | Replacing the `karan-server-admin` SSH key, exposed in a chat on 24 October 2026 | Server owner |
 
-## Review findings that block deploying the FastAPI service
+## Review findings from 25 October 2026
 
-An independent review of `services/api` on 25 October 2026 (after Batch 15) confirmed these. The FastAPI service must not go to production until the high and medium items are fixed and retested.
+An independent review of `services/api` after Batch 15 confirmed these. The high and medium items were fixed and retested on 25 October 2026 (Alembic `0012`, Express `src/sessions.js`); the low items remain before the FastAPI service goes to production.
 
-| Severity | Finding | Fix |
+| Severity | Finding | Status |
 |---|---|---|
-| High | Staff authenticator codes can be guessed across many sessions: wrong codes are counted per session, and a new sign-in starts again | Count failures per factor with escalating lockout; audit failures and tell the staff member |
-| Medium | Ending one session is not honoured by Express, which accepts the same cookie | Make Express refuse revoked `sid` tokens, or end all sessions through `session_version` |
-| Medium | `POST /v1/identity/me/phone` reveals whether a number belongs to any account, without a limit | Rate-limit first, answer identically, detect the conflict only at confirm |
-| Medium | A duplicate report lets its reporter open two members' evidence without an open review | Require an open review held by the reporter; bar the reporter from claiming the case |
-| Medium | Lower-tier staff can suspend higher-tier staff and replace their recovery number through assisted recovery | Refuse when the target holds a tier at or above the actor's; platform scope or two people for staff accounts |
-| Low | Concurrent sign-in failures can pass the lockout; refused staff requests can flood the audit log; no upload quota; sign-out accepts revoked tokens; Express can burn recovery codes (shared per-phone limits); a TOTP code can be used twice concurrently; recovery timing will reveal registered numbers once SMS is live | Atomic counters, aggregated denials, quotas, `authenticate()` before sign-out, per-purpose limits, conditional `use_factor`, asynchronous sending |
+| High | Staff authenticator codes could be guessed across many sessions: wrong codes were counted per session, and a new sign-in started again | Fixed: counted per authenticator, escalating lockouts, audited, the staff member told |
+| Medium | Ending one session was not honoured by Express, which accepted the same cookie | Fixed: Express refuses a token whose session is ended, idle or missing |
+| Medium | `POST /v1/identity/me/phone` revealed whether a number belongs to any account, without a limit | Fixed: rate limits first, the same answer for every number, the clash only after a correct code |
+| Medium | A duplicate report let its reporter open two members' evidence without an open review | Fixed: reports only from the member's review the reporter holds; the reporter cannot claim the case |
+| Medium | Lower-tier staff could suspend higher-tier staff and replace their recovery number through assisted recovery | Fixed: refused when the person holds a tier at or above the actor's (`target_outranks_you`) |
+| Low | A TOTP code could be used twice by concurrent requests | Fixed with the high item: codes are checked under a row lock |
+| Low | Concurrent sign-in failures can pass the lockout; refused staff requests can flood the audit log; no upload quota; sign-out accepts revoked tokens; Express can burn recovery codes (shared per-phone limits); recovery timing will reveal registered numbers once SMS is live | Open: atomic counters, aggregated denials, quotas, `authenticate()` before sign-out, per-purpose limits, asynchronous sending |
+
+Consequences to know: a locked authenticator cannot be unlocked by staff yet, only waited out; nobody outranks the Super Administrator, so that account's membership and recovery number cannot be changed through the API (no procedure exists yet); the lockout figures are assumptions for sponsor confirmation.
 
 ## Reporting a security problem
 

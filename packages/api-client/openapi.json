@@ -310,10 +310,13 @@
             "description": "Successful Response"
           },
           "401": {
-            "description": "invalid_code or too_many_attempts"
+            "description": "invalid_code, or too_many_attempts (five in this session: the session is ended)"
           },
           "409": {
-            "description": "already_enabled"
+            "description": "not_enrolled, already_enabled or session_not_registered"
+          },
+          "429": {
+            "description": "mfa_locked: too many wrong codes on this authenticator; see Retry-After"
           },
           "422": {
             "description": "Validation Error",
@@ -342,7 +345,7 @@
           "auth"
         ],
         "summary": "Verify Mfa",
-        "description": "Give the authenticator code for this session; staff endpoints need it (NFR-SEC-04).",
+        "description": "Give the authenticator code for this session; staff endpoints need it (NFR-SEC-04).\nWrong codes count against the authenticator in every session: five lock it, for longer each time.",
         "operationId": "verify_mfa_v1_auth_mfa_verify_post",
         "requestBody": {
           "content": {
@@ -359,10 +362,13 @@
             "description": "Successful Response"
           },
           "401": {
-            "description": "invalid_code, or too_many_attempts (the session is ended)"
+            "description": "invalid_code, or too_many_attempts (five in this session: the session is ended)"
           },
           "409": {
-            "description": "not_enrolled or session_not_registered"
+            "description": "not_enrolled, already_enabled or session_not_registered"
+          },
+          "429": {
+            "description": "mfa_locked: too many wrong codes on this authenticator; see Retry-After"
           },
           "422": {
             "description": "Validation Error",
@@ -2354,7 +2360,7 @@
           "duplicate investigations"
         ],
         "summary": "Report Duplicate",
-        "description": "Report that a member may hold another account. Needs members.verify over the member's area.\nReporting a pair that already has a case returns that case.",
+        "description": "Report that a member may hold another account. Needs members.verify over the member's area and\nthe member's identity review, claimed by this reviewer (PRM-03). Reporting a pair that already\nhas a case returns that case. The reporter cannot investigate it.",
         "operationId": "report_duplicate_v1_identity_duplicates_post",
         "security": [
           {
@@ -2386,13 +2392,13 @@
             }
           },
           "403": {
-            "description": "forbidden, own_record or outside_your_area"
+            "description": "forbidden, own_record, outside_your_area, or no_open_review (reporting)"
           },
           "404": {
             "description": "not_found"
           },
           "409": {
-            "description": "not_open, claimed_by_another or not_claimed_by_you"
+            "description": "not_open, claimed_by_another, not_claimed_by_you or reported_by_you"
           },
           "422": {
             "description": "{\"code\": \"report_refused\", \"problems\": [\"same_member\" | \"own_record\"]}"
@@ -2531,13 +2537,13 @@
             }
           },
           "403": {
-            "description": "forbidden, own_record or outside_your_area"
+            "description": "forbidden, own_record, outside_your_area, or no_open_review (reporting)"
           },
           "404": {
             "description": "not_found"
           },
           "409": {
-            "description": "not_open, claimed_by_another or not_claimed_by_you"
+            "description": "not_open, claimed_by_another, not_claimed_by_you or reported_by_you"
           },
           "422": {
             "description": "Validation Error",
@@ -2592,13 +2598,13 @@
             }
           },
           "403": {
-            "description": "forbidden, own_record or outside_your_area"
+            "description": "forbidden, own_record, outside_your_area, or no_open_review (reporting)"
           },
           "404": {
             "description": "not_found"
           },
           "409": {
-            "description": "not_open, claimed_by_another or not_claimed_by_you"
+            "description": "not_open, claimed_by_another, not_claimed_by_you or reported_by_you"
           },
           "422": {
             "description": "Validation Error",
@@ -2652,13 +2658,13 @@
             }
           },
           "403": {
-            "description": "forbidden, own_record or outside_your_area"
+            "description": "forbidden, own_record, outside_your_area, or no_open_review (reporting)"
           },
           "404": {
             "description": "not_found"
           },
           "409": {
-            "description": "not_open, claimed_by_another or not_claimed_by_you"
+            "description": "not_open, claimed_by_another, not_claimed_by_you or reported_by_you"
           },
           "422": {
             "description": "Validation Error",
@@ -2723,13 +2729,13 @@
             }
           },
           "403": {
-            "description": "forbidden, own_record or outside_your_area"
+            "description": "forbidden, own_record, outside_your_area, or no_open_review (reporting)"
           },
           "404": {
             "description": "not_found"
           },
           "409": {
-            "description": "not_open, claimed_by_another or not_claimed_by_you"
+            "description": "not_open, claimed_by_another, not_claimed_by_you or reported_by_you"
           },
           "422": {
             "description": "Validation Error",
@@ -2925,7 +2931,7 @@
           "recovery"
         ],
         "summary": "Request Phone Confirmation",
-        "description": "Send a code to a new number. It becomes the recovery contact only once the code is entered.",
+        "description": "Send a code to a new number. It becomes the recovery contact only once the code is entered.\nThe answer is the same whether or not another account has the number; confirming says so.",
         "operationId": "request_phone_confirmation_v1_identity_me_phone_post",
         "requestBody": {
           "content": {
@@ -2953,9 +2959,6 @@
           },
           "429": {
             "description": "too_many_requests, with Retry-After"
-          },
-          "409": {
-            "description": "phone_unavailable"
           },
           "422": {
             "description": "invalid_phone"
