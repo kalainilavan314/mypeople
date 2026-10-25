@@ -18,6 +18,18 @@
       "runtimeExecutable": "services/api/.venv/Scripts/python.exe",
       "runtimeArgs": ["-m", "uvicorn", "app.main:create_app", "--factory", "--app-dir", "services/api", "--env-file", "services/api/.env", "--port", "8000"],
       "port": 8000
+    },
+    {
+      "name": "member-mobile-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "web", "--workspace", "@my-people/member-mobile", "--", "--port", "8081"],
+      "port": 8081
+    },
+    {
+      "name": "staff-mobile-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "web", "--workspace", "@my-people/staff-mobile", "--", "--port", "8082"],
+      "port": 8082
     }
   ]
 }

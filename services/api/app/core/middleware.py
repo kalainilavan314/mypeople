@@ -1,16 +1,42 @@
 """HTTP middleware shared by every /v1 endpoint, mirroring the Express API."""
 
+import re
 from collections.abc import Awaitable, Callable
+from typing import Any
 from urllib.parse import urlsplit
 
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 
+from app.core.config import Settings
 from app.core.security import SESSION_COOKIE
 
 WRITE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
+# In development the apps run on their own local ports (Expo web 8081,
+# Next.js 3000) and call the API on 8000. Only plain-HTTP localhost origins
+# qualify, and only when APP_ENV is development.
+LOCAL_DEVELOPMENT_ORIGIN = re.compile(r"http://(localhost|127\.0\.0\.1)(:\d+)?")
+
 CallNext = Callable[[Request], Awaitable[Response]]
+
+
+def cors_options(settings: Settings) -> dict[str, Any] | None:
+    """Settings for Starlette's CORSMiddleware, or None for no cross-origin access.
+
+    Like the Express API: origins in ALLOWED_ORIGINS may call with cookies.
+    Development also allows local apps. Production allows nothing else.
+    """
+    origin_regex = LOCAL_DEVELOPMENT_ORIGIN.pattern if settings.app_env == "development" else None
+    if not settings.allowed_origins and origin_regex is None:
+        return None
+    return {
+        "allow_origins": settings.allowed_origins,
+        "allow_origin_regex": origin_regex,
+        "allow_credentials": True,
+        "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE"],
+        "allow_headers": ["Authorization", "Content-Type"],
+    }
 
 
 async def refuse_cross_origin_writes(request: Request, call_next: CallNext) -> Response:
@@ -34,7 +60,10 @@ async def refuse_cross_origin_writes(request: Request, call_next: CallNext) -> R
 
 
 def _origin_is_trusted(origin: str, request: Request) -> bool:
-    if origin in request.app.state.settings.allowed_origins:
+    settings: Settings = request.app.state.settings
+    if origin in settings.allowed_origins:
+        return True
+    if settings.app_env == "development" and LOCAL_DEVELOPMENT_ORIGIN.fullmatch(origin):
         return True
     # Same origin: the page that sent the request was served from this host.
     return urlsplit(origin).netloc == request.headers.get("host")

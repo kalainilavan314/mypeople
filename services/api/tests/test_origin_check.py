@@ -72,3 +72,55 @@ def test_sign_out_without_a_session_clears_the_cookie(make_client):
     cookie = response.headers["set-cookie"]
     assert cookie.startswith("mp_session=")
     assert "Max-Age=0" in cookie
+
+
+# --- Cross-origin reads (CORS) ----------------------------------------------
+
+
+def preflight(client, origin: str):
+    return client.options(
+        "/v1/members/me",
+        headers={"Origin": origin, "Access-Control-Request-Method": "GET", "Access-Control-Request-Headers": "authorization"},
+    )
+
+
+def test_development_lets_local_apps_call_the_api(make_client):
+    # Expo web on 8081 and Next.js on 3000 call the API on 8000 during development.
+    response = preflight(make_client("development"), "http://localhost:8081")
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "http://localhost:8081"
+    assert response.headers["access-control-allow-credentials"] == "true"
+
+
+def test_development_does_not_open_the_api_to_other_sites(make_client):
+    response = preflight(make_client("development"), "https://evil.example")
+
+    assert "access-control-allow-origin" not in response.headers
+
+
+def test_production_allows_no_cross_origin_calls_by_default(make_client):
+    response = preflight(make_client("production"), "http://localhost:8081")
+
+    assert "access-control-allow-origin" not in response.headers
+
+
+def test_production_allows_configured_origins(make_client):
+    client = make_client("production", allowed_origins="https://admin.example")
+
+    assert preflight(client, "https://admin.example").headers["access-control-allow-origin"] == "https://admin.example"
+    assert "access-control-allow-origin" not in preflight(client, "http://localhost:8081").headers
+
+
+def test_development_local_apps_may_sign_out_with_the_cookie(make_client):
+    client = make_client("development")
+    client.cookies.set("mp_session", "not-a-real-token")
+
+    assert client.post(SIGN_OUT, headers={"Origin": "http://localhost:3000"}).status_code == 204
+
+
+def test_production_refuses_local_origins_for_cookie_writes(make_client):
+    client = make_client("production")
+    client.cookies.set("mp_session", "not-a-real-token")
+
+    assert client.post(SIGN_OUT, headers={"Origin": "http://localhost:3000"}).status_code == 403

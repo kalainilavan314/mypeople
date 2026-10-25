@@ -52,8 +52,9 @@ The requirements are the BRD v1.1 (MP-BRD-001); see `docs/requirements/README.md
 | `server/` | Live Express API (`/api`) and SQL migrations 0000–0011 | Production; frozen layout |
 | `services/api/` | FastAPI modular monolith (`/v1`), Alembic | Built and tested; not yet deployed |
 | `services/ai-worker/` | Private AI inference worker | Planned (BRD Phase 3); README only |
-| `packages/` | `design-tokens`, `i18n`, `api-client` (TypeScript source) | Built and tested |
-| `apps/` | Expo member and staff apps, Next.js admin | Being added |
+| `packages/` | `design-tokens`, `i18n`, `api-client`, `mobile-ui` (TypeScript source) | Built and tested |
+| `apps/member-mobile`, `apps/staff-mobile` | Expo SDK 58 apps (Expo Router) | Shells: tabs, fonts, API connection check |
+| `apps/admin-web` | Next.js admin dashboard | Being added |
 | `docs/` | Architecture, setup, API, database, security, requirements | Keep in step with the code |
 | `deployment/` | Release scripts and the release record | In use for production |
 
@@ -87,6 +88,7 @@ The requirements are the BRD v1.1 (MP-BRD-001); see `docs/requirements/README.md
 | Express API | `npm test --prefix server` |
 | FastAPI | `python -m pytest` in `services/api` (database tests need `DATABASE_URL`) |
 | Packages | `npm run test:packages` and `npm run typecheck:packages` |
+| Expo apps | `npx tsc --noEmit`, `npx expo install --check`, `npx expo export --platform android` (in each app) |
 
 Never claim a check passed unless it ran and passed.
 

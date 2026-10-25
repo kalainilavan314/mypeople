@@ -9,8 +9,8 @@ app/                  live member PWA (Vite, React 18) - production, do not move
 server/               live Express API (/api) and migrations 0000-0011 - production, do not move
 services/api/         FastAPI modular monolith (/v1), Alembic, pytest
 services/ai-worker/   planned private AI worker (README only)
-packages/             design-tokens, i18n, api-client (npm workspaces)
-apps/                 Expo member and staff apps, Next.js admin (npm workspaces, being added)
+packages/             design-tokens, i18n, api-client, mobile-ui (npm workspaces)
+apps/                 member-mobile and staff-mobile (Expo shells); admin-web (Next.js, being added)
 docs/                 architecture, development, api, database, security, requirements
 deployment/           release package, stage, activate and verify scripts
 design/               design history and fixture QA screenshots
@@ -507,6 +507,37 @@ packages/
       index.ts
       schema.ts            generated from openapi.json, do not edit
     test/client.test.ts
+  mobile-ui/
+    package.json
+    tsconfig.json
+    src/
+      index.ts
+      fonts.ts             locked fonts and text styles for native apps
+      strings.ts           shared component text (Tamil pending review)
+      PlannedScreen.tsx
+      ServerStatus.tsx
+      tabIcon.tsx
+apps/
+  member-mobile/
+    package.json  app.json  tsconfig.json  .env.example  README.md
+    app/
+      _layout.tsx
+      (tabs)/
+        _layout.tsx  index.tsx  events.tsx  card.tsx  gallery.tsx  profile.tsx
+    src/lib/
+      api.ts
+      i18n.ts
+    assets/images/
+  staff-mobile/
+    package.json  app.json  tsconfig.json  .env.example  README.md
+    app/
+      _layout.tsx
+      (tabs)/
+        _layout.tsx  index.tsx  tasks.tsx  cases.tsx  check-in.tsx  profile.tsx
+    src/lib/
+      api.ts
+      i18n.ts              includes staff tab labels (Tamil pending review)
+    assets/images/
 docs/
   architecture/
     system-overview.md

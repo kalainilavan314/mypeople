@@ -28,6 +28,8 @@ The rules every change must follow, and what is in place today. BRD references: 
 | Client IP | Express trusts only the local proxy (`trust proxy` = loopback, `req.ip`); Nginx sets `X-Forwarded-For $remote_addr`; FastAPI must run uvicorn with `--proxy-headers --forwarded-allow-ips=127.0.0.1` behind Nginx |
 | Timing | FastAPI runs bcrypt even for unknown NICs, so response time does not reveal registered NICs |
 | CSRF | Cookie-authenticated writes from another origin get `403 csrf_origin_mismatch` (both APIs) |
+| CORS | FastAPI: only `ALLOWED_ORIGINS` (with cookies); in development also `http://localhost` ports. Production allows no other origin |
+| Mobile config | Only the public API address goes in `EXPO_PUBLIC_*` variables, which are readable inside the app |
 | Headers | `nosniff`, `Referrer-Policy`, `X-Frame-Options: SAMEORIGIN`; API responses `Cache-Control: no-store` |
 | OTP | Stored as HMACs; per-phone and per-IP limits; burned after 5 wrong guesses |
 | Card QR | Carries an opaque, signed, 10-minute token, never NIC or date of birth |
@@ -48,6 +50,7 @@ The rules every change must follow, and what is in place today. BRD references: 
 | Retention periods for ID images, selfies and decisions | Waiting on OD-03 |
 | Express listens on all interfaces (`*:3001`); the firewall blocks it, binding to `127.0.0.1` would add a layer | Next deploy |
 | CI security scans (SAST, dependency, secret scanning) | CI batch |
+| `npm audit`: 5 high findings in Expo's development CLI (`@expo/cli` via `node-forge`, `zod`), not in app bundles; npm's only fix is a downgrade | Next Expo patch release |
 | Replacing the `karan-server-admin` SSH key, exposed in a chat on 24 October 2026 | Server owner |
 
 ## Reporting a security problem

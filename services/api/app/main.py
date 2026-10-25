@@ -11,11 +11,12 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import sessionmaker
 
 from app import health
 from app.core.config import Settings
-from app.core.middleware import add_security_headers, refuse_cross_origin_writes
+from app.core.middleware import add_security_headers, cors_options, refuse_cross_origin_writes
 from app.db.session import create_database_engine
 from app.modules.auth import router as auth
 from app.modules.membership import router as membership
@@ -59,5 +60,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     # set on the 403 that the origin check returns.
     app.middleware("http")(refuse_cross_origin_writes)
     app.middleware("http")(add_security_headers)
+    # Outermost, so browser preflight requests are answered before anything else.
+    if options := cors_options(settings):
+        app.add_middleware(CORSMiddleware, **options)
 
     return app

@@ -25,13 +25,13 @@ The BRD's target, and the folders that hold it:
 
 | Part | Technology | Folder | Status |
 |---|---|---|---|
-| Member app (Android, iOS) | React Native, Expo Router | `apps/member-mobile` | Being added |
-| Staff app | Separate Expo app, same shared packages (OD-26 pending) | `apps/staff-mobile` | Being added |
+| Member app (Android, iOS) | React Native, Expo SDK 58, Expo Router | `apps/member-mobile` | Shell: five tabs, fonts, API check |
+| Staff app | Separate Expo app, same shared packages (OD-26 pending) | `apps/staff-mobile` | Shell: five tabs, API check |
 | Admin dashboard | Next.js, Tailwind CSS | `apps/admin-web` | Being added |
 | API | FastAPI modular monolith, SQLAlchemy 2, Alembic | `services/api` | Built and tested; not deployed |
 | Background jobs | Redis, Celery | `services/api/app/tasks` | Not started |
 | AI inference | Private worker, no internet egress | `services/ai-worker` | Planned (Phase 3) |
-| Shared code | Design tokens, i18n, typed API client | `packages/*` | Built and tested |
+| Shared code | Design tokens, i18n, typed API client, mobile components | `packages/*` | Built and tested |
 
 ## Moving from Express to FastAPI
 

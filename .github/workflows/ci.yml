@@ -57,6 +57,27 @@ jobs:
           npm run generate -w @my-people/api-client
           git diff --exit-code -- packages/api-client
 
+  mobile-apps:
+    name: Expo member and staff apps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Typecheck, check Expo versions, bundle for Android and web
+        env:
+          EXPO_PUBLIC_API_URL: http://localhost:8000
+        run: |
+          npm run typecheck -w @my-people/mobile-ui
+          for app in member-mobile staff-mobile; do
+            (cd "apps/$app" && npx tsc --noEmit && npx expo install --check \
+              && npx expo export --platform android --output-dir dist-android \
+              && npx expo export --platform web --output-dir dist-web)
+          done
+
   api:
     name: API tests
     runs-on: ubuntu-latest

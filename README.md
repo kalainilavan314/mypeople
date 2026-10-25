@@ -16,7 +16,11 @@ packages/
   design-tokens/      colours, spacing, type scale, locked fonts
   i18n/               Tamil, English and Sinhala UI text
   api-client/         typed /v1 client generated from OpenAPI
-apps/                 Expo member and staff apps, Next.js admin (being added)
+  mobile-ui/          shared React Native components and the locked fonts
+apps/
+  member-mobile/      Expo member app (shell: five tabs, API connection check)
+  staff-mobile/       Expo staff app (shell)
+  admin-web/          Next.js admin dashboard (being added)
 docs/                 architecture, development, api, database, security, requirements
 deployment/           release packaging, staging, activation and verification
 design/               design history and fixture QA screenshots
