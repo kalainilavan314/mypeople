@@ -27,24 +27,29 @@ export function VerificationSheet({
     identity_confirmed: 3,
   };
   const cur = rank[status];
+  // Three separate things, never to be read as one (QA audit): a well-formed ID number proves
+  // nothing about who someone is; a reviewer checks the documents; an authorised person approves.
   const rows: { label: string; hint: string; state: State }[] = [
     {
-      label: t('verify.stepNic', 'NIC format'),
-      hint: t('verify.stepNicHint', 'The ID number is well-formed.'),
+      label: t('verify.stepFormat', 'ID number format'),
+      hint: t(
+        'verify.stepFormatHint',
+        'Format only: the number is well-formed. This does not verify who you are.',
+      ),
       state: cur >= 1 ? 'done' : 'active',
     },
     {
-      label: t('verify.stepInfo', 'Member information'),
-      hint: t('verify.stepInfoHint', 'Your details were submitted.'),
-      state: cur >= 1 ? 'done' : 'todo',
+      label: t('verify.stepDocs', 'Document review'),
+      hint: t('verify.stepDocsHint', 'A reviewer checks your ID photos and selfie.'),
+      state: cur >= 3 ? 'done' : cur === 2 ? 'active' : 'todo',
     },
     {
-      label: t('verify.stepReview', 'Coordinator review'),
+      label: t('verify.stepApproval', 'Approval'),
       hint: t(
-        'verify.stepReviewHint',
-        'A coordinator confirms your identity against official records.',
+        'verify.stepApprovalHint',
+        'An authorised person confirms your identity. Your card becomes official once your membership is approved too.',
       ),
-      state: cur >= 3 ? 'done' : cur === 2 ? 'active' : 'todo',
+      state: cur >= 3 ? 'done' : 'todo',
     },
   ];
   const icon = (s: State): IconName => (s === 'done' ? 'check' : s === 'active' ? 'clock' : 'info');

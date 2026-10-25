@@ -15,6 +15,7 @@ import { clientIp, OTP_PURPOSES, checkOtpRequest, issueOtp, consumeOtp, reserveL
 import { putObject, getObject, mimeFor, backend as storageBackend } from './storage.js';
 import { replaceAvatar } from './avatar.js';
 import { sessionIsLive } from './sessions.js';
+import { membershipStatus, cardIsOfficial } from './membership.js';
 
 const PROD = process.env.NODE_ENV === 'production';
 
@@ -163,7 +164,7 @@ function decodeImage(image, maxBytes = MAX_SLIP_BYTES) {
 
 // Member view + live tier progress toward the next tier.
 async function withProgress(m) {
-  return { ...publicMember(m), tierProgress: await tierProgress(m) };
+  return { ...publicMember(m), membershipStatus: await membershipStatus(m.id), tierProgress: await tierProgress(m) };
 }
 
 // Never returns OTP codes in a production response, whatever the environment
@@ -464,6 +465,9 @@ app.get('/api/me', wrap(async (req, res) => {
 // resolves the token server-side under its own authorization rules.
 app.get('/api/me/card-token', wrap(async (req, res) => {
   const m = await requireMember(req);
+  // Only an official card carries a working QR; a provisional one must not pass
+  // as a credential at a check-in desk.
+  if (!cardIsOfficial(m.verification_status, await membershipStatus(m.id))) throw bad('card_not_available', 403);
   res.json({ token: signCardToken(m.id) });
 }));
 

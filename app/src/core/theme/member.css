@@ -19,3 +19,5 @@
 .member-shell .civic-profile-row .pf-menu-sub{display:none}
 :root[data-theme='dark'] .member-shell{color-scheme:dark}
 @media(prefers-reduced-motion:reduce){.member-shell *{scroll-behavior:auto}}
+/* While a text field has focus on a touch screen the keyboard lifts the bar over the field: step aside. */
+.member-shell .medtech-nav.work-nav--typing{display:none}

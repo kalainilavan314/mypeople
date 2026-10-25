@@ -325,7 +325,17 @@ body { line-height: 1.5; }
 input, textarea, select { font-family: inherit; color: inherit; }
 input:not([type='checkbox']):not([type='radio']):not([type='range']),
 textarea, select { font-size: max(16px, 1em); }
+/* Touch browsers (iOS Safari above all) zoom the whole page into any field set below 16px when it
+   gets focus, and several screens' own field styles set 13-14px: the QA recording's sudden zoom.
+   On touch screens no field goes below 16px, whatever its own style says. */
+@media (pointer: coarse) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']),
+  textarea, select { font-size: max(16px, 1em) !important; }
+}
 textarea { resize: vertical; }
+/* No double-tap zoom anywhere (it enlarged the whole app when a card or text was tapped twice);
+   pinch zoom stays available for people who need it (WCAG 1.4.4). */
+html { touch-action: manipulation; }
 button, a, input, select, textarea { touch-action: manipulation; }
 button:disabled { cursor: not-allowed; }
 img, video { max-width: 100%; }
@@ -2376,5 +2386,5 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
 :root[data-theme='dark'] .nu-skeleton-shimmer {
   background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%) !important;
 }
-
-
+/* Report form: required sections say so in words, not only by a mark. */
+.cr-required { margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: var(--surface-variant); color: var(--ink-2, #475569); font-size: 0.75rem; font-weight: 600; vertical-align: middle; }

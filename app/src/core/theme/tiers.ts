@@ -31,7 +31,7 @@ export const TIERS: Record<MemberTier, TierDef> = {
     nameTa: 'வைரம்',
     adminLevel: 'gs',
     seatLimit: 2,
-    requirementEn: 'Recruit 20% of your GS division',
+    requirementEn: 'Recruit 20% of your GN division',
     color: '#6EC6FF',
     grad: '#0F2942',
   },

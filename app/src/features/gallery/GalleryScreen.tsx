@@ -54,8 +54,8 @@ export function Gallery() {
               {albums.some((a) => a.sample) && (
                 <p className="civic-location">
                   {t(
-                    'Sample photo collections. Replace with approved community albums.',
-                    'மாதிரிப் படத்தொகுப்புகள். அங்கீகரிக்கப்பட்ட சமூகப் படங்களால் மாற்றவும்.',
+                    'Example albums from Wikimedia Commons, shown until our own event albums are published.',
+                    'எங்கள் நிகழ்வுப் படத்தொகுப்புகள் வெளியிடப்படும் வரை காட்டப்படும் விக்கிமீடியா காமன்ஸ் மாதிரிப் படத்தொகுப்புகள்.',
                   )}
                 </p>
               )}

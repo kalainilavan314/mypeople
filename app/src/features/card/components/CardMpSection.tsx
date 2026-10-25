@@ -46,7 +46,7 @@ export function CardMpSection({
         />
         <Detail
           icon="mapPin"
-          label={t('GS Division', 'கிராம சேவகர் பிரிவு')}
+          label={t('GN Division', 'கிராம அலுவலர் பிரிவு')}
           value={me.gsName || '—'}
         />
         <Detail icon="calendar" label={t('Member since', 'உறுப்பினரான நாள்')} value={memberSince} />

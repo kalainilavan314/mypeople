@@ -11,6 +11,8 @@ export type MembershipCredentialData = {
   referralId: string;
   verified: boolean;
   verificationLabel: string;
+  // A confirmed identity and an Active membership; anything else is drawn as provisional, without a QR.
+  official: boolean;
   avatarUrl?: string | null;
   signatureUrl?: string | null;
   qrValue?: string | null;

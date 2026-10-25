@@ -17,6 +17,11 @@ import { Icon } from '@/shared/components/Icon';
 import { useWorkspaceText } from '@/shared/components/MemberWorkspace';
 import { QueryBoundary } from '@/shared/components/ui';
 import { useMeQuery } from '@/shared/hooks/useMe';
+import {
+  hasOfficialCard,
+  MEMBERSHIP_STATUS_TEXT,
+  membershipStateOf,
+} from '@/shared/membership/membershipStatus';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
@@ -37,11 +42,14 @@ export function Card() {
   useEffect(() => {
     if (params.get('qr') === '1') setShowQr(true);
   }, [params, location.key]);
+  // The server issues a check-in QR only for an official card; nobody else asks for one.
+  const official = meQ.data ? hasOfficialCard(meQ.data) : false;
   const token = useQuery({
     queryKey: ['cardToken'],
     queryFn: () => authApi.cardToken(),
     staleTime: 5 * 60 * 1000,
     refetchInterval: 8 * 60 * 1000,
+    enabled: official,
   });
 
   return (
@@ -66,7 +74,7 @@ export function Card() {
             : me.verificationStatus === 'review_pending'
               ? t('Under review', 'மதிப்பாய்வில்')
               : me.verificationStatus === 'nic_format'
-                ? t('NIC format checked', 'அடையாள எண் வடிவம் சரிபார்க்கப்பட்டது')
+                ? t('ID format checked, not verified', 'அடையாள எண் வடிவம் மட்டும் சரி, சரிபார்க்கப்படவில்லை')
                 : t('Not verified', 'சரிபார்க்கப்படவில்லை');
           const joined = new Date(me.joinedAt),
             memberSince = Number.isNaN(joined.getTime())
@@ -89,17 +97,12 @@ export function Card() {
             referralId: me.referralCode || '—',
             verified: confirmed,
             verificationLabel: verification,
+            official,
             avatarUrl: me.avatarUrl,
-            qrValue: token.data,
+            qrValue: official ? token.data : null,
           };
-          const status =
-            me.membershipStatus === 'active'
-              ? t('Active', 'செயலில்')
-              : me.membershipStatus === 'suspended'
-                ? t('Suspended', 'இடைநிறுத்தப்பட்டது')
-                : me.membershipStatus === 'inactive'
-                  ? t('Inactive', 'செயலற்றது')
-                  : t('Pending', 'நிலுவையில்');
+          const { en, ta } = MEMBERSHIP_STATUS_TEXT[membershipStateOf(me)].short;
+          const status = t(en, ta);
           return (
             <>
               <header className="mp-header">
@@ -116,6 +119,15 @@ export function Card() {
                   <Icon name="menu" size={20} />
                 </button>
               </header>
+              {!official && (
+                <p className="mp-provisional-note" role="note">
+                  <Icon name="info" size={16} />
+                  {t(
+                    'Provisional card: not valid as an official credential. It becomes official, with a check-in QR, once your identity is verified and your membership is approved.',
+                    'தற்காலிக அட்டை: அதிகாரப்பூர்வச் சான்றாகச் செல்லாது. உங்கள் அடையாளம் சரிபார்க்கப்பட்டு உறுப்புரிமை அங்கீகரிக்கப்பட்டதும், வருகைப் பதிவு QR உடன் இது அதிகாரப்பூர்வமாகும்.',
+                  )}
+                </p>
+              )}
               <figure className="mp-card-figure">
                 <div className="mp-preview-stage" ref={cardHost}>
                   <ScaledMembershipCredential data={data} />
@@ -138,9 +150,12 @@ export function Card() {
               <div className="mp-actions" aria-label={t('Card actions', 'அட்டைச் செயல்கள்')}>
                 <Action
                   icon="idCard"
-                  label={t('View QR', 'QR பார்க்க')}
+                  label={
+                    official ? t('View QR', 'QR பார்க்க') : t('QR after approval', 'அங்கீகாரத்தின் பின் QR')
+                  }
                   onClick={() => setShowQr(true)}
                   active={showQr}
+                  disabled={!official}
                 />
                 <Action
                   icon="download"
@@ -178,7 +193,7 @@ export function Card() {
               {prog && <CardMpSection3 t={t} navigate={navigate} prog={prog} />}
               <CardMpSection2 t={t} navigate={navigate} badgesQ={badgesQ} me={me} />
               {viewer && <CardViewer data={data} onClose={() => setViewer(false)} t={t} />}
-              {showQr && (
+              {showQr && official && (
                 <QrDialog
                   value={token.data}
                   pending={token.isPending}

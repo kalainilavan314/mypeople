@@ -109,7 +109,7 @@ export function MembershipCredential({ data }: { data: MembershipCredentialData 
           </dd>
         </div>
         <div className="credential-field credential-field--gs" data-card-field="gs-division">
-          <dt>GS DIVISION</dt>
+          <dt>GN DIVISION</dt>
           <dd>
             <FitText max={20} min={13}>
               {data.gsDivision}
@@ -160,15 +160,15 @@ export function MembershipCredential({ data }: { data: MembershipCredentialData 
         </div>
       </div>
       <div className="credential-qr-panel">
-        {data.qrValue ? (
+        {data.official && data.qrValue ? (
           <CredentialQr value={data.qrValue} />
         ) : (
           <div className="credential-qr-unavailable">
             <Icon name="idCard" size={34} />
-            <span>QR unavailable</span>
+            <span>{data.official ? 'QR unavailable' : 'QR after approval'}</span>
           </div>
         )}
-        <span>SCAN TO VERIFY</span>
+        <span>{data.official ? 'SCAN TO VERIFY' : 'NOT VALID FOR CHECK-IN'}</span>
       </div>
       <div className="credential-footer">
         <span>
@@ -178,6 +178,10 @@ export function MembershipCredential({ data }: { data: MembershipCredentialData 
         </span>
         <small>UNITY&nbsp; | &nbsp;OPPORTUNITY&nbsp; | &nbsp;RESPONSIBILITY</small>
       </div>
+      {!data.official && (
+        // Drawn on the card itself, so the PDF and shared images carry it too.
+        <div className="credential-provisional">PROVISIONAL · NOT AN OFFICIAL MEMBERSHIP CARD</div>
+      )}
     </article>
   );
 }

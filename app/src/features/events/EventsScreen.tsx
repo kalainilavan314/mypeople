@@ -9,6 +9,7 @@ import { QueryBoundary } from '@/shared/components/ui';
 import 'leaflet/dist/leaflet.css';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 export function Events() {
   const { t } = useTranslation();
   const [seg, setSeg] = useState<'list' | 'map'>('list');
@@ -21,7 +22,7 @@ export function Events() {
     { key: 'all', label: t('events.filterAll', 'All') },
     { key: 'mine', label: t('events.filterMine', 'My Area') },
     { key: 'week', label: t('events.filterWeek', 'This Week') },
-    { key: 'month', label: t('events.filterMonth', 'This Month') },
+    { key: 'month', label: t('events.filterMonth', 'This month') },
   ];
 
   return (
@@ -83,7 +84,7 @@ export function Events() {
       <div
         role="group"
         aria-label={t('events.filters', 'Filter events')}
-        style={{ display: 'flex', gap: 8, padding: '16px 0 4px', overflowX: 'auto' }}
+        style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '16px 0 4px' }}
       >
         {FILTERS.map((f) => {
           const on = filter === f.key;
@@ -129,6 +130,7 @@ export function Events() {
             .sort((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt));
 
           if (seg === 'map') return <EventsMap events={list} />;
+          const narrowed = filter !== 'all' || q.length > 0;
 
           return (
             <section
@@ -157,13 +159,36 @@ export function Events() {
                 <div className="home-empty">
                   <Icon name="calendar" size={28} color={c.ink3} />
                   <div style={{ font: `600 0.9375rem/1.4 ${font.ta}`, color: c.ink }}>
-                    {t('events.none', 'No events found')}
+                    {narrowed
+                      ? t('events.noneMatch', 'No events match')
+                      : t('events.noneYet', 'No upcoming events yet')}
                   </div>
                   <div
-                    style={{ font: `400 0.8125rem/1.5 ${font.ui}`, color: c.ink3, maxWidth: 240 }}
+                    style={{ font: `400 0.8125rem/1.5 ${font.ui}`, color: c.ink3, maxWidth: 260 }}
                   >
-                    {t('events.noneSub', 'Try a different filter or check back soon.')}
+                    {narrowed
+                      ? t('events.noneMatchSub', 'Other events may be on. Show them all instead.')
+                      : t(
+                          'events.noneYetSub',
+                          'New events appear here as soon as they are announced. Photos of past events are in the gallery.',
+                        )}
                   </div>
+                  {narrowed ? (
+                    <button
+                      type="button"
+                      className="home-empty-card-btn"
+                      onClick={() => {
+                        setFilter('all');
+                        setSearch('');
+                      }}
+                    >
+                      {t('events.showAll', 'Show all events')}
+                    </button>
+                  ) : (
+                    <Link to="/gallery" className="home-empty-card-btn">
+                      {t('events.openGallery', 'See past events')}
+                    </Link>
+                  )}
                 </div>
               )}
             </section>

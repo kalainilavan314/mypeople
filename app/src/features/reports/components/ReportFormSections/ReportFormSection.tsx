@@ -1,6 +1,5 @@
 import { DISTRICTS } from '@/core/api/divisions';
 import { font } from '@/core/theme/tokens';
-import { Icon } from '@/shared/components/Icon';
 import { CustomSelect } from '@/shared/components/ui';
 import type { TFunction } from 'i18next';
 import type { Dispatch, SetStateAction } from 'react';
@@ -18,7 +17,7 @@ export function ReportFormSection({ t, districtVal, setDistrict }: Props) {
         <div>
           <h2 className="cr-step-title">{t('creport.location', 'Location')}</h2>
           <p className="cr-step-sub">
-            {t('creport.locationSub', 'Help us find the exact location')}
+            {t('creport.locationSub', 'Which district is the issue in?')}
           </p>
         </div>
       </div>
@@ -34,6 +33,12 @@ export function ReportFormSection({ t, districtVal, setDistrict }: Props) {
         >
           {t('creport.district', 'District')}
         </span>
+        <p className="cr-step-sub" style={{ margin: '0 0 8px' }}>
+          {t(
+            'creport.districtHint',
+            'Your own district is filled in. Change it if the issue is somewhere else.',
+          )}
+        </p>
         <CustomSelect
           value={districtVal}
           onChange={(val) => setDistrict(val)}
@@ -42,24 +47,6 @@ export function ReportFormSection({ t, districtVal, setDistrict }: Props) {
           options={DISTRICTS.map((d) => ({ value: d.code, label: d.name_en }))}
         />
       </div>
-
-      <button
-        type="button"
-        className="cr-current-loc-btn"
-        onClick={() => {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              () => {
-                /* location retrieved */
-              },
-              () => {},
-            );
-          }
-        }}
-      >
-        <Icon name="mapPin" size={16} color="var(--accent)" strokeWidth={2.4} />
-        <span>{t('creport.useCurrentLoc', 'Use Current Location')}</span>
-      </button>
     </section>
   );
 }

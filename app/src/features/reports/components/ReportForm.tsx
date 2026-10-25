@@ -15,10 +15,11 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
   const memberQ = useMember();
   const submit = useSubmitCommunityReport();
 
-  const [category, setCategory] = useState<CommunityReportCategory>('road');
+  // Nothing is chosen for the member: a preselected category or priority gets submitted unread.
+  const [category, setCategory] = useState<CommunityReportCategory | null>(null);
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
-  const [priority, setPriority] = useState<CommunityReportPriority>('medium');
+  const [priority, setPriority] = useState<CommunityReportPriority | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -34,6 +35,7 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
     if (!category) return setError(t('creport.pickCategory', 'Please select a category'));
     if (!title.trim()) return setError(t('creport.needTitle', 'Please enter an issue title'));
     if (!desc.trim()) return setError(t('creport.needDesc', 'Please provide a description'));
+    if (!priority) return setError(t('creport.pickPriority', 'Please choose how urgent the issue is'));
     try {
       await submit.mutateAsync({
         category,
@@ -43,9 +45,10 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
         priority,
       });
       setShowSuccess(true);
+      setCategory(null);
       setTitle('');
       setDesc('');
-      setPriority('medium');
+      setPriority(null);
     } catch {
       setError(
         navigator.onLine
@@ -78,6 +81,7 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
           <div>
             <h2 className="cr-step-title">
               {t('creport.whatToReport', 'What would you like to report?')}
+              <span className="cr-required">{t('creport.required', 'Required')}</span>
             </h2>
             <p className="cr-step-sub">
               {t('creport.whatToReportSub', 'Select the category that best matches the issue')}
@@ -92,6 +96,7 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
               <button
                 key={cat.key}
                 type="button"
+                aria-pressed={on}
                 onClick={() => setCategory(cat.key)}
                 className={`cr-cat-card ${on ? 'selected' : ''}`}
                 style={{ background: cat.bg }}
@@ -112,7 +117,10 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
         <div className="cr-step-head">
           <span className="cr-step-num">4</span>
           <div>
-            <h2 className="cr-step-title">{t('creport.priority', 'Priority')}</h2>
+            <h2 className="cr-step-title">
+              {t('creport.priority', 'Priority')}
+              <span className="cr-required">{t('creport.required', 'Required')}</span>
+            </h2>
             <p className="cr-step-sub">{t('creport.prioritySub', 'How urgent is this issue?')}</p>
           </div>
         </div>
@@ -124,6 +132,7 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
               <button
                 key={p.key}
                 type="button"
+                aria-pressed={on}
                 onClick={() => setPriority(p.key)}
                 className={`cr-priority-btn ${on ? 'selected' : ''}`}
                 style={{ background: p.bg, color: p.color }}
@@ -133,26 +142,6 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
               </button>
             );
           })}
-        </div>
-      </section>
-
-      <section>
-        <div className="cr-step-head">
-          <span className="cr-step-num">5</span>
-          <div>
-            <h2 className="cr-step-title">{t('creport.photos', 'Photos (Optional)')}</h2>
-            <p className="cr-step-sub">
-              {t('creport.photosSub', 'Add photos to help explain the issue')}
-            </p>
-          </div>
-        </div>
-
-        <div className="cr-photos-dashed-box" role="button" tabIndex={0}>
-          <Icon name="camera" size={26} color="#102D55" strokeWidth={2} />
-          <strong className="cr-photos-title">{t('creport.addPhotos', 'Add Photos')}</strong>
-          <span className="cr-photos-sub">
-            {t('creport.addPhotosSub', 'You can add up to 5 photos')}
-          </span>
         </div>
       </section>
 

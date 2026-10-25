@@ -25,7 +25,7 @@ export function MyArea() {
             [t('Province', 'மாகாணம்'), t('Northern Province', 'வட மாகாணம்')],
             [t('District', 'மாவட்டம்'), me?.districtName],
             [t('DS division', 'பிரதேச செயலாளர் பிரிவு'), me?.dsName],
-            [t('GN division', 'கிராம சேவகர் பிரிவு'), me?.gsName],
+            [t('GN division', 'கிராம அலுவலர் பிரிவு'), me?.gsName],
             [t('GN reference', 'பிரிவு இலக்கம்'), area?.gs.ref],
           ].map(([label, value]) => (
             <div key={label}>

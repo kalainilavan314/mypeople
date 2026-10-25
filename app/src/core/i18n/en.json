@@ -93,10 +93,10 @@
     "female": "Female",
     "other": "Other",
     "district": "District",
-    "gs": "GS division",
-    "chooseGs": "Choose your GS division",
+    "gs": "GN division",
+    "chooseGs": "Choose your GN division",
     "pickDistrictFirst": "Pick a district first",
-    "searchGs": "Search GS division…",
+    "searchGs": "Search GN division…",
     "referral": "Referral ID (Optional)",
     "referralPlaceholder": "e.g. KARU-4821 or NPM-XXXX",
     "referralHint": "Who invited you? (optional)",
@@ -217,7 +217,7 @@
     "qrUnavailable": "Check-in code unavailable right now. Try again shortly.",
     "toNextTier": "{{n}} more to {{tier}}",
     "district": "District",
-    "gsDivision": "GS division",
+    "gsDivision": "GN division",
     "recruits": "Recruits",
     "memberId": "Member ID",
     "referralId": "Referral ID",
@@ -235,7 +235,13 @@
     "checkIn": "Check in",
     "checkedIn": "Checked in",
     "agenda": "Agenda",
-    "pointsForCheckin": "+50 pts for checking in"
+    "pointsForCheckin": "+50 pts for checking in",
+    "noneMatch": "No events match",
+    "noneMatchSub": "Other events may be on. Show them all instead.",
+    "noneYet": "No upcoming events yet",
+    "noneYetSub": "New events appear here as soon as they are announced. Photos of past events are in the gallery.",
+    "showAll": "Show all events",
+    "openGallery": "See past events"
   },
   "reports": {
     "title": "Field report",
@@ -367,7 +373,7 @@
     "phone": "Mobile number (optional)",
     "division": "Where you live",
     "ds": "DS division",
-    "gs": "GS division",
+    "gs": "GN division",
     "changePhoto": "Change photo",
     "photoAlt": "Your profile photo",
     "needName": "Please enter your name",
@@ -490,7 +496,11 @@
       "under_review": "Under Review",
       "in_progress": "In Progress",
       "resolved": "Resolved"
-    }
+    },
+    "pickPriority": "Please choose how urgent the issue is",
+    "required": "Required",
+    "locationSub": "Which district is the issue in?",
+    "districtHint": "Your own district is filled in. Change it if the issue is somewhere else."
   },
   "welcome": {
     "badge": "Northern & Eastern Province, Sri Lanka",
@@ -523,5 +533,13 @@
     "nameTa": "என் மக்கள்",
     "slogan": "The target is one, the liberation of the race.",
     "sloganTa": "இலக்கு ஒன்று தான் இனத்தின் விடிவு"
+  },
+  "verify": {
+    "stepFormat": "ID number format",
+    "stepFormatHint": "Format only: the number is well-formed. This does not verify who you are.",
+    "stepDocs": "Document review",
+    "stepDocsHint": "A reviewer checks your ID photos and selfie.",
+    "stepApproval": "Approval",
+    "stepApprovalHint": "An authorised person confirms your identity. Your card becomes official once your membership is approved too."
   }
 }

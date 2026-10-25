@@ -47,7 +47,7 @@ export function EditFormProfileSelectBtn2({ dsCode, setGsSheetOpen, t, gs }: Pro
           {gs
             ? `${gs.name} (${gs.ref})`
             : dsCode
-              ? 'GS பிரிவைத் தேர்ந்தெடுக்கவும்'
+              ? 'GN பிரிவைத் தேர்ந்தெடுக்கவும்'
               : 'முதலில் DS பிரிவைத் தேர்ந்தெடுக்கவும்'}
         </div>
       </div>

@@ -87,7 +87,7 @@ export function GsSheet({
             }}
           />
           <div style={{ font: `800 17px/1.2 ${font.ta}`, color: '#14263D', marginBottom: 12 }}>
-            {ds?.name_en ?? district?.name_en} · {t('profileSetup.gs', 'GS பிரிவு')}
+            {ds?.name_en ?? district?.name_en} · {t('profileSetup.gs', 'GN பிரிவு')}
           </div>
           <div
             style={{
@@ -106,7 +106,7 @@ export function GsSheet({
               autoFocus
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder={t('profileSetup.searchGs', 'தேடல் / Search GS Division')}
+              placeholder={t('profileSetup.searchGs', 'தேடல் / Search GN Division')}
               style={{
                 flex: 1,
                 border: 'none',

@@ -2,6 +2,7 @@ import type { ServerMember } from '@/core/api/auth/models';
 import { tierDef } from '@/core/theme/tiers';
 import { StatusChip } from '@/features/profile/components/StatusChip';
 import { NetImage } from '@/shared/components/nn';
+import { MEMBERSHIP_STATUS_TEXT, membershipStateOf } from '@/shared/membership/membershipStatus';
 import type { TFunction } from 'i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -33,12 +34,8 @@ export function ProfileSection({ navigate, t, me, name, code, lang, tier, verifi
         <StatusChip good={verified} warn={pending}
           label={verified ? t('verify.confirmed', 'Identity verified') : pending
             ? t('verify.reviewPending', 'Review pending') : t('verify.unverified', 'Not verified')} />
-        <StatusChip good={me.membershipStatus === 'active'} warn={me.membershipStatus === 'pending'}
-          label={me.membershipStatus === 'active' ? t('profile.membershipActive', 'Membership active')
-            : me.membershipStatus === 'pending' ? t('profile.membershipPending', 'Membership pending')
-            : me.membershipStatus === 'suspended' ? t('profile.membershipSuspended', 'Membership suspended')
-            : me.membershipStatus === 'inactive' ? t('profile.membershipInactive', 'Membership inactive')
-            : t('profile.membershipUnknown', 'Membership status unavailable')} />
+        <StatusChip good={membershipStateOf(me) === 'active'} warn={membershipStateOf(me) === 'pending'}
+          label={MEMBERSHIP_STATUS_TEXT[membershipStateOf(me)].long[lang === 'ta' ? 'ta' : 'en']} />
       </div>
       <button type="button" className="profile-account-edit" onClick={() => navigate('/profile/edit')}>
         {t('profile.editProfile', 'Edit profile')}

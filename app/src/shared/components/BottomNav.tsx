@@ -1,5 +1,6 @@
 import { useWorkspaceText } from '@/shared/components/MemberWorkspace';
-import { CalendarDays, Home, Images, ScanLine, User, type LucideIcon } from 'lucide-react';
+import { useTypingInField } from '@/shared/hooks/useTypingInField';
+import { CalendarDays, Home, IdCard, Images, User, type LucideIcon } from 'lucide-react';
 import { useLayoutEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -8,7 +9,7 @@ type Tab = {
   label: string;
   icon: LucideIcon;
   match: string[];
-  destination?: string;
+  elevated?: boolean; // the raised centre button
 };
 
 export function BottomNav() {
@@ -16,11 +17,13 @@ export function BottomNav() {
   const navigate = useNavigate();
   const t = useWorkspaceText();
   const navRef = useRef<HTMLElement>(null);
+  const typing = useTypingInField();
   useLayoutEffect(() => {
     const nav = navRef.current;
     const shell = nav?.closest<HTMLElement>('.member-shell');
     if (!nav || !shell) return;
     const measure = () => {
+      if (nav.getClientRects().length === 0) return; // hidden while typing: keep the last clearance
       const bar = nav.getBoundingClientRect();
       const icons = [...nav.querySelectorAll('.work-nav-icon')].map(
         (icon) => icon.getBoundingClientRect().top,
@@ -61,9 +64,9 @@ export function BottomNav() {
     {
       to: '/card',
       label: t('Card', 'அட்டை'),
-      icon: ScanLine,
+      icon: IdCard,
       match: ['/card', '/milestones'],
-      destination: '/card?qr=1',
+      elevated: true,
     },
     {
       to: '/gallery',
@@ -87,7 +90,7 @@ export function BottomNav() {
   return (
     <nav
       ref={navRef}
-      className="work-nav medtech-nav"
+      className={`work-nav medtech-nav${typing ? ' work-nav--typing' : ''}`}
       aria-label={t('Primary navigation', 'முக்கிய வழிசெலுத்தல்')}
     >
       {tabs.map((tab) => {
@@ -98,17 +101,12 @@ export function BottomNav() {
           <button
             key={tab.to}
             type="button"
-            className={tab.destination ? 'medtech-nav-card' : undefined}
+            className={tab.elevated ? 'medtech-nav-card' : undefined}
             onClick={() => {
-              navigate(tab.destination ?? tab.to);
+              navigate(tab.to);
               document.querySelector<HTMLElement>('.screen')?.scrollTo({ top: 0 });
             }}
             aria-current={active ? 'page' : undefined}
-            aria-label={
-              tab.destination
-                ? t('Card and check-in QR', 'அட்டை மற்றும் வருகைப் பதிவு குறியீடு')
-                : undefined
-            }
           >
             <span className="work-nav-icon">
               <IconComp size={23} strokeWidth={2} aria-hidden="true" />

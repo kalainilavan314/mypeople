@@ -15,7 +15,10 @@ export function ReportFormSection2({ t, title, setTitle, desc, setDesc }: Props)
       <div className="cr-step-head">
         <span className="cr-step-num">2</span>
         <div>
-          <h2 className="cr-step-title">{t('creport.details', 'Issue Details')}</h2>
+          <h2 className="cr-step-title">
+            {t('creport.details', 'Issue Details')}
+            <span className="cr-required">{t('creport.required', 'Required')}</span>
+          </h2>
           <p className="cr-step-sub">
             {t('creport.detailsSub', 'Provide clear information to help us address the issue')}
           </p>
@@ -25,8 +28,12 @@ export function ReportFormSection2({ t, title, setTitle, desc, setDesc }: Props)
       <div className="cr-input-card">
         <Icon name="report" size={20} color="#94A3B8" style={{ marginTop: 2 }} />
         <div className="cr-input-wrap">
-          <span className="cr-input-label">{t('creport.titleLabel', 'Issue title')}</span>
+          <label className="cr-input-label" htmlFor="cr-title">
+            {t('creport.titleLabel', 'Issue title')}
+          </label>
           <input
+            id="cr-title"
+            required
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -39,8 +46,12 @@ export function ReportFormSection2({ t, title, setTitle, desc, setDesc }: Props)
       <div className="cr-input-card" style={{ marginBottom: 24 }}>
         <Icon name="clipboard" size={20} color="#94A3B8" style={{ marginTop: 2 }} />
         <div className="cr-input-wrap">
-          <span className="cr-input-label">{t('creport.descLabel', 'Description')}</span>
+          <label className="cr-input-label" htmlFor="cr-desc">
+            {t('creport.descLabel', 'Description')}
+          </label>
           <textarea
+            id="cr-desc"
+            required
             value={desc}
             maxLength={500}
             onChange={(e) => setDesc(e.target.value)}
