@@ -89,6 +89,11 @@ def test_bootstrap_creates_the_first_super_administrator_once(db_session, create
     assert assignment.granted_by is None
     last = db_session.execute(text("SELECT action, target_id FROM ops.audit_log ORDER BY id DESC LIMIT 1")).one()
     assert (last.action, last.target_id) == ("access.assignment.bootstrapped", str(assignment.id))
+    # Nobody could activate the first Super Administrator's membership, so the command does (BR-097).
+    membership = db_session.execute(
+        text("SELECT state, changed_by FROM membership.membership WHERE member_id = :id"), {"id": first.id}
+    ).one()
+    assert (membership.state, membership.changed_by) == ("active", None)
 
     with pytest.raises(access.AssignmentRefused) as refused:
         access.bootstrap_super_administrator(db_session, create_member(verified=True).id, [])

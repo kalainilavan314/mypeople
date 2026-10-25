@@ -16,6 +16,7 @@ from app.core.permissions import Tier, default_permissions, grant_for
 from app.modules.access.repository import StoredAssignment
 from app.modules.access.rules import Area, AreaPath, AssignmentRequest, Grantee
 from app.modules.audit import service as audit
+from app.modules.membership import repository as membership_repository
 
 
 class AssignmentRefused(Exception):
@@ -60,6 +61,7 @@ def evaluate(db: Session, actor: Staff, request: AssignmentRequest) -> tuple[lis
         grantee = Grantee(
             member_id=status.id,
             identity_verified=status.identity_verified,
+            membership_active=status.membership_active,
             assignments=tuple((a.as_rule(), repository.area_path(db, a.area) or (a.area,)) for a in current),
         )
     problems = rules.check_assignment(
@@ -140,19 +142,44 @@ def bootstrap_super_administrator(db: Session, member_id: uuid.UUID, extra_permi
 
     Gets the Tier 5 defaults plus any explicit Tier 5 permissions named (for
     example members.verify). Refused if a Super Administrator already exists
-    (the BRD has one position) or the person's identity is not verified.
+    (the BRD has one position), the person's identity is not verified, or
+    their membership is suspended or inactive. A Pending membership is
+    activated here, since nobody else could do it yet (BR-097).
     """
     status = repository.find_member_status(db, member_id)
     if status is None:
         raise AssignmentRefused(["unknown_member"])
     if not status.identity_verified:
         raise AssignmentRefused(["identity_not_verified"])
+    if status.membership_state in ("suspended", "inactive"):
+        raise AssignmentRefused(["membership_not_active"])
     if repository.has_active_super_administrator(db):
         raise AssignmentRefused(["super_administrator_exists"])
     tier: Tier = "5"
     invalid = [f"permission_not_for_tier:{p}" for p in extra_permissions if grant_for(p, tier) is None]
     if invalid:
         raise AssignmentRefused(invalid)
+
+    if status.membership_state == "pending":
+        membership_repository.record_change(
+            db,
+            member_id=member_id,
+            action="activate",
+            from_state="pending",
+            to_state="active",
+            reason_code="identity_verified",
+            note="Activated by the bootstrap command",
+            changed_by=None,
+        )
+        audit.record(
+            db,
+            actor_id=None,
+            action="membership.activate",
+            target_type="membership",
+            target_id=str(member_id),
+            area_path=(rules.PLATFORM,),
+            details={"memberId": str(member_id), "from": "pending", "to": "active", "reasonCode": "identity_verified"},
+        )
 
     permissions = frozenset(default_permissions(tier)) | frozenset(extra_permissions)
     now = datetime.now(UTC)

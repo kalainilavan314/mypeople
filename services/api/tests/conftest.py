@@ -101,10 +101,12 @@ def db_client(database_settings: Settings, db_session: Session) -> TestClient:
 def create_member(db_session: Session, database_settings: Settings) -> Callable[..., Row]:
     pepper = database_settings.nic_pepper.get_secret_value()
 
-    def create(nic: str | None = None, password: str = "correct horse battery", verified: bool = False) -> Row:
+    def create(
+        nic: str | None = None, password: str = "correct horse battery", verified: bool = False, active: bool = False
+    ) -> Row:
         # A random 12-digit NIC cannot collide with a real member's.
         nic = nic or str(random.randrange(10**11, 10**12))
-        return db_session.execute(
+        member = db_session.execute(
             text(
                 """
                 INSERT INTO npm.member (member_code, full_name, password_hash, referral_code, nic_hash, language,
@@ -120,8 +122,25 @@ def create_member(db_session: Session, database_settings: Settings) -> Callable[
                 "verification_status": "identity_confirmed" if verified else "unverified",
             },
         ).one()
+        if active:
+            activate_membership(db_session, member)
+        return member
 
     return create
+
+
+def activate_membership(db_session: Session, member: Row) -> None:
+    """Test set-up: an Active membership, as a members.activate holder would record it."""
+    db_session.execute(
+        text(
+            """
+            INSERT INTO membership.membership (member_id, state, reason_code)
+            VALUES (:id, 'active', 'identity_verified')
+            ON CONFLICT (member_id) DO UPDATE SET state = 'active'
+            """
+        ),
+        {"id": member.id},
+    )
 
 
 @pytest.fixture
@@ -142,9 +161,11 @@ def area(db_session) -> Row:
 
 @pytest.fixture
 def assign(db_session) -> Callable[..., str]:
-    """Insert an assignment directly, as a test set-up step."""
+    """Insert an assignment directly, as a test set-up step. Staff rights count only with
+    an Active membership (BR-097), so the person's membership is made Active too."""
 
     def insert(member, tier, level, code, permissions, granted_by=None, review_due_at=None) -> str:
+        activate_membership(db_session, member)
         return str(
             db_session.scalar(
                 text(

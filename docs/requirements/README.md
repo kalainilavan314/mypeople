@@ -24,7 +24,9 @@ v1.1 contains 466 functional requirements, 160 business rules, 174 screens, 70 d
 |---|---|---|
 | FR-ARCH-002 | Server-side session, permission and area checks; refusals return 403 and are logged (processing-purpose checks still to come) | `services/api/app/modules/auth`, `access` |
 | RB-01 to RB-07, BR-083, BR-084 | Staff assignments: tier + explicit permissions + area; grantor and time recorded; RB-03 limits; preview; 12-month review for explicit grants; nothing granted automatically | `services/api/app/modules/access` |
-| BR-097 (part) | Staff need a confirmed identity; membership "Active" waits for the membership module | `access/rules.py` |
+| BR-097 | Staff need a confirmed identity and an Active membership; rights stop while membership is not Active | `access/rules.py`, `access/repository.py` |
+| FR-ADM-003 (API), PRM-05, BR-014, BR-015 | Activate, suspend, reinstate and inactivate with a reason; identity approval does not activate membership; notifications not built | `services/api/app/modules/membership` |
+| FR-REG-024, FR-CARD-014 (API part) | The member's membership state and reason code, for A12 and C06 | `/v1/membership/me` |
 | RB-12 [ASSUMPTION] | Assistance decisions refused alongside fundraising or election-roster rights | `app/core/permissions.py` |
 | FR-WEB-030 to 033 (API) | Select a verified person, area and permissions; preview; refuse grants beyond the administrator's own; revocation on the next request. The W09 screen and notifications are not built | `/v1/access` |
 | FR-ADM-011 (part) | Searchable, tamper-evident audit log with chain verification; export not built | `/v1/audit` |
@@ -59,7 +61,7 @@ Every BRD module has a folder in the target structure, with a README naming its 
 | Decision | Blocks |
 |---|---|
 | OD-26 One role-aware app or two published apps | Staff app distribution (built as a separate app for now, as the BRD recommends) |
-| OD-01, OD-02 Who verifies identity; how membership is activated | Assigning reviewers in production; membership activation (approval confirms identity only) |
+| OD-01, OD-02 Who verifies identity; how membership is activated | Assigning reviewers in production; automatic activation on approval (only the manual path is built) |
 | OD-03 Retention of ID images, selfies, decisions | Deleting identity images (FR-IDV-015); every version is kept until decided |
 | OD-28, OD-29 Acceptable biometric processing and retention | Liveness and face comparison |
 | OD-42 AI provider and hosting | `services/ai-worker` |

@@ -12,6 +12,8 @@ Current scope:
 | `GET /v1/health` | the process is running (no database access) |
 | `GET /v1/health/db` | a query runs on PostgreSQL; `503 {"status":"unavailable"}` otherwise |
 | `GET /v1/members/me` | the signed-in member's profile; `401` without a valid session |
+| `GET /v1/membership/me` | the member's membership state (pending, active, suspended, inactive) and reason code |
+| `GET /v1/membership/awaiting-activation`, `GET /v1/membership/members/{id}`, `POST /v1/membership/members/{id}/changes` | activation, suspension, reinstatement and inactivation; need `members.activate` over the member's area |
 | `POST /v1/auth/sign-in` | `{nic, password}` → sets the session cookie, returns `{token, member}`; `401 invalid_credentials`, `429 too_many_attempts` |
 | `POST /v1/auth/sign-out` | ends every session of the member (`204`) and clears the cookie |
 | `GET /v1/access/me` | the caller's staff assignments that count now |
@@ -46,6 +48,27 @@ python -m app.modules.access.bootstrap <member-id> --permission members.verify
 It is refused when a Super Administrator already exists. Everyone else is
 assigned through `/v1/access/assignments`. The Express API still reads its
 old `is_admin` flag for its own four staff routes until they move here.
+
+## Membership (BRD §9.3, GAP-02, FR-ADM-003)
+
+Membership is its own state: pending, active, suspended or inactive. A
+member nobody has activated is pending. A holder of `members.activate` over
+the member's area changes it, never on their own record, always with a
+reason code (and a note when the reason is "other"); each change is kept in
+`membership.membership_change`, which cannot be edited, and in the audit log.
+
+- Activation needs a confirmed identity; approval of identity does not
+  activate membership by itself (BR-014). Automatic activation (OD-02's
+  recommendation) is not built until OD-02 is decided.
+- Staff rights need an Active membership as well as a confirmed identity
+  (BR-097): assignments are refused for others, and a member's existing
+  assignments stop counting while they are suspended or inactive.
+- The bootstrap command activates the first Super Administrator, whom
+  nobody else could activate.
+
+The reason codes are proposed, not from the BRD, and need sponsor
+confirmation. Not built yet: notifying the member, revoking card tokens on
+suspension (FR-CARD-015), and how existing members are migrated at go-live.
 
 ## Identity evidence (BRD FR-ARCH-007, BR-086)
 
@@ -228,7 +251,7 @@ Check the state with `python -m alembic current`. From now on, every schema
 change is a new Alembic revision, never a new file in `server/migrations`:
 
 ```powershell
-python -m alembic revision --rev-id 0006 -m "describe the change"
+python -m alembic revision --rev-id 0007 -m "describe the change"
 python -m alembic upgrade head --sql    # review the SQL before applying it
 python -m alembic upgrade head
 ```
@@ -265,7 +288,7 @@ app/
   db/base.py           ORM base class and the autogenerate table filter
   db/express_baseline.py   the Express migrations behind revision 0001
   modules/auth/        sign-in, sign-out, throttle, CurrentMember dependency
-  modules/membership/  /v1/members/me: router, schemas, repository
+  modules/membership/  /v1/members/me and membership states: rules, service, router, schemas, repository
   modules/access/      staff tiers, permissions, areas, assignments, bootstrap command
   modules/audit/       append-only, hash-chained audit log
   core/permissions.py  staff tiers and the BRD permission matrix

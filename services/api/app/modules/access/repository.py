@@ -104,12 +104,16 @@ def _to_assignment(row) -> StoredAssignment:
 
 def effective_assignments(db: Session, member_id: uuid.UUID) -> list[StoredAssignment]:
     """Assignments that count right now. One whose 12-month review is overdue no longer
-    counts (FR-AUTH-027: unreviewed grants are suspended automatically)."""
+    counts (FR-AUTH-027: unreviewed grants are suspended automatically), and none count
+    while the person's membership is not Active (BR-097), so suspending a member also
+    stops their staff rights on their next request."""
     rows = db.execute(
         text(
             f"""{_SELECT}
             WHERE member_id = :member_id AND state = 'active'
               AND (review_due_at IS NULL OR review_due_at > now())
+              AND EXISTS (SELECT 1 FROM membership.membership ms
+                          WHERE ms.member_id = :member_id AND ms.state = 'active')
             ORDER BY granted_at"""
         ),
         {"member_id": member_id},
@@ -185,15 +189,31 @@ def has_active_super_administrator(db: Session) -> bool:
 class MemberStatus:
     id: uuid.UUID
     identity_verified: bool
+    membership_state: str
+
+    @property
+    def membership_active(self) -> bool:
+        return self.membership_state == "active"
 
 
 def find_member_status(db: Session, member_id: uuid.UUID) -> MemberStatus | None:
-    """An active member and whether a reviewer has confirmed their identity."""
+    """A member who has not been deleted, whether a reviewer has confirmed their identity,
+    and their membership state (Pending when nobody has activated them)."""
     row = db.execute(
-        text("SELECT id, verification_status FROM npm.member WHERE id = :id AND deleted_at IS NULL"),
+        text(
+            """
+            SELECT m.id, m.verification_status, COALESCE(ms.state, 'pending') AS membership_state
+            FROM npm.member m LEFT JOIN membership.membership ms ON ms.member_id = m.id
+            WHERE m.id = :id AND m.deleted_at IS NULL
+            """
+        ),
         {"id": member_id},
     ).one_or_none()
     if row is None:
         return None
     # 'identity_confirmed' is the only Express state that means a person checked the identity.
-    return MemberStatus(id=row.id, identity_verified=row.verification_status == "identity_confirmed")
+    return MemberStatus(
+        id=row.id,
+        identity_verified=row.verification_status == "identity_confirmed",
+        membership_state=row.membership_state,
+    )

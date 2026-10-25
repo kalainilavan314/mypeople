@@ -30,7 +30,7 @@ MEMBER_ID = uuid.uuid4()
 
 SUPER_ADMIN = [Assignment("5", PLATFORM, frozenset(default_permissions("5")))]
 REGIONAL_ADMIN = [Assignment("4", PROVINCE, frozenset({"roles.assign", "members.verify", "audit.view"}))]
-VERIFIED = Grantee(member_id=MEMBER_ID, identity_verified=True, assignments=())
+VERIFIED = Grantee(member_id=MEMBER_ID, identity_verified=True, membership_active=True, assignments=())
 
 
 def district_coordinator(*permissions: str, member_id: uuid.UUID = MEMBER_ID) -> AssignmentRequest:
@@ -96,8 +96,14 @@ def test_nobody_assigns_their_own_tier():  # BR-083
 
 
 def test_staff_must_have_a_verified_identity():  # BR-097
-    unverified = Grantee(member_id=MEMBER_ID, identity_verified=False, assignments=())
+    unverified = Grantee(member_id=MEMBER_ID, identity_verified=False, membership_active=True, assignments=())
     assert "identity_not_verified" in check(district_coordinator("analytics.view"), grantee=unverified)
+
+
+def test_staff_must_have_an_active_membership():  # BR-097
+    pending = Grantee(member_id=MEMBER_ID, identity_verified=True, membership_active=False, assignments=())
+    problems = check(district_coordinator("analytics.view"), grantee=pending)
+    assert "membership_not_active" in problems and "identity_not_verified" not in problems
 
 
 def test_unknown_member_and_area():
@@ -153,6 +159,7 @@ def test_rb12_assistance_decisions_never_sit_with_fundraising_in_the_same_area()
     treasurer = Grantee(
         member_id=MEMBER_ID,
         identity_verified=True,
+        membership_active=True,
         assignments=((Assignment("3B", DISTRICT, frozenset({"finance.review"})), DISTRICT_PATH),),
     )
     granter = [Assignment("4", PROVINCE, frozenset({"roles.assign", "assistance.decide"}))]

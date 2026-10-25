@@ -150,6 +150,213 @@
         ]
       }
     },
+    "/v1/membership/me": {
+      "get": {
+        "tags": [
+          "membership"
+        ],
+        "summary": "Read My Membership",
+        "description": "The member's membership state: pending, active, suspended or inactive, with the reason\ncode (A12, C06). The card is available only when it is active (BR-065).",
+        "operationId": "read_my_membership_v1_membership_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyMembershipOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/membership/awaiting-activation": {
+      "get": {
+        "tags": [
+          "membership"
+        ],
+        "summary": "List Awaiting Activation",
+        "description": "Members whose identity is confirmed and whose membership is still pending, in the caller's areas.",
+        "operationId": "list_awaiting_activation_v1_membership_awaiting_activation_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AwaitingMemberOut"
+                  },
+                  "title": "Response List Awaiting Activation V1 Membership Awaiting Activation Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/membership/members/{member_id}": {
+      "get": {
+        "tags": [
+          "membership"
+        ],
+        "summary": "Read Membership",
+        "description": "A member's membership state and every change to it. Needs members.activate over their area.",
+        "operationId": "read_membership_v1_membership_members__member_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Member Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembershipFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/membership/members/{member_id}/changes": {
+      "post": {
+        "tags": [
+          "membership"
+        ],
+        "summary": "Change Membership",
+        "description": "Activate, suspend, reinstate or inactivate a membership, with a reason (FR-ADM-003, BR-015).\n\nActivation needs a confirmed identity. Suspending or inactivating also\nstops any staff rights the member holds, on their next request (BR-097).",
+        "operationId": "change_membership_v1_membership_members__member_id__changes_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Member Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MembershipChangeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembershipFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "{\"code\": \"change_refused\", \"problems\": [...]}"
+          }
+        }
+      }
+    },
     "/v1/access/me": {
       "get": {
         "tags": [
@@ -2479,6 +2686,48 @@
         ],
         "title": "AuditEntryOut"
       },
+      "AwaitingMemberOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "verifiedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verifiedat"
+          },
+          "area": {
+            "type": "string",
+            "title": "Area"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "memberCode",
+          "fullName",
+          "verifiedAt",
+          "area"
+        ],
+        "title": "AwaitingMemberOut"
+      },
       "Catalogue": {
         "properties": {
           "tiers": {
@@ -3087,6 +3336,229 @@
         ],
         "title": "MemberProfile",
         "description": "The signed-in member's own profile.\n\nJSON keys are camelCase, matching the Express /api/me response. The NIC\nhash, password hash and staff-only review fields are never part of it."
+      },
+      "MembershipChangeInput": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "activate",
+              "suspend",
+              "reinstate",
+              "inactivate"
+            ],
+            "title": "Action"
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "Reasoncode"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "reasonCode"
+        ],
+        "title": "MembershipChangeInput"
+      },
+      "MembershipChangeOut": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "activate",
+              "suspend",
+              "reinstate",
+              "inactivate"
+            ],
+            "title": "Action"
+          },
+          "fromState": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "active",
+              "suspended",
+              "inactive"
+            ],
+            "title": "Fromstate"
+          },
+          "toState": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "active",
+              "suspended",
+              "inactive"
+            ],
+            "title": "Tostate"
+          },
+          "reasonCode": {
+            "type": "string",
+            "title": "Reasoncode"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "changedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changedby"
+          },
+          "changedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Changedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "fromState",
+          "toState",
+          "reasonCode",
+          "note",
+          "changedBy",
+          "changedAt"
+        ],
+        "title": "MembershipChangeOut"
+      },
+      "MembershipFileOut": {
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "identityVerified": {
+            "type": "boolean",
+            "title": "Identityverified"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "active",
+              "suspended",
+              "inactive"
+            ],
+            "title": "State"
+          },
+          "reasonCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reasoncode"
+          },
+          "changedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changedat"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/MembershipChangeOut"
+            },
+            "type": "array",
+            "title": "History"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberId",
+          "identityVerified",
+          "state",
+          "reasonCode",
+          "changedAt",
+          "history"
+        ],
+        "title": "MembershipFileOut",
+        "description": "A member's membership for staff: state, whether identity is verified, and every change."
+      },
+      "MyMembershipOut": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "active",
+              "suspended",
+              "inactive"
+            ],
+            "title": "State"
+          },
+          "reasonCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reasoncode"
+          },
+          "changedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "state",
+          "reasonCode",
+          "changedAt"
+        ],
+        "title": "MyMembershipOut",
+        "description": "The member's own membership state (A12, C06). The reason code is shown; staff notes are not."
       },
       "MyReviewOut": {
         "properties": {

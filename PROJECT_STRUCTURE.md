@@ -443,6 +443,7 @@ services/api/
       0003_identity_documents.py
       0004_identity_reviews.py
       0005_verification_appeals.py
+      0006_membership_states.py
   app/
     __init__.py
     main.py
@@ -474,7 +475,9 @@ services/api/
         __init__.py
         repository.py
         router.py
+        rules.py
         schemas.py
+        service.py
       access/
         __init__.py
         bootstrap.py
@@ -545,6 +548,8 @@ services/api/
     test_identity_api.py
     test_identity_vault.py
     test_members_me.py
+    test_membership_api.py
+    test_membership_rules.py
     test_origin_check.py
     test_security.py
     test_sign_in.py

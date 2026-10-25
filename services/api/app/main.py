@@ -62,6 +62,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(health.router)
     app.include_router(auth.router)
     app.include_router(membership.router)
+    app.include_router(membership.membership_router)
     app.include_router(access.router)
     app.include_router(audit.router)
     app.include_router(identity_documents.router)

@@ -9,6 +9,11 @@ import type { components, operations } from './schema';
 type Schemas = components['schemas'];
 export type HealthStatus = Schemas['HealthStatus'];
 export type MemberProfile = Schemas['MemberProfile'];
+export type MyMembership = Schemas['MyMembershipOut'];
+export type MembershipState = MyMembership['state'];
+export type MembershipFile = Schemas['MembershipFileOut'];
+export type MembershipChangeInput = Schemas['MembershipChangeInput'];
+export type AwaitingMember = Schemas['AwaitingMemberOut'];
 export type SignInResponse = Schemas['SignInResponse'];
 export type AreaRef = Schemas['AreaRef'];
 export type AssignmentInput = Schemas['AssignmentInput'];
@@ -125,6 +130,15 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     signOut: () => request<void>('POST', '/v1/auth/sign-out'),
     /** Throws ApiError "unauthorized" or "session_expired" (401) without a valid session. */
     getMyProfile: () => request<MemberProfile>('GET', '/v1/members/me'),
+    /** Pending, active, suspended or inactive, with the reason code. The card shows only when active. */
+    getMyMembership: () => request<MyMembership>('GET', '/v1/membership/me'),
+    /** Verified members still pending, in the caller's areas. Needs members.activate. */
+    listAwaitingActivation: (limit?: number) =>
+      request<AwaitingMember[]>('GET', `/v1/membership/awaiting-activation${limit === undefined ? '' : `?limit=${limit}`}`),
+    getMembership: (memberId: string) => request<MembershipFile>('GET', `/v1/membership/members/${encodeURIComponent(memberId)}`),
+    /** Activate, suspend, reinstate or inactivate, with a reason. Throws ApiError "change_refused" (422) with `problems`. */
+    changeMembership: (memberId: string, input: MembershipChangeInput) =>
+      request<MembershipFile>('POST', `/v1/membership/members/${encodeURIComponent(memberId)}/changes`, input),
 
     /** The signed-in person's staff assignments; empty for members. The API still checks every action. */
     getMyAccess: () => request<Assignment[]>('GET', '/v1/access/me'),

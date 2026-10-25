@@ -87,6 +87,7 @@ class AssignmentRequest:
 class Grantee:
     member_id: uuid.UUID
     identity_verified: bool
+    membership_active: bool
     # Their current assignments with the path of each area, for RB-12.
     assignments: tuple[tuple[Assignment, AreaPath], ...]
 
@@ -121,8 +122,11 @@ def check_assignment(
     problems: list[str] = []
     if request.member_id == granter_id:
         problems.append("self_assignment")  # BR-083: nobody assigns their own tier
+    # BR-097: staff authorization needs a verified identity and an Active membership.
     if not grantee.identity_verified:
-        problems.append("identity_not_verified")  # BR-097: staff must be identity-verified
+        problems.append("identity_not_verified")
+    if not grantee.membership_active:
+        problems.append("membership_not_active")
     if request.tier == "5":
         problems.append("tier_5_by_bootstrap_only")
     if request.area.level != TIER_AREA_LEVEL[request.tier]:

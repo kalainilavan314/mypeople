@@ -232,3 +232,15 @@ test('an appeal sends the statement and a used appeal carries its reason', async
   assert.ok(error instanceof ApiError);
   assert.deepEqual([error.code, error.problems], ['appeal_refused', ['appeal_used']]);
 });
+
+test('a membership change posts the action and reason to the member', async () => {
+  const { fetch, sent } = fakeFetch(200, { memberId: 'm1', state: 'suspended', history: [] });
+
+  await createApiClient({ baseUrl: 'https://api.example', fetch }).changeMembership('m1', {
+    action: 'suspend',
+    reasonCode: 'conduct_investigation',
+  });
+
+  assert.equal(sent[0].url, 'https://api.example/v1/membership/members/m1/changes');
+  assert.equal(sent[0].body, JSON.stringify({ action: 'suspend', reasonCode: 'conduct_investigation' }));
+});

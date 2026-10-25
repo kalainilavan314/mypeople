@@ -13,7 +13,7 @@ from app.core.permissions import default_permissions
 
 @pytest.fixture
 def regional_admin(create_member, assign, super_admin, area) -> Row:
-    member = create_member(verified=True)
+    member = create_member(verified=True, active=True)
     assign(member, "4", "province", area.province, ["roles.assign", "audit.view", "members.verify"], granted_by=super_admin)
     return member
 
@@ -44,7 +44,7 @@ def test_my_access_lists_what_counts_now(db_client, auth, super_admin, create_me
 
 
 def test_an_overdue_review_suspends_the_assignment(db_client, auth, assign, super_admin, create_member, area):
-    member = create_member(verified=True)
+    member = create_member(verified=True, active=True)
     overdue = datetime.now(UTC) - timedelta(days=1)
     assign(member, "3A", "district", area.district, ["members.verify"], granted_by=super_admin, review_due_at=overdue)
 
@@ -55,7 +55,7 @@ def test_an_overdue_review_suspends_the_assignment(db_client, auth, assign, supe
 
 
 def test_without_roles_assign_the_request_is_refused_and_logged(db_client, db_session, auth, create_member, area):
-    member = create_member(verified=True)
+    member = create_member(verified=True, active=True)
 
     response = db_client.post("/v1/access/assignments", json=district_coordinator(member, area, "analytics.view"), headers=auth(member))
 
@@ -84,7 +84,7 @@ def test_preview_explains_problems_without_saving(db_client, db_session, auth, s
 
 
 def test_an_assignment_is_saved_audited_and_effective_at_once(db_client, db_session, auth, super_admin, create_member, area):
-    coordinator = create_member(verified=True)
+    coordinator = create_member(verified=True, active=True)
     body = district_coordinator(coordinator, area, "cases.decide_district", "members.verify")
 
     response = db_client.post("/v1/access/assignments", json=body, headers=auth(super_admin))
@@ -102,7 +102,7 @@ def test_an_assignment_is_saved_audited_and_effective_at_once(db_client, db_sess
 
 
 def test_a_refused_assignment_lists_the_problems(db_client, auth, super_admin, create_member, area):
-    body = district_coordinator(create_member(verified=True), area, "cases.collect")
+    body = district_coordinator(create_member(verified=True, active=True), area, "cases.collect")
     body["tier"] = "1"  # a GN coordinator cannot have a district
 
     response = db_client.post("/v1/access/assignments", json=body, headers=auth(super_admin))
@@ -115,7 +115,7 @@ def test_a_refused_assignment_lists_the_problems(db_client, auth, super_admin, c
 
 def test_regional_administrators_appoint_only_below_themselves(db_client, auth, regional_admin, create_member, area):
     peer = {
-        "memberId": str(create_member(verified=True).id),
+        "memberId": str(create_member(verified=True, active=True).id),
         "tier": "4",
         "area": {"level": "province", "code": area.province},
         "permissions": ["analytics.view"],
@@ -123,12 +123,12 @@ def test_regional_administrators_appoint_only_below_themselves(db_client, auth, 
     response = db_client.post("/v1/access/assignments", json=peer, headers=auth(regional_admin))
     assert "tier_not_below_yours" in response.json()["detail"]["problems"]
 
-    coordinator = district_coordinator(create_member(verified=True), area, "cases.decide_district")
+    coordinator = district_coordinator(create_member(verified=True, active=True), area, "cases.decide_district")
     assert db_client.post("/v1/access/assignments", json=coordinator, headers=auth(regional_admin)).status_code == 201
 
 
 def test_revoking_takes_effect_on_the_next_request(db_client, db_session, auth, super_admin, create_member, area):
-    coordinator = create_member(verified=True)
+    coordinator = create_member(verified=True, active=True)
     created = db_client.post(
         "/v1/access/assignments", json=district_coordinator(coordinator, area, "cases.decide_district"), headers=auth(super_admin)
     ).json()
@@ -156,9 +156,9 @@ def test_the_catalogue_describes_tiers_and_permissions(db_client, auth, super_ad
 
 
 def test_regional_auditors_see_only_their_region(db_client, auth, super_admin, regional_admin, create_member, area):
-    stranger = create_member(verified=True)
+    stranger = create_member(verified=True, active=True)
     db_client.post("/v1/access/assignments", json=district_coordinator(stranger, area, "analytics.view"), headers=auth(stranger))  # denied, no area
-    db_client.post("/v1/access/assignments", json=district_coordinator(create_member(verified=True), area, "cases.decide_district"), headers=auth(super_admin))
+    db_client.post("/v1/access/assignments", json=district_coordinator(create_member(verified=True, active=True), area, "cases.decide_district"), headers=auth(super_admin))
 
     everything = {e["action"] for e in db_client.get("/v1/audit?limit=10", headers=auth(super_admin)).json()}
     regional = {e["action"] for e in db_client.get("/v1/audit?limit=10", headers=auth(regional_admin)).json()}

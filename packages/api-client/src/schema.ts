@@ -104,6 +104,90 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/membership/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Membership
+         * @description The member's membership state: pending, active, suspended or inactive, with the reason
+         *     code (A12, C06). The card is available only when it is active (BR-065).
+         */
+        get: operations["read_my_membership_v1_membership_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/membership/awaiting-activation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Awaiting Activation
+         * @description Members whose identity is confirmed and whose membership is still pending, in the caller's areas.
+         */
+        get: operations["list_awaiting_activation_v1_membership_awaiting_activation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/membership/members/{member_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Membership
+         * @description A member's membership state and every change to it. Needs members.activate over their area.
+         */
+        get: operations["read_membership_v1_membership_members__member_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/membership/members/{member_id}/changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Change Membership
+         * @description Activate, suspend, reinstate or inactivate a membership, with a reason (FR-ADM-003, BR-015).
+         *
+         *     Activation needs a confirmed identity. Suspending or inactivating also
+         *     stops any staff rights the member holds, on their next request (BR-097).
+         */
+        post: operations["change_membership_v1_membership_members__member_id__changes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/access/me": {
         parameters: {
             query?: never;
@@ -909,6 +993,22 @@ export interface components {
             /** Entryhash */
             entryHash: string;
         };
+        /** AwaitingMemberOut */
+        AwaitingMemberOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Membercode */
+            memberCode: string;
+            /** Fullname */
+            fullName: string;
+            /** Verifiedat */
+            verifiedAt: string | null;
+            /** Area */
+            area: string;
+        };
         /**
          * Catalogue
          * @description The tiers and the permission matrix, for building the W09 form.
@@ -1145,6 +1245,86 @@ export interface components {
              * Format: date-time
              */
             joinedAt: string;
+        };
+        /** MembershipChangeInput */
+        MembershipChangeInput: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "activate" | "suspend" | "reinstate" | "inactivate";
+            /** Reasoncode */
+            reasonCode: string;
+            /** Note */
+            note?: string | null;
+        };
+        /** MembershipChangeOut */
+        MembershipChangeOut: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "activate" | "suspend" | "reinstate" | "inactivate";
+            /**
+             * Fromstate
+             * @enum {string}
+             */
+            fromState: "pending" | "active" | "suspended" | "inactive";
+            /**
+             * Tostate
+             * @enum {string}
+             */
+            toState: "pending" | "active" | "suspended" | "inactive";
+            /** Reasoncode */
+            reasonCode: string;
+            /** Note */
+            note: string | null;
+            /** Changedby */
+            changedBy: string | null;
+            /**
+             * Changedat
+             * Format: date-time
+             */
+            changedAt: string;
+        };
+        /**
+         * MembershipFileOut
+         * @description A member's membership for staff: state, whether identity is verified, and every change.
+         */
+        MembershipFileOut: {
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Identityverified */
+            identityVerified: boolean;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "active" | "suspended" | "inactive";
+            /** Reasoncode */
+            reasonCode: string | null;
+            /** Changedat */
+            changedAt: string | null;
+            /** History */
+            history: components["schemas"]["MembershipChangeOut"][];
+        };
+        /**
+         * MyMembershipOut
+         * @description The member's own membership state (A12, C06). The reason code is shown; staff notes are not.
+         */
+        MyMembershipOut: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "active" | "suspended" | "inactive";
+            /** Reasoncode */
+            reasonCode: string | null;
+            /** Changedat */
+            changedAt: string | null;
         };
         /**
          * MyReviewOut
@@ -1525,6 +1705,149 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["MemberProfile"];
                 };
+            };
+        };
+    };
+    read_my_membership_v1_membership_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyMembershipOut"];
+                };
+            };
+        };
+    };
+    list_awaiting_activation_v1_membership_awaiting_activation_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AwaitingMemberOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_membership_v1_membership_members__member_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                member_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_membership_v1_membership_members__member_id__changes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                member_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MembershipChangeInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "change_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
