@@ -22,6 +22,8 @@ The release package includes changed app/server source and a built `app/dist`, w
 
 `stage-ui-release.sh` copies the previous release, overlays the package and runs `npm ci --omit=dev --ignore-scripts` in `server/`, so lockfile changes reach production. `activate-ui-release.sh` switches the `current` link, restarts `mypeople.service` and rolls back automatically if the health check or release marker fails. The older server `deploy.sh` resets to `origin/main`; use the release-package workflow instead.
 
+The Nginx site in front of the app is kept as a reference copy in `nginx/my-people.conf` (see `nginx/README.md`).
+
 ## Open security items
 
 - Fixed 24 October 2026: the sign-in throttle bypass through a forged `X-Forwarded-For` (Express used the client-controlled first entry while Nginx kept client headers). Both the Express fix and the Nginx change are live; `npm test --prefix server` covers it.

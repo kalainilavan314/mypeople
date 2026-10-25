@@ -12,7 +12,7 @@ services/ai-worker/   planned private AI worker (README only)
 packages/             design-tokens, i18n, api-client, mobile-ui (npm workspaces)
 apps/                 member-mobile and staff-mobile (Expo shells); admin-web (Next.js shell)
 docs/                 architecture, development, api, database, security, requirements
-deployment/           release package, stage, activate and verify scripts
+deployment/           release package, stage, activate and verify scripts; nginx/ reference config
 design/               design history and fixture QA screenshots
 scripts/              PWA browser checks
 .github/workflows/    CI
