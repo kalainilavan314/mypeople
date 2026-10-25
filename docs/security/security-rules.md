@@ -75,6 +75,19 @@ The rules every change must follow, and what is in place today. BRD references: 
 | `npm audit`: 5 high findings in Expo's development CLI (`@expo/cli` via `node-forge`, `zod`), not in app bundles; npm's only fix is a downgrade | Next Expo patch release |
 | Replacing the `karan-server-admin` SSH key, exposed in a chat on 24 October 2026 | Server owner |
 
+## Review findings that block deploying the FastAPI service
+
+An independent review of `services/api` on 25 October 2026 (after Batch 15) confirmed these. The FastAPI service must not go to production until the high and medium items are fixed and retested.
+
+| Severity | Finding | Fix |
+|---|---|---|
+| High | Staff authenticator codes can be guessed across many sessions: wrong codes are counted per session, and a new sign-in starts again | Count failures per factor with escalating lockout; audit failures and tell the staff member |
+| Medium | Ending one session is not honoured by Express, which accepts the same cookie | Make Express refuse revoked `sid` tokens, or end all sessions through `session_version` |
+| Medium | `POST /v1/identity/me/phone` reveals whether a number belongs to any account, without a limit | Rate-limit first, answer identically, detect the conflict only at confirm |
+| Medium | A duplicate report lets its reporter open two members' evidence without an open review | Require an open review held by the reporter; bar the reporter from claiming the case |
+| Medium | Lower-tier staff can suspend higher-tier staff and replace their recovery number through assisted recovery | Refuse when the target holds a tier at or above the actor's; platform scope or two people for staff accounts |
+| Low | Concurrent sign-in failures can pass the lockout; refused staff requests can flood the audit log; no upload quota; sign-out accepts revoked tokens; Express can burn recovery codes (shared per-phone limits); a TOTP code can be used twice concurrently; recovery timing will reveal registered numbers once SMS is live | Atomic counters, aggregated denials, quotas, `authenticate()` before sign-out, per-purpose limits, conditional `use_factor`, asynchronous sending |
+
 ## Reporting a security problem
 
 Do not open a public issue. Tell the project owner directly, with the steps to reproduce.
