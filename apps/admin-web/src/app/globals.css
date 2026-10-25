@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+/* Colours and fonts come from packages/design-tokens as CSS variables set in
+   layout.tsx. This maps them into Tailwind utilities: bg-primary, text-muted,
+   border-line, font-sans and so on. Do not add literal colours or fonts here. */
+@theme inline {
+  --color-primary: var(--mp-primary);
+  --color-on-primary: var(--mp-on-primary);
+  --color-page: var(--mp-page);
+  --color-card: var(--mp-card);
+  --color-surface: var(--mp-surface-variant);
+  --color-ink: var(--mp-text);
+  --color-muted: var(--mp-text-muted);
+  --color-line: var(--mp-border);
+  --color-success: var(--mp-success-text);
+  --color-warning: var(--mp-warning-text);
+  --color-warning-bg: var(--mp-warning-background);
+  --color-error: var(--mp-error);
+  --font-sans: var(--mp-font-ui);
+  --font-mono: var(--mp-font-mono);
+}

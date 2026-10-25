@@ -27,7 +27,7 @@ The BRD's target, and the folders that hold it:
 |---|---|---|---|
 | Member app (Android, iOS) | React Native, Expo SDK 58, Expo Router | `apps/member-mobile` | Shell: five tabs, fonts, API check |
 | Staff app | Separate Expo app, same shared packages (OD-26 pending) | `apps/staff-mobile` | Shell: five tabs, API check |
-| Admin dashboard | Next.js, Tailwind CSS | `apps/admin-web` | Being added |
+| Admin dashboard | Next.js 16, Tailwind CSS 4 | `apps/admin-web` | Shell: live API status; not for deployment |
 | API | FastAPI modular monolith, SQLAlchemy 2, Alembic | `services/api` | Built and tested; not deployed |
 | Background jobs | Redis, Celery | `services/api/app/tasks` | Not started |
 | AI inference | Private worker, no internet egress | `services/ai-worker` | Planned (Phase 3) |

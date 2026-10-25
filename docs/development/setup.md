@@ -64,6 +64,7 @@ python -m pip install -e ".[dev]"
 | FastAPI | `uvicorn app.main:create_app --factory --reload --port 8000` (in `services/api`) | http://localhost:8000/v1/health, docs at `/docs` |
 | Member app (Expo web) | `npm run web --workspace @my-people/member-mobile -- --port 8081` | http://localhost:8081 |
 | Staff app (Expo web) | `npm run web --workspace @my-people/staff-mobile -- --port 8082` | http://localhost:8082 |
+| Admin dashboard (Next.js) | `npm run dev --workspace @my-people/admin-web` | http://localhost:3000 (reads `API_URL` from `apps/admin-web/.env.local`) |
 
 The Expo apps read `EXPO_PUBLIC_API_URL` from `apps/<app>/.env.local` (copy `.env.example`). On a phone, use `npm run android` or `ios` with Expo Go and the computer's LAN address as the API URL. In development the API accepts calls from any `http://localhost` port (CORS); production allows only `ALLOWED_ORIGINS`.
 
@@ -78,11 +79,12 @@ All of these are also defined in `.claude/launch.json`.
 | FastAPI | `python -m pytest` in `services/api` |
 | Shared packages | `npm run test:packages` and `npm run typecheck:packages` |
 | Expo apps | `npx tsc --noEmit`, `npx expo install --check` and `npx expo export --platform android` in `apps/<app>` |
+| Admin dashboard | `npm run typecheck`, `npm run lint` and `npm run build` with `--workspace @my-people/admin-web` |
 | PWA browser checks | `node scripts/verify-home.mjs` and the other `scripts/verify-*.mjs` (need Playwright) |
 
 FastAPI database tests use `DATABASE_URL` and roll back everything they write; without a database they are skipped. Tests that compare with the Express code (`tests/test_express_compat.py`) need Node and `npm --prefix server install`.
 
-CI (`.github/workflows/ci.yml`) runs the PWA build, the Express tests, the package tests and the API-client freshness check, the Expo typechecks and Android/web bundles, and the FastAPI tests against a fresh PostgreSQL built from the Express migrations plus Alembic.
+CI (`.github/workflows/ci.yml`) runs the PWA build, the Express tests, the package tests and the API-client freshness check, the Expo typechecks and Android/web bundles, the admin dashboard typecheck, lint and build, and the FastAPI tests against a fresh PostgreSQL built from the Express migrations plus Alembic.
 
 ## 7. After changing an API endpoint
 

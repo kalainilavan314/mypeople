@@ -20,7 +20,7 @@ packages/
 apps/
   member-mobile/      Expo member app (shell: five tabs, API connection check)
   staff-mobile/       Expo staff app (shell)
-  admin-web/          Next.js admin dashboard (being added)
+  admin-web/          Next.js admin dashboard (shell: live API status; not for deployment)
 docs/                 architecture, development, api, database, security, requirements
 deployment/           release packaging, staging, activation and verification
 design/               design history and fixture QA screenshots

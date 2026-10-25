@@ -54,7 +54,7 @@ The requirements are the BRD v1.1 (MP-BRD-001); see `docs/requirements/README.md
 | `services/ai-worker/` | Private AI inference worker | Planned (BRD Phase 3); README only |
 | `packages/` | `design-tokens`, `i18n`, `api-client`, `mobile-ui` (TypeScript source) | Built and tested |
 | `apps/member-mobile`, `apps/staff-mobile` | Expo SDK 58 apps (Expo Router) | Shells: tabs, fonts, API connection check |
-| `apps/admin-web` | Next.js admin dashboard | Being added |
+| `apps/admin-web` | Next.js 16 admin dashboard (Tailwind, Cache Components) | Shell: live API/database status; not for deployment |
 | `docs/` | Architecture, setup, API, database, security, requirements | Keep in step with the code |
 | `deployment/` | Release scripts and the release record | In use for production |
 
@@ -89,6 +89,7 @@ The requirements are the BRD v1.1 (MP-BRD-001); see `docs/requirements/README.md
 | FastAPI | `python -m pytest` in `services/api` (database tests need `DATABASE_URL`) |
 | Packages | `npm run test:packages` and `npm run typecheck:packages` |
 | Expo apps | `npx tsc --noEmit`, `npx expo install --check`, `npx expo export --platform android` (in each app) |
+| Admin dashboard | `npm run typecheck`, `lint` and `build` with `--workspace @my-people/admin-web` |
 
 Never claim a check passed unless it ran and passed.
 

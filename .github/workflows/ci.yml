@@ -78,6 +78,20 @@ jobs:
               && npx expo export --platform web --output-dir dist-web)
           done
 
+  admin-web:
+    name: Next.js admin dashboard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck --workspace @my-people/admin-web
+      - run: npm run lint --workspace @my-people/admin-web
+      - run: npm run build --workspace @my-people/admin-web
+
   api:
     name: API tests
     runs-on: ubuntu-latest

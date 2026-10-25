@@ -10,7 +10,7 @@ server/               live Express API (/api) and migrations 0000-0011 - product
 services/api/         FastAPI modular monolith (/v1), Alembic, pytest
 services/ai-worker/   planned private AI worker (README only)
 packages/             design-tokens, i18n, api-client, mobile-ui (npm workspaces)
-apps/                 member-mobile and staff-mobile (Expo shells); admin-web (Next.js, being added)
+apps/                 member-mobile and staff-mobile (Expo shells); admin-web (Next.js shell)
 docs/                 architecture, development, api, database, security, requirements
 deployment/           release package, stage, activate and verify scripts
 design/               design history and fixture QA screenshots
@@ -538,6 +538,18 @@ apps/
       api.ts
       i18n.ts              includes staff tab labels (Tamil pending review)
     assets/images/
+  admin-web/
+    package.json  next.config.ts  tsconfig.json  eslint.config.mjs  .env.example  README.md  AGENTS.md
+    src/
+      app/
+        layout.tsx         design tokens as CSS variables, self-hosted locked fonts
+        globals.css        maps the tokens into Tailwind
+        page.tsx           dashboard home: system status and planned modules
+        icon.png
+      components/SystemStatus.tsx
+      lib/
+        api.ts             server-only API client
+        modules.ts         the BRD's dashboard modules
 docs/
   architecture/
     system-overview.md

@@ -30,6 +30,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "web", "--workspace", "@my-people/staff-mobile", "--", "--port", "8082"],
       "port": 8082
+    },
+    {
+      "name": "admin-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--workspace", "@my-people/admin-web"],
+      "port": 3000
     }
   ]
 }
