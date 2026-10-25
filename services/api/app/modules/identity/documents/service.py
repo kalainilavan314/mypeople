@@ -32,6 +32,8 @@ from app.modules.identity.documents import links, repository
 from app.modules.identity.documents.links import ViewLink
 from app.modules.identity.documents.repository import DocumentKind, StoredDocument
 from app.modules.identity.documents.vault import EvidenceVault
+from app.modules.membership import repository as membership_repository
+from app.modules.membership.rules import NOTICE_VERSIONS
 from app.modules.identity.reviews import repository as verification_repository
 from app.modules.identity.appeals import repository as appeals_repository
 from app.modules.identity.duplicates import repository as duplicates_repository
@@ -42,6 +44,10 @@ VIEWED = "identity.evidence.viewed"
 
 class DocumentNotFound(Exception):
     pass
+
+
+class ConsentRequired(Exception):
+    """BR-008: consent to identity review comes before any upload."""
 
 
 @dataclass(frozen=True)
@@ -60,6 +66,8 @@ def upload(
     db: Session, vault: EvidenceVault, member_id: uuid.UUID, kind: DocumentKind, image: UploadedImage, ip: str
 ) -> StoredDocument:
     """Store a new image of this kind for the member; it replaces the current one (FR-REG-005)."""
+    if not membership_repository.has_consent(db, member_id, "identity_review", NOTICE_VERSIONS["identity_review"]):
+        raise ConsentRequired()
     document_id = uuid.uuid4()
     # The file is written before the record, so a failed commit can leave an
     # unused file but never a record whose image is missing.

@@ -29,5 +29,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 include = ["app*"]
 
+# Data files read at run time, so a non-editable install (the Docker image) has them.
+[tool.setuptools.package-data]
+"app.modules.identity.registration" = ["*.txt"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

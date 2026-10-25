@@ -65,6 +65,7 @@ def list_my_documents(member: CurrentMember, db: Db) -> list[DocumentOut]:
     openapi_extra=IMAGE_BODY,
     responses={
         400: {"description": "empty_file"},
+        409: {"description": "consent_required: consent to identity review first (POST /v1/identity/me/consent)"},
         413: {"description": "too_large (over 10 MB)"},
         415: {"description": "unsupported_type (JPEG, PNG or HEIC only)"},
         **NOT_CONFIGURED,
@@ -78,7 +79,10 @@ def upload_my_document(
     The response is the server's acknowledgement: only acknowledged images
     count (BR-020), and the app deletes its own copy after it (FR-REG-035).
     """
-    document = service.upload(db, vault, member.id, kind, image, client_ip(request))
+    try:
+        document = service.upload(db, vault, member.id, kind, image, client_ip(request))
+    except service.ConsentRequired:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="consent_required") from None
     return DocumentOut.from_stored(document)
 
 

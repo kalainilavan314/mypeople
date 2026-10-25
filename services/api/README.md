@@ -14,7 +14,10 @@ Current scope:
 | `GET /v1/members/me` | the signed-in member's profile; `401` without a valid session |
 | `GET /v1/membership/me` | the member's membership state (pending, active, suspended, inactive) and reason code |
 | `GET /v1/membership/awaiting-activation`, `GET /v1/membership/members/{id}`, `POST /v1/membership/members/{id}/changes` | activation, suspension, reinstatement and inactivation; need `members.activate` over the member's area |
-| `POST /v1/auth/sign-in` | `{nic, password}` → sets the session cookie, returns `{token, member}`; `401 invalid_credentials`, `429 too_many_attempts` |
+| `POST /v1/auth/sign-in` | `{nic, password}` or `{passportNumber, passportCountry, password}` → sets the session cookie, returns `{token, member}`; `401 invalid_credentials`, `429 too_many_attempts` |
+| `POST /v1/identity/register` | create an account on the NIC or passport route and sign it in; `409 already_registered`, `422 registration_refused` |
+| `GET /v1/identity/notices`, `POST /v1/identity/me/consent`, `GET /v1/identity/me/progress` | notice versions, identity-review consent (needed before any upload), registration steps |
+| `GET /v1/geography/districts`, `.../districts/{code}/ds-divisions`, `.../ds-divisions/{code}/gn-divisions` | the area lists, public |
 | `POST /v1/auth/sign-out` | ends every session of the member (`204`) and clears the cookie |
 | `GET /v1/access/me` | the caller's staff assignments that count now |
 | `GET /v1/access/catalogue`, `POST /v1/access/assignments/preview`, `POST /v1/access/assignments`, `POST /v1/access/assignments/{id}/revoke` | staff assignments (W09); need `roles.assign` |
@@ -50,6 +53,37 @@ python -m app.modules.access.bootstrap <member-id> --permission members.verify
 It is refused when a Super Administrator already exists. Everyone else is
 assigned through `/v1/access/assignments`. The Express API still reads its
 old `is_admin` flag for its own four staff routes until they move here.
+
+## Registration (BRD A03 to A18, FR-AUTH-010 to 013)
+
+`POST /v1/identity/register` creates an account the way the Express sign-up
+does (the same `npm.member` row, member and referral codes, verification
+trail), so it can sign in through either API, plus what Express lacks:
+
+- **Route.** NIC or passport, equal options, one per account (BR-003);
+  stored in `identity.identity_record`. NICs must be in the old or new
+  format; passports need a number matching `PASSPORT_NUMBER_PATTERN` and an
+  ISO country code. The number is stored only as a peppered hash
+  (`nic_hash`, or `passport_hash` with the country), one unique index
+  covering both routes (BR-007). Passport accounts sign in with the number
+  and country (FR-AUTH-005); Express has no passport route.
+- **Password.** At least 10 characters, not on the common-password list,
+  not containing the ID number (FR-AUTH-013).
+- **Details.** Language (BR-001); optional date of birth (age 18 or more,
+  an assumption until OD-15), gender with "prefer not to say", area chosen
+  top-down and checked against the registry (BR-017), referral code (an
+  unknown code is reported, not refused), and optional survey answers.
+- **Consent.** Accepting the terms is recorded with the notice version;
+  identity-review consent (`POST /v1/identity/me/consent`) must be given
+  before any image upload (BR-008). Notice versions are drafts until POL-01.
+- **Progress.** `GET /v1/identity/me/progress` lists consent, each image
+  the route needs and submission, with the next step (FR-AUTH-009).
+
+Identity starts as "Draft" (`nic_format` or `unverified` in Express terms)
+and membership as pending; nothing is verified by registering. Referrals are
+recorded but, unlike the Express sign-up, never promote anyone's tier
+(SG-03). Not built yet: the mobile number and its one-time code, recovery
+and registration rate limits (account-security batch).
 
 ## Membership (BRD §9.3, GAP-02, FR-ADM-003)
 
@@ -276,7 +310,7 @@ Check the state with `python -m alembic current`. From now on, every schema
 change is a new Alembic revision, never a new file in `server/migrations`:
 
 ```powershell
-python -m alembic revision --rev-id 0008 -m "describe the change"
+python -m alembic revision --rev-id 0009 -m "describe the change"
 python -m alembic upgrade head --sql    # review the SQL before applying it
 python -m alembic upgrade head
 ```
@@ -295,6 +329,7 @@ Settings are read from environment variables, falling back to `services/api/.env
 | `APP_ENV` | `development` (default), `staging`, `production` | `production` hides `/docs` and `/openapi.json` |
 | `DATABASE_URL` | PostgreSQL URL (required) | The same value the Express API uses; `postgres://` and `postgresql://` both work |
 | `JWT_SECRET` | long random string (required) | Must equal the Express API's `JWT_SECRET`; production refuses the `dev-secret` fallback |
+| `PASSPORT_NUMBER_PATTERN` | regular expression (optional) | Passport numbers accepted at registration; default 6 to 9 letters or digits |
 | `NIC_PEPPER` | string (required) | Must equal the Express API's `NIC_PEPPER`, and never change; production refuses `dev-pepper` |
 | `ALLOWED_ORIGINS` | comma-separated origins (optional) | Other sites allowed to send cookie-authenticated writes |
 | `EVIDENCE_STORAGE_DIR` | private directory (optional) | Where encrypted identity images are kept; production uses the encrypted `/srv/secure` volume |
@@ -321,6 +356,8 @@ app/
   modules/identity/reviews/    identity reviews: submit, queue, claim, decide
   modules/identity/appeals/    appeals against identity decisions
   modules/identity/duplicates/ duplicate account investigations
+  modules/identity/registration/ sign-up, consent, registration progress
+  modules/geography/  district, DS and GN lists
   modules/<households, assistance, community, events, engagement, finance, content, messaging, ai>/
                        README only: not built yet
   integrations/, tasks/  README only: not built yet

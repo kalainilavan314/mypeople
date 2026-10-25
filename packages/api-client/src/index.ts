@@ -15,6 +15,11 @@ export type MembershipFile = Schemas['MembershipFileOut'];
 export type MembershipChangeInput = Schemas['MembershipChangeInput'];
 export type AwaitingMember = Schemas['AwaitingMemberOut'];
 export type SignInResponse = Schemas['SignInResponse'];
+export type RegistrationInput = Schemas['RegistrationInput'];
+export type Registration = Schemas['RegistrationOut'];
+export type Notices = Schemas['NoticesOut'];
+export type RegistrationProgress = Schemas['ProgressOut'];
+export type Place = Schemas['PlaceOut'];
 export type AreaRef = Schemas['AreaRef'];
 export type AssignmentInput = Schemas['AssignmentInput'];
 export type Assignment = Schemas['AssignmentOut'];
@@ -132,6 +137,27 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     checkDatabase: () => request<HealthStatus>('GET', '/v1/health/db'),
     /** Throws ApiError "invalid_credentials" (401) or "too_many_attempts" (429, with retryAfter). */
     signIn: (nic: string, password: string) => request<SignInResponse>('POST', '/v1/auth/sign-in', { nic, password }),
+    /** For accounts registered with a passport (FR-AUTH-005). Same errors as signIn. */
+    signInWithPassport: (passportNumber: string, passportCountry: string, password: string) =>
+      request<SignInResponse>('POST', '/v1/auth/sign-in', { passportNumber, passportCountry, password }),
+    /**
+     * Creates an account and signs it in (A03). Throws ApiError "registration_refused" (422) with
+     * `problems`, or "already_registered" (409): offer sign-in and recovery instead.
+     */
+    register: (input: RegistrationInput) => request<Registration>('POST', '/v1/identity/register', input),
+    /** The notice versions to show; consent is given against them. */
+    getNotices: () => request<Notices>('GET', '/v1/identity/notices'),
+    /** A04: consent to identity review before any upload. Throws ApiError "notice_outdated" (409). */
+    giveIdentityConsent: (noticeVersion: string) =>
+      request<void>('POST', '/v1/identity/me/consent', { noticeVersion }),
+    /** Each registration step and the next one (A18). */
+    getMyRegistrationProgress: () => request<RegistrationProgress>('GET', '/v1/identity/me/progress'),
+    /** Dependent area lists: district, then DS division, then GN division. */
+    listDistricts: () => request<Place[]>('GET', '/v1/geography/districts'),
+    listDsDivisions: (districtCode: string) =>
+      request<Place[]>('GET', `/v1/geography/districts/${encodeURIComponent(districtCode)}/ds-divisions`),
+    listGnDivisions: (dsCode: string) =>
+      request<Place[]>('GET', `/v1/geography/ds-divisions/${encodeURIComponent(dsCode)}/gn-divisions`),
     /** Ends every session of the signed-in member. */
     signOut: () => request<void>('POST', '/v1/auth/sign-out'),
     /** Throws ApiError "unauthorized" or "session_expired" (401) without a valid session. */

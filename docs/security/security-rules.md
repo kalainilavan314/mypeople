@@ -23,7 +23,8 @@ The rules every change must follow, and what is in place today. BRD references: 
 | Sessions | HttpOnly, SameSite=Lax `mp_session` cookie (Secure in production); HS256 JWT `{sub, sv}`, 30 days, only HS256 accepted |
 | Sign-out | Increments `session_version`, ending every session of the member in both APIs |
 | Passwords | bcrypt cost 10; the first 72 bytes count (as bcryptjs) |
-| NIC | Stored only as SHA-256 of `NIC_PEPPER` + normalised NIC |
+| NIC and passport | Stored only as SHA-256 of `NIC_PEPPER` + the normalised number (passports prefixed with their country); one unique index stops a second account for the same number |
+| Registration (FastAPI) | Passwords of at least 10 characters, not common, not containing the ID number; terms consent recorded with the notice version; identity-review consent required before any upload (BR-008); referrals never change anyone's tier (SG-03) |
 | Sign-in throttling | Per NIC hash and client IP: delay from 5 failures, 15-minute lockout from 10; shared by both APIs |
 | Client IP | Express trusts only the local proxy (`trust proxy` = loopback, `req.ip`); Nginx sets `X-Forwarded-For $remote_addr`; FastAPI must run uvicorn with `--proxy-headers --forwarded-allow-ips=127.0.0.1` behind Nginx |
 | Timing | FastAPI runs bcrypt even for unknown NICs, so response time does not reveal registered NICs |
@@ -65,6 +66,7 @@ The rules every change must follow, and what is in place today. BRD references: 
 | Retention periods for ID images, selfies and decisions | Waiting on OD-03 |
 | Express listens on all interfaces (`*:3001`); the firewall blocks it, binding to `127.0.0.1` would add a layer | Next deploy |
 | CI security scans (SAST, dependency, secret scanning) | CI batch |
+| Registration has no rate limit and no phone confirmation yet; the Express sign-up accepts 6-character passwords and promotes tiers by referral count, which SG-03 forbids | Account-security batch; retire the Express sign-up |
 | `npm audit`: 5 high findings in Expo's development CLI (`@expo/cli` via `node-forge`, `zod`), not in app bundles; npm's only fix is a downgrade | Next Expo patch release |
 | Replacing the `karan-server-admin` SSH key, exposed in a chat on 24 October 2026 | Server owner |
 

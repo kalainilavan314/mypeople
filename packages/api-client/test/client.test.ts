@@ -252,3 +252,19 @@ test('duplicate cases are listed with the same state filters as appeals', async 
 
   assert.equal(sent[0].url, 'https://api.example/v1/identity/duplicates?state=open&mine=true');
 });
+
+test('passport sign-in sends the number and country, not a NIC', async () => {
+  const { fetch, sent } = fakeFetch(200, { token: 't', member: profile });
+
+  await createApiClient({ baseUrl: 'https://api.example', fetch }).signInWithPassport('N1234567', 'LKA', 'a long passphrase');
+
+  assert.equal(sent[0].body, JSON.stringify({ passportNumber: 'N1234567', passportCountry: 'LKA', password: 'a long passphrase' }));
+});
+
+test('consent accepts the empty 204 response', async () => {
+  const { fetch, sent } = fakeFetch(204, null);
+
+  await createApiClient({ baseUrl: 'https://api.example', fetch }).giveIdentityConsent('draft-2026-10');
+
+  assert.equal(sent[0].url, 'https://api.example/v1/identity/me/consent');
+});

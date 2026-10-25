@@ -55,7 +55,8 @@ export interface paths {
         put?: never;
         /**
          * Sign In
-         * @description Sign in with a NIC and password. Sets the session cookie and returns the token.
+         * @description Sign in with the NIC, or the passport number and country, the account registered with, and
+         *     the password (FR-AUTH-005). Sets the session cookie and returns the token.
          */
         post: operations["sign_in_v1_auth_sign_in_post"];
         delete?: never;
@@ -835,6 +836,140 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/identity/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register
+         * @description Create an account with the NIC or passport route (A03, FR-AUTH-010 to 013).
+         *
+         *     Returns a session like sign-in. The identity is "Draft" and the
+         *     membership pending; nothing about the person is verified yet.
+         */
+        post: operations["register_v1_identity_register_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/notices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Notices
+         * @description The current notice versions. Apps show these notices and send their version back with consent.
+         */
+        get: operations["read_notices_v1_identity_notices_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/me/consent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Give Identity Consent
+         * @description A04: consent to identity review, given before any image is uploaded (BR-008, FR-REG-003).
+         */
+        post: operations["give_identity_consent_v1_identity_me_consent_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/me/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Progress
+         * @description Each registration step and whether it is done, and the next one (FR-AUTH-009, FR-REG-017).
+         */
+        get: operations["read_my_progress_v1_identity_me_progress_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/geography/districts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Districts */
+        get: operations["list_districts_v1_geography_districts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/geography/districts/{district_code}/ds-divisions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Ds Divisions */
+        get: operations["list_ds_divisions_v1_geography_districts__district_code__ds_divisions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/geography/ds-divisions/{ds_code}/gn-divisions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Gn Divisions */
+        get: operations["list_gn_divisions_v1_geography_ds_divisions__ds_code__gn_divisions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1242,6 +1377,11 @@ export interface components {
             /** Firstbrokenid */
             firstBrokenId: number | null;
         };
+        /** ConsentInput */
+        ConsentInput: {
+            /** Noticeversion */
+            noticeVersion: string;
+        };
         /** DecisionInput */
         DecisionInput: {
             /**
@@ -1581,6 +1721,27 @@ export interface components {
             history: components["schemas"]["MemberDecisionOut"][];
         };
         /**
+         * NoticesOut
+         * @description The notice versions the apps must show; consent is recorded against them.
+         */
+        NoticesOut: {
+            /** Termsandprivacy */
+            termsAndPrivacy: string;
+            /** Identityreview */
+            identityReview: string;
+        };
+        /** PlaceOut */
+        PlaceOut: {
+            /** Code */
+            code: string;
+            /** Nameen */
+            nameEn: string | null;
+            /** Nameta */
+            nameTa: string | null;
+            /** Namesi */
+            nameSi: string | null;
+        };
+        /**
          * PreviewOut
          * @description What W09 shows before saving (RB-06). Each problem is a code the dashboard explains.
          */
@@ -1592,6 +1753,20 @@ export interface components {
             /** Reviewdueat */
             reviewDueAt: string | null;
         };
+        /** ProgressOut */
+        ProgressOut: {
+            /**
+             * Route
+             * @enum {string}
+             */
+            route: "nic" | "passport";
+            /** Steps */
+            steps: components["schemas"]["StepOut"][];
+            /** Nextstep */
+            nextStep: string | null;
+            /** Reviewstate */
+            reviewState: string | null;
+        };
         /** QueueCountsOut */
         QueueCountsOut: {
             /** Awaitingreview */
@@ -1600,6 +1775,74 @@ export interface components {
             needsUpdate: number;
             /** Assignedtome */
             assignedToMe: number;
+        };
+        /**
+         * RegistrationInput
+         * @description A03 and the optional A13 to A15 details (FR-AUTH-010, FR-REG-026 to 033).
+         */
+        RegistrationInput: {
+            /**
+             * Fullname
+             * @description As on the NIC or passport
+             */
+            fullName: string;
+            /**
+             * Route
+             * @enum {string}
+             */
+            route: "nic" | "passport";
+            /** Idnumber */
+            idNumber: string;
+            /**
+             * Passportcountry
+             * @description ISO 3166-1 alpha-3, passport only
+             */
+            passportCountry?: string | null;
+            /** Password */
+            password: string;
+            /**
+             * Acceptterms
+             * @constant
+             */
+            acceptTerms: true;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "ta" | "en";
+            /** Dob */
+            dob?: string | null;
+            /** Gender */
+            gender?: ("male" | "female" | "other" | "prefer_not_to_say") | null;
+            /** Districtcode */
+            districtCode?: string | null;
+            /** Dscode */
+            dsCode?: string | null;
+            /** Gscode */
+            gsCode?: string | null;
+            /** Referralcode */
+            referralCode?: string | null;
+            /**
+             * Surveyanswers
+             * @default {}
+             */
+            surveyAnswers: {
+                [key: string]: string;
+            };
+        };
+        /**
+         * RegistrationOut
+         * @description The token is returned for mobile apps; browsers use the HttpOnly cookie.
+         */
+        RegistrationOut: {
+            /** Token */
+            token: string;
+            member: components["schemas"]["MemberProfile"];
+            /**
+             * Referralaccepted
+             * @description null when no referral code was given (FR-REG-031)
+             */
+            referralAccepted: boolean | null;
         };
         /** ReportInput */
         ReportInput: {
@@ -1748,10 +1991,18 @@ export interface components {
             /** Reason */
             reason: string;
         };
-        /** SignInRequest */
+        /**
+         * SignInRequest
+         * @description The identity type and number the account registered with, and the password (FR-AUTH-005):
+         *     either nic, or passportNumber with passportCountry.
+         */
         SignInRequest: {
             /** Nic */
-            nic: string;
+            nic?: string | null;
+            /** Passportnumber */
+            passportNumber?: string | null;
+            /** Passportcountry */
+            passportCountry?: string | null;
             /** Password */
             password: string;
         };
@@ -1763,6 +2014,13 @@ export interface components {
             /** Token */
             token: string;
             member: components["schemas"]["MemberProfile"];
+        };
+        /** StepOut */
+        StepOut: {
+            /** Name */
+            name: string;
+            /** Done */
+            done: boolean;
         };
         /** SubmissionInput */
         SubmissionInput: {
@@ -2367,6 +2625,13 @@ export interface operations {
             };
             /** @description empty_file */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description consent_required: consent to identity review first (POST /v1/identity/me/consent) */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3459,6 +3724,218 @@ export interface operations {
             };
             /** @description not_open, claimed_by_another or not_claimed_by_you */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    register_v1_identity_register_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegistrationInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegistrationOut"];
+                };
+            };
+            /** @description already_registered: sign in or recover the account instead (FR-AUTH-012) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "registration_refused", "problems": [...]}, or an invalid body */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_notices_v1_identity_notices_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NoticesOut"];
+                };
+            };
+        };
+    };
+    give_identity_consent_v1_identity_me_consent_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsentInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description notice_outdated: show the current notice and ask again */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_my_progress_v1_identity_me_progress_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgressOut"];
+                };
+            };
+        };
+    };
+    list_districts_v1_geography_districts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaceOut"][];
+                };
+            };
+        };
+    };
+    list_ds_divisions_v1_geography_districts__district_code__ds_divisions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                district_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaceOut"][];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_gn_divisions_v1_geography_ds_divisions__ds_code__gn_divisions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ds_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaceOut"][];
+                };
+            };
+            /** @description not_found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

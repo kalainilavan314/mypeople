@@ -25,6 +25,8 @@ from app.modules.identity.appeals import router as identity_appeals
 from app.modules.identity.documents import router as identity_documents
 from app.modules.identity.documents.dependencies import build_vault
 from app.modules.identity.duplicates import router as identity_duplicates
+from app.modules.identity.registration import router as identity_registration
+from app.modules.geography import router as geography
 from app.modules.identity.reviews import router as identity_reviews
 from app.modules.membership import router as membership
 
@@ -70,6 +72,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(identity_reviews.router)
     app.include_router(identity_appeals.router)
     app.include_router(identity_duplicates.router)
+    app.include_router(identity_registration.router)
+    app.include_router(geography.router)
 
     # The middleware added last runs first, so the security headers are also
     # set on the 403 that the origin check returns.

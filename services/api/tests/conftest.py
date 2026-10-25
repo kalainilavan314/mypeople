@@ -32,10 +32,11 @@ from sqlalchemy import Row, text
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
+from app.core.permissions import default_permissions
 from app.core.security import hash_password, nic_hash, sign_session_token
 from app.db.session import create_database_engine, get_db
 from app.main import create_app
-from app.core.permissions import default_permissions
+from app.modules.membership.rules import NOTICE_VERSIONS
 
 # Nothing listens on port 1, so "database down" tests fail fast.
 UNREACHABLE_DATABASE_URL = "postgresql://nobody@127.0.0.1:1/unreachable"
@@ -236,9 +237,25 @@ def member_in(db_session: Session, create_member: Callable[..., Row]) -> Callabl
     return create
 
 
+def give_identity_consent(db_session: Session, member: Row) -> None:
+    """Test set-up: the member has consented to identity review (BR-008), as A04 records it."""
+    db_session.execute(
+        text(
+            """
+            INSERT INTO membership.consent_record (member_id, consent_type, notice_version)
+            SELECT :id, 'identity_review', :version
+            WHERE NOT EXISTS (SELECT 1 FROM membership.consent_record
+                              WHERE member_id = :id AND consent_type = 'identity_review' AND notice_version = :version)
+            """
+        ),
+        {"id": member.id, "version": NOTICE_VERSIONS["identity_review"]},
+    )
+
+
 @pytest.fixture
-def upload(identity_client: TestClient, auth: Callable[[Row], dict[str, str]]) -> Callable[..., dict]:
+def upload(identity_client: TestClient, db_session: Session, auth: Callable[[Row], dict[str, str]]) -> Callable[..., dict]:
     def put(person: Row, kind: str = "nic_front", data: bytes = SAMPLE_JPEG, content_type: str = "image/jpeg") -> dict:
+        give_identity_consent(db_session, person)
         response = identity_client.put(
             f"/v1/identity/me/documents/{kind}", content=data, headers={**auth(person), "Content-Type": content_type}
         )

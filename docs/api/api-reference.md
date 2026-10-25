@@ -21,7 +21,12 @@ Writes that carry the session cookie and come from another website are refused w
 |---|---|---|---|
 | `GET /v1/health` | no | `200 {"status":"ok"}` | none |
 | `GET /v1/health/db` | no | `200 {"status":"ok"}` | `503 {"status":"unavailable"}` |
-| `POST /v1/auth/sign-in` body `{nic, password}` | no | `200 {token, member}` and the session cookie | `401 invalid_credentials`, `429 too_many_attempts` with `Retry-After`, `422` invalid body |
+| `POST /v1/auth/sign-in` body `{nic, password}` or `{passportNumber, passportCountry, password}` | no | `200 {token, member}` and the session cookie | `401 invalid_credentials`, `429 too_many_attempts` with `Retry-After`, `422` invalid body |
+| `POST /v1/identity/register` body `{fullName, route, idNumber, passportCountry?, password, acceptTerms: true, language, dob?, gender?, districtCode?, dsCode?, gsCode?, referralCode?, surveyAnswers?}` | no | `201 {token, member, referralAccepted}` and the session cookie | `409 already_registered`, `422 {code: "registration_refused", problems}` or an invalid body |
+| `GET /v1/identity/notices` | no | `200 {termsAndPrivacy, identityReview}` notice versions | none |
+| `POST /v1/identity/me/consent` body `{noticeVersion}` | yes | `204`; recorded once | `409 notice_outdated` |
+| `GET /v1/identity/me/progress` | yes | `200 {route, steps: [{name, done}], nextStep, reviewState}` | `401` |
+| `GET /v1/geography/districts`, `/districts/{code}/ds-divisions`, `/ds-divisions/{code}/gn-divisions` | no | `200 [{code, nameEn, nameTa, nameSi}]` | `404 not_found` |
 | `POST /v1/auth/sign-out` | optional | `204`, cookie cleared, all sessions ended | `403 csrf_origin_mismatch` |
 | `GET /v1/members/me` | yes | `200` member profile (camelCase) | `401 unauthorized`, `401 session_expired` |
 | `GET /v1/membership/me` | yes | `200 {state, reasonCode, changedAt}`; `pending` until someone activates the member | `401` |
@@ -59,6 +64,8 @@ Writes that carry the session cookie and come from another website are refused w
 | `POST /v1/identity/duplicates/{id}/claim`, `/release`, `/decision` body `{outcome: "not_duplicate" \| "duplicate_confirmed", reason}` | the investigator holding the case for decisions | `200` the case file | as above; `409 claimed_by_another`, `not_claimed_by_you`, `not_open` |
 
 Error bodies are `{"detail": "<code>"}`, or for a refused assignment `{"detail": {"code": "assignment_refused", "problems": [...]}}`. Problem codes: `unknown_member`, `self_assignment`, `identity_not_verified`, `tier_5_by_bootstrap_only`, `area_does_not_match_tier`, `unknown_area`, `no_permissions`, `unknown_permission:<p>`, `permission_not_for_tier:<p>`, `outside_your_area`, `tier_not_below_yours`, `permission_not_held:<p>`, `separation_of_duties`, `own_assignment`.
+
+Registration problems: `invalid_name`, `invalid_id_number`, `invalid_passport_country`, `password_too_short`, `password_too_long`, `password_too_common`, `password_contains_id_number`, `dob_in_future`, `dob_too_early`, `under_minimum_age`, `area_incomplete`, `unknown_area`. Uploads answer `409 consent_required` until identity-review consent is given; a review on the wrong route gets `route_mismatch`.
 
 Every refused permission check is written to the audit log as `access.denied`. Membership actions: `activate` (from pending or inactive; needs a confirmed identity), `suspend` (from active), `reinstate` (from suspended), `inactivate` (from pending, active or suspended); problems `not_allowed_from:<state>`, `identity_not_verified`, `reason_required`, `note_required`; audited as `membership.<action>`. Staff assignment problems now include `membership_not_active` (BR-097). Identity uploads (`identity.document.uploaded`), view links (`identity.evidence.link_issued`) and every view (`identity.evidence.viewed`) are logged too. `kind` is one of `nic_front`, `nic_back`, `passport_page`, `selfie`.
 

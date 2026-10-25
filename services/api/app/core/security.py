@@ -30,6 +30,17 @@ def nic_hash(nic: str, pepper: str) -> str:
     return hashlib.sha256((pepper + nic.strip().upper()).encode("utf-8")).hexdigest()
 
 
+def passport_hash(number: str, country: str, pepper: str) -> str:
+    """The account's ID-number hash for a passport (BR-005), stored in the same
+    column as NIC hashes so one unique index covers both routes (BR-007).
+
+    The prefix and the issuing country keep passport hashes apart from NIC
+    hashes and from the same number issued by another country. Express has no
+    passport route; only FastAPI signs passport holders in.
+    """
+    return nic_hash(f"PASSPORT:{country.strip().upper()}:{number.strip().upper()}", pepper)
+
+
 def _password_bytes(password: str) -> bytes:
     # bcryptjs (Express) silently uses only the first 72 bytes of the UTF-8
     # password, while Python's bcrypt refuses longer input. Cutting at 72 bytes

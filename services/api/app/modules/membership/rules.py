@@ -53,3 +53,16 @@ def check_change(
 
 def state_after(action: Action) -> State:
     return TRANSITIONS[action][1]
+
+
+# --- Consent (ENT-05, BR-008, FR-AUTH-010, FR-REG-003) -------------------------------------
+
+ConsentType = Literal["terms_and_privacy", "identity_review"]
+
+# The notice version a member must have been shown. The privacy notices are not
+# approved yet (POL-01), so these are draft versions; when a notice changes, its
+# version changes and members are asked again.
+NOTICE_VERSIONS: dict[ConsentType, str] = {
+    "terms_and_privacy": "draft-2026-10",
+    "identity_review": "draft-2026-10",
+}

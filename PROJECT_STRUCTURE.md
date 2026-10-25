@@ -445,6 +445,7 @@ services/api/
       0005_verification_appeals.py
       0006_membership_states.py
       0007_duplicate_investigations.py
+      0008_registration.py
   app/
     __init__.py
     main.py
@@ -471,6 +472,7 @@ services/api/
         router.py
         schemas.py
         service.py
+        session_cookie.py
         throttle.py
       membership/
         __init__.py
@@ -527,6 +529,18 @@ services/api/
           rules.py
           schemas.py
           service.py
+        registration/      sign-up, consent, registration progress (A03 to A18)
+          __init__.py
+          common_passwords.txt
+          repository.py
+          router.py
+          rules.py
+          schemas.py
+          service.py
+      geography/           district, DS and GN lists (FR-REG-029)
+        __init__.py
+        repository.py
+        router.py
       households/          README only: not built yet
       assistance/          README only: not built yet
       community/           README only: not built yet
@@ -561,6 +575,8 @@ services/api/
     test_membership_api.py
     test_membership_rules.py
     test_origin_check.py
+    test_registration_api.py
+    test_registration_rules.py
     test_security.py
     test_sign_in.py
     test_throttle.py

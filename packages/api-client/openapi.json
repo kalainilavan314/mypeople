@@ -55,7 +55,7 @@
           "auth"
         ],
         "summary": "Sign In",
-        "description": "Sign in with a NIC and password. Sets the session cookie and returns the token.",
+        "description": "Sign in with the NIC, or the passport number and country, the account registered with, and\nthe password (FR-AUTH-005). Sets the session cookie and returns the token.",
         "operationId": "sign_in_v1_auth_sign_in_post",
         "requestBody": {
           "content": {
@@ -815,6 +815,9 @@
           },
           "400": {
             "description": "empty_file"
+          },
+          "409": {
+            "description": "consent_required: consent to identity review first (POST /v1/identity/me/consent)"
           },
           "413": {
             "description": "too_large (over 10 MB)"
@@ -2362,6 +2365,267 @@
           }
         }
       }
+    },
+    "/v1/identity/register": {
+      "post": {
+        "tags": [
+          "registration"
+        ],
+        "summary": "Register",
+        "description": "Create an account with the NIC or passport route (A03, FR-AUTH-010 to 013).\n\nReturns a session like sign-in. The identity is \"Draft\" and the\nmembership pending; nothing about the person is verified yet.",
+        "operationId": "register_v1_identity_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationOut"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "already_registered: sign in or recover the account instead (FR-AUTH-012)"
+          },
+          "422": {
+            "description": "{\"code\": \"registration_refused\", \"problems\": [...]}, or an invalid body"
+          }
+        }
+      }
+    },
+    "/v1/identity/notices": {
+      "get": {
+        "tags": [
+          "registration"
+        ],
+        "summary": "Read Notices",
+        "description": "The current notice versions. Apps show these notices and send their version back with consent.",
+        "operationId": "read_notices_v1_identity_notices_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoticesOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/me/consent": {
+      "post": {
+        "tags": [
+          "registration"
+        ],
+        "summary": "Give Identity Consent",
+        "description": "A04: consent to identity review, given before any image is uploaded (BR-008, FR-REG-003).",
+        "operationId": "give_identity_consent_v1_identity_me_consent_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "notice_outdated: show the current notice and ask again"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/identity/me/progress": {
+      "get": {
+        "tags": [
+          "registration"
+        ],
+        "summary": "Read My Progress",
+        "description": "Each registration step and whether it is done, and the next one (FR-AUTH-009, FR-REG-017).",
+        "operationId": "read_my_progress_v1_identity_me_progress_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/geography/districts": {
+      "get": {
+        "tags": [
+          "geography"
+        ],
+        "summary": "List Districts",
+        "operationId": "list_districts_v1_geography_districts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PlaceOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Districts V1 Geography Districts Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/geography/districts/{district_code}/ds-divisions": {
+      "get": {
+        "tags": [
+          "geography"
+        ],
+        "summary": "List Ds Divisions",
+        "operationId": "list_ds_divisions_v1_geography_districts__district_code__ds_divisions_get",
+        "parameters": [
+          {
+            "name": "district_code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 20,
+              "title": "District Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlaceOut"
+                  },
+                  "title": "Response List Ds Divisions V1 Geography Districts  District Code  Ds Divisions Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/geography/ds-divisions/{ds_code}/gn-divisions": {
+      "get": {
+        "tags": [
+          "geography"
+        ],
+        "summary": "List Gn Divisions",
+        "operationId": "list_gn_divisions_v1_geography_ds_divisions__ds_code__gn_divisions_get",
+        "parameters": [
+          {
+            "name": "ds_code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 20,
+              "title": "Ds Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlaceOut"
+                  },
+                  "title": "Response List Gn Divisions V1 Geography Ds Divisions  Ds Code  Gn Divisions Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3490,6 +3754,20 @@
         ],
         "title": "ChainCheckOut"
       },
+      "ConsentInput": {
+        "properties": {
+          "noticeVersion": {
+            "type": "string",
+            "maxLength": 40,
+            "title": "Noticeversion"
+          }
+        },
+        "type": "object",
+        "required": [
+          "noticeVersion"
+        ],
+        "title": "ConsentInput"
+      },
       "DecisionInput": {
         "properties": {
           "decision": {
@@ -4352,6 +4630,74 @@
         "title": "MyReviewOut",
         "description": "A10, A11, C06: the review reference and state, and what to correct when a correction is asked for."
       },
+      "NoticesOut": {
+        "properties": {
+          "termsAndPrivacy": {
+            "type": "string",
+            "title": "Termsandprivacy"
+          },
+          "identityReview": {
+            "type": "string",
+            "title": "Identityreview"
+          }
+        },
+        "type": "object",
+        "required": [
+          "termsAndPrivacy",
+          "identityReview"
+        ],
+        "title": "NoticesOut",
+        "description": "The notice versions the apps must show; consent is recorded against them."
+      },
+      "PlaceOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "nameEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nameta"
+          },
+          "nameSi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Namesi"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "nameEn",
+          "nameTa",
+          "nameSi"
+        ],
+        "title": "PlaceOut"
+      },
       "PreviewOut": {
         "properties": {
           "allowed": {
@@ -4387,6 +4733,55 @@
         "title": "PreviewOut",
         "description": "What W09 shows before saving (RB-06). Each problem is a code the dashboard explains."
       },
+      "ProgressOut": {
+        "properties": {
+          "route": {
+            "type": "string",
+            "enum": [
+              "nic",
+              "passport"
+            ],
+            "title": "Route"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/StepOut"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "nextStep": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nextstep"
+          },
+          "reviewState": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewstate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "route",
+          "steps",
+          "nextStep",
+          "reviewState"
+        ],
+        "title": "ProgressOut"
+      },
       "QueueCountsOut": {
         "properties": {
           "awaitingReview": {
@@ -4409,6 +4804,192 @@
           "assignedToMe"
         ],
         "title": "QueueCountsOut"
+      },
+      "RegistrationInput": {
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Fullname",
+            "description": "As on the NIC or passport"
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "nic",
+              "passport"
+            ],
+            "title": "Route"
+          },
+          "idNumber": {
+            "type": "string",
+            "maxLength": 32,
+            "title": "Idnumber"
+          },
+          "passportCountry": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passportcountry",
+            "description": "ISO 3166-1 alpha-3, passport only"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 256,
+            "title": "Password"
+          },
+          "acceptTerms": {
+            "type": "boolean",
+            "const": true,
+            "title": "Acceptterms"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "ta",
+              "en"
+            ],
+            "title": "Language"
+          },
+          "dob": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dob"
+          },
+          "gender": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "male",
+                  "female",
+                  "other",
+                  "prefer_not_to_say"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gender"
+          },
+          "districtCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Districtcode"
+          },
+          "dsCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dscode"
+          },
+          "gsCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gscode"
+          },
+          "referralCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Referralcode"
+          },
+          "surveyAnswers": {
+            "patternProperties": {
+              "^[a-z0-9_]{1,40}$": {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              }
+            },
+            "type": "object",
+            "maxProperties": 30,
+            "title": "Surveyanswers",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "required": [
+          "fullName",
+          "route",
+          "idNumber",
+          "password",
+          "acceptTerms",
+          "language"
+        ],
+        "title": "RegistrationInput",
+        "description": "A03 and the optional A13 to A15 details (FR-AUTH-010, FR-REG-026 to 033)."
+      },
+      "RegistrationOut": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "member": {
+            "$ref": "#/components/schemas/MemberProfile"
+          },
+          "referralAccepted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Referralaccepted",
+            "description": "null when no referral code was given (FR-REG-031)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "member",
+          "referralAccepted"
+        ],
+        "title": "RegistrationOut",
+        "description": "The token is returned for mobile apps; browsers use the HttpOnly cookie."
       },
       "ReportInput": {
         "properties": {
@@ -4799,10 +5380,43 @@
       "SignInRequest": {
         "properties": {
           "nic": {
-            "type": "string",
-            "maxLength": 32,
-            "minLength": 1,
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Nic"
+          },
+          "passportNumber": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passportnumber"
+          },
+          "passportCountry": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 3,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passportcountry"
           },
           "password": {
             "type": "string",
@@ -4813,10 +5427,10 @@
         },
         "type": "object",
         "required": [
-          "nic",
           "password"
         ],
-        "title": "SignInRequest"
+        "title": "SignInRequest",
+        "description": "The identity type and number the account registered with, and the password (FR-AUTH-005):\neither nic, or passportNumber with passportCountry."
       },
       "SignInResponse": {
         "properties": {
@@ -4835,6 +5449,24 @@
         ],
         "title": "SignInResponse",
         "description": "The token is returned for mobile apps; browsers use the HttpOnly cookie."
+      },
+      "StepOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "done": {
+            "type": "boolean",
+            "title": "Done"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "done"
+        ],
+        "title": "StepOut"
       },
       "SubmissionInput": {
         "properties": {

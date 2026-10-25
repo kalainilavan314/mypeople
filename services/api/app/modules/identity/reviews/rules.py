@@ -51,8 +51,13 @@ STATE_AFTER: dict[Decision, ReviewState] = {
 }
 
 
-def check_new_submission(route: Route, current_kinds: set[str], already_verified: bool) -> list[str]:
-    """A first submission (FR-REG-004, FR-REG-019): every image of the route received by the server."""
+def check_new_submission(
+    route: Route, current_kinds: set[str], already_verified: bool, account_route: Route = "nic"
+) -> list[str]:
+    """A first submission (FR-REG-004, FR-REG-019): every image of the route received by the server,
+    on the route the account registered with (BR-003: one route per account)."""
+    if route != account_route:
+        return ["route_mismatch"]
     problems = ["already_verified"] if already_verified else []
     problems += [f"missing:{kind}" for kind in REQUIRED_DOCUMENTS[route] if kind not in current_kinds]
     return problems

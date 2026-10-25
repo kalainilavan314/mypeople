@@ -26,7 +26,12 @@ PATH = (PLATFORM, Area("province", "LK4"), JAFFNA, Area("ds", "LK4103"), Area("g
     ],
 )
 def test_each_route_needs_its_own_images(route, kinds, expected):
-    assert rules.check_new_submission(route, kinds, already_verified=False) == expected
+    assert rules.check_new_submission(route, kinds, already_verified=False, account_route=route) == expected
+
+
+def test_a_review_uses_the_route_the_account_registered_with():  # BR-003
+    images = {"passport_page", "selfie"}
+    assert rules.check_new_submission("passport", images, False, account_route="nic") == ["route_mismatch"]
 
 
 def test_a_verified_member_does_not_submit_again():

@@ -6,11 +6,12 @@ from sqlalchemy.orm import Session
 
 from app.core.config import Settings
 from app.core.request_info import client_ip
-from app.core.security import SESSION_COOKIE, SESSION_LIFETIME
+from app.core.security import nic_hash, passport_hash
 from app.db.session import get_db
 from app.modules.auth import service
 from app.modules.auth.dependencies import SessionToken
 from app.modules.auth.schemas import SignInRequest, SignInResponse
+from app.modules.auth.session_cookie import clear_session_cookie, set_session_cookie
 from app.modules.membership.repository import find_member_profile
 from app.modules.membership.schemas import MemberProfile
 
@@ -24,15 +25,21 @@ Db = Annotated[Session, Depends(get_db)]
     responses={401: {"description": "invalid_credentials"}, 429: {"description": "too_many_attempts"}},
 )
 async def sign_in(body: SignInRequest, request: Request, response: Response, db: Db) -> SignInResponse:
-    """Sign in with a NIC and password. Sets the session cookie and returns the token."""
+    """Sign in with the NIC, or the passport number and country, the account registered with, and
+    the password (FR-AUTH-005). Sets the session cookie and returns the token."""
     settings: Settings = request.app.state.settings
     try:
+        pepper = settings.nic_pepper.get_secret_value()
+        identifier = (
+            nic_hash(body.nic, pepper)
+            if body.nic is not None
+            else passport_hash(body.passport_number or "", body.passport_country or "", pepper)
+        )
         signed_in = await service.sign_in(
             db,
-            nic=body.nic,
+            identifier=identifier,
             password=body.password,
             ip=client_ip(request),
-            nic_pepper=settings.nic_pepper.get_secret_value(),
             jwt_secret=settings.jwt_secret.get_secret_value(),
         )
     except service.TooManyAttempts as error:
@@ -44,17 +51,7 @@ async def sign_in(body: SignInRequest, request: Request, response: Response, db:
     except service.InvalidCredentials:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid_credentials") from None
 
-    # HttpOnly keeps the token away from page scripts; SameSite=Lax stops other
-    # sites' forms and fetches from carrying it. Same attributes as Express.
-    response.set_cookie(
-        SESSION_COOKIE,
-        signed_in.token,
-        max_age=int(SESSION_LIFETIME.total_seconds()),
-        path="/",
-        httponly=True,
-        samesite="lax",
-        secure=settings.secure_cookies,
-    )
+    set_session_cookie(response, signed_in.token, settings)
     profile = await run_in_threadpool(find_member_profile, db, signed_in.member_id)
     if profile is None:
         # The member was deleted in the moment between the password check and here.
@@ -67,4 +64,4 @@ def sign_out(request: Request, response: Response, db: Db, token: SessionToken) 
     """Sign out everywhere: every session token this member holds stops working."""
     settings: Settings = request.app.state.settings
     service.sign_out(db, token, settings.jwt_secret.get_secret_value())
-    response.delete_cookie(SESSION_COOKIE, path="/", httponly=True, samesite="lax", secure=settings.secure_cookies)
+    clear_session_cookie(response, settings)

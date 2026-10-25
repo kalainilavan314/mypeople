@@ -11,7 +11,6 @@ from sqlalchemy.orm import Session
 from app.core.security import (
     InvalidSessionToken,
     hash_password,
-    nic_hash,
     read_session_token,
     sign_session_token,
     verify_password,
@@ -76,18 +75,19 @@ def authenticate(db: Session, token: str | None, jwt_secret: str) -> SessionMemb
     return member
 
 
-async def sign_in(db: Session, nic: str, password: str, ip: str, nic_pepper: str, jwt_secret: str) -> SignedIn:
-    """Check a NIC and password under the sign-in throttle and issue a session token.
+async def sign_in(db: Session, identifier: str, password: str, ip: str, jwt_secret: str) -> SignedIn:
+    """Check an ID-number hash and password under the sign-in throttle and issue a session token.
+
+    identifier is the account's ID-number hash: nic_hash for a NIC, passport_hash
+    for a passport, so each signs in only with the number it registered with.
 
     Async because of the throttle's delay: waiting up to two seconds must not
     hold one of the worker threads every other endpoint needs. Database work
     and bcrypt still run on worker threads, between the waits.
     """
-    # The throttle is keyed on the NIC hash, so no NIC is ever stored, and
-    # failures are recorded for NICs nobody has registered too: probing for
-    # registered NICs looks the same as guessing a password.
-    identifier = nic_hash(nic, nic_pepper)
-
+    # The throttle is keyed on the hash, so no ID number is ever stored, and
+    # failures are recorded for numbers nobody has registered too: probing for
+    # registered numbers looks the same as guessing a password.
     gate = await run_in_threadpool(_check_throttle, db, identifier, ip)
     if not gate.allowed:
         raise TooManyAttempts(gate.retry_after or throttle.LOCKOUT_SECONDS)

@@ -26,6 +26,7 @@ from app.modules.audit import service as audit
 from app.modules.identity.documents import repository as identity_repository
 from app.modules.identity.documents.service import VIEWED
 from app.modules.identity.duplicates import service as duplicates
+from app.modules.identity.registration import repository as registration_repository
 from app.modules.identity.duplicates.repository import StoredCase
 from app.modules.identity.reviews import repository, rules
 from app.modules.identity.reviews.repository import ReviewMember, StoredDecision, StoredReview
@@ -133,7 +134,12 @@ def submit(db: Session, member_id: uuid.UUID, route: Route, ip: str) -> StoredRe
 
     member = repository.find_member(db, member_id)
     assert member is not None
-    problems = rules.check_new_submission(route, set(current), member.verification_status == "identity_confirmed")
+    problems = rules.check_new_submission(
+        route,
+        set(current),
+        member.verification_status == "identity_confirmed",
+        account_route=registration_repository.account_route(db, member_id),  # type: ignore[arg-type]
+    )
     if problems:
         raise SubmissionRefused(problems)
     area_path = access_repository.member_area_path(db, member_id)

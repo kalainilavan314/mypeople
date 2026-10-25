@@ -85,7 +85,7 @@ def test_submitting_needs_every_image_of_the_route(client, auth, upload, member)
     passport = client.post("/v1/identity/me/review", json={"route": "passport", "declaration": True}, headers=auth(member))
 
     assert (nic.status_code, nic.json()["detail"]) == (409, {"code": "submission_refused", "problems": ["missing:selfie"]})
-    assert passport.json()["detail"]["problems"] == ["missing:passport_page", "missing:selfie"]
+    assert passport.json()["detail"]["problems"] == ["route_mismatch"]  # BR-003: a NIC account stays on the NIC route
     assert client.get("/v1/identity/me/review", headers=auth(member)).json() is None
 
 

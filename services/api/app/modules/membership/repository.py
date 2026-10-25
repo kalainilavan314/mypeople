@@ -176,3 +176,34 @@ def awaiting_activation(db: Session, *, visible_areas: list[str] | None, limit: 
         params,
     ).mappings()
     return [AwaitingMember(**row) for row in rows]
+
+
+# --- Consent records (ENT-05) -------------------------------------------------------------
+
+
+def record_consent(db: Session, member_id: uuid.UUID, consent_type: str, notice_version: str) -> None:
+    db.execute(
+        text(
+            """
+            INSERT INTO membership.consent_record (member_id, consent_type, notice_version)
+            VALUES (:member_id, :consent_type, :notice_version)
+            """
+        ),
+        {"member_id": member_id, "consent_type": consent_type, "notice_version": notice_version},
+    )
+
+
+def has_consent(db: Session, member_id: uuid.UUID, consent_type: str, notice_version: str) -> bool:
+    """A consent to this version of the notice that has not been withdrawn."""
+    return bool(
+        db.scalar(
+            text(
+                """
+                SELECT EXISTS (SELECT 1 FROM membership.consent_record
+                               WHERE member_id = :member_id AND consent_type = :consent_type
+                                 AND notice_version = :notice_version AND withdrawn_at IS NULL)
+                """
+            ),
+            {"member_id": member_id, "consent_type": consent_type, "notice_version": notice_version},
+        )
+    )

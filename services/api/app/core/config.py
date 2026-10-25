@@ -40,6 +40,10 @@ class Settings(BaseSettings):
     # Express API's ALLOWED_ORIGINS (comma-separated). Empty means same-origin only.
     allowed_origins: Annotated[list[str], NoDecode] = []
 
+    # FR-AUTH-011: passport numbers are checked against a configurable pattern.
+    # [ASSUMPTION] 6 to 9 letters or digits until the sponsor sets the rule.
+    passport_number_pattern: str = r"^[A-Z0-9]{6,9}$"
+
     # Identity evidence (NIC images, selfies) is kept as encrypted files in this
     # private directory, outside any web root; in production on the encrypted
     # /srv/secure volume. Set both values or neither: without them the
