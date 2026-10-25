@@ -43,6 +43,9 @@ Writes that carry the session cookie and come from another website are refused w
 | `POST /v1/auth/mfa/totp/confirm`, `POST /v1/auth/mfa/verify` body `{code}` | yes | `204`; the second factor is given for this session | `401 invalid_code`, `too_many_attempts`; `409 not_enrolled`, `session_not_registered` |
 | `GET /v1/members/me` | yes | `200` member profile (camelCase) | `401 unauthorized`, `401 session_expired` |
 | `GET /v1/membership/me` | yes | `200 {state, reasonCode, changedAt}`; `pending` until someone activates the member | `401` |
+| `GET /v1/membership/me/card` | yes | `200 {available, identityVerified, membershipState, reasonCode, displayName, memberCode, designation, districtName, gnName, memberSince, lastScannedAt, publicCard}` (card fields null unless available) | `401` |
+| `GET /v1/membership/me/card/code` | yes | `200 {code, expiresAt, refreshAfterSeconds: 60}` | `409 card_not_available` |
+| `POST /v1/membership/card/scan` body `{code}` | `events.checkin_scan` | `200 {result: "valid" \| "expired" \| "not_valid", displayName, memberCode}` | `403` |
 | `GET /v1/membership/awaiting-activation?limit` | `members.activate` | `200` verified members still pending in the caller's areas | `403 forbidden` |
 | `GET /v1/membership/members/{memberId}` | `members.activate` over the member's area | `200 {memberId, identityVerified, state, reasonCode, changedAt, history}` | `403 own_record`, `outside_your_area`; `404` |
 | `POST /v1/membership/members/{memberId}/changes` body `{action, reasonCode, note}` | as above | `200` the membership file | as above; `422 {code: "change_refused", problems}` |

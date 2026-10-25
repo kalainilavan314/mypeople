@@ -286,3 +286,12 @@ test('an app install id is sent with every request', async () => {
   assert.equal(sent[0].headers['X-Device-Id'], 'install-123');
   assert.equal(sent[0].url, 'https://api.example/v1/auth/sessions');
 });
+
+test('a scan posts the code and returns the result', async () => {
+  const { fetch, sent } = fakeFetch(200, { result: 'expired', displayName: null, memberCode: null });
+
+  const result = await createApiClient({ baseUrl: 'https://api.example', fetch }).scanMemberCard('C1.a.b.c.d.e');
+
+  assert.equal(result.result, 'expired');
+  assert.equal(sent[0].url, 'https://api.example/v1/membership/card/scan');
+});

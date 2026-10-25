@@ -448,6 +448,7 @@ services/api/
       0008_registration.py
       0009_recovery.py
       0010_sessions_and_mfa.py
+      0011_member_cards.py
   app/
     __init__.py
     main.py
@@ -486,6 +487,13 @@ services/api/
         rules.py
         schemas.py
         service.py
+        card/              the member card, 60-second QR codes, scanning (C01 to C06)
+          __init__.py
+          repository.py
+          router.py
+          schemas.py
+          service.py
+          tokens.py
       access/
         __init__.py
         bootstrap.py
@@ -554,6 +562,7 @@ services/api/
         __init__.py
         repository.py
         router.py
+        schemas.py
       households/          README only: not built yet
       assistance/          README only: not built yet
       community/           README only: not built yet
@@ -577,6 +586,8 @@ services/api/
     test_access_api.py
     test_access_rules.py
     test_audit_log.py
+    test_card_api.py
+    test_card_tokens.py
     test_config.py
     test_database.py
     test_duplicate_rules.py

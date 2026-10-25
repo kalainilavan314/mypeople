@@ -36,7 +36,7 @@ The rules every change must follow, and what is in place today. BRD references: 
 | Headers | `nosniff`, `Referrer-Policy`, `X-Frame-Options: SAMEORIGIN`; API responses `Cache-Control: no-store` |
 | OTP | Stored as HMACs; per-phone and per-IP limits; burned after 5 wrong guesses; the same table and rules in both APIs |
 | Recovery (FastAPI) | Codes only to a number the member confirmed by code; the same answer whether or not an ID number is registered; a reset token valid 10 minutes and single-use; a new password ends every session and the contact is told; a changed number tells the old one; assisted recovery handled by reviewers in the member's area |
-| Card QR | Carries an opaque, signed, 10-minute token, never NIC or date of birth |
+| Card QR | Express: an opaque, signed, 10-minute token, never NIC or date of birth. FastAPI: an opaque per-member reference, HMAC-SHA256, 60 seconds; scans check the live state, reveal only name and member ID, and are audited; suspension replaces the reference |
 | Avatars and slips | Served through signed, expiring URLs or admin-only routes |
 | Errors | 5xx details go to a private `error_log` table, never to the response |
 | Staff permissions (FastAPI) | Tier + explicit permissions + area per assignment (BRD §9); checked on the server for every request; refusals logged; revocations apply on the next request; an assignment whose 12-month review is overdue stops counting |

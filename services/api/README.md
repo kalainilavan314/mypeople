@@ -13,6 +13,7 @@ Current scope:
 | `GET /v1/health/db` | a query runs on PostgreSQL; `503 {"status":"unavailable"}` otherwise |
 | `GET /v1/members/me` | the signed-in member's profile; `401` without a valid session |
 | `GET /v1/membership/me` | the member's membership state (pending, active, suspended, inactive) and reason code |
+| `GET /v1/membership/me/card`, `GET /v1/membership/me/card/code`, `POST /v1/membership/card/scan` | the member card, its 60-second QR code, and scanning (needs `events.checkin_scan`) |
 | `GET /v1/membership/awaiting-activation`, `GET /v1/membership/members/{id}`, `POST /v1/membership/members/{id}/changes` | activation, suspension, reinstatement and inactivation; need `members.activate` over the member's area |
 | `POST /v1/auth/sign-in` | `{nic, password}` or `{passportNumber, passportCountry, password}` → sets the session cookie, returns `{token, member}`; `401 invalid_credentials`, `429 too_many_attempts` |
 | `POST /v1/identity/register` | create an account on the NIC or passport route and sign it in; `409 already_registered`, `422 registration_refused` |
@@ -162,6 +163,26 @@ reason code (and a note when the reason is "other"); each change is kept in
 The reason codes are proposed, not from the BRD, and need sponsor
 confirmation. Not built yet: notifying the member, revoking card tokens on
 suspension (FR-CARD-015), and how existing members are migrated at go-live.
+
+## Member card (BRD C01 to C06, FR-CARD-001 to 004, 007, 012, 014, 015, FR-ADM-001)
+
+- The card exists only while identity is Verified and membership Active
+  (BR-065); otherwise `GET /v1/membership/me/card` explains why (C06). It
+  never contains the NIC or passport number, date of birth or phone.
+- The QR code is `C1.<card ref>.<issued>.<expires>.<key id>.<signature>`:
+  an opaque per-member reference, HMAC-SHA256 under a key derived from
+  `JWT_SECRET`, valid 60 seconds with 15 seconds' grace for scanning.
+- A scan checks the code, then the member's state at that moment, and
+  answers `valid` (display name and member ID only), `expired` or
+  `not_valid`, never why; every scan is audited with its reason.
+  Suspending or inactivating also replaces the card reference, so codes
+  already shown stop working (FR-CARD-015). The card shows the last
+  successful scan, for C02's "Checked in".
+
+Not built yet: wallet passes (INT-03, OD-06), the offline credential and
+offline scanning (OD-08), milestones, and event passes with per-event
+scope (events batch). The live PWA still uses Express's 10-minute card
+token, which carries the member id.
 
 ## Identity evidence (BRD FR-ARCH-007, BR-086)
 
@@ -367,7 +388,7 @@ Check the state with `python -m alembic current`. From now on, every schema
 change is a new Alembic revision, never a new file in `server/migrations`:
 
 ```powershell
-python -m alembic revision --rev-id 0011 -m "describe the change"
+python -m alembic revision --rev-id 0012 -m "describe the change"
 python -m alembic upgrade head --sql    # review the SQL before applying it
 python -m alembic upgrade head
 ```
@@ -409,6 +430,7 @@ app/
   modules/auth/        sign-in, sign-out, throttle, sessions, authenticator codes, CurrentMember dependency
   core/sealing.py      AES-256-GCM sealing shared by the evidence vault and MFA secrets
   modules/membership/  /v1/members/me and membership states: rules, service, router, schemas, repository
+  modules/membership/card/  the member card, QR codes and scanning
   modules/access/      staff tiers, permissions, areas, assignments, bootstrap command
   modules/audit/       append-only, hash-chained audit log
   core/permissions.py  staff tiers and the BRD permission matrix

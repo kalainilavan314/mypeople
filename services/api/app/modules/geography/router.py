@@ -6,22 +6,15 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Path, status
 from sqlalchemy.orm import Session
 
-from app.core.schemas import CamelModel
 from app.db.session import get_db
 from app.modules.geography import repository
 from app.modules.geography.repository import Place
+from app.modules.geography.schemas import PlaceOut
 
 router = APIRouter(prefix="/v1/geography", tags=["geography"])
 
 Db = Annotated[Session, Depends(get_db)]
 Code = Annotated[str, Path(max_length=20)]
-
-
-class PlaceOut(CamelModel):
-    code: str
-    name_en: str | None
-    name_ta: str | None
-    name_si: str | None
 
 
 def _out(places: list[Place] | None) -> list[PlaceOut]:

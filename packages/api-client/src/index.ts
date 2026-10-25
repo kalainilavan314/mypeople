@@ -14,6 +14,9 @@ export type MembershipState = MyMembership['state'];
 export type MembershipFile = Schemas['MembershipFileOut'];
 export type MembershipChangeInput = Schemas['MembershipChangeInput'];
 export type AwaitingMember = Schemas['AwaitingMemberOut'];
+export type MemberCard = Schemas['CardOut'];
+export type MemberCardCode = Schemas['CardCodeOut'];
+export type CardScan = Schemas['ScanOut'];
 export type SignInResponse = Schemas['SignInResponse'];
 export type RegistrationInput = Schemas['RegistrationInput'];
 export type Registration = Schemas['RegistrationOut'];
@@ -221,6 +224,15 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     getMyProfile: () => request<MemberProfile>('GET', '/v1/members/me'),
     /** Pending, active, suspended or inactive, with the reason code. The card shows only when active. */
     getMyMembership: () => request<MyMembership>('GET', '/v1/membership/me'),
+    /** C01, or the C06 explanation (available: false, with the membership state and reason). */
+    getMyCard: () => request<MemberCard>('GET', '/v1/membership/me/card'),
+    /**
+     * C02: a signed code valid for 60 seconds; ask again after refreshAfterSeconds.
+     * Throws ApiError "card_not_available" (409) unless identity is Verified and membership Active.
+     */
+    getMyCardCode: () => request<MemberCardCode>('GET', '/v1/membership/me/card/code'),
+    /** Checks a member's code: valid (name and member ID only), expired or not_valid. Needs events.checkin_scan. */
+    scanMemberCard: (code: string) => request<CardScan>('POST', '/v1/membership/card/scan', { code }),
     /** Verified members still pending, in the caller's areas. Needs members.activate. */
     listAwaitingActivation: (limit?: number) =>
       request<AwaitingMember[]>('GET', `/v1/membership/awaiting-activation${limit === undefined ? '' : `?limit=${limit}`}`),

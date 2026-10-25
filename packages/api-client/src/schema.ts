@@ -327,6 +327,67 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/membership/me/card": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Card
+         * @description C01, or the C06 explanation when identity is not Verified or membership not Active (FR-CARD-001, 014).
+         */
+        get: operations["read_my_card_v1_membership_me_card_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/membership/me/card/code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Card Code
+         * @description C02: a signed code valid for 60 seconds; ask again when it expires (FR-CARD-003, BR-064).
+         */
+        get: operations["read_my_card_code_v1_membership_me_card_code_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/membership/card/scan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Scan Card
+         * @description Check a member's code (FR-ADM-001, FR-STF-005). Needs events.checkin_scan. The answer is
+         *     valid with the display name and member ID only, expired, or not valid, never the reason.
+         */
+        post: operations["scan_card_v1_membership_card_scan_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/access/me": {
         parameters: {
             query?: never;
@@ -1639,6 +1700,50 @@ export interface components {
             /** Area */
             area: string;
         };
+        /** CardCodeOut */
+        CardCodeOut: {
+            /** Code */
+            code: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+            /** Refreshafterseconds */
+            refreshAfterSeconds: number;
+        };
+        /** CardOut */
+        CardOut: {
+            /** Available */
+            available: boolean;
+            /** Identityverified */
+            identityVerified: boolean;
+            /** Membershipstate */
+            membershipState: string;
+            /** Reasoncode */
+            reasonCode: string | null;
+            /** Displayname */
+            displayName: string | null;
+            /** Membercode */
+            memberCode: string | null;
+            /**
+             * Designation
+             * @description The highest staff tier, or null for a member
+             */
+            designation: string | null;
+            /** Districtname */
+            districtName: string | null;
+            /** Gnname */
+            gnName: string | null;
+            /** Membersince */
+            memberSince: string | null;
+            /**
+             * Lastscannedat
+             * @description The last successful scan, for C02's confirmation
+             */
+            lastScannedAt: string | null;
+            publicCard: components["schemas"]["PublicCardOut"] | null;
+        };
         /** CaseDecisionInput */
         CaseDecisionInput: {
             /**
@@ -2208,6 +2313,20 @@ export interface components {
             /** Reviewstate */
             reviewState: string | null;
         };
+        /**
+         * PublicCardOut
+         * @description What a shared public card may show (FR-CARD-012, BR-067): no QR, no identity numbers.
+         */
+        PublicCardOut: {
+            /** Displayname */
+            displayName: string;
+            /** Membercode */
+            memberCode: string;
+            /** Districtname */
+            districtName: string | null;
+            /** Gnname */
+            gnName: string | null;
+        };
         /** QueueCountsOut */
         QueueCountsOut: {
             /** Awaitingreview */
@@ -2454,6 +2573,23 @@ export interface components {
         RevokeInput: {
             /** Reason */
             reason: string;
+        };
+        /** ScanInput */
+        ScanInput: {
+            /** Code */
+            code: string;
+        };
+        /** ScanOut */
+        ScanOut: {
+            /**
+             * Result
+             * @enum {string}
+             */
+            result: "valid" | "expired" | "not_valid";
+            /** Displayname */
+            displayName?: string | null;
+            /** Membercode */
+            memberCode?: string | null;
         };
         /** SessionOut */
         SessionOut: {
@@ -3057,6 +3193,86 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    read_my_card_v1_membership_me_card_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CardOut"];
+                };
+            };
+        };
+    };
+    read_my_card_code_v1_membership_me_card_code_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CardCodeOut"];
+                };
+            };
+            /** @description card_not_available */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    scan_card_v1_membership_card_scan_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScanInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScanOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };

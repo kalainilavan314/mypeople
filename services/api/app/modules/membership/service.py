@@ -6,8 +6,10 @@ history row and audit entry in one transaction. Suspending or inactivating a
 staff member also stops their staff rights on their next request, because
 staff access needs an Active membership (BR-097).
 
-Not built yet: notifying the member (FR-ADM-003, needs messaging) and
-revoking card tokens within 5 minutes (FR-CARD-015, with the card module).
+Suspending or inactivating also replaces the member's card reference, so
+every QR code shown before then stops working (FR-CARD-015).
+
+Not built yet: notifying the member (FR-ADM-003, needs messaging).
 """
 
 import uuid
@@ -20,6 +22,7 @@ from app.modules.access import service as access
 from app.modules.access.service import Staff
 from app.modules.audit import service as audit
 from app.modules.membership import repository, rules
+from app.modules.membership.card import repository as card_repository
 from app.modules.membership.repository import AwaitingMember, MembershipChange, MembershipState
 from app.modules.membership.rules import ACTIVATE, Action
 
@@ -91,6 +94,9 @@ def change(
         raise ChangeRefused(problems)
 
     to_state = rules.state_after(action)
+    if to_state in ("suspended", "inactive"):
+        # Codes shown before now must name nobody (FR-CARD-015); scans also check the state live.
+        card_repository.replace_card_ref(db, member_id)
     repository.record_change(
         db,
         member_id=member_id,

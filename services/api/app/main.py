@@ -31,6 +31,7 @@ from app.modules.identity.registration import router as identity_registration
 from app.modules.geography import router as geography
 from app.modules.identity.reviews import router as identity_reviews
 from app.modules.membership import router as membership
+from app.modules.membership.card import router as member_card
 
 API_VERSION = "0.1.0"
 
@@ -69,6 +70,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(auth.router)
     app.include_router(membership.router)
     app.include_router(membership.membership_router)
+    app.include_router(member_card.router)
     app.include_router(access.router)
     app.include_router(audit.router)
     app.include_router(identity_documents.router)

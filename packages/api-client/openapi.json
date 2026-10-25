@@ -622,6 +622,119 @@
         }
       }
     },
+    "/v1/membership/me/card": {
+      "get": {
+        "tags": [
+          "member card"
+        ],
+        "summary": "Read My Card",
+        "description": "C01, or the C06 explanation when identity is not Verified or membership not Active (FR-CARD-001, 014).",
+        "operationId": "read_my_card_v1_membership_me_card_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/membership/me/card/code": {
+      "get": {
+        "tags": [
+          "member card"
+        ],
+        "summary": "Read My Card Code",
+        "description": "C02: a signed code valid for 60 seconds; ask again when it expires (FR-CARD-003, BR-064).",
+        "operationId": "read_my_card_code_v1_membership_me_card_code_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardCodeOut"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "card_not_available"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/membership/card/scan": {
+      "post": {
+        "tags": [
+          "member card"
+        ],
+        "summary": "Scan Card",
+        "description": "Check a member's code (FR-ADM-001, FR-STF-005). Needs events.checkin_scan. The answer is\nvalid with the display name and member ID only, expired, or not valid, never the reason.",
+        "operationId": "scan_card_v1_membership_card_scan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScanInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/v1/access/me": {
       "get": {
         "tags": [
@@ -4388,6 +4501,164 @@
         ],
         "title": "AwaitingMemberOut"
       },
+      "CardCodeOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiresat"
+          },
+          "refreshAfterSeconds": {
+            "type": "integer",
+            "title": "Refreshafterseconds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "expiresAt",
+          "refreshAfterSeconds"
+        ],
+        "title": "CardCodeOut"
+      },
+      "CardOut": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "identityVerified": {
+            "type": "boolean",
+            "title": "Identityverified"
+          },
+          "membershipState": {
+            "type": "string",
+            "title": "Membershipstate"
+          },
+          "reasonCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reasoncode"
+          },
+          "displayName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Displayname"
+          },
+          "memberCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Membercode"
+          },
+          "designation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Designation",
+            "description": "The highest staff tier, or null for a member"
+          },
+          "districtName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Districtname"
+          },
+          "gnName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gnname"
+          },
+          "memberSince": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Membersince"
+          },
+          "lastScannedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lastscannedat",
+            "description": "The last successful scan, for C02's confirmation"
+          },
+          "publicCard": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PublicCardOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "available",
+          "identityVerified",
+          "membershipState",
+          "reasonCode",
+          "displayName",
+          "memberCode",
+          "designation",
+          "districtName",
+          "gnName",
+          "memberSince",
+          "lastScannedAt",
+          "publicCard"
+        ],
+        "title": "CardOut"
+      },
       "CaseDecisionInput": {
         "properties": {
           "outcome": {
@@ -5900,6 +6171,49 @@
         ],
         "title": "ProgressOut"
       },
+      "PublicCardOut": {
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "title": "Displayname"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "districtName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Districtname"
+          },
+          "gnName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gnname"
+          }
+        },
+        "type": "object",
+        "required": [
+          "displayName",
+          "memberCode",
+          "districtName",
+          "gnName"
+        ],
+        "title": "PublicCardOut",
+        "description": "What a shared public card may show (FR-CARD-012, BR-067): no QR, no identity numbers."
+      },
       "QueueCountsOut": {
         "properties": {
           "awaitingReview": {
@@ -6578,6 +6892,60 @@
           "reason"
         ],
         "title": "RevokeInput"
+      },
+      "ScanInput": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "ScanInput"
+      },
+      "ScanOut": {
+        "properties": {
+          "result": {
+            "type": "string",
+            "enum": [
+              "valid",
+              "expired",
+              "not_valid"
+            ],
+            "title": "Result"
+          },
+          "displayName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Displayname"
+          },
+          "memberCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Membercode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "title": "ScanOut"
       },
       "SessionOut": {
         "properties": {
