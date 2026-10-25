@@ -30,6 +30,8 @@ v1.1 contains 466 functional requirements, 160 business rules, 174 screens, 70 d
 | RB-12 [ASSUMPTION] | Assistance decisions refused alongside fundraising or election-roster rights | `app/core/permissions.py` |
 | FR-WEB-030 to 033 (API) | Select a verified person, area and permissions; preview; refuse grants beyond the administrator's own; revocation on the next request. The W09 screen and notifications are not built | `/v1/access` |
 | FR-ADM-011 (part) | Searchable, tamper-evident audit log with chain verification; export not built | `/v1/audit` |
+| FR-EVT-001 to 003, 005, 007, 009 to 017 (API) | Events with "My area" as a removable default, filters, detail, RSVP with history and waitlist, event passes as 60-second codes bound to one event and member, check-in that records attendance once | `/v1/events` |
+| FR-ADM-004, FR-STF-006 (API) | Event console: create, edit, publish, cancel with SMS to members who responded; attendance roster | `/v1/events` (staff) |
 | FR-ARCH-007, INT-08 (part) | Identity images in private, encrypted storage; served only through a 5-minute link for one reviewer, issued after the permission and area check | `services/api/app/modules/identity/documents` |
 | BR-086, FR-WEB-005 (API) | Every link, view and refusal of identity evidence is logged | `identity/documents/service.py` |
 | FR-AUTH-024 (API) | Members see the date of each view and "Identity reviewer" | `/v1/identity/me/evidence-views` |

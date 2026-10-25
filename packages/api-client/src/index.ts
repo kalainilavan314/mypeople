@@ -28,6 +28,27 @@ export type SignedInSession = Schemas['SessionOut'];
 export type MfaStatus = Schemas['MfaStatusOut'];
 export type TotpEnrolment = Schemas['TotpEnrolmentOut'];
 export type CodeSent = Schemas['CodeSentOut'];
+export type EventSummary = Schemas['EventSummaryOut'];
+export type EventDetail = Schemas['EventDetailOut'];
+export type RsvpResponse = Schemas['RsvpInput']['response'];
+export type RsvpState = Schemas['RsvpOut']['response'];
+export type EventPass = Schemas['EventPassOut'];
+export type EventPassCode = Schemas['PassCodeOut'];
+export type ManagedEvent = Schemas['ManagedEventOut'];
+export type EventCreateInput = Schemas['EventCreateIn'];
+export type EventUpdateInput = Schemas['EventUpdateIn'];
+export type PassScan = Schemas['PassScanOut'];
+export type EventRoster = Schemas['RosterOut'];
+export type EventFilters = {
+  /** 'mine' (the default) narrows to the member's area; 'all' widens it (BR-057). */
+  scope?: 'mine' | 'all';
+  area?: string;
+  until?: string;
+  type?: string;
+  participation?: RsvpState;
+  q?: string;
+  limit?: number;
+};
 export type ResetToken = Schemas['ResetTokenOut'];
 export type AssistedRecoveryInput = Schemas['AssistedRecoveryInput'];
 export type AssistedRecoveryRequest = Schemas['AssistedRequestOut'];
@@ -130,7 +151,7 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
   const root = baseUrl.replace(/\/+$/, '');
 
   /** Sends `body` as JSON, or as it is when `rawType` names its media type (image uploads). */
-  async function request<T>(method: 'GET' | 'POST' | 'PUT', path: string, body?: unknown, rawType?: string): Promise<T> {
+  async function request<T>(method: 'GET' | 'POST' | 'PUT' | 'PATCH', path: string, body?: unknown, rawType?: string): Promise<T> {
     const headers: Record<string, string> = { Accept: 'application/json' };
     if (body !== undefined) headers['Content-Type'] = rawType ?? 'application/json';
     const token = await getToken?.();
@@ -345,6 +366,46 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     /** Record the finding with a reason. It changes neither account. */
     decideDuplicateCase: (caseId: string, input: DuplicateDecisionInput) =>
       request<DuplicateCaseFile>('POST', `/v1/identity/duplicates/${encodeURIComponent(caseId)}/decision`, input),
+
+    /** E01: events still to come with the member's response; cancelled ones stay listed as cancelled. */
+    listEvents: (filters: EventFilters = {}) => request<EventSummary[]>('GET', `/v1/events${toEventQuery(filters)}`),
+    /** E04. Throws ApiError "not_found" (404) for drafts and unknown events. */
+    getEvent: (eventId: string) => request<EventDetail>('GET', `/v1/events/${encodeURIComponent(eventId)}`),
+    /**
+     * E05: going, maybe or declined; the answer is the state recorded ("waitlisted" when the event is full).
+     * Throws ApiError "event_cancelled" or "event_over" (409).
+     */
+    respondToEvent: (eventId: string, response: RsvpResponse) =>
+      request<{ response: RsvpState }>('PUT', `/v1/events/${encodeURIComponent(eventId)}/rsvp`, { response }),
+    /** E06. Throws ApiError "not_going", "membership_not_active", "event_cancelled" or "event_over" (409). */
+    getEventPass: (eventId: string) => request<EventPass>('GET', `/v1/events/${encodeURIComponent(eventId)}/pass`),
+    /** A pass code valid for 60 seconds; show it black on white and ask again at expiresAt. */
+    getEventPassCode: (eventId: string) =>
+      request<EventPassCode>('GET', `/v1/events/${encodeURIComponent(eventId)}/pass/code`),
+
+    /** Events in the caller's areas, drafts included. Needs events.manage. */
+    listManagedEvents: (filters: { states?: readonly ('draft' | 'published' | 'cancelled')[]; limit?: number } = {}) =>
+      request<ManagedEvent[]>('GET', `/v1/events/manage${toQueueQuery(filters)}`),
+    getManagedEvent: (eventId: string) =>
+      request<ManagedEvent>('GET', `/v1/events/manage/${encodeURIComponent(eventId)}`),
+    /** A draft. Throws ApiError "event_invalid" (422) with `problems`, or "outside_your_area" (403). */
+    createEvent: (input: EventCreateInput) => request<ManagedEvent>('POST', '/v1/events', input),
+    /** Only the fields given change; `notified` counts members told of a new time or place. */
+    updateEvent: (eventId: string, input: EventUpdateInput) =>
+      request<ManagedEvent>('PATCH', `/v1/events/${encodeURIComponent(eventId)}`, input),
+    publishEvent: (eventId: string) => request<ManagedEvent>('POST', `/v1/events/${encodeURIComponent(eventId)}/publish`),
+    /** Every pass stops working; members who responded are told by SMS. */
+    cancelEvent: (eventId: string, reason: string) =>
+      request<ManagedEvent>('POST', `/v1/events/${encodeURIComponent(eventId)}/cancel`, { reason }),
+    /**
+     * Checks a pass in at this event: checked_in, already_checked_in, expired (ask the member to refresh),
+     * wrong_event, outside_window or not_valid. Needs events.checkin_scan over the event's area.
+     */
+    scanEventPass: (eventId: string, code: string) =>
+      request<PassScan>('POST', `/v1/events/${encodeURIComponent(eventId)}/scan`, { code }),
+    /** S09: expected and attended counts with the roster. */
+    getEventAttendance: (eventId: string) =>
+      request<EventRoster>('GET', `/v1/events/${encodeURIComponent(eventId)}/attendance`),
   };
 }
 
@@ -375,6 +436,15 @@ function toQueueQuery(filters: { states?: readonly string[]; mine?: boolean; lim
   for (const state of filters.states ?? []) params.append('state', state);
   if (filters.mine) params.set('mine', 'true');
   if (filters.limit !== undefined) params.set('limit', String(filters.limit));
+  const query = params.toString();
+  return query ? `?${query}` : '';
+}
+
+function toEventQuery(filters: EventFilters): string {
+  const params = new URLSearchParams();
+  for (const [name, value] of Object.entries(filters)) {
+    if (value !== undefined && value !== '') params.set(name, String(value));
+  }
   const query = params.toString();
   return query ? `?${query}` : '';
 }

@@ -79,6 +79,20 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET /v1/identity/duplicates/{id}` | `idv.duplicate.investigate` over both accounts' areas | `200` both accounts with details, verification and membership state, image records | `403 own_record`, `outside_your_area`; `404` |
 | `POST /v1/identity/duplicates/{id}/claim`, `/release`, `/decision` body `{outcome: "not_duplicate" \| "duplicate_confirmed", reason}` | the investigator holding the case for decisions | `200` the case file | as above; `409 claimed_by_another`, `not_claimed_by_you`, `not_open`, `reported_by_you` (the reporter never investigates) |
 
+### Events (`/v1/events`)
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /v1/events?scope=mine\|all&area&until&type&participation&q&limit` | a session | `200` events still to come with `myResponse` and `placesLeft` | `401` |
+| `GET /v1/events/{id}` | a session | `200` detail with agenda, meeting point, accessibility, contact route, `myHistory`, `attendedAt` | `404 not_found` (drafts too) |
+| `PUT /v1/events/{id}/rsvp` body `{response: "going" \| "maybe" \| "declined"}` | a session | `200 {response}`: the state recorded, `waitlisted` when full | `404`, `409 event_cancelled`, `event_over` |
+| `GET /v1/events/{id}/pass`, `GET /v1/events/{id}/pass/code` | a session | `200` the pass; `{code, expiresAt}` valid 60 seconds | `404`, `409 not_going`, `membership_not_active`, `event_cancelled`, `event_over` |
+| `GET /v1/events/manage?state&limit`, `GET /v1/events/manage/{id}` | `events.manage` | `200` events in the caller's areas, drafts included | `403 outside_your_area`, `404` |
+| `POST /v1/events` body: the details and `{area}` | `events.manage` over the area | `201` a draft | `403`, `422 {code: "event_invalid", problems}` |
+| `PATCH /v1/events/{id}`, `POST .../publish`, `POST .../cancel` body `{reason}` | `events.manage` over the event's area | `200` the event, with `notified` (members sent an SMS) | `403`, `404`, `409 not_allowed_from:<state>`, `422` |
+| `POST /v1/events/{id}/scan` body `{code}` | `events.checkin_scan` over the event's area | `200 {result, fullName?, memberCode?, attendedAt?}`: `checked_in`, `already_checked_in`, `expired`, `wrong_event`, `outside_window`, `not_valid` | `403`, `404` |
+| `GET /v1/events/{id}/attendance` | `events.checkin_scan` (or `events.manage`) over the event's area | `200 {expected, attended, entries}` | `403`, `404` |
+
 Error bodies are `{"detail": "<code>"}`, or for a refused assignment `{"detail": {"code": "assignment_refused", "problems": [...]}}`. Problem codes: `unknown_member`, `self_assignment`, `identity_not_verified`, `tier_5_by_bootstrap_only`, `area_does_not_match_tier`, `unknown_area`, `no_permissions`, `unknown_permission:<p>`, `permission_not_for_tier:<p>`, `outside_your_area`, `tier_not_below_yours`, `permission_not_held:<p>`, `separation_of_duties`, `own_assignment`.
 
 Registration problems: `invalid_name`, `invalid_id_number`, `invalid_passport_country`, `password_too_short`, `password_too_long`, `password_too_common`, `password_contains_id_number`, `dob_in_future`, `dob_too_early`, `under_minimum_age`, `area_incomplete`, `unknown_area`. Uploads answer `409 consent_required` until identity-review consent is given; a review on the wrong route gets `route_mismatch`.

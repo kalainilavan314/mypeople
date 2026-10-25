@@ -19,6 +19,9 @@ Current scope:
 | `POST /v1/identity/register` | create an account on the NIC or passport route and sign it in; `409 already_registered`, `422 registration_refused` |
 | `GET /v1/identity/notices`, `POST /v1/identity/me/consent`, `GET /v1/identity/me/progress` | notice versions, identity-review consent (needed before any upload), registration steps |
 | `GET /v1/geography/districts`, `.../districts/{code}/ds-divisions`, `.../ds-divisions/{code}/gn-divisions` | the area lists, public |
+| `GET /v1/events`, `GET /v1/events/{id}`, `PUT /v1/events/{id}/rsvp`, `GET /v1/events/{id}/pass`, `.../pass/code` | events for members: list with filters, detail, RSVP, the event pass and its 60-second QR code |
+| `GET /v1/events/manage`, `GET /v1/events/manage/{id}`, `POST /v1/events`, `PATCH /v1/events/{id}`, `POST .../publish`, `.../cancel` | the event console; needs `events.manage` over the event's area |
+| `POST /v1/events/{id}/scan`, `GET /v1/events/{id}/attendance` | check-in and the attendance roster; need `events.checkin_scan` over the event's area (the roster also opens with `events.manage`) |
 | `GET`/`POST /v1/identity/me/phone`, `POST /v1/identity/me/phone/confirm` | the recovery number, confirmed by a one-time code |
 | `POST /v1/auth/recovery/request`, `/verify`, `/reset`, `/assisted` | account recovery by code, a new password, and assisted recovery requests |
 | `GET /v1/identity/recovery-requests`, `POST .../{id}/resolve` | the assisted-recovery queue; needs `members.verify` over the member's area |
@@ -203,9 +206,49 @@ suspension (FR-CARD-015), and how existing members are migrated at go-live.
   successful scan, for C02's "Checked in".
 
 Not built yet: wallet passes (INT-03, OD-06), the offline credential and
-offline scanning (OD-08), milestones, and event passes with per-event
-scope (events batch). The live PWA still uses Express's 10-minute card
-token, which carries the member id.
+offline scanning (OD-08) and milestones. Event passes are their own codes
+(see Events). The live PWA still uses Express's 10-minute card token,
+which carries the member id, and shows it only for an official card.
+
+## Events (BRD E01 to E06, GAP-03, S09; FR-EVT-001 to 017, FR-ADM-004, FR-STF-006)
+
+Events live in their own schema (Alembic `0014`); the live app still uses
+Express's `/api/events` until the member app moves over.
+
+- **Listing (E01).** Members see every published event still to come, with
+  their own response. "My area" (events scoped to an area the member is in)
+  is the default and `scope=all` widens it (BR-057). Filters: an area, a
+  date limit, type, the member's participation and a search of titles and
+  venues. Cancelled events stay listed, marked cancelled; drafts never show.
+- **RSVP (E05).** Going, maybe or declined, with no reason asked for
+  declining; a change updates the one record and keeps every earlier
+  response (BR-059). Going on a full event joins the waitlist, and the
+  longest-waiting member takes a place that frees up (FR-EVT-011,
+  assumption).
+- **Pass (E06).** Only for a member going to an event that is on, and, by
+  OD-12 (assumption), only with an Active membership unless the event admits
+  pending members. Its QR is `E1.<pass ref>.<issued>.<expires>.<key id>.<signature>`
+  under its own key: an opaque reference bound to one event and one member,
+  valid 60 seconds (BR-060). The reference disappears when the member stops
+  going or the event is cancelled.
+- **Check-in.** Holders of `events.checkin_scan` over the event's area scan
+  at that event: `checked_in`, `already_checked_in` (no second record,
+  BR-061), `expired` (ask the member to refresh), `wrong_event`,
+  `outside_window` or `not_valid`. Only a recorded attendance shows the
+  name and member ID (BR-062); nobody checks themselves in. Attendance
+  cannot be changed or deleted, and every scan is audited.
+- **Console (GAP-03).** Holders of `events.manage` create drafts in their
+  own areas, edit, publish and cancel (with a reason). Members going,
+  maybe going or waitlisted are sent an SMS, after the response, when a
+  published event is cancelled or its time or place changes. The check-in
+  window defaults to an hour before the start until the end.
+- **Roster (S09).** Expected (going) and attended counts with the list.
+
+Not built yet: the 24-hour reminder (FR-EVT-018, scheduled tasks), notices
+to members promoted from the waitlist or checked in, the volunteer link
+(FR-EVT-008), My Activity and progress, the map and filter screens
+(FR-EVT-004 to 006, the apps), event-scoped scanning grants for
+volunteers (OD-12), and town halls and appointments.
 
 ## Identity evidence (BRD FR-ARCH-007, BR-086)
 
@@ -473,6 +516,8 @@ app/
   modules/identity/recovery/  recovery number, one-time codes, recovery, assisted recovery
   integrations/sms.py   the SMS interface (no vendor yet)
   modules/geography/  district, DS and GN lists
+  modules/events/     events, RSVPs, event passes, check-in and the roster
+  core/rotating_codes.py  60-second signed QR codes (member card, event pass)
   modules/<households, assistance, community, events, engagement, finance, content, messaging, ai>/
                        README only: not built yet
   integrations/, tasks/  README only: not built yet

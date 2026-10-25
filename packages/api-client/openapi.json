@@ -3452,6 +3452,920 @@
           }
         }
       }
+    },
+    "/v1/events/manage": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "List Managed Events",
+        "description": "Events in the areas where the caller holds events.manage, drafts included, soonest first.",
+        "operationId": "list_managed_events_v1_events_manage_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "draft",
+                      "published",
+                      "cancelled"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ManagedEventOut"
+                  },
+                  "title": "Response List Managed Events V1 Events Manage Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/manage/{event_id}": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Read Managed Event",
+        "operationId": "read_managed_event_v1_events_manage__event_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedEventOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events": {
+      "post": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Create Event",
+        "description": "A draft event in an area where the caller holds events.manage (FR-ADM-004).",
+        "operationId": "create_event_v1_events_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventCreateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedEventOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "{\"code\": \"event_invalid\", \"problems\": [...]}"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "List Events",
+        "description": "E01: published events still to come, soonest first, with the member's response (FR-EVT-001,\n002, 005). Cancelled ones stay listed, marked cancelled. \"My area\" is only a default (BR-057).",
+        "operationId": "list_events_v1_events_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scope",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "mine",
+                "all"
+              ],
+              "type": "string",
+              "description": "mine (the default): events for the member's area",
+              "default": "mine",
+              "title": "Scope"
+            },
+            "description": "mine (the default): events for the member's area"
+          },
+          {
+            "name": "area",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only events within this area, e.g. district:LK41",
+              "title": "Area"
+            },
+            "description": "Only events within this area, e.g. district:LK41"
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only events starting before this time",
+              "title": "Until"
+            },
+            "description": "Only events starting before this time"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "name": "participation",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "going",
+                    "maybe",
+                    "declined",
+                    "waitlisted"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Participation"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Search titles and venues",
+              "title": "Q"
+            },
+            "description": "Search titles and venues"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventSummaryOut"
+                  },
+                  "title": "Response List Events V1 Events Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/{event_id}": {
+      "patch": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Update Event",
+        "description": "Edit a draft or published event. Members who responded are told by SMS when a published\nevent's time or place changes.",
+        "operationId": "update_event_v1_events__event_id__patch",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventUpdateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedEventOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:cancelled"
+          },
+          "422": {
+            "description": "event_invalid"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Read Event",
+        "description": "E04: everything a member needs before responding (FR-EVT-007), and their response history.",
+        "operationId": "read_event_v1_events__event_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventDetailOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/{event_id}/publish": {
+      "post": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Publish Event",
+        "operationId": "publish_event_v1_events__event_id__publish_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedEventOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state>"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/{event_id}/cancel": {
+      "post": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Cancel Event",
+        "description": "Cancel with a reason: every pass stops working, and members going, maybe going or\nwaitlisted are told by SMS.",
+        "operationId": "cancel_event_v1_events__event_id__cancel_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedEventOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:cancelled"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/{event_id}/scan": {
+      "post": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Scan Pass",
+        "description": "Check a pass in at this event; needs events.checkin_scan over the event's area. A repeat\nscan records nothing new (BR-061); an expired code asks the member to refresh (BR-062).",
+        "operationId": "scan_pass_v1_events__event_id__scan_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PassScanIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassScanOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/{event_id}/attendance": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Read Attendance",
+        "description": "S09: who is expected and who has attended, for an event in the caller's scope (FR-STF-006).",
+        "operationId": "read_attendance_v1_events__event_id__attendance_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RosterOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/{event_id}/rsvp": {
+      "put": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Respond",
+        "description": "E05: going, maybe or declined; changing it updates the one RSVP (FR-EVT-009, 010). Going on a\nfull event joins the waitlist (FR-EVT-011).",
+        "operationId": "respond_v1_events__event_id__rsvp_put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RsvpInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RsvpOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "event_cancelled or event_over"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/{event_id}/pass": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Read Pass",
+        "description": "E06: only for a member going to the event (FR-EVT-012, 014).",
+        "operationId": "read_pass_v1_events__event_id__pass_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventPassOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_going, membership_not_active, event_cancelled or event_over"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/{event_id}/pass/code": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Read Pass Code",
+        "description": "A pass code valid for 60 seconds, bound to this event and this member (FR-EVT-013).",
+        "operationId": "read_pass_code_v1_events__event_id__pass_code_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassCodeOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_going, membership_not_active, event_cancelled or event_over"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4507,6 +5421,21 @@
         ],
         "title": "AwaitingMemberOut"
       },
+      "CancelIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "CancelIn"
+      },
       "CardCodeOut": {
         "properties": {
           "code": {
@@ -5317,6 +6246,734 @@
         "title": "DuplicateFlagOut",
         "description": "A possible duplicate account (FR-WEB-012): a flag for the reviewer, never a decision."
       },
+      "EventCreateIn": {
+        "properties": {
+          "titleEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Titleta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Descriptionen",
+            "default": ""
+          },
+          "descriptionTa": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Descriptionta",
+            "default": ""
+          },
+          "eventType": {
+            "type": "string",
+            "enum": [
+              "community_meeting",
+              "service_day",
+              "training",
+              "cultural",
+              "town_hall",
+              "other"
+            ],
+            "title": "Eventtype"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "checkinOpensAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkinopensat",
+            "description": "Default: an hour before the start"
+          },
+          "checkinClosesAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkinclosesat",
+            "description": "Default: the end"
+          },
+          "venue": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Venue"
+          },
+          "meetingPoint": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Meetingpoint",
+            "default": ""
+          },
+          "agenda": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Agenda",
+            "default": ""
+          },
+          "accessibility": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Accessibility",
+            "default": ""
+          },
+          "contactRoute": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Contactroute",
+            "description": "An approved route, never a private number",
+            "default": ""
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "admitsPending": {
+            "type": "boolean",
+            "title": "Admitspending",
+            "description": "OD-12: passes for members whose membership is pending",
+            "default": false
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaRef"
+          }
+        },
+        "type": "object",
+        "required": [
+          "titleEn",
+          "titleTa",
+          "eventType",
+          "startsAt",
+          "endsAt",
+          "venue",
+          "area"
+        ],
+        "title": "EventCreateIn"
+      },
+      "EventDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "eventRef": {
+            "type": "string",
+            "title": "Eventref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "eventType": {
+            "type": "string",
+            "title": "Eventtype"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "venue": {
+            "type": "string",
+            "title": "Venue"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "published",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "myResponse": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "going",
+                  "maybe",
+                  "declined",
+                  "waitlisted"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Myresponse"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "placesLeft": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placesleft",
+            "description": "Null when the event has no capacity limit"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          },
+          "meetingPoint": {
+            "type": "string",
+            "title": "Meetingpoint"
+          },
+          "agenda": {
+            "type": "string",
+            "title": "Agenda"
+          },
+          "accessibility": {
+            "type": "string",
+            "title": "Accessibility"
+          },
+          "contactRoute": {
+            "type": "string",
+            "title": "Contactroute"
+          },
+          "checkinOpensAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Checkinopensat"
+          },
+          "checkinClosesAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Checkinclosesat"
+          },
+          "cancelReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelreason"
+          },
+          "myHistory": {
+            "items": {
+              "$ref": "#/components/schemas/RsvpChangeOut"
+            },
+            "type": "array",
+            "title": "Myhistory"
+          },
+          "attendedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attendedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "eventRef",
+          "titleEn",
+          "titleTa",
+          "eventType",
+          "startsAt",
+          "endsAt",
+          "venue",
+          "areaKey",
+          "state",
+          "myResponse",
+          "capacity",
+          "placesLeft",
+          "descriptionEn",
+          "descriptionTa",
+          "meetingPoint",
+          "agenda",
+          "accessibility",
+          "contactRoute",
+          "checkinOpensAt",
+          "checkinClosesAt",
+          "cancelReason",
+          "myHistory",
+          "attendedAt"
+        ],
+        "title": "EventDetailOut",
+        "description": "E04: schedule, venue and meeting point, agenda, organiser contact route and accessibility\ninformation come before the RSVP control (FR-EVT-007)."
+      },
+      "EventPassOut": {
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Eventid"
+          },
+          "eventRef": {
+            "type": "string",
+            "title": "Eventref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "venue": {
+            "type": "string",
+            "title": "Venue"
+          },
+          "meetingPoint": {
+            "type": "string",
+            "title": "Meetingpoint"
+          },
+          "checkinOpensAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Checkinopensat"
+          },
+          "checkinClosesAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Checkinclosesat"
+          },
+          "attendedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attendedat",
+            "description": "Set once a scan has recorded attendance"
+          },
+          "instructionsEn": {
+            "type": "string",
+            "title": "Instructionsen",
+            "default": "Show this pass to the authorised staff at the entrance."
+          },
+          "instructionsTa": {
+            "type": "string",
+            "title": "Instructionsta",
+            "default": "நுழைவாயிலில் அங்கீகரிக்கப்பட்ட பணியாளரிடம் இந்த அனுமதிச்சீட்டைக் காட்டவும்."
+          }
+        },
+        "type": "object",
+        "required": [
+          "eventId",
+          "eventRef",
+          "titleEn",
+          "titleTa",
+          "startsAt",
+          "endsAt",
+          "venue",
+          "meetingPoint",
+          "checkinOpensAt",
+          "checkinClosesAt",
+          "attendedAt"
+        ],
+        "title": "EventPassOut",
+        "description": "E06 besides the QR: time, venue, meeting point and what to do (FR-EVT-014)."
+      },
+      "EventSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "eventRef": {
+            "type": "string",
+            "title": "Eventref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "eventType": {
+            "type": "string",
+            "title": "Eventtype"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "venue": {
+            "type": "string",
+            "title": "Venue"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "published",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "myResponse": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "going",
+                  "maybe",
+                  "declined",
+                  "waitlisted"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Myresponse"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "placesLeft": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placesleft",
+            "description": "Null when the event has no capacity limit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "eventRef",
+          "titleEn",
+          "titleTa",
+          "eventType",
+          "startsAt",
+          "endsAt",
+          "venue",
+          "areaKey",
+          "state",
+          "myResponse",
+          "capacity",
+          "placesLeft"
+        ],
+        "title": "EventSummaryOut",
+        "description": "An event card (FR-EVT-002): the member's response is given in words, never only by colour."
+      },
+      "EventUpdateIn": {
+        "properties": {
+          "titleEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleta"
+          },
+          "descriptionEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Descriptionta"
+          },
+          "eventType": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "community_meeting",
+                  "service_day",
+                  "training",
+                  "cultural",
+                  "town_hall",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventtype"
+          },
+          "startsAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endsat"
+          },
+          "checkinOpensAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkinopensat"
+          },
+          "checkinClosesAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkinclosesat"
+          },
+          "venue": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Venue"
+          },
+          "meetingPoint": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meetingpoint"
+          },
+          "agenda": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agenda"
+          },
+          "accessibility": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accessibility"
+          },
+          "contactRoute": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contactroute"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "admitsPending": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Admitspending"
+          }
+        },
+        "type": "object",
+        "title": "EventUpdateIn",
+        "description": "Only the fields sent change; the area stays as created."
+      },
       "EvidenceVersion": {
         "properties": {
           "id": {
@@ -5391,6 +7048,245 @@
           "status"
         ],
         "title": "HealthStatus"
+      },
+      "ManagedEventOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "eventRef": {
+            "type": "string",
+            "title": "Eventref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "eventType": {
+            "type": "string",
+            "title": "Eventtype"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "venue": {
+            "type": "string",
+            "title": "Venue"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "myResponse": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "going",
+                  "maybe",
+                  "declined",
+                  "waitlisted"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Myresponse"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "placesLeft": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placesleft",
+            "description": "Null when the event has no capacity limit"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          },
+          "meetingPoint": {
+            "type": "string",
+            "title": "Meetingpoint"
+          },
+          "agenda": {
+            "type": "string",
+            "title": "Agenda"
+          },
+          "accessibility": {
+            "type": "string",
+            "title": "Accessibility"
+          },
+          "contactRoute": {
+            "type": "string",
+            "title": "Contactroute"
+          },
+          "checkinOpensAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Checkinopensat"
+          },
+          "checkinClosesAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Checkinclosesat"
+          },
+          "cancelReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelreason"
+          },
+          "myHistory": {
+            "items": {
+              "$ref": "#/components/schemas/RsvpChangeOut"
+            },
+            "type": "array",
+            "title": "Myhistory"
+          },
+          "attendedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attendedat"
+          },
+          "areaPath": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Areapath"
+          },
+          "admitsPending": {
+            "type": "boolean",
+            "title": "Admitspending"
+          },
+          "going": {
+            "type": "integer",
+            "title": "Going"
+          },
+          "waitlisted": {
+            "type": "integer",
+            "title": "Waitlisted"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedat"
+          },
+          "cancelledAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelledat"
+          },
+          "notified": {
+            "type": "integer",
+            "title": "Notified",
+            "description": "Members sent an SMS about this change",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "eventRef",
+          "titleEn",
+          "titleTa",
+          "eventType",
+          "startsAt",
+          "endsAt",
+          "venue",
+          "areaKey",
+          "state",
+          "myResponse",
+          "capacity",
+          "placesLeft",
+          "descriptionEn",
+          "descriptionTa",
+          "meetingPoint",
+          "agenda",
+          "accessibility",
+          "contactRoute",
+          "checkinOpensAt",
+          "checkinClosesAt",
+          "cancelReason",
+          "myHistory",
+          "attendedAt",
+          "areaPath",
+          "admitsPending",
+          "going",
+          "waitlisted",
+          "publishedAt",
+          "cancelledAt"
+        ],
+        "title": "ManagedEventOut"
       },
       "MemberDecisionOut": {
         "properties": {
@@ -5987,6 +7883,97 @@
         ],
         "title": "NoticesOut",
         "description": "The notice versions the apps must show; consent is recorded against them."
+      },
+      "PassCodeOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "description": "Show as a black-on-white QR; ask for a new one at expiresAt"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiresat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "expiresAt"
+        ],
+        "title": "PassCodeOut"
+      },
+      "PassScanIn": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "PassScanIn"
+      },
+      "PassScanOut": {
+        "properties": {
+          "result": {
+            "type": "string",
+            "enum": [
+              "checked_in",
+              "already_checked_in",
+              "expired",
+              "wrong_event",
+              "outside_window",
+              "not_valid"
+            ],
+            "title": "Result"
+          },
+          "fullName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fullname"
+          },
+          "memberCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Membercode"
+          },
+          "attendedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attendedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "title": "PassScanOut",
+        "description": "checked_in, already_checked_in, expired (ask the member to refresh), wrong_event,\noutside_window or not_valid. A name is shown only with a recorded attendance (BR-062)."
       },
       "PasswordResetInput": {
         "properties": {
@@ -6898,6 +8885,163 @@
           "reason"
         ],
         "title": "RevokeInput"
+      },
+      "RosterEntryOut": {
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "response": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "going",
+                  "maybe",
+                  "declined",
+                  "waitlisted"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response"
+          },
+          "attendedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attendedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberId",
+          "fullName",
+          "memberCode",
+          "response",
+          "attendedAt"
+        ],
+        "title": "RosterEntryOut"
+      },
+      "RosterOut": {
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Eventid"
+          },
+          "eventRef": {
+            "type": "string",
+            "title": "Eventref"
+          },
+          "expected": {
+            "type": "integer",
+            "title": "Expected",
+            "description": "Members going"
+          },
+          "attended": {
+            "type": "integer",
+            "title": "Attended"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/RosterEntryOut"
+            },
+            "type": "array",
+            "title": "Entries"
+          }
+        },
+        "type": "object",
+        "required": [
+          "eventId",
+          "eventRef",
+          "expected",
+          "attended",
+          "entries"
+        ],
+        "title": "RosterOut"
+      },
+      "RsvpChangeOut": {
+        "properties": {
+          "response": {
+            "type": "string",
+            "enum": [
+              "going",
+              "maybe",
+              "declined",
+              "waitlisted"
+            ],
+            "title": "Response"
+          },
+          "changedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Changedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "response",
+          "changedAt"
+        ],
+        "title": "RsvpChangeOut"
+      },
+      "RsvpInput": {
+        "properties": {
+          "response": {
+            "type": "string",
+            "enum": [
+              "going",
+              "maybe",
+              "declined"
+            ],
+            "title": "Response",
+            "description": "No reason is asked for declining (BR-059)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "response"
+        ],
+        "title": "RsvpInput"
+      },
+      "RsvpOut": {
+        "properties": {
+          "response": {
+            "type": "string",
+            "enum": [
+              "going",
+              "maybe",
+              "declined",
+              "waitlisted"
+            ],
+            "title": "Response",
+            "description": "waitlisted when Going was chosen for a full event"
+          }
+        },
+        "type": "object",
+        "required": [
+          "response"
+        ],
+        "title": "RsvpOut"
       },
       "ScanInput": {
         "properties": {

@@ -17,7 +17,7 @@ A batch builds the API module first (rules, service, endpoints, tests, audit), t
 | 15 (done) | Member card: rotating signed QR, scanning, revocation | FR-CARD-001 to 015, FR-ADM-001, 002, FR-STF-005 | Wallet passes (INT-03), OD-08 |
 | 15b (done) | Security fixes from the 25 October review: authenticator lockout per factor, Express honours ended sessions, no phone-number probing, duplicate reports only from an open review, staff actions ranked by tier | NFR-SEC-04, NFR-SEC-11, FR-STF-001, FR-REG-028, PRM-03, RB-03 | Lockout figures (sponsor) |
 | 15c (done) | The review's low findings: sign-in attempts counted before the password check under a lock both APIs share, repeated refusals tallied, a daily upload cap, sign-out only from a working session, code limits per purpose, recovery SMS after the answer | NFR-SEC, FR-ARCH-002, FR-AUTH-014, BR-023 | Upload cap figure (sponsor) |
-| 16 | Events foundation | FR-EVT-001 to 018, FR-ADM-004, FR-STF-006 | — |
+| 16 (done) | Events foundation: listing, RSVP with history and waitlist, event passes, check-in, roster, event console | FR-EVT-001 to 003, 005, 007, 009 to 017, FR-ADM-004, FR-STF-006 (API) | OD-12 (pass eligibility, volunteer scanning); reminders need scheduled tasks |
 | 17 | Home and gallery | FR-HOME-001 to 014, FR-GAL-001 to 007, FR-ADM-005, 006 | — |
 | 18 | Profile and data-subject rights | FR-PROF remaining | — |
 | 19 | Notifications (in-app first, push behind an interface) | FR-REG-021, FR-ADM-007, FR-STF-009 | Push credentials (INT-02) |

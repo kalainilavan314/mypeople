@@ -1340,6 +1340,233 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/events/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Managed Events
+         * @description Events in the areas where the caller holds events.manage, drafts included, soonest first.
+         */
+        get: operations["list_managed_events_v1_events_manage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/manage/{event_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Managed Event */
+        get: operations["read_managed_event_v1_events_manage__event_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Events
+         * @description E01: published events still to come, soonest first, with the member's response (FR-EVT-001,
+         *     002, 005). Cancelled ones stay listed, marked cancelled. "My area" is only a default (BR-057).
+         */
+        get: operations["list_events_v1_events_get"];
+        put?: never;
+        /**
+         * Create Event
+         * @description A draft event in an area where the caller holds events.manage (FR-ADM-004).
+         */
+        post: operations["create_event_v1_events_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/{event_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Event
+         * @description E04: everything a member needs before responding (FR-EVT-007), and their response history.
+         */
+        get: operations["read_event_v1_events__event_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Event
+         * @description Edit a draft or published event. Members who responded are told by SMS when a published
+         *     event's time or place changes.
+         */
+        patch: operations["update_event_v1_events__event_id__patch"];
+        trace?: never;
+    };
+    "/v1/events/{event_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish Event */
+        post: operations["publish_event_v1_events__event_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/{event_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel Event
+         * @description Cancel with a reason: every pass stops working, and members going, maybe going or
+         *     waitlisted are told by SMS.
+         */
+        post: operations["cancel_event_v1_events__event_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/{event_id}/scan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Scan Pass
+         * @description Check a pass in at this event; needs events.checkin_scan over the event's area. A repeat
+         *     scan records nothing new (BR-061); an expired code asks the member to refresh (BR-062).
+         */
+        post: operations["scan_pass_v1_events__event_id__scan_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/{event_id}/attendance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Attendance
+         * @description S09: who is expected and who has attended, for an event in the caller's scope (FR-STF-006).
+         */
+        get: operations["read_attendance_v1_events__event_id__attendance_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/{event_id}/rsvp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Respond
+         * @description E05: going, maybe or declined; changing it updates the one RSVP (FR-EVT-009, 010). Going on a
+         *     full event joins the waitlist (FR-EVT-011).
+         */
+        put: operations["respond_v1_events__event_id__rsvp_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/{event_id}/pass": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Pass
+         * @description E06: only for a member going to the event (FR-EVT-012, 014).
+         */
+        get: operations["read_pass_v1_events__event_id__pass_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/{event_id}/pass/code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Pass Code
+         * @description A pass code valid for 60 seconds, bound to this event and this member (FR-EVT-013).
+         */
+        get: operations["read_pass_code_v1_events__event_id__pass_code_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1704,6 +1931,11 @@ export interface components {
             /** Area */
             area: string;
         };
+        /** CancelIn */
+        CancelIn: {
+            /** Reason */
+            reason: string;
+        };
         /** CardCodeOut */
         CardCodeOut: {
             /** Code */
@@ -2003,6 +2235,297 @@ export interface components {
              */
             otherMemberId: string;
         };
+        /** EventCreateIn */
+        EventCreateIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Descriptionen
+             * @default
+             */
+            descriptionEn: string;
+            /**
+             * Descriptionta
+             * @default
+             */
+            descriptionTa: string;
+            /**
+             * Eventtype
+             * @enum {string}
+             */
+            eventType: "community_meeting" | "service_day" | "training" | "cultural" | "town_hall" | "other";
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /**
+             * Checkinopensat
+             * @description Default: an hour before the start
+             */
+            checkinOpensAt?: string | null;
+            /**
+             * Checkinclosesat
+             * @description Default: the end
+             */
+            checkinClosesAt?: string | null;
+            /** Venue */
+            venue: string;
+            /**
+             * Meetingpoint
+             * @default
+             */
+            meetingPoint: string;
+            /**
+             * Agenda
+             * @default
+             */
+            agenda: string;
+            /**
+             * Accessibility
+             * @default
+             */
+            accessibility: string;
+            /**
+             * Contactroute
+             * @description An approved route, never a private number
+             * @default
+             */
+            contactRoute: string;
+            /** Capacity */
+            capacity?: number | null;
+            /**
+             * Admitspending
+             * @description OD-12: passes for members whose membership is pending
+             * @default false
+             */
+            admitsPending: boolean;
+            area: components["schemas"]["AreaRef"];
+        };
+        /**
+         * EventDetailOut
+         * @description E04: schedule, venue and meeting point, agenda, organiser contact route and accessibility
+         *     information come before the RSVP control (FR-EVT-007).
+         */
+        EventDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Eventref */
+            eventRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Eventtype */
+            eventType: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Venue */
+            venue: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "published" | "cancelled";
+            /** Myresponse */
+            myResponse: ("going" | "maybe" | "declined" | "waitlisted") | null;
+            /** Capacity */
+            capacity: number | null;
+            /**
+             * Placesleft
+             * @description Null when the event has no capacity limit
+             */
+            placesLeft: number | null;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Meetingpoint */
+            meetingPoint: string;
+            /** Agenda */
+            agenda: string;
+            /** Accessibility */
+            accessibility: string;
+            /** Contactroute */
+            contactRoute: string;
+            /**
+             * Checkinopensat
+             * Format: date-time
+             */
+            checkinOpensAt: string;
+            /**
+             * Checkinclosesat
+             * Format: date-time
+             */
+            checkinClosesAt: string;
+            /** Cancelreason */
+            cancelReason: string | null;
+            /** Myhistory */
+            myHistory: components["schemas"]["RsvpChangeOut"][];
+            /** Attendedat */
+            attendedAt: string | null;
+        };
+        /**
+         * EventPassOut
+         * @description E06 besides the QR: time, venue, meeting point and what to do (FR-EVT-014).
+         */
+        EventPassOut: {
+            /**
+             * Eventid
+             * Format: uuid
+             */
+            eventId: string;
+            /** Eventref */
+            eventRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Venue */
+            venue: string;
+            /** Meetingpoint */
+            meetingPoint: string;
+            /**
+             * Checkinopensat
+             * Format: date-time
+             */
+            checkinOpensAt: string;
+            /**
+             * Checkinclosesat
+             * Format: date-time
+             */
+            checkinClosesAt: string;
+            /**
+             * Attendedat
+             * @description Set once a scan has recorded attendance
+             */
+            attendedAt: string | null;
+            /**
+             * Instructionsen
+             * @default Show this pass to the authorised staff at the entrance.
+             */
+            instructionsEn: string;
+            /**
+             * Instructionsta
+             * @default நுழைவாயிலில் அங்கீகரிக்கப்பட்ட பணியாளரிடம் இந்த அனுமதிச்சீட்டைக் காட்டவும்.
+             */
+            instructionsTa: string;
+        };
+        /**
+         * EventSummaryOut
+         * @description An event card (FR-EVT-002): the member's response is given in words, never only by colour.
+         */
+        EventSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Eventref */
+            eventRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Eventtype */
+            eventType: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Venue */
+            venue: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "published" | "cancelled";
+            /** Myresponse */
+            myResponse: ("going" | "maybe" | "declined" | "waitlisted") | null;
+            /** Capacity */
+            capacity: number | null;
+            /**
+             * Placesleft
+             * @description Null when the event has no capacity limit
+             */
+            placesLeft: number | null;
+        };
+        /**
+         * EventUpdateIn
+         * @description Only the fields sent change; the area stays as created.
+         */
+        EventUpdateIn: {
+            /** Titleen */
+            titleEn?: string | null;
+            /** Titleta */
+            titleTa?: string | null;
+            /** Descriptionen */
+            descriptionEn?: string | null;
+            /** Descriptionta */
+            descriptionTa?: string | null;
+            /** Eventtype */
+            eventType?: ("community_meeting" | "service_day" | "training" | "cultural" | "town_hall" | "other") | null;
+            /** Startsat */
+            startsAt?: string | null;
+            /** Endsat */
+            endsAt?: string | null;
+            /** Checkinopensat */
+            checkinOpensAt?: string | null;
+            /** Checkinclosesat */
+            checkinClosesAt?: string | null;
+            /** Venue */
+            venue?: string | null;
+            /** Meetingpoint */
+            meetingPoint?: string | null;
+            /** Agenda */
+            agenda?: string | null;
+            /** Accessibility */
+            accessibility?: string | null;
+            /** Contactroute */
+            contactRoute?: string | null;
+            /** Capacity */
+            capacity?: number | null;
+            /** Admitspending */
+            admitsPending?: boolean | null;
+        };
         /** EvidenceVersion */
         EvidenceVersion: {
             /**
@@ -2044,6 +2567,96 @@ export interface components {
              * @enum {string}
              */
             status: "ok" | "unavailable";
+        };
+        /** ManagedEventOut */
+        ManagedEventOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Eventref */
+            eventRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Eventtype */
+            eventType: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Venue */
+            venue: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "published" | "cancelled";
+            /** Myresponse */
+            myResponse: ("going" | "maybe" | "declined" | "waitlisted") | null;
+            /** Capacity */
+            capacity: number | null;
+            /**
+             * Placesleft
+             * @description Null when the event has no capacity limit
+             */
+            placesLeft: number | null;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Meetingpoint */
+            meetingPoint: string;
+            /** Agenda */
+            agenda: string;
+            /** Accessibility */
+            accessibility: string;
+            /** Contactroute */
+            contactRoute: string;
+            /**
+             * Checkinopensat
+             * Format: date-time
+             */
+            checkinOpensAt: string;
+            /**
+             * Checkinclosesat
+             * Format: date-time
+             */
+            checkinClosesAt: string;
+            /** Cancelreason */
+            cancelReason: string | null;
+            /** Myhistory */
+            myHistory: components["schemas"]["RsvpChangeOut"][];
+            /** Attendedat */
+            attendedAt: string | null;
+            /** Areapath */
+            areaPath: string[];
+            /** Admitspending */
+            admitsPending: boolean;
+            /** Going */
+            going: number;
+            /** Waitlisted */
+            waitlisted: number;
+            /** Publishedat */
+            publishedAt: string | null;
+            /** Cancelledat */
+            cancelledAt: string | null;
+            /**
+             * Notified
+             * @description Members sent an SMS about this change
+             * @default 0
+             */
+            notified: number;
         };
         /**
          * MemberDecisionOut
@@ -2254,6 +2867,42 @@ export interface components {
             termsAndPrivacy: string;
             /** Identityreview */
             identityReview: string;
+        };
+        /** PassCodeOut */
+        PassCodeOut: {
+            /**
+             * Code
+             * @description Show as a black-on-white QR; ask for a new one at expiresAt
+             */
+            code: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+        };
+        /** PassScanIn */
+        PassScanIn: {
+            /** Code */
+            code: string;
+        };
+        /**
+         * PassScanOut
+         * @description checked_in, already_checked_in, expired (ask the member to refresh), wrong_event,
+         *     outside_window or not_valid. A name is shown only with a recorded attendance (BR-062).
+         */
+        PassScanOut: {
+            /**
+             * Result
+             * @enum {string}
+             */
+            result: "checked_in" | "already_checked_in" | "expired" | "wrong_event" | "outside_window" | "not_valid";
+            /** Fullname */
+            fullName?: string | null;
+            /** Membercode */
+            memberCode?: string | null;
+            /** Attendedat */
+            attendedAt?: string | null;
         };
         /** PasswordResetInput */
         PasswordResetInput: {
@@ -2577,6 +3226,72 @@ export interface components {
         RevokeInput: {
             /** Reason */
             reason: string;
+        };
+        /** RosterEntryOut */
+        RosterEntryOut: {
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Fullname */
+            fullName: string;
+            /** Membercode */
+            memberCode: string;
+            /** Response */
+            response: ("going" | "maybe" | "declined" | "waitlisted") | null;
+            /** Attendedat */
+            attendedAt: string | null;
+        };
+        /** RosterOut */
+        RosterOut: {
+            /**
+             * Eventid
+             * Format: uuid
+             */
+            eventId: string;
+            /** Eventref */
+            eventRef: string;
+            /**
+             * Expected
+             * @description Members going
+             */
+            expected: number;
+            /** Attended */
+            attended: number;
+            /** Entries */
+            entries: components["schemas"]["RosterEntryOut"][];
+        };
+        /** RsvpChangeOut */
+        RsvpChangeOut: {
+            /**
+             * Response
+             * @enum {string}
+             */
+            response: "going" | "maybe" | "declined" | "waitlisted";
+            /**
+             * Changedat
+             * Format: date-time
+             */
+            changedAt: string;
+        };
+        /** RsvpInput */
+        RsvpInput: {
+            /**
+             * Response
+             * @description No reason is asked for declining (BR-059)
+             * @enum {string}
+             */
+            response: "going" | "maybe" | "declined";
+        };
+        /** RsvpOut */
+        RsvpOut: {
+            /**
+             * Response
+             * @description waitlisted when Going was chosen for a full event
+             * @enum {string}
+             */
+            response: "going" | "maybe" | "declined" | "waitlisted";
         };
         /** ScanInput */
         ScanInput: {
@@ -5246,6 +5961,602 @@ export interface operations {
             };
             /** @description not_found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_managed_events_v1_events_manage_get: {
+        parameters: {
+            query?: {
+                state?: ("draft" | "published" | "cancelled")[] | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedEventOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_managed_event_v1_events_manage__event_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedEventOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_events_v1_events_get: {
+        parameters: {
+            query?: {
+                /** @description mine (the default): events for the member's area */
+                scope?: "mine" | "all";
+                /** @description Only events within this area, e.g. district:LK41 */
+                area?: string | null;
+                /** @description Only events starting before this time */
+                until?: string | null;
+                type?: string | null;
+                participation?: ("going" | "maybe" | "declined" | "waitlisted") | null;
+                /** @description Search titles and venues */
+                q?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_event_v1_events_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EventCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedEventOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "event_invalid", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_event_v1_events__event_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventDetailOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_event_v1_events__event_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EventUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedEventOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:cancelled */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description event_invalid */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    publish_event_v1_events__event_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedEventOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_event_v1_events__event_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedEventOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:cancelled */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    scan_pass_v1_events__event_id__scan_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PassScanIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PassScanOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_attendance_v1_events__event_id__attendance_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RosterOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    respond_v1_events__event_id__rsvp_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RsvpInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RsvpOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description event_cancelled or event_over */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_pass_v1_events__event_id__pass_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventPassOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_going, membership_not_active, event_cancelled or event_over */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_pass_code_v1_events__event_id__pass_code_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PassCodeOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_going, membership_not_active, event_cancelled or event_over */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

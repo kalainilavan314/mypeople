@@ -295,3 +295,17 @@ test('a scan posts the code and returns the result', async () => {
   assert.equal(result.result, 'expired');
   assert.equal(sent[0].url, 'https://api.example/v1/membership/card/scan');
 });
+
+test('events are listed with their filters and a response is put to the RSVP', async () => {
+  const { fetch, sent } = fakeFetch(200, []);
+  const client = createApiClient({ baseUrl: 'https://api.example', fetch });
+
+  await client.listEvents({ scope: 'all', participation: 'going', q: 'hall' });
+  await client.respondToEvent('e 1', 'maybe');
+
+  assert.equal(sent[0].url, 'https://api.example/v1/events?scope=all&participation=going&q=hall');
+  assert.equal(sent[1].url, 'https://api.example/v1/events/e%201/rsvp');
+  assert.equal(sent[1].method, 'PUT');
+  assert.deepEqual(JSON.parse(sent[1].body ?? ''), { response: 'maybe' });
+});
+

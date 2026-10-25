@@ -21,6 +21,7 @@ from app.db.session import create_database_engine
 from app.integrations.sms import build_sms
 from app.modules.access import router as access
 from app.modules.audit import router as audit
+from app.modules.events import router as events
 from app.modules.auth import router as auth
 from app.modules.identity.appeals import router as identity_appeals
 from app.modules.identity.documents import router as identity_documents
@@ -80,6 +81,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(identity_registration.router)
     app.include_router(identity_recovery.router)
     app.include_router(geography.router)
+    app.include_router(events.router)
 
     # The middleware added last runs first, so the security headers are also
     # set on the 403 that the origin check returns.
