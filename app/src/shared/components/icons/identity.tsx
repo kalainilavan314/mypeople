@@ -9,8 +9,8 @@ export const identityIcons: Partial<Record<IconName, React.ReactNode>> = {
   ),
   user: (
     <>
-      <path d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2" />
       <circle cx="12" cy="7" r="4" />
+      <path d="M5 20v-1c0-2.8 3.1-5 7-5s7 2.2 7 5v1c0 .6-.5 1-1 1H6c-.5 0-1-.4-1-1z" />
     </>
   ),
   star: <path d="M12 2.5l2.9 6.1 6.6.9-4.8 4.7 1.2 6.7L12 17.6 6.1 20.9l1.2-6.7-4.8-4.7 6.6-.9z" />,
