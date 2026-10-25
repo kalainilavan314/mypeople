@@ -4,6 +4,7 @@ import { tierDef } from '@/core/theme/tiers';
 import '@/core/theme/profile.css';
 import { ProfileGroup } from '@/features/profile/components/ProfileGroup';
 import { ProfileSection } from '@/features/profile/components/ProfileSection';
+import { LogoutConfirmDialog } from '@/features/profile/components/LogoutConfirmDialog';
 import { Row } from '@/features/profile/components/Row';
 import { VerificationSheet } from '@/features/profile/components/VerificationSheet';
 import { Icon } from '@/shared/components/Icon';
@@ -11,18 +12,38 @@ import { QueryBoundary } from '@/shared/components/ui';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useMeQuery } from '@/shared/hooks/useMe';
 import { useTheme } from '@/shared/hooks/useTheme';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 export function Profile() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
   const meQ = useMeQuery();
   const { logout } = useAuth();
   const { isDark, toggle: toggleTheme } = useTheme();
   const [verifyOpen, setVerifyOpen] = useState(false);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await authApi.logout();
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      queryClient.clear();
+      logout();
+      setLogoutConfirmOpen(false);
+      setIsLoggingOut(false);
+      navigate('/login', { replace: true });
+    }
+  };
+
   const languageName = lang.startsWith('ta') ? 'தமிழ்' : lang.startsWith('si') ? 'සිංහල' : 'English';
 
   return (
@@ -44,8 +65,18 @@ export function Profile() {
         return (
           <main className="civic-page profile-page">
             <h1 className="sr-only">{t('profile.titleMy', 'My Profile')}</h1>
-            <ProfileSection navigate={navigate} t={t} me={member} name={name} code={code} lang={lang}
-              tier={tierDef(member.tier ?? 'volunteer')} verified={verified} pending={pending} />
+            <ProfileSection
+              navigate={navigate}
+              t={t}
+              me={member}
+              name={name}
+              code={code}
+              lang={lang}
+              tier={tierDef(member.tier ?? 'volunteer')}
+              verified={verified}
+              pending={pending}
+              onOpenVerification={() => setVerifyOpen(true)}
+            />
             <nav className="profile-account-groups" aria-label={t('profile.sections', 'Profile sections')}>
               <ProfileGroup title={lang === 'ta' ? 'எனது உறுப்பினர் விவரங்கள்' : 'My membership'}>
                 <Row icon="mapPin" title={t('profile.myArea', 'My area')} sub={area}
@@ -83,15 +114,25 @@ export function Profile() {
                   value="v1.0.0" onClick={() => navigate('/privacy')} />
               </ProfileGroup>
             </nav>
-            <button type="button" className="profile-account-logout" onClick={() => {
-              void authApi.logout();
-              logout();
-              navigate('/login');
-            }}>
-              <Icon name="logout" size={20} strokeWidth={1.7} />
-              {t('profile.logout', 'Sign out')}
+            <button
+              type="button"
+              className="profile-account-logout"
+              onClick={() => setLogoutConfirmOpen(true)}
+              aria-haspopup="dialog"
+            >
+              <Icon name="logout" size={20} strokeWidth={1.8} />
+              <span>{t('profile.logout', 'Sign out')}</span>
             </button>
             <VerificationSheet open={verifyOpen} onClose={() => setVerifyOpen(false)} status={status} t={t} />
+            <LogoutConfirmDialog
+              open={logoutConfirmOpen}
+              onClose={() => {
+                if (!isLoggingOut) setLogoutConfirmOpen(false);
+              }}
+              onConfirm={handleLogout}
+              loading={isLoggingOut}
+              t={t}
+            />
           </main>
         );
       }}
