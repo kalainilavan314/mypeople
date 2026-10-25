@@ -6,7 +6,7 @@ export function LoginDiv({ t }: Props) {
   return (
     <div
       style={{
-        marginTop: 14,
+        marginTop: 0,
         paddingTop: 12,
         paddingBottom: 2,
         borderTop: '1px solid rgba(20, 38, 61, 0.08)',

@@ -50,9 +50,10 @@ export function LoginLoginCardContainer({
         style={{
           position: 'relative',
           zIndex: 2,
-          padding: '16px 22px 18px',
+          padding: 'calc(14px + var(--safe-top, 0px)) 22px calc(24px + var(--safe-bottom, 0px))',
           display: 'flex',
           flexDirection: 'column',
+          flex: 1,
         }}
       >
         <div
@@ -60,7 +61,7 @@ export function LoginLoginCardContainer({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginBottom: 14,
+            marginBottom: 6,
           }}
         >
           <button
@@ -85,6 +86,9 @@ export function LoginLoginCardContainer({
           </button>
           <LangToggle />
         </div>
+
+        {/* Breathing space for the Jaffna coastal lighthouse hero artwork */}
+        <div style={{ flex: '0.4 1 auto', minHeight: 6, maxHeight: 32 }} />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Logo
@@ -118,7 +122,7 @@ export function LoginLoginCardContainer({
             font: `900 25px/1.2 var(--font-ui, 'Inter', sans-serif)`,
             letterSpacing: '-0.025em',
             color: '#0F2137',
-            margin: '14px 0 0',
+            margin: '16px 0 0',
           }}
         >
           {t('auth.welcomeBack', 'Welcome back')}
@@ -130,7 +134,7 @@ export function LoginLoginCardContainer({
             background: '#F1F5F9',
             padding: 4,
             borderRadius: 999,
-            marginTop: 14,
+            marginTop: 16,
             border: '1px solid rgba(20, 38, 61, 0.04)',
           }}
         >
@@ -159,9 +163,10 @@ export function LoginLoginCardContainer({
           busy={busy}
         />
 
+        {/* Grouped directly under primary button */}
         <div
           style={{
-            marginTop: 13,
+            marginTop: 16,
             textAlign: 'center',
             font: `500 13px/1.4 var(--font-ui, 'Inter', sans-serif)`,
             color: '#4B5563',
@@ -185,7 +190,12 @@ export function LoginLoginCardContainer({
           </button>
         </div>
 
-        <LoginDiv t={t} />
+        {/* Controlled spacer to bottom trust badges */}
+        <div style={{ flex: '1 1 auto', minHeight: 20, maxHeight: 60 }} />
+
+        <div style={{ marginTop: 'auto', width: '100%' }}>
+          <LoginDiv t={t} />
+        </div>
       </div>
     </div>
   );

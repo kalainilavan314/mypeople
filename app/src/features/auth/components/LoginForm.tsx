@@ -92,7 +92,7 @@ export function LoginForm({
         setShowPassword={setShowPassword}
       />
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: -4 }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
         <button
           type="button"
           onClick={() => navigate('/forgot')}
@@ -128,7 +128,7 @@ export function LoginForm({
         </div>
       )}
 
-      <div style={{ marginTop: 6 }}>
+      <div style={{ marginTop: 14 }}>
         <button type="submit" className="login-cta-button" disabled={!canSubmit}>
           {busy ? (
             <span

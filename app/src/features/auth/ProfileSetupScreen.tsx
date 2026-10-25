@@ -58,12 +58,10 @@ export function ProfileSetup() {
   return (
     <div
       style={{
-        minHeight: '100vh',
-        background: '#EDF4FC',
+        minHeight: '100%',
+        background: '#F8FAFC',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '16px 12px calc(24px + var(--safe-bottom, 0px))',
+        flexDirection: 'column',
       }}
     >
       <style>{embeddedStyles0}</style>

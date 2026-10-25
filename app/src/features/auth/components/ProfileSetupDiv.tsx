@@ -17,7 +17,7 @@ export function ProfileSetupDiv({ navigate, t, cont, ready }: Props) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '16px 18px 8px',
+        padding: 'calc(14px + var(--safe-top, 0px)) 18px 8px',
       }}
     >
       <BackChip onClick={() => navigate('/signup')} />

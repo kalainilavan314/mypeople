@@ -48,14 +48,10 @@ export function SignUp() {
   return (
     <div
       style={{
-        height: '100%',
-        maxHeight: '100%',
-        overflow: 'hidden',
-        background: '#EDF4FC',
+        minHeight: '100%',
+        background: '#FFFFFF',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '10px 12px calc(10px + var(--safe-bottom, 0px))',
+        flexDirection: 'column',
       }}
     >
       <style>{embeddedStyles0}</style>

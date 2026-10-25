@@ -55,14 +55,11 @@ export function Login() {
   return (
     <div
       style={{
-        height: '100%',
-        maxHeight: '100%',
-        overflow: 'hidden',
-        background: '#EDF4FC',
+        flex: 1,
+        minHeight: '100%',
+        background: '#FFFFFF',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '10px 12px calc(12px + var(--safe-bottom, 0px))',
+        flexDirection: 'column',
       }}
     >
       <style>{embeddedStyles0}</style>
