@@ -28,7 +28,7 @@ Current scope:
 ## Staff access (BRD §9)
 
 Access is a tier, explicit permissions and an area, held as rows in
-`access.staff_assignment`. `app/modules/access/permissions.py` encodes the
+`access.staff_assignment`. `app/core/permissions.py` encodes the
 BRD's permission matrix (§9.4, §9.8) and `rules.py` the rules RB-01 to RB-07
 and RB-12, as plain functions with their own tests. Endpoints declare what
 they need with `require_permission("...")`; refused checks return 403 and
@@ -268,9 +268,14 @@ app/
   modules/membership/  /v1/members/me: router, schemas, repository
   modules/access/      staff tiers, permissions, areas, assignments, bootstrap command
   modules/audit/       append-only, hash-chained audit log
-  modules/identity/    identity images: encrypted vault, upload, signed view links
-  modules/verification/  identity reviews: submit, queue, claim, decide
-  modules/verification_appeals/  appeals against identity decisions
+  core/permissions.py  staff tiers and the BRD permission matrix
+  modules/identity/documents/  identity images: encrypted vault, upload, signed view links
+  modules/identity/reviews/    identity reviews: submit, queue, claim, decide
+  modules/identity/appeals/    appeals against identity decisions
+  modules/<households, assistance, community, events, engagement, finance, content, messaging, ai>/
+                       README only: not built yet
+  integrations/, tasks/  README only: not built yet
+Dockerfile             production-style image (python:3.12-slim, unprivileged user)
 alembic/               Alembic environment and revisions
 tests/                 pytest tests
 tests/express/         Node helper and vectors from server/src/lib.js

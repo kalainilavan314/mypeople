@@ -12,7 +12,7 @@ from typing import NoReturn
 from sqlalchemy.orm import Session
 
 from app.modules.access import repository, rules
-from app.modules.access.permissions import Tier, default_permissions, grant_for
+from app.core.permissions import Tier, default_permissions, grant_for
 from app.modules.access.repository import StoredAssignment
 from app.modules.access.rules import Area, AreaPath, AssignmentRequest, Grantee
 from app.modules.audit import service as audit

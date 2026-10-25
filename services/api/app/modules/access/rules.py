@@ -18,7 +18,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from app.modules.access.permissions import (
+from app.core.permissions import (
     ASSISTANCE_DECISIONS,
     MATRIX,
     POLITICAL_RIGHTS,

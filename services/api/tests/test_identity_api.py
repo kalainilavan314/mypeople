@@ -14,7 +14,7 @@ from sqlalchemy import Row, text
 from app.db.session import get_db
 from app.main import create_app
 from app.modules.audit.service import verify_chain
-from app.modules.identity import links
+from app.modules.identity.documents import links
 
 JPEG = b"\xff\xd8\xff\xe0\x00\x10JFIF\x00" + os.urandom(2048)
 PNG = b"\x89PNG\r\n\x1a\n" + os.urandom(1024)

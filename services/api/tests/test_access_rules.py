@@ -5,7 +5,7 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from app.modules.access.permissions import MATRIX, TIER_AREA_LEVEL, TIERS, default_permissions, grant_for
+from app.core.permissions import MATRIX, TIER_AREA_LEVEL, TIERS, default_permissions, grant_for
 from app.modules.access.rules import (
     PLATFORM,
     Area,

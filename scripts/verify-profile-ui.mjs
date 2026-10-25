@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.MY_PEOPLE_PLAYWRIGHT_MODULE || 'playwright');
 const base = process.env.MY_PEOPLE_BASE_URL || 'http://127.0.0.1:5175';
-const out = new URL('../design/qa/profile-redesign/', import.meta.url);
+const out = new URL('../design/mobile/qa/profile-redesign/', import.meta.url);
 await fs.mkdir(out, { recursive: true });
 const member = {
   id: 'profile-ui-fixture', fullName: 'Kalai', memberCode: 'WTL-26-5401749', phone: '',

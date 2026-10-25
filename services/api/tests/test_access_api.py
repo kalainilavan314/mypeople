@@ -8,7 +8,7 @@ from datetime import UTC, datetime, timedelta
 import pytest
 from sqlalchemy import Row, text
 
-from app.modules.access.permissions import default_permissions
+from app.core.permissions import default_permissions
 
 
 @pytest.fixture

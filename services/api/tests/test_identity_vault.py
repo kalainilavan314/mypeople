@@ -10,9 +10,9 @@ from pydantic import ValidationError
 
 from app.core.config import Settings
 from app.core.security import InvalidSessionToken, read_session_token, sign_session_token
-from app.modules.identity import links
-from app.modules.identity.images import image_type
-from app.modules.identity.vault import EvidenceUnreadable, EvidenceVault, FileStore, key_id, seal, unseal
+from app.modules.identity.documents import links
+from app.modules.identity.documents.images import image_type
+from app.modules.identity.documents.vault import EvidenceUnreadable, EvidenceVault, FileStore, key_id, seal, unseal
 
 SECRET = "test-only-jwt-secret-for-unit-tests"
 KEY = bytes(range(32))

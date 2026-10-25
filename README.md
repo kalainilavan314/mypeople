@@ -11,7 +11,7 @@ app/                  live member PWA (production; do not move)
 server/               live Express API /api and SQL migrations 0000-0011 (production; do not move)
 services/
   api/                FastAPI modular monolith /v1, Alembic, pytest
-  ai-worker/          planned private AI worker (README only, BRD Phase 3)
+  ai-worker/          private AI worker: one folder per task, not built yet
 packages/
   design-tokens/      colours, spacing, type scale, locked fonts
   i18n/               Tamil, English and Sinhala UI text
@@ -21,14 +21,14 @@ apps/
   member-mobile/      Expo member app (shell: five tabs, API connection check)
   staff-mobile/       Expo staff app (shell)
   admin-web/          Next.js admin dashboard (shell: live API status; not for deployment)
-docs/                 architecture, development, api, database, security, requirements
-deployment/           release packaging, staging, activation and verification
-design/               design history and fixture QA screenshots
+docs/                 requirements, architecture, api, database, ai-ml, security, policies, development
+deployment/           release scripts (production), nginx/, docker-compose.dev.yml, environments/, monitoring/
+design/               wireframes/, mobile/ (PWA design system and QA), admin-dashboard/
 scripts/              PWA browser checks
 .github/workflows/    CI
 ```
 
-`app/` and `server/` stay outside the npm workspaces and keep their own lockfiles. Production releases run from those exact paths, and the PWA uses React 18. Full tree: [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md). Conventions for contributors and AI agents: [CLAUDE.md](CLAUDE.md).
+Every folder of the target structure exists; folders for features not built yet hold a README with their BRD requirement IDs. `app/` and `server/` stay outside the npm workspaces and keep their own lockfiles. Production releases run from those exact paths, and the PWA uses React 18. Full tree: [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md). Conventions for contributors and AI agents: [CLAUDE.md](CLAUDE.md).
 
 ## Quick start
 
@@ -48,7 +48,8 @@ Database, FastAPI and test setup: [docs/development/setup.md](docs/development/s
 - [Development setup](docs/development/setup.md)
 - [API reference](docs/api/api-reference.md)
 - [Database guide](docs/database/database-guide.md)
-- [Security rules](docs/security/security-rules.md)
+- [Security rules](docs/security/security-rules.md) and [policies](docs/policies/README.md)
+- [AI and machine learning](docs/ai-ml/README.md)
 - [Requirements and status](docs/requirements/README.md)
 - [Deployment, backup and rollback](deployment/README.md)
 - [Home and navigation specification](docs/home-design.md), [Profile layout](docs/profile-design.md)

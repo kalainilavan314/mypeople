@@ -1,6 +1,6 @@
 # AI worker (planned)
 
-This folder will hold the private AI inference worker described in BRD v1.1 §15B. **No code exists yet, on purpose:** the BRD places AI features in Phase 3, and the decisions they depend on are still open (OD-28 biometric processing, OD-29 face data retention, OD-42 AI provider and hosting).
+This folder will hold the private AI inference worker described in BRD v1.1 §15B. **No code exists yet, on purpose:** capture quality and OCR are BRD Phase 1–2 and the rest Phase 2–3 (§15B.1), and the decisions they depend on are still open (OD-28 biometric processing, OD-29 face data retention, OD-42 AI provider and hosting). The rules and release gates are in `docs/ai-ml/README.md`.
 
 ## What it will do
 
@@ -20,4 +20,4 @@ This folder will hold the private AI inference worker described in BRD v1.1 §15
 - **Every model version is registered and approved** before use, with its evaluation report (§15B.5, NFR-AI-01). Model weights live in the registry, not in Git.
 - **No political profiling** from any input, ever (§16.9).
 
-Planned layout when work starts: `app/worker.py` plus one folder per task (`document_ocr`, `face_comparison`, `liveness`, `issue_classification`, `translation`, `knowledge_assistant`), `tests/`, `pyproject.toml` and `Dockerfile`.
+The task folders exist, each with a README naming its BRD IDs: `app/document_ocr`, `app/face_comparison`, `app/liveness`, `app/issue_classification`, `app/translation`, `app/knowledge_assistant` and `tests/`. `app/worker.py`, `pyproject.toml` and the `Dockerfile` come with the first model, once OD-42 decides the provider and hosting; a Dockerfile with nothing to run would only pretend.

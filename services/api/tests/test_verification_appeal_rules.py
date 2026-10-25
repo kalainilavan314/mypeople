@@ -4,8 +4,8 @@ import uuid
 
 import pytest
 
-from app.modules.verification import rules as review_rules
-from app.modules.verification_appeals import rules
+from app.modules.identity.appeals import rules
+from app.modules.identity.reviews import rules as review_rules
 
 ME, ORIGINAL, OTHER = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
 

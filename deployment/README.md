@@ -24,6 +24,8 @@ The release package includes changed app/server source and a built `app/dist`, w
 
 The Nginx site in front of the app is kept as a reference copy in `nginx/my-people.conf` (see `nginx/README.md`).
 
+Production does not run on Docker, so there is no production `docker-compose.yml`; one waits on the hosting decision (OD-20). `docker-compose.dev.yml` gives a local PostgreSQL 17 (and the FastAPI image with `--profile api`) for development; `environments/` and `monitoring/` describe what exists today.
+
 ## Open security items
 
 - Fixed 24 October 2026: the sign-in throttle bypass through a forged `X-Forwarded-For` (Express used the client-controlled first entry while Nginx kept client headers). Both the Express fix and the Nginx change are live; `npm test --prefix server` covers it.

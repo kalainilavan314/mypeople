@@ -21,11 +21,11 @@ from app.db.session import create_database_engine
 from app.modules.access import router as access
 from app.modules.audit import router as audit
 from app.modules.auth import router as auth
-from app.modules.identity import router as identity
-from app.modules.identity.dependencies import build_vault
+from app.modules.identity.appeals import router as identity_appeals
+from app.modules.identity.documents import router as identity_documents
+from app.modules.identity.documents.dependencies import build_vault
+from app.modules.identity.reviews import router as identity_reviews
 from app.modules.membership import router as membership
-from app.modules.verification import router as verification
-from app.modules.verification_appeals import router as verification_appeals
 
 API_VERSION = "0.1.0"
 
@@ -64,9 +64,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(membership.router)
     app.include_router(access.router)
     app.include_router(audit.router)
-    app.include_router(identity.router)
-    app.include_router(verification.router)
-    app.include_router(verification_appeals.router)
+    app.include_router(identity_documents.router)
+    app.include_router(identity_reviews.router)
+    app.include_router(identity_appeals.router)
 
     # The middleware added last runs first, so the security headers are also
     # set on the 403 that the origin check returns.

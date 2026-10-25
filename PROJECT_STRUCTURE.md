@@ -7,16 +7,19 @@ Generated from the working tree. Dependency folders, credentials, build output a
 ```text
 app/                  live member PWA (Vite, React 18) - production, do not move
 server/               live Express API (/api) and migrations 0000-0011 - production, do not move
-services/api/         FastAPI modular monolith (/v1), Alembic, pytest
-services/ai-worker/   planned private AI worker (README only)
+services/api/         FastAPI modular monolith (/v1), Alembic, pytest, Dockerfile
+services/ai-worker/   private AI worker: one folder per task, not built yet (README in each)
 packages/             design-tokens, i18n, api-client, mobile-ui (npm workspaces)
 apps/                 member-mobile and staff-mobile (Expo shells); admin-web (Next.js shell)
-docs/                 architecture, development, api, database, security, requirements
-deployment/           release package, stage, activate and verify scripts; nginx/ reference config
-design/               design history and fixture QA screenshots
+docs/                 requirements, architecture, api, database, ai-ml, security, policies, development
+deployment/           release scripts (production), nginx/, docker-compose.dev.yml, environments/, monitoring/
+design/               wireframes/, mobile/ (PWA design system and QA), admin-dashboard/
 scripts/              PWA browser checks
 .github/workflows/    CI
+.env.example          settings for deployment/docker-compose.dev.yml
 ```
+
+Every folder from the target structure exists. A folder whose feature is not built yet holds only a `README.md` that names its BRD requirement IDs and says "not built yet"; nothing in it pretends to work.
 
 ## Detail
 
@@ -426,6 +429,8 @@ services/api/
   pyproject.toml
   README.md
   .env.example
+  Dockerfile
+  .dockerignore
   scripts/
     export_openapi.py
   alembic.ini
@@ -446,6 +451,7 @@ services/api/
       __init__.py
       config.py
       middleware.py
+      permissions.py       staff tiers and the BRD permission matrix
       request_info.py
       schemas.py
       security.py
@@ -473,7 +479,6 @@ services/api/
         __init__.py
         bootstrap.py
         dependencies.py
-        permissions.py
         repository.py
         router.py
         rules.py
@@ -487,28 +492,41 @@ services/api/
         service.py
       identity/
         __init__.py
-        dependencies.py
-        images.py
-        links.py
-        repository.py
-        router.py
-        schemas.py
-        service.py
-        vault.py
-      verification/
-        __init__.py
-        repository.py
-        router.py
-        rules.py
-        schemas.py
-        service.py
-      verification_appeals/
-        __init__.py
-        repository.py
-        router.py
-        rules.py
-        schemas.py
-        service.py
+        documents/         identity images: encrypted vault, upload, signed view links
+          __init__.py
+          dependencies.py
+          images.py
+          links.py
+          repository.py
+          router.py
+          schemas.py
+          service.py
+          vault.py
+        reviews/           submission, queue, claim, decisions (W01, W02)
+          __init__.py
+          repository.py
+          router.py
+          rules.py
+          schemas.py
+          service.py
+        appeals/           appeals against decisions (D05)
+          __init__.py
+          repository.py
+          router.py
+          rules.py
+          schemas.py
+          service.py
+      households/          README only: not built yet
+      assistance/          README only: not built yet
+      community/           README only: not built yet
+      events/              README only: not built yet
+      engagement/          README only: not built yet
+      finance/             README only: not built yet
+      content/             README only: not built yet
+      messaging/           README only: not built yet
+      ai/                  README only: not built yet
+    integrations/          README only: not built yet
+    tasks/                 README only: not built yet (Celery)
   tests/
     conftest.py
     express/
@@ -537,6 +555,10 @@ services/api/
     test_verification_rules.py
 services/ai-worker/
   README.md
+  app/
+    document_ocr/  face_comparison/  liveness/  issue_classification/  translation/  knowledge_assistant/
+                           README only in each: not built yet (OD-28, OD-42)
+  tests/                   README only
 packages/
   design-tokens/
     package.json
@@ -579,9 +601,18 @@ apps/
       _layout.tsx
       (tabs)/
         _layout.tsx  index.tsx  events.tsx  card.tsx  gallery.tsx  profile.tsx
-    src/lib/
-      api.ts
-      i18n.ts
+      (auth)/  household/  assistance/  ideas/  promises/  issues/
+                           README only in each: not built yet
+    src/
+      lib/
+        api.ts
+        i18n.ts
+      features/
+        auth/  identity/  membership/  household/  assistance/  issues/
+        development/  promises/  events/  finance/  assistant/
+                           README only in each: not built yet
+      components/  hooks/  providers/
+                           README only in each
     assets/images/
   staff-mobile/
     package.json  app.json  tsconfig.json  .env.example  README.md
@@ -589,12 +620,18 @@ apps/
       _layout.tsx
       (tabs)/
         _layout.tsx  index.tsx  tasks.tsx  cases.tsx  check-in.tsx  profile.tsx
-    src/lib/
-      api.ts
-      i18n.ts              includes staff tab labels (Tamil pending review)
+      (auth)/  field-visits/  identity-reviews/
+                           README only in each: not built yet
+    src/
+      lib/
+        api.ts
+        i18n.ts            includes staff tab labels (Tamil pending review)
+      features/  components/
+                           README only in each
     assets/images/
   admin-web/
     package.json  next.config.ts  tsconfig.json  eslint.config.mjs  .env.example  README.md  AGENTS.md
+    public/robots.txt      keeps the dashboard out of search engines
     src/
       app/
         layout.tsx         design tokens as CSS variables, self-hosted locked fonts
@@ -605,16 +642,33 @@ apps/
       lib/
         api.ts             server-only API client
         modules.ts         the BRD's dashboard modules
+      features/
+        members/  verification/  organization/  assistance/  households/  issues/
+        finance/  promises/  elections/  analytics/  ai-monitoring/  audit-logs/
+                           README only in each: not built yet
 docs/
+  requirements/README.md
   architecture/
     system-overview.md
     member-pwa.md
-  development/setup.md
   api/api-reference.md
   database/database-guide.md
+  ai-ml/README.md          AI rules, use-case register, release gates (BRD §15B)
   security/security-rules.md
-  requirements/README.md
-  assets/  home-design.md  profile-design.md  refactor/
+  policies/README.md       policy approval matrix, retention, prohibitions (BRD §13.4, §16)
+  development/setup.md
+  assets/  home-design.md  profile-design.md
+design/
+  wireframes/README.md     the BRD wireframes are held by the project owner
+  mobile/                  PWA design system, specifications, review.html, qa/ screenshots
+  admin-dashboard/README.md
+deployment/
+  README.md                release record and how to deploy
+  package_release.py  deploy_release.py  stage-ui-release.sh  activate-ui-release.sh  verify_public_release.py
+  nginx/                   reference copy of the production site
+  docker-compose.dev.yml   local PostgreSQL 17, and the API with --profile api
+  environments/README.md
+  monitoring/README.md
 tsconfig.packages.json
 .github/workflows/
   ci.yml

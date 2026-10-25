@@ -8,7 +8,7 @@ from app.core.request_info import client_ip
 from app.db.session import get_db
 from app.modules.access import repository, service
 from app.modules.access.dependencies import require_permission
-from app.modules.access.permissions import MATRIX, TIER_AREA_LEVEL, TIERS, default_permissions
+from app.core.permissions import MATRIX, TIER_AREA_LEVEL, TIERS, default_permissions
 from app.modules.access.schemas import (
     AssignmentInput,
     AssignmentOut,

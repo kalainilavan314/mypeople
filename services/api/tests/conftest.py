@@ -35,7 +35,7 @@ from app.core.config import Settings
 from app.core.security import hash_password, nic_hash, sign_session_token
 from app.db.session import create_database_engine, get_db
 from app.main import create_app
-from app.modules.access.permissions import default_permissions
+from app.core.permissions import default_permissions
 
 # Nothing listens on port 1, so "database down" tests fail fast.
 UNREACHABLE_DATABASE_URL = "postgresql://nobody@127.0.0.1:1/unreachable"

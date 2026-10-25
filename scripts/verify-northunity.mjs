@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 const require=createRequire(import.meta.url);
 const {chromium}=require(process.env.MY_PEOPLE_PLAYWRIGHT_MODULE||'playwright');
-const out=new URL('../design/qa/northunity/',import.meta.url);
+const out=new URL('../design/mobile/qa/northunity/',import.meta.url);
 await fs.mkdir(out,{recursive:true});
 const member={id:'qa-member',fullName:'Kalai',memberCode:'WTL-26-5401749',districtName:'Jaffna',dsName:'Islands North (Kayts)',gsName:'Analaitivu North',tier:'volunteer',verificationStatus:'identity_confirmed',membershipStatus:'active',language:'en',recruitCount:0,joinedAt:'2026-10-03T00:00:00Z',avatarUrl:null};
 const events=[{id:'sample-event',titleEn:'Nallur water scheme — volunteer mapping',titleTa:'நல்லூர் நீர் திட்டம் — தன்னார்வப் பதிவு',venue:'Kandaswamy Kovil, Nallur',startsAt:'2026-10-11T08:00:00+05:30',endsAt:'2026-10-11T11:00:00+05:30',lat:9.674,lng:80.03,rsvpCount:1,isMine:true,myStatus:'going',agenda:[]}];

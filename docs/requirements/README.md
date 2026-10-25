@@ -25,22 +25,22 @@ v1.1 contains 466 functional requirements, 160 business rules, 174 screens, 70 d
 | FR-ARCH-002 | Server-side session, permission and area checks; refusals return 403 and are logged (processing-purpose checks still to come) | `services/api/app/modules/auth`, `access` |
 | RB-01 to RB-07, BR-083, BR-084 | Staff assignments: tier + explicit permissions + area; grantor and time recorded; RB-03 limits; preview; 12-month review for explicit grants; nothing granted automatically | `services/api/app/modules/access` |
 | BR-097 (part) | Staff need a confirmed identity; membership "Active" waits for the membership module | `access/rules.py` |
-| RB-12 [ASSUMPTION] | Assistance decisions refused alongside fundraising or election-roster rights | `access/permissions.py` |
+| RB-12 [ASSUMPTION] | Assistance decisions refused alongside fundraising or election-roster rights | `app/core/permissions.py` |
 | FR-WEB-030 to 033 (API) | Select a verified person, area and permissions; preview; refuse grants beyond the administrator's own; revocation on the next request. The W09 screen and notifications are not built | `/v1/access` |
 | FR-ADM-011 (part) | Searchable, tamper-evident audit log with chain verification; export not built | `/v1/audit` |
-| FR-ARCH-007, INT-08 (part) | Identity images in private, encrypted storage; served only through a 5-minute link for one reviewer, issued after the permission and area check | `services/api/app/modules/identity` |
-| BR-086, FR-WEB-005 (API) | Every link, view and refusal of identity evidence is logged | `identity/service.py` |
+| FR-ARCH-007, INT-08 (part) | Identity images in private, encrypted storage; served only through a 5-minute link for one reviewer, issued after the permission and area check | `services/api/app/modules/identity/documents` |
+| BR-086, FR-WEB-005 (API) | Every link, view and refusal of identity evidence is logged | `identity/documents/service.py` |
 | FR-AUTH-024 (API) | Members see the date of each view and "Identity reviewer" | `/v1/identity/me/evidence-views` |
 | FR-REG-004, 005, 010, BR-020 (API) | NIC front and back (also passport page and selfie) uploaded separately, one side replaceable; JPEG, PNG or HEIC up to 10 MB; the response is the acknowledgement | `/v1/identity/me/documents` |
 | BR-021, FR-PROF-007 (API) | No way for a member to fetch their identity images | `/v1/identity` |
 | BR-085 (part) | Nobody opens, claims or decides their own identity review or evidence; relatives are not recorded yet | `access/service.py` (`check_record_scope`) |
-| PRM-03, PRM-04 | Evidence opens only inside the reviewer's own open review; decisions need `members.verify` over the member's area | `identity`, `verification` |
+| PRM-03, PRM-04 | Evidence opens only inside the reviewer's own open review; decisions need `members.verify` over the member's area | `identity/documents`, `identity/reviews` |
 | FR-REG-019, 020, 022, 023, 025 (API) | Submission with a VR reference and no duplicates; states; the exact items to correct with the note; a correction returns to the same review; the reason category for Unable to verify | `/v1/identity/me/review` |
 | FR-WEB-001 to 004 (API) | Queue limited to the reviewer's areas with counts; search by review reference; claim with the owner shown; no bulk decision | `/v1/identity/reviews` |
-| FR-WEB-007 to 011, 013 (API) | Checklist before Approve; exactly three decisions; items and reason for Request an update; reason for Unable to verify; immutable decision with reviewer, time, reason and evidence versions; no deciding one's own record | `verification/rules.py`, Alembic `0004` |
-| BR-011 to 014, BR-081, BR-082 | Declaration; only a human with `members.verify` decides; corrections name the item; identity, membership and access stay separate | `verification` |
+| FR-WEB-007 to 011, 013 (API) | Checklist before Approve; exactly three decisions; items and reason for Request an update; reason for Unable to verify; immutable decision with reviewer, time, reason and evidence versions; no deciding one's own record | `identity/reviews/rules.py`, Alembic `0004` |
+| BR-011 to 014, BR-081, BR-082 | Declaration; only a human with `members.verify` decides; corrections name the item; identity, membership and access stay separate | `identity/reviews` |
 | FR-PROF-006 (API) | The member's review history with decision, reviewer tier and date | `/v1/identity/me/review` |
-| FR-IDV-013, PRM-29, M04 and D05 (API), §15B.4 | One appeal per Request-update or Unable-to-verify decision, up to 1,000 characters; decided by a holder of `idv.appeal.decide`, never the original reviewer; uphold or overturn with a reason the member sees; the 10-working-day target is not tracked yet | `services/api/app/modules/verification_appeals` |
+| FR-IDV-013, PRM-29, M04 and D05 (API), §15B.4 | One appeal per Request-update or Unable-to-verify decision, up to 1,000 characters; decided by a holder of `idv.appeal.decide`, never the original reviewer; uphold or overturn with a reason the member sees; the 10-working-day target is not tracked yet | `services/api/app/modules/identity/appeals` |
 | FR-AUTH-027 (part) | An assignment with an overdue review stops counting; the review workflow is not built | `access/repository.py` |
 | FR-ARCH-003, NFR-ARCH-02 | Versioned `/v1` REST API documented in OpenAPI 3.1 | `services/api`, `packages/api-client/openapi.json` |
 | FR-ARCH-006 (part) | CI runs builds and tests; security scans and the production approval gate are still missing | `.github/workflows/ci.yml` |
@@ -49,6 +49,10 @@ v1.1 contains 466 functional requirements, 160 business rules, 174 screens, 70 d
 | AP-06, NFR-ARCH-01 | Modular monolith with one folder per module | `services/api/app/modules` |
 | AP-07 (part) | Tamil and English text shared; parity checked, 82 older gaps recorded | `packages/i18n` |
 | §13.8 migrations | Alembic, forward-only, baseline guarded, run in CI | `services/api/alembic` |
+
+## Where the rest will be built
+
+Every BRD module has a folder in the target structure, with a README naming its requirement IDs: the member and staff app route and feature folders, the dashboard's `src/features/*`, the API's `modules/*`, `integrations/`, `tasks/` and the AI worker's task folders. See `PROJECT_STRUCTURE.md`. A few BRD modules have no folder of their own in the target tree yet: Home, Volunteering, Surveys, Learning, Referrals, Gallery, Elections (member side), Committees, Blood donors, Livelihood guide, Voice, Messaging (member side), Diaspora and Fact-checking. They get one when they are built.
 
 ## Open decisions that block upcoming work
 

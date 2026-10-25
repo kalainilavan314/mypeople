@@ -5,7 +5,7 @@ import uuid
 import pytest
 
 from app.modules.access.rules import PLATFORM, Area, Assignment
-from app.modules.verification import rules
+from app.modules.identity.reviews import rules
 
 FULL_CHECKLIST = list(rules.CHECKLIST)
 JAFFNA = Area("district", "LK41")

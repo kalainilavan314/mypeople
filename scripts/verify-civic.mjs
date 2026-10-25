@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 const root=new URL('../',import.meta.url);
-const out=new URL('../design/qa/',import.meta.url);
+const out=new URL('../design/mobile/qa/',import.meta.url);
 await fs.mkdir(out,{recursive:true});
 const member={id:'design-member',fullName:'Kalai',memberCode:'WTL-26-5401749',districtName:'Jaffna',dsName:'Islands North (Kayts)',gsName:'Analaitivu North',tier:'volunteer',verificationStatus:'identity_confirmed',membershipStatus:'active',phone:'',nicStatus:'verified',dob:null,gender:null,gsCode:null,dsCode:null,districtCode:null,referralCode:'SAMPLE',recruitCount:0,language:'en',joinedAt:'2026-10-03T00:00:00Z'};
 const events=[{id:'sample-event',titleEn:'Nallur water scheme — volunteer mapping',titleTa:'நல்லூர் நீர் திட்டம் — தன்னார்வப் பதிவு',venue:'Kandaswamy Kovil, Nallur',startsAt:'2026-10-11T08:00:00+05:30',endsAt:'2026-10-11T11:00:00+05:30',lat:9.674,lng:80.03,electorateId:null,agenda:[],rsvpCount:1,isMine:true,myStatus:'going'}];
@@ -95,5 +95,5 @@ const albums=(await (await fetch('http://127.0.0.1:8788/api/gallery/albums')).js
 assert.equal(albums.length,5);
 for(const album of albums){assert.equal(album.count,album.photos.length);for(const photo of album.photos){assert(photo.credit&&photo.licenseUrl);await fs.access(new URL('../app/public'+photo.src,import.meta.url));}}
 await fs.writeFile(new URL('results.json',out),JSON.stringify({fixtureOnly:true,productionServerContacted:false,checks:results},null,2));
-console.log('Passed',results.length,'checks; screenshots in design/qa.');
+console.log('Passed',results.length,'checks; screenshots in design/mobile/qa.');
 await browser.close();

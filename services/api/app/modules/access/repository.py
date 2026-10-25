@@ -12,7 +12,7 @@ from datetime import datetime
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.modules.access.permissions import AreaLevel, Tier
+from app.core.permissions import AreaLevel, Tier
 from app.modules.access.rules import PLATFORM, Area, AreaPath, Assignment
 
 # One query per area level, each returning the codes from province down.

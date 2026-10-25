@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 const require=createRequire(import.meta.url);
 const {chromium}=require(process.env.MY_PEOPLE_PLAYWRIGHT_MODULE);
 const base=process.env.MY_PEOPLE_BASE_URL||'http://127.0.0.1:5175';
-const out='design/qa/membership';await fs.mkdir(out,{recursive:true});
+const out='design/mobile/qa/membership';await fs.mkdir(out,{recursive:true});
 let member={id:'fixture',fullName:'Kalai',memberCode:'WTL-26-5401749',districtName:'Jaffna',dsName:'Islands North (Kayts)',gsName:'Analaitivu North',tier:'volunteer',verificationStatus:'identity_confirmed',membershipStatus:'active',language:'en',referralCode:'KALA-8386',recruitCount:0,joinedAt:'2026-10-09T00:00:00Z',tierProgress:{next:'diamond',need:300,have:0,pct:0}};
 const browser=await chromium.launch({headless:true,channel:'msedge'});
 const ctx=await browser.newContext({viewport:{width:390,height:844},acceptDownloads:true,serviceWorkers:'block'});

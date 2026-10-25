@@ -94,3 +94,13 @@ npm run generate -w @my-people/api-client
 ```
 
 Commit `packages/api-client/openapi.json` and `src/schema.ts` with the API change.
+
+## PostgreSQL in Docker (optional)
+
+If Docker is installed, `deployment/docker-compose.dev.yml` provides PostgreSQL 17 on `127.0.0.1:5432`. Copy `.env.example` to `.env` in the repository root and fill it in, then:
+
+```powershell
+docker compose --env-file .env -f deployment/docker-compose.dev.yml up -d db
+```
+
+Point `DATABASE_URL` in `server/.env` and `services/api/.env` at `postgresql://my_people:<POSTGRES_PASSWORD>@localhost:5432/my_people`, then build the schema with `npm run migrate --prefix server` and `python -m alembic upgrade head` (in `services/api`). Add `--profile api` to run the FastAPI image as well.

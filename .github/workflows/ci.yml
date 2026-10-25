@@ -136,3 +136,18 @@ jobs:
       - run: python -m pip install -e ".[dev]"
       - run: python -m alembic upgrade head
       - run: python -m pytest
+
+  api-image:
+    name: FastAPI container image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Builds services/api/Dockerfile and checks the image starts its app factory.
+      - run: docker build -t my-people-api services/api
+      - name: The image can import and build the app
+        run: >
+          docker run --rm
+          -e DATABASE_URL=postgresql://nobody@127.0.0.1:1/none
+          -e JWT_SECRET=ci-only-jwt-secret-not-used-anywhere-else
+          -e NIC_PEPPER=ci-only-nic-pepper-not-used-anywhere-else
+          my-people-api python -c "from app.main import create_app; print(len(create_app().routes), 'routes')"

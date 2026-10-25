@@ -5,7 +5,7 @@ from typing import Literal, Self
 from pydantic import Field, model_validator
 
 from app.core.schemas import CamelModel
-from app.modules.access.permissions import AreaLevel, Tier
+from app.core.permissions import AreaLevel, Tier
 from app.modules.access.repository import StoredAssignment
 from app.modules.access.rules import Area
 
