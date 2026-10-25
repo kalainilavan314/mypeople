@@ -41,6 +41,13 @@ from app.modules.identity.duplicates import repository as duplicates_repository
 PERMISSION = "members.view_identity_evidence"  # PRM-03
 VIEWED = "identity.evidence.viewed"
 
+# [ASSUMPTION] The BRD sets no figure. Every image is kept (decisions name the
+# versions they saw), so without a cap one account could fill the private disk
+# at 10 MB a time (review finding, 25 October 2026). A full submission is three
+# images; twelve a day leaves room for several retakes.
+UPLOADS_PER_DAY = 12
+UPLOAD_WINDOW = "24 hours"
+
 
 class DocumentNotFound(Exception):
     pass
@@ -48,6 +55,12 @@ class DocumentNotFound(Exception):
 
 class ConsentRequired(Exception):
     """BR-008: consent to identity review comes before any upload."""
+
+
+class UploadLimit(Exception):
+    def __init__(self, retry_after: int) -> None:
+        super().__init__(f"retry after {retry_after}s")
+        self.retry_after = retry_after
 
 
 @dataclass(frozen=True)
@@ -68,6 +81,13 @@ def upload(
     """Store a new image of this kind for the member; it replaces the current one (FR-REG-005)."""
     if not membership_repository.has_consent(db, member_id, "identity_review", NOTICE_VERSIONS["identity_review"]):
         raise ConsentRequired()
+    # Checked under the member's upload lock and before the file is written, so
+    # neither parallel uploads nor a refused one use any disk.
+    repository.lock_member_uploads(db, member_id)
+    uploads, oldest_leaves_in = repository.recent_uploads(db, member_id, UPLOAD_WINDOW)
+    if uploads >= UPLOADS_PER_DAY:
+        db.commit()
+        raise UploadLimit(oldest_leaves_in)
     document_id = uuid.uuid4()
     # The file is written before the record, so a failed commit can leave an
     # unused file but never a record whose image is missing.

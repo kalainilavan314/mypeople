@@ -70,14 +70,19 @@ class ResolutionRefused(Exception):
         self.code = code
 
 
-def _send_code(
-    db: Session, sms: SmsSender, *, phone: str, purpose: str, ip: str, jwt_secret: str, wait_quietly: bool = False
-) -> str | None:
-    """Issue and send a code; returns it (only development shows it) or None when limits stop it quietly."""
-    wait = rules.code_request_wait(repository.code_requests(db, phone, ip))
+@dataclass(frozen=True)
+class PendingCode:
+    """A recovery code already stored, to be sent once the answer has gone (see request_recovery)."""
+
+    phone: str
+    text: str
+    code: str  # only development shows it
+
+
+def _send_code(db: Session, sms: SmsSender, *, phone: str, purpose: str, ip: str, jwt_secret: str) -> str:
+    """Issue and send a code; returns it (only development shows it)."""
+    wait = rules.code_request_wait(repository.code_requests(db, phone, ip, purpose))
     if wait is not None:
-        if wait_quietly:
-            return None  # recovery answers the same either way (BR-023)
         raise TooManyRequests(wait)
     code = rules.new_code()
     lifetime = rules.CODE_LIFETIME[purpose]
@@ -165,13 +170,39 @@ def confirm_phone(
 # --- Recovery (FR-AUTH-014 to 016) -------------------------------------------------------------------
 
 
-def request_recovery(db: Session, sms: SmsSender, id_hash: str, ip: str, jwt_secret: str) -> str | None:
-    """Send a code to the confirmed contact, if there is one. The caller answers the same in every case."""
+def request_recovery(db: Session, id_hash: str, ip: str, jwt_secret: str) -> PendingCode | None:
+    """Store a code for the confirmed contact, if there is one and the limits allow; the caller
+    answers the same in every case (BR-023) and sends it afterwards with deliver().
+
+    Sending inside the request made the answer for a registered number slower
+    by the SMS provider's round trip, and a provider failure turned it into an
+    error, so timing or errors would tell anyone which ID numbers are
+    registered (review finding, 25 October 2026). The database work that
+    remains differs by milliseconds.
+    """
     member_id = repository.member_by_id_hash(db, id_hash)
     contact = repository.find_contact(db, member_id) if member_id else None
     if contact is None:
         return None
-    return _send_code(db, sms, phone=contact.phone, purpose=rules.RECOVERY, ip=ip, jwt_secret=jwt_secret, wait_quietly=True)
+    if rules.code_request_wait(repository.code_requests(db, contact.phone, ip, rules.RECOVERY)) is not None:
+        return None
+    code = rules.new_code()
+    lifetime = rules.CODE_LIFETIME[rules.RECOVERY]
+    repository.issue_code(
+        db,
+        phone=contact.phone,
+        purpose=rules.RECOVERY,
+        code_hash=one_time_code_hash(code, jwt_secret),
+        ip=ip,
+        lifetime=lifetime,
+    )
+    db.commit()
+    return PendingCode(phone=contact.phone, text=rules.code_message(code, lifetime), code=code)
+
+
+def deliver(sms: SmsSender, pending: PendingCode) -> None:
+    """Send a stored recovery code after the response. A failure is like a lost message: the code expires."""
+    _notify(sms, pending.phone, pending.text)
 
 
 def verify_recovery(db: Session, id_hash: str, code: str, jwt_secret: str) -> str:

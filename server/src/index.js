@@ -11,7 +11,7 @@ import pg from 'pg';
 import { pool, poolConfig, memberById, memberByNicHash, memberByPhone } from './db.js';
 import { nicHash, signToken, verifyToken, tokenIsStale, otpCode, memberCode, referralCode, publicMember, verifyAvatarUrl, hashOtp, isNicFormat, signCardToken } from './lib.js';
 import { recomputeTier, tierProgress } from './tier.js';
-import { clientIp, checkOtpRequest, issueOtp, consumeOtp, checkLogin, recordLogin, sleep, TRUSTED_PROXIES } from './throttle.js';
+import { clientIp, OTP_PURPOSES, checkOtpRequest, issueOtp, consumeOtp, reserveLogin, recordLoginSuccess, sleep, TRUSTED_PROXIES } from './throttle.js';
 import { putObject, getObject, mimeFor, backend as storageBackend } from './storage.js';
 import { replaceAvatar } from './avatar.js';
 import { sessionIsLive } from './sessions.js';
@@ -232,13 +232,14 @@ app.get('/api/config', (_req, res) =>
 app.post('/api/auth/request-otp', wrap(async (req, res) => {
   const { phone, purpose = 'signup' } = req.body || {};
   if (!phone || String(phone).replace(/\D/g, '').length < 9) throw bad('invalid_phone');
+  if (!OTP_PURPOSES.includes(purpose)) throw bad('invalid_purpose');
 
   // Layered limits: per-phone cooldown, hourly and daily caps, and a per-IP cap
   // so one attacker cannot walk through many numbers. Unthrottled, this endpoint
   // issued ten codes for one number instantly — an SMS bill and, once each code
   // stays valid, ten simultaneous guesses at a 6-digit secret.
   const ip = clientIp(req);
-  const gate = await checkOtpRequest(String(phone), ip);
+  const gate = await checkOtpRequest(String(phone), ip, purpose);
   if (!gate.ok) {
     res.set('retry-after', String(gate.retryAfter));
     throw bad('too_many_requests', 429);
@@ -255,6 +256,7 @@ app.post('/api/auth/request-otp', wrap(async (req, res) => {
 app.post('/api/auth/verify-otp', wrap(async (req, res) => {
   const { phone, code, purpose = 'signup' } = req.body || {};
   if (!phone || !code) throw bad('missing_fields');
+  if (!OTP_PURPOSES.includes(purpose)) throw bad('invalid_purpose');
 
   // Counts wrong guesses against the code and burns it after five, so the
   // 6-digit space cannot be searched within the code's lifetime.
@@ -406,7 +408,8 @@ app.post('/api/auth/login', wrap(async (req, res) => {
   const ip = clientIp(req);
   const identifier = nicHash(nic);
 
-  const gate = await checkLogin(identifier, ip);
+  // The attempt counts as a failure from here until the password proves right.
+  const gate = await reserveLogin(identifier, ip);
   if (!gate.ok) {
     res.set('retry-after', String(gate.retryAfter));
     throw bad('too_many_attempts', 429);
@@ -418,8 +421,8 @@ app.post('/api/auth/login', wrap(async (req, res) => {
   const member = await memberByNicHash(identifier);
   const ok = member ? await bcrypt.compare(String(password), member.password_hash) : false;
 
-  await recordLogin(identifier, ip, ok);
   if (!ok) throw bad('invalid_credentials', 401);
+  await recordLoginSuccess(identifier, ip);
 
   const token = signToken(member.id, member.session_version);
   setSession(res, token);
@@ -433,11 +436,17 @@ app.post('/api/auth/logout', wrap(async (req, res) => {
   // itself stayed valid for its full 30-day life and worked if replayed.
   // Incrementing the session version invalidates every token already issued to
   // this member, which is what logging out has to mean on a shared device.
+  // Only a token that still works may do it: an old or ended one (a copy left
+  // on that shared phone) must not keep signing the member out everywhere
+  // (security review, 25 October 2026).
   const token = tokenFromReq(req);
   if (token) {
     try {
-      const { sub } = verifyToken(token);
-      await pool.query('UPDATE npm.member SET session_version = session_version + 1 WHERE id = $1', [sub]);
+      const payload = verifyToken(token);
+      const m = await memberById(payload.sub);
+      if (m && !tokenIsStale(payload, m) && (await sessionIsLive(pool, payload))) {
+        await pool.query('UPDATE npm.member SET session_version = session_version + 1 WHERE id = $1', [m.id]);
+      }
     } catch { /* an unreadable token has nothing to revoke */ }
   }
   clearSession(res);

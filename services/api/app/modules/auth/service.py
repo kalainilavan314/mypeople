@@ -163,15 +163,16 @@ def sign_out(db: Session, token: str | None, jwt_secret: str) -> None:
 
     Clearing the cookie alone would leave a copied token valid for the rest of
     its 30 days, which is not what signing out of a shared phone should mean.
+    Only a token that still works may do it: an old or ended one, a copy left
+    on that shared phone say, must not keep signing the member out everywhere
+    (review finding, 25 October 2026). The cookie is cleared either way.
     """
-    if not token:
-        return
     try:
-        claims = read_session_token(token, jwt_secret)
-    except InvalidSessionToken:
-        return  # an unreadable token has nothing to revoke
-    revoke_sessions(db, claims.member_id)
-    repository.revoke_member_sessions(db, claims.member_id, "member")
+        member = authenticate(db, token, jwt_secret)
+    except NotAuthenticated:
+        return
+    revoke_sessions(db, member.id)
+    repository.revoke_member_sessions(db, member.id, "member")
     db.commit()
 
 
@@ -294,9 +295,19 @@ def has_enabled_factor(db: Session, member_id: uuid.UUID) -> bool:
 
 
 def _check_throttle(db: Session, identifier: str, ip: str) -> throttle.SignInGate:
-    failures = count_recent_failures(db, identifier, ip, throttle.WINDOW)
-    db.commit()  # end the read, so no connection is held during the delay
-    return throttle.sign_in_gate(failures)
+    """Decide, and count this attempt as a failure until its password proves right.
+
+    Counting only after the password check let concurrent guesses all read the
+    same count and slip past the lockout together (review finding, 25 October
+    2026). Under the shared lock each attempt sees the ones before it, in this
+    API and in Express.
+    """
+    repository.lock_attempts(db, identifier, ip)
+    gate = throttle.sign_in_gate(count_recent_failures(db, identifier, ip, throttle.WINDOW))
+    if gate.allowed:
+        record_attempt(db, identifier, ip, succeeded=False)
+    db.commit()  # releases the lock, so no connection is held during the delay
+    return gate
 
 
 def _check_password(db: Session, identifier: str, ip: str, password: str) -> SignInMember:
@@ -306,11 +317,11 @@ def _check_password(db: Session, identifier: str, ip: str, password: str) -> Sig
     succeeded = verify_password(password, member.password_hash if member else _unmatchable_hash())
     succeeded = succeeded and member is not None
 
-    record_attempt(db, identifier, ip, succeeded)
     if succeeded:
-        # A correct password clears the slate, so a member who eventually
-        # remembers it is not still slowed down afterwards.
+        # A correct password clears the slate, this attempt's provisional failure
+        # included, so a member who eventually remembers it is not still slowed down.
         clear_failures(db, identifier, ip)
+        record_attempt(db, identifier, ip, succeeded=True)
     db.commit()
 
     if not succeeded or member is None:

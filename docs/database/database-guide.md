@@ -21,12 +21,13 @@ PostgreSQL 16 on the server (17 locally is fine). Production data lives on the e
 | `identity` | `session`: each signed-in device (label, device key, last use, second factor given, revocation); `mfa_factor`: the encrypted authenticator secret, when enabled, last step used | Alembic `0010` |
 | `membership` | `card`: the opaque reference a member's QR carries (replaced on suspension or inactivation) and the last successful scan | Alembic `0011` |
 | `identity` | `mfa_factor` gains `failed_attempts`, `locked_until` and `lockouts`: wrong authenticator codes counted across sessions, and escalating lockouts | Alembic `0012` |
+| `ops` | `denial_tally`: per person, permission and reason, when the current 10-minute window began and how many refusals it held back from the audit log | Alembic `0013` |
 
 Sensitive columns: `npm.member.nic_hash` (peppered SHA-256, never the NIC itself) and `password_hash` (bcrypt). OTP codes are stored only as HMACs. Identity images are never stored in the database: they are AES-256-GCM encrypted files in `EVIDENCE_STORAGE_DIR`, named by the `identity.identity_document` id, and backups must include that directory and, kept apart, `EVIDENCE_ENCRYPTION_KEY`.
 
 ## Migrations
 
-Two runners, one rule: **new schema changes are Alembic revisions only.** Revisions so far: `0001` baseline, `0002` staff access and the audit log, `0003` identity documents, `0004` identity reviews and decisions, `0005` appeals, `0006` membership states, `0007` duplicate investigations, `0008` registration, `0009` recovery, `0010` sessions and MFA, `0011` member cards, `0012` authenticator lockout.
+Two runners, one rule: **new schema changes are Alembic revisions only.** Revisions so far: `0001` baseline, `0002` staff access and the audit log, `0003` identity documents, `0004` identity reviews and decisions, `0005` appeals, `0006` membership states, `0007` duplicate investigations, `0008` registration, `0009` recovery, `0010` sessions and MFA, `0011` member cards, `0012` authenticator lockout, `0013` refusal tally.
 
 - `server/migrations/0000`–`0011` are frozen. They built the schema before Alembic and are still applied by `npm run migrate --prefix server` on a new database.
 - Alembic revision `0001` (`services/api/alembic/versions/0001_baseline_express_schema.py`) is a no-op baseline that stands for those twelve files. `alembic/env.py` refuses every command, `stamp` included, while any of them is missing from the Express ledger, so a database that is behind can never be marked current.

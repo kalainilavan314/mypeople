@@ -30,12 +30,12 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET /v1/identity/me/phone` | yes | `200 {phone}` or `null` | `401` |
 | `POST /v1/identity/me/phone` body `{phone}` | yes | `202 {sent, devCode}` (devCode only in development), whether or not another account has the number | `422 invalid_phone`, `429 too_many_requests`, `503 sms_not_configured` |
 | `POST /v1/identity/me/phone/confirm` body `{phone, code}` | yes | `200 {phone}` | `401 invalid_code`, `too_many_attempts`; `409 phone_unavailable` (another account has the number) |
-| `POST /v1/auth/recovery/request` body `{nic}` or `{passportNumber, passportCountry}` | no | `202 {sent: true}`, the same whether or not the number is registered | `503 sms_not_configured` |
+| `POST /v1/auth/recovery/request` body `{nic}` or `{passportNumber, passportCountry}` | no | `202 {sent: true}`, the same whether or not the number is registered; the SMS goes after the answer | `503 sms_not_configured` |
 | `POST /v1/auth/recovery/verify` body: the number and `{code}` | no | `200 {resetToken, expiresInSeconds}` | `401 invalid_code`, `too_many_attempts` |
 | `POST /v1/auth/recovery/reset` body `{resetToken, newPassword}` | no | `204`; every session ends | `401 invalid_reset_token`, `422 {code: "password_refused", problems}` |
 | `POST /v1/auth/recovery/assisted` body: the number and `{contactMethod, contactValue?, message?}` | no | `202 {reference}` | `429 too_many_requests` |
 | `GET /v1/identity/recovery-requests`, `POST /v1/identity/recovery-requests/{id}/resolve` body `{outcome: "contact_replaced" \| "declined", newPhone?, note}` | `members.verify` over the member's area (platform scope for requests that matched no account) | `200` | `403`, `target_outranks_you` (replacing the number of a staff account at or above your tier); `404`, `409 not_open`, `no_matching_account`, `phone_unavailable` |
-| `POST /v1/auth/sign-out` | optional | `204`, cookie cleared, all sessions ended | `403 csrf_origin_mismatch` |
+| `POST /v1/auth/sign-out` | optional | `204`, cookie cleared; all sessions ended only when the token still works | `403 csrf_origin_mismatch` |
 | `GET /v1/auth/sessions` | yes | `200 [{id, deviceLabel, createdAt, lastSeenAt, current}]` | `401` |
 | `POST /v1/auth/sessions/{id}/revoke`, `POST /v1/auth/sessions/revoke-others` | yes | `204` | `404 not_found` |
 | `GET /v1/auth/mfa` | yes | `200 {enrolled, enabled, sessionVerified}` | `401` |
@@ -57,7 +57,7 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET /v1/audit?actor_id&action&before_id&limit` | `audit.view` | `200` entries, newest first; a regional auditor sees only their region | `403 forbidden` |
 | `GET /v1/audit/verify` | `audit.view` at platform scope | `200 {ok, checked, firstBrokenId}` | `403 platform_scope_required` |
 | `GET /v1/identity/me/documents` | yes | `200` the member's current identity images: `{id, kind, version, contentType, byteSize, serverAckAt}`, never the image | `401` |
-| `PUT /v1/identity/me/documents/{kind}`, body = the image, `Content-Type: image/jpeg`, `image/png` or `image/heic` | yes | `201` the new version (the server's acknowledgement) | `400 empty_file`, `413 too_large`, `415 unsupported_type`, `503 evidence_storage_not_configured` |
+| `PUT /v1/identity/me/documents/{kind}`, body = the image, `Content-Type: image/jpeg`, `image/png` or `image/heic` | yes | `201` the new version (the server's acknowledgement) | `400 empty_file`, `413 too_large`, `415 unsupported_type`, `429 upload_limit` with `Retry-After` (12 images in 24 hours), `503 evidence_storage_not_configured` |
 | `GET /v1/identity/me/evidence-views` | yes | `200 [{viewedAt, kind, role: "identity_reviewer"}]`, newest first | `401` |
 | `GET /v1/identity/members/{memberId}/documents` | `members.view_identity_evidence` over the member's area, and the caller's own open review of the member | `200` the member's current identity images, without the images | `403 forbidden`, `own_record`, `outside_your_area`, `no_open_review`; `404 not_found` |
 | `POST /v1/identity/documents/{documentId}/view-link` | as above | `200 {url, expiresAt}`: a path for this reviewer only, valid 5 minutes | as above |

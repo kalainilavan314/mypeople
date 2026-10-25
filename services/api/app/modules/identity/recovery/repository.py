@@ -14,18 +14,27 @@ from app.modules.identity.recovery.rules import MAX_CODE_ATTEMPTS, CodeRequests
 # --- One-time codes, as server/src/throttle.js issues and consumes them ------------------------------
 
 
-def code_requests(db: Session, phone: str, ip: str) -> CodeRequests:
+def code_requests(db: Session, phone: str, ip: str, purpose: str) -> CodeRequests:
+    """Codes sent recently: to this phone for this purpose, and from this address for any.
+
+    Per purpose (as throttle.js checkOtpRequest), so codes asked for through the
+    Express API never use up a member's recovery allowance (review finding,
+    25 October 2026).
+    """
     row = db.execute(
         text(
             """
-            SELECT count(*) FILTER (WHERE phone = :phone AND created_at > now() - interval '1 minute') AS minute,
-                   count(*) FILTER (WHERE phone = :phone AND created_at > now() - interval '1 hour') AS hour,
-                   count(*) FILTER (WHERE phone = :phone AND created_at > now() - interval '1 day') AS day,
+            SELECT count(*) FILTER (WHERE phone = :phone AND purpose = :purpose
+                                      AND created_at > now() - interval '1 minute') AS minute,
+                   count(*) FILTER (WHERE phone = :phone AND purpose = :purpose
+                                      AND created_at > now() - interval '1 hour') AS hour,
+                   count(*) FILTER (WHERE phone = :phone AND purpose = :purpose
+                                      AND created_at > now() - interval '1 day') AS day,
                    count(*) FILTER (WHERE ip = :ip AND created_at > now() - interval '10 minutes') AS ip_window
             FROM npm.otp WHERE created_at > now() - interval '1 day'
             """
         ),
-        {"phone": phone, "ip": ip},
+        {"phone": phone, "ip": ip, "purpose": purpose},
     ).one()
     return CodeRequests(row.minute, row.hour, row.day, row.ip_window)
 

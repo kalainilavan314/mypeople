@@ -67,6 +67,32 @@ def test_without_roles_assign_the_request_is_refused_and_logged(db_client, db_se
     assert entry.details["permission"] == "roles.assign"
 
 
+def test_repeated_refusals_are_counted_not_each_logged(db_client, db_session, auth, create_member):
+    """The review finding: every refused request wrote an audit entry, so one member could flood
+    the append-only log. One entry per person, permission and reason in 10 minutes; the next
+    entry after that reports how many were held back."""
+    member = create_member()
+
+    def refusals() -> list[Row]:
+        return db_session.execute(
+            text("SELECT details FROM ops.audit_log WHERE action = 'access.denied' AND actor_id = :id ORDER BY id"),
+            {"id": member.id},
+        ).all()
+
+    statuses = {db_client.get("/v1/identity/reviews", headers=auth(member)).status_code for _ in range(6)}
+    assert statuses == {403}
+    assert len(refusals()) == 1 and "repeatsHeldBack" not in refusals()[0].details
+
+    db_session.execute(
+        text("UPDATE ops.denial_tally SET window_started_at = now() - interval '11 minutes' WHERE actor_id = :id"),
+        {"id": member.id},
+    )
+    db_client.get("/v1/identity/reviews", headers=auth(member))
+
+    [first, second] = refusals()
+    assert (second.details["reason"], second.details["repeatsHeldBack"]) == ("forbidden", 5)
+
+
 # --- Assigning (W09, RB-02 to RB-06) ----------------------------------------------------
 
 

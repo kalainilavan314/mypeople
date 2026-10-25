@@ -207,19 +207,53 @@ def bootstrap_super_administrator(db: Session, member_id: uuid.UUID, extra_permi
     return assignment
 
 
+DENIAL_WINDOW = "10 minutes"
+
+
+def record_denial(
+    db: Session,
+    *,
+    actor_id: uuid.UUID,
+    permission: str,
+    reason: str,
+    ip: str,
+    target: tuple[str, str] | None = None,
+    area_path: AreaPath | None = None,
+    details: dict[str, object] | None = None,
+) -> None:
+    """Log a refused staff action so that probing for access is visible (FR-ARCH-002).
+
+    At most one entry per person, permission and reason in DENIAL_WINDOW; the
+    repeats are counted and the next entry reports them as repeatsHeldBack.
+    Writing every one let any signed-in member flood the append-only audit log
+    (review finding, 25 October 2026). The caller commits.
+    """
+    held_back = repository.tally_denial(db, actor_id, permission, reason, DENIAL_WINDOW)
+    if held_back is None:
+        return
+    audit.record(
+        db,
+        actor_id=actor_id,
+        action="access.denied",
+        target_type=target[0] if target else None,
+        target_id=target[1] if target else None,
+        area_path=area_path,
+        details={
+            "permission": permission,
+            "reason": reason,
+            **(details or {}),
+            **({"repeatsHeldBack": held_back} if held_back else {}),
+        },
+        ip=ip,
+    )
+
+
 def refuse(
     db: Session, staff: Staff, permission: str, reason: str, ip: str, *, target: tuple[str, str], area_path: AreaPath | None
 ) -> NoReturn:
-    """Record a refused staff action, then raise it. Logged so that probing for access is visible (FR-ARCH-002)."""
-    audit.record(
-        db,
-        actor_id=staff.member_id,
-        action="access.denied",
-        target_type=target[0],
-        target_id=target[1],
-        area_path=area_path,
-        details={"permission": permission, "reason": reason},
-        ip=ip,
+    """Record a refused staff action (see record_denial), then raise it."""
+    record_denial(
+        db, actor_id=staff.member_id, permission=permission, reason=reason, ip=ip, target=target, area_path=area_path
     )
     db.commit()
     raise AccessRefused(reason)

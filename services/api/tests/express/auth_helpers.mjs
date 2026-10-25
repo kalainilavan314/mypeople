@@ -15,6 +15,10 @@
 //   {"command": "check-login", "identifier": ..., "ip": ...}
 //                                                   throttle.js checkLogin against DATABASE_URL
 //   {"command": "session-live", "token": ...}       sessions.js sessionIsLive against DATABASE_URL
+//   {"command": "check-otp", "phone": ..., "ip": ..., "purpose": ...}
+//                                                   throttle.js checkOtpRequest against DATABASE_URL
+//   {"command": "reserve-login-burst", "identifier": ..., "ip": ..., "attempts": n}
+//                                                   n concurrent reserveLogin calls; how many were allowed
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 
@@ -100,12 +104,37 @@ async function sessionLive({ token }) {
   }
 }
 
+async function reserveLoginBurst({ identifier, ip, attempts }) {
+  const { reserveLogin } = await import(new URL('../../../../server/src/throttle.js', import.meta.url));
+  const { pool } = await import(new URL('../../../../server/src/db.js', import.meta.url));
+  try {
+    const gates = await Promise.all(Array.from({ length: attempts }, () => reserveLogin(identifier, ip)));
+    return { allowed: gates.filter((gate) => gate.ok).length };
+  } finally {
+    await pool.end();
+  }
+}
+
+async function checkOtp({ phone, ip, purpose }) {
+  const { checkOtpRequest } = await import(new URL('../../../../server/src/throttle.js', import.meta.url));
+  const { pool } = await import(new URL('../../../../server/src/db.js', import.meta.url));
+  try {
+    return await checkOtpRequest(phone, ip, purpose);
+  } finally {
+    await pool.end();
+  }
+}
+
 async function run(request) {
   switch (request.command) {
     case 'check-login':
       return checkLogin(request);
     case 'session-live':
       return sessionLive(request);
+    case 'reserve-login-burst':
+      return reserveLoginBurst(request);
+    case 'check-otp':
+      return checkOtp(request);
     case 'sign':
       return { token: lib.signToken(request.memberId, request.sessionVersion) };
     case 'verify':

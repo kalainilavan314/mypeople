@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, status
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
@@ -123,13 +123,16 @@ def confirm_phone(body: PhoneConfirmInput, member: CurrentMember, request: Reque
 
 
 @router.post("/v1/auth/recovery/request", status_code=status.HTTP_202_ACCEPTED, responses=NOT_CONFIGURED)
-def request_recovery(body: AccountNumber, request: Request, db: Db) -> CodeSentOut:
+def request_recovery(body: AccountNumber, request: Request, background: BackgroundTasks, db: Db) -> CodeSentOut:
     """Send a recovery code to the account's confirmed contact. The answer is the same whether or
-    not the number is registered or has a contact (BR-023)."""
+    not the number is registered or has a contact (BR-023), and it goes before the SMS is sent, so
+    its timing does not tell either."""
     if isinstance(_sms(request), NoSms):
         raise _unavailable()  # the same for every caller, so it reveals nothing about accounts
-    code = service.request_recovery(db, _sms(request), _id_hash(body, request), client_ip(request), _secret(request))
-    return _sent(request, code)
+    pending = service.request_recovery(db, _id_hash(body, request), client_ip(request), _secret(request))
+    if pending is not None:
+        background.add_task(service.deliver, _sms(request), pending)
+    return _sent(request, pending.code if pending else None)
 
 
 @router.post("/v1/auth/recovery/verify", responses={401: {"description": "invalid_code or too_many_attempts"}})

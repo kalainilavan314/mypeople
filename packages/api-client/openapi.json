@@ -1209,6 +1209,9 @@
           "415": {
             "description": "unsupported_type (JPEG, PNG or HEIC only)"
           },
+          "429": {
+            "description": "upload_limit: 12 images in 24 hours; see Retry-After"
+          },
           "503": {
             "description": "evidence_storage_not_configured"
           },
@@ -3036,7 +3039,7 @@
           "recovery"
         ],
         "summary": "Request Recovery",
-        "description": "Send a recovery code to the account's confirmed contact. The answer is the same whether or\nnot the number is registered or has a contact (BR-023).",
+        "description": "Send a recovery code to the account's confirmed contact. The answer is the same whether or\nnot the number is registered or has a contact (BR-023), and it goes before the SMS is sent, so\nits timing does not tell either.",
         "operationId": "request_recovery_v1_auth_recovery_request_post",
         "requestBody": {
           "content": {

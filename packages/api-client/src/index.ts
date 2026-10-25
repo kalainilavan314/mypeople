@@ -183,7 +183,7 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
      */
     confirmPhone: (phone: string, code: string) =>
       request<{ phone: string }>('POST', '/v1/identity/me/phone/confirm', { phone, code }),
-    /** A16: the answer is the same whether or not the number is registered (BR-023). */
+    /** A16: the answer is the same whether or not the number is registered (BR-023); the SMS follows it. */
     requestRecovery: (account: AccountNumber) => request<CodeSent>('POST', '/v1/auth/recovery/request', account),
     /** A correct code returns a reset token valid for 10 minutes. */
     verifyRecovery: (account: AccountNumber, code: string) =>
@@ -204,7 +204,7 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
       request<Place[]>('GET', `/v1/geography/districts/${encodeURIComponent(districtCode)}/ds-divisions`),
     listGnDivisions: (dsCode: string) =>
       request<Place[]>('GET', `/v1/geography/ds-divisions/${encodeURIComponent(dsCode)}/gn-divisions`),
-    /** Ends every session of the signed-in member. */
+    /** Ends every session of the signed-in member; an old or ended token only clears the cookie. */
     signOut: () => request<void>('POST', '/v1/auth/sign-out'),
     /** The member's signed-in devices (FR-AUTH-020). */
     listMySessions: () => request<SignedInSession[]>('GET', '/v1/auth/sessions'),
@@ -266,7 +266,8 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     /**
      * Uploads or replaces one identity image, at most 10 MB. The returned record is the server's
      * acknowledgement: delete the device's copy after it (FR-REG-035). Throws ApiError
-     * "unsupported_type" (415), "too_large" (413) or "empty_file" (400).
+     * "unsupported_type" (415), "too_large" (413), "empty_file" (400) or "upload_limit" (429, retryAfter:
+     * 12 images in 24 hours).
      */
     uploadIdentityDocument: (kind: IdentityDocumentKind, image: Blob | ArrayBuffer, contentType: IdentityImageType) =>
       request<IdentityDocument>('PUT', `/v1/identity/me/documents/${kind}`, image, contentType),

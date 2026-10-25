@@ -30,24 +30,36 @@ export function clientIp(req) {
 /* ------------------------------------------------------------------ OTP */
 
 /**
+ * The purposes a client of this API may ask for or check a code for. npm.otp is
+ * shared with services/api, whose recovery and phone-confirmation codes must not
+ * be issued (which cancels the live one) or guessed at (which burns it) through
+ * these public endpoints (security review, 25 October 2026). 'donation' codes
+ * are handled only by the donation routes.
+ */
+export const OTP_PURPOSES = ['signup', 'login', 'reset'];
+
+/**
  * Layered limits on requesting a one-time code.
  *
- *   per phone   1 / minute, 5 / hour, 10 / day
- *   per IP      10 / 10 minutes
+ *   per phone and purpose   1 / minute, 5 / hour, 10 / day
+ *   per IP                  10 / 10 minutes, any purpose
+ *
+ * Per purpose, so codes asked for here never use up a member's allowance of
+ * recovery codes in services/api (or the other way round).
  *
  * Returns { ok: true } or { ok: false, retryAfter, reason }. retryAfter is
  * seconds, for a Retry-After header.
  */
-export async function checkOtpRequest(phone, ip) {
+export async function checkOtpRequest(phone, ip, purpose) {
   const r = await pool.query(
     `SELECT
-       count(*) FILTER (WHERE phone = $1 AND created_at > now() - interval '1 minute')  AS phone_minute,
-       count(*) FILTER (WHERE phone = $1 AND created_at > now() - interval '1 hour')    AS phone_hour,
-       count(*) FILTER (WHERE phone = $1 AND created_at > now() - interval '1 day')     AS phone_day,
-       count(*) FILTER (WHERE ip    = $2 AND created_at > now() - interval '10 minutes') AS ip_window
+       count(*) FILTER (WHERE phone = $1 AND purpose = $3 AND created_at > now() - interval '1 minute') AS phone_minute,
+       count(*) FILTER (WHERE phone = $1 AND purpose = $3 AND created_at > now() - interval '1 hour')   AS phone_hour,
+       count(*) FILTER (WHERE phone = $1 AND purpose = $3 AND created_at > now() - interval '1 day')    AS phone_day,
+       count(*) FILTER (WHERE ip    = $2 AND created_at > now() - interval '10 minutes')                AS ip_window
      FROM npm.otp
      WHERE created_at > now() - interval '1 day'`,
-    [phone, ip],
+    [phone, ip, purpose],
   );
   const c = r.rows[0];
 
@@ -146,8 +158,8 @@ const LOCKOUT_SECONDS = 900;
  *
  * Returns { ok: true, delayMs } or { ok: false, retryAfter }.
  */
-export async function checkLogin(identifier, ip) {
-  const r = await pool.query(
+export async function checkLogin(identifier, ip, db = pool) {
+  const r = await db.query(
     `SELECT count(*)::int AS failures
      FROM npm.auth_attempt
      WHERE identifier = $1 AND ip = $2 AND succeeded = false
@@ -164,20 +176,55 @@ export async function checkLogin(identifier, ip) {
   return { ok: true, delayMs: 0, failures };
 }
 
-export async function recordLogin(identifier, ip, succeeded) {
-  await pool.query(
-    `INSERT INTO npm.auth_attempt (identifier, ip, succeeded) VALUES ($1, $2, $3)`,
-    [identifier, ip, !!succeeded],
-  );
-  if (succeeded) {
-    // A correct password clears the slate, so a member who eventually remembers
-    // it is not still throttled afterwards.
-    await pool.query(
-      `DELETE FROM npm.auth_attempt
-       WHERE identifier = $1 AND ip = $2 AND succeeded = false`,
-      [identifier, ip],
+// Shared with services/api (auth/repository.py LOGIN_LOCK_SPACE): both APIs take
+// the same lock, so their attempts for one account and address queue together.
+const LOGIN_LOCK_SPACE = 30002;
+
+/**
+ * Decide on a sign-in and, if it may go ahead, count it as a failure straight
+ * away; recordLoginSuccess() clears that once the password proves right.
+ *
+ * Checking first and recording after the password let concurrent guesses all
+ * read the same count and pass the lockout together (security review, 25
+ * October 2026). Under the lock each attempt sees the ones before it.
+ */
+export async function reserveLogin(identifier, ip) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query(
+      `SELECT pg_advisory_xact_lock($1, hashtext($2::text || '|' || $3::text))`,
+      [LOGIN_LOCK_SPACE, identifier, ip],
     );
+    const gate = await checkLogin(identifier, ip, client);
+    if (gate.ok) {
+      await client.query(
+        `INSERT INTO npm.auth_attempt (identifier, ip, succeeded) VALUES ($1, $2, false)`,
+        [identifier, ip],
+      );
+    }
+    await client.query('COMMIT');
+    return gate;
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    client.release();
   }
+}
+
+export async function recordLoginSuccess(identifier, ip) {
+  // A correct password clears the slate, this attempt's provisional failure
+  // included, so a member who eventually remembers it is not still throttled.
+  await pool.query(
+    `DELETE FROM npm.auth_attempt
+     WHERE identifier = $1 AND ip = $2 AND succeeded = false`,
+    [identifier, ip],
+  );
+  await pool.query(
+    `INSERT INTO npm.auth_attempt (identifier, ip, succeeded) VALUES ($1, $2, true)`,
+    [identifier, ip],
+  );
 }
 
 export const sleep = (ms) => (ms > 0 ? new Promise((r) => setTimeout(r, ms)) : Promise.resolve());

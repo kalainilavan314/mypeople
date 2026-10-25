@@ -194,3 +194,24 @@ def test_sign_out_with_a_bearer_token(db_client, member, database_settings):
 
     assert db_client.post("/v1/auth/sign-out", headers=headers).status_code == 204
     assert db_client.get("/v1/members/me", headers=headers).status_code == 401
+
+
+def test_an_old_or_ended_token_cannot_sign_the_member_out(db_client, db_session, member, database_settings, delays):
+    """The review finding: sign-out read any well-signed token, so a copy left on a shared phone,
+    long since signed out, could keep signing the member out everywhere."""
+    secret = database_settings.jwt_secret.get_secret_value()
+    old = {"Authorization": f"Bearer {sign_session_token(member.id, member.session_version, secret)}"}
+    db_client.post("/v1/auth/sign-out", headers=old)  # the member signs out: this token is now stale
+    current = {"Authorization": f"Bearer {sign_in(db_client).json()['token']}"}
+    db_client.cookies.clear()
+    ended = {"Authorization": f"Bearer {sign_in(db_client).json()['token']}"}
+    db_client.cookies.clear()
+    db_session.execute(
+        text("UPDATE identity.session SET revoked_at = now(), revoked_reason = 'member' WHERE id = :id"),
+        {"id": read_session_token(ended["Authorization"][7:], secret).session_id},
+    )
+
+    for stale in (old, ended):
+        assert db_client.post("/v1/auth/sign-out", headers=stale).status_code == 204  # the cookie is still cleared
+
+    assert db_client.get("/v1/members/me", headers=current).status_code == 200

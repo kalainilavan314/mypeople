@@ -22,7 +22,7 @@ Current scope:
 | `GET`/`POST /v1/identity/me/phone`, `POST /v1/identity/me/phone/confirm` | the recovery number, confirmed by a one-time code |
 | `POST /v1/auth/recovery/request`, `/verify`, `/reset`, `/assisted` | account recovery by code, a new password, and assisted recovery requests |
 | `GET /v1/identity/recovery-requests`, `POST .../{id}/resolve` | the assisted-recovery queue; needs `members.verify` over the member's area |
-| `POST /v1/auth/sign-out` | ends every session of the member (`204`) and clears the cookie |
+| `POST /v1/auth/sign-out` | ends every session of the member (`204`) and clears the cookie; an old or ended token only clears the cookie |
 | `GET /v1/auth/sessions`, `POST /v1/auth/sessions/{id}/revoke`, `POST /v1/auth/sessions/revoke-others` | the member's signed-in devices; end one or all others |
 | `GET /v1/auth/mfa`, `POST /v1/auth/mfa/totp`, `.../totp/confirm`, `POST /v1/auth/mfa/verify` | the staff second factor: enrol an authenticator app, give its code in each session |
 | `GET /v1/access/me` | the caller's staff assignments that count now |
@@ -45,7 +45,9 @@ Access is a tier, explicit permissions and an area, held as rows in
 BRD's permission matrix (§9.4, §9.8) and `rules.py` the rules RB-01 to RB-07
 and RB-12, as plain functions with their own tests. Endpoints declare what
 they need with `require_permission("...")`; refused checks return 403 and
-are written to the audit log. Every grant and revocation is audited in the
+are written to the audit log, at most once per person, permission and reason
+in 10 minutes: repeats are counted in `ops.denial_tally` and the next entry
+reports them as `repeatsHeldBack`, so nobody can flood the log. Every grant and revocation is audited in the
 same transaction, and revocations apply on the next request.
 
 The first Super Administrator (Tier 5) has nobody above to grant it. An
@@ -132,10 +134,16 @@ and the quarterly access review (FR-AUTH-027).
   (`409 phone_unavailable`), so nobody can probe which numbers are registered.
 - **One-time codes** use the Express table `npm.otp`, hashed the same way
   (HMAC under `JWT_SECRET`), with the same limits: one a minute, five an
-  hour and ten a day per number, ten per address in ten minutes, five
-  guesses per code. Recovery codes last 10 minutes, confirmation codes 5.
+  hour and ten a day per number and purpose, ten per address in ten minutes
+  for any purpose, five guesses per code. Counting per purpose means codes
+  asked for through Express never use up a member's recovery allowance;
+  Express accepts only its own purposes (`signup`, `login`, `reset`), so it
+  cannot cancel or burn this API's codes. Recovery codes last 10 minutes,
+  confirmation codes 5.
 - **Recovery.** A code goes only to the confirmed contact, and the answer is
-  the same whether or not the ID number is registered (BR-023). A correct
+  the same whether or not the ID number is registered (BR-023). The code is
+  stored in the request and the SMS sent after the answer, so neither its
+  timing nor a provider failure tells which numbers are registered. A correct
   code gives a 10-minute reset token; the new password ends every session
   and the contact is told. This also covers moving to a new phone.
 - **Assisted recovery.** Anyone can ask for help with an AR reference; the
@@ -204,7 +212,9 @@ token, which carries the member id.
 Members upload NIC front and back, passport-page and selfie images. Each
 upload is a new version; the previous one is kept, marked superseded. Images
 are JPEG, PNG or HEIC up to 10 MB, recognised from their bytes rather than
-from what the client claims.
+from what the client claims. Since every version is kept, a member may upload
+12 images in 24 hours (an assumption); more answer `429 upload_limit` with
+`Retry-After`, before anything is written.
 
 - **Storage.** Each image is encrypted with AES-256-GCM under
   `EVIDENCE_ENCRYPTION_KEY`, bound to its document id, before it is written
@@ -326,7 +336,10 @@ Sign-in throttling follows `server/src/throttle.js`, and both APIs count the
 same `npm.auth_attempt` rows. Failures are counted per NIC hash and client IP
 together over 15 minutes: from 5 failures each attempt waits 0.4 s more (up to
 2 s), from 10 attempts are refused for 15 minutes with `Retry-After: 900`. A
-correct password clears the failures. The wait is asynchronous, so throttled
+correct password clears the failures. Each attempt is counted as a failure
+before its password is checked, under a database lock both APIs take for the
+same number and address, so attempts made at the same moment cannot slip
+past the limit together. The wait is asynchronous, so throttled
 attempts do not tie up the server.
 
 Two deliberate differences from the Express API:

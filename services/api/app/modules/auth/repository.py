@@ -55,6 +55,19 @@ def find_sign_in_member(db: Session, nic_hash: str) -> SignInMember | None:
     return SignInMember(id=row.id, session_version=row.session_version, password_hash=row.password_hash)
 
 
+# Shared with server/src/throttle.js (LOGIN_LOCK_SPACE): both APIs take the same
+# lock, so their sign-in attempts for one number and address queue behind each other.
+LOGIN_LOCK_SPACE = 30_002
+
+
+def lock_attempts(db: Session, identifier: str, ip: str) -> None:
+    """Hold sign-in checks for this number and address one at a time until the caller commits."""
+    db.execute(
+        text("SELECT pg_advisory_xact_lock(:space, hashtext(CAST(:identifier AS text) || '|' || CAST(:ip AS text)))"),
+        {"space": LOGIN_LOCK_SPACE, "identifier": identifier, "ip": ip},
+    )
+
+
 def count_recent_failures(db: Session, identifier: str, ip: str, window: timedelta) -> int:
     return db.execute(
         text(

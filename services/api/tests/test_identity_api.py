@@ -90,6 +90,28 @@ def test_a_member_uploads_both_sides_and_replaces_one(client, db_session, auth, 
     assert entry.details == {"memberId": str(member.id), "kind": "nic_front", "version": 2}
 
 
+def test_uploads_are_capped_per_day_before_any_file_is_written(
+    client, db_session, auth, upload, member, evidence_dir
+):
+    """The review finding: every version is kept, so unlimited uploads could fill the private disk."""
+    for number in range(12):
+        upload(member, ("nic_front", "nic_back", "selfie")[number % 3])
+
+    refused = client.put(
+        "/v1/identity/me/documents/nic_front", content=JPEG, headers={**auth(member), "Content-Type": "image/jpeg"}
+    )
+
+    assert (refused.status_code, refused.json()) == (429, {"detail": "upload_limit"})
+    assert 0 < int(refused.headers["Retry-After"]) <= 24 * 60 * 60
+    assert len([path for path in evidence_dir.rglob("*") if path.is_file()]) == 12
+
+    db_session.execute(
+        text("UPDATE identity.identity_document SET server_ack_at = now() - interval '25 hours' WHERE member_id = :id"),
+        {"id": member.id},
+    )
+    assert upload(member, "nic_front")["version"] > 1  # a day later, uploads are allowed again
+
+
 def test_the_stored_file_is_encrypted(upload, member, evidence_dir):
     document = upload(member, data=JPEG)
 

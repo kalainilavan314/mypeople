@@ -68,6 +68,7 @@ def list_my_documents(member: CurrentMember, db: Db) -> list[DocumentOut]:
         409: {"description": "consent_required: consent to identity review first (POST /v1/identity/me/consent)"},
         413: {"description": "too_large (over 10 MB)"},
         415: {"description": "unsupported_type (JPEG, PNG or HEIC only)"},
+        429: {"description": "upload_limit: 12 images in 24 hours; see Retry-After"},
         **NOT_CONFIGURED,
     },
 )
@@ -83,6 +84,12 @@ def upload_my_document(
         document = service.upload(db, vault, member.id, kind, image, client_ip(request))
     except service.ConsentRequired:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="consent_required") from None
+    except service.UploadLimit as error:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="upload_limit",
+            headers={"Retry-After": str(error.retry_after)},
+        ) from None
     return DocumentOut.from_stored(document)
 
 

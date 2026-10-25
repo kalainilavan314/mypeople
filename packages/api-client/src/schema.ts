@@ -1177,7 +1177,8 @@ export interface paths {
         /**
          * Request Recovery
          * @description Send a recovery code to the account's confirmed contact. The answer is the same whether or
-         *     not the number is registered or has a contact (BR-023).
+         *     not the number is registered or has a contact (BR-023), and it goes before the SMS is sent, so
+         *     its timing does not tell either.
          */
         post: operations["request_recovery_v1_auth_recovery_request_post"];
         delete?: never;
@@ -3599,6 +3600,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+            /** @description upload_limit: 12 images in 24 hours; see Retry-After */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description evidence_storage_not_configured */
             503: {

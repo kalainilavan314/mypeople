@@ -191,6 +191,55 @@ def held_tiers(db: Session, member_id: uuid.UUID) -> list[Tier]:
     return list(rows)
 
 
+def tally_denial(db: Session, actor_id: uuid.UUID, permission: str, reason: str, window: str) -> int | None:
+    """Count a refusal in ops.denial_tally (Alembic 0013). None: it falls inside an open window
+    and is only counted. Otherwise it opens a new window and should be written to the audit
+    log; the number is how many the previous window held back."""
+    key = {"actor": actor_id, "permission": permission, "reason": reason}
+    opened = db.scalar(
+        text(
+            """
+            INSERT INTO ops.denial_tally (actor_id, permission, reason) VALUES (:actor, :permission, :reason)
+            ON CONFLICT DO NOTHING RETURNING 0
+            """
+        ),
+        key,
+    )
+    if opened is not None:
+        return 0
+    row = db.execute(
+        text(
+            """
+            SELECT suppressed, window_started_at < clock_timestamp() - CAST(:window AS interval) AS expired
+            FROM ops.denial_tally WHERE actor_id = :actor AND permission = :permission AND reason = :reason
+            FOR UPDATE
+            """
+        ),
+        {**key, "window": window},
+    ).one()
+    if row.expired:
+        db.execute(
+            text(
+                """
+                UPDATE ops.denial_tally SET window_started_at = clock_timestamp(), suppressed = 0
+                WHERE actor_id = :actor AND permission = :permission AND reason = :reason
+                """
+            ),
+            key,
+        )
+        return row.suppressed
+    db.execute(
+        text(
+            """
+            UPDATE ops.denial_tally SET suppressed = suppressed + 1
+            WHERE actor_id = :actor AND permission = :permission AND reason = :reason
+            """
+        ),
+        key,
+    )
+    return None
+
+
 def has_active_super_administrator(db: Session) -> bool:
     return bool(db.scalar(text("SELECT EXISTS (SELECT 1 FROM access.staff_assignment WHERE tier = '5' AND state = 'active')")))
 

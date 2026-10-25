@@ -39,6 +39,31 @@ _SELECT = """
 """
 
 
+def lock_member_uploads(db: Session, member_id: uuid.UUID) -> None:
+    """One upload at a time per member, until the caller commits."""
+    db.execute(
+        text("SELECT pg_advisory_xact_lock(:space, hashtext(CAST(:member_id AS text)))"),
+        {"space": _UPLOAD_LOCK_SPACE, "member_id": member_id},
+    )
+
+
+def recent_uploads(db: Session, member_id: uuid.UUID, window: str) -> tuple[int, int]:
+    """(images the member uploaded in the window, seconds until the oldest of them leaves it)."""
+    row = db.execute(
+        text(
+            """
+            SELECT count(*) AS uploads,
+                   COALESCE(CEIL(EXTRACT(EPOCH FROM min(server_ack_at) + CAST(:window AS interval) - now())), 0)::int
+                       AS oldest_leaves_in
+            FROM identity.identity_document
+            WHERE member_id = :member_id AND server_ack_at > now() - CAST(:window AS interval)
+            """
+        ),
+        {"member_id": member_id, "window": window},
+    ).one()
+    return row.uploads, max(row.oldest_leaves_in, 1)
+
+
 def insert_document(
     db: Session,
     *,
@@ -51,10 +76,7 @@ def insert_document(
 ) -> StoredDocument:
     """Add a new version of the member's image of this kind; the current one becomes superseded."""
     params = {"member_id": member_id, "kind": kind}
-    db.execute(
-        text("SELECT pg_advisory_xact_lock(:space, hashtext(CAST(:member_id AS text)))"),
-        {"space": _UPLOAD_LOCK_SPACE, "member_id": member_id},
-    )
+    lock_member_uploads(db, member_id)
     db.execute(
         text(
             """

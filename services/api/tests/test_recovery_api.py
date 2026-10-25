@@ -8,7 +8,9 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import Row, text
 
-from app.integrations.sms import DevelopmentSms, NoSms
+from app.core.security import nic_hash
+from app.integrations.sms import DevelopmentSms, NoSms, SmsUnavailable
+from app.modules.identity.recovery import service as recovery_service
 
 NEW_PASSWORD = "another long passphrase"
 
@@ -115,6 +117,26 @@ def test_asking_for_codes_is_limited_before_anything_is_looked_up(client, auth, 
     assert (again.status_code, again.json()) == (429, {"detail": "too_many_requests"})
 
 
+def test_codes_for_other_purposes_do_not_use_up_this_ones_limit(client, db_session, auth, create_member):
+    """The review finding: Express's public code endpoint shared the per-phone limits, so anyone
+    could use up a member's daily allowance and block their recovery codes."""
+    phone = new_phone()
+    db_session.execute(  # a day's worth of sign-up codes asked for through Express, the last just now
+        text(
+            """
+            INSERT INTO npm.otp (phone, code, purpose, ip, expires_at, created_at)
+            SELECT :phone, 'not-a-code', 'signup', '198.51.100.20', now(), now() - make_interval(mins => n * 5)
+            FROM generate_series(0, 9) AS n
+            """
+        ),
+        {"phone": e164(phone)},
+    )
+
+    response = client.post("/v1/identity/me/phone", json={"phone": phone}, headers=auth(create_member()))
+
+    assert response.status_code == 202
+
+
 def test_codes_are_rate_limited_like_the_express_api(client, auth, create_member):
     member = create_member()
     phone = new_phone()
@@ -152,6 +174,41 @@ def account(client, db_session, auth, create_member) -> tuple[Row, str, str]:
         {"phone": e164(phone)},
     )
     return member, nic, phone
+
+
+def test_the_recovery_code_is_stored_first_and_sent_after_the_answer(db_session, database_settings, account):
+    """The review finding: sending inside the request made answers for registered numbers slower
+    by the SMS provider's round trip. The request only stores the code; deliver() sends it later."""
+    _, nic, phone = account
+    outbox = DevelopmentSms()
+    id_hash = nic_hash(nic, database_settings.nic_pepper.get_secret_value())
+
+    pending = recovery_service.request_recovery(
+        db_session, id_hash, "203.0.113.30", database_settings.jwt_secret.get_secret_value()
+    )
+
+    assert pending is not None and len(outbox.sent) == 0  # stored, nothing sent yet
+    recovery_service.deliver(outbox, pending)
+    assert [(m.phone, pending.code in m.text) for m in outbox.sent] == [(e164(phone), True)]
+
+
+class FailingSms:
+    """A provider that is configured but refuses to send."""
+
+    def send(self, phone: str, text: str) -> None:
+        raise SmsUnavailable()
+
+
+def test_a_failing_sms_provider_gives_the_same_answer_for_every_number(client, account):
+    _, nic, _ = account
+    client.app.state.sms = FailingSms()
+
+    registered = client.post("/v1/auth/recovery/request", json={"nic": nic})
+    unknown = client.post("/v1/auth/recovery/request", json={"nic": "199912345670"})
+
+    assert (registered.status_code, registered.json()) == (unknown.status_code, unknown.json()) == (
+        202, {"sent": True, "devCode": None}
+    )
 
 
 def test_recovering_an_account_with_the_code(client, db_session, auth, account, outbox):

@@ -23,8 +23,7 @@ from sqlalchemy.orm import Session
 from app.core.request_info import client_ip
 from app.db.session import get_db
 from app.modules.access import rules
-from app.modules.access.service import Staff, load_staff
-from app.modules.audit import service as audit
+from app.modules.access.service import Staff, load_staff, record_denial
 from app.modules.auth import service as auth_service
 from app.modules.auth.dependencies import CurrentMember
 
@@ -40,13 +39,14 @@ def require_permission(permission: str) -> Callable[..., Staff]:
             # NFR-SEC-04: staff give a second factor in each session before acting as staff.
             reason = "mfa_required" if auth_service.has_enabled_factor(db, member.id) else "mfa_enrolment_required"
         if reason is not None:
-            # Refused attempts are logged, so probing for access is visible (FR-ARCH-002).
-            audit.record(
+            # Refused attempts are logged, so probing for access is visible (FR-ARCH-002); repeats are counted.
+            record_denial(
                 db,
                 actor_id=member.id,
-                action="access.denied",
-                details={"permission": permission, "method": request.method, "path": request.url.path, "reason": reason},
+                permission=permission,
+                reason=reason,
                 ip=client_ip(request),
+                details={"method": request.method, "path": request.url.path},
             )
             db.commit()
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=reason)

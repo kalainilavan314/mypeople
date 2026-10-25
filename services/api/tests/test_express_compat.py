@@ -6,6 +6,7 @@ tests sign and verify in both directions now, so expiry is checked for real.
 """
 
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 from sqlalchemy import text
@@ -14,7 +15,8 @@ from sqlalchemy.orm import Session
 from app.core.security import hash_password, read_session_token, sign_session_token, verify_password
 from app.db.session import create_database_engine
 from app.modules.auth.repository import count_recent_failures
-from app.modules.auth.throttle import WINDOW, sign_in_gate
+from app.modules.auth import service as auth_service
+from app.modules.auth.throttle import HARD_FAILURES, WINDOW, sign_in_gate
 
 JWT_SECRET = "test-only-compat-secret-for-pytest-runs"
 OTHER_SECRET = "a-different-secret-the-api-never-uses"
@@ -165,4 +167,68 @@ def test_express_refuses_sessions_ended_in_this_api(express_auth, database_setti
         with engine.begin() as connection:
             connection.execute(text("DELETE FROM identity.session WHERE member_id = :id"), {"id": member_id})
             connection.execute(text("DELETE FROM npm.member WHERE id = :id"), {"id": member_id})
+        engine.dispose()
+
+
+def test_concurrent_sign_in_attempts_never_pass_the_lockout(express_auth, database_settings):
+    """The review finding: attempts checked at the same moment all read the same count and
+    slipped past the lockout together. Each API now counts an attempt before checking its
+    password, under a lock both share. Committed under unique identifiers, deleted afterwards."""
+    database_url = database_settings.database_url.get_secret_value()
+    engine = create_database_engine(database_url)
+    ip = "203.0.113.8"
+    python_identifier, express_identifier = f"test-race-{uuid.uuid4()}", f"test-race-{uuid.uuid4()}"
+
+    def python_attempt(_: int) -> bool:
+        with Session(engine) as db:
+            return auth_service._check_throttle(db, python_identifier, ip).allowed
+
+    try:
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            python_allowed = sum(pool.map(python_attempt, range(20)))
+        express_allowed = express_auth(
+            {"command": "reserve-login-burst", "identifier": express_identifier, "ip": ip, "attempts": 20},
+            JWT_SECRET,
+            database_url=database_url,
+        )["allowed"]
+
+        assert python_allowed == HARD_FAILURES
+        assert express_allowed == HARD_FAILURES
+    finally:
+        with engine.begin() as connection:
+            connection.execute(
+                text("DELETE FROM npm.auth_attempt WHERE identifier IN (:a, :b)"),
+                {"a": python_identifier, "b": express_identifier},
+            )
+        engine.dispose()
+
+
+def test_express_counts_code_limits_per_purpose(express_auth, database_settings):
+    """Recovery codes sent by this API never use up a phone's sign-up allowance in Express, nor
+    the other way round. Committed under a test number, deleted afterwards."""
+    database_url = database_settings.database_url.get_secret_value()
+    engine = create_database_engine(database_url)
+    phone = f"+9470{uuid.uuid4().int % 10**7:07d}"
+    ip = "198.51.100.21"
+
+    def express_check(purpose: str) -> dict:
+        request = {"command": "check-otp", "phone": phone, "ip": ip, "purpose": purpose}
+        return express_auth(request, JWT_SECRET, database_url=database_url)
+
+    try:
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO npm.otp (phone, code, purpose, ip, expires_at)
+                    VALUES (:phone, 'not-a-code', 'recovery', '198.51.100.22', now() + interval '10 minutes')
+                    """
+                ),
+                {"phone": phone},
+            )
+        assert express_check("signup") == {"ok": True}
+        assert express_check("recovery")["reason"] == "cooldown"
+    finally:
+        with engine.begin() as connection:
+            connection.execute(text("DELETE FROM npm.otp WHERE phone = :phone"), {"phone": phone})
         engine.dispose()
