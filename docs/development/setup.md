@@ -44,7 +44,7 @@ python -m alembic upgrade head        # new database
 python -m alembic current             # should print 0001 (head)
 ```
 
-An existing database that already has every Express migration uses `python -m alembic stamp 0001` instead. Alembic refuses both commands while an Express migration is missing; see `docs/database/database-guide.md`.
+An existing database that already has every Express migration but is not yet under Alembic uses `python -m alembic stamp 0001`, then `python -m alembic upgrade head`. Alembic refuses both commands while an Express migration is missing; see `docs/database/database-guide.md`.
 
 ## 4. FastAPI environment
 

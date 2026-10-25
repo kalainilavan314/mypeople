@@ -43,11 +43,11 @@ The Express API is replaced one group of endpoints at a time ("strangler" migrat
 4. Schema changes after the baseline are Alembic revisions only (`docs/database/database-guide.md`).
 5. When an app no longer calls an `/api` route, that route is removed from Express. When none remain, `server/` and `app/` are retired.
 
-Moved so far: health checks, sign-in, sign-out, session checks and the member's own profile (`docs/api/api-reference.md`).
+Moved so far: health checks, sign-in, sign-out, session checks and the member's own profile. New in FastAPI only: staff access and the audit log (`docs/api/api-reference.md`).
 
 ## Backend modules
 
-Each module in `services/api/app/modules/` has a thin `router.py` (HTTP, permissions), `service.py` (rules), `repository.py` (SQL) and `schemas.py` (request and response models). The BRD's module list (§15A.7) is identity, membership, access, community, assistance, household, events, engagement, finance, content, messaging, ai and admin. Built: `auth` (sessions, sign-in, throttling) and `membership` (own profile).
+Each module in `services/api/app/modules/` has a thin `router.py` (HTTP, permissions), `service.py` (rules), `repository.py` (SQL) and `schemas.py` (request and response models). The BRD's module list (§15A.7) is identity, membership, access, community, assistance, household, events, engagement, finance, content, messaging, ai and admin. Built: `auth` (sessions, sign-in, throttling), `membership` (own profile), `access` (staff assignments, permission and area checks, RB-01 to RB-07) and `audit` (append-only, hash-chained log).
 
 ## Principles from the BRD (§15A.1)
 

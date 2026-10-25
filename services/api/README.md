@@ -14,6 +14,31 @@ Current scope:
 | `GET /v1/members/me` | the signed-in member's profile; `401` without a valid session |
 | `POST /v1/auth/sign-in` | `{nic, password}` → sets the session cookie, returns `{token, member}`; `401 invalid_credentials`, `429 too_many_attempts` |
 | `POST /v1/auth/sign-out` | ends every session of the member (`204`) and clears the cookie |
+| `GET /v1/access/me` | the caller's staff assignments that count now |
+| `GET /v1/access/catalogue`, `POST /v1/access/assignments/preview`, `POST /v1/access/assignments`, `POST /v1/access/assignments/{id}/revoke` | staff assignments (W09); need `roles.assign` |
+| `GET /v1/audit`, `GET /v1/audit/verify` | the audit log and its hash-chain check; need `audit.view` |
+
+## Staff access (BRD §9)
+
+Access is a tier, explicit permissions and an area, held as rows in
+`access.staff_assignment`. `app/modules/access/permissions.py` encodes the
+BRD's permission matrix (§9.4, §9.8) and `rules.py` the rules RB-01 to RB-07
+and RB-12, as plain functions with their own tests. Endpoints declare what
+they need with `require_permission("...")`; refused checks return 403 and
+are written to the audit log. Every grant and revocation is audited in the
+same transaction, and revocations apply on the next request.
+
+The first Super Administrator (Tier 5) has nobody above to grant it. An
+operator creates it once, on the server, for a member whose identity is
+confirmed:
+
+```powershell
+python -m app.modules.access.bootstrap <member-id> --permission members.verify
+```
+
+It is refused when a Super Administrator already exists. Everyone else is
+assigned through `/v1/access/assignments`. The Express API still reads its
+old `is_admin` flag for its own four staff routes until they move here.
 
 ## Sessions
 
@@ -103,15 +128,16 @@ any of them is missing, so a database that is behind is never marked current.
 
 | Database | Commands |
 |---|---|
-| Existing, with all Express migrations applied | `python -m alembic stamp 0001` |
-| Existing, behind on Express migrations | `npm run migrate --prefix ../../server`, then `python -m alembic stamp 0001` |
+| Existing, with all Express migrations applied, not yet under Alembic | `python -m alembic stamp 0001`, then `python -m alembic upgrade head` |
+| Existing, behind on Express migrations | `npm run migrate --prefix ../../server`, then `python -m alembic stamp 0001` and `python -m alembic upgrade head` |
+| Already under Alembic | `python -m alembic upgrade head` |
 | New and empty | `npm run migrate --prefix ../../server`, then `python -m alembic upgrade head` |
 
 Check the state with `python -m alembic current`. From now on, every schema
 change is a new Alembic revision, never a new file in `server/migrations`:
 
 ```powershell
-python -m alembic revision --rev-id 0002 -m "describe the change"
+python -m alembic revision --rev-id 0003 -m "describe the change"
 python -m alembic upgrade head --sql    # review the SQL before applying it
 python -m alembic upgrade head
 ```
@@ -147,6 +173,8 @@ app/
   db/express_baseline.py   the Express migrations behind revision 0001
   modules/auth/        sign-in, sign-out, throttle, CurrentMember dependency
   modules/membership/  /v1/members/me: router, schemas, repository
+  modules/access/      staff tiers, permissions, areas, assignments, bootstrap command
+  modules/audit/       append-only, hash-chained audit log
 alembic/               Alembic environment and revisions
 tests/                 pytest tests
 tests/express/         Node helper and vectors from server/src/lib.js

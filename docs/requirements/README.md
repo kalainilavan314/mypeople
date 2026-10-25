@@ -22,7 +22,13 @@ v1.1 contains 466 functional requirements, 160 business rules, 174 screens, 70 d
 
 | Requirement | What exists | Where |
 |---|---|---|
-| FR-ARCH-002 | Server-side session checks on every `/v1` endpoint (roles and scope still to come) | `services/api/app/modules/auth` |
+| FR-ARCH-002 | Server-side session, permission and area checks; refusals return 403 and are logged (processing-purpose checks still to come) | `services/api/app/modules/auth`, `access` |
+| RB-01 to RB-07, BR-083, BR-084 | Staff assignments: tier + explicit permissions + area; grantor and time recorded; RB-03 limits; preview; 12-month review for explicit grants; nothing granted automatically | `services/api/app/modules/access` |
+| BR-097 (part) | Staff need a confirmed identity; membership "Active" waits for the membership module | `access/rules.py` |
+| RB-12 [ASSUMPTION] | Assistance decisions refused alongside fundraising or election-roster rights | `access/permissions.py` |
+| FR-WEB-030 to 033 (API) | Select a verified person, area and permissions; preview; refuse grants beyond the administrator's own; revocation on the next request. The W09 screen and notifications are not built | `/v1/access` |
+| FR-ADM-011 (part) | Searchable, tamper-evident audit log with chain verification; export not built | `/v1/audit` |
+| FR-AUTH-027 (part) | An assignment with an overdue review stops counting; the review workflow is not built | `access/repository.py` |
 | FR-ARCH-003, NFR-ARCH-02 | Versioned `/v1` REST API documented in OpenAPI 3.1 | `services/api`, `packages/api-client/openapi.json` |
 | FR-ARCH-006 (part) | CI runs builds and tests; security scans and the production approval gate are still missing | `.github/workflows/ci.yml` |
 | FR-ARCH-010 | One design-token package for the new apps | `packages/design-tokens` |

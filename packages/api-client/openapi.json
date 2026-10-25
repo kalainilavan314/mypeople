@@ -149,10 +149,732 @@
           }
         ]
       }
+    },
+    "/v1/access/me": {
+      "get": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Read My Access",
+        "description": "The signed-in person's assignments that count right now. Apps use this to show\nor hide staff controls; the API still checks every request (RB-01).",
+        "operationId": "read_my_access_v1_access_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AssignmentOut"
+                  },
+                  "type": "array",
+                  "title": "Response Read My Access V1 Access Me Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/access/catalogue": {
+      "get": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Read Catalogue",
+        "description": "Tiers, their area levels and the permission matrix, for the W09 form.",
+        "operationId": "read_catalogue_v1_access_catalogue_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Catalogue"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/access/assignments/preview": {
+      "post": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Preview Assignment",
+        "description": "Check an assignment without saving it (RB-06, FR-WEB-031).",
+        "operationId": "preview_assignment_v1_access_assignments_preview_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignmentInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/access/assignments": {
+      "post": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Create Assignment",
+        "description": "Assign a tier, an area and explicit permissions to a verified member (W09, RB-02, RB-03).",
+        "operationId": "create_assignment_v1_access_assignments_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignmentInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, or {\"code\": \"assignment_refused\", \"problems\": [...]}"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/access/assignments/{assignment_id}/revoke": {
+      "post": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Revoke Assignment",
+        "description": "End an assignment. The person loses its permissions on their next request.",
+        "operationId": "revoke_assignment_v1_access_assignments__assignment_id__revoke_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assignment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Assignment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, or {\"code\": \"assignment_refused\", \"problems\": [...]}"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/audit": {
+      "get": {
+        "tags": [
+          "audit"
+        ],
+        "summary": "List Audit Entries",
+        "description": "Audit entries, newest first (FR-ADM-011). A regional auditor sees only entries in their region.",
+        "operationId": "list_audit_entries_v1_audit_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "actor_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Actor Id"
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Action"
+            }
+          },
+          {
+            "name": "before_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "For paging: entries older than this id",
+              "title": "Before Id"
+            },
+            "description": "For paging: entries older than this id"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditEntryOut"
+                  },
+                  "title": "Response List Audit Entries V1 Audit Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/audit/verify": {
+      "get": {
+        "tags": [
+          "audit"
+        ],
+        "summary": "Verify Audit Chain",
+        "description": "Recompute the hash chain over the whole log. It spans every region, so it needs platform scope.",
+        "operationId": "verify_audit_chain_v1_audit_verify_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChainCheckOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or platform_scope_required"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
     "schemas": {
+      "AreaRef": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "platform",
+              "province",
+              "district",
+              "ds",
+              "gn"
+            ],
+            "title": "Level"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level"
+        ],
+        "title": "AreaRef",
+        "description": "An area: the whole platform, or a province, district, DS division or GN division by code."
+      },
+      "AssignmentInput": {
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "1",
+              "2A",
+              "2B",
+              "3A",
+              "3B",
+              "4",
+              "5"
+            ],
+            "title": "Tier"
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaRef"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 60,
+            "title": "Permissions"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberId",
+          "tier",
+          "area",
+          "permissions"
+        ],
+        "title": "AssignmentInput"
+      },
+      "AssignmentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "1",
+              "2A",
+              "2B",
+              "3A",
+              "3B",
+              "4",
+              "5"
+            ],
+            "title": "Tier"
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaRef"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Permissions"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "revoked"
+            ],
+            "title": "State"
+          },
+          "grantedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grantedby"
+          },
+          "grantedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Grantedat"
+          },
+          "reviewDueAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewdueat"
+          },
+          "endedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "memberId",
+          "tier",
+          "area",
+          "permissions",
+          "state",
+          "grantedBy",
+          "grantedAt",
+          "reviewDueAt",
+          "endedAt"
+        ],
+        "title": "AssignmentOut"
+      },
+      "AuditEntryOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurredat"
+          },
+          "actorId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actorid"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "targetType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Targettype"
+          },
+          "targetId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Targetid"
+          },
+          "areaLevel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arealevel"
+          },
+          "areaCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Areacode"
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Details"
+          },
+          "entryHash": {
+            "type": "string",
+            "title": "Entryhash"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "occurredAt",
+          "actorId",
+          "action",
+          "targetType",
+          "targetId",
+          "areaLevel",
+          "areaCode",
+          "details",
+          "entryHash"
+        ],
+        "title": "AuditEntryOut"
+      },
+      "Catalogue": {
+        "properties": {
+          "tiers": {
+            "items": {
+              "$ref": "#/components/schemas/TierInfo"
+            },
+            "type": "array",
+            "title": "Tiers"
+          },
+          "permissions": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "explicit"
+                ]
+              },
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Permissions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tiers",
+          "permissions"
+        ],
+        "title": "Catalogue",
+        "description": "The tiers and the permission matrix, for building the W09 form."
+      },
+      "ChainCheckOut": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "checked": {
+            "type": "integer",
+            "title": "Checked"
+          },
+          "firstBrokenId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Firstbrokenid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "checked",
+          "firstBrokenId"
+        ],
+        "title": "ChainCheckOut"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -356,6 +1078,56 @@
         "title": "MemberProfile",
         "description": "The signed-in member's own profile.\n\nJSON keys are camelCase, matching the Express /api/me response. The NIC\nhash, password hash and staff-only review fields are never part of it."
       },
+      "PreviewOut": {
+        "properties": {
+          "allowed": {
+            "type": "boolean",
+            "title": "Allowed"
+          },
+          "problems": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Problems"
+          },
+          "reviewDueAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewdueat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "allowed",
+          "problems",
+          "reviewDueAt"
+        ],
+        "title": "PreviewOut",
+        "description": "What W09 shows before saving (RB-06). Each problem is a code the dashboard explains."
+      },
+      "RevokeInput": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "RevokeInput"
+      },
       "SignInRequest": {
         "properties": {
           "nic": {
@@ -395,6 +1167,48 @@
         ],
         "title": "SignInResponse",
         "description": "The token is returned for mobile apps; browsers use the HttpOnly cookie."
+      },
+      "TierInfo": {
+        "properties": {
+          "tier": {
+            "type": "string",
+            "enum": [
+              "1",
+              "2A",
+              "2B",
+              "3A",
+              "3B",
+              "4",
+              "5"
+            ],
+            "title": "Tier"
+          },
+          "areaLevel": {
+            "type": "string",
+            "enum": [
+              "platform",
+              "province",
+              "district",
+              "ds",
+              "gn"
+            ],
+            "title": "Arealevel"
+          },
+          "defaultPermissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Defaultpermissions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tier",
+          "areaLevel",
+          "defaultPermissions"
+        ],
+        "title": "TierInfo"
       },
       "ValidationError": {
         "properties": {

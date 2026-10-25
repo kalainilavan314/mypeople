@@ -131,3 +131,40 @@ test('signOut accepts the empty 204 response', async () => {
   assert.equal(await createApiClient({ baseUrl: 'https://api.example', fetch }).signOut(), undefined);
   assert.equal(sent[0].url, 'https://api.example/v1/auth/sign-out');
 });
+
+test('a refused assignment carries the reasons', async () => {
+  const { fetch } = fakeFetch(403, { detail: { code: 'assignment_refused', problems: ['tier_not_below_yours'] } });
+  const input = {
+    memberId: '3f1c2a9e-5b7d-4e8a-9c0f-1a2b3c4d5e6f',
+    tier: '3A' as const,
+    area: { level: 'district' as const, code: 'LK41' },
+    permissions: ['cases.decide_district'],
+  };
+
+  await assert.rejects(createApiClient({ baseUrl: 'https://api.example', fetch }).createAssignment(input), (error) => {
+    assert.ok(error instanceof ApiError);
+    assert.equal(error.code, 'assignment_refused');
+    assert.deepEqual(error.problems, ['tier_not_below_yours']);
+    return true;
+  });
+});
+
+test('revoking posts the reason to the assignment', async () => {
+  const { fetch, sent } = fakeFetch(200, {});
+
+  await createApiClient({ baseUrl: 'https://api.example', fetch }).revokeAssignment('abc-123', 'Left the role');
+
+  assert.equal(sent[0].url, 'https://api.example/v1/access/assignments/abc-123/revoke');
+  assert.deepEqual(JSON.parse(sent[0].body ?? ''), { reason: 'Left the role' });
+});
+
+test('audit filters become query parameters', async () => {
+  const { fetch, sent } = fakeFetch(200, []);
+  const client = createApiClient({ baseUrl: 'https://api.example', fetch });
+
+  await client.listAuditEntries({ action: 'access.denied', beforeId: 40, limit: 20 });
+  await client.listAuditEntries();
+
+  assert.equal(sent[0].url, 'https://api.example/v1/audit?action=access.denied&before_id=40&limit=20');
+  assert.equal(sent[1].url, 'https://api.example/v1/audit');
+});

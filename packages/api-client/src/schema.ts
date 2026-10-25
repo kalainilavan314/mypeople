@@ -104,10 +104,270 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/access/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Access
+         * @description The signed-in person's assignments that count right now. Apps use this to show
+         *     or hide staff controls; the API still checks every request (RB-01).
+         */
+        get: operations["read_my_access_v1_access_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/catalogue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Catalogue
+         * @description Tiers, their area levels and the permission matrix, for the W09 form.
+         */
+        get: operations["read_catalogue_v1_access_catalogue_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignments/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview Assignment
+         * @description Check an assignment without saving it (RB-06, FR-WEB-031).
+         */
+        post: operations["preview_assignment_v1_access_assignments_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Assignment
+         * @description Assign a tier, an area and explicit permissions to a verified member (W09, RB-02, RB-03).
+         */
+        post: operations["create_assignment_v1_access_assignments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignments/{assignment_id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Revoke Assignment
+         * @description End an assignment. The person loses its permissions on their next request.
+         */
+        post: operations["revoke_assignment_v1_access_assignments__assignment_id__revoke_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Audit Entries
+         * @description Audit entries, newest first (FR-ADM-011). A regional auditor sees only entries in their region.
+         */
+        get: operations["list_audit_entries_v1_audit_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/audit/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Verify Audit Chain
+         * @description Recompute the hash chain over the whole log. It spans every region, so it needs platform scope.
+         */
+        get: operations["verify_audit_chain_v1_audit_verify_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AreaRef
+         * @description An area: the whole platform, or a province, district, DS division or GN division by code.
+         */
+        AreaRef: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "platform" | "province" | "district" | "ds" | "gn";
+            /** Code */
+            code?: string | null;
+        };
+        /** AssignmentInput */
+        AssignmentInput: {
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /**
+             * Tier
+             * @enum {string}
+             */
+            tier: "1" | "2A" | "2B" | "3A" | "3B" | "4" | "5";
+            area: components["schemas"]["AreaRef"];
+            /** Permissions */
+            permissions: string[];
+            /** Note */
+            note?: string | null;
+        };
+        /** AssignmentOut */
+        AssignmentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /**
+             * Tier
+             * @enum {string}
+             */
+            tier: "1" | "2A" | "2B" | "3A" | "3B" | "4" | "5";
+            area: components["schemas"]["AreaRef"];
+            /** Permissions */
+            permissions: string[];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "active" | "revoked";
+            /** Grantedby */
+            grantedBy: string | null;
+            /**
+             * Grantedat
+             * Format: date-time
+             */
+            grantedAt: string;
+            /** Reviewdueat */
+            reviewDueAt: string | null;
+            /** Endedat */
+            endedAt: string | null;
+        };
+        /** AuditEntryOut */
+        AuditEntryOut: {
+            /** Id */
+            id: number;
+            /**
+             * Occurredat
+             * Format: date-time
+             */
+            occurredAt: string;
+            /** Actorid */
+            actorId: string | null;
+            /** Action */
+            action: string;
+            /** Targettype */
+            targetType: string | null;
+            /** Targetid */
+            targetId: string | null;
+            /** Arealevel */
+            areaLevel: string | null;
+            /** Areacode */
+            areaCode: string | null;
+            /** Details */
+            details: {
+                [key: string]: unknown;
+            };
+            /** Entryhash */
+            entryHash: string;
+        };
+        /**
+         * Catalogue
+         * @description The tiers and the permission matrix, for building the W09 form.
+         */
+        Catalogue: {
+            /** Tiers */
+            tiers: components["schemas"]["TierInfo"][];
+            /** Permissions */
+            permissions: {
+                [key: string]: {
+                    [key: string]: "default" | "explicit";
+                };
+            };
+        };
+        /** ChainCheckOut */
+        ChainCheckOut: {
+            /** Ok */
+            ok: boolean;
+            /** Checked */
+            checked: number;
+            /** Firstbrokenid */
+            firstBrokenId: number | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -172,6 +432,23 @@ export interface components {
              */
             joinedAt: string;
         };
+        /**
+         * PreviewOut
+         * @description What W09 shows before saving (RB-06). Each problem is a code the dashboard explains.
+         */
+        PreviewOut: {
+            /** Allowed */
+            allowed: boolean;
+            /** Problems */
+            problems: string[];
+            /** Reviewdueat */
+            reviewDueAt: string | null;
+        };
+        /** RevokeInput */
+        RevokeInput: {
+            /** Reason */
+            reason: string;
+        };
         /** SignInRequest */
         SignInRequest: {
             /** Nic */
@@ -187,6 +464,21 @@ export interface components {
             /** Token */
             token: string;
             member: components["schemas"]["MemberProfile"];
+        };
+        /** TierInfo */
+        TierInfo: {
+            /**
+             * Tier
+             * @enum {string}
+             */
+            tier: "1" | "2A" | "2B" | "3A" | "3B" | "4" | "5";
+            /**
+             * Arealevel
+             * @enum {string}
+             */
+            areaLevel: "platform" | "province" | "district" | "ds" | "gn";
+            /** Defaultpermissions */
+            defaultPermissions: string[];
         };
         /** ValidationError */
         ValidationError: {
@@ -332,6 +624,230 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["MemberProfile"];
                 };
+            };
+        };
+    };
+    read_my_access_v1_access_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentOut"][];
+                };
+            };
+        };
+    };
+    read_catalogue_v1_access_catalogue_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Catalogue"];
+                };
+            };
+        };
+    };
+    preview_assignment_v1_access_assignments_preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_assignment_v1_access_assignments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentOut"];
+                };
+            };
+            /** @description forbidden, or {"code": "assignment_refused", "problems": [...]} */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_assignment_v1_access_assignments__assignment_id__revoke_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assignment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RevokeInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentOut"];
+                };
+            };
+            /** @description forbidden, or {"code": "assignment_refused", "problems": [...]} */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_audit_entries_v1_audit_get: {
+        parameters: {
+            query?: {
+                actor_id?: string | null;
+                action?: string | null;
+                /** @description For paging: entries older than this id */
+                before_id?: number | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditEntryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    verify_audit_chain_v1_audit_verify_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChainCheckOut"];
+                };
+            };
+            /** @description forbidden or platform_scope_required */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

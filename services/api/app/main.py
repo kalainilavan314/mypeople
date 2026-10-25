@@ -18,6 +18,8 @@ from app import health
 from app.core.config import Settings
 from app.core.middleware import add_security_headers, cors_options, refuse_cross_origin_writes
 from app.db.session import create_database_engine
+from app.modules.access import router as access
+from app.modules.audit import router as audit
 from app.modules.auth import router as auth
 from app.modules.membership import router as membership
 
@@ -55,6 +57,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(health.router)
     app.include_router(auth.router)
     app.include_router(membership.router)
+    app.include_router(access.router)
+    app.include_router(audit.router)
 
     # The middleware added last runs first, so the security headers are also
     # set on the 403 that the origin check returns.

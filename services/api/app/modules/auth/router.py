@@ -5,6 +5,7 @@ from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
+from app.core.request_info import client_ip
 from app.core.security import SESSION_COOKIE, SESSION_LIFETIME
 from app.db.session import get_db
 from app.modules.auth import service
@@ -16,18 +17,6 @@ from app.modules.membership.schemas import MemberProfile
 router = APIRouter(prefix="/v1/auth", tags=["auth"])
 
 Db = Annotated[Session, Depends(get_db)]
-
-
-def client_ip(request: Request) -> str:
-    """The address the sign-in throttle counts against.
-
-    X-Forwarded-For is not read here: a client can put any address in it, and
-    with per-IP limits that would let one attacker try unlimited passwords by
-    inventing a new address for each attempt. Behind Nginx, run uvicorn with
-    --proxy-headers --forwarded-allow-ips=<nginx address> instead; uvicorn then
-    takes the address Nginx appended, which the client cannot forge.
-    """
-    return request.client.host if request.client else "unknown"
 
 
 @router.post(

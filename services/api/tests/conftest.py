@@ -94,19 +94,24 @@ def db_client(database_settings: Settings, db_session: Session) -> TestClient:
 def create_member(db_session: Session, database_settings: Settings) -> Callable[..., Row]:
     pepper = database_settings.nic_pepper.get_secret_value()
 
-    def create(nic: str | None = None, password: str = "correct horse battery") -> Row:
+    def create(nic: str | None = None, password: str = "correct horse battery", verified: bool = False) -> Row:
         # A random 12-digit NIC cannot collide with a real member's.
         nic = nic or str(random.randrange(10**11, 10**12))
         return db_session.execute(
             text(
                 """
-                INSERT INTO npm.member (member_code, full_name, password_hash, referral_code, nic_hash, language)
+                INSERT INTO npm.member (member_code, full_name, password_hash, referral_code, nic_hash, language,
+                                        verification_status)
                 VALUES ('TEST-' || left(gen_random_uuid()::text, 8), 'Test Member', :password_hash,
-                        'TEST-' || left(gen_random_uuid()::text, 8), :nic_hash, 'ta')
+                        'TEST-' || left(gen_random_uuid()::text, 8), :nic_hash, 'ta', :verification_status)
                 RETURNING id, session_version, nic_hash
                 """
             ),
-            {"password_hash": hash_password(password), "nic_hash": nic_hash(nic, pepper)},
+            {
+                "password_hash": hash_password(password),
+                "nic_hash": nic_hash(nic, pepper),
+                "verification_status": "identity_confirmed" if verified else "unverified",
+            },
         ).one()
 
     return create

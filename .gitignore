@@ -24,7 +24,8 @@ __pycache__/
 server/uploads/
 
 # Local-only audit/review notes — not meant to be pushed or shared on branches.
-audit/
+# Anchored to the root: services/api/app/modules/audit/ is code and is tracked.
+/audit/
 
 # Editor / OS
 .vscode/

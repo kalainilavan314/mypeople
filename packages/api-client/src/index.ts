@@ -6,9 +6,17 @@
 // re-export openapi.json and regenerate it, and CI checks that you did.
 import type { components } from './schema';
 
-export type HealthStatus = components['schemas']['HealthStatus'];
-export type MemberProfile = components['schemas']['MemberProfile'];
-export type SignInResponse = components['schemas']['SignInResponse'];
+type Schemas = components['schemas'];
+export type HealthStatus = Schemas['HealthStatus'];
+export type MemberProfile = Schemas['MemberProfile'];
+export type SignInResponse = Schemas['SignInResponse'];
+export type AreaRef = Schemas['AreaRef'];
+export type AssignmentInput = Schemas['AssignmentInput'];
+export type Assignment = Schemas['AssignmentOut'];
+export type AssignmentPreview = Schemas['PreviewOut'];
+export type AccessCatalogue = Schemas['Catalogue'];
+export type AuditEntry = Schemas['AuditEntryOut'];
+export type AuditChainCheck = Schemas['ChainCheckOut'];
 
 /** A response other than 2xx. `code` is the API's error code, e.g. "invalid_credentials". */
 export class ApiError extends Error {
@@ -16,13 +24,16 @@ export class ApiError extends Error {
   readonly code: string;
   /** Seconds to wait before trying again, when the API sent Retry-After (sign-in lockout). */
   readonly retryAfter: number | null;
+  /** Why an action was refused, e.g. ["tier_not_below_yours"] for "assignment_refused". */
+  readonly problems: string[];
 
-  constructor(status: number, code: string, retryAfter: number | null) {
+  constructor(status: number, code: string, retryAfter: number | null, problems: string[] = []) {
     super(`API request failed: ${status} ${code}`);
     this.name = 'ApiError';
     this.status = status;
     this.code = code;
     this.retryAfter = retryAfter;
+    this.problems = problems;
   }
 }
 
@@ -36,6 +47,14 @@ export interface ApiClientOptions {
   getToken?: () => string | null | Promise<string | null>;
   /** Replaces the global fetch, e.g. in tests. */
   fetch?: typeof fetch;
+}
+
+export interface AuditFilters {
+  actorId?: string;
+  action?: string;
+  /** For paging: entries older than this id. */
+  beforeId?: number;
+  limit?: number;
 }
 
 export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalThis.fetch }: ApiClientOptions) {
@@ -69,20 +88,55 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     signOut: () => request<void>('POST', '/v1/auth/sign-out'),
     /** Throws ApiError "unauthorized" or "session_expired" (401) without a valid session. */
     getMyProfile: () => request<MemberProfile>('GET', '/v1/members/me'),
+
+    /** The signed-in person's staff assignments; empty for members. The API still checks every action. */
+    getMyAccess: () => request<Assignment[]>('GET', '/v1/access/me'),
+    /** Tiers and the permission matrix, for the W09 form. Needs roles.assign. */
+    getAccessCatalogue: () => request<AccessCatalogue>('GET', '/v1/access/catalogue'),
+    /** Checks an assignment without saving it (RB-06). Needs roles.assign. */
+    previewAssignment: (input: AssignmentInput) => request<AssignmentPreview>('POST', '/v1/access/assignments/preview', input),
+    /** Throws ApiError "assignment_refused" (403) with `problems` when a rule forbids it. */
+    createAssignment: (input: AssignmentInput) => request<Assignment>('POST', '/v1/access/assignments', input),
+    revokeAssignment: (assignmentId: string, reason: string) =>
+      request<Assignment>('POST', `/v1/access/assignments/${encodeURIComponent(assignmentId)}/revoke`, { reason }),
+
+    /** Newest first. Needs audit.view; a regional auditor sees only their region. */
+    listAuditEntries: (filters: AuditFilters = {}) => request<AuditEntry[]>('GET', `/v1/audit${toQuery(filters)}`),
+    /** Recomputes the audit hash chain. Needs audit.view with platform scope. */
+    verifyAuditChain: () => request<AuditChainCheck>('GET', '/v1/audit/verify'),
   };
 }
 
 export type ApiClient = ReturnType<typeof createApiClient>;
 
+function toQuery(filters: AuditFilters): string {
+  const params = new URLSearchParams();
+  if (filters.actorId) params.set('actor_id', filters.actorId);
+  if (filters.action) params.set('action', filters.action);
+  if (filters.beforeId !== undefined) params.set('before_id', String(filters.beforeId));
+  if (filters.limit !== undefined) params.set('limit', String(filters.limit));
+  const query = params.toString();
+  return query ? `?${query}` : '';
+}
+
 async function toApiError(response: Response): Promise<ApiError> {
   const retryAfter = Number(response.headers.get('retry-after'));
   let code = `http_${response.status}`;
+  let problems: string[] = [];
   try {
-    const body = (await response.json()) as { detail?: unknown };
-    if (typeof body.detail === 'string') code = body.detail;
-    else if (Array.isArray(body.detail)) code = 'invalid_request'; // FastAPI field validation
+    const { detail } = (await response.json()) as { detail?: unknown };
+    if (typeof detail === 'string') {
+      code = detail;
+    } else if (Array.isArray(detail)) {
+      code = 'invalid_request'; // FastAPI field validation
+    } else if (detail && typeof detail === 'object' && 'code' in detail) {
+      // A refusal with reasons: {"code": "assignment_refused", "problems": [...]}
+      const refusal = detail as { code: unknown; problems?: unknown };
+      code = String(refusal.code);
+      problems = Array.isArray(refusal.problems) ? refusal.problems.map(String) : [];
+    }
   } catch {
     // Not JSON (e.g. a proxy error page); keep the HTTP status as the code.
   }
-  return new ApiError(response.status, code, Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : null);
+  return new ApiError(response.status, code, Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : null, problems);
 }

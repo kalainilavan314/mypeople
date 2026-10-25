@@ -434,6 +434,7 @@ services/api/
     script.py.mako
     versions/
       0001_baseline_express_schema.py
+      0002_access_and_audit.py
   app/
     __init__.py
     main.py
@@ -442,6 +443,8 @@ services/api/
       __init__.py
       config.py
       middleware.py
+      request_info.py
+      schemas.py
       security.py
     db/
       __init__.py
@@ -463,12 +466,31 @@ services/api/
         repository.py
         router.py
         schemas.py
+      access/
+        __init__.py
+        bootstrap.py
+        dependencies.py
+        permissions.py
+        repository.py
+        router.py
+        rules.py
+        schemas.py
+        service.py
+      audit/
+        __init__.py
+        repository.py
+        router.py
+        schemas.py
+        service.py
   tests/
     conftest.py
     express/
       auth_helpers.mjs
       auth_vectors.json
       vectors-request.json
+    test_access_api.py
+    test_access_rules.py
+    test_audit_log.py
     test_config.py
     test_database.py
     test_db_session.py

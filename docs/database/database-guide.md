@@ -9,12 +9,14 @@ PostgreSQL 16 on the server (17 locally is fine). Production data lives on the e
 | `geo` | `province`, `district`, `ds_division`, `gn_division` (Northern Province reference data) | Express `0000` |
 | `npm` | `member`, `otp`, `auth_attempt`, `verification_audit`, `onboarding_answer`, `referral_event`, `event`, `event_rsvp`, `community_report`, `donation` | Express `0001`–`0011` |
 | `public` | `error_log` (Express 5xx errors), `schema_migrations` (Express ledger), `alembic_version` (Alembic) | Express, Alembic |
+| `access` | `staff_assignment`: a person's tier, area and explicit permissions, who granted it, review date, revocation | Alembic `0002` |
+| `ops` | `audit_log`: append-only and hash-chained; triggers refuse UPDATE, DELETE and TRUNCATE | Alembic `0002` |
 
 Sensitive columns: `npm.member.nic_hash` (peppered SHA-256, never the NIC itself) and `password_hash` (bcrypt). OTP codes are stored only as HMACs.
 
 ## Migrations
 
-Two runners, one rule: **new schema changes are Alembic revisions only.**
+Two runners, one rule: **new schema changes are Alembic revisions only.** Revisions so far: `0001` baseline, `0002` staff access and the audit log.
 
 - `server/migrations/0000`–`0011` are frozen. They built the schema before Alembic and are still applied by `npm run migrate --prefix server` on a new database.
 - Alembic revision `0001` (`services/api/alembic/versions/0001_baseline_express_schema.py`) is a no-op baseline that stands for those twelve files. `alembic/env.py` refuses every command, `stamp` included, while any of them is missing from the Express ledger, so a database that is behind can never be marked current.
@@ -23,9 +25,12 @@ Two runners, one rule: **new schema changes are Alembic revisions only.**
 | Situation | Commands |
 |---|---|
 | New, empty database | `npm run migrate --prefix server`, then `python -m alembic upgrade head` |
-| Existing database with all Express migrations | `python -m alembic stamp 0001` |
-| Existing database that is behind | `npm run migrate --prefix server`, then `python -m alembic stamp 0001` |
-| A schema change | `python -m alembic revision --rev-id 0002 -m "what changes"`, review `python -m alembic upgrade head --sql`, then upgrade |
+| Existing database with all Express migrations, not yet under Alembic | `python -m alembic stamp 0001`, then `python -m alembic upgrade head` |
+| Existing database that is behind | `npm run migrate --prefix server`, then `python -m alembic stamp 0001` and `python -m alembic upgrade head` |
+| Database already under Alembic | `python -m alembic upgrade head` |
+| A schema change | `python -m alembic revision --rev-id 0003 -m "what changes"` (next free number), review `python -m alembic upgrade head --sql`, then upgrade |
+
+Staff assignments are never deleted: revoking sets `state`, `ended_at`, `ended_by` and `end_reason`. Each audit entry stores the SHA-256 of the previous one; `GET /v1/audit/verify` recomputes the chain.
 
 Autogenerate compares only tables declared on `app.db.base.Base`, so it never proposes dropping the Express tables. Until a module takes over a table, FastAPI reads and writes it with SQL in that module's `repository.py`.
 

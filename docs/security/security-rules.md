@@ -35,6 +35,10 @@ The rules every change must follow, and what is in place today. BRD references: 
 | Card QR | Carries an opaque, signed, 10-minute token, never NIC or date of birth |
 | Avatars and slips | Served through signed, expiring URLs or admin-only routes |
 | Errors | 5xx details go to a private `error_log` table, never to the response |
+| Staff permissions (FastAPI) | Tier + explicit permissions + area per assignment (BRD §9); checked on the server for every request; refusals logged; revocations apply on the next request; an assignment whose 12-month review is overdue stops counting |
+| Granting (RB-02, RB-03, BR-083, BR-097) | Only holders of `roles.assign`, inside their own area, for tiers below their own; no self-assignment; the person's identity must be confirmed; preview before saving |
+| Separation of duties (RB-12) | Assistance decisions are refused alongside fundraising or election-roster rights in an overlapping area |
+| Audit log | `ops.audit_log`: append-only (database triggers) and hash-chained; regional auditors see only their region; grants, revocations and refused access are recorded with ids only |
 | Network | Firewall allows only 22, 80, 443; PostgreSQL listens on localhost |
 | Backups | Encrypted, off-server restic backups daily and before each release, integrity-checked |
 | Dependencies | `npm audit` clean for the Express API (October 2026) |
@@ -43,9 +47,11 @@ The rules every change must follow, and what is in place today. BRD references: 
 
 | Gap | Planned in |
 |---|---|
-| Roles, permissions and geographic scope (only an `is_admin` flag today) | Access module, next backend batch |
+| Express still decides its four staff routes by `is_admin`. The first Super Administrator is created with `python -m app.modules.access.bootstrap` | When identity verification and finance move to `/v1` |
+| How RB-03 is applied (see `app/modules/access/rules.py`) needs sponsor confirmation, as does the RB-12 list of conflicting rights (OD-32) | Sponsor |
+| Membership "Active" is not modelled yet, so staff eligibility checks identity only (BR-097) | Membership module (OD-02) |
+| Notifying the person on grant or revocation; the quarterly access-review workflow (FR-AUTH-027) | Messaging and admin dashboard |
 | MFA for privileged staff | With the staff app and admin dashboard |
-| General append-only audit log (only `verification_audit` today) | Access module |
 | Private object storage with 5-minute signed URLs for identity evidence | Document-storage batch |
 | Retention periods for ID images, selfies and decisions | Waiting on OD-03 |
 | Express listens on all interfaces (`*:3001`); the firewall blocks it, binding to `127.0.0.1` would add a layer | Next deploy |
