@@ -74,7 +74,7 @@ await page.getByRole('searchbox').fill('Party Fund');
 assert.equal(await page.locator('.home-service-grid a').count(),1);
 await page.getByRole('searchbox').fill('does not exist');await page.getByRole('status').filter({hasText:'No matching services'}).waitFor();
 await page.getByRole('button',{name:'Clear search'}).click();
-assert.equal(await page.locator('.home-quick-grid a').count(),5);
+assert.equal(await page.locator('.home-quick-grid a').count(),4);
 assert.equal(await page.locator('.home-service-grid a').count(),7);
 await page.getByRole('button',{name:'Card and check-in QR'}).click();
 assert.equal(new URL(page.url()).pathname,'/card');assert.equal(new URL(page.url()).search,'?qr=1');

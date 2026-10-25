@@ -27,7 +27,7 @@ HomeScreen
 ├── CommunityHero       short mission headline, illustrative community photo, Get Involved
 ├── ActivityOverview    existing event/report/referral data; aligned numeric baselines
 ├── HomeServices
-│   ├── Quick access    Volunteer, Surveys, Report issue, Events, Community
+│   ├── Quick access    Volunteer, Surveys, Report issue, Community
 │   └── Feature cards   Party Fund, My area, Ideas, Courses, Referrals, Gallery, Card
 ├── NearbyEvents        upcoming API events or an honest empty state
 └── Footer
