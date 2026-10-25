@@ -32,7 +32,8 @@ The rules every change must follow, and what is in place today. BRD references: 
 | CORS | FastAPI: only `ALLOWED_ORIGINS` (with cookies); in development also `http://localhost` ports. Production allows no other origin |
 | Mobile config | Only the public API address goes in `EXPO_PUBLIC_*` variables, which are readable inside the app |
 | Headers | `nosniff`, `Referrer-Policy`, `X-Frame-Options: SAMEORIGIN`; API responses `Cache-Control: no-store` |
-| OTP | Stored as HMACs; per-phone and per-IP limits; burned after 5 wrong guesses |
+| OTP | Stored as HMACs; per-phone and per-IP limits; burned after 5 wrong guesses; the same table and rules in both APIs |
+| Recovery (FastAPI) | Codes only to a number the member confirmed by code; the same answer whether or not an ID number is registered; a reset token valid 10 minutes and single-use; a new password ends every session and the contact is told; a changed number tells the old one; assisted recovery handled by reviewers in the member's area |
 | Card QR | Carries an opaque, signed, 10-minute token, never NIC or date of birth |
 | Avatars and slips | Served through signed, expiring URLs or admin-only routes |
 | Errors | 5xx details go to a private `error_log` table, never to the response |
@@ -66,7 +67,8 @@ The rules every change must follow, and what is in place today. BRD references: 
 | Retention periods for ID images, selfies and decisions | Waiting on OD-03 |
 | Express listens on all interfaces (`*:3001`); the firewall blocks it, binding to `127.0.0.1` would add a layer | Next deploy |
 | CI security scans (SAST, dependency, secret scanning) | CI batch |
-| Registration has no rate limit and no phone confirmation yet; the Express sign-up accepts 6-character passwords and promotes tiers by referral count, which SG-03 forbids | Account-security batch; retire the Express sign-up |
+| No SMS vendor: production cannot send one-time codes, so recovery answers 503 until INT-01 is contracted | INT-01 vendor |
+| Registration and assisted-recovery limits are per address only (5 and 3 an hour); the Express sign-up accepts 6-character passwords and promotes tiers by referral count, which SG-03 forbids | Sessions batch; retire the Express sign-up |
 | `npm audit`: 5 high findings in Expo's development CLI (`@expo/cli` via `node-forge`, `zod`), not in app bundles; npm's only fix is a downgrade | Next Expo patch release |
 | Replacing the `karan-server-admin` SSH key, exposed in a chat on 24 October 2026 | Server owner |
 

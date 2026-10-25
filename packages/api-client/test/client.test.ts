@@ -268,3 +268,12 @@ test('consent accepts the empty 204 response', async () => {
 
   assert.equal(sent[0].url, 'https://api.example/v1/identity/me/consent');
 });
+
+test('recovery verification sends the account number with the code', async () => {
+  const { fetch, sent } = fakeFetch(200, { resetToken: 'r', expiresInSeconds: 600 });
+
+  const token = await createApiClient({ baseUrl: 'https://api.example', fetch }).verifyRecovery({ nic: '123456789V' }, '123456');
+
+  assert.equal(token.resetToken, 'r');
+  assert.equal(sent[0].body, JSON.stringify({ nic: '123456789V', code: '123456' }));
+});

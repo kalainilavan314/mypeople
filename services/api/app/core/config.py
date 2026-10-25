@@ -40,6 +40,12 @@ class Settings(BaseSettings):
     # Express API's ALLOWED_ORIGINS (comma-separated). Empty means same-origin only.
     allowed_origins: Annotated[list[str], NoDecode] = []
 
+    # How one-time codes are sent (INT-01; no vendor chosen yet). "none" answers
+    # 503 sms_not_configured wherever a code must be sent. "development" keeps
+    # messages in memory and returns the code in the response; it is refused
+    # outside APP_ENV=development, so a live system can never leak codes.
+    sms_provider: Literal["none", "development"] = "none"
+
     # FR-AUTH-011: passport numbers are checked against a configurable pattern.
     # [ASSUMPTION] 6 to 9 letters or digits until the sponsor sets the rule.
     passport_number_pattern: str = r"^[A-Z0-9]{6,9}$"
@@ -71,6 +77,12 @@ class Settings(BaseSettings):
             if len(key) != 32:
                 raise ValueError("EVIDENCE_ENCRYPTION_KEY must be 32 bytes, base64-encoded")
         return value
+
+    @model_validator(mode="after")
+    def development_sms_only_in_development(self) -> Self:
+        if self.sms_provider == "development" and self.app_env != "development":
+            raise ValueError("SMS_PROVIDER=development is allowed only with APP_ENV=development")
+        return self
 
     @model_validator(mode="after")
     def evidence_settings_together(self) -> Self:

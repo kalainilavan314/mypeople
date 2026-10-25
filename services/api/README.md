@@ -18,6 +18,9 @@ Current scope:
 | `POST /v1/identity/register` | create an account on the NIC or passport route and sign it in; `409 already_registered`, `422 registration_refused` |
 | `GET /v1/identity/notices`, `POST /v1/identity/me/consent`, `GET /v1/identity/me/progress` | notice versions, identity-review consent (needed before any upload), registration steps |
 | `GET /v1/geography/districts`, `.../districts/{code}/ds-divisions`, `.../ds-divisions/{code}/gn-divisions` | the area lists, public |
+| `GET`/`POST /v1/identity/me/phone`, `POST /v1/identity/me/phone/confirm` | the recovery number, confirmed by a one-time code |
+| `POST /v1/auth/recovery/request`, `/verify`, `/reset`, `/assisted` | account recovery by code, a new password, and assisted recovery requests |
+| `GET /v1/identity/recovery-requests`, `POST .../{id}/resolve` | the assisted-recovery queue; needs `members.verify` over the member's area |
 | `POST /v1/auth/sign-out` | ends every session of the member (`204`) and clears the cookie |
 | `GET /v1/access/me` | the caller's staff assignments that count now |
 | `GET /v1/access/catalogue`, `POST /v1/access/assignments/preview`, `POST /v1/access/assignments`, `POST /v1/access/assignments/{id}/revoke` | staff assignments (W09); need `roles.assign` |
@@ -84,6 +87,34 @@ and membership as pending; nothing is verified by registering. Referrals are
 recorded but, unlike the Express sign-up, never promote anyone's tier
 (SG-03). Not built yet: the mobile number and its one-time code, recovery
 and registration rate limits (account-security batch).
+
+## Recovery (BRD A13, A16, FR-REG-028, FR-AUTH-014 to 017)
+
+- **Recovery number.** A number becomes the recovery contact only after the
+  member enters the code sent to it; it is also copied to `npm.member.phone`
+  for the live app. Changing it later sends a notice to the old number.
+- **One-time codes** use the Express table `npm.otp`, hashed the same way
+  (HMAC under `JWT_SECRET`), with the same limits: one a minute, five an
+  hour and ten a day per number, ten per address in ten minutes, five
+  guesses per code. Recovery codes last 10 minutes, confirmation codes 5.
+- **Recovery.** A code goes only to the confirmed contact, and the answer is
+  the same whether or not the ID number is registered (BR-023). A correct
+  code gives a 10-minute reset token; the new password ends every session
+  and the contact is told. This also covers moving to a new phone.
+- **Assisted recovery.** Anyone can ask for help with an AR reference; the
+  request reaches reviewers with `members.verify` over the member's area
+  (an assumption: the BRD names no support permission). After checking the
+  person's identity a reviewer can replace the recovery number.
+- **SMS.** `app/integrations/sms.py` sends through an interface. No vendor is
+  chosen (INT-01), so `SMS_PROVIDER=none` answers `503 sms_not_configured`;
+  `SMS_PROVIDER=development` keeps messages in memory and returns the code
+  in the response, and is refused outside development.
+- **Limits.** Five registrations and three assisted-recovery requests per
+  address an hour (assumptions).
+
+Not built yet: the 24-hour delay on high-risk actions after a contact change
+(no such action exists yet), and sessions, device alerts and staff MFA
+(next batch).
 
 ## Membership (BRD §9.3, GAP-02, FR-ADM-003)
 
@@ -310,7 +341,7 @@ Check the state with `python -m alembic current`. From now on, every schema
 change is a new Alembic revision, never a new file in `server/migrations`:
 
 ```powershell
-python -m alembic revision --rev-id 0009 -m "describe the change"
+python -m alembic revision --rev-id 0010 -m "describe the change"
 python -m alembic upgrade head --sql    # review the SQL before applying it
 python -m alembic upgrade head
 ```
@@ -329,6 +360,7 @@ Settings are read from environment variables, falling back to `services/api/.env
 | `APP_ENV` | `development` (default), `staging`, `production` | `production` hides `/docs` and `/openapi.json` |
 | `DATABASE_URL` | PostgreSQL URL (required) | The same value the Express API uses; `postgres://` and `postgresql://` both work |
 | `JWT_SECRET` | long random string (required) | Must equal the Express API's `JWT_SECRET`; production refuses the `dev-secret` fallback |
+| `SMS_PROVIDER` | `none` (default), `development` | How one-time codes are sent; `development` keeps them in memory and is refused outside development |
 | `PASSPORT_NUMBER_PATTERN` | regular expression (optional) | Passport numbers accepted at registration; default 6 to 9 letters or digits |
 | `NIC_PEPPER` | string (required) | Must equal the Express API's `NIC_PEPPER`, and never change; production refuses `dev-pepper` |
 | `ALLOWED_ORIGINS` | comma-separated origins (optional) | Other sites allowed to send cookie-authenticated writes |
@@ -357,6 +389,8 @@ app/
   modules/identity/appeals/    appeals against identity decisions
   modules/identity/duplicates/ duplicate account investigations
   modules/identity/registration/ sign-up, consent, registration progress
+  modules/identity/recovery/  recovery number, one-time codes, recovery, assisted recovery
+  integrations/sms.py   the SMS interface (no vendor yet)
   modules/geography/  district, DS and GN lists
   modules/<households, assistance, community, events, engagement, finance, content, messaging, ai>/
                        README only: not built yet

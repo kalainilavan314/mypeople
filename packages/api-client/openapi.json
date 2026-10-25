@@ -2398,6 +2398,9 @@
           "409": {
             "description": "already_registered: sign in or recover the account instead (FR-AUTH-012)"
           },
+          "429": {
+            "description": "too_many_requests: too many new accounts from this address in the last hour"
+          },
           "422": {
             "description": "{\"code\": \"registration_refused\", \"problems\": [...]}, or an invalid body"
           }
@@ -2500,6 +2503,445 @@
             "HTTPBearer": []
           }
         ]
+      }
+    },
+    "/v1/identity/me/phone": {
+      "get": {
+        "tags": [
+          "recovery"
+        ],
+        "summary": "Read My Phone",
+        "description": "The confirmed recovery number, or null.",
+        "operationId": "read_my_phone_v1_identity_me_phone_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/RecoveryContactOut"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Read My Phone V1 Identity Me Phone Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "recovery"
+        ],
+        "summary": "Request Phone Confirmation",
+        "description": "Send a code to a new number. It becomes the recovery contact only once the code is entered.",
+        "operationId": "request_phone_confirmation_v1_identity_me_phone_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhoneInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeSentOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "sms_not_configured: no SMS provider is set up yet (INT-01)"
+          },
+          "429": {
+            "description": "too_many_requests, with Retry-After"
+          },
+          "409": {
+            "description": "phone_unavailable"
+          },
+          "422": {
+            "description": "invalid_phone"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/identity/me/phone/confirm": {
+      "post": {
+        "tags": [
+          "recovery"
+        ],
+        "summary": "Confirm Phone",
+        "description": "Enter the code: the number becomes the recovery contact. A previous number is told of the change.",
+        "operationId": "confirm_phone_v1_identity_me_phone_confirm_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhoneConfirmInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecoveryContactOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "invalid_code or too_many_attempts"
+          },
+          "409": {
+            "description": "phone_unavailable"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/auth/recovery/request": {
+      "post": {
+        "tags": [
+          "recovery"
+        ],
+        "summary": "Request Recovery",
+        "description": "Send a recovery code to the account's confirmed contact. The answer is the same whether or\nnot the number is registered or has a contact (BR-023).",
+        "operationId": "request_recovery_v1_auth_recovery_request_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountNumber"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeSentOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "sms_not_configured: no SMS provider is set up yet (INT-01)"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/recovery/verify": {
+      "post": {
+        "tags": [
+          "recovery"
+        ],
+        "summary": "Verify Recovery",
+        "description": "A correct code gives a reset token valid for 10 minutes (FR-AUTH-015).",
+        "operationId": "verify_recovery_v1_auth_recovery_verify_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecoveryCodeInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResetTokenOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "invalid_code or too_many_attempts"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/recovery/reset": {
+      "post": {
+        "tags": [
+          "recovery"
+        ],
+        "summary": "Reset Password",
+        "description": "Set a new password. Every session of the account ends, and the contact is told (FR-AUTH-016).",
+        "operationId": "reset_password_v1_auth_recovery_reset_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "invalid_reset_token"
+          },
+          "422": {
+            "description": "{\"code\": \"password_refused\", \"problems\": [...]}"
+          }
+        }
+      }
+    },
+    "/v1/auth/recovery/assisted": {
+      "post": {
+        "tags": [
+          "recovery"
+        ],
+        "summary": "Request Assisted Recovery",
+        "description": "For someone who cannot use their recovery contact: a reference, and a request the support\nteam handles (FR-AUTH-017). The answer is the same whether or not the number is registered.",
+        "operationId": "request_assisted_recovery_v1_auth_recovery_assisted_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistedRecoveryInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistedRecoveryReceipt"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "too_many_requests, with Retry-After"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/recovery-requests": {
+      "get": {
+        "tags": [
+          "recovery"
+        ],
+        "summary": "List Recovery Requests",
+        "description": "Open assisted-recovery requests in the caller's areas, oldest first.",
+        "operationId": "list_recovery_requests_v1_identity_recovery_requests_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssistedRequestOut"
+                  },
+                  "title": "Response List Recovery Requests V1 Identity Recovery Requests Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/recovery-requests/{request_id}/resolve": {
+      "post": {
+        "tags": [
+          "recovery"
+        ],
+        "summary": "Resolve Recovery Request",
+        "description": "After checking the person's identity, replace their recovery number (they then recover\nnormally), or decline with a note.",
+        "operationId": "resolve_recovery_request_v1_identity_recovery_requests__request_id__resolve_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistedResolutionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistedRequestOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_open, no_matching_account or phone_unavailable"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/v1/geography/districts": {
@@ -2630,6 +3072,52 @@
   },
   "components": {
     "schemas": {
+      "AccountNumber": {
+        "properties": {
+          "nic": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nic"
+          },
+          "passportNumber": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passportnumber"
+          },
+          "passportCountry": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 3,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passportcountry"
+          }
+        },
+        "type": "object",
+        "title": "AccountNumber",
+        "description": "The ID number the account registered with: nic, or passportNumber with passportCountry."
+      },
       "AppealDecisionInput": {
         "properties": {
           "outcome": {
@@ -3250,6 +3738,253 @@
         ],
         "title": "AssignmentOut"
       },
+      "AssistedRecoveryInput": {
+        "properties": {
+          "nic": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nic"
+          },
+          "passportNumber": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passportnumber"
+          },
+          "passportCountry": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 3,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passportcountry"
+          },
+          "contactMethod": {
+            "type": "string",
+            "enum": [
+              "phone",
+              "email",
+              "in_person"
+            ],
+            "title": "Contactmethod"
+          },
+          "contactValue": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contactvalue",
+            "description": "How the support team can reach you"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "contactMethod"
+        ],
+        "title": "AssistedRecoveryInput"
+      },
+      "AssistedRecoveryReceipt": {
+        "properties": {
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reference"
+        ],
+        "title": "AssistedRecoveryReceipt"
+      },
+      "AssistedRequestOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          },
+          "memberId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memberid",
+            "description": "null when the ID number matched no account"
+          },
+          "contactMethod": {
+            "type": "string",
+            "title": "Contactmethod"
+          },
+          "contactValue": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contactvalue"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "contact_replaced",
+              "declined"
+            ],
+            "title": "State"
+          },
+          "requestedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Requestedat"
+          },
+          "resolvedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolvedby"
+          },
+          "resolvedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolvedat"
+          },
+          "outcomeNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcomenote"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "reference",
+          "memberId",
+          "contactMethod",
+          "contactValue",
+          "message",
+          "state",
+          "requestedAt",
+          "resolvedBy",
+          "resolvedAt",
+          "outcomeNote"
+        ],
+        "title": "AssistedRequestOut"
+      },
+      "AssistedResolutionInput": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "contact_replaced",
+              "declined"
+            ],
+            "title": "Outcome"
+          },
+          "newPhone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 25
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Newphone"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcome",
+          "note"
+        ],
+        "title": "AssistedResolutionInput"
+      },
       "AuditEntryOut": {
         "properties": {
           "id": {
@@ -3753,6 +4488,31 @@
           "firstBrokenId"
         ],
         "title": "ChainCheckOut"
+      },
+      "CodeSentOut": {
+        "properties": {
+          "sent": {
+            "type": "boolean",
+            "title": "Sent"
+          },
+          "devCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Devcode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sent"
+        ],
+        "title": "CodeSentOut",
+        "description": "devCode appears only with SMS_PROVIDER=development, for local testing."
       },
       "ConsentInput": {
         "properties": {
@@ -4649,6 +5409,62 @@
         "title": "NoticesOut",
         "description": "The notice versions the apps must show; consent is recorded against them."
       },
+      "PasswordResetInput": {
+        "properties": {
+          "resetToken": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Resettoken"
+          },
+          "newPassword": {
+            "type": "string",
+            "maxLength": 256,
+            "title": "Newpassword"
+          }
+        },
+        "type": "object",
+        "required": [
+          "resetToken",
+          "newPassword"
+        ],
+        "title": "PasswordResetInput"
+      },
+      "PhoneConfirmInput": {
+        "properties": {
+          "phone": {
+            "type": "string",
+            "maxLength": 25,
+            "title": "Phone",
+            "description": "E.164, or a Sri Lankan number such as 0771234567"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^\\d{6}$",
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "phone",
+          "code"
+        ],
+        "title": "PhoneConfirmInput"
+      },
+      "PhoneInput": {
+        "properties": {
+          "phone": {
+            "type": "string",
+            "maxLength": 25,
+            "title": "Phone",
+            "description": "E.164, or a Sri Lankan number such as 0771234567"
+          }
+        },
+        "type": "object",
+        "required": [
+          "phone"
+        ],
+        "title": "PhoneInput"
+      },
       "PlaceOut": {
         "properties": {
           "code": {
@@ -4804,6 +5620,72 @@
           "assignedToMe"
         ],
         "title": "QueueCountsOut"
+      },
+      "RecoveryCodeInput": {
+        "properties": {
+          "nic": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nic"
+          },
+          "passportNumber": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passportnumber"
+          },
+          "passportCountry": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 3,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passportcountry"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^\\d{6}$",
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "RecoveryCodeInput"
+      },
+      "RecoveryContactOut": {
+        "properties": {
+          "phone": {
+            "type": "string",
+            "title": "Phone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "phone"
+        ],
+        "title": "RecoveryContactOut"
       },
       "RegistrationInput": {
         "properties": {
@@ -5017,6 +5899,24 @@
           "reason"
         ],
         "title": "ReportInput"
+      },
+      "ResetTokenOut": {
+        "properties": {
+          "resetToken": {
+            "type": "string",
+            "title": "Resettoken"
+          },
+          "expiresInSeconds": {
+            "type": "integer",
+            "title": "Expiresinseconds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "resetToken",
+          "expiresInSeconds"
+        ],
+        "title": "ResetTokenOut"
       },
       "ReviewFileOut": {
         "properties": {

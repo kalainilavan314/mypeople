@@ -17,12 +17,13 @@ PostgreSQL 16 on the server (17 locally is fine). Production data lives on the e
 | `membership` | `membership`: each member's current state, reason code and who changed it (no row means pending); `membership_change`: every change, append-only (`ops.refuse_change()` trigger) | Alembic `0006` |
 | `identity` | `duplicate_case`: one investigation per pair of accounts (`DC-` reference, signal, opener and reason, state, claim, finding and reason); decided cases cannot be changed. Also an index on `npm.member` by normalised name and date of birth | Alembic `0007` |
 | `identity`, `membership` | `identity_record`: the account's route and passport country (no row means a NIC account from the Express sign-up); `consent_record`: each consent with its notice version and time | Alembic `0008` |
+| `identity` | `recovery_contact`: the confirmed recovery number, who confirmed it and when it changed; `assisted_recovery`: help requests with an `AR-` reference, matched account, contact and outcome. One-time codes stay in Express's `npm.otp` | Alembic `0009` |
 
 Sensitive columns: `npm.member.nic_hash` (peppered SHA-256, never the NIC itself) and `password_hash` (bcrypt). OTP codes are stored only as HMACs. Identity images are never stored in the database: they are AES-256-GCM encrypted files in `EVIDENCE_STORAGE_DIR`, named by the `identity.identity_document` id, and backups must include that directory and, kept apart, `EVIDENCE_ENCRYPTION_KEY`.
 
 ## Migrations
 
-Two runners, one rule: **new schema changes are Alembic revisions only.** Revisions so far: `0001` baseline, `0002` staff access and the audit log, `0003` identity documents, `0004` identity reviews and decisions, `0005` appeals, `0006` membership states, `0007` duplicate investigations, `0008` registration.
+Two runners, one rule: **new schema changes are Alembic revisions only.** Revisions so far: `0001` baseline, `0002` staff access and the audit log, `0003` identity documents, `0004` identity reviews and decisions, `0005` appeals, `0006` membership states, `0007` duplicate investigations, `0008` registration, `0009` recovery.
 
 - `server/migrations/0000`–`0011` are frozen. They built the schema before Alembic and are still applied by `npm run migrate --prefix server` on a new database.
 - Alembic revision `0001` (`services/api/alembic/versions/0001_baseline_express_schema.py`) is a no-op baseline that stands for those twelve files. `alembic/env.py` refuses every command, `stamp` included, while any of them is missing from the Express ledger, so a database that is behind can never be marked current.
@@ -34,7 +35,7 @@ Two runners, one rule: **new schema changes are Alembic revisions only.** Revisi
 | Existing database with all Express migrations, not yet under Alembic | `python -m alembic stamp 0001`, then `python -m alembic upgrade head` |
 | Existing database that is behind | `npm run migrate --prefix server`, then `python -m alembic stamp 0001` and `python -m alembic upgrade head` |
 | Database already under Alembic | `python -m alembic upgrade head` |
-| A schema change | `python -m alembic revision --rev-id 0009 -m "what changes"` (next free number), review `python -m alembic upgrade head --sql`, then upgrade |
+| A schema change | `python -m alembic revision --rev-id 0010 -m "what changes"` (next free number), review `python -m alembic upgrade head --sql`, then upgrade |
 
 Staff assignments are never deleted: revoking sets `state`, `ended_at`, `ended_by` and `end_reason`. Each audit entry stores the SHA-256 of the previous one; `GET /v1/audit/verify` recomputes the chain.
 

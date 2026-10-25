@@ -16,6 +16,8 @@ from sqlalchemy.orm import Session
 from app.core.security import hash_password, nic_hash, passport_hash
 from app.modules.audit import service as audit
 from app.modules.identity.documents import repository as documents_repository
+from app.modules.identity.recovery import repository as recovery_repository
+from app.modules.identity.recovery.rules import MAX_REGISTRATIONS_PER_IP_PER_HOUR
 from app.modules.identity.registration import repository, rules
 from app.modules.identity.registration.repository import NewMember
 from app.modules.identity.registration.rules import Route
@@ -33,6 +35,10 @@ class RegistrationRefused(Exception):
 
 class AlreadyRegistered(Exception):
     """The ID number belongs to an account already; the app offers sign-in and recovery (FR-AUTH-012)."""
+
+
+class TooManyRegistrations(Exception):
+    """[ASSUMPTION] More than a handful of new accounts from one address in an hour."""
 
 
 class NoticeOutdated(Exception):
@@ -70,6 +76,8 @@ def id_hash(route: Route, id_number: str, passport_country: str | None, pepper: 
 
 
 def register(db: Session, form: Registration, *, pepper: str, passport_pattern: str, ip: str) -> Registered:
+    if recovery_repository.registrations_from(db, ip) >= MAX_REGISTRATIONS_PER_IP_PER_HOUR:
+        raise TooManyRegistrations()
     id_number = rules.normalise_id_number(form.id_number)
     country = form.passport_country.strip().upper() if form.passport_country else None
     problems = [

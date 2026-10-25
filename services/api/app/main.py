@@ -18,6 +18,7 @@ from app import health
 from app.core.config import Settings
 from app.core.middleware import add_security_headers, cors_options, refuse_cross_origin_writes
 from app.db.session import create_database_engine
+from app.integrations.sms import build_sms
 from app.modules.access import router as access
 from app.modules.audit import router as audit
 from app.modules.auth import router as auth
@@ -25,6 +26,7 @@ from app.modules.identity.appeals import router as identity_appeals
 from app.modules.identity.documents import router as identity_documents
 from app.modules.identity.documents.dependencies import build_vault
 from app.modules.identity.duplicates import router as identity_duplicates
+from app.modules.identity.recovery import router as identity_recovery
 from app.modules.identity.registration import router as identity_registration
 from app.modules.geography import router as geography
 from app.modules.identity.reviews import router as identity_reviews
@@ -62,6 +64,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = settings
     app.state.session_factory = sessionmaker(bind=engine, expire_on_commit=False)
     app.state.evidence_vault = build_vault(settings)
+    app.state.sms = build_sms(settings)
     app.include_router(health.router)
     app.include_router(auth.router)
     app.include_router(membership.router)
@@ -73,6 +76,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(identity_appeals.router)
     app.include_router(identity_duplicates.router)
     app.include_router(identity_registration.router)
+    app.include_router(identity_recovery.router)
     app.include_router(geography.router)
 
     # The middleware added last runs first, so the security headers are also

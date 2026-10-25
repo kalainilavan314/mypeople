@@ -919,6 +919,173 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/identity/me/phone": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Phone
+         * @description The confirmed recovery number, or null.
+         */
+        get: operations["read_my_phone_v1_identity_me_phone_get"];
+        put?: never;
+        /**
+         * Request Phone Confirmation
+         * @description Send a code to a new number. It becomes the recovery contact only once the code is entered.
+         */
+        post: operations["request_phone_confirmation_v1_identity_me_phone_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/me/phone/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm Phone
+         * @description Enter the code: the number becomes the recovery contact. A previous number is told of the change.
+         */
+        post: operations["confirm_phone_v1_identity_me_phone_confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/recovery/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Recovery
+         * @description Send a recovery code to the account's confirmed contact. The answer is the same whether or
+         *     not the number is registered or has a contact (BR-023).
+         */
+        post: operations["request_recovery_v1_auth_recovery_request_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/recovery/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify Recovery
+         * @description A correct code gives a reset token valid for 10 minutes (FR-AUTH-015).
+         */
+        post: operations["verify_recovery_v1_auth_recovery_verify_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/recovery/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset Password
+         * @description Set a new password. Every session of the account ends, and the contact is told (FR-AUTH-016).
+         */
+        post: operations["reset_password_v1_auth_recovery_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/recovery/assisted": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Assisted Recovery
+         * @description For someone who cannot use their recovery contact: a reference, and a request the support
+         *     team handles (FR-AUTH-017). The answer is the same whether or not the number is registered.
+         */
+        post: operations["request_assisted_recovery_v1_auth_recovery_assisted_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/recovery-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Recovery Requests
+         * @description Open assisted-recovery requests in the caller's areas, oldest first.
+         */
+        get: operations["list_recovery_requests_v1_identity_recovery_requests_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/recovery-requests/{request_id}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resolve Recovery Request
+         * @description After checking the person's identity, replace their recovery number (they then recover
+         *     normally), or decline with a note.
+         */
+        post: operations["resolve_recovery_request_v1_identity_recovery_requests__request_id__resolve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/geography/districts": {
         parameters: {
             query?: never;
@@ -974,6 +1141,18 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AccountNumber
+         * @description The ID number the account registered with: nic, or passportNumber with passportCountry.
+         */
+        AccountNumber: {
+            /** Nic */
+            nic?: string | null;
+            /** Passportnumber */
+            passportNumber?: string | null;
+            /** Passportcountry */
+            passportCountry?: string | null;
+        };
         /** AppealDecisionInput */
         AppealDecisionInput: {
             /**
@@ -1203,6 +1382,81 @@ export interface components {
             /** Endedat */
             endedAt: string | null;
         };
+        /** AssistedRecoveryInput */
+        AssistedRecoveryInput: {
+            /** Nic */
+            nic?: string | null;
+            /** Passportnumber */
+            passportNumber?: string | null;
+            /** Passportcountry */
+            passportCountry?: string | null;
+            /**
+             * Contactmethod
+             * @enum {string}
+             */
+            contactMethod: "phone" | "email" | "in_person";
+            /**
+             * Contactvalue
+             * @description How the support team can reach you
+             */
+            contactValue?: string | null;
+            /** Message */
+            message?: string | null;
+        };
+        /** AssistedRecoveryReceipt */
+        AssistedRecoveryReceipt: {
+            /** Reference */
+            reference: string;
+        };
+        /** AssistedRequestOut */
+        AssistedRequestOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Reference */
+            reference: string;
+            /**
+             * Memberid
+             * @description null when the ID number matched no account
+             */
+            memberId: string | null;
+            /** Contactmethod */
+            contactMethod: string;
+            /** Contactvalue */
+            contactValue: string | null;
+            /** Message */
+            message: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "contact_replaced" | "declined";
+            /**
+             * Requestedat
+             * Format: date-time
+             */
+            requestedAt: string;
+            /** Resolvedby */
+            resolvedBy: string | null;
+            /** Resolvedat */
+            resolvedAt: string | null;
+            /** Outcomenote */
+            outcomeNote: string | null;
+        };
+        /** AssistedResolutionInput */
+        AssistedResolutionInput: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "contact_replaced" | "declined";
+            /** Newphone */
+            newPhone?: string | null;
+            /** Note */
+            note: string;
+        };
         /** AuditEntryOut */
         AuditEntryOut: {
             /** Id */
@@ -1376,6 +1630,16 @@ export interface components {
             checked: number;
             /** Firstbrokenid */
             firstBrokenId: number | null;
+        };
+        /**
+         * CodeSentOut
+         * @description devCode appears only with SMS_PROVIDER=development, for local testing.
+         */
+        CodeSentOut: {
+            /** Sent */
+            sent: boolean;
+            /** Devcode */
+            devCode?: string | null;
         };
         /** ConsentInput */
         ConsentInput: {
@@ -1730,6 +1994,31 @@ export interface components {
             /** Identityreview */
             identityReview: string;
         };
+        /** PasswordResetInput */
+        PasswordResetInput: {
+            /** Resettoken */
+            resetToken: string;
+            /** Newpassword */
+            newPassword: string;
+        };
+        /** PhoneConfirmInput */
+        PhoneConfirmInput: {
+            /**
+             * Phone
+             * @description E.164, or a Sri Lankan number such as 0771234567
+             */
+            phone: string;
+            /** Code */
+            code: string;
+        };
+        /** PhoneInput */
+        PhoneInput: {
+            /**
+             * Phone
+             * @description E.164, or a Sri Lankan number such as 0771234567
+             */
+            phone: string;
+        };
         /** PlaceOut */
         PlaceOut: {
             /** Code */
@@ -1775,6 +2064,22 @@ export interface components {
             needsUpdate: number;
             /** Assignedtome */
             assignedToMe: number;
+        };
+        /** RecoveryCodeInput */
+        RecoveryCodeInput: {
+            /** Nic */
+            nic?: string | null;
+            /** Passportnumber */
+            passportNumber?: string | null;
+            /** Passportcountry */
+            passportCountry?: string | null;
+            /** Code */
+            code: string;
+        };
+        /** RecoveryContactOut */
+        RecoveryContactOut: {
+            /** Phone */
+            phone: string;
         };
         /**
          * RegistrationInput
@@ -1858,6 +2163,13 @@ export interface components {
             otherMemberId: string;
             /** Reason */
             reason: string;
+        };
+        /** ResetTokenOut */
+        ResetTokenOut: {
+            /** Resettoken */
+            resetToken: string;
+            /** Expiresinseconds */
+            expiresInSeconds: number;
         };
         /**
          * ReviewFileOut
@@ -3776,6 +4088,13 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description too_many_requests: too many new accounts from this address in the last hour */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     read_notices_v1_identity_notices_get: {
@@ -3852,6 +4171,368 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProgressOut"];
+                };
+            };
+        };
+    };
+    read_my_phone_v1_identity_me_phone_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecoveryContactOut"] | null;
+                };
+            };
+        };
+    };
+    request_phone_confirmation_v1_identity_me_phone_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PhoneInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CodeSentOut"];
+                };
+            };
+            /** @description phone_unavailable */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description invalid_phone */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description too_many_requests, with Retry-After */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description sms_not_configured: no SMS provider is set up yet (INT-01) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    confirm_phone_v1_identity_me_phone_confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PhoneConfirmInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecoveryContactOut"];
+                };
+            };
+            /** @description invalid_code or too_many_attempts */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description phone_unavailable */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_recovery_v1_auth_recovery_request_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccountNumber"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CodeSentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description sms_not_configured: no SMS provider is set up yet (INT-01) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    verify_recovery_v1_auth_recovery_verify_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecoveryCodeInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResetTokenOut"];
+                };
+            };
+            /** @description invalid_code or too_many_attempts */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_password_v1_auth_recovery_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordResetInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description invalid_reset_token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "password_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    request_assisted_recovery_v1_auth_recovery_assisted_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistedRecoveryInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistedRecoveryReceipt"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_requests, with Retry-After */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_recovery_requests_v1_identity_recovery_requests_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistedRequestOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resolve_recovery_request_v1_identity_recovery_requests__request_id__resolve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistedResolutionInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistedRequestOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open, no_matching_account or phone_unavailable */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

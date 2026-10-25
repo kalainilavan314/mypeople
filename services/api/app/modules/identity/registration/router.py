@@ -32,6 +32,7 @@ Db = Annotated[Session, Depends(get_db)]
     status_code=status.HTTP_201_CREATED,
     responses={
         409: {"description": "already_registered: sign in or recover the account instead (FR-AUTH-012)"},
+        429: {"description": "too_many_requests: too many new accounts from this address in the last hour"},
         422: {"description": '{"code": "registration_refused", "problems": [...]}, or an invalid body'},
     },
 )
@@ -72,6 +73,10 @@ def register(body: RegistrationInput, request: Request, response: Response, db: 
         ) from None
     except service.AlreadyRegistered:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="already_registered") from None
+    except service.TooManyRegistrations:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="too_many_requests", headers={"Retry-After": "3600"}
+        ) from None
 
     session = find_session_member(db, registered.member_id)
     assert session is not None

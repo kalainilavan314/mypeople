@@ -7,6 +7,7 @@ generated from lib.js, and tests/test_express_compat.py against lib.js itself.
 """
 
 import hashlib
+import hmac
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
@@ -39,6 +40,12 @@ def passport_hash(number: str, country: str, pepper: str) -> str:
     passport route; only FastAPI signs passport holders in.
     """
     return nic_hash(f"PASSPORT:{country.strip().upper()}:{number.strip().upper()}", pepper)
+
+
+def one_time_code_hash(code: str, secret: str) -> str:
+    """How one-time codes are stored in npm.otp: HMAC-SHA256 of "otp:<code>" under JWT_SECRET,
+    as lib.js hashOtp does, so a stolen table never holds a live code."""
+    return hmac.new(secret.encode("utf-8"), f"otp:{code}".encode("utf-8"), hashlib.sha256).hexdigest()
 
 
 def _password_bytes(password: str) -> bytes:

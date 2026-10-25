@@ -20,6 +20,12 @@ export type Registration = Schemas['RegistrationOut'];
 export type Notices = Schemas['NoticesOut'];
 export type RegistrationProgress = Schemas['ProgressOut'];
 export type Place = Schemas['PlaceOut'];
+export type AccountNumber = Schemas['AccountNumber'];
+export type CodeSent = Schemas['CodeSentOut'];
+export type ResetToken = Schemas['ResetTokenOut'];
+export type AssistedRecoveryInput = Schemas['AssistedRecoveryInput'];
+export type AssistedRecoveryRequest = Schemas['AssistedRequestOut'];
+export type AssistedResolutionInput = Schemas['AssistedResolutionInput'];
 export type AreaRef = Schemas['AreaRef'];
 export type AssignmentInput = Schemas['AssignmentInput'];
 export type Assignment = Schemas['AssignmentOut'];
@@ -152,6 +158,31 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
       request<void>('POST', '/v1/identity/me/consent', { noticeVersion }),
     /** Each registration step and the next one (A18). */
     getMyRegistrationProgress: () => request<RegistrationProgress>('GET', '/v1/identity/me/progress'),
+    /** The confirmed recovery number, or null. */
+    getMyRecoveryPhone: () => request<{ phone: string } | null>('GET', '/v1/identity/me/phone'),
+    /**
+     * Sends a code to a new number (FR-REG-028). Throws ApiError "phone_unavailable" (409),
+     * "too_many_requests" (429, retryAfter) or "sms_not_configured" (503).
+     */
+    requestPhoneConfirmation: (phone: string) => request<CodeSent>('POST', '/v1/identity/me/phone', { phone }),
+    /** The number becomes the recovery contact. Throws ApiError "invalid_code" or "too_many_attempts" (401). */
+    confirmPhone: (phone: string, code: string) =>
+      request<{ phone: string }>('POST', '/v1/identity/me/phone/confirm', { phone, code }),
+    /** A16: the answer is the same whether or not the number is registered (BR-023). */
+    requestRecovery: (account: AccountNumber) => request<CodeSent>('POST', '/v1/auth/recovery/request', account),
+    /** A correct code returns a reset token valid for 10 minutes. */
+    verifyRecovery: (account: AccountNumber, code: string) =>
+      request<ResetToken>('POST', '/v1/auth/recovery/verify', { ...account, code }),
+    /** Ends every session of the account. Throws ApiError "password_refused" (422) or "invalid_reset_token" (401). */
+    resetPassword: (resetToken: string, newPassword: string) =>
+      request<void>('POST', '/v1/auth/recovery/reset', { resetToken, newPassword }),
+    /** For someone who cannot use their recovery contact: returns a reference (FR-AUTH-017). */
+    requestAssistedRecovery: (input: AssistedRecoveryInput) =>
+      request<{ reference: string }>('POST', '/v1/auth/recovery/assisted', input),
+    /** Open assisted-recovery requests in the caller's areas. Needs members.verify. */
+    listRecoveryRequests: () => request<AssistedRecoveryRequest[]>('GET', '/v1/identity/recovery-requests'),
+    resolveRecoveryRequest: (requestId: string, input: AssistedResolutionInput) =>
+      request<AssistedRecoveryRequest>('POST', `/v1/identity/recovery-requests/${encodeURIComponent(requestId)}/resolve`, input),
     /** Dependent area lists: district, then DS division, then GN division. */
     listDistricts: () => request<Place[]>('GET', '/v1/geography/districts'),
     listDsDivisions: (districtCode: string) =>

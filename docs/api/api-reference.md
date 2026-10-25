@@ -27,6 +27,14 @@ Writes that carry the session cookie and come from another website are refused w
 | `POST /v1/identity/me/consent` body `{noticeVersion}` | yes | `204`; recorded once | `409 notice_outdated` |
 | `GET /v1/identity/me/progress` | yes | `200 {route, steps: [{name, done}], nextStep, reviewState}` | `401` |
 | `GET /v1/geography/districts`, `/districts/{code}/ds-divisions`, `/ds-divisions/{code}/gn-divisions` | no | `200 [{code, nameEn, nameTa, nameSi}]` | `404 not_found` |
+| `GET /v1/identity/me/phone` | yes | `200 {phone}` or `null` | `401` |
+| `POST /v1/identity/me/phone` body `{phone}` | yes | `202 {sent, devCode}` (devCode only in development) | `409 phone_unavailable`, `422 invalid_phone`, `429 too_many_requests`, `503 sms_not_configured` |
+| `POST /v1/identity/me/phone/confirm` body `{phone, code}` | yes | `200 {phone}` | `401 invalid_code`, `too_many_attempts`; `409 phone_unavailable` |
+| `POST /v1/auth/recovery/request` body `{nic}` or `{passportNumber, passportCountry}` | no | `202 {sent: true}`, the same whether or not the number is registered | `503 sms_not_configured` |
+| `POST /v1/auth/recovery/verify` body: the number and `{code}` | no | `200 {resetToken, expiresInSeconds}` | `401 invalid_code`, `too_many_attempts` |
+| `POST /v1/auth/recovery/reset` body `{resetToken, newPassword}` | no | `204`; every session ends | `401 invalid_reset_token`, `422 {code: "password_refused", problems}` |
+| `POST /v1/auth/recovery/assisted` body: the number and `{contactMethod, contactValue?, message?}` | no | `202 {reference}` | `429 too_many_requests` |
+| `GET /v1/identity/recovery-requests`, `POST /v1/identity/recovery-requests/{id}/resolve` body `{outcome: "contact_replaced" \| "declined", newPhone?, note}` | `members.verify` over the member's area (platform scope for requests that matched no account) | `200` | `403`, `404`, `409 not_open`, `no_matching_account`, `phone_unavailable` |
 | `POST /v1/auth/sign-out` | optional | `204`, cookie cleared, all sessions ended | `403 csrf_origin_mismatch` |
 | `GET /v1/members/me` | yes | `200` member profile (camelCase) | `401 unauthorized`, `401 session_expired` |
 | `GET /v1/membership/me` | yes | `200 {state, reasonCode, changedAt}`; `pending` until someone activates the member | `401` |

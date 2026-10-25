@@ -446,6 +446,7 @@ services/api/
       0006_membership_states.py
       0007_duplicate_investigations.py
       0008_registration.py
+      0009_recovery.py
   app/
     __init__.py
     main.py
@@ -529,6 +530,14 @@ services/api/
           rules.py
           schemas.py
           service.py
+        recovery/          recovery number, one-time codes, recovery, assisted recovery (A16)
+          __init__.py
+          repository.py
+          reset_tokens.py
+          router.py
+          rules.py
+          schemas.py
+          service.py
         registration/      sign-up, consent, registration progress (A03 to A18)
           __init__.py
           common_passwords.txt
@@ -550,7 +559,10 @@ services/api/
       content/             README only: not built yet
       messaging/           README only: not built yet
       ai/                  README only: not built yet
-    integrations/          README only: not built yet
+    integrations/
+      README.md
+      __init__.py
+      sms.py               the SMS interface; no vendor yet (INT-01)
     tasks/                 README only: not built yet (Celery)
   tests/
     conftest.py
@@ -575,6 +587,8 @@ services/api/
     test_membership_api.py
     test_membership_rules.py
     test_origin_check.py
+    test_recovery_api.py
+    test_recovery_rules.py
     test_registration_api.py
     test_registration_rules.py
     test_security.py
