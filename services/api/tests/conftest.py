@@ -193,9 +193,26 @@ def assign(db_session) -> Callable[..., str]:
 
 
 @pytest.fixture
-def auth(database_settings: Settings) -> Callable[[Row], dict[str, str]]:
+def auth(database_settings: Settings, db_session: Session) -> Callable[[Row], dict[str, str]]:
+    """A Bearer header for a fresh session of this API, in which the staff second factor
+    has been given (NFR-SEC-04), as after sign-in and /v1/auth/mfa/verify."""
     secret = database_settings.jwt_secret.get_secret_value()
-    return lambda member: {"Authorization": f"Bearer {sign_session_token(member.id, member.session_version, secret)}"}
+
+    def header(member: Row) -> dict[str, str]:
+        session_id = db_session.scalar(
+            text(
+                """
+                INSERT INTO identity.session (member_id, device_label, device_key, mfa_verified_at)
+                VALUES (:id, 'Test device', 'test-device', clock_timestamp())
+                RETURNING id
+                """
+            ),
+            {"id": member.id},
+        )
+        version = db_session.scalar(text("SELECT session_version FROM npm.member WHERE id = :id"), {"id": member.id})
+        return {"Authorization": f"Bearer {sign_session_token(member.id, version, secret, session_id=session_id)}"}
+
+    return header
 
 
 @pytest.fixture

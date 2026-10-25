@@ -277,3 +277,12 @@ test('recovery verification sends the account number with the code', async () =>
   assert.equal(token.resetToken, 'r');
   assert.equal(sent[0].body, JSON.stringify({ nic: '123456789V', code: '123456' }));
 });
+
+test('an app install id is sent with every request', async () => {
+  const { fetch, sent } = fakeFetch(200, []);
+
+  await createApiClient({ baseUrl: 'https://api.example', fetch, deviceId: 'install-123' }).listMySessions();
+
+  assert.equal(sent[0].headers['X-Device-Id'], 'install-123');
+  assert.equal(sent[0].url, 'https://api.example/v1/auth/sessions');
+});

@@ -22,6 +22,8 @@ The rules every change must follow, and what is in place today. BRD references: 
 |---|---|
 | Sessions | HttpOnly, SameSite=Lax `mp_session` cookie (Secure in production); HS256 JWT `{sub, sv}`, 30 days, only HS256 accepted |
 | Sign-out | Increments `session_version`, ending every session of the member in both APIs |
+| Sessions (FastAPI) | Each session is a row the token names: listed with a coarse device label, ended one by one or all others, refused on its next request, expired after 30 days unused; a new device is announced on the confirmed number |
+| Staff MFA (FastAPI) | Authenticator codes (TOTP) required in each session before any staff endpoint; one use per code; five wrong codes end the session; secrets encrypted at rest; Express tokens never act as staff |
 | Passwords | bcrypt cost 10; the first 72 bytes count (as bcryptjs) |
 | NIC and passport | Stored only as SHA-256 of `NIC_PEPPER` + the normalised number (passports prefixed with their country); one unique index stops a second account for the same number |
 | Registration (FastAPI) | Passwords of at least 10 characters, not common, not containing the ID number; terms consent recorded with the notice version; identity-review consent required before any upload (BR-008); referrals never change anyone's tier (SG-03) |
@@ -58,7 +60,8 @@ The rules every change must follow, and what is in place today. BRD references: 
 | How RB-03 is applied (see `app/modules/access/rules.py`) needs sponsor confirmation, as does the RB-12 list of conflicting rights (OD-32) | Sponsor |
 | Automatic membership activation on identity approval (OD-02) and the migration of existing members at go-live | OD-02 |
 | Notifying the person on grant or revocation; the quarterly access-review workflow (FR-AUTH-027) | Messaging and admin dashboard |
-| MFA for privileged staff | With the staff app and admin dashboard |
+| Passkeys, step-up codes for new devices, refresh-token rotation, alerts to the old device | Later account-security work; push notifications |
+| Revoking one session does not reach the Express API, which still accepts that token until "sign out" or its 30 days end | Retiring Express |
 | The identity vault in its own database and storage account with separate credentials and managed keys (INT-08, §13.8); a key-rotation tool. Today: own schema, encrypted files on `/srv/secure`, one key in the API's settings | Hosting decision (OD-20) |
 | Relatives of a reviewer (BR-085); the reviewer screen's watermark (FR-WEB-006) | Relatives register, reviewer screen |
 | Express `POST /api/members/:id/verification` (`is_admin`) can still set a verification status without a review | Switch it off when `/v1` verification goes live |

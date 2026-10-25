@@ -46,6 +46,10 @@ class Settings(BaseSettings):
     # outside APP_ENV=development, so a live system can never leak codes.
     sms_provider: Literal["none", "development"] = "none"
 
+    # NFR-SEC-04: staff give a second factor (an authenticator code) in each
+    # session before any staff endpoint. Only development may switch it off.
+    staff_mfa_required: bool = True
+
     # FR-AUTH-011: passport numbers are checked against a configurable pattern.
     # [ASSUMPTION] 6 to 9 letters or digits until the sponsor sets the rule.
     passport_number_pattern: str = r"^[A-Z0-9]{6,9}$"
@@ -77,6 +81,12 @@ class Settings(BaseSettings):
             if len(key) != 32:
                 raise ValueError("EVIDENCE_ENCRYPTION_KEY must be 32 bytes, base64-encoded")
         return value
+
+    @model_validator(mode="after")
+    def staff_mfa_off_only_in_development(self) -> Self:
+        if not self.staff_mfa_required and self.app_env != "development":
+            raise ValueError("STAFF_MFA_REQUIRED=false is allowed only with APP_ENV=development")
+        return self
 
     @model_validator(mode="after")
     def development_sms_only_in_development(self) -> Self:

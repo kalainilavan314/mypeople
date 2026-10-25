@@ -1,5 +1,14 @@
-"""Sign-in, sign-out and session checks, with the same rules as the Express API."""
+"""Sign-in, sign-out and session checks, with the same rules as the Express API, plus this
+API's session registry (FR-AUTH-020, 021, 025) and the staff second factor (NFR-SEC-04).
 
+Tokens from this API name a session row: it can be ended on its own, it
+expires after 30 days without use, and it records whether the staff second
+factor was given. Tokens from the Express API name no session; they still
+work for member endpoints, end only with "sign out everywhere", and never
+count as having given the second factor.
+"""
+
+import time
 import uuid
 from dataclasses import dataclass
 from functools import cache
@@ -15,10 +24,13 @@ from app.core.security import (
     sign_session_token,
     verify_password,
 )
-from app.modules.auth import throttle
+from app.core.sealing import UnsealError, derived_key, seal, unseal
+from app.modules.auth import repository, throttle, totp
+from app.modules.auth.device import Device
 from app.modules.auth.repository import (
     SessionMember,
     SignInMember,
+    StoredSession,
     clear_failures,
     count_recent_failures,
     find_session_member,
@@ -26,6 +38,10 @@ from app.modules.auth.repository import (
     record_attempt,
     revoke_sessions,
 )
+
+IDLE_LIMIT = "30 days"  # FR-AUTH-025 [ASSUMPTION in the BRD]
+TOUCH_INTERVAL = "5 minutes"  # how often a session's last use is written, to spare the database
+MAX_MFA_FAILURES = 5  # wrong codes before the session is ended and sign-in starts again
 
 
 class NotAuthenticated(Exception):
@@ -50,6 +66,19 @@ class InvalidCredentials(Exception):
 class SignedIn:
     member_id: uuid.UUID
     token: str
+    new_device: bool  # a sign-in from a device this member has not used before (FR-AUTH-019)
+
+
+class MfaRefused(Exception):
+    """invalid_code, too_many_attempts, not_enrolled, already_enabled or session_not_registered."""
+
+    def __init__(self, code: str) -> None:
+        super().__init__(code)
+        self.code = code
+
+
+class SessionNotFound(Exception):
+    pass
 
 
 def authenticate(db: Session, token: str | None, jwt_secret: str) -> SessionMember:
@@ -72,10 +101,32 @@ def authenticate(db: Session, token: str | None, jwt_secret: str) -> SessionMemb
     if claims.session_version != member.session_version:
         raise NotAuthenticated("session_expired")
 
-    return member
+    if claims.session_id is None:
+        return member  # an Express token: no session row, no second factor
+    session = repository.find_session(db, claims.session_id, IDLE_LIMIT, TOUCH_INTERVAL)
+    if session is None or session.member_id != member.id or session.revoked:
+        raise NotAuthenticated("session_expired")  # ended on this or another device (NFR-SEC-11)
+    if session.idle:
+        repository.revoke_session(db, session.id, "idle")
+        db.commit()
+        raise NotAuthenticated("session_expired")
+    if session.stale:
+        repository.touch_session(db, session.id)
+        db.commit()
+    return SessionMember(
+        id=member.id, session_version=member.session_version, session_id=session.id, mfa_verified=session.mfa_verified
+    )
 
 
-async def sign_in(db: Session, identifier: str, password: str, ip: str, jwt_secret: str) -> SignedIn:
+def start_session(db: Session, member_id: uuid.UUID, session_version: int, device: Device, jwt_secret: str) -> SignedIn:
+    """Record a session for a sign-in or a new account and sign its token."""
+    session_id, new_device = repository.start_session(db, member_id, device.label, device.key)
+    db.commit()
+    token = sign_session_token(member_id, session_version, jwt_secret, session_id=session_id)
+    return SignedIn(member_id=member_id, token=token, new_device=new_device)
+
+
+async def sign_in(db: Session, identifier: str, password: str, ip: str, jwt_secret: str, device: Device) -> SignedIn:
     """Check an ID-number hash and password under the sign-in throttle and issue a session token.
 
     identifier is the account's ID-number hash: nic_hash for a NIC, passport_hash
@@ -94,7 +145,7 @@ async def sign_in(db: Session, identifier: str, password: str, ip: str, jwt_secr
     await throttle.wait(gate.delay_seconds)
 
     member = await run_in_threadpool(_check_password, db, identifier, ip, password)
-    return SignedIn(member_id=member.id, token=sign_session_token(member.id, member.session_version, jwt_secret))
+    return await run_in_threadpool(start_session, db, member.id, member.session_version, device, jwt_secret)
 
 
 def sign_out(db: Session, token: str | None, jwt_secret: str) -> None:
@@ -110,7 +161,95 @@ def sign_out(db: Session, token: str | None, jwt_secret: str) -> None:
     except InvalidSessionToken:
         return  # an unreadable token has nothing to revoke
     revoke_sessions(db, claims.member_id)
+    repository.revoke_member_sessions(db, claims.member_id, "member")
     db.commit()
+
+
+# --- Sessions (FR-AUTH-020, 021) ---------------------------------------------------------------------
+
+
+def my_sessions(db: Session, member_id: uuid.UUID) -> list[StoredSession]:
+    return repository.active_sessions(db, member_id, IDLE_LIMIT)
+
+
+def revoke_my_session(db: Session, member: SessionMember, session_id: uuid.UUID) -> None:
+    """End one of the member's sessions; its next request is refused."""
+    session = repository.find_session(db, session_id, IDLE_LIMIT, TOUCH_INTERVAL)
+    if session is None or session.member_id != member.id:
+        raise SessionNotFound()
+    repository.revoke_session(db, session_id, "member")
+    db.commit()
+
+
+def revoke_my_other_sessions(db: Session, member: SessionMember) -> None:
+    """End every session except this one. Express tokens end only with sign-out everywhere."""
+    repository.revoke_member_sessions(db, member.id, "member", keep=member.session_id)
+    db.commit()
+
+
+# --- The staff second factor: an authenticator app (NFR-SEC-04, FR-STF-001) ------------------------------
+
+
+def _factor_key(jwt_secret: str) -> bytes:
+    # Derived from JWT_SECRET for this purpose alone. Changing JWT_SECRET signs
+    # everyone out; it also means staff enrol their authenticator again.
+    return derived_key(jwt_secret, b"my-people mfa secret v1")
+
+
+def mfa_status(db: Session, member_id: uuid.UUID) -> tuple[bool, bool]:
+    """(an authenticator is enrolling or enrolled, it is enabled)."""
+    factor = repository.find_factor(db, member_id)
+    return factor is not None, bool(factor and factor.enabled)
+
+
+def start_totp(db: Session, member: SessionMember, jwt_secret: str) -> tuple[str, str]:
+    """A new secret to add to an authenticator app; enabled once the first code is confirmed."""
+    factor = repository.find_factor(db, member.id)
+    if factor is not None and factor.enabled:
+        raise MfaRefused("already_enabled")
+    secret = totp.new_secret()
+    repository.save_pending_factor(db, member.id, seal(_factor_key(jwt_secret), member.id.bytes, secret))
+    db.commit()
+    label = repository.member_code(db, member.id)
+    return totp.secret_text(secret), totp.provisioning_uri(secret, label)
+
+
+def _check_code(db: Session, member: SessionMember, code: str, jwt_secret: str, *, enabled: bool) -> None:
+    factor = repository.find_factor(db, member.id)
+    if factor is None or factor.enabled != enabled:
+        raise MfaRefused("not_enrolled" if enabled else "already_enabled")
+    try:
+        secret = unseal(_factor_key(jwt_secret), member.id.bytes, factor.secret_sealed)
+    except UnsealError:
+        raise MfaRefused("not_enrolled") from None  # sealed under an earlier JWT_SECRET: enrol again
+    step = totp.matching_step(secret, code, time.time(), factor.last_used_step)
+    if step is None:
+        if member.session_id is not None and repository.add_mfa_failure(db, member.session_id) >= MAX_MFA_FAILURES:
+            repository.revoke_session(db, member.session_id, "mfa_failures")
+            db.commit()
+            raise MfaRefused("too_many_attempts")
+        db.commit()
+        raise MfaRefused("invalid_code")
+    repository.use_factor(db, member.id, step)
+    if member.session_id is not None:
+        repository.mark_session_mfa_verified(db, member.session_id)
+    db.commit()
+
+
+def confirm_totp(db: Session, member: SessionMember, code: str, jwt_secret: str) -> None:
+    """The first code enables the authenticator, and counts as the second factor for this session."""
+    _check_code(db, member, code, jwt_secret, enabled=False)
+
+
+def verify_mfa(db: Session, member: SessionMember, code: str, jwt_secret: str) -> None:
+    """Give the second factor for this session, as staff must before any staff endpoint."""
+    if member.session_id is None:
+        raise MfaRefused("session_not_registered")  # an Express token: sign in through this API
+    _check_code(db, member, code, jwt_secret, enabled=True)
+
+
+def has_enabled_factor(db: Session, member_id: uuid.UUID) -> bool:
+    return mfa_status(db, member_id)[1]
 
 
 def _check_throttle(db: Session, identifier: str, ip: str) -> throttle.SignInGate:

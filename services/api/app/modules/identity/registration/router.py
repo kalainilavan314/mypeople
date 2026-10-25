@@ -5,9 +5,10 @@ from sqlalchemy.orm import Session
 
 from app.core.config import Settings
 from app.core.request_info import client_ip
-from app.core.security import sign_session_token
 from app.db.session import get_db
 from app.modules.auth.dependencies import CurrentMember
+from app.modules.auth import service as auth_service
+from app.modules.auth.device import describe
 from app.modules.auth.repository import find_session_member
 from app.modules.auth.session_cookie import set_session_cookie
 from app.modules.identity.registration import service
@@ -78,9 +79,12 @@ def register(body: RegistrationInput, request: Request, response: Response, db: 
             status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="too_many_requests", headers={"Retry-After": "3600"}
         ) from None
 
-    session = find_session_member(db, registered.member_id)
-    assert session is not None
-    token = sign_session_token(session.id, session.session_version, settings.jwt_secret.get_secret_value())
+    member = find_session_member(db, registered.member_id)
+    assert member is not None
+    device = describe(request.headers.get("user-agent"), request.headers.get("x-device-id"))
+    token = auth_service.start_session(
+        db, member.id, member.session_version, device, settings.jwt_secret.get_secret_value()
+    ).token
     set_session_cookie(response, token, settings)
     profile = find_member_profile(db, registered.member_id)
     assert profile is not None

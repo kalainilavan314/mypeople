@@ -21,6 +21,9 @@ export type Notices = Schemas['NoticesOut'];
 export type RegistrationProgress = Schemas['ProgressOut'];
 export type Place = Schemas['PlaceOut'];
 export type AccountNumber = Schemas['AccountNumber'];
+export type SignedInSession = Schemas['SessionOut'];
+export type MfaStatus = Schemas['MfaStatusOut'];
+export type TotpEnrolment = Schemas['TotpEnrolmentOut'];
 export type CodeSent = Schemas['CodeSentOut'];
 export type ResetToken = Schemas['ResetTokenOut'];
 export type AssistedRecoveryInput = Schemas['AssistedRecoveryInput'];
@@ -87,6 +90,11 @@ export interface ApiClientOptions {
   getToken?: () => string | null | Promise<string | null>;
   /** Replaces the global fetch, e.g. in tests. */
   fetch?: typeof fetch;
+  /**
+   * A stable id for this app install, sent as X-Device-Id, so sign-ins from a new
+   * device can be noticed (FR-AUTH-019). Not personal data; browsers leave it out.
+   */
+  deviceId?: string;
 }
 
 export interface AuditFilters {
@@ -115,7 +123,7 @@ export interface AppealFilters {
   limit?: number;
 }
 
-export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalThis.fetch }: ApiClientOptions) {
+export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalThis.fetch, deviceId }: ApiClientOptions) {
   const root = baseUrl.replace(/\/+$/, '');
 
   /** Sends `body` as JSON, or as it is when `rawType` names its media type (image uploads). */
@@ -124,6 +132,7 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     if (body !== undefined) headers['Content-Type'] = rawType ?? 'application/json';
     const token = await getToken?.();
     if (token) headers.Authorization = `Bearer ${token}`;
+    if (deviceId) headers['X-Device-Id'] = deviceId;
 
     const response = await fetchImpl(`${root}${path}`, {
       method,
@@ -191,6 +200,23 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
       request<Place[]>('GET', `/v1/geography/ds-divisions/${encodeURIComponent(dsCode)}/gn-divisions`),
     /** Ends every session of the signed-in member. */
     signOut: () => request<void>('POST', '/v1/auth/sign-out'),
+    /** The member's signed-in devices (FR-AUTH-020). */
+    listMySessions: () => request<SignedInSession[]>('GET', '/v1/auth/sessions'),
+    /** Ends one session; its next request is refused. */
+    revokeSession: (sessionId: string) =>
+      request<void>('POST', `/v1/auth/sessions/${encodeURIComponent(sessionId)}/revoke`),
+    revokeOtherSessions: () => request<void>('POST', '/v1/auth/sessions/revoke-others'),
+    /** Whether an authenticator is enrolled and the second factor was given in this session. */
+    getMfaStatus: () => request<MfaStatus>('GET', '/v1/auth/mfa'),
+    /** Starts adding an authenticator app; show the secret or the URI as a QR code once. */
+    startTotpEnrolment: () => request<TotpEnrolment>('POST', '/v1/auth/mfa/totp'),
+    /** The first code enables the authenticator. Throws ApiError "invalid_code" (401). */
+    confirmTotp: (code: string) => request<void>('POST', '/v1/auth/mfa/totp/confirm', { code }),
+    /**
+     * Gives the second factor for this session; staff endpoints answer "mfa_required" (403) until then.
+     * Throws ApiError "invalid_code" or "too_many_attempts" (401; the session is ended).
+     */
+    verifyMfa: (code: string) => request<void>('POST', '/v1/auth/mfa/verify', { code }),
     /** Throws ApiError "unauthorized" or "session_expired" (401) without a valid session. */
     getMyProfile: () => request<MemberProfile>('GET', '/v1/members/me'),
     /** Pending, active, suspended or inactive, with the reason code. The card shows only when active. */

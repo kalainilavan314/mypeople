@@ -145,7 +145,7 @@ def test_recovering_an_account_with_the_code(client, db_session, auth, account, 
     assert reset.status_code == 204
     assert client.get("/v1/members/me", headers=old_session).json() == {"detail": "session_expired"}  # FR-AUTH-016
     assert client.post("/v1/auth/sign-in", json={"nic": nic, "password": NEW_PASSWORD}).status_code == 200
-    assert "password was changed" in outbox.sent[-1].text and outbox.sent[-1].phone == e164(phone)
+    assert any("password was changed" in m.text and m.phone == e164(phone) for m in outbox.sent)
     again = client.post("/v1/auth/recovery/reset", json={"resetToken": token, "newPassword": NEW_PASSWORD + "!"})
     assert (again.status_code, again.json()) == (401, {"detail": "invalid_reset_token"})  # single use
     assert db_session.scalar(

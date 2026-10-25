@@ -72,6 +72,8 @@ def verify_password(password: str, password_hash: str) -> bool:
 class SessionClaims:
     member_id: uuid.UUID
     session_version: int
+    # The identity.session row a token from this API names; None for Express tokens.
+    session_id: uuid.UUID | None = None
 
 
 class InvalidSessionToken(Exception):
@@ -83,17 +85,19 @@ def sign_session_token(
     session_version: int,
     secret: str,
     issued_at: datetime | None = None,
+    session_id: uuid.UUID | None = None,
 ) -> str:
-    """Sign a 30-day session token, as lib.js signToken does."""
+    """Sign a 30-day session token, as lib.js signToken does.
+
+    session_id names this API's session row, so the session can be ended on its
+    own (FR-AUTH-021). Express ignores the extra claim; without it, the token is
+    byte-for-byte the one lib.js signs in the same second.
+    """
     iat = int((issued_at or datetime.now(UTC)).timestamp())
-    # Same claims in the same order as jsonwebtoken, so a token signed here is
-    # byte-for-byte the one lib.js signs in the same second.
-    payload = {
-        "sub": str(member_id),
-        "sv": session_version,
-        "iat": iat,
-        "exp": iat + int(SESSION_LIFETIME.total_seconds()),
-    }
+    payload: dict[str, object] = {"sub": str(member_id), "sv": session_version}
+    if session_id is not None:
+        payload["sid"] = str(session_id)
+    payload |= {"iat": iat, "exp": iat + int(SESSION_LIFETIME.total_seconds())}
     return jwt.encode(payload, secret, algorithm="HS256")
 
 
@@ -111,6 +115,7 @@ def read_session_token(token: str, secret: str) -> SessionClaims:
         # Tokens signed before session revocation existed carry no "sv";
         # lib.js treats them as version 0, so nobody was signed out by that change.
         session_version = int(payload.get("sv", 0))
+        session_id = uuid.UUID(payload["sid"]) if "sid" in payload else None
     except (jwt.InvalidTokenError, ValueError, TypeError) as error:
         raise InvalidSessionToken(str(error)) from error
-    return SessionClaims(member_id=member_id, session_version=session_version)
+    return SessionClaims(member_id=member_id, session_version=session_version, session_id=session_id)

@@ -28,6 +28,7 @@ from app.modules.access import service as access
 from app.modules.access.rules import PLATFORM, area_from_key
 from app.modules.access.service import Staff
 from app.modules.audit import service as audit
+from app.modules.auth import repository as auth_repository
 from app.modules.identity.recovery import repository, reset_tokens, rules
 from app.modules.identity.recovery.repository import AssistedRequest
 from app.modules.identity.registration import rules as registration_rules
@@ -87,6 +88,13 @@ def _send_code(
     )
     db.commit()
     return code
+
+
+def notify_member(db: Session, sms: SmsSender, member_id: uuid.UUID, text: str) -> None:
+    """A notice to the member's confirmed number, if they have one; best effort."""
+    contact = repository.find_contact(db, member_id)
+    if contact is not None:
+        _notify(sms, contact.phone, text)
 
 
 def _notify(sms: SmsSender, phone: str, text: str) -> None:
@@ -188,6 +196,7 @@ def reset_password(db: Session, sms: SmsSender, token: str, new_password: str, i
         raise PasswordRefused(problems)
 
     repository.set_password(db, claims.member_id, hash_password(new_password))
+    auth_repository.revoke_member_sessions(db, claims.member_id, "password_reset")
     audit.record(
         db,
         actor_id=claims.member_id,

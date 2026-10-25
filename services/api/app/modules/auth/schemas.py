@@ -1,6 +1,8 @@
-from typing import Self
+import uuid
+from datetime import datetime
+from typing import Annotated, Self
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, StringConstraints, model_validator
 
 from app.core.schemas import CamelModel
 from app.modules.membership.schemas import MemberProfile
@@ -30,3 +32,28 @@ class SignInResponse(BaseModel):
 
     token: str
     member: MemberProfile
+
+
+class SessionOut(CamelModel):
+    id: uuid.UUID
+    device_label: str
+    created_at: datetime
+    last_seen_at: datetime
+    current: bool
+
+
+class MfaStatusOut(CamelModel):
+    enrolled: bool
+    enabled: bool
+    session_verified: bool
+
+
+class TotpEnrolmentOut(CamelModel):
+    """Shown once, to add to an authenticator app; never shown again."""
+
+    secret: str
+    otpauth_uri: str
+
+
+class MfaCodeInput(CamelModel):
+    code: Annotated[str, StringConstraints(pattern=r"^\d{6}$")]

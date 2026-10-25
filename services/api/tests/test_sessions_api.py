@@ -1,0 +1,197 @@
+"""Sessions, new-device notices and the staff second factor against a real database.
+Skipped without DATABASE_URL. Everything is rolled back; SMS go to an in-memory outbox.
+"""
+
+import base64
+import random
+import time
+from types import SimpleNamespace
+
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import Row, text
+
+from app.core.security import sign_session_token
+from app.integrations.sms import DevelopmentSms
+from app.modules.auth import service as auth_service
+from app.modules.auth import totp
+
+PASSWORD = "a long tamil passphrase"
+ANDROID = {"User-Agent": "Mozilla/5.0 (Linux; Android 14; Pixel 8) Chrome/131"}
+IPHONE = {"User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0) Safari/605"}
+
+
+@pytest.fixture
+def client(db_client) -> TestClient:
+    db_client.app.state.sms = DevelopmentSms()
+    return db_client
+
+
+@pytest.fixture
+def account(create_member) -> tuple[Row, str]:
+    nic = str(random.randrange(10**11, 10**12))
+    return create_member(nic=nic, password=PASSWORD), nic
+
+
+def sign_in(client, nic: str, device: dict[str, str]) -> dict[str, str]:
+    response = client.post("/v1/auth/sign-in", json={"nic": nic, "password": PASSWORD}, headers=device)
+    assert response.status_code == 200, response.text
+    client.cookies.clear()  # each "device" uses its own Bearer token
+    return {"Authorization": f"Bearer {response.json()['token']}"}
+
+
+# --- Sessions (FR-AUTH-020, 021, 025) -------------------------------------------------------------------
+
+
+def test_members_see_and_end_their_sessions(client, account):
+    _, nic = account
+    phone = sign_in(client, nic, ANDROID)
+    tablet = sign_in(client, nic, IPHONE)
+
+    listed = client.get("/v1/auth/sessions", headers=phone).json()
+    assert {(s["deviceLabel"], s["current"]) for s in listed} == {("Android browser", True), ("iPhone browser", False)}
+    other = next(s["id"] for s in listed if not s["current"])
+
+    assert client.post(f"/v1/auth/sessions/{other}/revoke", headers=phone).status_code == 204
+    assert client.get("/v1/members/me", headers=tablet).json() == {"detail": "session_expired"}  # NFR-SEC-11
+    assert client.get("/v1/members/me", headers=phone).status_code == 200
+    assert [s["current"] for s in client.get("/v1/auth/sessions", headers=phone).json()] == [True]
+
+
+def test_ending_all_other_sessions_keeps_this_one(client, account):
+    _, nic = account
+    phone, tablet, laptop = (sign_in(client, nic, ANDROID), sign_in(client, nic, IPHONE), sign_in(client, nic, ANDROID))
+
+    assert client.post("/v1/auth/sessions/revoke-others", headers=laptop).status_code == 204
+
+    assert client.get("/v1/members/me", headers=phone).status_code == 401
+    assert client.get("/v1/members/me", headers=tablet).status_code == 401
+    assert client.get("/v1/members/me", headers=laptop).status_code == 200
+
+
+def test_another_members_session_cannot_be_ended(client, account, create_member, auth):
+    _, nic = account
+    phone = sign_in(client, nic, ANDROID)
+    session_id = client.get("/v1/auth/sessions", headers=phone).json()[0]["id"]
+
+    response = client.post(f"/v1/auth/sessions/{session_id}/revoke", headers=auth(create_member()))
+
+    assert (response.status_code, response.json()) == (404, {"detail": "not_found"})
+    assert client.get("/v1/members/me", headers=phone).status_code == 200
+
+
+def test_a_session_unused_for_30_days_expires(client, db_session, account):
+    member, nic = account
+    phone = sign_in(client, nic, ANDROID)
+    db_session.execute(
+        text("UPDATE identity.session SET last_seen_at = now() - interval '31 days' WHERE member_id = :id"),
+        {"id": member.id},
+    )
+
+    assert client.get("/v1/members/me", headers=phone).json() == {"detail": "session_expired"}
+    reason = db_session.scalar(
+        text("SELECT revoked_reason FROM identity.session WHERE member_id = :id"), {"id": member.id}
+    )
+    assert reason == "idle"
+
+
+def test_a_new_device_is_announced_on_the_confirmed_number(client, db_session, account):  # FR-AUTH-019
+    member, nic = account
+    db_session.execute(
+        text("INSERT INTO identity.recovery_contact (member_id, phone) VALUES (:id, :phone)"),
+        {"id": member.id, "phone": f"+9477{random.randrange(10**6, 10**7)}"},
+    )
+    outbox: DevelopmentSms = client.app.state.sms
+
+    sign_in(client, nic, ANDROID)  # the first device is not "new"
+    sign_in(client, nic, ANDROID)
+    assert len(outbox.sent) == 0
+    sign_in(client, nic, IPHONE)
+
+    assert len(outbox.sent) == 1 and "new device" in outbox.sent[0].text
+
+
+def test_express_tokens_still_work_for_members(client, database_settings, account):
+    member, _ = account
+    token = sign_session_token(member.id, member.session_version, database_settings.jwt_secret.get_secret_value())
+
+    assert client.get("/v1/members/me", headers={"Authorization": f"Bearer {token}"}).status_code == 200
+
+
+# --- The staff second factor (NFR-SEC-04, FR-STF-001) ------------------------------------------------------
+
+
+# The middle of a 30-second step, frozen for the service, so a test never crosses into the next step.
+NOW = (time.time() // totp.STEP_SECONDS) * totp.STEP_SECONDS + 15
+
+
+@pytest.fixture(autouse=True)
+def frozen_clock(monkeypatch):
+    monkeypatch.setattr(auth_service, "time", SimpleNamespace(time=lambda: NOW))
+
+
+def code_now(secret_text: str, offset_steps: int = 0) -> str:
+    secret = base64.b32decode(secret_text + "=" * (-len(secret_text) % 8))
+    return totp.code_for_step(secret, totp.step_at(NOW) + offset_steps)
+
+
+@pytest.fixture
+def staff(account, assign, super_admin, area) -> tuple[Row, str]:
+    member, nic = account
+    assign(member, "3A", "district", area.district, ["members.verify"], granted_by=super_admin)
+    return member, nic
+
+
+def test_staff_enrol_an_authenticator_before_acting_as_staff(client, db_session, staff):
+    _, nic = staff
+    session = sign_in(client, nic, ANDROID)
+
+    refused = client.get("/v1/identity/reviews", headers=session)
+    assert (refused.status_code, refused.json()) == (403, {"detail": "mfa_enrolment_required"})
+    denied = db_session.execute(
+        text("SELECT details FROM ops.audit_log WHERE action = 'access.denied' ORDER BY id DESC LIMIT 1")
+    ).one()
+    assert denied.details["reason"] == "mfa_enrolment_required"
+    assert client.get("/v1/auth/mfa", headers=session).json() == {"enrolled": False, "enabled": False, "sessionVerified": False}
+
+    enrolment = client.post("/v1/auth/mfa/totp", headers=session).json()
+    assert enrolment["otpauthUri"].startswith("otpauth://totp/")
+    wrong = client.post("/v1/auth/mfa/totp/confirm", json={"code": "000000"}, headers=session)
+    right = client.post("/v1/auth/mfa/totp/confirm", json={"code": code_now(enrolment["secret"])}, headers=session)
+
+    assert wrong.status_code == 401 and right.status_code == 204
+    assert client.get("/v1/identity/reviews", headers=session).status_code == 200
+    again = client.post("/v1/auth/mfa/totp", headers=session)
+    assert (again.status_code, again.json()) == (409, {"detail": "already_enabled"})
+
+    # A new session asks for the code again; a code already used is refused.
+    second = sign_in(client, nic, IPHONE)
+    assert client.get("/v1/identity/reviews", headers=second).json() == {"detail": "mfa_required"}
+    replay = client.post("/v1/auth/mfa/verify", json={"code": code_now(enrolment["secret"])}, headers=second)
+    fresh = client.post("/v1/auth/mfa/verify", json={"code": code_now(enrolment["secret"], 1)}, headers=second)
+    assert replay.status_code == 401 and fresh.status_code == 204
+    assert client.get("/v1/identity/reviews", headers=second).status_code == 200
+    assert client.get("/v1/auth/mfa", headers=second).json()["sessionVerified"] is True
+
+
+def test_five_wrong_codes_end_the_session(client, staff):
+    _, nic = staff
+    session = sign_in(client, nic, ANDROID)
+    secret = client.post("/v1/auth/mfa/totp", headers=session).json()["secret"]
+    client.post("/v1/auth/mfa/totp/confirm", json={"code": code_now(secret)}, headers=session)
+    second = sign_in(client, nic, IPHONE)
+
+    answers = [client.post("/v1/auth/mfa/verify", json={"code": "000000"}, headers=second).json() for _ in range(5)]
+
+    assert answers[:4] == [{"detail": "invalid_code"}] * 4 and answers[4] == {"detail": "too_many_attempts"}
+    assert client.get("/v1/members/me", headers=second).json() == {"detail": "session_expired"}
+
+
+def test_express_tokens_cannot_act_as_staff(client, database_settings, staff):
+    member, _ = staff
+    token = sign_session_token(member.id, member.session_version, database_settings.jwt_secret.get_secret_value())
+    headers = {"Authorization": f"Bearer {token}"}
+
+    assert client.get("/v1/identity/reviews", headers=headers).json() == {"detail": "mfa_enrolment_required"}
+    verify = client.post("/v1/auth/mfa/verify", json={"code": "123456"}, headers=headers)
+    assert (verify.status_code, verify.json()) == (409, {"detail": "session_not_registered"})

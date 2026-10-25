@@ -7,7 +7,7 @@ That keeps Alembic autogenerate away from them until this API owns them.
 
 import uuid
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -17,6 +17,10 @@ from sqlalchemy.orm import Session
 class SessionMember:
     id: uuid.UUID
     session_version: int
+    # This API's session row; None for a token issued by the Express API.
+    session_id: uuid.UUID | None = None
+    # The staff second factor was given in this session (NFR-SEC-04).
+    mfa_verified: bool = False
 
 
 @dataclass(frozen=True)
@@ -82,3 +86,170 @@ def revoke_sessions(db: Session, member_id: uuid.UUID) -> None:
         text("UPDATE npm.member SET session_version = session_version + 1 WHERE id = :id"),
         {"id": member_id},
     )
+
+
+# --- Sessions (identity.session, Alembic 0010) -------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class StoredSession:
+    id: uuid.UUID
+    member_id: uuid.UUID
+    device_label: str
+    created_at: datetime
+    last_seen_at: datetime
+    mfa_verified: bool
+    revoked: bool
+    idle: bool  # unused for longer than IDLE_LIMIT
+    stale: bool  # last seen long enough ago to record this request
+
+
+_SESSION_COLUMNS = """
+    id, member_id, device_label, created_at, last_seen_at, mfa_verified_at IS NOT NULL AS mfa_verified,
+    revoked_at IS NOT NULL AS revoked,
+    last_seen_at < now() - CAST(:idle AS interval) AS idle,
+    last_seen_at < now() - CAST(:touch AS interval) AS stale
+"""
+
+
+def start_session(db: Session, member_id: uuid.UUID, device_label: str, device_key: str) -> tuple[uuid.UUID, bool]:
+    """Record a new session; also says whether this member signed in from this device before."""
+    seen_before = bool(
+        db.scalar(
+            text("SELECT EXISTS (SELECT 1 FROM identity.session WHERE member_id = :member AND device_key = :key)"),
+            {"member": member_id, "key": device_key},
+        )
+    )
+    had_sessions = bool(
+        db.scalar(text("SELECT EXISTS (SELECT 1 FROM identity.session WHERE member_id = :member)"), {"member": member_id})
+    )
+    session_id = db.scalar(
+        text(
+            """
+            INSERT INTO identity.session (member_id, device_label, device_key)
+            VALUES (:member, :label, :key) RETURNING id
+            """
+        ),
+        {"member": member_id, "label": device_label, "key": device_key},
+    )
+    return session_id, had_sessions and not seen_before
+
+
+def find_session(db: Session, session_id: uuid.UUID, idle: str, touch: str) -> StoredSession | None:
+    row = db.execute(
+        text(f"SELECT {_SESSION_COLUMNS} FROM identity.session WHERE id = :id"),
+        {"id": session_id, "idle": idle, "touch": touch},
+    ).mappings().one_or_none()
+    return StoredSession(**row) if row else None
+
+
+def active_sessions(db: Session, member_id: uuid.UUID, idle: str) -> list[StoredSession]:
+    rows = db.execute(
+        text(
+            f"""
+            SELECT {_SESSION_COLUMNS} FROM identity.session
+            WHERE member_id = :member AND revoked_at IS NULL AND last_seen_at >= now() - CAST(:idle AS interval)
+            ORDER BY last_seen_at DESC
+            """
+        ),
+        {"member": member_id, "idle": idle, "touch": "0 seconds"},
+    ).mappings()
+    return [StoredSession(**row) for row in rows]
+
+
+def touch_session(db: Session, session_id: uuid.UUID) -> None:
+    db.execute(text("UPDATE identity.session SET last_seen_at = clock_timestamp() WHERE id = :id"), {"id": session_id})
+
+
+def revoke_session(db: Session, session_id: uuid.UUID, reason: str) -> None:
+    db.execute(
+        text(
+            """
+            UPDATE identity.session SET revoked_at = clock_timestamp(), revoked_reason = :reason
+            WHERE id = :id AND revoked_at IS NULL
+            """
+        ),
+        {"id": session_id, "reason": reason},
+    )
+
+
+def revoke_member_sessions(db: Session, member_id: uuid.UUID, reason: str, keep: uuid.UUID | None = None) -> None:
+    db.execute(
+        text(
+            """
+            UPDATE identity.session SET revoked_at = clock_timestamp(), revoked_reason = :reason
+            WHERE member_id = :member AND revoked_at IS NULL AND (CAST(:keep AS uuid) IS NULL OR id <> :keep)
+            """
+        ),
+        {"member": member_id, "reason": reason, "keep": keep},
+    )
+
+
+def mark_session_mfa_verified(db: Session, session_id: uuid.UUID) -> None:
+    db.execute(
+        text("UPDATE identity.session SET mfa_verified_at = clock_timestamp(), mfa_failures = 0 WHERE id = :id"),
+        {"id": session_id},
+    )
+
+
+def add_mfa_failure(db: Session, session_id: uuid.UUID) -> int:
+    return db.scalar(
+        text("UPDATE identity.session SET mfa_failures = mfa_failures + 1 WHERE id = :id RETURNING mfa_failures"),
+        {"id": session_id},
+    )
+
+
+# --- Authenticator factors (identity.mfa_factor) --------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class StoredFactor:
+    secret_sealed: bytes
+    enabled: bool
+    last_used_step: int | None
+
+
+def find_factor(db: Session, member_id: uuid.UUID) -> StoredFactor | None:
+    row = db.execute(
+        text(
+            """
+            SELECT secret_sealed, enabled_at IS NOT NULL AS enabled, last_used_step
+            FROM identity.mfa_factor WHERE member_id = :id
+            """
+        ),
+        {"id": member_id},
+    ).one_or_none()
+    return StoredFactor(bytes(row.secret_sealed), row.enabled, row.last_used_step) if row else None
+
+
+def save_pending_factor(db: Session, member_id: uuid.UUID, secret_sealed: bytes) -> None:
+    db.execute(
+        text(
+            """
+            INSERT INTO identity.mfa_factor (member_id, kind, secret_sealed) VALUES (:id, 'totp', :secret)
+            ON CONFLICT (member_id) DO UPDATE
+            SET secret_sealed = EXCLUDED.secret_sealed, created_at = clock_timestamp(), enabled_at = NULL,
+                last_used_step = NULL
+            WHERE identity.mfa_factor.enabled_at IS NULL
+            """
+        ),
+        {"id": member_id, "secret": secret_sealed},
+    )
+
+
+def use_factor(db: Session, member_id: uuid.UUID, step: int) -> None:
+    """Record the step just used (so it cannot be used again) and enable a pending factor."""
+    db.execute(
+        text(
+            """
+            UPDATE identity.mfa_factor
+            SET last_used_step = :step, enabled_at = COALESCE(enabled_at, clock_timestamp())
+            WHERE member_id = :id
+            """
+        ),
+        {"id": member_id, "step": step},
+    )
+
+
+def member_code(db: Session, member_id: uuid.UUID) -> str:
+    return db.scalar(text("SELECT member_code FROM npm.member WHERE id = :id"), {"id": member_id})

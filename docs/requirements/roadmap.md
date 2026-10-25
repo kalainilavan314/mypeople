@@ -12,7 +12,8 @@ A batch builds the API module first (rules, service, endpoints, tests, audit), t
 | 12 (done) | Duplicate identities by keyed hash, investigations | FR-IDV-005, 006, 010, FR-WEB-012, BR-007, BR-094, PRM-28, D04 | KMS for the key (OD-20) |
 | 13 (done) | Registration in FastAPI: route, consent, profile, area, referral, survey, progress, passport sign-in, area lists | FR-AUTH-005, 009 to 013, FR-REG-001, 003, 008, 009, 017, 026, 027, 029 to 033 | OD-15 (minimum age), POL-01 (notices) |
 | 14 (done) | Recovery number with SMS one-time codes behind an interface, recovery, assisted recovery, registration rate limits | FR-REG-028, FR-AUTH-014 to 017, 023 (part), 026 | SMS vendor (INT-01) |
-| 14b | Account security: sessions list and revoke one, new-device alerts, step-up, idle expiry, staff MFA, quarterly access reviews | FR-AUTH-018 to 022, 025, 027, FR-STF-001, 010, NFR-SEC-04 | Staff identity provider (INT-09) |
+| 14b (done) | Sessions list and revoke, idle expiry, new-device notices, staff TOTP | FR-AUTH-019 to 021, 025 (part), FR-STF-001 (part), NFR-SEC-04, NFR-SEC-11 | — |
+| 14c | Step-up codes, suspicious sign-ins, refresh rotation, passkeys, lost-device wipe, quarterly access reviews | FR-AUTH-018, 022, 025, 027, FR-STF-010 | Push (INT-02), staff identity provider (INT-09) |
 | 15 | Member card: rotating signed QR, scanning, revocation | FR-CARD-001 to 015, FR-ADM-001, 002, FR-STF-005 | Wallet passes (INT-03), OD-08 |
 | 16 | Events foundation | FR-EVT-001 to 018, FR-ADM-004, FR-STF-006 | — |
 | 17 | Home and gallery | FR-HOME-001 to 014, FR-GAL-001 to 007, FR-ADM-005, 006 | — |

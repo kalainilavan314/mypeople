@@ -120,6 +120,271 @@
         ]
       }
     },
+    "/v1/auth/sessions": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "List My Sessions",
+        "description": "The member's signed-in devices: a coarse label and times, never a location (FR-AUTH-020).\nSessions from the Express API are not listed; \"sign out\" ends those too.",
+        "operationId": "list_my_sessions_v1_auth_sessions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SessionOut"
+                  },
+                  "type": "array",
+                  "title": "Response List My Sessions V1 Auth Sessions Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/auth/sessions/{session_id}/revoke": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Revoke My Session",
+        "description": "End one session; its next request is refused (FR-AUTH-021, NFR-SEC-11).",
+        "operationId": "revoke_my_session_v1_auth_sessions__session_id__revoke_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/sessions/revoke-others": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Revoke My Other Sessions",
+        "description": "End every session except this one.",
+        "operationId": "revoke_my_other_sessions_v1_auth_sessions_revoke_others_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/auth/mfa": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Read My Mfa",
+        "operationId": "read_my_mfa_v1_auth_mfa_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MfaStatusOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/auth/mfa/totp": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Start Totp",
+        "description": "Start adding an authenticator app: the secret to type or the URI to scan as a QR code.",
+        "operationId": "start_totp_v1_auth_mfa_totp_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TotpEnrolmentOut"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "already_enabled"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/auth/mfa/totp/confirm": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Confirm Totp",
+        "description": "The first code from the app enables it, and counts as the second factor for this session.",
+        "operationId": "confirm_totp_v1_auth_mfa_totp_confirm_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MfaCodeInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "invalid_code or too_many_attempts"
+          },
+          "409": {
+            "description": "already_enabled"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/auth/mfa/verify": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Verify Mfa",
+        "description": "Give the authenticator code for this session; staff endpoints need it (NFR-SEC-04).",
+        "operationId": "verify_mfa_v1_auth_mfa_verify_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MfaCodeInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "invalid_code, or too_many_attempts (the session is ended)"
+          },
+          "409": {
+            "description": "not_enrolled or session_not_registered"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/v1/members/me": {
       "get": {
         "tags": [
@@ -5283,6 +5548,43 @@
         "title": "MembershipFileOut",
         "description": "A member's membership for staff: state, whether identity is verified, and every change."
       },
+      "MfaCodeInput": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^\\d{6}$",
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "MfaCodeInput"
+      },
+      "MfaStatusOut": {
+        "properties": {
+          "enrolled": {
+            "type": "boolean",
+            "title": "Enrolled"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "sessionVerified": {
+            "type": "boolean",
+            "title": "Sessionverified"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enrolled",
+          "enabled",
+          "sessionVerified"
+        ],
+        "title": "MfaStatusOut"
+      },
       "MyMembershipOut": {
         "properties": {
           "state": {
@@ -6277,6 +6579,42 @@
         ],
         "title": "RevokeInput"
       },
+      "SessionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "deviceLabel": {
+            "type": "string",
+            "title": "Devicelabel"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "lastSeenAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Lastseenat"
+          },
+          "current": {
+            "type": "boolean",
+            "title": "Current"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "deviceLabel",
+          "createdAt",
+          "lastSeenAt",
+          "current"
+        ],
+        "title": "SessionOut"
+      },
       "SignInRequest": {
         "properties": {
           "nic": {
@@ -6432,6 +6770,25 @@
           "defaultPermissions"
         ],
         "title": "TierInfo"
+      },
+      "TotpEnrolmentOut": {
+        "properties": {
+          "secret": {
+            "type": "string",
+            "title": "Secret"
+          },
+          "otpauthUri": {
+            "type": "string",
+            "title": "Otpauthuri"
+          }
+        },
+        "type": "object",
+        "required": [
+          "secret",
+          "otpauthUri"
+        ],
+        "title": "TotpEnrolmentOut",
+        "description": "Shown once, to add to an authenticator app; never shown again."
       },
       "ValidationError": {
         "properties": {

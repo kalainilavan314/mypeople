@@ -22,6 +22,8 @@ Current scope:
 | `POST /v1/auth/recovery/request`, `/verify`, `/reset`, `/assisted` | account recovery by code, a new password, and assisted recovery requests |
 | `GET /v1/identity/recovery-requests`, `POST .../{id}/resolve` | the assisted-recovery queue; needs `members.verify` over the member's area |
 | `POST /v1/auth/sign-out` | ends every session of the member (`204`) and clears the cookie |
+| `GET /v1/auth/sessions`, `POST /v1/auth/sessions/{id}/revoke`, `POST /v1/auth/sessions/revoke-others` | the member's signed-in devices; end one or all others |
+| `GET /v1/auth/mfa`, `POST /v1/auth/mfa/totp`, `.../totp/confirm`, `POST /v1/auth/mfa/verify` | the staff second factor: enrol an authenticator app, give its code in each session |
 | `GET /v1/access/me` | the caller's staff assignments that count now |
 | `GET /v1/access/catalogue`, `POST /v1/access/assignments/preview`, `POST /v1/access/assignments`, `POST /v1/access/assignments/{id}/revoke` | staff assignments (W09); need `roles.assign` |
 | `GET /v1/audit`, `GET /v1/audit/verify` | the audit log and its hash-chain check; need `audit.view` |
@@ -87,6 +89,30 @@ and membership as pending; nothing is verified by registering. Referrals are
 recorded but, unlike the Express sign-up, never promote anyone's tier
 (SG-03). Not built yet: the mobile number and its one-time code, recovery
 and registration rate limits (account-security batch).
+
+## Sessions and the staff second factor (FR-AUTH-019 to 021, 025, NFR-SEC-04)
+
+- **Sessions.** Sign-in and registration record a row in
+  `identity.session` (a coarse device label, never a location) and the token
+  names it (`sid`). Members list their devices, end one, or end all others;
+  the next request from an ended session is refused. A session unused for
+  30 days expires. "Sign out" still ends every session in both APIs.
+- **New devices.** A sign-in from a device the member has not used before
+  sends a notice to their confirmed number. Apps send a stable install id in
+  `X-Device-Id`; browsers are told apart by their description.
+- **Staff MFA.** Staff add an authenticator app (TOTP, RFC 6238) once and
+  give its code in each session; until then every staff endpoint answers
+  `403 mfa_enrolment_required` or `mfa_required`, logged as refused access.
+  A code works once; five wrong codes end the session. The secret is
+  encrypted with a key derived from `JWT_SECRET` (changing it means staff
+  enrol again). `STAFF_MFA_REQUIRED=false` is allowed only in development.
+- **Express tokens** carry no session: they still work for member
+  endpoints, end only with "sign out", are not listed, and can never act as
+  staff here.
+
+Not built yet: step-up codes for new devices (FR-AUTH-022), alerts to the
+old device (needs push), refresh-token rotation (FR-AUTH-025), passkeys,
+and the quarterly access review (FR-AUTH-027).
 
 ## Recovery (BRD A13, A16, FR-REG-028, FR-AUTH-014 to 017)
 
@@ -341,7 +367,7 @@ Check the state with `python -m alembic current`. From now on, every schema
 change is a new Alembic revision, never a new file in `server/migrations`:
 
 ```powershell
-python -m alembic revision --rev-id 0010 -m "describe the change"
+python -m alembic revision --rev-id 0011 -m "describe the change"
 python -m alembic upgrade head --sql    # review the SQL before applying it
 python -m alembic upgrade head
 ```
@@ -360,6 +386,7 @@ Settings are read from environment variables, falling back to `services/api/.env
 | `APP_ENV` | `development` (default), `staging`, `production` | `production` hides `/docs` and `/openapi.json` |
 | `DATABASE_URL` | PostgreSQL URL (required) | The same value the Express API uses; `postgres://` and `postgresql://` both work |
 | `JWT_SECRET` | long random string (required) | Must equal the Express API's `JWT_SECRET`; production refuses the `dev-secret` fallback |
+| `STAFF_MFA_REQUIRED` | `true` (default), `false` | Staff give an authenticator code in each session; only development may switch it off |
 | `SMS_PROVIDER` | `none` (default), `development` | How one-time codes are sent; `development` keeps them in memory and is refused outside development |
 | `PASSPORT_NUMBER_PATTERN` | regular expression (optional) | Passport numbers accepted at registration; default 6 to 9 letters or digits |
 | `NIC_PEPPER` | string (required) | Must equal the Express API's `NIC_PEPPER`, and never change; production refuses `dev-pepper` |
@@ -379,7 +406,8 @@ app/
   db/session.py        engine and per-request sessions (get_db)
   db/base.py           ORM base class and the autogenerate table filter
   db/express_baseline.py   the Express migrations behind revision 0001
-  modules/auth/        sign-in, sign-out, throttle, CurrentMember dependency
+  modules/auth/        sign-in, sign-out, throttle, sessions, authenticator codes, CurrentMember dependency
+  core/sealing.py      AES-256-GCM sealing shared by the evidence vault and MFA secrets
   modules/membership/  /v1/members/me and membership states: rules, service, router, schemas, repository
   modules/access/      staff tiers, permissions, areas, assignments, bootstrap command
   modules/audit/       append-only, hash-chained audit log

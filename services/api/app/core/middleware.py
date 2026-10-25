@@ -35,7 +35,7 @@ def cors_options(settings: Settings) -> dict[str, Any] | None:
         "allow_origin_regex": origin_regex,
         "allow_credentials": True,
         "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE"],
-        "allow_headers": ["Authorization", "Content-Type"],
+        "allow_headers": ["Authorization", "Content-Type", "X-Device-Id"],
     }
 
 

@@ -19,11 +19,7 @@ import os
 import uuid
 from pathlib import Path
 
-from cryptography.exceptions import InvalidTag
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-
-FORMAT = b"MPE1"
-NONCE_BYTES = 12
+from app.core import sealing
 
 
 class EvidenceUnreadable(Exception):
@@ -36,18 +32,14 @@ def key_id(key: bytes) -> str:
 
 
 def seal(key: bytes, document_id: uuid.UUID, data: bytes) -> bytes:
-    nonce = os.urandom(NONCE_BYTES)
-    return FORMAT + nonce + AESGCM(key).encrypt(nonce, data, document_id.bytes)
+    return sealing.seal(key, document_id.bytes, data)
 
 
 def unseal(key: bytes, document_id: uuid.UUID, sealed: bytes) -> bytes:
-    if not sealed.startswith(FORMAT):
-        raise EvidenceUnreadable("unknown format")
-    nonce = sealed[len(FORMAT) : len(FORMAT) + NONCE_BYTES]
     try:
-        return AESGCM(key).decrypt(nonce, sealed[len(FORMAT) + NONCE_BYTES :], document_id.bytes)
-    except InvalidTag:
-        raise EvidenceUnreadable("wrong key, wrong document or damaged file") from None
+        return sealing.unseal(key, document_id.bytes, sealed)
+    except sealing.UnsealError as error:
+        raise EvidenceUnreadable(str(error)) from None
 
 
 class FileStore:

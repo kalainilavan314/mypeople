@@ -447,6 +447,7 @@ services/api/
       0007_duplicate_investigations.py
       0008_registration.py
       0009_recovery.py
+      0010_sessions_and_mfa.py
   app/
     __init__.py
     main.py
@@ -456,6 +457,7 @@ services/api/
       config.py
       middleware.py
       permissions.py       staff tiers and the BRD permission matrix
+      sealing.py           AES-256-GCM sealing with associated data
       request_info.py
       schemas.py
       security.py
@@ -469,12 +471,14 @@ services/api/
       auth/
         __init__.py
         dependencies.py
+        device.py
         repository.py
         router.py
         schemas.py
         service.py
         session_cookie.py
         throttle.py
+        totp.py
       membership/
         __init__.py
         repository.py
@@ -592,6 +596,8 @@ services/api/
     test_registration_api.py
     test_registration_rules.py
     test_security.py
+    test_sessions_api.py
+    test_sessions_mfa_rules.py
     test_sign_in.py
     test_throttle.py
     test_verification_api.py
