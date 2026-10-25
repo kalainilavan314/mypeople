@@ -63,6 +63,10 @@ class Settings(BaseSettings):
     # makes every stored image unreadable, so it is backed up apart from the files.
     evidence_encryption_key: SecretStr | None = None
 
+    # Gallery photos (FR-GAL-006): WebP files re-encoded without metadata, served
+    # only through the API. Without it the gallery's photo endpoints answer 503.
+    media_storage_dir: Path | None = None
+
     @field_validator("allowed_origins", mode="before")
     @classmethod
     def split_comma_separated(cls, value: object) -> object:

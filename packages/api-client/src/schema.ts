@@ -1567,6 +1567,332 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/content/albums/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Managed Albums
+         * @description Albums in the caller's areas, newest first: drafts and submitted ones unless asked otherwise.
+         */
+        get: operations["list_managed_albums_v1_content_albums_manage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/albums/manage/{album_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Managed Album */
+        get: operations["read_managed_album_v1_content_albums_manage__album_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/albums": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Albums
+         * @description G01: published albums, newest first.
+         */
+        get: operations["list_albums_v1_content_albums_get"];
+        put?: never;
+        /**
+         * Create Album
+         * @description A draft album in an area where the caller holds gallery.publish.
+         */
+        post: operations["create_album_v1_content_albums_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/albums/{album_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Album
+         * @description G02, with the photos still shown (blurred ones say so).
+         */
+        get: operations["read_album_v1_content_albums__album_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Album */
+        patch: operations["update_album_v1_content_albums__album_id__patch"];
+        trace?: never;
+    };
+    "/v1/content/albums/{album_id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Photo
+         * @description Add a photo to a draft. It is re-encoded as WebP without any metadata (GPS included).
+         */
+        post: operations["add_photo_v1_content_albums__album_id__photos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/photos/{photo_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Photo
+         * @description Only from a draft; a published photo leaves through a removal decision.
+         */
+        delete: operations["delete_photo_v1_content_photos__photo_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Captions
+         * @description Captions change only while the album is a draft.
+         */
+        patch: operations["update_captions_v1_content_photos__photo_id__patch"];
+        trace?: never;
+    };
+    "/v1/content/albums/{album_id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Album
+         * @description For approval: needs a bilingual summary, both captions on every photo (a missing Tamil caption
+         *     blocks it) and, for an event album, a published event.
+         */
+        post: operations["submit_album_v1_content_albums__album_id__submit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/albums/{album_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish Album
+         * @description Publish a submitted album; never by the person who submitted it.
+         */
+        post: operations["publish_album_v1_content_albums__album_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/albums/{album_id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Return Album
+         * @description Send a submitted album back to draft with a note for its author.
+         */
+        post: operations["return_album_v1_content_albums__album_id__return_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/removal-requests/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List My Requests */
+        get: operations["list_my_requests_v1_content_removal_requests_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/removal-requests/public": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Removal Publicly
+         * @description For someone who is not a member (FR-GAL-007): name the album and the photo's number. The same
+         *     24-hour queue handles it.
+         */
+        post: operations["request_removal_publicly_v1_content_removal_requests_public_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/removal-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Removal Requests
+         * @description The queue in the caller's areas, soonest due first, with the 18-hour escalation flag.
+         */
+        get: operations["list_removal_requests_v1_content_removal_requests_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/removal-requests/{request_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Removal
+         * @description Remove, blur or keep, always with a reason; the requester is told by SMS when a number is known.
+         */
+        post: operations["decide_removal_v1_content_removal_requests__request_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/photos/{photo_id}/{size}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Photo
+         * @description G03: the image, shown inside the app; thumbnails first on a slow connection (FR-GAL-006).
+         */
+        get: operations["read_photo_v1_content_photos__photo_id___size__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/photos/{photo_id}/removal-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Removal
+         * @description G03 "Report a concern / Request photo removal": a receipt, due within 24 hours (FR-GAL-004).
+         */
+        post: operations["request_removal_v1_content_photos__photo_id__removal_requests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/home": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Home
+         * @description Everything the Home tab shows, decided by the server: H01 or H02, one next step, the next
+         *     event nearby, and which quick actions, tabs and hub services are open or locked with why.
+         */
+        get: operations["read_home_v1_home_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1582,6 +1908,157 @@ export interface components {
             passportNumber?: string | null;
             /** Passportcountry */
             passportCountry?: string | null;
+        };
+        /** AlbumCreateIn */
+        AlbumCreateIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Summaryen
+             * @default
+             */
+            summaryEn: string;
+            /**
+             * Summaryta
+             * @default
+             */
+            summaryTa: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "events" | "community";
+            /**
+             * Place
+             * @default
+             */
+            place: string;
+            /**
+             * Albumdate
+             * Format: date
+             */
+            albumDate: string;
+            /**
+             * Publisher
+             * @description The office credited, e.g. a district media team
+             */
+            publisher: string;
+            /** Eventid */
+            eventId?: string | null;
+            area: components["schemas"]["AreaRef"];
+        };
+        /**
+         * AlbumDetailOut
+         * @description G02: publisher, bilingual summary, date, area, linked event and the captioned photos.
+         */
+        AlbumDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Albumref */
+            albumRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "events" | "community";
+            /** Place */
+            place: string;
+            /**
+             * Albumdate
+             * Format: date
+             */
+            albumDate: string;
+            /** Photocount */
+            photoCount: number;
+            /** Coverphotoid */
+            coverPhotoId: string | null;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /** Publisher */
+            publisher: string;
+            /** Areakey */
+            areaKey: string;
+            /** Eventid */
+            eventId: string | null;
+            /** Eventtitleen */
+            eventTitleEn: string | null;
+            /** Eventtitleta */
+            eventTitleTa: string | null;
+            /** Photos */
+            photos: components["schemas"]["GalleryPhotoOut"][];
+        };
+        /** AlbumReturnIn */
+        AlbumReturnIn: {
+            /** Note */
+            note: string;
+        };
+        /**
+         * AlbumSummaryOut
+         * @description A G01 grid card: cover, title, photo count and date.
+         */
+        AlbumSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Albumref */
+            albumRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "events" | "community";
+            /** Place */
+            place: string;
+            /**
+             * Albumdate
+             * Format: date
+             */
+            albumDate: string;
+            /** Photocount */
+            photoCount: number;
+            /** Coverphotoid */
+            coverPhotoId: string | null;
+        };
+        /**
+         * AlbumUpdateIn
+         * @description Only the fields sent change, in a draft; the area stays as created.
+         */
+        AlbumUpdateIn: {
+            /** Titleen */
+            titleEn?: string | null;
+            /** Titleta */
+            titleTa?: string | null;
+            /** Summaryen */
+            summaryEn?: string | null;
+            /** Summaryta */
+            summaryTa?: string | null;
+            /** Category */
+            category?: ("events" | "community") | null;
+            /** Place */
+            place?: string | null;
+            /** Albumdate */
+            albumDate?: string | null;
+            /** Publisher */
+            publisher?: string | null;
+            /** Eventid */
+            eventId?: string | null;
         };
         /** AppealDecisionInput */
         AppealDecisionInput: {
@@ -2555,6 +3032,33 @@ export interface components {
              */
             role: "identity_reviewer";
         };
+        /**
+         * GalleryPhotoOut
+         * @description A photo with its captions. The image is at /v1/content/photos/{id}/thumb or /display;
+         *     there is no download, share or tagging (BR-071).
+         */
+        GalleryPhotoOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Number
+             * @description Its place in the album as shown, from 1 (the public removal form uses it)
+             */
+            number: number;
+            /** Captionen */
+            captionEn: string;
+            /** Captionta */
+            captionTa: string;
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
+            /** Blurred */
+            blurred: boolean;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -2567,6 +3071,156 @@ export interface components {
              * @enum {string}
              */
             status: "ok" | "unavailable";
+        };
+        /**
+         * HomeFeatureOut
+         * @description Open, or locked with a plain reason and the next step to take (FR-HOME-008, BR-026).
+         */
+        HomeFeatureOut: {
+            /** Key */
+            key: string;
+            /** Available */
+            available: boolean;
+            /** Reason */
+            reason: ("identity_not_verified" | "membership_not_active") | null;
+            /** Nextstep */
+            nextStep: ("view_verification" | "view_membership") | null;
+        };
+        /** HomeHubOut */
+        HomeHubOut: {
+            /**
+             * Gnlabel
+             * @description The member's GN division, labelling the hub (FR-HOME-012)
+             */
+            gnLabel: string | null;
+            /**
+             * Services
+             * @description Eight services in this order; the party fund never comes first
+             */
+            services: components["schemas"]["HomeFeatureOut"][];
+        };
+        /**
+         * HomeNextStepOut
+         * @description Exactly one (BR-025).
+         */
+        HomeNextStepOut: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "correct_identity" | "submit_identity" | "event_soon" | "confirm_recovery_number" | "complete_profile";
+            /** Reviewref */
+            reviewRef?: string | null;
+            /** Eventid */
+            eventId?: string | null;
+            /** Eventtitleen */
+            eventTitleEn?: string | null;
+            /** Eventtitleta */
+            eventTitleTa?: string | null;
+            /** Startsat */
+            startsAt?: string | null;
+        };
+        /** HomeOut */
+        HomeOut: {
+            /**
+             * Layout
+             * @description H01 only when identity is Verified and membership Active (FR-HOME-001)
+             * @enum {string}
+             */
+            layout: "active" | "awaiting_review";
+            /**
+             * Displayname
+             * @description For the greeting; the app adds the time of day (FR-HOME-002)
+             */
+            displayName: string;
+            /** Districtname */
+            districtName: string | null;
+            /** Gnname */
+            gnName: string | null;
+            /**
+             * Identitystate
+             * @enum {string}
+             */
+            identityState: "not_submitted" | "submitted" | "in_review" | "needs_update" | "verified" | "unable_to_verify";
+            /**
+             * Reviewref
+             * @description The VR reference for H02's status card (FR-HOME-006)
+             */
+            reviewRef: string | null;
+            /**
+             * Membershipstate
+             * @enum {string}
+             */
+            membershipState: "pending" | "active" | "suspended" | "inactive";
+            nextStep: components["schemas"]["HomeNextStepOut"] | null;
+            /** @description The next event in the member's area (FR-HOME-005) */
+            comingUp: components["schemas"]["EventSummaryOut"] | null;
+            /**
+             * Quickactions
+             * @description Report issue, Volunteer, My area, Community (FR-HOME-004)
+             */
+            quickActions: components["schemas"]["HomeFeatureOut"][];
+            /**
+             * Tabs
+             * @description Events, Card and Gallery, open or locked
+             */
+            tabs: components["schemas"]["HomeFeatureOut"][];
+            hub: components["schemas"]["HomeHubOut"];
+        };
+        /** ManagedAlbumOut */
+        ManagedAlbumOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Albumref */
+            albumRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "events" | "community";
+            /** Place */
+            place: string;
+            /**
+             * Albumdate
+             * Format: date
+             */
+            albumDate: string;
+            /** Photocount */
+            photoCount: number;
+            /** Coverphotoid */
+            coverPhotoId: string | null;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /** Publisher */
+            publisher: string;
+            /** Areakey */
+            areaKey: string;
+            /** Eventid */
+            eventId: string | null;
+            /** Eventtitleen */
+            eventTitleEn: string | null;
+            /** Eventtitleta */
+            eventTitleTa: string | null;
+            /** Photos */
+            photos: components["schemas"]["GalleryPhotoOut"][];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "submitted" | "published";
+            /** Returnnote */
+            returnNote: string | null;
+            /** Publishedat */
+            publishedAt: string | null;
         };
         /** ManagedEventOut */
         ManagedEventOut: {
@@ -2929,6 +3583,13 @@ export interface components {
              */
             phone: string;
         };
+        /** PhotoCaptionsIn */
+        PhotoCaptionsIn: {
+            /** Captionen */
+            captionEn?: string | null;
+            /** Captionta */
+            captionTa?: string | null;
+        };
         /** PlaceOut */
         PlaceOut: {
             /** Code */
@@ -2980,6 +3641,31 @@ export interface components {
             /** Gnname */
             gnName: string | null;
         };
+        /**
+         * PublicRemovalRequestIn
+         * @description FR-GAL-007, for someone who is not a member: the album reference (AL-…) and the photo's number.
+         */
+        PublicRemovalRequestIn: {
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "appears_in_photo" | "safety" | "inaccurate" | "other";
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+            /** Albumref */
+            albumRef: string;
+            /** Photonumber */
+            photoNumber: number;
+            /**
+             * Contact
+             * @description A phone number or address to send the outcome to
+             */
+            contact: string;
+        };
         /** QueueCountsOut */
         QueueCountsOut: {
             /** Awaitingreview */
@@ -2988,6 +3674,72 @@ export interface components {
             needsUpdate: number;
             /** Assignedtome */
             assignedToMe: number;
+        };
+        /** QueuedRemovalOut */
+        QueuedRemovalOut: {
+            /** Requestref */
+            requestRef: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "removed" | "blurred" | "kept";
+            /**
+             * Handledby
+             * @default Gallery takedown team (gallery.takedown)
+             */
+            handledBy: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Dueat
+             * Format: date-time
+             * @description 24 hours after the request (BR-070)
+             */
+            dueAt: string;
+            /** Decisionreason */
+            decisionReason: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Photoid
+             * Format: uuid
+             */
+            photoId: string;
+            /**
+             * Albumid
+             * Format: uuid
+             */
+            albumId: string;
+            /** Albumref */
+            albumRef: string;
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "appears_in_photo" | "safety" | "inaccurate" | "other";
+            /** Note */
+            note: string;
+            /** Frommember */
+            fromMember: boolean;
+            /**
+             * Contact
+             * @description Only for a request from someone who is not a member
+             */
+            contact: string | null;
+            /**
+             * Escalated
+             * @description Open 18 hours or more: Tier 5 sees it
+             */
+            escalated: boolean;
         };
         /** RecoveryCodeInput */
         RecoveryCodeInput: {
@@ -3072,6 +3824,62 @@ export interface components {
              * @description null when no referral code was given (FR-REG-031)
              */
             referralAccepted: boolean | null;
+        };
+        /** RemovalDecisionIn */
+        RemovalDecisionIn: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "remove" | "blur" | "keep";
+            /** Reason */
+            reason: string;
+        };
+        /**
+         * RemovalReceiptOut
+         * @description BR-028: the tracking reference, where the request stands and who handles it.
+         */
+        RemovalReceiptOut: {
+            /** Requestref */
+            requestRef: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "removed" | "blurred" | "kept";
+            /**
+             * Handledby
+             * @default Gallery takedown team (gallery.takedown)
+             */
+            handledBy: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Dueat
+             * Format: date-time
+             * @description 24 hours after the request (BR-070)
+             */
+            dueAt: string;
+            /** Decisionreason */
+            decisionReason: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+        };
+        /** RemovalRequestIn */
+        RemovalRequestIn: {
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "appears_in_photo" | "safety" | "inaccurate" | "other";
+            /**
+             * Note
+             * @default
+             */
+            note: string;
         };
         /** ReportInput */
         ReportInput: {
@@ -6569,6 +7377,883 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_managed_albums_v1_content_albums_manage_get: {
+        parameters: {
+            query?: {
+                state?: ("draft" | "submitted" | "published")[] | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlbumSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_managed_album_v1_content_albums_manage__album_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                album_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedAlbumOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_albums_v1_content_albums_get: {
+        parameters: {
+            query?: {
+                category?: ("events" | "community") | null;
+                /** @description Search titles and places */
+                q?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlbumSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_album_v1_content_albums_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlbumCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedAlbumOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description album_invalid */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_album_v1_content_albums__album_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                album_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlbumDetailOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_album_v1_content_albums__album_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                album_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlbumUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedAlbumOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_photo_v1_content_albums__album_id__photos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                album_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "image/jpeg": string;
+                "image/png": string;
+                "image/webp": string;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GalleryPhotoOut"];
+                };
+            };
+            /** @description empty_file */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description too_large (over 15 MB) or too_many_pixels */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description unsupported_type (JPEG, PNG or WebP) */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description media_storage_not_configured */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    delete_photo_v1_content_photos__photo_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                photo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description media_storage_not_configured */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_captions_v1_content_photos__photo_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                photo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PhotoCaptionsIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GalleryPhotoOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_album_v1_content_albums__album_id__submit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                album_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedAlbumOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description album_invalid */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    publish_album_v1_content_albums__album_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                album_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedAlbumOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> or own_submission */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    return_album_v1_content_albums__album_id__return_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                album_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlbumReturnIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedAlbumOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_my_requests_v1_content_removal_requests_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RemovalReceiptOut"][];
+                };
+            };
+        };
+    };
+    request_removal_publicly_v1_content_removal_requests_public_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublicRemovalRequestIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RemovalReceiptOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_requests, with Retry-After */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_removal_requests_v1_content_removal_requests_get: {
+        parameters: {
+            query?: {
+                state?: ("open" | "removed" | "blurred" | "kept")[] | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueuedRemovalOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_removal_v1_content_removal_requests__request_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RemovalDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RemovalReceiptOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description already_decided */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description media_storage_not_configured */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_photo_v1_content_photos__photo_id___size__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                photo_id: string;
+                size: "thumb" | "display";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/webp": string;
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description media_storage_not_configured */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    request_removal_v1_content_photos__photo_id__removal_requests_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                photo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RemovalRequestIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RemovalReceiptOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_home_v1_home_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomeOut"];
                 };
             };
         };

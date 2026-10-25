@@ -79,6 +79,23 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET /v1/identity/duplicates/{id}` | `idv.duplicate.investigate` over both accounts' areas | `200` both accounts with details, verification and membership state, image records | `403 own_record`, `outside_your_area`; `404` |
 | `POST /v1/identity/duplicates/{id}/claim`, `/release`, `/decision` body `{outcome: "not_duplicate" \| "duplicate_confirmed", reason}` | the investigator holding the case for decisions | `200` the case file | as above; `409 claimed_by_another`, `not_claimed_by_you`, `not_open`, `reported_by_you` (the reporter never investigates) |
 
+### Home and gallery (`/v1/home`, `/v1/content`)
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /v1/home` | a session | `200 {layout, displayName, districtName, gnName, identityState, reviewRef, membershipState, nextStep, comingUp, quickActions, tabs, hub}` | `401` |
+| `GET /v1/content/albums?category&q&limit`, `GET /v1/content/albums/{id}` | a session | `200` published albums; detail with publisher, summary, linked event and numbered photos | `404 not_found` |
+| `GET /v1/content/photos/{id}/thumb`, `.../display` | a session | `200 image/webp`, inline | `404`, `503 media_storage_not_configured` |
+| `POST /v1/content/photos/{id}/removal-requests` body `{reason, note?}` | a session | `201` receipt `{requestRef, state, handledBy, createdAt, dueAt}` (the open one if asked again) | `404` |
+| `GET /v1/content/removal-requests/mine` | a session | `200` the member's receipts | `401` |
+| `POST /v1/content/removal-requests/public` body `{albumRef, photoNumber, reason, note?, contact}` | none | `201` receipt | `404`, `429 too_many_requests` |
+| `GET /v1/content/albums/manage`, `GET .../manage/{id}`, `POST /v1/content/albums`, `PATCH /v1/content/albums/{id}` | `gallery.publish` over the album's area | `200`/`201` the album | `403`, `404`, `409 not_allowed_from:<state>`, `422 {code: "album_invalid", problems}` |
+| `POST /v1/content/albums/{id}/photos` body = the image (`image/jpeg`, `image/png`, `image/webp`) | as above, a draft | `201` the photo | `400 empty_file`, `413 too_large`, `too_many_pixels`, `415 unsupported_type`, `503` |
+| `PATCH /v1/content/photos/{id}` body `{captionEn?, captionTa?}`, `DELETE /v1/content/photos/{id}` | as above, a draft | `200`, `204` | `403`, `404`, `409` |
+| `POST /v1/content/albums/{id}/submit`, `.../publish`, `.../return` body `{note}` | as above | `200` the album | `409 own_submission`, `not_allowed_from:<state>`; `422 album_invalid` (`tamil_caption_missing`, `event_required`, …) |
+| `GET /v1/content/removal-requests?state&limit` | `gallery.takedown` | `200` the queue with `escalated` | `403` |
+| `POST /v1/content/removal-requests/{id}/decision` body `{decision: "remove" \| "blur" \| "keep", reason}` | `gallery.takedown` over the album's area | `200` the receipt | `403 own_record`, `404`, `409 already_decided` |
+
 ### Events (`/v1/events`)
 
 | Endpoint | Needs | Success | Errors |

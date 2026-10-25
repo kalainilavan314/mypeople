@@ -35,6 +35,7 @@ Production does not run on Docker, so there is no production `docker-compose.yml
 
 - Fixed 24 October 2026: the sign-in throttle bypass through a forged `X-Forwarded-For` (Express used the client-controlled first entry while Nginx kept client headers). Both the Express fix and the Nginx change are live; `npm test --prefix server` covers it.
 - Express listens on all interfaces (`*:3001`). UFW blocks the port externally; binding to `127.0.0.1` would add a second layer.
+- Before the FastAPI gallery goes live: create `MEDIA_STORAGE_DIR` on `/srv/secure` (owned by the API's service user) and add it to the restic backup.
 - Before the FastAPI identity endpoints go live: create `EVIDENCE_STORAGE_DIR` on `/srv/secure` (owned by the API's service user, mode 700), generate `EVIDENCE_ENCRYPTION_KEY` on the server, add the directory to the restic backup and keep a copy of the key apart from it. Without the key the backed-up images cannot be read.
 - The `karan-server-admin` key and its passphrase were exposed in a chat on 24 October 2026 and should be replaced.
 

@@ -21,6 +21,11 @@ Current scope:
 | `GET /v1/geography/districts`, `.../districts/{code}/ds-divisions`, `.../ds-divisions/{code}/gn-divisions` | the area lists, public |
 | `GET /v1/events`, `GET /v1/events/{id}`, `PUT /v1/events/{id}/rsvp`, `GET /v1/events/{id}/pass`, `.../pass/code` | events for members: list with filters, detail, RSVP, the event pass and its 60-second QR code |
 | `GET /v1/events/manage`, `GET /v1/events/manage/{id}`, `POST /v1/events`, `PATCH /v1/events/{id}`, `POST .../publish`, `.../cancel` | the event console; needs `events.manage` over the event's area |
+| `GET /v1/home` | the Home tab: H01 or H02, one next step, the next event nearby, open and locked features with reasons, the hub |
+| `GET /v1/content/albums`, `GET /v1/content/albums/{id}`, `GET /v1/content/photos/{id}/{thumb\|display}` | the gallery for members: published albums, album detail, the photos |
+| `POST /v1/content/photos/{id}/removal-requests`, `GET /v1/content/removal-requests/mine`, `POST /v1/content/removal-requests/public` | photo removal requests with receipts, for members and, through a public form, for people who are not |
+| `GET /v1/content/albums/manage`, `POST /v1/content/albums`, `PATCH .../albums/{id}`, `POST .../photos`, `PATCH`/`DELETE /v1/content/photos/{id}`, `POST .../submit`, `.../publish`, `.../return` | the media console; needs `gallery.publish` over the album's area |
+| `GET /v1/content/removal-requests`, `POST .../{id}/decision` | the 24-hour removal queue; needs `gallery.takedown` over the album's area |
 | `POST /v1/events/{id}/scan`, `GET /v1/events/{id}/attendance` | check-in and the attendance roster; need `events.checkin_scan` over the event's area (the roster also opens with `events.manage`) |
 | `GET`/`POST /v1/identity/me/phone`, `POST /v1/identity/me/phone/confirm` | the recovery number, confirmed by a one-time code |
 | `POST /v1/auth/recovery/request`, `/verify`, `/reset`, `/assisted` | account recovery by code, a new password, and assisted recovery requests |
@@ -209,6 +214,62 @@ Not built yet: wallet passes (INT-03, OD-06), the offline credential and
 offline scanning (OD-08) and milestones. Event passes are their own codes
 (see Events). The live PWA still uses Express's 10-minute card token,
 which carries the member id, and shows it only for an official card.
+
+## Home (BRD H01, H02, H04; FR-HOME-001 to 008, 012, 013)
+
+`GET /v1/home` answers everything the Home tab shows, so the app never
+guesses what a member may do (BR-089):
+
+- **Layout.** `active` (H01) only when identity is Verified and membership
+  Active; otherwise `awaiting_review` (H02) with the identity state and the
+  VR reference for the status card (FR-HOME-001, 006).
+- **One next step** (BR-025), in this order (an assumption): correct the
+  identity documents, submit them, an event within 48 hours the member is
+  going to, confirm a recovery number, complete the profile's area.
+- **Coming up nearby:** the next event in the member's area with their
+  response (FR-HOME-005).
+- **Locks** (FR-HOME-007, 008; the policy is an assumption): reporting a
+  local issue, My area, events, the card, the gallery, learning, local
+  reports and area projects are open to everyone; volunteering, community
+  participation, ideas, surveys, invites and the party fund wait for a
+  Verified identity and an Active membership. Each lock gives the reason
+  and the next step.
+- **Quick actions** are Report issue, Volunteer, My area and Community
+  (FR-HOME-004); the **hub** lists eight services under the member's GN,
+  with the party fund after ideas, surveys and learning (FR-HOME-012, 013).
+
+Not here: notifications (FR-HOME-009 to 011, notifications batch) and the
+tabs themselves (FR-HOME-014, the apps).
+
+## Gallery (BRD G01 to G03, GAP-04; FR-GAL-001 to 007, FR-ADM-005, 006)
+
+- **Publishing.** Only `gallery.publish` holders add photos (BR-069), in
+  albums in their own areas. Every upload (JPEG, PNG or WebP, up to 15 MB
+  and 40 megapixels) is decoded and re-encoded as WebP in two sizes, so no
+  EXIF, GPS or camera data survives; the original is not kept. Albums need
+  a bilingual summary, both captions on every photo (a missing Tamil
+  caption blocks submission) and, for an event album, a published event
+  (BR-072). A different `gallery.publish` holder publishes a submitted
+  album or returns it with a note (an assumption on who approves).
+- **Members** see published albums (filters Events and Community, search by
+  title or place), album detail with publisher and linked event, and the
+  photos, with no download, share or tagging (BR-071). Photos are served
+  only through the API to a signed-in member; staff also see their areas'
+  unpublished albums.
+- **Removal requests.** Every photo has one (BR-070): a member picks a
+  reason and gets a receipt (RR- reference) due 24 hours later; asking again
+  returns the same receipt. People who are not members use a public form
+  with the album reference and the photo's number, three an hour per
+  address (FR-GAL-007). The queue (`gallery.takedown` over the album's area)
+  runs soonest due first and flags requests open 18 hours for Tier 5
+  (alerting waits on notifications). A decision removes the photo and its
+  files (answering every open request on it), blurs it, or keeps it, always
+  with a reason, and cannot be changed; the requester is told by SMS when a
+  number is known (FR-GAL-005).
+
+Storage: `MEDIA_STORAGE_DIR`; without it the photo endpoints answer
+`503 media_storage_not_configured`. The live app still shows Express's
+sample albums.
 
 ## Events (BRD E01 to E06, GAP-03, S09; FR-EVT-001 to 017, FR-ADM-004, FR-STF-006)
 
@@ -488,6 +549,7 @@ Settings are read from environment variables, falling back to `services/api/.env
 | `ALLOWED_ORIGINS` | comma-separated origins (optional) | Other sites allowed to send cookie-authenticated writes |
 | `EVIDENCE_STORAGE_DIR` | private directory (optional) | Where encrypted identity images are kept; production uses the encrypted `/srv/secure` volume |
 | `EVIDENCE_ENCRYPTION_KEY` | 32 bytes, base64 (optional, with the directory) | Encrypts every identity image; keep a copy apart from the files |
+| `MEDIA_STORAGE_DIR` | directory (optional) | Where gallery photos are kept as WebP files; back it up with the database |
 
 ## Layout
 
@@ -517,6 +579,8 @@ app/
   integrations/sms.py   the SMS interface (no vendor yet)
   modules/geography/  district, DS and GN lists
   modules/events/     events, RSVPs, event passes, check-in and the roster
+  modules/home/       the Home tab: layout, next step, locks, hub
+  modules/content/gallery/  albums, photos (re-encoded WebP), removal requests
   core/rotating_codes.py  60-second signed QR codes (member card, event pass)
   modules/<households, assistance, community, events, engagement, finance, content, messaging, ai>/
                        README only: not built yet

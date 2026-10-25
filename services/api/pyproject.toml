@@ -14,6 +14,7 @@ dependencies = [
     "pyjwt>=2.15",
     "bcrypt>=5.0",
     "cryptography>=50.0",  # AES-256-GCM for identity evidence
+    "pillow>=13.0",  # gallery photos: decoded, stripped of metadata, re-encoded as WebP
 ]
 
 [project.optional-dependencies]

@@ -39,6 +39,20 @@ export type EventCreateInput = Schemas['EventCreateIn'];
 export type EventUpdateInput = Schemas['EventUpdateIn'];
 export type PassScan = Schemas['PassScanOut'];
 export type EventRoster = Schemas['RosterOut'];
+export type HomeView = Schemas['HomeOut'];
+export type AlbumSummary = Schemas['AlbumSummaryOut'];
+export type AlbumDetail = Schemas['AlbumDetailOut'];
+export type GalleryPhoto = Schemas['GalleryPhotoOut'];
+export type ManagedAlbum = Schemas['ManagedAlbumOut'];
+export type AlbumCreateInput = Schemas['AlbumCreateIn'];
+export type AlbumUpdateInput = Schemas['AlbumUpdateIn'];
+export type PhotoCaptionsInput = Schemas['PhotoCaptionsIn'];
+export type RemovalRequestInput = Schemas['RemovalRequestIn'];
+export type PublicRemovalRequestInput = Schemas['PublicRemovalRequestIn'];
+export type RemovalReceipt = Schemas['RemovalReceiptOut'];
+export type QueuedRemoval = Schemas['QueuedRemovalOut'];
+export type RemovalDecisionInput = Schemas['RemovalDecisionIn'];
+export type GalleryImageType = 'image/jpeg' | 'image/png' | 'image/webp';
 export type EventFilters = {
   /** 'mine' (the default) narrows to the member's area; 'all' widens it (BR-057). */
   scope?: 'mine' | 'all';
@@ -151,7 +165,7 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
   const root = baseUrl.replace(/\/+$/, '');
 
   /** Sends `body` as JSON, or as it is when `rawType` names its media type (image uploads). */
-  async function request<T>(method: 'GET' | 'POST' | 'PUT' | 'PATCH', path: string, body?: unknown, rawType?: string): Promise<T> {
+  async function request<T>(method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE', path: string, body?: unknown, rawType?: string): Promise<T> {
     const headers: Record<string, string> = { Accept: 'application/json' };
     if (body !== undefined) headers['Content-Type'] = rawType ?? 'application/json';
     const token = await getToken?.();
@@ -406,6 +420,60 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     /** S09: expected and attended counts with the roster. */
     getEventAttendance: (eventId: string) =>
       request<EventRoster>('GET', `/v1/events/${encodeURIComponent(eventId)}/attendance`),
+
+    /**
+     * The Home tab, decided by the server: layout "active" (H01) or "awaiting_review" (H02), one next step,
+     * the next event nearby, and which quick actions, tabs and hub services are open or locked, with why.
+     */
+    getHome: () => request<HomeView>('GET', '/v1/home'),
+
+    /** G01: published albums, newest first. */
+    listAlbums: (filters: { category?: 'events' | 'community'; q?: string; limit?: number } = {}) =>
+      request<AlbumSummary[]>('GET', `/v1/content/albums${toEventQuery(filters)}`),
+    /** G02. Throws ApiError "not_found" (404) for an album that is not published. */
+    getAlbum: (albumId: string) => request<AlbumDetail>('GET', `/v1/content/albums/${encodeURIComponent(albumId)}`),
+    /**
+     * Where a photo's image is: thumb for grids, display for the viewer. It needs the session (cookie or
+     * Bearer header). Show it in the app; offer no download, share or tagging (BR-071).
+     */
+    galleryPhotoUrl: (photoId: string, size: 'thumb' | 'display') =>
+      `${root}/v1/content/photos/${encodeURIComponent(photoId)}/${size}`,
+    /** G03 "Request photo removal": a receipt due within 24 hours; asking again returns the same one. */
+    requestPhotoRemoval: (photoId: string, input: RemovalRequestInput) =>
+      request<RemovalReceipt>('POST', `/v1/content/photos/${encodeURIComponent(photoId)}/removal-requests`, input),
+    listMyRemovalRequests: () => request<RemovalReceipt[]>('GET', '/v1/content/removal-requests/mine'),
+    /** For someone who is not a member (no session needed). Throws ApiError "too_many_requests" (429). */
+    requestPhotoRemovalPublicly: (input: PublicRemovalRequestInput) =>
+      request<RemovalReceipt>('POST', '/v1/content/removal-requests/public', input),
+
+    /** Albums in the caller's areas (drafts and submitted by default). Needs gallery.publish. */
+    listManagedAlbums: (filters: { states?: readonly ('draft' | 'submitted' | 'published')[]; limit?: number } = {}) =>
+      request<AlbumSummary[]>('GET', `/v1/content/albums/manage${toQueueQuery(filters)}`),
+    getManagedAlbum: (albumId: string) =>
+      request<ManagedAlbum>('GET', `/v1/content/albums/manage/${encodeURIComponent(albumId)}`),
+    createAlbum: (input: AlbumCreateInput) => request<ManagedAlbum>('POST', '/v1/content/albums', input),
+    updateAlbum: (albumId: string, input: AlbumUpdateInput) =>
+      request<ManagedAlbum>('PATCH', `/v1/content/albums/${encodeURIComponent(albumId)}`, input),
+    /** Adds a photo to a draft; it is re-encoded as WebP without metadata. Throws "unsupported_type" (415). */
+    uploadAlbumPhoto: (albumId: string, image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
+      request<GalleryPhoto>('POST', `/v1/content/albums/${encodeURIComponent(albumId)}/photos`, image, contentType),
+    updatePhotoCaptions: (photoId: string, input: PhotoCaptionsInput) =>
+      request<GalleryPhoto>('PATCH', `/v1/content/photos/${encodeURIComponent(photoId)}`, input),
+    deletePhoto: (photoId: string) => request<void>('DELETE', `/v1/content/photos/${encodeURIComponent(photoId)}`),
+    /** Throws ApiError "album_invalid" (422) with `problems`, e.g. "tamil_caption_missing". */
+    submitAlbum: (albumId: string) =>
+      request<ManagedAlbum>('POST', `/v1/content/albums/${encodeURIComponent(albumId)}/submit`),
+    /** Throws ApiError "own_submission" (409) for the person who submitted it. */
+    publishAlbum: (albumId: string) =>
+      request<ManagedAlbum>('POST', `/v1/content/albums/${encodeURIComponent(albumId)}/publish`),
+    returnAlbum: (albumId: string, note: string) =>
+      request<ManagedAlbum>('POST', `/v1/content/albums/${encodeURIComponent(albumId)}/return`, { note }),
+    /** The removal queue, soonest due first, with the 18-hour escalation flag. Needs gallery.takedown. */
+    listRemovalRequests: (filters: { states?: readonly ('open' | 'removed' | 'blurred' | 'kept')[]; limit?: number } = {}) =>
+      request<QueuedRemoval[]>('GET', `/v1/content/removal-requests${toQueueQuery(filters)}`),
+    /** Remove, blur or keep, with a reason. Throws ApiError "already_decided" (409). */
+    decideRemovalRequest: (requestId: string, input: RemovalDecisionInput) =>
+      request<RemovalReceipt>('POST', `/v1/content/removal-requests/${encodeURIComponent(requestId)}/decision`, input),
   };
 }
 
@@ -440,7 +508,7 @@ function toQueueQuery(filters: { states?: readonly string[]; mine?: boolean; lim
   return query ? `?${query}` : '';
 }
 
-function toEventQuery(filters: EventFilters): string {
+function toEventQuery(filters: Record<string, string | number | undefined>): string {
   const params = new URLSearchParams();
   for (const [name, value] of Object.entries(filters)) {
     if (value !== undefined && value !== '') params.set(name, String(value));

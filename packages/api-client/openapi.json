@@ -4366,6 +4366,1225 @@
           }
         }
       }
+    },
+    "/v1/content/albums/manage": {
+      "get": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "List Managed Albums",
+        "description": "Albums in the caller's areas, newest first: drafts and submitted ones unless asked otherwise.",
+        "operationId": "list_managed_albums_v1_content_albums_manage_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "draft",
+                      "submitted",
+                      "published"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AlbumSummaryOut"
+                  },
+                  "title": "Response List Managed Albums V1 Content Albums Manage Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/albums/manage/{album_id}": {
+      "get": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "Read Managed Album",
+        "operationId": "read_managed_album_v1_content_albums_manage__album_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "album_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Album Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedAlbumOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/albums": {
+      "post": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "Create Album",
+        "description": "A draft album in an area where the caller holds gallery.publish.",
+        "operationId": "create_album_v1_content_albums_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlbumCreateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedAlbumOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "album_invalid"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "List Albums",
+        "description": "G01: published albums, newest first.",
+        "operationId": "list_albums_v1_content_albums_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "events",
+                    "community"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Search titles and places",
+              "title": "Q"
+            },
+            "description": "Search titles and places"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AlbumSummaryOut"
+                  },
+                  "title": "Response List Albums V1 Content Albums Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/albums/{album_id}": {
+      "patch": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "Update Album",
+        "operationId": "update_album_v1_content_albums__album_id__patch",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "album_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Album Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlbumUpdateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedAlbumOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state>"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "Read Album",
+        "description": "G02, with the photos still shown (blurred ones say so).",
+        "operationId": "read_album_v1_content_albums__album_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "album_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Album Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlbumDetailOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/albums/{album_id}/photos": {
+      "post": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "Add Photo",
+        "description": "Add a photo to a draft. It is re-encoded as WebP without any metadata (GPS included).",
+        "operationId": "add_photo_v1_content_albums__album_id__photos_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "album_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Album Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GalleryPhotoOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "400": {
+            "description": "empty_file"
+          },
+          "409": {
+            "description": "not_allowed_from:<state>"
+          },
+          "413": {
+            "description": "too_large (over 15 MB) or too_many_pixels"
+          },
+          "415": {
+            "description": "unsupported_type (JPEG, PNG or WebP)"
+          },
+          "503": {
+            "description": "media_storage_not_configured"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/webp": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/photos/{photo_id}": {
+      "patch": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "Update Captions",
+        "description": "Captions change only while the album is a draft.",
+        "operationId": "update_captions_v1_content_photos__photo_id__patch",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "photo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Photo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhotoCaptionsIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GalleryPhotoOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state>"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "Delete Photo",
+        "description": "Only from a draft; a published photo leaves through a removal decision.",
+        "operationId": "delete_photo_v1_content_photos__photo_id__delete",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "photo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Photo Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state>"
+          },
+          "503": {
+            "description": "media_storage_not_configured"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/albums/{album_id}/submit": {
+      "post": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "Submit Album",
+        "description": "For approval: needs a bilingual summary, both captions on every photo (a missing Tamil caption\nblocks it) and, for an event album, a published event.",
+        "operationId": "submit_album_v1_content_albums__album_id__submit_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "album_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Album Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedAlbumOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state>"
+          },
+          "422": {
+            "description": "album_invalid"
+          }
+        }
+      }
+    },
+    "/v1/content/albums/{album_id}/publish": {
+      "post": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "Publish Album",
+        "description": "Publish a submitted album; never by the person who submitted it.",
+        "operationId": "publish_album_v1_content_albums__album_id__publish_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "album_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Album Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedAlbumOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state> or own_submission"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/albums/{album_id}/return": {
+      "post": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "Return Album",
+        "description": "Send a submitted album back to draft with a note for its author.",
+        "operationId": "return_album_v1_content_albums__album_id__return_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "album_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Album Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlbumReturnIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedAlbumOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state>"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/removal-requests/mine": {
+      "get": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "List My Requests",
+        "operationId": "list_my_requests_v1_content_removal_requests_mine_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RemovalReceiptOut"
+                  },
+                  "type": "array",
+                  "title": "Response List My Requests V1 Content Removal Requests Mine Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/content/removal-requests/public": {
+      "post": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "Request Removal Publicly",
+        "description": "For someone who is not a member (FR-GAL-007): name the album and the photo's number. The same\n24-hour queue handles it.",
+        "operationId": "request_removal_publicly_v1_content_removal_requests_public_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicRemovalRequestIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemovalReceiptOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "429": {
+            "description": "too_many_requests, with Retry-After"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/removal-requests": {
+      "get": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "List Removal Requests",
+        "description": "The queue in the caller's areas, soonest due first, with the 18-hour escalation flag.",
+        "operationId": "list_removal_requests_v1_content_removal_requests_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "open",
+                      "removed",
+                      "blurred",
+                      "kept"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/QueuedRemovalOut"
+                  },
+                  "title": "Response List Removal Requests V1 Content Removal Requests Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/removal-requests/{request_id}/decision": {
+      "post": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "Decide Removal",
+        "description": "Remove, blur or keep, always with a reason; the requester is told by SMS when a number is known.",
+        "operationId": "decide_removal_v1_content_removal_requests__request_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemovalDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemovalReceiptOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "already_decided"
+          },
+          "503": {
+            "description": "media_storage_not_configured"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/photos/{photo_id}/{size}": {
+      "get": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "Read Photo",
+        "description": "G03: the image, shown inside the app; thumbnails first on a slow connection (FR-GAL-006).",
+        "operationId": "read_photo_v1_content_photos__photo_id___size__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "photo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Photo Id"
+            }
+          },
+          {
+            "name": "size",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "thumb",
+                "display"
+              ],
+              "type": "string",
+              "title": "Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "503": {
+            "description": "media_storage_not_configured"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/photos/{photo_id}/removal-requests": {
+      "post": {
+        "tags": [
+          "gallery"
+        ],
+        "summary": "Request Removal",
+        "description": "G03 \"Report a concern / Request photo removal\": a receipt, due within 24 hours (FR-GAL-004).",
+        "operationId": "request_removal_v1_content_photos__photo_id__removal_requests_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "photo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Photo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemovalRequestIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemovalReceiptOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/home": {
+      "get": {
+        "tags": [
+          "home"
+        ],
+        "summary": "Read Home",
+        "description": "Everything the Home tab shows, decided by the server: H01 or H02, one next step, the next\nevent nearby, and which quick actions, tabs and hub services are open or locked with why.",
+        "operationId": "read_home_v1_home_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -4415,6 +5634,422 @@
         "type": "object",
         "title": "AccountNumber",
         "description": "The ID number the account registered with: nic, or passportNumber with passportCountry."
+      },
+      "AlbumCreateIn": {
+        "properties": {
+          "titleEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Summaryen",
+            "default": ""
+          },
+          "summaryTa": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Summaryta",
+            "default": ""
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "events",
+              "community"
+            ],
+            "title": "Category"
+          },
+          "place": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Place",
+            "default": ""
+          },
+          "albumDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Albumdate"
+          },
+          "publisher": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Publisher",
+            "description": "The office credited, e.g. a district media team"
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventid"
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaRef"
+          }
+        },
+        "type": "object",
+        "required": [
+          "titleEn",
+          "titleTa",
+          "category",
+          "albumDate",
+          "publisher",
+          "area"
+        ],
+        "title": "AlbumCreateIn"
+      },
+      "AlbumDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "albumRef": {
+            "type": "string",
+            "title": "Albumref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "events",
+              "community"
+            ],
+            "title": "Category"
+          },
+          "place": {
+            "type": "string",
+            "title": "Place"
+          },
+          "albumDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Albumdate"
+          },
+          "photoCount": {
+            "type": "integer",
+            "title": "Photocount"
+          },
+          "coverPhotoId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverphotoid"
+          },
+          "summaryEn": {
+            "type": "string",
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "type": "string",
+            "title": "Summaryta"
+          },
+          "publisher": {
+            "type": "string",
+            "title": "Publisher"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventid"
+          },
+          "eventTitleEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventtitleen"
+          },
+          "eventTitleTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventtitleta"
+          },
+          "photos": {
+            "items": {
+              "$ref": "#/components/schemas/GalleryPhotoOut"
+            },
+            "type": "array",
+            "title": "Photos"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "albumRef",
+          "titleEn",
+          "titleTa",
+          "category",
+          "place",
+          "albumDate",
+          "photoCount",
+          "coverPhotoId",
+          "summaryEn",
+          "summaryTa",
+          "publisher",
+          "areaKey",
+          "eventId",
+          "eventTitleEn",
+          "eventTitleTa",
+          "photos"
+        ],
+        "title": "AlbumDetailOut",
+        "description": "G02: publisher, bilingual summary, date, area, linked event and the captioned photos."
+      },
+      "AlbumReturnIn": {
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "note"
+        ],
+        "title": "AlbumReturnIn"
+      },
+      "AlbumSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "albumRef": {
+            "type": "string",
+            "title": "Albumref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "events",
+              "community"
+            ],
+            "title": "Category"
+          },
+          "place": {
+            "type": "string",
+            "title": "Place"
+          },
+          "albumDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Albumdate"
+          },
+          "photoCount": {
+            "type": "integer",
+            "title": "Photocount"
+          },
+          "coverPhotoId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverphotoid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "albumRef",
+          "titleEn",
+          "titleTa",
+          "category",
+          "place",
+          "albumDate",
+          "photoCount",
+          "coverPhotoId"
+        ],
+        "title": "AlbumSummaryOut",
+        "description": "A G01 grid card: cover, title, photo count and date."
+      },
+      "AlbumUpdateIn": {
+        "properties": {
+          "titleEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summaryta"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "events",
+                  "community"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "place": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place"
+          },
+          "albumDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Albumdate"
+          },
+          "publisher": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publisher"
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventid"
+          }
+        },
+        "type": "object",
+        "title": "AlbumUpdateIn",
+        "description": "Only the fields sent change, in a draft; the area stays as created."
       },
       "AppealDecisionInput": {
         "properties": {
@@ -7019,6 +8654,52 @@
         "title": "EvidenceViewOut",
         "description": "FR-AUTH-024: the date and the role, never the person."
       },
+      "GalleryPhotoOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "number": {
+            "type": "integer",
+            "title": "Number",
+            "description": "Its place in the album as shown, from 1 (the public removal form uses it)"
+          },
+          "captionEn": {
+            "type": "string",
+            "title": "Captionen"
+          },
+          "captionTa": {
+            "type": "string",
+            "title": "Captionta"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height"
+          },
+          "blurred": {
+            "type": "boolean",
+            "title": "Blurred"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "number",
+          "captionEn",
+          "captionTa",
+          "width",
+          "height",
+          "blurred"
+        ],
+        "title": "GalleryPhotoOut",
+        "description": "A photo with its captions. The image is at /v1/content/photos/{id}/thumb or /display;\nthere is no download, share or tagging (BR-071)."
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -7048,6 +8729,462 @@
           "status"
         ],
         "title": "HealthStatus"
+      },
+      "HomeFeatureOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "identity_not_verified",
+                  "membership_not_active"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "nextStep": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "view_verification",
+                  "view_membership"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nextstep"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "available",
+          "reason",
+          "nextStep"
+        ],
+        "title": "HomeFeatureOut",
+        "description": "Open, or locked with a plain reason and the next step to take (FR-HOME-008, BR-026)."
+      },
+      "HomeHubOut": {
+        "properties": {
+          "gnLabel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gnlabel",
+            "description": "The member's GN division, labelling the hub (FR-HOME-012)"
+          },
+          "services": {
+            "items": {
+              "$ref": "#/components/schemas/HomeFeatureOut"
+            },
+            "type": "array",
+            "title": "Services",
+            "description": "Eight services in this order; the party fund never comes first"
+          }
+        },
+        "type": "object",
+        "required": [
+          "gnLabel",
+          "services"
+        ],
+        "title": "HomeHubOut"
+      },
+      "HomeNextStepOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "correct_identity",
+              "submit_identity",
+              "event_soon",
+              "confirm_recovery_number",
+              "complete_profile"
+            ],
+            "title": "Kind"
+          },
+          "reviewRef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewref"
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventid"
+          },
+          "eventTitleEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventtitleen"
+          },
+          "eventTitleTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventtitleta"
+          },
+          "startsAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Startsat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "title": "HomeNextStepOut",
+        "description": "Exactly one (BR-025)."
+      },
+      "HomeOut": {
+        "properties": {
+          "layout": {
+            "type": "string",
+            "enum": [
+              "active",
+              "awaiting_review"
+            ],
+            "title": "Layout",
+            "description": "H01 only when identity is Verified and membership Active (FR-HOME-001)"
+          },
+          "displayName": {
+            "type": "string",
+            "title": "Displayname",
+            "description": "For the greeting; the app adds the time of day (FR-HOME-002)"
+          },
+          "districtName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Districtname"
+          },
+          "gnName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gnname"
+          },
+          "identityState": {
+            "type": "string",
+            "enum": [
+              "not_submitted",
+              "submitted",
+              "in_review",
+              "needs_update",
+              "verified",
+              "unable_to_verify"
+            ],
+            "title": "Identitystate"
+          },
+          "reviewRef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewref",
+            "description": "The VR reference for H02's status card (FR-HOME-006)"
+          },
+          "membershipState": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "active",
+              "suspended",
+              "inactive"
+            ],
+            "title": "Membershipstate"
+          },
+          "nextStep": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HomeNextStepOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "comingUp": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventSummaryOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The next event in the member's area (FR-HOME-005)"
+          },
+          "quickActions": {
+            "items": {
+              "$ref": "#/components/schemas/HomeFeatureOut"
+            },
+            "type": "array",
+            "title": "Quickactions",
+            "description": "Report issue, Volunteer, My area, Community (FR-HOME-004)"
+          },
+          "tabs": {
+            "items": {
+              "$ref": "#/components/schemas/HomeFeatureOut"
+            },
+            "type": "array",
+            "title": "Tabs",
+            "description": "Events, Card and Gallery, open or locked"
+          },
+          "hub": {
+            "$ref": "#/components/schemas/HomeHubOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "layout",
+          "displayName",
+          "districtName",
+          "gnName",
+          "identityState",
+          "reviewRef",
+          "membershipState",
+          "nextStep",
+          "comingUp",
+          "quickActions",
+          "tabs",
+          "hub"
+        ],
+        "title": "HomeOut"
+      },
+      "ManagedAlbumOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "albumRef": {
+            "type": "string",
+            "title": "Albumref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "events",
+              "community"
+            ],
+            "title": "Category"
+          },
+          "place": {
+            "type": "string",
+            "title": "Place"
+          },
+          "albumDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Albumdate"
+          },
+          "photoCount": {
+            "type": "integer",
+            "title": "Photocount"
+          },
+          "coverPhotoId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverphotoid"
+          },
+          "summaryEn": {
+            "type": "string",
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "type": "string",
+            "title": "Summaryta"
+          },
+          "publisher": {
+            "type": "string",
+            "title": "Publisher"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventid"
+          },
+          "eventTitleEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventtitleen"
+          },
+          "eventTitleTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventtitleta"
+          },
+          "photos": {
+            "items": {
+              "$ref": "#/components/schemas/GalleryPhotoOut"
+            },
+            "type": "array",
+            "title": "Photos"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "submitted",
+              "published"
+            ],
+            "title": "State"
+          },
+          "returnNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Returnnote"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "albumRef",
+          "titleEn",
+          "titleTa",
+          "category",
+          "place",
+          "albumDate",
+          "photoCount",
+          "coverPhotoId",
+          "summaryEn",
+          "summaryTa",
+          "publisher",
+          "areaKey",
+          "eventId",
+          "eventTitleEn",
+          "eventTitleTa",
+          "photos",
+          "state",
+          "returnNote",
+          "publishedAt"
+        ],
+        "title": "ManagedAlbumOut"
       },
       "ManagedEventOut": {
         "properties": {
@@ -8031,6 +10168,36 @@
         ],
         "title": "PhoneInput"
       },
+      "PhotoCaptionsIn": {
+        "properties": {
+          "captionEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Captionen"
+          },
+          "captionTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Captionta"
+          }
+        },
+        "type": "object",
+        "title": "PhotoCaptionsIn"
+      },
       "PlaceOut": {
         "properties": {
           "code": {
@@ -8207,6 +10374,54 @@
         "title": "PublicCardOut",
         "description": "What a shared public card may show (FR-CARD-012, BR-067): no QR, no identity numbers."
       },
+      "PublicRemovalRequestIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "appears_in_photo",
+              "safety",
+              "inaccurate",
+              "other"
+            ],
+            "title": "Reason"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Note",
+            "default": ""
+          },
+          "albumRef": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 4,
+            "title": "Albumref"
+          },
+          "photoNumber": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "minimum": 1.0,
+            "title": "Photonumber"
+          },
+          "contact": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 5,
+            "title": "Contact",
+            "description": "A phone number or address to send the outcome to"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason",
+          "albumRef",
+          "photoNumber",
+          "contact"
+        ],
+        "title": "PublicRemovalRequestIn",
+        "description": "FR-GAL-007, for someone who is not a member: the album reference (AL-…) and the photo's number."
+      },
       "QueueCountsOut": {
         "properties": {
           "awaitingReview": {
@@ -8229,6 +10444,136 @@
           "assignedToMe"
         ],
         "title": "QueueCountsOut"
+      },
+      "QueuedRemovalOut": {
+        "properties": {
+          "requestRef": {
+            "type": "string",
+            "title": "Requestref"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "removed",
+              "blurred",
+              "kept"
+            ],
+            "title": "State"
+          },
+          "handledBy": {
+            "type": "string",
+            "title": "Handledby",
+            "default": "Gallery takedown team (gallery.takedown)"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Dueat",
+            "description": "24 hours after the request (BR-070)"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "photoId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Photoid"
+          },
+          "albumId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Albumid"
+          },
+          "albumRef": {
+            "type": "string",
+            "title": "Albumref"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "appears_in_photo",
+              "safety",
+              "inaccurate",
+              "other"
+            ],
+            "title": "Reason"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "fromMember": {
+            "type": "boolean",
+            "title": "Frommember"
+          },
+          "contact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact",
+            "description": "Only for a request from someone who is not a member"
+          },
+          "escalated": {
+            "type": "boolean",
+            "title": "Escalated",
+            "description": "Open 18 hours or more: Tier 5 sees it"
+          }
+        },
+        "type": "object",
+        "required": [
+          "requestRef",
+          "state",
+          "createdAt",
+          "dueAt",
+          "decisionReason",
+          "decidedAt",
+          "id",
+          "photoId",
+          "albumId",
+          "albumRef",
+          "reason",
+          "note",
+          "fromMember",
+          "contact",
+          "escalated"
+        ],
+        "title": "QueuedRemovalOut"
       },
       "RecoveryCodeInput": {
         "properties": {
@@ -8481,6 +10826,124 @@
         ],
         "title": "RegistrationOut",
         "description": "The token is returned for mobile apps; browsers use the HttpOnly cookie."
+      },
+      "RemovalDecisionIn": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "remove",
+              "blur",
+              "keep"
+            ],
+            "title": "Decision"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision",
+          "reason"
+        ],
+        "title": "RemovalDecisionIn"
+      },
+      "RemovalReceiptOut": {
+        "properties": {
+          "requestRef": {
+            "type": "string",
+            "title": "Requestref"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "removed",
+              "blurred",
+              "kept"
+            ],
+            "title": "State"
+          },
+          "handledBy": {
+            "type": "string",
+            "title": "Handledby",
+            "default": "Gallery takedown team (gallery.takedown)"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Dueat",
+            "description": "24 hours after the request (BR-070)"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "requestRef",
+          "state",
+          "createdAt",
+          "dueAt",
+          "decisionReason",
+          "decidedAt"
+        ],
+        "title": "RemovalReceiptOut",
+        "description": "BR-028: the tracking reference, where the request stands and who handles it."
+      },
+      "RemovalRequestIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "appears_in_photo",
+              "safety",
+              "inaccurate",
+              "other"
+            ],
+            "title": "Reason"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Note",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "RemovalRequestIn"
       },
       "ReportInput": {
         "properties": {

@@ -2,7 +2,7 @@
 
 import uuid
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 
 from sqlalchemy import text
@@ -201,6 +201,21 @@ def published_events(
         my_response = values.pop("my_response")
         items.append(EventListItem(event=_event(values), my_response=my_response))
     return items
+
+
+def next_going_event(db: Session, member_id: uuid.UUID, now: datetime, within: timedelta) -> StoredEvent | None:
+    """The member's soonest published event they are going to, starting within the given time."""
+    row = db.execute(
+        text(
+            f"""{_SELECT}
+            JOIN events.rsvp r ON r.event_id = e.id AND r.member_id = :member AND r.response = 'going'
+            WHERE e.state = 'published' AND e.starts_at >= :now AND e.starts_at < :until
+            ORDER BY e.starts_at LIMIT 1
+            """
+        ),
+        {"member": member_id, "now": now, "until": now + within},
+    ).mappings().one_or_none()
+    return _event(row) if row else None
 
 
 def managed_events(

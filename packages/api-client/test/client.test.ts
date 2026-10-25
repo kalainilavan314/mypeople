@@ -309,3 +309,16 @@ test('events are listed with their filters and a response is put to the RSVP', a
   assert.deepEqual(JSON.parse(sent[1].body ?? ''), { response: 'maybe' });
 });
 
+test('a gallery photo is uploaded as its own bytes and shown from a URL on the API', async () => {
+  const { fetch, sent } = fakeFetch(201, { id: 'p1' });
+  const client = createApiClient({ baseUrl: 'https://api.example/', fetch });
+  const image = new Uint8Array([0xff, 0xd8, 0xff]).buffer;
+
+  await client.uploadAlbumPhoto('a 1', image, 'image/jpeg');
+
+  assert.equal(sent[0].url, 'https://api.example/v1/content/albums/a%201/photos');
+  assert.equal(sent[0].headers['Content-Type'], 'image/jpeg');
+  assert.equal(sent[0].body, image);
+  assert.equal(client.galleryPhotoUrl('p1', 'thumb'), 'https://api.example/v1/content/photos/p1/thumb');
+});
+
