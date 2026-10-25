@@ -1,7 +1,6 @@
 import { useWorkspaceText } from '@/shared/components/MemberWorkspace';
 import {
   BookOpen,
-  CalendarDays,
   ChevronRight,
   ClipboardList,
   CreditCard,
@@ -29,7 +28,6 @@ const quick: Service[] = [
   { to: '/skills', icon: HandHeart, en: 'Volunteer', ta: 'தன்னார்வம்' },
   { to: '/survey', icon: ClipboardList, en: 'Surveys', ta: 'கருத்துக்கணிப்புகள்' },
   { to: '/reports', icon: FileText, en: 'Report issue', ta: 'பிரச்சினை பதிவு' },
-  { to: '/events', icon: CalendarDays, en: 'Events', ta: 'நிகழ்வுகள்' },
   { to: '/community', icon: UsersRound, en: 'Community', ta: 'சமூகம்' },
 ];
 const more: Service[] = [
