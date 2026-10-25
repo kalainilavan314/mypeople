@@ -38,6 +38,7 @@ The rules every change must follow, and what is in place today. BRD references: 
 | Staff permissions (FastAPI) | Tier + explicit permissions + area per assignment (BRD §9); checked on the server for every request; refusals logged; revocations apply on the next request; an assignment whose 12-month review is overdue stops counting |
 | Granting (RB-02, RB-03, BR-083, BR-097) | Only holders of `roles.assign`, inside their own area, for tiers below their own; no self-assignment; the person's identity must be confirmed; preview before saving |
 | Separation of duties (RB-12) | Assistance decisions are refused alongside fundraising or election-roster rights in an overlapping area |
+| Identity evidence (FastAPI) | Images encrypted with AES-256-GCM, each bound to its document id, in a private directory; the database holds records only. Reviewers need `members.view_identity_evidence` over the member's area, never for their own record; each image opens through a link for one reviewer that expires after 5 minutes and still needs their session; the permission is checked again on every view. Links, views and refusals are audited; members see when (not who). No member download; uploads must be real JPEG, PNG or HEIC, at most 10 MB |
 | Audit log | `ops.audit_log`: append-only (database triggers) and hash-chained; regional auditors see only their region; grants, revocations and refused access are recorded with ids only |
 | Network | Firewall allows only 22, 80, 443; PostgreSQL listens on localhost |
 | Backups | Encrypted, off-server restic backups daily and before each release, integrity-checked |
@@ -52,7 +53,9 @@ The rules every change must follow, and what is in place today. BRD references: 
 | Membership "Active" is not modelled yet, so staff eligibility checks identity only (BR-097) | Membership module (OD-02) |
 | Notifying the person on grant or revocation; the quarterly access-review workflow (FR-AUTH-027) | Messaging and admin dashboard |
 | MFA for privileged staff | With the staff app and admin dashboard |
-| Private object storage with 5-minute signed URLs for identity evidence | Document-storage batch |
+| The identity vault in its own database and storage account with separate credentials and managed keys (INT-08, §13.8); a key-rotation tool. Today: own schema, encrypted files on `/srv/secure`, one key in the API's settings | Hosting decision (OD-20) |
+| Evidence opened only inside an open review (PRM-03); relatives of a reviewer (BR-085); the reviewer screen's watermark (FR-WEB-006) | Identity verification workflow, reviewer screen |
+| Selfies taken only with the live camera (FR-REG-014) is enforced by the app, not the API | Member app |
 | Retention periods for ID images, selfies and decisions | Waiting on OD-03 |
 | Express listens on all interfaces (`*:3001`); the firewall blocks it, binding to `127.0.0.1` would add a layer | Next deploy |
 | CI security scans (SAST, dependency, secret scanning) | CI batch |

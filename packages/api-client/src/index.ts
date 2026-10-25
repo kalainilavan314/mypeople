@@ -4,7 +4,7 @@
 // The types come from the API's OpenAPI document. src/schema.ts is generated
 // (npm run generate) and must not be edited by hand; after an API change,
 // re-export openapi.json and regenerate it, and CI checks that you did.
-import type { components } from './schema';
+import type { components, operations } from './schema';
 
 type Schemas = components['schemas'];
 export type HealthStatus = Schemas['HealthStatus'];
@@ -17,6 +17,12 @@ export type AssignmentPreview = Schemas['PreviewOut'];
 export type AccessCatalogue = Schemas['Catalogue'];
 export type AuditEntry = Schemas['AuditEntryOut'];
 export type AuditChainCheck = Schemas['ChainCheckOut'];
+export type IdentityDocument = Schemas['DocumentOut'];
+export type IdentityDocumentKind = IdentityDocument['kind'];
+/** JPEG, PNG or HEIC (FR-REG-010). */
+export type IdentityImageType = keyof operations['upload_my_document_v1_identity_me_documents__kind__put']['requestBody']['content'];
+export type EvidenceLink = Schemas['ViewLinkOut'];
+export type EvidenceView = Schemas['EvidenceViewOut'];
 
 /** A response other than 2xx. `code` is the API's error code, e.g. "invalid_credentials". */
 export class ApiError extends Error {
@@ -60,16 +66,17 @@ export interface AuditFilters {
 export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalThis.fetch }: ApiClientOptions) {
   const root = baseUrl.replace(/\/+$/, '');
 
-  async function request<T>(method: 'GET' | 'POST', path: string, body?: unknown): Promise<T> {
+  /** Sends `body` as JSON, or as it is when `rawType` names its media type (image uploads). */
+  async function request<T>(method: 'GET' | 'POST' | 'PUT', path: string, body?: unknown, rawType?: string): Promise<T> {
     const headers: Record<string, string> = { Accept: 'application/json' };
-    if (body !== undefined) headers['Content-Type'] = 'application/json';
+    if (body !== undefined) headers['Content-Type'] = rawType ?? 'application/json';
     const token = await getToken?.();
     if (token) headers.Authorization = `Bearer ${token}`;
 
     const response = await fetchImpl(`${root}${path}`, {
       method,
       headers,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: body === undefined ? undefined : rawType ? (body as BodyInit) : JSON.stringify(body),
       // Sends the session cookie when the dashboard and API are on different origins.
       credentials: 'include',
     });
@@ -104,6 +111,32 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     listAuditEntries: (filters: AuditFilters = {}) => request<AuditEntry[]>('GET', `/v1/audit${toQuery(filters)}`),
     /** Recomputes the audit hash chain. Needs audit.view with platform scope. */
     verifyAuditChain: () => request<AuditChainCheck>('GET', '/v1/audit/verify'),
+
+    /** Which identity images the server holds for the signed-in member; never the images (BR-021). */
+    getMyIdentityDocuments: () => request<IdentityDocument[]>('GET', '/v1/identity/me/documents'),
+    /**
+     * Uploads or replaces one identity image, at most 10 MB. The returned record is the server's
+     * acknowledgement: delete the device's copy after it (FR-REG-035). Throws ApiError
+     * "unsupported_type" (415), "too_large" (413) or "empty_file" (400).
+     */
+    uploadIdentityDocument: (kind: IdentityDocumentKind, image: Blob | ArrayBuffer, contentType: IdentityImageType) =>
+      request<IdentityDocument>('PUT', `/v1/identity/me/documents/${kind}`, image, contentType),
+    /** When reviewers viewed the member's identity evidence: date and role only (FR-AUTH-024). */
+    getMyEvidenceViews: () => request<EvidenceView[]>('GET', '/v1/identity/me/evidence-views'),
+    /** A member's identity images, without the images. Needs members.view_identity_evidence over their area. */
+    getMemberIdentityDocuments: (memberId: string) =>
+      request<IdentityDocument[]>('GET', `/v1/identity/members/${encodeURIComponent(memberId)}/documents`),
+    /**
+     * Opens one identity image for the caller alone, for 5 minutes, and logs it. Load `url` with the
+     * same session (cookie or Bearer header); the API refuses it after `expiresAt` or for anyone else.
+     */
+    openEvidence: async (documentId: string): Promise<EvidenceLink> => {
+      const link = await request<EvidenceLink>(
+        'POST',
+        `/v1/identity/documents/${encodeURIComponent(documentId)}/view-link`,
+      );
+      return { ...link, url: `${root}${link.url}` };
+    },
   };
 }
 

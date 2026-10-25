@@ -11,12 +11,13 @@ PostgreSQL 16 on the server (17 locally is fine). Production data lives on the e
 | `public` | `error_log` (Express 5xx errors), `schema_migrations` (Express ledger), `alembic_version` (Alembic) | Express, Alembic |
 | `access` | `staff_assignment`: a person's tier, area and explicit permissions, who granted it, review date, revocation | Alembic `0002` |
 | `ops` | `audit_log`: append-only and hash-chained; triggers refuse UPDATE, DELETE and TRUNCATE | Alembic `0002` |
+| `identity` | `identity_document`: one row per identity image version (kind, version, type, size, which key sealed it, `server_ack_at`); the images are encrypted files outside the database | Alembic `0003` |
 
-Sensitive columns: `npm.member.nic_hash` (peppered SHA-256, never the NIC itself) and `password_hash` (bcrypt). OTP codes are stored only as HMACs.
+Sensitive columns: `npm.member.nic_hash` (peppered SHA-256, never the NIC itself) and `password_hash` (bcrypt). OTP codes are stored only as HMACs. Identity images are never stored in the database: they are AES-256-GCM encrypted files in `EVIDENCE_STORAGE_DIR`, named by the `identity.identity_document` id, and backups must include that directory and, kept apart, `EVIDENCE_ENCRYPTION_KEY`.
 
 ## Migrations
 
-Two runners, one rule: **new schema changes are Alembic revisions only.** Revisions so far: `0001` baseline, `0002` staff access and the audit log.
+Two runners, one rule: **new schema changes are Alembic revisions only.** Revisions so far: `0001` baseline, `0002` staff access and the audit log, `0003` identity documents.
 
 - `server/migrations/0000`–`0011` are frozen. They built the schema before Alembic and are still applied by `npm run migrate --prefix server` on a new database.
 - Alembic revision `0001` (`services/api/alembic/versions/0001_baseline_express_schema.py`) is a no-op baseline that stands for those twelve files. `alembic/env.py` refuses every command, `stamp` included, while any of them is missing from the Express ledger, so a database that is behind can never be marked current.
@@ -28,7 +29,7 @@ Two runners, one rule: **new schema changes are Alembic revisions only.** Revisi
 | Existing database with all Express migrations, not yet under Alembic | `python -m alembic stamp 0001`, then `python -m alembic upgrade head` |
 | Existing database that is behind | `npm run migrate --prefix server`, then `python -m alembic stamp 0001` and `python -m alembic upgrade head` |
 | Database already under Alembic | `python -m alembic upgrade head` |
-| A schema change | `python -m alembic revision --rev-id 0003 -m "what changes"` (next free number), review `python -m alembic upgrade head --sql`, then upgrade |
+| A schema change | `python -m alembic revision --rev-id 0004 -m "what changes"` (next free number), review `python -m alembic upgrade head --sql`, then upgrade |
 
 Staff assignments are never deleted: revoking sets `state`, `ended_at`, `ended_by` and `end_reason`. Each audit entry stores the SHA-256 of the previous one; `GET /v1/audit/verify` recomputes the chain.
 

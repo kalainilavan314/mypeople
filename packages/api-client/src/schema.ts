@@ -245,6 +245,131 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/identity/me/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List My Documents
+         * @description Which identity images the server holds for the signed-in member (BR-020).
+         *     Members cannot download their images (BR-021, FR-PROF-007).
+         */
+        get: operations["list_my_documents_v1_identity_me_documents_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/me/documents/{kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Upload My Document
+         * @description Upload or replace one identity image; the body is the image itself (FR-REG-004, 005, 010).
+         *
+         *     The response is the server's acknowledgement: only acknowledged images
+         *     count (BR-020), and the app deletes its own copy after it (FR-REG-035).
+         */
+        put: operations["upload_my_document_v1_identity_me_documents__kind__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/me/evidence-views": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List My Evidence Views
+         * @description When a reviewer viewed the member's identity evidence: date and role only (FR-AUTH-024).
+         */
+        get: operations["list_my_evidence_views_v1_identity_me_evidence_views_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/members/{member_id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Member Documents
+         * @description A member's current identity images, without the images. Needs members.view_identity_evidence
+         *     over the member's area, and never for one's own record (BR-085).
+         */
+        get: operations["list_member_documents_v1_identity_members__member_id__documents_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/documents/{document_id}/view-link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create View Link
+         * @description Open one image: a link for the caller alone that expires after 5 minutes (FR-ARCH-007). Logged.
+         */
+        post: operations["create_view_link_v1_identity_documents__document_id__view_link_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/evidence/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * View Evidence
+         * @description The image behind a view link, for the reviewer it was issued to. Every view is logged (BR-086).
+         */
+        get: operations["view_evidence_v1_identity_evidence__token__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -367,6 +492,52 @@ export interface components {
             checked: number;
             /** Firstbrokenid */
             firstBrokenId: number | null;
+        };
+        /**
+         * DocumentOut
+         * @description An identity image the server holds (BR-020). Never the image itself.
+         */
+        DocumentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "nic_front" | "nic_back" | "passport_page" | "selfie";
+            /** Version */
+            version: number;
+            /** Contenttype */
+            contentType: string;
+            /** Bytesize */
+            byteSize: number;
+            /**
+             * Serverackat
+             * Format: date-time
+             */
+            serverAckAt: string;
+        };
+        /**
+         * EvidenceViewOut
+         * @description FR-AUTH-024: the date and the role, never the person.
+         */
+        EvidenceViewOut: {
+            /**
+             * Viewedat
+             * Format: date-time
+             */
+            viewedAt: string;
+            /** Kind */
+            kind: string;
+            /**
+             * Role
+             * @default identity_reviewer
+             * @constant
+             */
+            role: "identity_reviewer";
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -492,6 +663,19 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /**
+         * ViewLinkOut
+         * @description A path on this API that shows one image to the reviewer it was issued to, until expiresAt.
+         */
+        ViewLinkOut: {
+            /** Url */
+            url: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
         };
     };
     responses: never;
@@ -844,6 +1028,255 @@ export interface operations {
             };
             /** @description forbidden or platform_scope_required */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_my_documents_v1_identity_me_documents_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentOut"][];
+                };
+            };
+        };
+    };
+    upload_my_document_v1_identity_me_documents__kind__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: "nic_front" | "nic_back" | "passport_page" | "selfie";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "image/jpeg": string;
+                "image/png": string;
+                "image/heic": string;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentOut"];
+                };
+            };
+            /** @description empty_file */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description too_large (over 10 MB) */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description unsupported_type (JPEG, PNG or HEIC only) */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description evidence_storage_not_configured */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_my_evidence_views_v1_identity_me_evidence_views_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvidenceViewOut"][];
+                };
+            };
+        };
+    };
+    list_member_documents_v1_identity_members__member_id__documents_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                member_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentOut"][];
+                };
+            };
+            /** @description forbidden, own_record, outside_your_area, link_expired, link_invalid or link_not_yours */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_view_link_v1_identity_documents__document_id__view_link_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ViewLinkOut"];
+                };
+            };
+            /** @description forbidden, own_record, outside_your_area, link_expired, link_invalid or link_not_yours */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    view_evidence_v1_identity_evidence__token__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The image */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/jpeg": string;
+                    "image/png": string;
+                    "image/heic": string;
+                };
+            };
+            /** @description forbidden, own_record, outside_your_area, link_expired, link_invalid or link_not_yours */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description evidence_storage_not_configured */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

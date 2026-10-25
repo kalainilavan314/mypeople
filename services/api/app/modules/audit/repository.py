@@ -92,6 +92,15 @@ def list_entries(
     return [AuditEntry(**row) for row in rows]
 
 
+def entries_about_member(db: Session, *, action: str, member_id: uuid.UUID, limit: int) -> list[AuditEntry]:
+    """Newest first: entries of one action whose details name the member (details.memberId)."""
+    rows = db.execute(
+        text(f"{_SELECT} WHERE action = :action AND details->>'memberId' = :member_id ORDER BY id DESC LIMIT :limit"),
+        {"action": action, "member_id": str(member_id), "limit": limit},
+    ).mappings()
+    return [AuditEntry(**row) for row in rows]
+
+
 def all_entries_in_order(db: Session) -> Iterator[AuditEntry]:
     for row in db.execute(text(f"{_SELECT} ORDER BY id")).mappings():
         yield AuditEntry(**row)

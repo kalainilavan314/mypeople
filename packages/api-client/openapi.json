@@ -527,6 +527,360 @@
           }
         ]
       }
+    },
+    "/v1/identity/me/documents": {
+      "get": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "List My Documents",
+        "description": "Which identity images the server holds for the signed-in member (BR-020).\nMembers cannot download their images (BR-021, FR-PROF-007).",
+        "operationId": "list_my_documents_v1_identity_me_documents_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentOut"
+                  },
+                  "type": "array",
+                  "title": "Response List My Documents V1 Identity Me Documents Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/identity/me/documents/{kind}": {
+      "put": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "Upload My Document",
+        "description": "Upload or replace one identity image; the body is the image itself (FR-REG-004, 005, 010).\n\nThe response is the server's acknowledgement: only acknowledged images\ncount (BR-020), and the app deletes its own copy after it (FR-REG-035).",
+        "operationId": "upload_my_document_v1_identity_me_documents__kind__put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "nic_front",
+                "nic_back",
+                "passport_page",
+                "selfie"
+              ],
+              "type": "string",
+              "title": "Kind"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "empty_file"
+          },
+          "413": {
+            "description": "too_large (over 10 MB)"
+          },
+          "415": {
+            "description": "unsupported_type (JPEG, PNG or HEIC only)"
+          },
+          "503": {
+            "description": "evidence_storage_not_configured"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/heic": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/me/evidence-views": {
+      "get": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "List My Evidence Views",
+        "description": "When a reviewer viewed the member's identity evidence: date and role only (FR-AUTH-024).",
+        "operationId": "list_my_evidence_views_v1_identity_me_evidence_views_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EvidenceViewOut"
+                  },
+                  "type": "array",
+                  "title": "Response List My Evidence Views V1 Identity Me Evidence Views Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/identity/members/{member_id}/documents": {
+      "get": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "List Member Documents",
+        "description": "A member's current identity images, without the images. Needs members.view_identity_evidence\nover the member's area, and never for one's own record (BR-085).",
+        "operationId": "list_member_documents_v1_identity_members__member_id__documents_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Member Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentOut"
+                  },
+                  "title": "Response List Member Documents V1 Identity Members  Member Id  Documents Get"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record, outside_your_area, link_expired, link_invalid or link_not_yours"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/documents/{document_id}/view-link": {
+      "post": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "Create View Link",
+        "description": "Open one image: a link for the caller alone that expires after 5 minutes (FR-ARCH-007). Logged.",
+        "operationId": "create_view_link_v1_identity_documents__document_id__view_link_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ViewLinkOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record, outside_your_area, link_expired, link_invalid or link_not_yours"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/evidence/{token}": {
+      "get": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "View Evidence",
+        "description": "The image behind a view link, for the reviewer it was issued to. Every view is logged (BR-086).",
+        "operationId": "view_evidence_v1_identity_evidence__token__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 1000,
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The image",
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/heic": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record, outside_your_area, link_expired, link_invalid or link_not_yours"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "503": {
+            "description": "evidence_storage_not_configured"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -874,6 +1228,79 @@
           "firstBrokenId"
         ],
         "title": "ChainCheckOut"
+      },
+      "DocumentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "nic_front",
+              "nic_back",
+              "passport_page",
+              "selfie"
+            ],
+            "title": "Kind"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "contentType": {
+            "type": "string",
+            "title": "Contenttype"
+          },
+          "byteSize": {
+            "type": "integer",
+            "title": "Bytesize"
+          },
+          "serverAckAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Serverackat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "version",
+          "contentType",
+          "byteSize",
+          "serverAckAt"
+        ],
+        "title": "DocumentOut",
+        "description": "An identity image the server holds (BR-020). Never the image itself."
+      },
+      "EvidenceViewOut": {
+        "properties": {
+          "viewedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Viewedat"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "role": {
+            "type": "string",
+            "const": "identity_reviewer",
+            "title": "Role",
+            "default": "identity_reviewer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "viewedAt",
+          "kind"
+        ],
+        "title": "EvidenceViewOut",
+        "description": "FR-AUTH-024: the date and the role, never the person."
       },
       "HTTPValidationError": {
         "properties": {
@@ -1249,6 +1676,26 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "ViewLinkOut": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiresat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url",
+          "expiresAt"
+        ],
+        "title": "ViewLinkOut",
+        "description": "A path on this API that shows one image to the reviewer it was issued to, until expiresAt."
       }
     },
     "securitySchemes": {

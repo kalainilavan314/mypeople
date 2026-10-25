@@ -45,6 +45,20 @@ def area_path(db: Session, area: Area) -> AreaPath | None:
     return (PLATFORM, *(Area(level, code) for level, code in zip(_LEVELS_FROM_PROVINCE, row)))
 
 
+def member_area_path(db: Session, member_id: uuid.UUID) -> AreaPath:
+    """The area a member's records belong to: their GN division, or the closest
+    level they gave. A member with no known area is platform-only, so only
+    staff with platform scope can act on their records."""
+    row = db.execute(
+        text("SELECT gs_code, ds_code, district_code FROM npm.member WHERE id = :id"), {"id": member_id}
+    ).one_or_none()
+    if row is not None:
+        for level, code in (("gn", row.gs_code), ("ds", row.ds_code), ("district", row.district_code)):
+            if code and (path := area_path(db, Area(level, code))):
+                return path
+    return (PLATFORM,)
+
+
 @dataclass(frozen=True)
 class StoredAssignment:
     id: uuid.UUID

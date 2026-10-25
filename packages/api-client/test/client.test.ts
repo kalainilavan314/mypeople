@@ -168,3 +168,31 @@ test('audit filters become query parameters', async () => {
   assert.equal(sent[0].url, 'https://api.example/v1/audit?action=access.denied&before_id=40&limit=20');
   assert.equal(sent[1].url, 'https://api.example/v1/audit');
 });
+
+test('an identity image is sent as it is, with its own media type', async () => {
+  const document = { id: 'd1', kind: 'nic_front', version: 1, contentType: 'image/jpeg', byteSize: 3, serverAckAt: '2026-10-25T00:00:00Z' };
+  const { fetch, sent } = fakeFetch(201, document);
+  const image = new Blob([new Uint8Array([0xff, 0xd8, 0xff])], { type: 'image/jpeg' });
+
+  const acknowledged = await createApiClient({ baseUrl: 'https://api.example', fetch }).uploadIdentityDocument(
+    'nic_front',
+    image,
+    'image/jpeg',
+  );
+
+  assert.deepEqual(acknowledged, document);
+  assert.equal(sent[0].url, 'https://api.example/v1/identity/me/documents/nic_front');
+  assert.equal(sent[0].method, 'PUT');
+  assert.equal(sent[0].headers['Content-Type'], 'image/jpeg');
+  assert.equal(sent[0].body as unknown, image);
+});
+
+test('openEvidence returns an absolute link on the API', async () => {
+  const { fetch, sent } = fakeFetch(200, { url: '/v1/identity/evidence/abc.def.ghi', expiresAt: '2026-10-25T00:05:00Z' });
+
+  const link = await createApiClient({ baseUrl: 'https://api.example/', fetch }).openEvidence('d1');
+
+  assert.equal(sent[0].url, 'https://api.example/v1/identity/documents/d1/view-link');
+  assert.equal(sent[0].method, 'POST');
+  assert.deepEqual(link, { url: 'https://api.example/v1/identity/evidence/abc.def.ghi', expiresAt: '2026-10-25T00:05:00Z' });
+});

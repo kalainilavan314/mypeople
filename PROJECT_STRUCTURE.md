@@ -435,6 +435,7 @@ services/api/
     versions/
       0001_baseline_express_schema.py
       0002_access_and_audit.py
+      0003_identity_documents.py
   app/
     __init__.py
     main.py
@@ -482,6 +483,16 @@ services/api/
         router.py
         schemas.py
         service.py
+      identity/
+        __init__.py
+        dependencies.py
+        images.py
+        links.py
+        repository.py
+        router.py
+        schemas.py
+        service.py
+        vault.py
   tests/
     conftest.py
     express/
@@ -497,6 +508,8 @@ services/api/
     test_express_baseline.py
     test_express_compat.py
     test_health.py
+    test_identity_api.py
+    test_identity_vault.py
     test_members_me.py
     test_origin_check.py
     test_security.py

@@ -6,6 +6,9 @@ started from that folder. The real .env is never committed; .env.example lists
 the names.
 """
 
+import base64
+import binascii
+from pathlib import Path
 from typing import Annotated, Literal, Self
 
 from pydantic import SecretStr, field_validator, model_validator
@@ -37,12 +40,39 @@ class Settings(BaseSettings):
     # Express API's ALLOWED_ORIGINS (comma-separated). Empty means same-origin only.
     allowed_origins: Annotated[list[str], NoDecode] = []
 
+    # Identity evidence (NIC images, selfies) is kept as encrypted files in this
+    # private directory, outside any web root; in production on the encrypted
+    # /srv/secure volume. Set both values or neither: without them the
+    # identity document endpoints answer 503.
+    evidence_storage_dir: Path | None = None
+    # 32 random bytes, base64-encoded. Encrypts every evidence file. Losing it
+    # makes every stored image unreadable, so it is backed up apart from the files.
+    evidence_encryption_key: SecretStr | None = None
+
     @field_validator("allowed_origins", mode="before")
     @classmethod
     def split_comma_separated(cls, value: object) -> object:
         if isinstance(value, str):
             return [origin.strip() for origin in value.split(",") if origin.strip()]
         return value
+
+    @field_validator("evidence_encryption_key")
+    @classmethod
+    def key_is_32_bytes(cls, value: SecretStr | None) -> SecretStr | None:
+        if value is not None:
+            try:
+                key = base64.b64decode(value.get_secret_value(), validate=True)
+            except binascii.Error:
+                key = b""
+            if len(key) != 32:
+                raise ValueError("EVIDENCE_ENCRYPTION_KEY must be 32 bytes, base64-encoded")
+        return value
+
+    @model_validator(mode="after")
+    def evidence_settings_together(self) -> Self:
+        if (self.evidence_storage_dir is None) != (self.evidence_encryption_key is None):
+            raise ValueError("set EVIDENCE_STORAGE_DIR and EVIDENCE_ENCRYPTION_KEY together")
+        return self
 
     @model_validator(mode="after")
     def refuse_dev_secrets_in_production(self) -> Self:
@@ -60,3 +90,9 @@ class Settings(BaseSettings):
     def secure_cookies(self) -> bool:
         """Cookies need HTTPS everywhere except local development."""
         return self.app_env != "development"
+
+    @property
+    def evidence_key(self) -> bytes | None:
+        if self.evidence_encryption_key is None:
+            return None
+        return base64.b64decode(self.evidence_encryption_key.get_secret_value())

@@ -93,6 +93,10 @@ def list_entries(
     )
 
 
+def entries_about_member(db: Session, *, action: str, member_id: uuid.UUID, limit: int = 500) -> list[AuditEntry]:
+    return repository.entries_about_member(db, action=action, member_id=member_id, limit=limit)
+
+
 @dataclass(frozen=True)
 class ChainCheck:
     ok: bool

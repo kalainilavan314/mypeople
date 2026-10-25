@@ -6,6 +6,8 @@ fixture built on it): it reads DATABASE_URL, JWT_SECRET and NIC_PEPPER
 (environment first, then services/api/.env) and skips the test when no
 database is configured. CI always provides one. Those tests run inside one
 transaction that is rolled back afterwards, so nothing they write remains.
+Staff tests build on `area` (a real GN division and the areas above it),
+`assign` (inserts an assignment), `auth` (a Bearer header) and `super_admin`.
 
 Tests that compare behaviour with the Express API take `express_auth`, which
 runs server/src code through tests/express/auth_helpers.mjs. They are skipped
@@ -27,9 +29,10 @@ from sqlalchemy import Row, text
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
-from app.core.security import hash_password, nic_hash
+from app.core.security import hash_password, nic_hash, sign_session_token
 from app.db.session import create_database_engine, get_db
 from app.main import create_app
+from app.modules.access.permissions import default_permissions
 
 # Nothing listens on port 1, so "database down" tests fail fast.
 UNREACHABLE_DATABASE_URL = "postgresql://nobody@127.0.0.1:1/unreachable"
@@ -115,6 +118,65 @@ def create_member(db_session: Session, database_settings: Settings) -> Callable[
         ).one()
 
     return create
+
+
+@pytest.fixture
+def area(db_session) -> Row:
+    """A real GN division and the DS division, district and province above it."""
+    return db_session.execute(
+        text(
+            """
+            SELECT d.province_code AS province, ds.district_code AS district, ds.ds_code AS ds, g.gn_code AS gn
+            FROM geo.gn_division g
+            JOIN geo.ds_division ds ON ds.ds_code = g.ds_code
+            JOIN geo.district d ON d.district_code = ds.district_code
+            ORDER BY g.gn_code LIMIT 1
+            """
+        )
+    ).one()
+
+
+@pytest.fixture
+def assign(db_session) -> Callable[..., str]:
+    """Insert an assignment directly, as a test set-up step."""
+
+    def insert(member, tier, level, code, permissions, granted_by=None, review_due_at=None) -> str:
+        return str(
+            db_session.scalar(
+                text(
+                    """
+                    INSERT INTO access.staff_assignment (member_id, tier, area_level, area_code, permissions,
+                                                         granted_by, review_due_at)
+                    VALUES (:member_id, :tier, :level, :code, :permissions, :granted_by, :review_due_at)
+                    RETURNING id
+                    """
+                ),
+                {
+                    "member_id": member.id,
+                    "tier": tier,
+                    "level": level,
+                    "code": code,
+                    "permissions": sorted(permissions),
+                    "granted_by": granted_by.id if granted_by else None,
+                    "review_due_at": review_due_at,
+                },
+            )
+        )
+
+    return insert
+
+
+@pytest.fixture
+def auth(database_settings: Settings) -> Callable[[Row], dict[str, str]]:
+    secret = database_settings.jwt_secret.get_secret_value()
+    return lambda member: {"Authorization": f"Bearer {sign_session_token(member.id, member.session_version, secret)}"}
+
+
+@pytest.fixture
+def super_admin(create_member, assign) -> Row:
+    member = create_member(verified=True)
+    assign(member, "5", "platform", None, [*default_permissions("5"), "members.verify"])
+    return member
 
 
 @pytest.fixture

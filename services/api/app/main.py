@@ -21,6 +21,8 @@ from app.db.session import create_database_engine
 from app.modules.access import router as access
 from app.modules.audit import router as audit
 from app.modules.auth import router as auth
+from app.modules.identity import router as identity
+from app.modules.identity.dependencies import build_vault
 from app.modules.membership import router as membership
 
 API_VERSION = "0.1.0"
@@ -54,11 +56,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     app.state.settings = settings
     app.state.session_factory = sessionmaker(bind=engine, expire_on_commit=False)
+    app.state.evidence_vault = build_vault(settings)
     app.include_router(health.router)
     app.include_router(auth.router)
     app.include_router(membership.router)
     app.include_router(access.router)
     app.include_router(audit.router)
+    app.include_router(identity.router)
 
     # The middleware added last runs first, so the security headers are also
     # set on the 403 that the origin check returns.

@@ -24,7 +24,6 @@ Writes that carry the session cookie and come from another website are refused w
 | `POST /v1/auth/sign-in` body `{nic, password}` | no | `200 {token, member}` and the session cookie | `401 invalid_credentials`, `429 too_many_attempts` with `Retry-After`, `422` invalid body |
 | `POST /v1/auth/sign-out` | optional | `204`, cookie cleared, all sessions ended | `403 csrf_origin_mismatch` |
 | `GET /v1/members/me` | yes | `200` member profile (camelCase) | `401 unauthorized`, `401 session_expired` |
-
 | `GET /v1/access/me` | yes | `200` the caller's staff assignments that count now (empty for members) | `401` |
 | `GET /v1/access/catalogue` | `roles.assign` | `200` tiers, their area levels and the permission matrix | `403 forbidden` |
 | `POST /v1/access/assignments/preview` body `{memberId, tier, area, permissions}` | `roles.assign` | `200 {allowed, problems, reviewDueAt}`, nothing saved | `403 forbidden` |
@@ -32,10 +31,16 @@ Writes that carry the session cookie and come from another website are refused w
 | `POST /v1/access/assignments/{id}/revoke` body `{reason}` | `roles.assign` | `200` assignment, now `revoked` | `403`, `404 not_found` |
 | `GET /v1/audit?actor_id&action&before_id&limit` | `audit.view` | `200` entries, newest first; a regional auditor sees only their region | `403 forbidden` |
 | `GET /v1/audit/verify` | `audit.view` at platform scope | `200 {ok, checked, firstBrokenId}` | `403 platform_scope_required` |
+| `GET /v1/identity/me/documents` | yes | `200` the member's current identity images: `{id, kind, version, contentType, byteSize, serverAckAt}`, never the image | `401` |
+| `PUT /v1/identity/me/documents/{kind}`, body = the image, `Content-Type: image/jpeg`, `image/png` or `image/heic` | yes | `201` the new version (the server's acknowledgement) | `400 empty_file`, `413 too_large`, `415 unsupported_type`, `503 evidence_storage_not_configured` |
+| `GET /v1/identity/me/evidence-views` | yes | `200 [{viewedAt, kind, role: "identity_reviewer"}]`, newest first | `401` |
+| `GET /v1/identity/members/{memberId}/documents` | `members.view_identity_evidence` over the member's area | `200` the member's current identity images, without the images | `403 forbidden`, `own_record`, `outside_your_area`; `404 not_found` |
+| `POST /v1/identity/documents/{documentId}/view-link` | as above | `200 {url, expiresAt}`: a path for this reviewer only, valid 5 minutes | as above |
+| `GET /v1/identity/evidence/{token}` | the same reviewer's session, and as above | `200` the image, shown inline, never cached | `403 link_expired`, `link_invalid`, `link_not_yours`, `forbidden`, `outside_your_area`; `404`; `500 evidence_unreadable` |
 
 Error bodies are `{"detail": "<code>"}`, or for a refused assignment `{"detail": {"code": "assignment_refused", "problems": [...]}}`. Problem codes: `unknown_member`, `self_assignment`, `identity_not_verified`, `tier_5_by_bootstrap_only`, `area_does_not_match_tier`, `unknown_area`, `no_permissions`, `unknown_permission:<p>`, `permission_not_for_tier:<p>`, `outside_your_area`, `tier_not_below_yours`, `permission_not_held:<p>`, `separation_of_duties`, `own_assignment`.
 
-Every refused permission check is written to the audit log as `access.denied`.
+Every refused permission check is written to the audit log as `access.denied`. Identity uploads (`identity.document.uploaded`), view links (`identity.evidence.link_issued`) and every view (`identity.evidence.viewed`) are logged too. `kind` is one of `nic_front`, `nic_back`, `passport_page`, `selfie`.
 
 Sign-in throttling (shared with Express): failures are counted per NIC hash and client IP over 15 minutes. From 5 failures each attempt waits 0.4 s more (up to 2 s); from 10, attempts are refused for 15 minutes.
 
