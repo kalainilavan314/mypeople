@@ -135,6 +135,13 @@
   line-height: 1.2;
 }
 
+.profile-page .profile-contact {
+  font-size: .8125rem;
+  color: var(--profile-muted, #60708a);
+  margin: 2px 0 0;
+  line-height: 1.4;
+}
+
 .profile-page .profile-id-copy-wrap {
   position: relative;
   display: inline-flex;
@@ -197,6 +204,14 @@
   border-color: #0f172a transparent transparent transparent;
 }
 
+.profile-page .profile-copy-floating-tooltip--error {
+  background: var(--error);
+}
+
+.profile-page .profile-copy-floating-tooltip--error::after {
+  border-color: var(--error) transparent transparent transparent;
+}
+
 @keyframes tooltipFadePop {
   from {
     opacity: 0;
@@ -231,8 +246,9 @@
   align-self: flex-start;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
-  min-height: 30px;
+  min-height: 44px;
   padding: 5px 12px;
   border-radius: 999px;
   border: 1.5px solid #3b82f6;
@@ -379,24 +395,22 @@ button.profile-status-chip:hover {
   padding: 12px 18px;
   margin-top: 22px;
   margin-bottom: 24px;
-  border: 1px solid #dc2626;
+  border: 1px solid var(--error);
   border-radius: 12px;
-  background: #dc2626;
+  background: var(--error);
   color: #ffffff;
   font: 600 .9375rem/1.4 var(--font-ui);
   cursor: pointer;
-  box-shadow: 0 3px 12px rgba(220, 38, 38, 0.28);
-  transition: background-color 150ms ease, border-color 150ms ease, transform 120ms ease, box-shadow 150ms ease;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+  transition: background-color 150ms ease, border-color 150ms ease, transform 120ms ease, box-shadow 150ms ease, filter 150ms ease;
 }
 .profile-page .profile-account-logout:hover {
-  background: #b91c1c;
-  border-color: #b91c1c;
-  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.38);
+  filter: brightness(0.9);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.24);
 }
 .profile-page .profile-account-logout:active {
   transform: scale(0.98);
-  background: #991b1b;
-  border-color: #991b1b;
+  filter: brightness(0.8);
 }
 .profile-page .profile-account-logout:focus-visible {
   outline: 3px solid rgba(220, 38, 38, 0.45);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ServerMember } from '@/core/api/auth/models';
 import { tierDef } from '@/core/theme/tiers';
 import { NetImage } from '@/shared/components/nn';
@@ -31,10 +31,20 @@ export function ProfileSection({
   onOpenVerification,
 }: Props) {
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
+  const copyResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (copyResetTimer.current) clearTimeout(copyResetTimer.current);
+    },
+    [],
+  );
 
   const handleCopyCode = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!code || code === '—') return;
+    if (copyResetTimer.current) clearTimeout(copyResetTimer.current);
     try {
       if (navigator?.clipboard?.writeText) {
         await navigator.clipboard.writeText(code);
@@ -49,9 +59,14 @@ export function ProfileSection({
         document.body.removeChild(textArea);
       }
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setCopyFailed(false);
+      copyResetTimer.current = setTimeout(() => setCopied(false), 2000);
     } catch {
-      // ignore copy error
+      // Clipboard access can be denied (embedded webview, permissions) — tell
+      // the member instead of letting them believe the copy silently worked.
+      setCopied(false);
+      setCopyFailed(true);
+      copyResetTimer.current = setTimeout(() => setCopyFailed(false), 2000);
     }
   };
 
@@ -148,9 +163,18 @@ export function ProfileSection({
                   {t('profile.copied', 'Copied!')}
                 </span>
               )}
+              {copyFailed && (
+                <span
+                  className="profile-copy-floating-tooltip profile-copy-floating-tooltip--error"
+                  role="status"
+                >
+                  {t('profile.copyFailed', "Couldn't copy")}
+                </span>
+              )}
             </div>
           </div>
 
+          {me.phone && <p className="profile-contact">{me.phone}</p>}
 
           <div className="profile-tier-pill">
             <svg
