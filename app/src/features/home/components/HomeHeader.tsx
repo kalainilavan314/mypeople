@@ -11,6 +11,8 @@ type Props = {
 export function HomeHeader({ name, avatarUrl, search, onSearch }: Props) {
   const t = useWorkspaceText();
   const greeting = t('Welcome,', 'வணக்கம்,');
+  const trimmedName = name.trim();
+  const displayName = trimmedName && !trimmedName.endsWith('!') ? `${trimmedName}!` : trimmedName;
   return (
     <header className="home-header">
       <div className="home-header-row">
@@ -32,7 +34,7 @@ export function HomeHeader({ name, avatarUrl, search, onSearch }: Props) {
         </Link>
         <div className="home-greeting">
           <span className="home-brand">{greeting}</span>
-          <h1>{name.endsWith('!') ? name : `${name}!`}</h1>
+          <h1>{displayName}</h1>
         </div>
         <div className="home-header-controls">
           <Link to="/notifications" aria-label={t('Notifications', 'அறிவிப்புகள்')}>
