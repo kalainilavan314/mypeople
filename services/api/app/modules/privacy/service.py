@@ -29,6 +29,7 @@ from app.modules.auth import throttle
 from app.modules.identity.recovery import repository as contacts
 from app.modules.identity.recovery import rules as code_rules
 from app.modules.identity.recovery import service as recovery
+from app.modules.messaging.notifications import service as notifications
 from app.modules.privacy import repository, rules
 from app.modules.privacy.repository import StoredRequest
 
@@ -134,6 +135,7 @@ def close(
     if request.kind == "closure" and outcome == "completed":
         repository.close_account(db, request.member_id)
     repository.close(db, request.id, state=outcome, outcome_note=note, handled_by=staff.member_id)
+    notifications.notify(db, request.member_id, "privacy_answered", request.id)
     _record(db, staff.member_id, f"privacy.request.{outcome}", request, ip)
     db.commit()
     closed = repository.find(db, request.id)

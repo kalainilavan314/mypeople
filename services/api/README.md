@@ -27,6 +27,8 @@ Current scope:
 | `POST /v1/auth/password` | a new password, only with the current one |
 | `POST /v1/privacy/closure-code`, `POST /v1/privacy/requests`, `GET /v1/privacy/requests/mine` | data-subject requests: a copy of one's data, or closing the account |
 | `GET /v1/privacy/requests`, `POST .../{id}/decision` | the DPO register; needs `privacy.requests.handle` |
+| `GET /v1/notifications`, `POST .../{id}/read`, `POST .../read-all`, `GET`/`PUT .../choices`, `POST .../devices`, `.../devices/unregister` | the in-app inbox (All, Action needed), channel choices and quiet hours, push devices |
+| `GET`/`POST /v1/notifications/broadcasts`, `PATCH .../{id}`, `POST .../preview`, `.../submit`, `.../approve`, `.../cancel` | staff broadcasts; need `notifications.send` over the area |
 | `GET /v1/home` | the Home tab: H01 or H02, one next step, the next event nearby, open and locked features with reasons, the hub |
 | `GET /v1/content/albums`, `GET /v1/content/albums/{id}`, `GET /v1/content/photos/{id}/{thumb\|display}` | the gallery for members: published albums, album detail, the photos |
 | `POST /v1/content/photos/{id}/removal-requests`, `GET /v1/content/removal-requests/mine`, `POST /v1/content/removal-requests/public` | photo removal requests with receipts, for members and, through a public form, for people who are not |
@@ -220,6 +222,43 @@ Not built yet: wallet passes (INT-03, OD-06), the offline credential and
 offline scanning (OD-08) and milestones. Event passes are their own codes
 (see Events). The live PWA still uses Express's 10-minute card token,
 which carries the member id, and shows it only for an official card.
+
+## Notifications (BRD H03, P05, S14, GAP-05; FR-HOME-009 to 011, FR-REG-021, FR-ADM-007, FR-STF-009, FR-PROF-012)
+
+- **Outbox.** A module adds a notice inside its own transaction, so the
+  notice and the change it reports are saved together (AP-08): identity
+  decisions and appeals (FR-REG-021), membership changes, event changes and
+  cancellations, area-change, photo-removal and data-request outcomes.
+  Wording comes from fixed bilingual templates whose titles name no person,
+  number or case (FR-MSG-007, INT-02).
+- **Inbox (H03).** All or Action needed, newest first, with topic chips and
+  unread and action-needed counts. Each item names what it opens (BR-027);
+  reading never clears Action needed, which ends when the task is done (a
+  correction resubmitted, a removal request decided).
+- **Choices (P05).** Push and SMS per topic; account and review notices
+  cannot be turned off (refused, not ignored). Quiet hours (local time, may
+  cross midnight) hold non-urgent pushes until they end (FR-STF-009).
+- **Push.** Behind `app/integrations/push.py` (`PUSH_PROVIDER=none` or
+  `development`; FCM and APNs credentials are not issued, INT-02). A push
+  carries the short bilingual title and the notice's id only. Tokens move to
+  whoever signs in on the device last; a token the service rejects is
+  retired. Without a provider or a device, the inbox is the fallback
+  (FR-MSG-008).
+- **Broadcasts (GAP-05).** A `notifications.send` holder writes a bilingual
+  announcement or emergency for an area inside their scope (another area is
+  refused, BR-083), previews how many members it reaches, and schedules it.
+  A text with an ID number is refused (BR-145). Wider than a district, a
+  Tier 4 or 5 holder over the area who did not submit it approves first (an
+  assumption on who approves). Emergencies are urgent and ignore quiet hours.
+- **Dispatcher.** `python -m app.tasks.notifications` sends due broadcasts,
+  alerts Tier 5 once about photo removal requests open 18 hours
+  (FR-ADM-006), and pushes pending notices; a timer runs it every minute
+  once the API is deployed. Row locks with SKIP LOCKED keep two runs from
+  sending twice.
+
+Not built yet: SMS and WhatsApp notices and STOP replies (INT-01, INT-14;
+no vendors), staff alerts for new queue items, and the 24-hour event
+reminder (now possible from the dispatcher).
 
 ## Profile and data-subject rights (BRD P01 to P06; FR-PROF-001 to 006, 009, 010, 014, 017 to 019)
 
@@ -593,6 +632,7 @@ Settings are read from environment variables, falling back to `services/api/.env
 | `EVIDENCE_STORAGE_DIR` | private directory (optional) | Where encrypted identity images are kept; production uses the encrypted `/srv/secure` volume |
 | `EVIDENCE_ENCRYPTION_KEY` | 32 bytes, base64 (optional, with the directory) | Encrypts every identity image; keep a copy apart from the files |
 | `MEDIA_STORAGE_DIR` | directory (optional) | Where gallery photos are kept as WebP files; back it up with the database |
+| `PUSH_PROVIDER` | `none` (default), `development` | How notices are pushed; `development` keeps pushes in memory and is refused outside development |
 
 ## Layout
 
@@ -625,6 +665,10 @@ app/
   modules/home/       the Home tab: layout, next step, locks, hub
   modules/profile/    the member's profile, My Activity, survey answers; area_changes/ GN moves
   modules/privacy/    data-subject requests and the DPO register
+  modules/messaging/notifications/  the inbox, choices, devices and push delivery
+  modules/messaging/broadcasts/     staff broadcasts by area
+  integrations/push.py  the push interface (no provider yet)
+  tasks/notifications.py  the dispatcher, run every minute
   modules/content/gallery/  albums, photos (re-encoded WebP), removal requests
   core/rotating_codes.py  60-second signed QR codes (member card, event pass)
   modules/<households, assistance, community, events, engagement, finance, content, messaging, ai>/

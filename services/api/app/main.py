@@ -19,12 +19,15 @@ from app.core.config import Settings
 from app.core.middleware import add_security_headers, cors_options, refuse_cross_origin_writes
 from app.db.session import create_database_engine
 from app.integrations.sms import build_sms
+from app.integrations.push import build_push
 from app.modules.access import router as access
 from app.modules.audit import router as audit
 from app.modules.content.gallery import router as gallery
 from app.modules.content.gallery.dependencies import build_media_store
 from app.modules.events import router as events
 from app.modules.home import router as home
+from app.modules.messaging.broadcasts import router as broadcasts
+from app.modules.messaging.notifications import router as notifications
 from app.modules.privacy import router as privacy
 from app.modules.profile import router as profile
 from app.modules.profile.area_changes import router as area_changes
@@ -74,6 +77,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.evidence_vault = build_vault(settings)
     app.state.media_store = build_media_store(settings)
     app.state.sms = build_sms(settings)
+    app.state.push = build_push(settings)
     app.include_router(health.router)
     app.include_router(auth.router)
     app.include_router(membership.router)
@@ -94,6 +98,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(profile.router)
     app.include_router(area_changes.router)
     app.include_router(privacy.router)
+    app.include_router(broadcasts.router)
+    app.include_router(notifications.router)
 
     # The middleware added last runs first, so the security headers are also
     # set on the 403 that the origin check returns.

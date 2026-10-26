@@ -6649,6 +6649,799 @@
           }
         }
       }
+    },
+    "/v1/notifications/broadcasts": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "List Broadcasts",
+        "description": "Broadcasts in the caller's areas, newest first.",
+        "operationId": "list_broadcasts_v1_notifications_broadcasts_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "draft",
+                      "pending_approval",
+                      "scheduled",
+                      "sent",
+                      "cancelled"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BroadcastOut"
+                  },
+                  "title": "Response List Broadcasts V1 Notifications Broadcasts Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Create Broadcast",
+        "description": "A bilingual draft for an area inside the caller's own scope (FR-ADM-007, BR-083).",
+        "operationId": "create_broadcast_v1_notifications_broadcasts_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BroadcastCreateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BroadcastOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "broadcast_invalid"
+          }
+        }
+      }
+    },
+    "/v1/notifications/broadcasts/{broadcast_id}": {
+      "patch": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Update Broadcast",
+        "operationId": "update_broadcast_v1_notifications_broadcasts__broadcast_id__patch",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "broadcast_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Broadcast Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BroadcastUpdateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BroadcastOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state>"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notifications/broadcasts/{broadcast_id}/preview": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Preview Broadcast",
+        "description": "How many members it reaches and anything that would stop it, before sending.",
+        "operationId": "preview_broadcast_v1_notifications_broadcasts__broadcast_id__preview_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "broadcast_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Broadcast Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BroadcastPreviewOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notifications/broadcasts/{broadcast_id}/submit": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Submit Broadcast",
+        "description": "Schedule it (now, or at sendAt). Wider than a district, it waits for approval first.",
+        "operationId": "submit_broadcast_v1_notifications_broadcasts__broadcast_id__submit_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "broadcast_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Broadcast Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BroadcastSubmitIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BroadcastOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state>"
+          },
+          "422": {
+            "description": "broadcast_invalid"
+          }
+        }
+      }
+    },
+    "/v1/notifications/broadcasts/{broadcast_id}/approve": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Approve Broadcast",
+        "description": "By a Tier 4 or 5 holder over the area who did not submit it.",
+        "operationId": "approve_broadcast_v1_notifications_broadcasts__broadcast_id__approve_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "broadcast_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Broadcast Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BroadcastOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state>, own_submission or approver_tier_too_low"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notifications/broadcasts/{broadcast_id}/cancel": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Cancel Broadcast",
+        "operationId": "cancel_broadcast_v1_notifications_broadcasts__broadcast_id__cancel_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "broadcast_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Broadcast Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BroadcastOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state>"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notifications": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Read Inbox",
+        "description": "H03: All or Action needed, newest first, with the unread and action-needed counts (FR-HOME-009).",
+        "operationId": "read_inbox_v1_notifications_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "view",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "all",
+                "action_needed"
+              ],
+              "type": "string",
+              "default": "all",
+              "title": "View"
+            }
+          },
+          {
+            "name": "topic",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "account",
+                    "review",
+                    "events",
+                    "announcements",
+                    "emergency"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Category chips: review, events (issues and surveys later)",
+              "title": "Topic"
+            },
+            "description": "Category chips: review, events (issues and surveys later)"
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "For paging: items older than this",
+              "title": "Before"
+            },
+            "description": "For paging: items older than this"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InboxOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notifications/{notification_id}/read": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Mark Read",
+        "description": "Read is separate from done: an item needing action stays under Action needed (FR-HOME-011).",
+        "operationId": "mark_read_v1_notifications__notification_id__read_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "notification_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Notification Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notifications/read-all": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Mark All Read",
+        "operationId": "mark_all_read_v1_notifications_read_all_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/notifications/choices": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Read Choices",
+        "description": "P05: push and SMS per topic, and quiet hours (FR-PROF-012, FR-STF-009).",
+        "operationId": "read_choices_v1_notifications_choices_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChoicesOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Update Choices",
+        "description": "Account and review notices cannot be turned off; asking to is refused, not ignored.",
+        "operationId": "update_choices_v1_notifications_choices_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChoicesIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChoicesOut"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "topic_locked"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/notifications/devices": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Register Device",
+        "description": "The app's push token, after sign-in. A token used by someone else before moves to this member.",
+        "operationId": "register_device_v1_notifications_devices_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/notifications/devices/unregister": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Unregister Device",
+        "description": "On sign-out, so nothing more is pushed to this phone for this member.",
+        "operationId": "unregister_device_v1_notifications_devices_unregister_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceTokenIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -8301,6 +9094,384 @@
         ],
         "title": "AwaitingMemberOut"
       },
+      "BroadcastCreateIn": {
+        "properties": {
+          "topic": {
+            "type": "string",
+            "enum": [
+              "announcements",
+              "emergency"
+            ],
+            "title": "Topic"
+          },
+          "titleEn": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Bodyta"
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaRef"
+          }
+        },
+        "type": "object",
+        "required": [
+          "topic",
+          "titleEn",
+          "titleTa",
+          "bodyEn",
+          "bodyTa",
+          "area"
+        ],
+        "title": "BroadcastCreateIn"
+      },
+      "BroadcastOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "broadcastRef": {
+            "type": "string",
+            "title": "Broadcastref"
+          },
+          "topic": {
+            "type": "string",
+            "enum": [
+              "announcements",
+              "emergency"
+            ],
+            "title": "Topic"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "type": "string",
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "title": "Bodyta"
+          },
+          "areaLevel": {
+            "type": "string",
+            "title": "Arealevel"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "pending_approval",
+              "scheduled",
+              "sent",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "sendAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sendat"
+          },
+          "sentAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sentat"
+          },
+          "recipients": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipients"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "broadcastRef",
+          "topic",
+          "titleEn",
+          "titleTa",
+          "bodyEn",
+          "bodyTa",
+          "areaLevel",
+          "areaKey",
+          "state",
+          "sendAt",
+          "sentAt",
+          "recipients"
+        ],
+        "title": "BroadcastOut"
+      },
+      "BroadcastPreviewOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "broadcastRef": {
+            "type": "string",
+            "title": "Broadcastref"
+          },
+          "topic": {
+            "type": "string",
+            "enum": [
+              "announcements",
+              "emergency"
+            ],
+            "title": "Topic"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "type": "string",
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "title": "Bodyta"
+          },
+          "areaLevel": {
+            "type": "string",
+            "title": "Arealevel"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "pending_approval",
+              "scheduled",
+              "sent",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "sendAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sendat"
+          },
+          "sentAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sentat"
+          },
+          "recipients": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipients"
+          },
+          "reaches": {
+            "type": "integer",
+            "title": "Reaches"
+          },
+          "problems": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Problems",
+            "description": "e.g. contains_id_number (FR-MSG-007)"
+          },
+          "needsApproval": {
+            "type": "boolean",
+            "title": "Needsapproval",
+            "description": "Wider than a district (FR-ADM-007)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "broadcastRef",
+          "topic",
+          "titleEn",
+          "titleTa",
+          "bodyEn",
+          "bodyTa",
+          "areaLevel",
+          "areaKey",
+          "state",
+          "sendAt",
+          "sentAt",
+          "recipients",
+          "reaches",
+          "problems",
+          "needsApproval"
+        ],
+        "title": "BroadcastPreviewOut",
+        "description": "What members will see, how many it reaches, and anything that would stop it."
+      },
+      "BroadcastSubmitIn": {
+        "properties": {
+          "sendAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sendat",
+            "description": "Later, or now when left out"
+          }
+        },
+        "type": "object",
+        "title": "BroadcastSubmitIn"
+      },
+      "BroadcastUpdateIn": {
+        "properties": {
+          "topic": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "announcements",
+                  "emergency"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic"
+          },
+          "titleEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bodyta"
+          }
+        },
+        "type": "object",
+        "title": "BroadcastUpdateIn"
+      },
       "CancelIn": {
         "properties": {
           "reason": {
@@ -8840,6 +10011,93 @@
         ],
         "title": "ChainCheckOut"
       },
+      "ChoicesIn": {
+        "properties": {
+          "topics": {
+            "items": {
+              "$ref": "#/components/schemas/TopicChoiceIn"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "title": "Topics",
+            "default": []
+          },
+          "quietStart": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quietstart"
+          },
+          "quietEnd": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quietend"
+          },
+          "clearQuietHours": {
+            "type": "boolean",
+            "title": "Clearquiethours",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "ChoicesIn"
+      },
+      "ChoicesOut": {
+        "properties": {
+          "topics": {
+            "items": {
+              "$ref": "#/components/schemas/TopicChoiceOut"
+            },
+            "type": "array",
+            "title": "Topics"
+          },
+          "quietStart": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quietstart",
+            "description": "Local time; non-urgent pushes wait until quietEnd"
+          },
+          "quietEnd": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quietend"
+          }
+        },
+        "type": "object",
+        "required": [
+          "topics",
+          "quietStart",
+          "quietEnd"
+        ],
+        "title": "ChoicesOut"
+      },
       "CodeSentOut": {
         "properties": {
           "sent": {
@@ -9048,6 +10306,46 @@
           "appeal"
         ],
         "title": "DecisionOut"
+      },
+      "DeviceIn": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "maxLength": 4096,
+            "minLength": 10,
+            "title": "Token"
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "android",
+              "ios",
+              "web"
+            ],
+            "title": "Platform"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "platform"
+        ],
+        "title": "DeviceIn"
+      },
+      "DeviceTokenIn": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "maxLength": 4096,
+            "minLength": 10,
+            "title": "Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "DeviceTokenIn"
       },
       "DocumentOut": {
         "properties": {
@@ -10302,6 +11600,32 @@
         ],
         "title": "IdentityDataItemOut"
       },
+      "InboxOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/NotificationOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "unread": {
+            "type": "integer",
+            "title": "Unread"
+          },
+          "actionNeeded": {
+            "type": "integer",
+            "title": "Actionneeded"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "unread",
+          "actionNeeded"
+        ],
+        "title": "InboxOut"
+      },
       "LockedFieldOut": {
         "properties": {
           "field": {
@@ -11327,6 +12651,92 @@
         ],
         "title": "NoticesOut",
         "description": "The notice versions the apps must show; consent is recorded against them."
+      },
+      "NotificationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "topic": {
+            "type": "string",
+            "enum": [
+              "account",
+              "review",
+              "events",
+              "announcements",
+              "emergency"
+            ],
+            "title": "Topic"
+          },
+          "template": {
+            "type": "string",
+            "title": "Template"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "type": "string",
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "title": "Bodyta"
+          },
+          "targetKind": {
+            "type": "string",
+            "title": "Targetkind"
+          },
+          "targetId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Targetid"
+          },
+          "actionNeeded": {
+            "type": "boolean",
+            "title": "Actionneeded"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "read": {
+            "type": "boolean",
+            "title": "Read"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "topic",
+          "template",
+          "titleEn",
+          "titleTa",
+          "bodyEn",
+          "bodyTa",
+          "targetKind",
+          "targetId",
+          "actionNeeded",
+          "createdAt",
+          "read"
+        ],
+        "title": "NotificationOut",
+        "description": "An inbox item. targetKind and targetId say what it opens (BR-027); actionNeeded stays true\nuntil the task is done, whether or not it was read."
       },
       "PassCodeOut": {
         "properties": {
@@ -13726,6 +15136,72 @@
           "defaultPermissions"
         ],
         "title": "TierInfo"
+      },
+      "TopicChoiceIn": {
+        "properties": {
+          "topic": {
+            "type": "string",
+            "enum": [
+              "account",
+              "review",
+              "events",
+              "announcements",
+              "emergency"
+            ],
+            "title": "Topic"
+          },
+          "push": {
+            "type": "boolean",
+            "title": "Push"
+          },
+          "sms": {
+            "type": "boolean",
+            "title": "Sms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "topic",
+          "push",
+          "sms"
+        ],
+        "title": "TopicChoiceIn"
+      },
+      "TopicChoiceOut": {
+        "properties": {
+          "topic": {
+            "type": "string",
+            "enum": [
+              "account",
+              "review",
+              "events",
+              "announcements",
+              "emergency"
+            ],
+            "title": "Topic"
+          },
+          "push": {
+            "type": "boolean",
+            "title": "Push"
+          },
+          "sms": {
+            "type": "boolean",
+            "title": "Sms"
+          },
+          "locked": {
+            "type": "boolean",
+            "title": "Locked",
+            "description": "Account and review notices cannot be turned off (FR-PROF-012)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "topic",
+          "push",
+          "sms",
+          "locked"
+        ],
+        "title": "TopicChoiceOut"
       },
       "TotpEnrolmentOut": {
         "properties": {

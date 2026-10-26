@@ -2,7 +2,7 @@
 
 import uuid
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from sqlalchemy import text
@@ -347,6 +347,43 @@ def decide(db: Session, request_id: uuid.UUID, *, state: str, reason: str, decid
             """
         ),
         {"id": request_id, "state": state, "reason": reason, "member": decided_by},
+    )
+
+
+def overdue_unescalated(db: Session, open_for: timedelta) -> list[uuid.UUID]:
+    """Open requests older than open_for whose Tier 5 alert has not gone out yet."""
+    return list(
+        db.scalars(
+            text(
+                """
+                SELECT id FROM content.removal_request
+                WHERE state = 'open' AND escalated_at IS NULL AND created_at <= now() - CAST(:age AS interval)
+                ORDER BY created_at FOR UPDATE SKIP LOCKED
+                """
+            ),
+            {"age": open_for},
+        )
+    )
+
+
+def mark_escalated(db: Session, request_id: uuid.UUID) -> None:
+    db.execute(text("UPDATE content.removal_request SET escalated_at = clock_timestamp() WHERE id = :id"), {"id": request_id})
+
+
+def tier5_takedown_holders(db: Session) -> list[uuid.UUID]:
+    """Tier 5 holders of gallery.takedown whose assignment counts now (an Active membership,
+    review not overdue)."""
+    return list(
+        db.scalars(
+            text(
+                """
+                SELECT DISTINCT a.member_id FROM access.staff_assignment a
+                JOIN membership.membership ms ON ms.member_id = a.member_id AND ms.state = 'active'
+                WHERE a.tier = '5' AND a.state = 'active' AND 'gallery.takedown' = ANY(a.permissions)
+                  AND (a.review_due_at IS NULL OR a.review_due_at > now())
+                """
+            )
+        )
     )
 
 

@@ -2190,6 +2190,245 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/notifications/broadcasts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Broadcasts
+         * @description Broadcasts in the caller's areas, newest first.
+         */
+        get: operations["list_broadcasts_v1_notifications_broadcasts_get"];
+        put?: never;
+        /**
+         * Create Broadcast
+         * @description A bilingual draft for an area inside the caller's own scope (FR-ADM-007, BR-083).
+         */
+        post: operations["create_broadcast_v1_notifications_broadcasts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/broadcasts/{broadcast_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Broadcast */
+        patch: operations["update_broadcast_v1_notifications_broadcasts__broadcast_id__patch"];
+        trace?: never;
+    };
+    "/v1/notifications/broadcasts/{broadcast_id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview Broadcast
+         * @description How many members it reaches and anything that would stop it, before sending.
+         */
+        post: operations["preview_broadcast_v1_notifications_broadcasts__broadcast_id__preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/broadcasts/{broadcast_id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Broadcast
+         * @description Schedule it (now, or at sendAt). Wider than a district, it waits for approval first.
+         */
+        post: operations["submit_broadcast_v1_notifications_broadcasts__broadcast_id__submit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/broadcasts/{broadcast_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve Broadcast
+         * @description By a Tier 4 or 5 holder over the area who did not submit it.
+         */
+        post: operations["approve_broadcast_v1_notifications_broadcasts__broadcast_id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/broadcasts/{broadcast_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Broadcast */
+        post: operations["cancel_broadcast_v1_notifications_broadcasts__broadcast_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Inbox
+         * @description H03: All or Action needed, newest first, with the unread and action-needed counts (FR-HOME-009).
+         */
+        get: operations["read_inbox_v1_notifications_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/{notification_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark Read
+         * @description Read is separate from done: an item needing action stays under Action needed (FR-HOME-011).
+         */
+        post: operations["mark_read_v1_notifications__notification_id__read_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark All Read */
+        post: operations["mark_all_read_v1_notifications_read_all_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/choices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Choices
+         * @description P05: push and SMS per topic, and quiet hours (FR-PROF-012, FR-STF-009).
+         */
+        get: operations["read_choices_v1_notifications_choices_get"];
+        /**
+         * Update Choices
+         * @description Account and review notices cannot be turned off; asking to is refused, not ignored.
+         */
+        put: operations["update_choices_v1_notifications_choices_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/devices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register Device
+         * @description The app's push token, after sign-in. A token used by someone else before moves to this member.
+         */
+        post: operations["register_device_v1_notifications_devices_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/devices/unregister": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Unregister Device
+         * @description On sign-out, so nothing more is pushed to this phone for this member.
+         */
+        post: operations["unregister_device_v1_notifications_devices_unregister_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2778,6 +3017,135 @@ export interface components {
             /** Area */
             area: string;
         };
+        /** BroadcastCreateIn */
+        BroadcastCreateIn: {
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "announcements" | "emergency";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            area: components["schemas"]["AreaRef"];
+        };
+        /** BroadcastOut */
+        BroadcastOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Broadcastref */
+            broadcastRef: string;
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "announcements" | "emergency";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Arealevel */
+            areaLevel: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "pending_approval" | "scheduled" | "sent" | "cancelled";
+            /** Sendat */
+            sendAt: string | null;
+            /** Sentat */
+            sentAt: string | null;
+            /** Recipients */
+            recipients: number | null;
+        };
+        /**
+         * BroadcastPreviewOut
+         * @description What members will see, how many it reaches, and anything that would stop it.
+         */
+        BroadcastPreviewOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Broadcastref */
+            broadcastRef: string;
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "announcements" | "emergency";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Arealevel */
+            areaLevel: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "pending_approval" | "scheduled" | "sent" | "cancelled";
+            /** Sendat */
+            sendAt: string | null;
+            /** Sentat */
+            sentAt: string | null;
+            /** Recipients */
+            recipients: number | null;
+            /** Reaches */
+            reaches: number;
+            /**
+             * Problems
+             * @description e.g. contains_id_number (FR-MSG-007)
+             */
+            problems: string[];
+            /**
+             * Needsapproval
+             * @description Wider than a district (FR-ADM-007)
+             */
+            needsApproval: boolean;
+        };
+        /** BroadcastSubmitIn */
+        BroadcastSubmitIn: {
+            /**
+             * Sendat
+             * @description Later, or now when left out
+             */
+            sendAt?: string | null;
+        };
+        /** BroadcastUpdateIn */
+        BroadcastUpdateIn: {
+            /** Topic */
+            topic?: ("announcements" | "emergency") | null;
+            /** Titleen */
+            titleEn?: string | null;
+            /** Titleta */
+            titleTa?: string | null;
+            /** Bodyen */
+            bodyEn?: string | null;
+            /** Bodyta */
+            bodyTa?: string | null;
+        };
         /** CancelIn */
         CancelIn: {
             /** Reason */
@@ -2957,6 +3325,35 @@ export interface components {
             /** Firstbrokenid */
             firstBrokenId: number | null;
         };
+        /** ChoicesIn */
+        ChoicesIn: {
+            /**
+             * Topics
+             * @default []
+             */
+            topics: components["schemas"]["TopicChoiceIn"][];
+            /** Quietstart */
+            quietStart?: string | null;
+            /** Quietend */
+            quietEnd?: string | null;
+            /**
+             * Clearquiethours
+             * @default false
+             */
+            clearQuietHours: boolean;
+        };
+        /** ChoicesOut */
+        ChoicesOut: {
+            /** Topics */
+            topics: components["schemas"]["TopicChoiceOut"][];
+            /**
+             * Quietstart
+             * @description Local time; non-urgent pushes wait until quietEnd
+             */
+            quietStart: string | null;
+            /** Quietend */
+            quietEnd: string | null;
+        };
         /**
          * CodeSentOut
          * @description devCode appears only with SMS_PROVIDER=development, for local testing.
@@ -3037,6 +3434,21 @@ export interface components {
                 [key: string]: components["schemas"]["EvidenceVersion"];
             };
             appeal: components["schemas"]["AppealOut"] | null;
+        };
+        /** DeviceIn */
+        DeviceIn: {
+            /** Token */
+            token: string;
+            /**
+             * Platform
+             * @enum {string}
+             */
+            platform: "android" | "ios" | "web";
+        };
+        /** DeviceTokenIn */
+        DeviceTokenIn: {
+            /** Token */
+            token: string;
         };
         /**
          * DocumentOut
@@ -3552,6 +3964,15 @@ export interface components {
             /** Retentionta */
             retentionTa: string;
         };
+        /** InboxOut */
+        InboxOut: {
+            /** Items */
+            items: components["schemas"]["NotificationOut"][];
+            /** Unread */
+            unread: number;
+            /** Actionneeded */
+            actionNeeded: number;
+        };
         /** LockedFieldOut */
         LockedFieldOut: {
             /**
@@ -3920,6 +4341,46 @@ export interface components {
             termsAndPrivacy: string;
             /** Identityreview */
             identityReview: string;
+        };
+        /**
+         * NotificationOut
+         * @description An inbox item. targetKind and targetId say what it opens (BR-027); actionNeeded stays true
+         *     until the task is done, whether or not it was read.
+         */
+        NotificationOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "account" | "review" | "events" | "announcements" | "emergency";
+            /** Template */
+            template: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Targetkind */
+            targetKind: string;
+            /** Targetid */
+            targetId: string | null;
+            /** Actionneeded */
+            actionNeeded: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Read */
+            read: boolean;
         };
         /** PassCodeOut */
         PassCodeOut: {
@@ -4859,6 +5320,35 @@ export interface components {
             areaLevel: "platform" | "province" | "district" | "ds" | "gn";
             /** Defaultpermissions */
             defaultPermissions: string[];
+        };
+        /** TopicChoiceIn */
+        TopicChoiceIn: {
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "account" | "review" | "events" | "announcements" | "emergency";
+            /** Push */
+            push: boolean;
+            /** Sms */
+            sms: boolean;
+        };
+        /** TopicChoiceOut */
+        TopicChoiceOut: {
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "account" | "review" | "events" | "announcements" | "emergency";
+            /** Push */
+            push: boolean;
+            /** Sms */
+            sms: boolean;
+            /**
+             * Locked
+             * @description Account and review notices cannot be turned off (FR-PROF-012)
+             */
+            locked: boolean;
         };
         /**
          * TotpEnrolmentOut
@@ -9641,6 +10131,554 @@ export interface operations {
             };
             /** @description already_closed */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_broadcasts_v1_notifications_broadcasts_get: {
+        parameters: {
+            query?: {
+                state?: ("draft" | "pending_approval" | "scheduled" | "sent" | "cancelled")[] | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BroadcastOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_broadcast_v1_notifications_broadcasts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BroadcastCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BroadcastOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description broadcast_invalid */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_broadcast_v1_notifications_broadcasts__broadcast_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                broadcast_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BroadcastUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BroadcastOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_broadcast_v1_notifications_broadcasts__broadcast_id__preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                broadcast_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BroadcastPreviewOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_broadcast_v1_notifications_broadcasts__broadcast_id__submit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                broadcast_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BroadcastSubmitIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BroadcastOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description broadcast_invalid */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    approve_broadcast_v1_notifications_broadcasts__broadcast_id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                broadcast_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BroadcastOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state>, own_submission or approver_tier_too_low */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_broadcast_v1_notifications_broadcasts__broadcast_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                broadcast_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BroadcastOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_inbox_v1_notifications_get: {
+        parameters: {
+            query?: {
+                view?: "all" | "action_needed";
+                /** @description Category chips: review, events (issues and surveys later) */
+                topic?: ("account" | "review" | "events" | "announcements" | "emergency") | null;
+                /** @description For paging: items older than this */
+                before?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InboxOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mark_read_v1_notifications__notification_id__read_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notification_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mark_all_read_v1_notifications_read_all_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_choices_v1_notifications_choices_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChoicesOut"];
+                };
+            };
+        };
+    };
+    update_choices_v1_notifications_choices_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChoicesIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChoicesOut"];
+                };
+            };
+            /** @description topic_locked */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    register_device_v1_notifications_devices_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeviceIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    unregister_device_v1_notifications_devices_unregister_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeviceTokenIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };

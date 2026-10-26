@@ -22,6 +22,7 @@ from app.modules.access import service as access
 from app.modules.access.service import Staff
 from app.modules.audit import service as audit
 from app.modules.membership import repository, rules
+from app.modules.messaging.notifications import service as notifications
 from app.modules.membership.card import repository as card_repository
 from app.modules.membership.repository import AwaitingMember, MembershipChange, MembershipState
 from app.modules.membership.rules import ACTIVATE, Action
@@ -118,6 +119,7 @@ def change(
         note=note,
         changed_by=staff.member_id,
     )
+    notifications.notify(db, member_id, "membership_changed", member_id)
     # The note stays in the membership history; the audit entry holds codes only.
     audit.record(
         db,

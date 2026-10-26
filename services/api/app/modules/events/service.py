@@ -44,6 +44,7 @@ from app.modules.events import repository, rules
 from app.modules.events.repository import EDITABLE, EventListItem, RosterEntry, RsvpChange, StoredEvent
 from app.modules.events.rules import MANAGE, SCAN, Response
 from app.modules.identity.recovery import repository as contacts
+from app.modules.messaging.notifications import service as notifications
 
 
 class EventNotFound(Exception):
@@ -261,9 +262,11 @@ class Notice:
     text: str
 
 
-def _notice(db: Session, event: StoredEvent, text: str) -> Notice:
+def _notice(db: Session, event: StoredEvent, text: str, key: str) -> Notice:
+    """An inbox notice for everyone who responded, in this transaction, and the SMS to send after."""
     phones = []
     for member_id in repository.members_to_notify(db, event.id):
+        notifications.notify(db, member_id, key, event.id, body_en=event.title_en, body_ta=event.title_ta)
         contact = contacts.find_contact(db, member_id)
         if contact is not None:
             phones.append(contact.phone)
@@ -288,7 +291,7 @@ def update_event(
     _record(db, staff, "events.event.updated", event, ip, changed=sorted(changed))
     notice = None
     if event.state == "published" and NOTIFIED_CHANGES & changed.keys():
-        notice = _notice(db, event, rules.changed_message(merged["title_en"], merged["title_ta"]))
+        notice = _notice(db, event, rules.changed_message(merged["title_en"], merged["title_ta"]), "event_changed")
     db.commit()
     updated = repository.find_event(db, event_id)
     assert updated is not None
@@ -318,7 +321,7 @@ def cancel_event(
         raise EventRefused(problem)
     notice = None
     if event.state == "published":
-        notice = _notice(db, event, rules.cancelled_message(event.title_en, event.title_ta))
+        notice = _notice(db, event, rules.cancelled_message(event.title_en, event.title_ta), "event_cancelled")
     repository.cancel(db, event_id, staff.member_id, reason)
     # The reason stays on the event; the audit entry holds ids only.
     _record(db, staff, "events.event.cancelled", event, ip)

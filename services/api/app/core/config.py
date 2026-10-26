@@ -46,6 +46,10 @@ class Settings(BaseSettings):
     # outside APP_ENV=development, so a live system can never leak codes.
     sms_provider: Literal["none", "development"] = "none"
 
+    # Push notifications (INT-02; no credentials yet). "none" keeps notifications in the
+    # in-app inbox only; "development" keeps pushes in memory and is refused outside development.
+    push_provider: Literal["none", "development"] = "none"
+
     # NFR-SEC-04: staff give a second factor (an authenticator code) in each
     # session before any staff endpoint. Only development may switch it off.
     staff_mfa_required: bool = True
@@ -90,6 +94,12 @@ class Settings(BaseSettings):
     def staff_mfa_off_only_in_development(self) -> Self:
         if not self.staff_mfa_required and self.app_env != "development":
             raise ValueError("STAFF_MFA_REQUIRED=false is allowed only with APP_ENV=development")
+        return self
+
+    @model_validator(mode="after")
+    def development_push_only_in_development(self) -> Self:
+        if self.push_provider == "development" and self.app_env != "development":
+            raise ValueError("PUSH_PROVIDER=development is allowed only with APP_ENV=development")
         return self
 
     @model_validator(mode="after")

@@ -20,6 +20,7 @@ from app.modules.access.service import Staff
 from app.modules.audit import service as audit
 from app.modules.identity.documents.service import UploadedImage
 from app.modules.identity.documents.vault import EvidenceVault
+from app.modules.messaging.notifications import service as notifications
 from app.modules.profile import rules
 from app.modules.profile.area_changes import repository
 from app.modules.profile.area_changes.repository import StoredChange
@@ -144,6 +145,7 @@ def decide(
     if decision == "approve":
         repository.move_member(db, change.member_id, change.to_gn)
     repository.decide(db, change.id, state=state, reason=reason, decided_by=staff.member_id)
+    notifications.notify(db, change.member_id, "area_change_decided", change.id)
     # The reason stays on the request; the audit entry holds ids only.
     _record(db, staff.member_id, f"profile.area_change.{state}", change, ip)
     db.commit()

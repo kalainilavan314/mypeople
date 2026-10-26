@@ -18,6 +18,7 @@ from dataclasses import dataclass
 
 from sqlalchemy.orm import Session
 
+from app.modules.messaging.notifications import service as notifications
 from app.modules.access import repository as access_repository
 from app.modules.access import service as access
 from app.modules.access.rules import AreaPath, area_from_key
@@ -128,6 +129,7 @@ def submit(db: Session, member_id: uuid.UUID, route: Route, ip: str) -> StoredRe
         if problems:
             raise SubmissionRefused(problems)
         repository.resubmit(db, review.id)
+        notifications.complete_action(db, "identity_review", review.id, member_id)  # the correction is done
         _record(db, member_id, "identity.review.resubmitted", review, ip)
         db.commit()
         return _reload(db, review.id)
@@ -270,6 +272,13 @@ def _unviewed_documents(
     ]
 
 
+DECISION_NOTICES = {
+    "approve": "identity_verified",
+    "request_update": "identity_needs_update",
+    "unable_to_verify": "identity_unable",
+}
+
+
 def decide(db: Session, staff: Staff, review_id: uuid.UUID, decision: DecisionInput, ip: str) -> StoredReview:
     """Record one of the three decisions (FR-WEB-008), immutably, with the evidence versions (BR-082).
 
@@ -323,6 +332,8 @@ def decide(db: Session, staff: Staff, review_id: uuid.UUID, decision: DecisionIn
             db, member_id=review.member_id, status=express_status, changed_by=staff.member_id, review_ref=review.review_ref
         )
 
+    # FR-REG-021: the member hears of every identity status change, in the same transaction.
+    notifications.notify(db, review.member_id, DECISION_NOTICES[decision.decision], review.id)
     # The note to the member stays in the decision record; the audit entry holds codes only.
     _record(
         db,

@@ -36,6 +36,7 @@ from app.modules.content.gallery.media_store import MediaStore
 from app.modules.content.gallery.repository import StoredAlbum, StoredPhoto, StoredRequest
 from app.modules.content.gallery.rules import PUBLISH, TAKEDOWN, Decision, RemovalReason
 from app.modules.identity.recovery import repository as contacts
+from app.modules.messaging.notifications import service as notifications
 from app.modules.identity.recovery import rules as contact_rules
 
 
@@ -384,6 +385,11 @@ def decide_removal(
             assert other is not None
             decided.append(other)
     repository.decide(db, request.id, state=state, reason=reason, decided_by=staff.member_id)
+    for answered in decided:
+        if answered.requester_id is not None:
+            notifications.notify(db, answered.requester_id, "removal_decided", answered.id)
+        # A Tier 5 alert about it no longer needs action (BR-027).
+        notifications.complete_action(db, "removal_request", answered.id)
     # The reason stays on the request; the audit entry holds ids only.
     _audit(db, staff.member_id, "gallery.removal.decided", target, request.area_path, ip,
            requestRef=request.request_ref, decision=decision, photoId=str(request.photo_id))
@@ -396,6 +402,19 @@ def decide_removal(
     final = repository.find_request(db, request.id)
     assert final is not None
     return final, Outcome(messages=messages)
+
+
+def escalate_overdue(db: Session) -> int:
+    """FR-ADM-006: alert Tier 5 once about each request still open after 18 hours; for the
+    dispatcher. Returns how many requests were escalated."""
+    overdue = repository.overdue_unescalated(db, rules.ESCALATE_AFTER)
+    holders = repository.tier5_takedown_holders(db) if overdue else []
+    for request_id in overdue:
+        for holder in holders:
+            notifications.notify(db, holder, "removal_escalated", request_id)
+        repository.mark_escalated(db, request_id)
+    db.commit()
+    return len(overdue)
 
 
 def deliver(sms: SmsSender, outcome: Outcome) -> None:

@@ -15,6 +15,7 @@ from dataclasses import dataclass
 
 from sqlalchemy.orm import Session
 
+from app.modules.messaging.notifications import service as notifications
 from app.modules.access import service as access
 from app.modules.access.rules import AreaPath, area_from_key, highest_tier
 from app.modules.access.service import Staff, load_staff
@@ -220,6 +221,7 @@ def decide(db: Session, staff: Staff, appeal_id: uuid.UUID, outcome: Outcome, re
             verification_repository.set_express_status(
                 db, member_id=review.member_id, status="review_pending", changed_by=staff.member_id, review_ref=review.review_ref
             )
+    notifications.notify(db, appeal.member_id, "appeal_decided", appeal.id)
     _record(db, staff.member_id, "identity.appeal.decided", appeal, ip, outcome=outcome)
     db.commit()
     return _reload(db, appeal.id)

@@ -65,6 +65,16 @@ export type PrivacyRequest = Schemas['PrivacyRequestOut'];
 export type PrivacyRequestInput = Schemas['PrivacyRequestIn'];
 export type PrivacyRegisterEntry = Schemas['RegisterEntryOut'];
 export type PrivacyOutcomeInput = Schemas['PrivacyOutcomeIn'];
+export type NotificationItem = Schemas['NotificationOut'];
+export type NotificationTopic = NotificationItem['topic'];
+export type NotificationInbox = Schemas['InboxOut'];
+export type NotificationChoices = Schemas['ChoicesOut'];
+export type NotificationChoicesInput = Schemas['ChoicesIn'];
+export type PushPlatform = Schemas['DeviceIn']['platform'];
+export type Broadcast = Schemas['BroadcastOut'];
+export type BroadcastPreview = Schemas['BroadcastPreviewOut'];
+export type BroadcastCreateInput = Schemas['BroadcastCreateIn'];
+export type BroadcastUpdateInput = Schemas['BroadcastUpdateIn'];
 export type EventFilters = {
   /** 'mine' (the default) narrows to the member's area; 'all' widens it (BR-057). */
   scope?: 'mine' | 'all';
@@ -536,6 +546,46 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     /** Complete or refuse with a note; completing a closure closes the account. */
     closePrivacyRequest: (requestId: string, input: PrivacyOutcomeInput) =>
       request<PrivacyRegisterEntry>('POST', `/v1/privacy/requests/${encodeURIComponent(requestId)}/decision`, input),
+
+    /**
+     * H03: All or Action needed, newest first, with unread and action-needed counts. Each item names what it
+     * opens (targetKind, targetId); reading never clears Action needed.
+     */
+    getNotifications: (
+      filters: { view?: 'all' | 'action_needed'; topic?: NotificationTopic; before?: string; limit?: number } = {},
+    ) => request<NotificationInbox>('GET', `/v1/notifications${toEventQuery(filters)}`),
+    markNotificationRead: (notificationId: string) =>
+      request<void>('POST', `/v1/notifications/${encodeURIComponent(notificationId)}/read`),
+    markAllNotificationsRead: () => request<void>('POST', '/v1/notifications/read-all'),
+    /** P05: push and SMS per topic, and quiet hours. */
+    getNotificationChoices: () => request<NotificationChoices>('GET', '/v1/notifications/choices'),
+    /** Throws ApiError "topic_locked" (409) for turning off account or review notices. */
+    updateNotificationChoices: (input: NotificationChoicesInput) =>
+      request<NotificationChoices>('PUT', '/v1/notifications/choices', input),
+    /** After sign-in: the app's push token. */
+    registerPushDevice: (token: string, platform: PushPlatform) =>
+      request<void>('POST', '/v1/notifications/devices', { token, platform }),
+    /** On sign-out, before the session ends. */
+    unregisterPushDevice: (token: string) => request<void>('POST', '/v1/notifications/devices/unregister', { token }),
+
+    /** Broadcasts in the caller's areas. Needs notifications.send. */
+    listBroadcasts: (filters: { states?: readonly Broadcast['state'][]; limit?: number } = {}) =>
+      request<Broadcast[]>('GET', `/v1/notifications/broadcasts${toQueueQuery(filters)}`),
+    /** A bilingual draft for an area in the caller's own scope; another area is "outside_your_area" (403). */
+    createBroadcast: (input: BroadcastCreateInput) => request<Broadcast>('POST', '/v1/notifications/broadcasts', input),
+    updateBroadcast: (broadcastId: string, input: BroadcastUpdateInput) =>
+      request<Broadcast>('PATCH', `/v1/notifications/broadcasts/${encodeURIComponent(broadcastId)}`, input),
+    /** How many members it reaches, and anything that would stop it (e.g. "contains_id_number"). */
+    previewBroadcast: (broadcastId: string) =>
+      request<BroadcastPreview>('POST', `/v1/notifications/broadcasts/${encodeURIComponent(broadcastId)}/preview`),
+    /** Now, or at sendAt; wider than a district it waits for approval. */
+    submitBroadcast: (broadcastId: string, sendAt?: string) =>
+      request<Broadcast>('POST', `/v1/notifications/broadcasts/${encodeURIComponent(broadcastId)}/submit`, { sendAt }),
+    /** By a Tier 4 or 5 holder over the area who did not submit it. */
+    approveBroadcast: (broadcastId: string) =>
+      request<Broadcast>('POST', `/v1/notifications/broadcasts/${encodeURIComponent(broadcastId)}/approve`),
+    cancelBroadcast: (broadcastId: string) =>
+      request<Broadcast>('POST', `/v1/notifications/broadcasts/${encodeURIComponent(broadcastId)}/cancel`),
   };
 }
 

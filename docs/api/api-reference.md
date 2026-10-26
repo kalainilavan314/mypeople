@@ -79,6 +79,18 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET /v1/identity/duplicates/{id}` | `idv.duplicate.investigate` over both accounts' areas | `200` both accounts with details, verification and membership state, image records | `403 own_record`, `outside_your_area`; `404` |
 | `POST /v1/identity/duplicates/{id}/claim`, `/release`, `/decision` body `{outcome: "not_duplicate" \| "duplicate_confirmed", reason}` | the investigator holding the case for decisions | `200` the case file | as above; `409 claimed_by_another`, `not_claimed_by_you`, `not_open`, `reported_by_you` (the reporter never investigates) |
 
+### Notifications (`/v1/notifications`)
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /v1/notifications?view=all\|action_needed&topic&before&limit` | a session | `200 {items, unread, actionNeeded}`; each item has `targetKind`, `targetId`, `actionNeeded`, `read` | `422` |
+| `POST /v1/notifications/{id}/read`, `POST /v1/notifications/read-all` | a session | `204` (reading never clears Action needed) | `404` |
+| `GET`/`PUT /v1/notifications/choices` body `{topics: [{topic, push, sms}], quietStart?, quietEnd?, clearQuietHours?}` | a session | `200` choices with `locked` topics | `409 topic_locked`, `422` |
+| `POST /v1/notifications/devices` body `{token, platform}`, `POST .../devices/unregister` body `{token}` | a session | `204` | `422` |
+| `GET /v1/notifications/broadcasts?state`, `POST` body: the texts, `topic` and `{area}`, `PATCH .../{id}` | `notifications.send` over the area | `200`/`201` | `403 outside_your_area`, `404`, `409`, `422` |
+| `POST .../{id}/preview` | as above | `200` with `reaches`, `problems`, `needsApproval` | `403`, `404` |
+| `POST .../{id}/submit` body `{sendAt?}`, `POST .../{id}/approve`, `POST .../{id}/cancel` | as above; approval by Tier 4 or 5, not the submitter | `200` | `409 own_submission`, `approver_tier_too_low`, `not_allowed_from:<state>`; `422 {code: "broadcast_invalid", problems: ["contains_id_number"]}` |
+
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 
 | Endpoint | Needs | Success | Errors |
