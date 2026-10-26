@@ -335,7 +335,15 @@
     "skills": "Skills registry",
     "referrals": "Referrals",
     "notifications": "Notifications",
-    "privacy": "Privacy & consent"
+    "privacy": "Privacy & consent",
+    "edit": "Edit",
+    "memberId": "Member ID",
+    "membershipActive": "Membership active",
+    "verificationDetails": "Verification details",
+    "verificationSub": "Identity and membership status",
+    "copyId": "Copy ID",
+    "copied": "Copied!",
+    "copyFailed": "Couldn't copy"
   },
   "onboarding": {
     "joinTitle": "Join the movement",
@@ -527,20 +535,5 @@
     "nameTa": "என் மக்கள்",
     "slogan": "The target is one, the liberation of the race.",
     "sloganTa": "இலக்கு ஒன்று தான் இனத்தின் விடிவு"
-  },
-  "profile": {
-    "titleMy": "My Profile",
-    "editProfile": "Edit profile",
-    "edit": "Edit",
-    "memberId": "Member ID",
-    "membershipActive": "Membership active",
-    "membershipPending": "Membership pending",
-    "membershipSuspended": "Membership suspended",
-    "membershipInactive": "Membership inactive",
-    "membershipUnknown": "Membership status unavailable",
-    "verificationDetails": "Verification details",
-    "verificationSub": "Identity and membership status",
-    "copyId": "Copy ID",
-    "copied": "Copied!"
   }
 }
