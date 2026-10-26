@@ -12,8 +12,13 @@ from datetime import timedelta
 
 CONFIRM_PHONE = "confirm_phone"  # npm.otp purpose: confirming a new recovery number (FR-REG-028)
 RECOVERY = "recovery"  # npm.otp purpose: a recovery code (FR-AUTH-014)
+ACCOUNT_CLOSURE = "account_closure"  # npm.otp purpose: confirming an account-closure request (FR-PROF-018)
 
-CODE_LIFETIME = {CONFIRM_PHONE: timedelta(minutes=5), RECOVERY: timedelta(minutes=10)}  # FR-AUTH-015
+CODE_LIFETIME = {  # FR-AUTH-015
+    CONFIRM_PHONE: timedelta(minutes=5),
+    RECOVERY: timedelta(minutes=10),
+    ACCOUNT_CLOSURE: timedelta(minutes=5),
+}
 MAX_CODE_ATTEMPTS = 5  # FR-AUTH-015; then the code is burnt
 
 # [ASSUMPTION] Limits the BRD does not set: registrations and assisted-recovery

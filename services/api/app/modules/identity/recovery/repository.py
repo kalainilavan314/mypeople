@@ -151,6 +151,12 @@ def session_version(db: Session, member_id: uuid.UUID) -> int | None:
     )
 
 
+def password_hash(db: Session, member_id: uuid.UUID) -> str | None:
+    return db.scalar(
+        text("SELECT password_hash FROM npm.member WHERE id = :id AND deleted_at IS NULL"), {"id": member_id}
+    )
+
+
 def set_password(db: Session, member_id: uuid.UUID, password_hash: str) -> None:
     """A new password ends every session of the member, in both APIs (FR-AUTH-016)."""
     db.execute(

@@ -79,6 +79,24 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET /v1/identity/duplicates/{id}` | `idv.duplicate.investigate` over both accounts' areas | `200` both accounts with details, verification and membership state, image records | `403 own_record`, `outside_your_area`; `404` |
 | `POST /v1/identity/duplicates/{id}/claim`, `/release`, `/decision` body `{outcome: "not_duplicate" \| "duplicate_confirmed", reason}` | the investigator holding the case for decisions | `200` the case file | as above; `409 claimed_by_another`, `not_claimed_by_you`, `not_open`, `reported_by_you` (the reporter never investigates) |
 
+### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /v1/profile`, `PATCH /v1/profile` body `{displayName?, gender?}` | a session | `200` the profile with `lockedFields`, `mobileMasked`, `verificationValidUntil`, `openAreaChange` | `401` |
+| `GET /v1/profile/activity?kind&limit` | a session | `200` receipts newest first | `422` unknown kind |
+| `GET`/`PUT /v1/profile/survey-answers` body `{answers}`, `DELETE` | a session | `200` the answers; `204` | `422` |
+| `GET /v1/profile/identity-data` | a session | `200` purpose and retention of each kind of identity data | `401` |
+| `POST /v1/profile/area-changes` body `{gnCode}` | a session | `201` receipt (`AC-`) | `409 request_open`, `same_area`, `unknown_area` |
+| `PUT /v1/profile/area-changes/{id}/proof` body = the image | the requester | `200` submitted | `404`, `409 not_awaiting_proof`, `413`, `415`, `503` |
+| `GET /v1/profile/area-changes/mine`, `POST .../{id}/withdraw` | the requester | `200` | `404`, `409 not_open` |
+| `GET /v1/profile/area-changes?state`, `GET .../{id}/proof`, `POST .../{id}/decision` body `{decision: "approve" \| "decline", reason}` | `members.verify` over the requested area | `200` | `403 own_record`, `outside_your_area`; `404`; `409 not_submitted` |
+| `POST /v1/auth/password` body `{currentPassword, newPassword}` | a session | `204`; every session ends | `401 wrong_password`, `422 password_refused`, `429` |
+| `POST /v1/privacy/closure-code` | a session | `202 {sent, devCode}` | `409 no_recovery_number`, `429`, `503 sms_not_configured` |
+| `POST /v1/privacy/requests` body `{kind: "copy" \| "closure", note?, password?, code?}` | a session | `201` receipt (`DSR-`) with `dueAt` and, for a closure, `retention` | `401 wrong_password`, `invalid_code`, `too_many_attempts`; `409 no_recovery_number`; `422` |
+| `GET /v1/privacy/requests/mine` | a session | `200` | `401` |
+| `GET /v1/privacy/requests?state`, `POST .../{id}/decision` body `{outcome: "completed" \| "refused", note}` | `privacy.requests.handle` | `200` | `403 own_record`, `404`, `409 already_closed` |
+
 ### Home and gallery (`/v1/home`, `/v1/content`)
 
 | Endpoint | Needs | Success | Errors |

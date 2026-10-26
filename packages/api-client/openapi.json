@@ -3154,6 +3154,48 @@
         }
       }
     },
+    "/v1/auth/password": {
+      "post": {
+        "tags": [
+          "recovery"
+        ],
+        "summary": "Change Password",
+        "description": "P05: a new password, only with the current one (FR-PROF-014). Every session ends, this one too,\nso the app signs in again; the confirmed number is told.",
+        "operationId": "change_password_v1_auth_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChangeInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "wrong_password"
+          },
+          "422": {
+            "description": "{\"code\": \"password_refused\", \"problems\": [...]}, e.g. \"same_password\""
+          },
+          "429": {
+            "description": "too_many_requests, with Retry-After"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/v1/auth/recovery/assisted": {
       "post": {
         "tags": [
@@ -5585,6 +5627,1028 @@
           }
         ]
       }
+    },
+    "/v1/profile": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Read Profile",
+        "description": "P01 and P02: what is recorded, what is locked, and any area change waiting for review.",
+        "operationId": "read_profile_v1_profile_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Update Profile",
+        "description": "Display name and gender only (FR-PROF-003). The legal name, date of birth and ID number are\nnot fields here at all.",
+        "operationId": "update_profile_v1_profile_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileUpdateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/profile/activity": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "List Activity",
+        "description": "P04: every receipt the member holds, newest first, with a filter (FR-PROF-010).",
+        "operationId": "list_activity_v1_profile_activity_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "identity_review",
+                    "appeal",
+                    "event",
+                    "removal_request",
+                    "area_change",
+                    "privacy_request"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ActivityItemOut"
+                  },
+                  "title": "Response List Activity V1 Profile Activity Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/profile/survey-answers": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Read Survey Answers",
+        "description": "The optional joining-survey answers (FR-PROF-017); never on cards or public views (BR-019).",
+        "operationId": "read_survey_answers_v1_profile_survey_answers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Read Survey Answers V1 Profile Survey Answers Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Replace Survey Answers",
+        "operationId": "replace_survey_answers_v1_profile_survey_answers_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SurveyAnswersIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Replace Survey Answers V1 Profile Survey Answers Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Delete Survey Answers",
+        "description": "\"Delete my optional answers\": deleted at once, and the deletion is logged (FR-PROF-017).",
+        "operationId": "delete_survey_answers_v1_profile_survey_answers_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/profile/identity-data": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Read Identity Data Notice",
+        "description": "What identity data is kept, why, and for how long (FR-PROF-017). The periods are proposals (OD-03).",
+        "operationId": "read_identity_data_notice_v1_profile_identity_data_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/IdentityDataItemOut"
+                  },
+                  "type": "array",
+                  "title": "Response Read Identity Data Notice V1 Profile Identity Data Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/profile/area-changes": {
+      "post": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Request Area Change",
+        "description": "Ask to move to another GN division; upload proof of residence next. The current area stays\nuntil a reviewer approves (FR-PROF-005, BR-076).",
+        "operationId": "request_area_change_v1_profile_area_changes_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AreaChangeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AreaChangeOut"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "request_open, same_area or unknown_area"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "List Area Changes",
+        "description": "Requests to move into the caller's areas, oldest submitted first. Needs members.verify.",
+        "operationId": "list_area_changes_v1_profile_area_changes_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "submitted",
+                      "awaiting_proof",
+                      "approved",
+                      "declined",
+                      "withdrawn"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/QueuedAreaChangeOut"
+                  },
+                  "title": "Response List Area Changes V1 Profile Area Changes Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/profile/area-changes/mine": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "List My Area Changes",
+        "operationId": "list_my_area_changes_v1_profile_area_changes_mine_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AreaChangeOut"
+                  },
+                  "type": "array",
+                  "title": "Response List My Area Changes V1 Profile Area Changes Mine Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/profile/area-changes/{change_id}/proof": {
+      "put": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Attach Proof",
+        "description": "Proof of residence, kept encrypted; this sends the request for review.",
+        "operationId": "attach_proof_v1_profile_area_changes__change_id__proof_put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Change Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AreaChangeOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_awaiting_proof"
+          },
+          "413": {
+            "description": "too_large"
+          },
+          "415": {
+            "description": "unsupported_type (JPEG, PNG or HEIC)"
+          },
+          "503": {
+            "description": "evidence_storage_not_configured"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/heic": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Read Proof",
+        "description": "The proof of residence, shown to a reviewer over the requested area; every opening is logged.",
+        "operationId": "read_proof_v1_profile_area_changes__change_id__proof_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Change Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/jpeg": {},
+              "image/png": {},
+              "image/heic": {}
+            }
+          },
+          "403": {
+            "description": "own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "503": {
+            "description": "evidence_storage_not_configured"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/profile/area-changes/{change_id}/withdraw": {
+      "post": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Withdraw",
+        "operationId": "withdraw_v1_profile_area_changes__change_id__withdraw_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Change Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AreaChangeOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_open"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/profile/area-changes/{change_id}/decision": {
+      "post": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Decide",
+        "description": "Approve (the member's area changes now) or decline, with a reason the member sees.",
+        "operationId": "decide_v1_profile_area_changes__change_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Change Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AreaDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AreaChangeOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_submitted"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/privacy/closure-code": {
+      "post": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "Send Closure Code",
+        "description": "P06: a one-time code to the confirmed number, to confirm closing the account (FR-PROF-018).",
+        "operationId": "send_closure_code_v1_privacy_closure_code_post",
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeSentOut"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "no_recovery_number"
+          },
+          "429": {
+            "description": "too_many_requests, with Retry-After"
+          },
+          "503": {
+            "description": "sms_not_configured"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/privacy/requests": {
+      "post": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "Make Request",
+        "description": "P06: a copy of one's personal data (FR-PROF-019) or closing the account (FR-PROF-018), each with\na receipt and the date it is due. Asking again while one is open returns it.",
+        "operationId": "make_request_v1_privacy_requests_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrivacyRequestIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyRequestOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "wrong_password, invalid_code or too_many_attempts (closure)"
+          },
+          "409": {
+            "description": "no_recovery_number"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "Read Register",
+        "description": "The DPO register, soonest due first. Needs privacy.requests.handle.",
+        "operationId": "read_register_v1_privacy_requests_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "open",
+                      "completed",
+                      "refused"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 200,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RegisterEntryOut"
+                  },
+                  "title": "Response Read Register V1 Privacy Requests Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/privacy/requests/mine": {
+      "get": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "List My Requests",
+        "operationId": "list_my_requests_v1_privacy_requests_mine_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PrivacyRequestOut"
+                  },
+                  "type": "array",
+                  "title": "Response List My Requests V1 Privacy Requests Mine Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/privacy/requests/{request_id}/decision": {
+      "post": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "Close Request",
+        "description": "Complete or refuse with a note. Completing a closure closes the account in both APIs; the\nmember is told by SMS when a number is confirmed.",
+        "operationId": "close_request_v1_privacy_requests__request_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrivacyOutcomeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterEntryOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "already_closed"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -5634,6 +6698,62 @@
         "type": "object",
         "title": "AccountNumber",
         "description": "The ID number the account registered with: nic, or passportNumber with passportCountry."
+      },
+      "ActivityItemOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "identity_review",
+              "appeal",
+              "event",
+              "removal_request",
+              "area_change",
+              "privacy_request"
+            ],
+            "title": "Kind"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At"
+          },
+          "targetId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Targetid",
+            "description": "What the item opens: the review, appeal, event, request or receipt"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "reference",
+          "title",
+          "state",
+          "at",
+          "targetId"
+        ],
+        "title": "ActivityItemOut"
       },
       "AlbumCreateIn": {
         "properties": {
@@ -6484,6 +7604,131 @@
         ],
         "title": "AppealSummaryOut",
         "description": "One row of the D05 queue."
+      },
+      "AreaChangeIn": {
+        "properties": {
+          "gnCode": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 1,
+            "title": "Gncode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "gnCode"
+        ],
+        "title": "AreaChangeIn"
+      },
+      "AreaChangeOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "requestRef": {
+            "type": "string",
+            "title": "Requestref"
+          },
+          "toGn": {
+            "type": "string",
+            "title": "Togn"
+          },
+          "toGnName": {
+            "type": "string",
+            "title": "Tognname"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "awaiting_proof",
+              "submitted",
+              "approved",
+              "declined",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "submittedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submittedat"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "requestRef",
+          "toGn",
+          "toGnName",
+          "state",
+          "createdAt",
+          "submittedAt",
+          "decidedAt",
+          "decisionReason"
+        ],
+        "title": "AreaChangeOut",
+        "description": "The receipt for an area-change request (FR-PROF-005): the current area stays until it is approved."
+      },
+      "AreaDecisionIn": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "decline"
+            ],
+            "title": "Decision"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision",
+          "reason"
+        ],
+        "title": "AreaDecisionIn"
       },
       "AreaRef": {
         "properties": {
@@ -9019,6 +10264,68 @@
         ],
         "title": "HomeOut"
       },
+      "IdentityDataItemOut": {
+        "properties": {
+          "dataEn": {
+            "type": "string",
+            "title": "Dataen"
+          },
+          "dataTa": {
+            "type": "string",
+            "title": "Datata"
+          },
+          "purposeEn": {
+            "type": "string",
+            "title": "Purposeen"
+          },
+          "purposeTa": {
+            "type": "string",
+            "title": "Purposeta"
+          },
+          "retentionEn": {
+            "type": "string",
+            "title": "Retentionen"
+          },
+          "retentionTa": {
+            "type": "string",
+            "title": "Retentionta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataEn",
+          "dataTa",
+          "purposeEn",
+          "purposeTa",
+          "retentionEn",
+          "retentionTa"
+        ],
+        "title": "IdentityDataItemOut"
+      },
+      "LockedFieldOut": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "enum": [
+              "legal_name",
+              "date_of_birth",
+              "id_number"
+            ],
+            "title": "Field"
+          },
+          "reason": {
+            "type": "string",
+            "const": "re_review_required",
+            "title": "Reason",
+            "default": "re_review_required"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field"
+        ],
+        "title": "LockedFieldOut"
+      },
       "ManagedAlbumOut": {
         "properties": {
           "id": {
@@ -10112,6 +11419,26 @@
         "title": "PassScanOut",
         "description": "checked_in, already_checked_in, expired (ask the member to refresh), wrong_event,\noutside_window or not_valid. A name is shown only with a recorded attendance (BR-062)."
       },
+      "PasswordChangeInput": {
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "maxLength": 256,
+            "title": "Currentpassword"
+          },
+          "newPassword": {
+            "type": "string",
+            "maxLength": 256,
+            "title": "Newpassword"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ],
+        "title": "PasswordChangeInput"
+      },
       "PasswordResetInput": {
         "properties": {
           "resetToken": {
@@ -10282,6 +11609,391 @@
         "title": "PreviewOut",
         "description": "What W09 shows before saving (RB-06). Each problem is a code the dashboard explains."
       },
+      "PrivacyOutcomeIn": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "refused"
+            ],
+            "title": "Outcome"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 3,
+            "title": "Note",
+            "description": "Shown to the member"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcome",
+          "note"
+        ],
+        "title": "PrivacyOutcomeIn"
+      },
+      "PrivacyRequestIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "copy",
+              "closure"
+            ],
+            "title": "Kind"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Note",
+            "default": ""
+          },
+          "password": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Password"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{6}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "title": "PrivacyRequestIn",
+        "description": "A copy needs nothing more; a closure needs the password and the code sent by /closure-code."
+      },
+      "PrivacyRequestOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "requestRef": {
+            "type": "string",
+            "title": "Requestref"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "copy",
+              "closure"
+            ],
+            "title": "Kind"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "completed",
+              "refused"
+            ],
+            "title": "State"
+          },
+          "handledBy": {
+            "type": "string",
+            "title": "Handledby",
+            "default": "Data Protection Officer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Dueat",
+            "description": "21 working days [UNVERIFIED, PDPA], for the DPO to confirm"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedat"
+          },
+          "outcomeNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcomenote"
+          },
+          "retention": {
+            "items": {
+              "$ref": "#/components/schemas/RetentionItemOut"
+            },
+            "type": "array",
+            "title": "Retention"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "requestRef",
+          "kind",
+          "state",
+          "createdAt",
+          "dueAt",
+          "closedAt",
+          "outcomeNote",
+          "retention"
+        ],
+        "title": "PrivacyRequestOut",
+        "description": "The receipt (BR-028): reference, state, the statutory due date and, for a closure, what is\nkept and for how long; nothing is deleted at once (BR-079)."
+      },
+      "ProfileOut": {
+        "properties": {
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "legalName": {
+            "type": "string",
+            "title": "Legalname"
+          },
+          "displayName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Displayname",
+            "description": "Greets the member; never replaces the legal name (BR-074)"
+          },
+          "dateOfBirth": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dateofbirth"
+          },
+          "gender": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "male",
+                  "female",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gender"
+          },
+          "tier": {
+            "type": "string",
+            "title": "Tier",
+            "description": "As assigned; there is no way to change it here (FR-PROF-002)"
+          },
+          "identityState": {
+            "type": "string",
+            "enum": [
+              "not_submitted",
+              "submitted",
+              "in_review",
+              "needs_update",
+              "verified",
+              "unable_to_verify"
+            ],
+            "title": "Identitystate"
+          },
+          "membershipState": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "active",
+              "suspended",
+              "inactive"
+            ],
+            "title": "Membershipstate"
+          },
+          "districtName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Districtname"
+          },
+          "dsName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dsname"
+          },
+          "gnName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gnname"
+          },
+          "mobileMasked": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mobilemasked",
+            "description": "Changed only through a code to the new number (/v1/identity/me/phone)"
+          },
+          "verifiedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verifiedat"
+          },
+          "verificationValidUntil": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verificationvaliduntil",
+            "description": "OD-17 [ASSUMPTION]: a year after verification"
+          },
+          "lockedFields": {
+            "items": {
+              "$ref": "#/components/schemas/LockedFieldOut"
+            },
+            "type": "array",
+            "title": "Lockedfields"
+          },
+          "openAreaChange": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AreaChangeOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberCode",
+          "legalName",
+          "displayName",
+          "dateOfBirth",
+          "gender",
+          "tier",
+          "identityState",
+          "membershipState",
+          "districtName",
+          "dsName",
+          "gnName",
+          "mobileMasked",
+          "verifiedAt",
+          "verificationValidUntil",
+          "lockedFields",
+          "openAreaChange"
+        ],
+        "title": "ProfileOut",
+        "description": "P01 and P02. Locked fields change only through a new identity review (BR-073)."
+      },
+      "ProfileUpdateIn": {
+        "properties": {
+          "displayName": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 60
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Displayname"
+          },
+          "gender": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "male",
+                  "female",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gender"
+          }
+        },
+        "type": "object",
+        "title": "ProfileUpdateIn",
+        "description": "Only these; anything else is refused by the schema. An empty display name greets by the legal name."
+      },
       "ProgressOut": {
         "properties": {
           "route": {
@@ -10444,6 +12156,114 @@
           "assignedToMe"
         ],
         "title": "QueueCountsOut"
+      },
+      "QueuedAreaChangeOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "requestRef": {
+            "type": "string",
+            "title": "Requestref"
+          },
+          "toGn": {
+            "type": "string",
+            "title": "Togn"
+          },
+          "toGnName": {
+            "type": "string",
+            "title": "Tognname"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "awaiting_proof",
+              "submitted",
+              "approved",
+              "declined",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "submittedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submittedat"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          },
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "fromGn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fromgn"
+          },
+          "hasProof": {
+            "type": "boolean",
+            "title": "Hasproof"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "requestRef",
+          "toGn",
+          "toGnName",
+          "state",
+          "createdAt",
+          "submittedAt",
+          "decidedAt",
+          "decisionReason",
+          "memberId",
+          "fromGn",
+          "hasProof"
+        ],
+        "title": "QueuedAreaChangeOut"
       },
       "QueuedRemovalOut": {
         "properties": {
@@ -10640,6 +12460,111 @@
           "phone"
         ],
         "title": "RecoveryContactOut"
+      },
+      "RegisterEntryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "requestRef": {
+            "type": "string",
+            "title": "Requestref"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "copy",
+              "closure"
+            ],
+            "title": "Kind"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "completed",
+              "refused"
+            ],
+            "title": "State"
+          },
+          "handledBy": {
+            "type": "string",
+            "title": "Handledby",
+            "default": "Data Protection Officer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Dueat",
+            "description": "21 working days [UNVERIFIED, PDPA], for the DPO to confirm"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedat"
+          },
+          "outcomeNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcomenote"
+          },
+          "retention": {
+            "items": {
+              "$ref": "#/components/schemas/RetentionItemOut"
+            },
+            "type": "array",
+            "title": "Retention"
+          },
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "requestRef",
+          "kind",
+          "state",
+          "createdAt",
+          "dueAt",
+          "closedAt",
+          "outcomeNote",
+          "retention",
+          "memberId",
+          "memberCode",
+          "note"
+        ],
+        "title": "RegisterEntryOut"
       },
       "RegistrationInput": {
         "properties": {
@@ -10989,6 +12914,34 @@
           "expiresInSeconds"
         ],
         "title": "ResetTokenOut"
+      },
+      "RetentionItemOut": {
+        "properties": {
+          "dataEn": {
+            "type": "string",
+            "title": "Dataen"
+          },
+          "dataTa": {
+            "type": "string",
+            "title": "Datata"
+          },
+          "keptEn": {
+            "type": "string",
+            "title": "Kepten"
+          },
+          "keptTa": {
+            "type": "string",
+            "title": "Keptta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataEn",
+          "dataTa",
+          "keptEn",
+          "keptTa"
+        ],
+        "title": "RetentionItemOut"
       },
       "ReviewFileOut": {
         "properties": {
@@ -11709,6 +13662,28 @@
           "declaration"
         ],
         "title": "SubmissionInput"
+      },
+      "SurveyAnswersIn": {
+        "properties": {
+          "answers": {
+            "patternProperties": {
+              "^[a-z0-9_]{1,40}$": {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              }
+            },
+            "type": "object",
+            "maxProperties": 30,
+            "title": "Answers",
+            "description": "An empty set deletes every answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answers"
+        ],
+        "title": "SurveyAnswersIn"
       },
       "TierInfo": {
         "properties": {

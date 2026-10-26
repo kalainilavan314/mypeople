@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, Response, status
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
@@ -12,6 +12,7 @@ from app.integrations.sms import DevelopmentSms, NoSms, SmsSender, SmsUnavailabl
 from app.modules.access.dependencies import require_permission
 from app.modules.access.service import AccessRefused, Staff
 from app.modules.auth.dependencies import CurrentMember
+from app.modules.auth.session_cookie import clear_session_cookie
 from app.modules.identity.recovery import reset_tokens, rules, service
 from app.modules.identity.recovery.schemas import (
     AccountNumber,
@@ -20,6 +21,7 @@ from app.modules.identity.recovery.schemas import (
     AssistedRequestOut,
     AssistedResolutionInput,
     CodeSentOut,
+    PasswordChangeInput,
     PasswordResetInput,
     PhoneConfirmInput,
     PhoneInput,
@@ -161,6 +163,34 @@ def reset_password(body: PasswordResetInput, request: Request, db: Db) -> None:
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail={"code": "password_refused", "problems": error.problems},
         ) from None
+
+
+@router.post(
+    "/v1/auth/password",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        401: {"description": "wrong_password"},
+        422: {"description": '{"code": "password_refused", "problems": [...]}, e.g. "same_password"'},
+        429: {"description": "too_many_requests, with Retry-After"},
+    },
+)
+def change_password(body: PasswordChangeInput, member: CurrentMember, request: Request, response: Response, db: Db) -> None:
+    """P05: a new password, only with the current one (FR-PROF-014). Every session ends, this one too,
+    so the app signs in again; the confirmed number is told."""
+    try:
+        service.change_password(
+            db, _sms(request), member.id, body.current_password, body.new_password, client_ip(request)
+        )
+    except service.TooManyRequests as error:
+        raise _too_many(error) from None
+    except service.WrongPassword:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="wrong_password") from None
+    except service.PasswordRefused as error:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail={"code": "password_refused", "problems": error.problems},
+        ) from None
+    clear_session_cookie(response, _settings(request))
 
 
 @router.post("/v1/auth/recovery/assisted", status_code=status.HTTP_202_ACCEPTED, responses=LIMITED)

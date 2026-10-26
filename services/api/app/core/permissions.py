@@ -92,6 +92,9 @@ MATRIX: dict[str, dict[Tier, Grant]] = {
     "certificate.issue_revoke": {"3B": E, "5": D},  # PRM-52
     "disaster.relay": {"3B": E, "5": E},  # PRM-53
     "relief.logistics": {"2B": E, "3B": E},  # PRM-54
+    # Not in the BRD matrix [ASSUMPTION]: FR-PROF-018 and 019 route data-subject requests to
+    # the DPO without naming a permission; the DPO's account holds it as an explicit Tier 5 grant.
+    "privacy.requests.handle": {"5": E},
 }
 
 # RB-12 [ASSUMPTION; OD-32]: no person may hold assistance decision rights

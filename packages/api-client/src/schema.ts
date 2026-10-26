@@ -1227,6 +1227,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/auth/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Change Password
+         * @description P05: a new password, only with the current one (FR-PROF-014). Every session ends, this one too,
+         *     so the app signs in again; the confirmed number is told.
+         */
+        post: operations["change_password_v1_auth_password_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/auth/recovery/assisted": {
         parameters: {
             query?: never;
@@ -1893,6 +1914,282 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Profile
+         * @description P01 and P02: what is recorded, what is locked, and any area change waiting for review.
+         */
+        get: operations["read_profile_v1_profile_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Profile
+         * @description Display name and gender only (FR-PROF-003). The legal name, date of birth and ID number are
+         *     not fields here at all.
+         */
+        patch: operations["update_profile_v1_profile_patch"];
+        trace?: never;
+    };
+    "/v1/profile/activity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Activity
+         * @description P04: every receipt the member holds, newest first, with a filter (FR-PROF-010).
+         */
+        get: operations["list_activity_v1_profile_activity_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/profile/survey-answers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Survey Answers
+         * @description The optional joining-survey answers (FR-PROF-017); never on cards or public views (BR-019).
+         */
+        get: operations["read_survey_answers_v1_profile_survey_answers_get"];
+        /** Replace Survey Answers */
+        put: operations["replace_survey_answers_v1_profile_survey_answers_put"];
+        post?: never;
+        /**
+         * Delete Survey Answers
+         * @description "Delete my optional answers": deleted at once, and the deletion is logged (FR-PROF-017).
+         */
+        delete: operations["delete_survey_answers_v1_profile_survey_answers_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/profile/identity-data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Identity Data Notice
+         * @description What identity data is kept, why, and for how long (FR-PROF-017). The periods are proposals (OD-03).
+         */
+        get: operations["read_identity_data_notice_v1_profile_identity_data_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/profile/area-changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Area Changes
+         * @description Requests to move into the caller's areas, oldest submitted first. Needs members.verify.
+         */
+        get: operations["list_area_changes_v1_profile_area_changes_get"];
+        put?: never;
+        /**
+         * Request Area Change
+         * @description Ask to move to another GN division; upload proof of residence next. The current area stays
+         *     until a reviewer approves (FR-PROF-005, BR-076).
+         */
+        post: operations["request_area_change_v1_profile_area_changes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/profile/area-changes/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List My Area Changes */
+        get: operations["list_my_area_changes_v1_profile_area_changes_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/profile/area-changes/{change_id}/proof": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Proof
+         * @description The proof of residence, shown to a reviewer over the requested area; every opening is logged.
+         */
+        get: operations["read_proof_v1_profile_area_changes__change_id__proof_get"];
+        /**
+         * Attach Proof
+         * @description Proof of residence, kept encrypted; this sends the request for review.
+         */
+        put: operations["attach_proof_v1_profile_area_changes__change_id__proof_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/profile/area-changes/{change_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw */
+        post: operations["withdraw_v1_profile_area_changes__change_id__withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/profile/area-changes/{change_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide
+         * @description Approve (the member's area changes now) or decline, with a reason the member sees.
+         */
+        post: operations["decide_v1_profile_area_changes__change_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/privacy/closure-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send Closure Code
+         * @description P06: a one-time code to the confirmed number, to confirm closing the account (FR-PROF-018).
+         */
+        post: operations["send_closure_code_v1_privacy_closure_code_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/privacy/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Register
+         * @description The DPO register, soonest due first. Needs privacy.requests.handle.
+         */
+        get: operations["read_register_v1_privacy_requests_get"];
+        put?: never;
+        /**
+         * Make Request
+         * @description P06: a copy of one's personal data (FR-PROF-019) or closing the account (FR-PROF-018), each with
+         *     a receipt and the date it is due. Asking again while one is open returns it.
+         */
+        post: operations["make_request_v1_privacy_requests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/privacy/requests/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List My Requests */
+        get: operations["list_my_requests_v1_privacy_requests_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/privacy/requests/{request_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Close Request
+         * @description Complete or refuse with a note. Completing a closure closes the account in both APIs; the
+         *     member is told by SMS when a number is confirmed.
+         */
+        post: operations["close_request_v1_privacy_requests__request_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1908,6 +2205,31 @@ export interface components {
             passportNumber?: string | null;
             /** Passportcountry */
             passportCountry?: string | null;
+        };
+        /** ActivityItemOut */
+        ActivityItemOut: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request";
+            /** Reference */
+            reference: string;
+            /** Title */
+            title: string | null;
+            /** State */
+            state: string;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /**
+             * Targetid
+             * Format: uuid
+             * @description What the item opens: the review, appeal, event, request or receipt
+             */
+            targetId: string;
         };
         /** AlbumCreateIn */
         AlbumCreateIn: {
@@ -2220,6 +2542,54 @@ export interface components {
             claimedAt: string | null;
             /** Decidedat */
             decidedAt: string | null;
+        };
+        /** AreaChangeIn */
+        AreaChangeIn: {
+            /** Gncode */
+            gnCode: string;
+        };
+        /**
+         * AreaChangeOut
+         * @description The receipt for an area-change request (FR-PROF-005): the current area stays until it is approved.
+         */
+        AreaChangeOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Requestref */
+            requestRef: string;
+            /** Togn */
+            toGn: string;
+            /** Tognname */
+            toGnName: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "awaiting_proof" | "submitted" | "approved" | "declined" | "withdrawn";
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Submittedat */
+            submittedAt: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+            /** Decisionreason */
+            decisionReason: string | null;
+        };
+        /** AreaDecisionIn */
+        AreaDecisionIn: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approve" | "decline";
+            /** Reason */
+            reason: string;
         };
         /**
          * AreaRef
@@ -3167,6 +3537,35 @@ export interface components {
             tabs: components["schemas"]["HomeFeatureOut"][];
             hub: components["schemas"]["HomeHubOut"];
         };
+        /** IdentityDataItemOut */
+        IdentityDataItemOut: {
+            /** Dataen */
+            dataEn: string;
+            /** Datata */
+            dataTa: string;
+            /** Purposeen */
+            purposeEn: string;
+            /** Purposeta */
+            purposeTa: string;
+            /** Retentionen */
+            retentionEn: string;
+            /** Retentionta */
+            retentionTa: string;
+        };
+        /** LockedFieldOut */
+        LockedFieldOut: {
+            /**
+             * Field
+             * @enum {string}
+             */
+            field: "legal_name" | "date_of_birth" | "id_number";
+            /**
+             * Reason
+             * @default re_review_required
+             * @constant
+             */
+            reason: "re_review_required";
+        };
         /** ManagedAlbumOut */
         ManagedAlbumOut: {
             /**
@@ -3558,6 +3957,13 @@ export interface components {
             /** Attendedat */
             attendedAt?: string | null;
         };
+        /** PasswordChangeInput */
+        PasswordChangeInput: {
+            /** Currentpassword */
+            currentPassword: string;
+            /** Newpassword */
+            newPassword: string;
+        };
         /** PasswordResetInput */
         PasswordResetInput: {
             /** Resettoken */
@@ -3612,6 +4018,150 @@ export interface components {
             problems: string[];
             /** Reviewdueat */
             reviewDueAt: string | null;
+        };
+        /** PrivacyOutcomeIn */
+        PrivacyOutcomeIn: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "completed" | "refused";
+            /**
+             * Note
+             * @description Shown to the member
+             */
+            note: string;
+        };
+        /**
+         * PrivacyRequestIn
+         * @description A copy needs nothing more; a closure needs the password and the code sent by /closure-code.
+         */
+        PrivacyRequestIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "copy" | "closure";
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+            /** Password */
+            password?: string | null;
+            /** Code */
+            code?: string | null;
+        };
+        /**
+         * PrivacyRequestOut
+         * @description The receipt (BR-028): reference, state, the statutory due date and, for a closure, what is
+         *     kept and for how long; nothing is deleted at once (BR-079).
+         */
+        PrivacyRequestOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Requestref */
+            requestRef: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "copy" | "closure";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "completed" | "refused";
+            /**
+             * Handledby
+             * @default Data Protection Officer
+             */
+            handledBy: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Dueat
+             * Format: date-time
+             * @description 21 working days [UNVERIFIED, PDPA], for the DPO to confirm
+             */
+            dueAt: string;
+            /** Closedat */
+            closedAt: string | null;
+            /** Outcomenote */
+            outcomeNote: string | null;
+            /** Retention */
+            retention: components["schemas"]["RetentionItemOut"][];
+        };
+        /**
+         * ProfileOut
+         * @description P01 and P02. Locked fields change only through a new identity review (BR-073).
+         */
+        ProfileOut: {
+            /** Membercode */
+            memberCode: string;
+            /** Legalname */
+            legalName: string;
+            /**
+             * Displayname
+             * @description Greets the member; never replaces the legal name (BR-074)
+             */
+            displayName: string | null;
+            /** Dateofbirth */
+            dateOfBirth: string | null;
+            /** Gender */
+            gender: ("male" | "female" | "other") | null;
+            /**
+             * Tier
+             * @description As assigned; there is no way to change it here (FR-PROF-002)
+             */
+            tier: string;
+            /**
+             * Identitystate
+             * @enum {string}
+             */
+            identityState: "not_submitted" | "submitted" | "in_review" | "needs_update" | "verified" | "unable_to_verify";
+            /**
+             * Membershipstate
+             * @enum {string}
+             */
+            membershipState: "pending" | "active" | "suspended" | "inactive";
+            /** Districtname */
+            districtName: string | null;
+            /** Dsname */
+            dsName: string | null;
+            /** Gnname */
+            gnName: string | null;
+            /**
+             * Mobilemasked
+             * @description Changed only through a code to the new number (/v1/identity/me/phone)
+             */
+            mobileMasked: string | null;
+            /** Verifiedat */
+            verifiedAt: string | null;
+            /**
+             * Verificationvaliduntil
+             * @description OD-17 [ASSUMPTION]: a year after verification
+             */
+            verificationValidUntil: string | null;
+            /** Lockedfields */
+            lockedFields: components["schemas"]["LockedFieldOut"][];
+            openAreaChange: components["schemas"]["AreaChangeOut"] | null;
+        };
+        /**
+         * ProfileUpdateIn
+         * @description Only these; anything else is refused by the schema. An empty display name greets by the legal name.
+         */
+        ProfileUpdateIn: {
+            /** Displayname */
+            displayName?: string | null;
+            /** Gender */
+            gender?: ("male" | "female" | "other") | null;
         };
         /** ProgressOut */
         ProgressOut: {
@@ -3674,6 +4224,45 @@ export interface components {
             needsUpdate: number;
             /** Assignedtome */
             assignedToMe: number;
+        };
+        /** QueuedAreaChangeOut */
+        QueuedAreaChangeOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Requestref */
+            requestRef: string;
+            /** Togn */
+            toGn: string;
+            /** Tognname */
+            toGnName: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "awaiting_proof" | "submitted" | "approved" | "declined" | "withdrawn";
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Submittedat */
+            submittedAt: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+            /** Decisionreason */
+            decisionReason: string | null;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Fromgn */
+            fromGn: string | null;
+            /** Hasproof */
+            hasProof: boolean;
         };
         /** QueuedRemovalOut */
         QueuedRemovalOut: {
@@ -3756,6 +4345,57 @@ export interface components {
         RecoveryContactOut: {
             /** Phone */
             phone: string;
+        };
+        /** RegisterEntryOut */
+        RegisterEntryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Requestref */
+            requestRef: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "copy" | "closure";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "completed" | "refused";
+            /**
+             * Handledby
+             * @default Data Protection Officer
+             */
+            handledBy: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Dueat
+             * Format: date-time
+             * @description 21 working days [UNVERIFIED, PDPA], for the DPO to confirm
+             */
+            dueAt: string;
+            /** Closedat */
+            closedAt: string | null;
+            /** Outcomenote */
+            outcomeNote: string | null;
+            /** Retention */
+            retention: components["schemas"]["RetentionItemOut"][];
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Membercode */
+            memberCode: string;
+            /** Note */
+            note: string;
         };
         /**
          * RegistrationInput
@@ -3902,6 +4542,17 @@ export interface components {
             resetToken: string;
             /** Expiresinseconds */
             expiresInSeconds: number;
+        };
+        /** RetentionItemOut */
+        RetentionItemOut: {
+            /** Dataen */
+            dataEn: string;
+            /** Datata */
+            dataTa: string;
+            /** Kepten */
+            keptEn: string;
+            /** Keptta */
+            keptTa: string;
         };
         /**
          * ReviewFileOut
@@ -4183,6 +4834,16 @@ export interface components {
              * @constant
              */
             declaration: true;
+        };
+        /** SurveyAnswersIn */
+        SurveyAnswersIn: {
+            /**
+             * Answers
+             * @description An empty set deletes every answer
+             */
+            answers: {
+                [key: string]: string;
+            };
         };
         /** TierInfo */
         TierInfo: {
@@ -6562,6 +7223,49 @@ export interface operations {
             };
         };
     };
+    change_password_v1_auth_password_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordChangeInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description wrong_password */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "password_refused", "problems": [...]}, e.g. "same_password" */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description too_many_requests, with Retry-After */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     request_assisted_recovery_v1_auth_recovery_assisted_post: {
         parameters: {
             query?: never;
@@ -8254,6 +8958,701 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HomeOut"];
+                };
+            };
+        };
+    };
+    read_profile_v1_profile_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileOut"];
+                };
+            };
+        };
+    };
+    update_profile_v1_profile_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_activity_v1_profile_activity_get: {
+        parameters: {
+            query?: {
+                kind?: ("identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request") | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivityItemOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_survey_answers_v1_profile_survey_answers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+    };
+    replace_survey_answers_v1_profile_survey_answers_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SurveyAnswersIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_survey_answers_v1_profile_survey_answers_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_identity_data_notice_v1_profile_identity_data_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdentityDataItemOut"][];
+                };
+            };
+        };
+    };
+    list_area_changes_v1_profile_area_changes_get: {
+        parameters: {
+            query?: {
+                state?: ("submitted" | "awaiting_proof" | "approved" | "declined" | "withdrawn")[] | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueuedAreaChangeOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_area_change_v1_profile_area_changes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AreaChangeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AreaChangeOut"];
+                };
+            };
+            /** @description request_open, same_area or unknown_area */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_my_area_changes_v1_profile_area_changes_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AreaChangeOut"][];
+                };
+            };
+        };
+    };
+    read_proof_v1_profile_area_changes__change_id__proof_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                change_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/jpeg": unknown;
+                    "image/png": unknown;
+                    "image/heic": unknown;
+                };
+            };
+            /** @description own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description evidence_storage_not_configured */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    attach_proof_v1_profile_area_changes__change_id__proof_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                change_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "image/jpeg": string;
+                "image/png": string;
+                "image/heic": string;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AreaChangeOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_awaiting_proof */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description too_large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description unsupported_type (JPEG, PNG or HEIC) */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description evidence_storage_not_configured */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    withdraw_v1_profile_area_changes__change_id__withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                change_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AreaChangeOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_open */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_v1_profile_area_changes__change_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                change_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AreaDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AreaChangeOut"];
+                };
+            };
+            /** @description own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_submitted */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    send_closure_code_v1_privacy_closure_code_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CodeSentOut"];
+                };
+            };
+            /** @description no_recovery_number */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description too_many_requests, with Retry-After */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description sms_not_configured */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_register_v1_privacy_requests_get: {
+        parameters: {
+            query?: {
+                state?: ("open" | "completed" | "refused")[] | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisterEntryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    make_request_v1_privacy_requests_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PrivacyRequestIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrivacyRequestOut"];
+                };
+            };
+            /** @description wrong_password, invalid_code or too_many_attempts (closure) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description no_recovery_number */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_my_requests_v1_privacy_requests_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrivacyRequestOut"][];
+                };
+            };
+        };
+    };
+    close_request_v1_privacy_requests__request_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PrivacyOutcomeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisterEntryOut"];
+                };
+            };
+            /** @description own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description already_closed */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

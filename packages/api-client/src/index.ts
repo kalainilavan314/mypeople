@@ -53,6 +53,18 @@ export type RemovalReceipt = Schemas['RemovalReceiptOut'];
 export type QueuedRemoval = Schemas['QueuedRemovalOut'];
 export type RemovalDecisionInput = Schemas['RemovalDecisionIn'];
 export type GalleryImageType = 'image/jpeg' | 'image/png' | 'image/webp';
+export type ProfileView = Schemas['ProfileOut'];
+export type ProfileUpdateInput = Schemas['ProfileUpdateIn'];
+export type ActivityItem = Schemas['ActivityItemOut'];
+export type ActivityKind = ActivityItem['kind'];
+export type IdentityDataItem = Schemas['IdentityDataItemOut'];
+export type AreaChange = Schemas['AreaChangeOut'];
+export type QueuedAreaChange = Schemas['QueuedAreaChangeOut'];
+export type AreaDecisionInput = Schemas['AreaDecisionIn'];
+export type PrivacyRequest = Schemas['PrivacyRequestOut'];
+export type PrivacyRequestInput = Schemas['PrivacyRequestIn'];
+export type PrivacyRegisterEntry = Schemas['RegisterEntryOut'];
+export type PrivacyOutcomeInput = Schemas['PrivacyOutcomeIn'];
 export type EventFilters = {
   /** 'mine' (the default) narrows to the member's area; 'all' widens it (BR-057). */
   scope?: 'mine' | 'all';
@@ -474,6 +486,56 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     /** Remove, blur or keep, with a reason. Throws ApiError "already_decided" (409). */
     decideRemovalRequest: (requestId: string, input: RemovalDecisionInput) =>
       request<RemovalReceipt>('POST', `/v1/content/removal-requests/${encodeURIComponent(requestId)}/decision`, input),
+
+    /** P01, P02: what is recorded, the locked legal details, the masked number and any open area change. */
+    getProfile: () => request<ProfileView>('GET', '/v1/profile'),
+    /** Display name and gender only; an empty display name greets by the legal name again. */
+    updateProfile: (input: ProfileUpdateInput) => request<ProfileView>('PATCH', '/v1/profile', input),
+    /** P04: every receipt, newest first. */
+    listMyActivity: (filters: { kind?: ActivityKind; limit?: number } = {}) =>
+      request<ActivityItem[]>('GET', `/v1/profile/activity${toEventQuery(filters)}`),
+    getSurveyAnswers: () => request<Record<string, string>>('GET', '/v1/profile/survey-answers'),
+    replaceSurveyAnswers: (answers: Record<string, string>) =>
+      request<Record<string, string>>('PUT', '/v1/profile/survey-answers', { answers }),
+    /** "Delete my optional answers": immediate, and logged. */
+    deleteSurveyAnswers: () => request<void>('DELETE', '/v1/profile/survey-answers'),
+    getIdentityDataNotice: () => request<IdentityDataItem[]>('GET', '/v1/profile/identity-data'),
+    /**
+     * A new password, only with the current one. Every session ends, this one too: sign in again.
+     * Throws ApiError "wrong_password" (401), "password_refused" (422) or "too_many_requests" (429).
+     */
+    changePassword: (currentPassword: string, newPassword: string) =>
+      request<void>('POST', '/v1/auth/password', { currentPassword, newPassword }),
+
+    /** Ask to move to another GN division. Throws ApiError "request_open", "same_area" or "unknown_area" (409). */
+    requestAreaChange: (gnCode: string) => request<AreaChange>('POST', '/v1/profile/area-changes', { gnCode }),
+    listMyAreaChanges: () => request<AreaChange[]>('GET', '/v1/profile/area-changes/mine'),
+    /** Proof of residence (kept encrypted); this sends the request for review. */
+    uploadAreaChangeProof: (changeId: string, image: Blob | ArrayBuffer, contentType: IdentityImageType) =>
+      request<AreaChange>('PUT', `/v1/profile/area-changes/${encodeURIComponent(changeId)}/proof`, image, contentType),
+    withdrawAreaChange: (changeId: string) =>
+      request<AreaChange>('POST', `/v1/profile/area-changes/${encodeURIComponent(changeId)}/withdraw`),
+    /** Requests to move into the caller's areas. Needs members.verify. */
+    listAreaChanges: (filters: { states?: readonly AreaChange['state'][]; limit?: number } = {}) =>
+      request<QueuedAreaChange[]>('GET', `/v1/profile/area-changes${toQueueQuery(filters)}`),
+    /** Approve (the member's area changes now) or decline, with a reason. */
+    decideAreaChange: (changeId: string, input: AreaDecisionInput) =>
+      request<AreaChange>('POST', `/v1/profile/area-changes/${encodeURIComponent(changeId)}/decision`, input),
+
+    /** The one-time code that confirms closing the account. Throws ApiError "no_recovery_number" (409). */
+    sendClosureCode: () => request<CodeSent>('POST', '/v1/privacy/closure-code'),
+    /**
+     * A copy of one's data, or closing the account (with password and code): a receipt with its due date.
+     * Throws ApiError "wrong_password", "invalid_code" or "too_many_attempts" (401) for a closure.
+     */
+    makePrivacyRequest: (input: PrivacyRequestInput) => request<PrivacyRequest>('POST', '/v1/privacy/requests', input),
+    listMyPrivacyRequests: () => request<PrivacyRequest[]>('GET', '/v1/privacy/requests/mine'),
+    /** The DPO register, soonest due first. Needs privacy.requests.handle. */
+    listPrivacyRegister: (filters: { states?: readonly PrivacyRequest['state'][]; limit?: number } = {}) =>
+      request<PrivacyRegisterEntry[]>('GET', `/v1/privacy/requests${toQueueQuery(filters)}`),
+    /** Complete or refuse with a note; completing a closure closes the account. */
+    closePrivacyRequest: (requestId: string, input: PrivacyOutcomeInput) =>
+      request<PrivacyRegisterEntry>('POST', `/v1/privacy/requests/${encodeURIComponent(requestId)}/decision`, input),
   };
 }
 

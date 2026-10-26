@@ -21,6 +21,12 @@ Current scope:
 | `GET /v1/geography/districts`, `.../districts/{code}/ds-divisions`, `.../ds-divisions/{code}/gn-divisions` | the area lists, public |
 | `GET /v1/events`, `GET /v1/events/{id}`, `PUT /v1/events/{id}/rsvp`, `GET /v1/events/{id}/pass`, `.../pass/code` | events for members: list with filters, detail, RSVP, the event pass and its 60-second QR code |
 | `GET /v1/events/manage`, `GET /v1/events/manage/{id}`, `POST /v1/events`, `PATCH /v1/events/{id}`, `POST .../publish`, `.../cancel` | the event console; needs `events.manage` over the event's area |
+| `GET`/`PATCH /v1/profile`, `GET /v1/profile/activity`, `GET`/`PUT`/`DELETE /v1/profile/survey-answers`, `GET /v1/profile/identity-data` | the member's profile: locked legal details, display name and gender, My Activity, optional survey answers, the identity-data notice |
+| `POST /v1/profile/area-changes`, `GET .../mine`, `PUT .../{id}/proof`, `POST .../{id}/withdraw` | GN area-change requests with proof of residence |
+| `GET /v1/profile/area-changes`, `GET .../{id}/proof`, `POST .../{id}/decision` | reviewing area changes; needs `members.verify` over the requested area |
+| `POST /v1/auth/password` | a new password, only with the current one |
+| `POST /v1/privacy/closure-code`, `POST /v1/privacy/requests`, `GET /v1/privacy/requests/mine` | data-subject requests: a copy of one's data, or closing the account |
+| `GET /v1/privacy/requests`, `POST .../{id}/decision` | the DPO register; needs `privacy.requests.handle` |
 | `GET /v1/home` | the Home tab: H01 or H02, one next step, the next event nearby, open and locked features with reasons, the hub |
 | `GET /v1/content/albums`, `GET /v1/content/albums/{id}`, `GET /v1/content/photos/{id}/{thumb\|display}` | the gallery for members: published albums, album detail, the photos |
 | `POST /v1/content/photos/{id}/removal-requests`, `GET /v1/content/removal-requests/mine`, `POST /v1/content/removal-requests/public` | photo removal requests with receipts, for members and, through a public form, for people who are not |
@@ -214,6 +220,43 @@ Not built yet: wallet passes (INT-03, OD-06), the offline credential and
 offline scanning (OD-08) and milestones. Event passes are their own codes
 (see Events). The live PWA still uses Express's 10-minute card token,
 which carries the member id, and shows it only for an official card.
+
+## Profile and data-subject rights (BRD P01 to P06; FR-PROF-001 to 006, 009, 010, 014, 017 to 019)
+
+- **Profile.** The member edits a display name and gender only; the legal
+  name, date of birth and ID number come back as locked fields that need a
+  new identity review (BR-073), and a display name never replaces the legal
+  name (BR-074). The mobile number is shown masked and changes only through
+  a code to the new number. The tier is shown as assigned. Verification is
+  valid for a year after it was confirmed (OD-17, an assumption).
+- **My Activity** lists every receipt the member holds, newest first, with a
+  filter: identity reviews, appeals, events, photo removal requests, area
+  changes and data-subject requests (FR-PROF-010).
+- **Survey answers** can be seen, changed or deleted; deleting them is
+  immediate and logged without the answers (FR-PROF-017). The identity-data
+  notice gives the purpose and the proposed retention of each kind.
+- **Area change.** A request to move to another GN division, with proof of
+  residence kept encrypted in the evidence vault; the member's area stays as
+  it is until an identity reviewer (`members.verify`, an assumption) over the
+  requested area opens the proof and approves. One request at a time; a
+  decision is final; nobody reviews their own (BR-076).
+- **Password.** Only with the current one; wrong ones count like sign-in
+  failures; the new password ends every session and the number is told
+  (FR-PROF-014).
+- **Data-subject requests.** A copy of one's personal data, or closing the
+  account after the password and a one-time code: each has a DSR- receipt
+  and a due date 21 working days on (Personal Data Protection Act,
+  unverified, for the DPO to confirm). Closing promises no instant deletion
+  and says what is kept and for how long (BR-079). The DPO register
+  (`privacy.requests.handle`, a Tier 5 explicit grant, an assumption: the BRD
+  names the DPO without a permission) runs soonest due first; completing a
+  closure closes the account in both APIs; the member is told by SMS.
+
+Not built yet: changing verified legal details through a new review
+(FR-PROF-008), notification channel choices (FR-PROF-012, messaging),
+volunteer-skill audience, assembling the copy of the data, anonymising a
+closed account after 30 days, and the device-side settings (FR-PROF-011,
+013, 015, 016).
 
 ## Home (BRD H01, H02, H04; FR-HOME-001 to 008, 012, 013)
 
@@ -580,6 +623,8 @@ app/
   modules/geography/  district, DS and GN lists
   modules/events/     events, RSVPs, event passes, check-in and the roster
   modules/home/       the Home tab: layout, next step, locks, hub
+  modules/profile/    the member's profile, My Activity, survey answers; area_changes/ GN moves
+  modules/privacy/    data-subject requests and the DPO register
   modules/content/gallery/  albums, photos (re-encoded WebP), removal requests
   core/rotating_codes.py  60-second signed QR codes (member card, event pass)
   modules/<households, assistance, community, events, engagement, finance, content, messaging, ai>/

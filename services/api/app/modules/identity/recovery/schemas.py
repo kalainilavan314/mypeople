@@ -59,6 +59,11 @@ class PasswordResetInput(CamelModel):
     new_password: str = Field(max_length=256)
 
 
+class PasswordChangeInput(CamelModel):
+    current_password: str = Field(max_length=256)
+    new_password: str = Field(max_length=256)
+
+
 class AssistedRecoveryInput(AccountNumber):
     contact_method: Literal["phone", "email", "in_person"]
     contact_value: str | None = Field(default=None, max_length=200, description="How the support team can reach you")

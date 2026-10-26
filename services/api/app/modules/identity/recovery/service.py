@@ -21,7 +21,7 @@ from dataclasses import dataclass
 
 from sqlalchemy.orm import Session
 
-from app.core.security import hash_password, one_time_code_hash
+from app.core.security import hash_password, one_time_code_hash, verify_password
 from app.integrations.sms import SmsSender, SmsUnavailable
 from app.modules.access import repository as access_repository
 from app.modules.access import service as access
@@ -29,6 +29,7 @@ from app.modules.access.rules import PLATFORM, area_from_key
 from app.modules.access.service import Staff
 from app.modules.audit import service as audit
 from app.modules.auth import repository as auth_repository
+from app.modules.auth import throttle
 from app.modules.identity.recovery import repository, reset_tokens, rules
 from app.modules.identity.recovery.repository import AssistedRequest
 from app.modules.identity.registration import rules as registration_rules
@@ -52,6 +53,10 @@ class CodeRefused(Exception):
     def __init__(self, reason: str) -> None:
         super().__init__(reason)
         self.reason = reason  # invalid_code or too_many_attempts
+
+
+class WrongPassword(Exception):
+    pass
 
 
 class PasswordRefused(Exception):
@@ -79,7 +84,7 @@ class PendingCode:
     code: str  # only development shows it
 
 
-def _send_code(db: Session, sms: SmsSender, *, phone: str, purpose: str, ip: str, jwt_secret: str) -> str:
+def send_code(db: Session, sms: SmsSender, *, phone: str, purpose: str, ip: str, jwt_secret: str) -> str:
     """Issue and send a code; returns it (only development shows it)."""
     wait = rules.code_request_wait(repository.code_requests(db, phone, ip, purpose))
     if wait is not None:
@@ -131,7 +136,7 @@ def request_phone_confirmation(
     phone = rules.normalise_phone(raw_phone)
     if phone is None:
         raise InvalidPhone()
-    return _send_code(db, sms, phone=phone, purpose=rules.CONFIRM_PHONE, ip=ip, jwt_secret=jwt_secret)
+    return send_code(db, sms, phone=phone, purpose=rules.CONFIRM_PHONE, ip=ip, jwt_secret=jwt_secret)
 
 
 def confirm_phone(
@@ -246,6 +251,39 @@ def reset_password(db: Session, sms: SmsSender, token: str, new_password: str, i
     contact = repository.find_contact(db, claims.member_id)
     if contact is not None:
         _notify(sms, contact.phone, rules.PASSWORD_CHANGED_MESSAGE)  # FR-AUTH-016
+
+
+def change_password(
+    db: Session, sms: SmsSender, member_id: uuid.UUID, current_password: str, new_password: str, ip: str
+) -> None:
+    """FR-PROF-014: only with the current password. Wrong ones count like sign-in failures, so a
+    session left open cannot be used to guess it. The new password ends every session, this one
+    included, and the confirmed number is told (FR-AUTH-016)."""
+    identifier = f"password-change:{member_id}"
+    if not throttle.sign_in_gate(auth_repository.count_recent_failures(db, identifier, ip, throttle.WINDOW)).allowed:
+        raise TooManyRequests(throttle.LOCKOUT_SECONDS)
+    stored = repository.password_hash(db, member_id)
+    if stored is None or not verify_password(current_password, stored):
+        auth_repository.record_attempt(db, identifier, ip, succeeded=False)
+        db.commit()
+        raise WrongPassword()
+    problems = registration_rules.check_password(new_password, "")
+    if new_password == current_password:
+        problems.append("same_password")
+    if problems:
+        raise PasswordRefused(problems)
+
+    repository.set_password(db, member_id, hash_password(new_password))
+    auth_repository.revoke_member_sessions(db, member_id, "password_reset")
+    auth_repository.clear_failures(db, identifier, ip)
+    audit.record(
+        db, actor_id=member_id, action="identity.password.changed", target_type="member", target_id=str(member_id),
+        details={"memberId": str(member_id)}, ip=ip,
+    )
+    db.commit()
+    contact = repository.find_contact(db, member_id)
+    if contact is not None:
+        _notify(sms, contact.phone, rules.PASSWORD_CHANGED_MESSAGE)
 
 
 # --- Assisted recovery (FR-AUTH-017) ------------------------------------------------------------------
