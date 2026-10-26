@@ -213,7 +213,7 @@ def submit_album(album_id: uuid.UUID, staff: CanPublish, request: Request, db: D
 
 @router.post(
     "/albums/{album_id}/publish",
-    responses={**REFUSED, 409: {"description": "not_allowed_from:<state> or own_submission"}},
+    responses={**REFUSED, 409: {"description": "not_allowed_from:<state>, own_submission or silence_period"}},
 )
 def publish_album(album_id: uuid.UUID, staff: CanPublish, request: Request, db: Db) -> ManagedAlbumOut:
     """Publish a submitted album; never by the person who submitted it."""

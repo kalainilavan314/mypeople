@@ -8,6 +8,11 @@ than a district waits for approval by a Tier 4 or 5 holder over the area who
 did not submit it. The dispatcher sends it when due: one inbox item per
 member in the area, pushed by their topic choice (emergencies count as
 urgent and ignore quiet hours).
+
+While a declared silence window covers the area, an announcement is held,
+recorded once, and sent when the silence ends unless cancelled first
+(NFR-ELC-03, FR-ELX-008). Emergencies still go; the audit entry names the
+silence they went out in.
 """
 
 import uuid
@@ -22,6 +27,7 @@ from app.modules.access import service as access
 from app.modules.access.rules import Area, AreaPath, area_from_key, highest_tier
 from app.modules.access.service import Staff
 from app.modules.audit import service as audit
+from app.modules.election import service as election
 from app.modules.messaging.broadcasts import repository, rules
 from app.modules.messaging.broadcasts.repository import StoredBroadcast
 from app.modules.messaging.broadcasts.rules import SEND
@@ -165,15 +171,27 @@ def _reload(db: Session, broadcast_id: uuid.UUID) -> StoredBroadcast:
 
 def send_due(db: Session, now: datetime | None = None) -> int:
     """Send every scheduled broadcast whose time has come; for the dispatcher. Returns how many."""
+    now = now or datetime.now(UTC)
     sent = 0
-    for broadcast_id in repository.due(db, now or datetime.now(UTC)):
+    for broadcast_id in repository.due(db, now):
         broadcast = repository.find(db, broadcast_id)
         assert broadcast is not None
+        silences = election.silences(db, broadcast.area_path, now)
+        if silences and broadcast.topic != "emergency":
+            if broadcast.held_at is None:
+                repository.mark_held(db, broadcast.id, now)
+                audit.record(
+                    db, actor_id=None, action="election.silence.held", target_type="broadcast",
+                    target_id=str(broadcast.id), area_path=_path(broadcast),
+                    details={"broadcastRef": broadcast.broadcast_ref, "periodRefs": silences},
+                )
+            continue
         count = repository.fan_out(db, broadcast)
-        repository.set_state(db, broadcast.id, "sent", sent_at=now or datetime.now(UTC), recipients=count)
+        repository.set_state(db, broadcast.id, "sent", sent_at=now, recipients=count)
         audit.record(
             db, actor_id=None, action="messaging.broadcast.sent", target_type="broadcast", target_id=str(broadcast.id),
-            area_path=_path(broadcast), details={"broadcastRef": broadcast.broadcast_ref, "recipients": count},
+            area_path=_path(broadcast),
+            details={"broadcastRef": broadcast.broadcast_ref, "recipients": count, "duringSilence": silences or None},
         )
         sent += 1
     db.commit()

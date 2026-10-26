@@ -190,6 +190,27 @@ def test_an_event_album_needs_a_published_event(client, auth, officer, area):
     assert response.json()["detail"]["problems"] == ["event_required"]
 
 
+def test_no_album_is_published_during_silence_in_its_area(client, db_session, auth, officer, colleague, area, silence):
+    silence(area, level="province")
+    album = client.post(
+        "/v1/content/albums",
+        json={"titleEn": "Library day", "titleTa": "நூலக நாள்", "summaryEn": "s", "summaryTa": "s", "category": "community",
+              "albumDate": "2026-10-21", "publisher": "Team", "area": {"level": "district", "code": area.district}},
+        headers=auth(officer),
+    ).json()
+    photo = client.post(
+        f"/v1/content/albums/{album['id']}/photos", content=photo_bytes(), headers={**auth(officer), "Content-Type": "image/jpeg"}
+    ).json()
+    client.patch(f"/v1/content/photos/{photo['id']}", json={"captionEn": "a", "captionTa": "அ"}, headers=auth(officer))
+    client.post(f"/v1/content/albums/{album['id']}/submit", headers=auth(officer))
+
+    response = client.post(f"/v1/content/albums/{album['id']}/publish", headers=auth(colleague))
+
+    assert (response.status_code, response.json()) == (409, {"detail": "silence_period"})  # NFR-ELC-03
+    state = db_session.scalar(text("SELECT state FROM content.album WHERE id = :id"), {"id": album["id"]})
+    assert state == "submitted"
+
+
 # --- What members see (G01 to G03) ------------------------------------------------------------------------
 
 

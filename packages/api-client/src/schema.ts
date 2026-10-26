@@ -1507,6 +1507,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/events/{event_id}/checkin/manual": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check In Manually
+         * @description FR-VOI-007: check a member in by the member ID on their card when the pass cannot be scanned
+         *     (camera refused or broken, no phone). Same permission, window and eligibility as a scan; the
+         *     reason is kept on the attendance record and the roster shows it was manual.
+         */
+        post: operations["check_in_manually_v1_events__event_id__checkin_manual_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/events/{event_id}/attendance": {
         parameters: {
             query?: never;
@@ -2429,6 +2451,231 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/features": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Enabled Features
+         * @description The v1.1 modules that are on, so the apps show only those (FR-ARCH-011). Public.
+         */
+        get: operations["read_enabled_features_v1_features_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/features/registry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Registry
+         * @description Every v1.1 module, the gate it needs, and what is recorded (D34). Needs system.configure.
+         */
+        get: operations["read_registry_v1_features_registry_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/features/{key}/gate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record Gate
+         * @description Record the phase gate the module belongs to and the approval behind it.
+         */
+        post: operations["record_gate_v1_features__key__gate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/features/{key}/enable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Enable
+         * @description Only after the gate is recorded.
+         */
+        post: operations["enable_v1_features__key__enable_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/features/{key}/disable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Disable
+         * @description At any time; members lose the module on their next request.
+         */
+        post: operations["disable_v1_features__key__disable_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/periods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Periods
+         * @description Declared periods by default, latest start first. Needs election.mode.manage.
+         */
+        get: operations["list_periods_v1_election_periods_get"];
+        put?: never;
+        /**
+         * Declare Period
+         * @description Declare a period with its own silence window from an Election Commission publication (NFR-ELC-01).
+         *     Overlapping periods are allowed (NFR-ELC-05) and listed as a warning.
+         */
+        post: operations["declare_period_v1_election_periods_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/periods/{period_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Period
+         * @description The period and every notice published for it, withdrawn ones included.
+         */
+        get: operations["read_period_v1_election_periods__period_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/periods/{period_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Close Period
+         * @description End the period, or withdraw it if declared in error; its silence controls stop at once.
+         */
+        post: operations["close_period_v1_election_periods__period_id__close_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/periods/{period_id}/notices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish Notice
+         * @description Election Commission information needs its link, document reference and publication time (NFR-ELC-06).
+         */
+        post: operations["publish_notice_v1_election_periods__period_id__notices_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/notices/{notice_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw Notice
+         * @description When the source is superseded (NFR-ELC-06).
+         */
+        post: operations["withdraw_notice_v1_election_notices__notice_id__withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/current": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Current Elections
+         * @description Elections running for the member's area: date, countdown, official source and notices (FR-ELX-001, 004).
+         */
+        get: operations["read_current_elections_v1_election_current_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3071,6 +3318,11 @@ export interface components {
             sentAt: string | null;
             /** Recipients */
             recipients: number | null;
+            /**
+             * Heldat
+             * @description When a silence period first held it back (NFR-ELC-03)
+             */
+            heldAt: string | null;
         };
         /**
          * BroadcastPreviewOut
@@ -3112,6 +3364,11 @@ export interface components {
             sentAt: string | null;
             /** Recipients */
             recipients: number | null;
+            /**
+             * Heldat
+             * @description When a silence period first held it back (NFR-ELC-03)
+             */
+            heldAt: string | null;
             /** Reaches */
             reaches: number;
             /**
@@ -3354,6 +3611,17 @@ export interface components {
             /** Quietend */
             quietEnd: string | null;
         };
+        /** CloseIn */
+        CloseIn: {
+            /**
+             * Action
+             * @description end when the election is over; withdraw if declared in error
+             * @enum {string}
+             */
+            action: "end" | "withdraw";
+            /** Reason */
+            reason: string;
+        };
         /**
          * CodeSentOut
          * @description devCode appears only with SMS_PROVIDER=development, for local testing.
@@ -3435,6 +3703,78 @@ export interface components {
             };
             appeal: components["schemas"]["AppealOut"] | null;
         };
+        /** DeclaredOut */
+        DeclaredOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Periodref */
+            periodRef: string;
+            /**
+             * Electiontype
+             * @enum {string}
+             */
+            electionType: "presidential" | "parliamentary" | "provincial" | "local" | "referendum";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /**
+             * Silencestartsat
+             * Format: date-time
+             */
+            silenceStartsAt: string;
+            /**
+             * Silenceendsat
+             * Format: date-time
+             */
+            silenceEndsAt: string;
+            /**
+             * Pollingday
+             * Format: date
+             */
+            pollingDay: string;
+            /** Sourceurl */
+            sourceUrl: string;
+            /** Sourcereference */
+            sourceReference: string;
+            /**
+             * Sourcepublishedat
+             * Format: date-time
+             */
+            sourcePublishedAt: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "declared" | "ended" | "withdrawn";
+            /**
+             * Declaredat
+             * Format: date-time
+             */
+            declaredAt: string;
+            /** Closedat */
+            closedAt: string | null;
+            /**
+             * Overlaps
+             * @description Other declared periods for the same time and area (a warning, D22)
+             */
+            overlaps: string[];
+        };
         /** DeviceIn */
         DeviceIn: {
             /** Token */
@@ -3493,6 +3833,95 @@ export interface components {
              * Format: uuid
              */
             otherMemberId: string;
+        };
+        /**
+         * ElectionBannerOut
+         * @description FR-ELX-001: the official date and countdown, citing the Election Commission publication and its time.
+         */
+        ElectionBannerOut: {
+            /** Periodref */
+            periodRef: string;
+            /**
+             * Electiontype
+             * @enum {string}
+             */
+            electionType: "presidential" | "parliamentary" | "provincial" | "local" | "referendum";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Pollingday
+             * Format: date
+             */
+            pollingDay: string;
+            /** Daystopolling */
+            daysToPolling: number;
+            /** Insilence */
+            inSilence: boolean;
+            /**
+             * Silencestartsat
+             * Format: date-time
+             */
+            silenceStartsAt: string;
+            /**
+             * Silenceendsat
+             * Format: date-time
+             */
+            silenceEndsAt: string;
+            /** Labelen */
+            labelEn: string;
+            /** Labelta */
+            labelTa: string;
+            /** Sourceurl */
+            sourceUrl: string;
+            /** Sourcereference */
+            sourceReference: string;
+            /**
+             * Sourcepublishedat
+             * Format: date-time
+             */
+            sourcePublishedAt: string;
+            /** Notices */
+            notices: components["schemas"]["ElectionNoticeOut"][];
+        };
+        /** ElectionNoticeOut */
+        ElectionNoticeOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "election_commission" | "party";
+            /** Labelen */
+            labelEn: string;
+            /** Labelta */
+            labelTa: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Sourceurl */
+            sourceUrl: string | null;
+            /** Documentreference */
+            documentReference: string | null;
+            /** Sourcepublishedat */
+            sourcePublishedAt: string | null;
+            /**
+             * Publishedat
+             * Format: date-time
+             */
+            publishedAt: string;
+            /** Withdrawnat */
+            withdrawnAt: string | null;
         };
         /** EventCreateIn */
         EventCreateIn: {
@@ -3815,6 +4244,36 @@ export interface components {
             role: "identity_reviewer";
         };
         /**
+         * FeaturesOut
+         * @description What the apps may show; a module that is off is hidden, never shown broken.
+         */
+        FeaturesOut: {
+            /** Enabled */
+            enabled: string[];
+        };
+        /** FlagOut */
+        FlagOut: {
+            /** Key */
+            key: string;
+            /** Nameen */
+            nameEn: string;
+            /** Phase */
+            phase: number;
+            /**
+             * Requiredgate
+             * @enum {string}
+             */
+            requiredGate: "G0" | "G1" | "G2" | "G3";
+            /** Enabled */
+            enabled: boolean;
+            /** Gate */
+            gate: ("G0" | "G1" | "G2" | "G3") | null;
+            /** Approvalref */
+            approvalRef: string | null;
+            /** Gaterecordedat */
+            gateRecordedAt: string | null;
+        };
+        /**
          * GalleryPhotoOut
          * @description A photo with its captions. The image is at /v1/content/photos/{id}/thumb or /display;
          *     there is no download, share or tagging (BR-071).
@@ -3840,6 +4299,21 @@ export interface components {
             height: number;
             /** Blurred */
             blurred: boolean;
+        };
+        /** GateIn */
+        GateIn: {
+            /**
+             * Gate
+             * @enum {string}
+             */
+            gate: "G0" | "G1" | "G2" | "G3";
+            /**
+             * Approvalref
+             * @description The sign-off record, e.g. a decision or minutes reference
+             */
+            approvalRef: string;
+            /** Reason */
+            reason: string;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -4132,6 +4606,37 @@ export interface components {
              */
             notified: number;
         };
+        /** ManualCheckInIn */
+        ManualCheckInIn: {
+            /**
+             * Membercode
+             * @description The member ID printed on the card
+             */
+            memberCode: string;
+            /**
+             * Reason
+             * @description Why the pass could not be scanned
+             */
+            reason: string;
+        };
+        /**
+         * ManualCheckInOut
+         * @description checked_in, already_checked_in, outside_window, not_eligible (not going, or the membership the
+         *     pass needs) or not_valid (no such member ID). A name is shown only with a recorded attendance.
+         */
+        ManualCheckInOut: {
+            /**
+             * Result
+             * @enum {string}
+             */
+            result: "checked_in" | "already_checked_in" | "outside_window" | "not_eligible" | "not_valid";
+            /** Fullname */
+            fullName?: string | null;
+            /** Membercode */
+            memberCode?: string | null;
+            /** Attendedat */
+            attendedAt?: string | null;
+        };
         /**
          * MemberDecisionOut
          * @description A decision as the member sees it: the reviewer's tier, never their name (FR-PROF-006).
@@ -4332,6 +4837,29 @@ export interface components {
             /** History */
             history: components["schemas"]["MemberDecisionOut"][];
         };
+        /** NoticeIn */
+        NoticeIn: {
+            /**
+             * Source
+             * @description FR-ELX-004: Election Commission information or Party information
+             * @enum {string}
+             */
+            source: "election_commission" | "party";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Sourceurl */
+            sourceUrl?: string | null;
+            /** Documentreference */
+            documentReference?: string | null;
+            /** Sourcepublishedat */
+            sourcePublishedAt?: string | null;
+        };
         /**
          * NoticesOut
          * @description The notice versions the apps must show; consent is recorded against them.
@@ -4431,6 +4959,196 @@ export interface components {
             resetToken: string;
             /** Newpassword */
             newPassword: string;
+        };
+        /** PeriodFileOut */
+        PeriodFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Periodref */
+            periodRef: string;
+            /**
+             * Electiontype
+             * @enum {string}
+             */
+            electionType: "presidential" | "parliamentary" | "provincial" | "local" | "referendum";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /**
+             * Silencestartsat
+             * Format: date-time
+             */
+            silenceStartsAt: string;
+            /**
+             * Silenceendsat
+             * Format: date-time
+             */
+            silenceEndsAt: string;
+            /**
+             * Pollingday
+             * Format: date
+             */
+            pollingDay: string;
+            /** Sourceurl */
+            sourceUrl: string;
+            /** Sourcereference */
+            sourceReference: string;
+            /**
+             * Sourcepublishedat
+             * Format: date-time
+             */
+            sourcePublishedAt: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "declared" | "ended" | "withdrawn";
+            /**
+             * Declaredat
+             * Format: date-time
+             */
+            declaredAt: string;
+            /** Closedat */
+            closedAt: string | null;
+            /** Notices */
+            notices: components["schemas"]["ElectionNoticeOut"][];
+        };
+        /** PeriodIn */
+        PeriodIn: {
+            /**
+             * Electiontype
+             * @enum {string}
+             */
+            electionType: "presidential" | "parliamentary" | "provincial" | "local" | "referendum";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            area: components["schemas"]["AreaRef"];
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /**
+             * Silencestartsat
+             * Format: date-time
+             */
+            silenceStartsAt: string;
+            /**
+             * Silenceendsat
+             * Format: date-time
+             */
+            silenceEndsAt: string;
+            /**
+             * Pollingday
+             * Format: date
+             * @description Sri Lankan calendar day; the silence window must cover all of it
+             */
+            pollingDay: string;
+            /**
+             * Sourceurl
+             * @description The Election Commission publication
+             */
+            sourceUrl: string;
+            /**
+             * Sourcereference
+             * @description e.g. the gazette number
+             */
+            sourceReference: string;
+            /**
+             * Sourcepublishedat
+             * Format: date-time
+             */
+            sourcePublishedAt: string;
+        };
+        /** PeriodOut */
+        PeriodOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Periodref */
+            periodRef: string;
+            /**
+             * Electiontype
+             * @enum {string}
+             */
+            electionType: "presidential" | "parliamentary" | "provincial" | "local" | "referendum";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /**
+             * Silencestartsat
+             * Format: date-time
+             */
+            silenceStartsAt: string;
+            /**
+             * Silenceendsat
+             * Format: date-time
+             */
+            silenceEndsAt: string;
+            /**
+             * Pollingday
+             * Format: date
+             */
+            pollingDay: string;
+            /** Sourceurl */
+            sourceUrl: string;
+            /** Sourcereference */
+            sourceReference: string;
+            /**
+             * Sourcepublishedat
+             * Format: date-time
+             */
+            sourcePublishedAt: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "declared" | "ended" | "withdrawn";
+            /**
+             * Declaredat
+             * Format: date-time
+             */
+            declaredAt: string;
+            /** Closedat */
+            closedAt: string | null;
         };
         /** PhoneConfirmInput */
         PhoneConfirmInput: {
@@ -5162,6 +5880,8 @@ export interface components {
             response: ("going" | "maybe" | "declined" | "waitlisted") | null;
             /** Attendedat */
             attendedAt: string | null;
+            /** Checkinmethod */
+            checkinMethod: ("scan" | "manual") | null;
         };
         /** RosterOut */
         RosterOut: {
@@ -5305,6 +6025,11 @@ export interface components {
             answers: {
                 [key: string]: string;
             };
+        };
+        /** SwitchIn */
+        SwitchIn: {
+            /** Reason */
+            reason: string;
         };
         /** TierInfo */
         TierInfo: {
@@ -8218,7 +8943,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description not_allowed_from:cancelled */
+            /** @description not_allowed_from:cancelled, or silence_period for a published event moved into one */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -8268,7 +8993,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description not_allowed_from:<state> */
+            /** @description not_allowed_from:<state> or silence_period */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -8364,6 +9089,55 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PassScanOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    check_in_manually_v1_events__event_id__checkin_manual_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManualCheckInIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManualCheckInOut"];
                 };
             };
             /** @description forbidden or outside_your_area */
@@ -9108,7 +9882,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description not_allowed_from:<state> or own_submission */
+            /** @description not_allowed_from:<state>, own_submission or silence_period */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -10691,6 +11465,511 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_enabled_features_v1_features_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeaturesOut"];
+                };
+            };
+        };
+    };
+    read_registry_v1_features_registry_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlagOut"][];
+                };
+            };
+        };
+    };
+    record_gate_v1_features__key__gate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlagOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description gate_must_be:<gate> or gate_not_recorded */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    enable_v1_features__key__enable_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SwitchIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlagOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description gate_must_be:<gate> or gate_not_recorded */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    disable_v1_features__key__disable_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SwitchIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlagOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description gate_must_be:<gate> or gate_not_recorded */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_periods_v1_election_periods_get: {
+        parameters: {
+            query?: {
+                state?: ("declared" | "ended" | "withdrawn")[] | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PeriodOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    declare_period_v1_election_periods_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PeriodIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeclaredOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> or already_withdrawn */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description election_invalid */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_period_v1_election_periods__period_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                period_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PeriodFileOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> or already_withdrawn */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    close_period_v1_election_periods__period_id__close_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                period_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CloseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PeriodOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> or already_withdrawn */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_notice_v1_election_periods__period_id__notices_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                period_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NoticeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ElectionNoticeOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> or already_withdrawn */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description election_invalid: official_source_required */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    withdraw_notice_v1_election_notices__notice_id__withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ElectionNoticeOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_allowed_from:<state> or already_withdrawn */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_current_elections_v1_election_current_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ElectionBannerOut"][];
                 };
             };
         };

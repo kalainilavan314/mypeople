@@ -24,6 +24,7 @@ class BroadcastOut(CamelModel):
     send_at: datetime | None
     sent_at: datetime | None
     recipients: int | None
+    held_at: datetime | None = Field(description="When a silence period first held it back (NFR-ELC-03)")
 
     @classmethod
     def build(cls, broadcast: StoredBroadcast) -> "BroadcastOut":
@@ -41,6 +42,7 @@ class BroadcastOut(CamelModel):
             send_at=broadcast.send_at,
             sent_at=broadcast.sent_at,
             recipients=broadcast.recipients,
+            held_at=broadcast.held_at,
         )
 
 

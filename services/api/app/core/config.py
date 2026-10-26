@@ -50,6 +50,10 @@ class Settings(BaseSettings):
     # in-app inbox only; "development" keeps pushes in memory and is refused outside development.
     push_provider: Literal["none", "development"] = "none"
 
+    # FR-ARCH-011: v1.1 modules stay off until their phase gate is recorded. Always enforced in
+    # production; elsewhere off by default so development and tests see every module.
+    enforce_feature_flags: bool = False
+
     # NFR-SEC-04: staff give a second factor (an authenticator code) in each
     # session before any staff endpoint. Only development may switch it off.
     staff_mfa_required: bool = True
@@ -125,6 +129,10 @@ class Settings(BaseSettings):
             if self.nic_pepper.get_secret_value() == "dev-pepper":
                 raise ValueError("NIC_PEPPER must not be the development fallback in production")
         return self
+
+    @property
+    def feature_flags_enforced(self) -> bool:
+        return self.app_env == "production" or self.enforce_feature_flags
 
     @property
     def secure_cookies(self) -> bool:

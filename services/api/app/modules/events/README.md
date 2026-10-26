@@ -2,9 +2,9 @@
 
 Events, RSVP, passes, attendance, town halls and appointments.
 
-**Status: events built (Batch 16); town halls and appointments not built yet.** The live Express API (`server/`) still serves the PWA's events under `/api/events`.
+**Status: events built (Batch 16), with manual check-in by member ID (FR-VOI-007) and silence-period checks on publishing (Batch 20); town halls and appointments not built yet.** The live Express API (`server/`) still serves the PWA's events under `/api/events`.
 
-- `rules.py`: event types, the check-in window, state changes, RSVP and waitlist, pass eligibility, scan results, SMS notices.
+- `rules.py`: event types, the check-in window, state changes, RSVP and waitlist, pass eligibility, scan and manual check-in results, SMS notices.
 - `repository.py`: SQL for `events.event`, `events.rsvp`, `events.rsvp_change` and `events.attendance` (Alembic `0014`).
 - `service.py`, `router.py`, `schemas.py`: `/v1/events` for members, the event console and check-in.
 

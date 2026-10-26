@@ -40,6 +40,7 @@ from app.modules.access import service as access
 from app.modules.access.rules import Area, AreaPath, area_from_key
 from app.modules.access.service import Staff
 from app.modules.audit import service as audit
+from app.modules.election import service as election
 from app.modules.events import repository, rules
 from app.modules.events.repository import EDITABLE, EventListItem, RosterEntry, RsvpChange, StoredEvent
 from app.modules.events.rules import MANAGE, SCAN, Response
@@ -287,6 +288,8 @@ def update_event(
         return event, None
     merged = {name: getattr(event, name) for name in EDITABLE} | changed
     _validate(merged)
+    if event.state == "published" and {"starts_at", "ends_at"} & changed.keys():
+        _refuse_if_silent(db, staff, event, merged["starts_at"], merged["ends_at"], "events.event.update", ip)
     repository.update_event(db, event_id, changed, staff.member_id)
     _record(db, staff, "events.event.updated", event, ip, changed=sorted(changed))
     notice = None
@@ -298,11 +301,27 @@ def update_event(
     return updated, notice
 
 
+def _refuse_if_silent(
+    db: Session, staff: Staff, event: StoredEvent, starts_at: datetime, ends_at: datetime, action: str, ip: str
+) -> None:
+    """NFR-ELC-03, FR-THL-008: no publishing while a silence window covers the event's area, and no
+    event that would take place inside one."""
+    now = _now()
+    try:
+        election.refuse_if_silent(
+            db, staff, action=action, target=("event", str(event.id)), area_path=event.area_path,
+            spans=[(now, now), (starts_at, ends_at)], ip=ip,
+        )
+    except election.SilencePeriod:
+        raise EventRefused("silence_period") from None
+
+
 def publish_event(db: Session, staff: Staff, event_id: uuid.UUID, ip: str) -> StoredEvent:
     event = _managed(db, staff, event_id, ip)
     problem = rules.check_transition("publish", event.state)
     if problem:
         raise EventRefused(problem)
+    _refuse_if_silent(db, staff, event, event.starts_at, event.ends_at, "events.event.publish", ip)
     repository.publish(db, event_id, staff.member_id)
     _record(db, staff, "events.event.published", event, ip)
     db.commit()
@@ -357,7 +376,7 @@ def managed_event(db: Session, staff: Staff, event_id: uuid.UUID, ip: str) -> St
 
 @dataclass(frozen=True)
 class CheckIn:
-    result: rules.ScanResult
+    result: rules.ScanResult | rules.ManualResult
     full_name: str | None = None  # shown for checked_in and already_checked_in only
     member_code: str | None = None
     attended_at: datetime | None = None
@@ -392,6 +411,12 @@ def scan(db: Session, staff: Staff, event_id: uuid.UUID, code: str, jwt_secret: 
         result=result, reason=reason, memberId=str(member_id) if member_id else None,
     )
     db.commit()
+    return _check_in_answer(db, event, result, member_id)
+
+
+def _check_in_answer(
+    db: Session, event: StoredEvent, result: rules.ScanResult | rules.ManualResult, member_id: uuid.UUID | None
+) -> CheckIn:
     if result not in ("checked_in", "already_checked_in") or member_id is None:
         return CheckIn(result=result)
     full_name, member_code = repository.member_name(db, member_id)
@@ -401,6 +426,37 @@ def scan(db: Session, staff: Staff, event_id: uuid.UUID, code: str, jwt_secret: 
         member_code=member_code,
         attended_at=repository.attended_at(db, event.id, member_id),
     )
+
+
+def check_in_manually(
+    db: Session, staff: Staff, event_id: uuid.UUID, member_code: str, reason: str, ip: str
+) -> CheckIn:
+    """FR-VOI-007: the member ID from the card, typed in when the pass cannot be scanned. Same
+    permission, window and eligibility as a scan; the typed reason stays on the attendance record."""
+    event = _managed(db, staff, event_id, ip, permission=SCAN)
+    member_id = repository.member_by_code(db, member_code.strip())
+    refusal = None
+    if member_id == staff.member_id:
+        refusal, member_id = "own_record", None  # nobody checks themselves in (BR-085)
+    now = _now()
+    already = member_id is not None and repository.attended_at(db, event.id, member_id) is not None
+    problem = _pass_problem(db, member_id, event) if member_id is not None else None
+    result = rules.manual_result(
+        member_found=member_id is not None,
+        within_window=event.state == "published" and event.checkin_opens_at <= now <= event.checkin_closes_at,
+        already_attended=already,
+        pass_problem=problem,
+    )
+    if result == "checked_in" and not repository.record_attendance(
+        db, event.id, member_id, staff.member_id, manual_reason=reason  # type: ignore[arg-type]
+    ):
+        result = "already_checked_in"
+    _record(
+        db, staff, "events.attendance.manual", event, ip,
+        result=result, reason=refusal or problem, memberId=str(member_id) if member_id else None,
+    )
+    db.commit()
+    return _check_in_answer(db, event, result, member_id)
 
 
 @dataclass(frozen=True)

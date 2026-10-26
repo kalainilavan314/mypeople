@@ -322,3 +322,24 @@ test('a gallery photo is uploaded as its own bytes and shown from a URL on the A
   assert.equal(client.galleryPhotoUrl('p1', 'thumb'), 'https://api.example/v1/content/photos/p1/thumb');
 });
 
+
+test('a manual check-in sends the member ID and the reason', async () => {
+  const { fetch, sent } = fakeFetch(200, { result: 'checked_in', fullName: 'A', memberCode: 'WTL-26-1234567' });
+
+  const result = await createApiClient({ baseUrl: 'https://api.example', fetch }).checkInManually('e 1', 'WTL-26-1234567', 'No phone');
+
+  assert.equal(result.result, 'checked_in');
+  assert.equal(sent[0].url, 'https://api.example/v1/events/e%201/checkin/manual');
+  assert.deepEqual(JSON.parse(sent[0].body ?? ''), { memberCode: 'WTL-26-1234567', reason: 'No phone' });
+});
+
+test('enabled features are read without sign-in and election periods are listed by state', async () => {
+  const { fetch, sent } = fakeFetch(200, { enabled: [] });
+  const client = createApiClient({ baseUrl: 'https://api.example', fetch });
+
+  await client.getEnabledFeatures();
+  await client.listElectionPeriods({ states: ['declared', 'ended'] });
+
+  assert.equal(sent[0].url, 'https://api.example/v1/features');
+  assert.equal(sent[1].url, 'https://api.example/v1/election/periods?state=declared&state=ended');
+});

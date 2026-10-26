@@ -28,13 +28,14 @@ class StoredBroadcast:
     approved_by: uuid.UUID | None
     sent_at: datetime | None
     recipients: int | None
+    held_at: datetime | None  # first held back by a silence period (NFR-ELC-03)
 
 
 EDITABLE = ("topic", "title_en", "title_ta", "body_en", "body_ta")
 
 _SELECT = """
     SELECT id, broadcast_ref, topic, title_en, title_ta, body_en, body_ta, area_level, area_key, area_path, state,
-           send_at, created_by, submitted_by, approved_by, sent_at, recipients
+           send_at, created_by, submitted_by, approved_by, sent_at, recipients, held_at
     FROM notifications.broadcast
 """
 
@@ -73,6 +74,13 @@ def set_state(db: Session, broadcast_id: uuid.UUID, state: str, **columns: Any) 
     db.execute(
         text(f"UPDATE notifications.broadcast SET state = :state{extra} WHERE id = :id"),
         {"id": broadcast_id, "state": state, **columns},
+    )
+
+
+def mark_held(db: Session, broadcast_id: uuid.UUID, now: datetime) -> None:
+    db.execute(
+        text("UPDATE notifications.broadcast SET held_at = :now WHERE id = :id AND held_at IS NULL"),
+        {"id": broadcast_id, "now": now},
     )
 
 

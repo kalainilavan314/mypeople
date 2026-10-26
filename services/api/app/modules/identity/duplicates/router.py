@@ -8,6 +8,7 @@ from app.core.request_info import client_ip
 from app.db.session import get_db
 from app.modules.access.dependencies import require_permission
 from app.modules.access.service import AccessRefused, Staff
+from app.modules.features.dependencies import require_feature
 from app.modules.identity.documents.schemas import DocumentOut
 from app.modules.identity.duplicates import service
 from app.modules.identity.duplicates.rules import INVESTIGATE, REPORT, CaseState
@@ -20,7 +21,11 @@ from app.modules.identity.duplicates.schemas import (
 )
 from app.modules.identity.reviews.schemas import ReviewMemberOut
 
-router = APIRouter(prefix="/v1/identity/duplicates", tags=["duplicate investigations"])
+router = APIRouter(
+    prefix="/v1/identity/duplicates",
+    tags=["duplicate investigations"],
+    dependencies=[Depends(require_feature("duplicate_investigations"))],
+)
 
 Db = Annotated[Session, Depends(get_db)]
 CanReport = Annotated[Staff, Depends(require_permission(REPORT))]

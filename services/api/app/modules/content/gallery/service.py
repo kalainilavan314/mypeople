@@ -35,6 +35,7 @@ from app.modules.content.gallery import images, repository, rules
 from app.modules.content.gallery.media_store import MediaStore
 from app.modules.content.gallery.repository import StoredAlbum, StoredPhoto, StoredRequest
 from app.modules.content.gallery.rules import PUBLISH, TAKEDOWN, Decision, RemovalReason
+from app.modules.election import service as election
 from app.modules.identity.recovery import repository as contacts
 from app.modules.messaging.notifications import service as notifications
 from app.modules.identity.recovery import rules as contact_rules
@@ -297,6 +298,14 @@ def publish_album(db: Session, staff: Staff, album_id: uuid.UUID, ip: str) -> St
     problem = rules.check_publisher(staff.member_id, album.submitted_by)
     if problem:
         raise GalleryRefused(problem)
+    now = datetime.now(UTC)
+    try:
+        election.refuse_if_silent(
+            db, staff, action="gallery.album.publish", target=("album", str(album.id)), area_path=album.area_path,
+            spans=[(now, now)], ip=ip,
+        )
+    except election.SilencePeriod:
+        raise GalleryRefused("silence_period") from None  # NFR-ELC-03
     repository.publish(db, album_id, staff.member_id)
     _audit(db, staff.member_id, "gallery.album.published", ("album", str(album.id)), album.area_path, ip,
            albumRef=album.album_ref)

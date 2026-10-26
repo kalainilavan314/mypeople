@@ -9,6 +9,7 @@ from app.db.session import get_db
 from app.modules.access.dependencies import require_permission
 from app.modules.access.service import AccessRefused, Staff
 from app.modules.auth.dependencies import CurrentMember
+from app.modules.features.dependencies import require_feature
 from app.modules.identity.documents.schemas import DocumentOut
 from app.modules.identity.reviews import service as verification
 from app.modules.identity.reviews.schemas import DecisionOut, MyReviewOut, ReviewMemberOut, ReviewSummaryOut
@@ -21,7 +22,9 @@ from app.modules.identity.appeals.schemas import (
     AppealSummaryOut,
 )
 
-router = APIRouter(prefix="/v1/identity", tags=["verification appeals"])
+router = APIRouter(
+    prefix="/v1/identity", tags=["verification appeals"], dependencies=[Depends(require_feature("identity_appeals"))]
+)
 
 Db = Annotated[Session, Depends(get_db)]
 CanDecideAppeals = Annotated[Staff, Depends(require_permission(APPEAL_DECIDE))]

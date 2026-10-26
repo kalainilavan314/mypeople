@@ -38,6 +38,7 @@ export type ManagedEvent = Schemas['ManagedEventOut'];
 export type EventCreateInput = Schemas['EventCreateIn'];
 export type EventUpdateInput = Schemas['EventUpdateIn'];
 export type PassScan = Schemas['PassScanOut'];
+export type ManualCheckIn = Schemas['ManualCheckInOut'];
 export type EventRoster = Schemas['RosterOut'];
 export type HomeView = Schemas['HomeOut'];
 export type AlbumSummary = Schemas['AlbumSummaryOut'];
@@ -75,6 +76,17 @@ export type Broadcast = Schemas['BroadcastOut'];
 export type BroadcastPreview = Schemas['BroadcastPreviewOut'];
 export type BroadcastCreateInput = Schemas['BroadcastCreateIn'];
 export type BroadcastUpdateInput = Schemas['BroadcastUpdateIn'];
+export type EnabledFeatures = Schemas['FeaturesOut'];
+export type FeatureFlag = Schemas['FlagOut'];
+export type PhaseGate = FeatureFlag['requiredGate'];
+export type ElectionBanner = Schemas['ElectionBannerOut'];
+export type ElectionNotice = Schemas['ElectionNoticeOut'];
+export type ElectionNoticeInput = Schemas['NoticeIn'];
+export type ElectionPeriod = Schemas['PeriodOut'];
+export type ElectionPeriodState = ElectionPeriod['state'];
+export type ElectionPeriodInput = Schemas['PeriodIn'];
+export type DeclaredElectionPeriod = Schemas['DeclaredOut'];
+export type ElectionPeriodFile = Schemas['PeriodFileOut'];
 export type EventFilters = {
   /** 'mine' (the default) narrows to the member's area; 'all' widens it (BR-057). */
   scope?: 'mine' | 'all';
@@ -439,6 +451,12 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
      */
     scanEventPass: (eventId: string, code: string) =>
       request<PassScan>('POST', `/v1/events/${encodeURIComponent(eventId)}/scan`, { code }),
+    /**
+     * FR-VOI-007: checks a member in by the member ID on their card when the pass cannot be scanned.
+     * Same rules as a scan; the reason is kept on the attendance record.
+     */
+    checkInManually: (eventId: string, memberCode: string, reason: string) =>
+      request<ManualCheckIn>('POST', `/v1/events/${encodeURIComponent(eventId)}/checkin/manual`, { memberCode, reason }),
     /** S09: expected and attended counts with the roster. */
     getEventAttendance: (eventId: string) =>
       request<EventRoster>('GET', `/v1/events/${encodeURIComponent(eventId)}/attendance`),
@@ -586,6 +604,35 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
       request<Broadcast>('POST', `/v1/notifications/broadcasts/${encodeURIComponent(broadcastId)}/approve`),
     cancelBroadcast: (broadcastId: string) =>
       request<Broadcast>('POST', `/v1/notifications/broadcasts/${encodeURIComponent(broadcastId)}/cancel`),
+
+    /** The v1.1 modules that are on; the apps show only these (FR-ARCH-011). No sign-in needed. */
+    getEnabledFeatures: () => request<EnabledFeatures>('GET', '/v1/features'),
+    /** Every v1.1 module, the gate it needs and what is recorded. Needs system.configure. */
+    getFeatureRegistry: () => request<FeatureFlag[]>('GET', '/v1/features/registry'),
+    recordFeatureGate: (key: string, gate: PhaseGate, approvalRef: string, reason: string) =>
+      request<FeatureFlag>('POST', `/v1/features/${encodeURIComponent(key)}/gate`, { gate, approvalRef, reason }),
+    /** Refused with gate_not_recorded until the gate is recorded. */
+    enableFeature: (key: string, reason: string) =>
+      request<FeatureFlag>('POST', `/v1/features/${encodeURIComponent(key)}/enable`, { reason }),
+    disableFeature: (key: string, reason: string) =>
+      request<FeatureFlag>('POST', `/v1/features/${encodeURIComponent(key)}/disable`, { reason }),
+
+    /** Elections running for the member's area, with the official source and labelled notices (FR-ELX-001, 004). */
+    getCurrentElections: () => request<ElectionBanner[]>('GET', '/v1/election/current'),
+    /** Declared periods by default. Needs election.mode.manage. */
+    listElectionPeriods: (filters: { states?: readonly ElectionPeriodState[]; limit?: number } = {}) =>
+      request<ElectionPeriod[]>('GET', `/v1/election/periods${toQueueQuery(filters)}`),
+    /** Overlapping periods are allowed and listed in `overlaps` as a warning. */
+    declareElectionPeriod: (input: ElectionPeriodInput) =>
+      request<DeclaredElectionPeriod>('POST', '/v1/election/periods', input),
+    getElectionPeriod: (periodId: string) =>
+      request<ElectionPeriodFile>('GET', `/v1/election/periods/${encodeURIComponent(periodId)}`),
+    closeElectionPeriod: (periodId: string, action: 'end' | 'withdraw', reason: string) =>
+      request<ElectionPeriod>('POST', `/v1/election/periods/${encodeURIComponent(periodId)}/close`, { action, reason }),
+    publishElectionNotice: (periodId: string, input: ElectionNoticeInput) =>
+      request<ElectionNotice>('POST', `/v1/election/periods/${encodeURIComponent(periodId)}/notices`, input),
+    withdrawElectionNotice: (noticeId: string) =>
+      request<ElectionNotice>('POST', `/v1/election/notices/${encodeURIComponent(noticeId)}/withdraw`),
   };
 }
 

@@ -10,6 +10,7 @@ Staff tests build on `area` (a real GN division and the areas above it),
 `assign` (inserts an assignment), `auth` (a Bearer header) and `super_admin`.
 Identity tests add `identity_client` (with a temporary evidence store),
 `member_in`, `upload`, `open_review`, `make_reviewer` and `submitted`.
+`silence` declares an election period whose silence window covers now.
 
 Tests that compare behaviour with the Express API take `express_auth`, which
 runs server/src code through tests/express/auth_helpers.mjs. They are skipped
@@ -23,6 +24,7 @@ import random
 import shutil
 import subprocess
 from collections.abc import Callable, Iterator
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -336,6 +338,44 @@ def submitted(identity_client: TestClient, auth: Callable[[Row], dict[str, str]]
         return response.json()
 
     return submit
+
+
+@pytest.fixture
+def silence(db_session: Session, super_admin: Row) -> Callable[..., str]:
+    """Test set-up: a declared election period for an area (a row of the `area` fixture, at the given
+    level) whose silence window covers now, as a Tier 5 would declare it. Returns the period id."""
+
+    def declare(gn: Row, level: str = "district") -> str:
+        levels = ["province", "district", "ds", "gn"]
+        path = ["platform", *(f"{name}:{getattr(gn, name)}" for name in levels[: levels.index(level) + 1])]
+        now = datetime.now(UTC)
+        return str(
+            db_session.scalar(
+                text(
+                    """
+                    INSERT INTO election.period (election_type, title_en, title_ta, area_key, area_path, starts_at,
+                                                 ends_at, silence_starts_at, silence_ends_at, polling_day, source_url,
+                                                 source_reference, source_published_at, declared_by)
+                    VALUES ('provincial', 'Provincial council election', 'மாகாண சபைத் தேர்தல்', :key, :path,
+                            :starts, :ends, :silence_starts, :silence_ends, :polling_day,
+                            'https://elections.example/notice', 'Gazette 1/2026', :starts, :admin)
+                    RETURNING id
+                    """
+                ),
+                {
+                    "key": path[-1],
+                    "path": path,
+                    "starts": now - timedelta(days=30),
+                    "ends": now + timedelta(days=10),
+                    "silence_starts": now - timedelta(hours=1),
+                    "silence_ends": now + timedelta(days=2),
+                    "polling_day": (now + timedelta(days=1)).date(),
+                    "admin": super_admin.id,
+                },
+            )
+        )
+
+    return declare
 
 
 @pytest.fixture

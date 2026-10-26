@@ -1,6 +1,6 @@
 # Roadmap for the remaining requirements
 
-BRD v1.1 has 466 functional requirements. About 35 are built so far, mostly in the API (see [README.md](README.md)). The BRD plans the rest in phases with a vendor team (§20.2): Phase 0 governance (about 3 months), Phase 1 secure core (about 6), Phase 2 community and accountability (about 9), Phase 3 advanced participation and AI (9 to 12). This file is the order of batches, one tested module at a time, and what each is waiting on.
+BRD v1.1 has 466 functional requirements. About 140 are built so far, nearly all in the API (see [README.md](README.md)); the screens for them come in batches 21 to 24. The BRD plans the rest in phases with a vendor team (§20.2): Phase 0 governance (about 3 months), Phase 1 secure core (about 6), Phase 2 community and accountability (about 9), Phase 3 advanced participation and AI (9 to 12). This file is the order of batches, one tested module at a time, and what each is waiting on.
 
 A batch builds the API module first (rules, service, endpoints, tests, audit), then the screens that use it. Anything that needs a decision, a vendor or legal approval is built behind an interface with a clear "not configured" answer, never a pretend success.
 
@@ -21,7 +21,7 @@ A batch builds the API module first (rules, service, endpoints, tests, audit), t
 | 17 (done) | Home (layout, one next step, locks with reasons, hub) and gallery (albums, photo processing, removal requests, media console, 24-hour queue) | FR-HOME-001 to 008, 012, 013, FR-GAL-001 to 005, 007, FR-ADM-005, 006 (API) | Feature policy for pending members and the approver rule (sponsor); notifications for FR-HOME-009 to 011 and the 18-hour alert |
 | 18 (done) | Profile (locked legal details, display name, My Activity, survey answers, identity-data notice), GN area change with proof, password change, data-subject requests and the DPO register | FR-PROF-001 to 006, 009, 010, 014, 017 to 019 (API) | FR-PROF-008 (versioned identity change), 012 (messaging); the DPO permission and the statutory period (DPO) |
 | 19 (done) | Notifications: in-app inbox with Action needed, outbox notices from decisions, channel choices and quiet hours, push behind an interface, staff broadcasts with approval, the dispatcher (also the 18-hour removal alert) | FR-REG-021, FR-ADM-007, FR-STF-009, FR-HOME-009 to 011, FR-PROF-012, FR-MSG-004, 007, 008 (API) | Push credentials (INT-02); SMS and WhatsApp vendors (INT-01, INT-14) for FR-MSG-001 to 003, 006 |
-| 20 | Election silence period, feature flags, manual alternatives | NFR-ELC-01 to 04, FR-ARCH-011, FR-VOI-007 | POL-12 |
+| 20 (done) | Feature flags with recorded phase gates; election periods with silence windows (publishing refused, announcements held), the member banner and labelled notices; manual event check-in by member ID | FR-ARCH-011, NFR-ELC-01, 03, 05, 06, 08, FR-ELX-001, 004, 008, 010, FR-VOI-007 (API) | POL-12 (what counts as campaign content); NFR-ELC-02 is an operating procedure and NFR-ELC-04 waits for the finance module |
 | 21–24 | Screens: member app (A, H01–H04, E, C, G, P), dashboard (W01, W02, W09, D03–D06), staff app core (S01–S04, S08–S10, S13, S14) | — | UX approval of new screens (Phase 0) |
 | 25 | Capture quality and OCR | FR-IDV-001 to 004 | OD-42 for server-side OCR |
 

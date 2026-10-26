@@ -3907,7 +3907,7 @@
             "description": "not_found"
           },
           "409": {
-            "description": "not_allowed_from:cancelled"
+            "description": "not_allowed_from:cancelled, or silence_period for a published event moved into one"
           },
           "422": {
             "description": "event_invalid"
@@ -4013,7 +4013,7 @@
             "description": "not_found"
           },
           "409": {
-            "description": "not_allowed_from:<state>"
+            "description": "not_allowed_from:<state> or silence_period"
           },
           "422": {
             "description": "Validation Error",
@@ -4144,6 +4144,74 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PassScanOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/{event_id}/checkin/manual": {
+      "post": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Check In Manually",
+        "description": "FR-VOI-007: check a member in by the member ID on their card when the pass cannot be scanned\n(camera refused or broken, no phone). Same permission, window and eligibility as a scan; the\nreason is kept on the attendance record and the roster shows it was manual.",
+        "operationId": "check_in_manually_v1_events__event_id__checkin_manual_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualCheckInIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManualCheckInOut"
                 }
               }
             }
@@ -5137,7 +5205,7 @@
             "description": "not_found"
           },
           "409": {
-            "description": "not_allowed_from:<state> or own_submission"
+            "description": "not_allowed_from:<state>, own_submission or silence_period"
           },
           "422": {
             "description": "Validation Error",
@@ -7442,6 +7510,686 @@
           }
         ]
       }
+    },
+    "/v1/features": {
+      "get": {
+        "tags": [
+          "features"
+        ],
+        "summary": "Read Enabled Features",
+        "description": "The v1.1 modules that are on, so the apps show only those (FR-ARCH-011). Public.",
+        "operationId": "read_enabled_features_v1_features_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeaturesOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/features/registry": {
+      "get": {
+        "tags": [
+          "features"
+        ],
+        "summary": "Read Registry",
+        "description": "Every v1.1 module, the gate it needs, and what is recorded (D34). Needs system.configure.",
+        "operationId": "read_registry_v1_features_registry_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FlagOut"
+                  },
+                  "type": "array",
+                  "title": "Response Read Registry V1 Features Registry Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/features/{key}/gate": {
+      "post": {
+        "tags": [
+          "features"
+        ],
+        "summary": "Record Gate",
+        "description": "Record the phase gate the module belongs to and the approval behind it.",
+        "operationId": "record_gate_v1_features__key__gate_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FlagOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "gate_must_be:<gate> or gate_not_recorded"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/features/{key}/enable": {
+      "post": {
+        "tags": [
+          "features"
+        ],
+        "summary": "Enable",
+        "description": "Only after the gate is recorded.",
+        "operationId": "enable_v1_features__key__enable_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SwitchIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FlagOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "gate_must_be:<gate> or gate_not_recorded"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/features/{key}/disable": {
+      "post": {
+        "tags": [
+          "features"
+        ],
+        "summary": "Disable",
+        "description": "At any time; members lose the module on their next request.",
+        "operationId": "disable_v1_features__key__disable_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SwitchIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FlagOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "gate_must_be:<gate> or gate_not_recorded"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/election/periods": {
+      "get": {
+        "tags": [
+          "election"
+        ],
+        "summary": "List Periods",
+        "description": "Declared periods by default, latest start first. Needs election.mode.manage.",
+        "operationId": "list_periods_v1_election_periods_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "declared",
+                      "ended",
+                      "withdrawn"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PeriodOut"
+                  },
+                  "title": "Response List Periods V1 Election Periods Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "election"
+        ],
+        "summary": "Declare Period",
+        "description": "Declare a period with its own silence window from an Election Commission publication (NFR-ELC-01).\nOverlapping periods are allowed (NFR-ELC-05) and listed as a warning.",
+        "operationId": "declare_period_v1_election_periods_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PeriodIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeclaredOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state> or already_withdrawn"
+          },
+          "422": {
+            "description": "election_invalid"
+          }
+        }
+      }
+    },
+    "/v1/election/periods/{period_id}": {
+      "get": {
+        "tags": [
+          "election"
+        ],
+        "summary": "Read Period",
+        "description": "The period and every notice published for it, withdrawn ones included.",
+        "operationId": "read_period_v1_election_periods__period_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "period_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Period Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state> or already_withdrawn"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/election/periods/{period_id}/close": {
+      "post": {
+        "tags": [
+          "election"
+        ],
+        "summary": "Close Period",
+        "description": "End the period, or withdraw it if declared in error; its silence controls stop at once.",
+        "operationId": "close_period_v1_election_periods__period_id__close_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "period_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Period Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state> or already_withdrawn"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/election/periods/{period_id}/notices": {
+      "post": {
+        "tags": [
+          "election"
+        ],
+        "summary": "Publish Notice",
+        "description": "Election Commission information needs its link, document reference and publication time (NFR-ELC-06).",
+        "operationId": "publish_notice_v1_election_periods__period_id__notices_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "period_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Period Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoticeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ElectionNoticeOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state> or already_withdrawn"
+          },
+          "422": {
+            "description": "election_invalid: official_source_required"
+          }
+        }
+      }
+    },
+    "/v1/election/notices/{notice_id}/withdraw": {
+      "post": {
+        "tags": [
+          "election"
+        ],
+        "summary": "Withdraw Notice",
+        "description": "When the source is superseded (NFR-ELC-06).",
+        "operationId": "withdraw_notice_v1_election_notices__notice_id__withdraw_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "notice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Notice Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ElectionNoticeOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_allowed_from:<state> or already_withdrawn"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/election/current": {
+      "get": {
+        "tags": [
+          "election"
+        ],
+        "summary": "Read Current Elections",
+        "description": "Elections running for the member's area: date, countdown, official source and notices (FR-ELX-001, 004).",
+        "operationId": "read_current_elections_v1_election_current_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ElectionBannerOut"
+                  },
+                  "type": "array",
+                  "title": "Response Read Current Elections V1 Election Current Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -9231,6 +9979,19 @@
               }
             ],
             "title": "Recipients"
+          },
+          "heldAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heldat",
+            "description": "When a silence period first held it back (NFR-ELC-03)"
           }
         },
         "type": "object",
@@ -9247,7 +10008,8 @@
           "state",
           "sendAt",
           "sentAt",
-          "recipients"
+          "recipients",
+          "heldAt"
         ],
         "title": "BroadcastOut"
       },
@@ -9340,6 +10102,19 @@
             ],
             "title": "Recipients"
           },
+          "heldAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heldat",
+            "description": "When a silence period first held it back (NFR-ELC-03)"
+          },
           "reaches": {
             "type": "integer",
             "title": "Reaches"
@@ -9373,6 +10148,7 @@
           "sendAt",
           "sentAt",
           "recipients",
+          "heldAt",
           "reaches",
           "problems",
           "needsApproval"
@@ -10098,6 +10874,31 @@
         ],
         "title": "ChoicesOut"
       },
+      "CloseIn": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "end",
+              "withdraw"
+            ],
+            "title": "Action",
+            "description": "end when the election is over; withdraw if declared in error"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "reason"
+        ],
+        "title": "CloseIn"
+      },
       "CodeSentOut": {
         "properties": {
           "sent": {
@@ -10307,6 +11108,136 @@
         ],
         "title": "DecisionOut"
       },
+      "DeclaredOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "periodRef": {
+            "type": "string",
+            "title": "Periodref"
+          },
+          "electionType": {
+            "type": "string",
+            "enum": [
+              "presidential",
+              "parliamentary",
+              "provincial",
+              "local",
+              "referendum"
+            ],
+            "title": "Electiontype"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "silenceStartsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Silencestartsat"
+          },
+          "silenceEndsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Silenceendsat"
+          },
+          "pollingDay": {
+            "type": "string",
+            "format": "date",
+            "title": "Pollingday"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "title": "Sourceurl"
+          },
+          "sourceReference": {
+            "type": "string",
+            "title": "Sourcereference"
+          },
+          "sourcePublishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourcepublishedat"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "declared",
+              "ended",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "declaredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Declaredat"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedat"
+          },
+          "overlaps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Overlaps",
+            "description": "Other declared periods for the same time and area (a warning, D22)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "periodRef",
+          "electionType",
+          "titleEn",
+          "titleTa",
+          "areaKey",
+          "startsAt",
+          "endsAt",
+          "silenceStartsAt",
+          "silenceEndsAt",
+          "pollingDay",
+          "sourceUrl",
+          "sourceReference",
+          "sourcePublishedAt",
+          "state",
+          "declaredAt",
+          "closedAt",
+          "overlaps"
+        ],
+        "title": "DeclaredOut"
+      },
       "DeviceIn": {
         "properties": {
           "token": {
@@ -10423,6 +11354,213 @@
         ],
         "title": "DuplicateFlagOut",
         "description": "A possible duplicate account (FR-WEB-012): a flag for the reviewer, never a decision."
+      },
+      "ElectionBannerOut": {
+        "properties": {
+          "periodRef": {
+            "type": "string",
+            "title": "Periodref"
+          },
+          "electionType": {
+            "type": "string",
+            "enum": [
+              "presidential",
+              "parliamentary",
+              "provincial",
+              "local",
+              "referendum"
+            ],
+            "title": "Electiontype"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "pollingDay": {
+            "type": "string",
+            "format": "date",
+            "title": "Pollingday"
+          },
+          "daysToPolling": {
+            "type": "integer",
+            "title": "Daystopolling"
+          },
+          "inSilence": {
+            "type": "boolean",
+            "title": "Insilence"
+          },
+          "silenceStartsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Silencestartsat"
+          },
+          "silenceEndsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Silenceendsat"
+          },
+          "labelEn": {
+            "type": "string",
+            "title": "Labelen"
+          },
+          "labelTa": {
+            "type": "string",
+            "title": "Labelta"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "title": "Sourceurl"
+          },
+          "sourceReference": {
+            "type": "string",
+            "title": "Sourcereference"
+          },
+          "sourcePublishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourcepublishedat"
+          },
+          "notices": {
+            "items": {
+              "$ref": "#/components/schemas/ElectionNoticeOut"
+            },
+            "type": "array",
+            "title": "Notices"
+          }
+        },
+        "type": "object",
+        "required": [
+          "periodRef",
+          "electionType",
+          "titleEn",
+          "titleTa",
+          "pollingDay",
+          "daysToPolling",
+          "inSilence",
+          "silenceStartsAt",
+          "silenceEndsAt",
+          "labelEn",
+          "labelTa",
+          "sourceUrl",
+          "sourceReference",
+          "sourcePublishedAt",
+          "notices"
+        ],
+        "title": "ElectionBannerOut",
+        "description": "FR-ELX-001: the official date and countdown, citing the Election Commission publication and its time."
+      },
+      "ElectionNoticeOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "election_commission",
+              "party"
+            ],
+            "title": "Source"
+          },
+          "labelEn": {
+            "type": "string",
+            "title": "Labelen"
+          },
+          "labelTa": {
+            "type": "string",
+            "title": "Labelta"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "type": "string",
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "title": "Bodyta"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceurl"
+          },
+          "documentReference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Documentreference"
+          },
+          "sourcePublishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourcepublishedat"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Publishedat"
+          },
+          "withdrawnAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawnat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source",
+          "labelEn",
+          "labelTa",
+          "titleEn",
+          "titleTa",
+          "bodyEn",
+          "bodyTa",
+          "sourceUrl",
+          "documentReference",
+          "sourcePublishedAt",
+          "publishedAt",
+          "withdrawnAt"
+        ],
+        "title": "ElectionNoticeOut"
       },
       "EventCreateIn": {
         "properties": {
@@ -11197,6 +12335,105 @@
         "title": "EvidenceViewOut",
         "description": "FR-AUTH-024: the date and the role, never the person."
       },
+      "FeaturesOut": {
+        "properties": {
+          "enabled": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "title": "FeaturesOut",
+        "description": "What the apps may show; a module that is off is hidden, never shown broken."
+      },
+      "FlagOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "nameEn": {
+            "type": "string",
+            "title": "Nameen"
+          },
+          "phase": {
+            "type": "integer",
+            "title": "Phase"
+          },
+          "requiredGate": {
+            "type": "string",
+            "enum": [
+              "G0",
+              "G1",
+              "G2",
+              "G3"
+            ],
+            "title": "Requiredgate"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "gate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "G0",
+                  "G1",
+                  "G2",
+                  "G3"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gate"
+          },
+          "approvalRef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approvalref"
+          },
+          "gateRecordedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gaterecordedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "nameEn",
+          "phase",
+          "requiredGate",
+          "enabled",
+          "gate",
+          "approvalRef",
+          "gateRecordedAt"
+        ],
+        "title": "FlagOut"
+      },
       "GalleryPhotoOut": {
         "properties": {
           "id": {
@@ -11242,6 +12479,40 @@
         ],
         "title": "GalleryPhotoOut",
         "description": "A photo with its captions. The image is at /v1/content/photos/{id}/thumb or /display;\nthere is no download, share or tagging (BR-071)."
+      },
+      "GateIn": {
+        "properties": {
+          "gate": {
+            "type": "string",
+            "enum": [
+              "G0",
+              "G1",
+              "G2",
+              "G3"
+            ],
+            "title": "Gate"
+          },
+          "approvalRef": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Approvalref",
+            "description": "The sign-off record, e.g. a decision or minutes reference"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "gate",
+          "approvalRef",
+          "reason"
+        ],
+        "title": "GateIn"
       },
       "HTTPValidationError": {
         "properties": {
@@ -12056,6 +13327,85 @@
         ],
         "title": "ManagedEventOut"
       },
+      "ManualCheckInIn": {
+        "properties": {
+          "memberCode": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 3,
+            "title": "Membercode",
+            "description": "The member ID printed on the card"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason",
+            "description": "Why the pass could not be scanned"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberCode",
+          "reason"
+        ],
+        "title": "ManualCheckInIn"
+      },
+      "ManualCheckInOut": {
+        "properties": {
+          "result": {
+            "type": "string",
+            "enum": [
+              "checked_in",
+              "already_checked_in",
+              "outside_window",
+              "not_eligible",
+              "not_valid"
+            ],
+            "title": "Result"
+          },
+          "fullName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fullname"
+          },
+          "memberCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Membercode"
+          },
+          "attendedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attendedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "title": "ManualCheckInOut",
+        "description": "checked_in, already_checked_in, outside_window, not_eligible (not going, or the membership the\npass needs) or not_valid (no such member ID). A name is shown only with a recorded attendance."
+      },
       "MemberDecisionOut": {
         "properties": {
           "decision": {
@@ -12633,6 +13983,90 @@
         "title": "MyReviewOut",
         "description": "A10, A11, C06: the review reference and state, and what to correct when a correction is asked for."
       },
+      "NoticeIn": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "election_commission",
+              "party"
+            ],
+            "title": "Source",
+            "description": "FR-ELX-004: Election Commission information or Party information"
+          },
+          "titleEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Bodyta"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "pattern": "^https://"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceurl"
+          },
+          "documentReference": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Documentreference"
+          },
+          "sourcePublishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourcepublishedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "titleEn",
+          "titleTa",
+          "bodyEn",
+          "bodyTa"
+        ],
+        "title": "NoticeIn"
+      },
       "NoticesOut": {
         "properties": {
           "termsAndPrivacy": {
@@ -12868,6 +14302,347 @@
           "newPassword"
         ],
         "title": "PasswordResetInput"
+      },
+      "PeriodFileOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "periodRef": {
+            "type": "string",
+            "title": "Periodref"
+          },
+          "electionType": {
+            "type": "string",
+            "enum": [
+              "presidential",
+              "parliamentary",
+              "provincial",
+              "local",
+              "referendum"
+            ],
+            "title": "Electiontype"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "silenceStartsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Silencestartsat"
+          },
+          "silenceEndsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Silenceendsat"
+          },
+          "pollingDay": {
+            "type": "string",
+            "format": "date",
+            "title": "Pollingday"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "title": "Sourceurl"
+          },
+          "sourceReference": {
+            "type": "string",
+            "title": "Sourcereference"
+          },
+          "sourcePublishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourcepublishedat"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "declared",
+              "ended",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "declaredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Declaredat"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedat"
+          },
+          "notices": {
+            "items": {
+              "$ref": "#/components/schemas/ElectionNoticeOut"
+            },
+            "type": "array",
+            "title": "Notices"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "periodRef",
+          "electionType",
+          "titleEn",
+          "titleTa",
+          "areaKey",
+          "startsAt",
+          "endsAt",
+          "silenceStartsAt",
+          "silenceEndsAt",
+          "pollingDay",
+          "sourceUrl",
+          "sourceReference",
+          "sourcePublishedAt",
+          "state",
+          "declaredAt",
+          "closedAt",
+          "notices"
+        ],
+        "title": "PeriodFileOut"
+      },
+      "PeriodIn": {
+        "properties": {
+          "electionType": {
+            "type": "string",
+            "enum": [
+              "presidential",
+              "parliamentary",
+              "provincial",
+              "local",
+              "referendum"
+            ],
+            "title": "Electiontype"
+          },
+          "titleEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Titleta"
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaRef"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "silenceStartsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Silencestartsat"
+          },
+          "silenceEndsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Silenceendsat"
+          },
+          "pollingDay": {
+            "type": "string",
+            "format": "date",
+            "title": "Pollingday",
+            "description": "Sri Lankan calendar day; the silence window must cover all of it"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "maxLength": 500,
+            "pattern": "^https://",
+            "title": "Sourceurl",
+            "description": "The Election Commission publication"
+          },
+          "sourceReference": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Sourcereference",
+            "description": "e.g. the gazette number"
+          },
+          "sourcePublishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourcepublishedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "electionType",
+          "titleEn",
+          "titleTa",
+          "area",
+          "startsAt",
+          "endsAt",
+          "silenceStartsAt",
+          "silenceEndsAt",
+          "pollingDay",
+          "sourceUrl",
+          "sourceReference",
+          "sourcePublishedAt"
+        ],
+        "title": "PeriodIn"
+      },
+      "PeriodOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "periodRef": {
+            "type": "string",
+            "title": "Periodref"
+          },
+          "electionType": {
+            "type": "string",
+            "enum": [
+              "presidential",
+              "parliamentary",
+              "provincial",
+              "local",
+              "referendum"
+            ],
+            "title": "Electiontype"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "silenceStartsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Silencestartsat"
+          },
+          "silenceEndsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Silenceendsat"
+          },
+          "pollingDay": {
+            "type": "string",
+            "format": "date",
+            "title": "Pollingday"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "title": "Sourceurl"
+          },
+          "sourceReference": {
+            "type": "string",
+            "title": "Sourcereference"
+          },
+          "sourcePublishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourcepublishedat"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "declared",
+              "ended",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "declaredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Declaredat"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "periodRef",
+          "electionType",
+          "titleEn",
+          "titleTa",
+          "areaKey",
+          "startsAt",
+          "endsAt",
+          "silenceStartsAt",
+          "silenceEndsAt",
+          "pollingDay",
+          "sourceUrl",
+          "sourceReference",
+          "sourcePublishedAt",
+          "state",
+          "declaredAt",
+          "closedAt"
+        ],
+        "title": "PeriodOut"
       },
       "PhoneConfirmInput": {
         "properties": {
@@ -14755,6 +16530,21 @@
               }
             ],
             "title": "Attendedat"
+          },
+          "checkinMethod": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "scan",
+                  "manual"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkinmethod"
           }
         },
         "type": "object",
@@ -14763,7 +16553,8 @@
           "fullName",
           "memberCode",
           "response",
-          "attendedAt"
+          "attendedAt",
+          "checkinMethod"
         ],
         "title": "RosterEntryOut"
       },
@@ -15094,6 +16885,21 @@
           "answers"
         ],
         "title": "SurveyAnswersIn"
+      },
+      "SwitchIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "SwitchIn"
       },
       "TierInfo": {
         "properties": {

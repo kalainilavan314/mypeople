@@ -14,6 +14,8 @@ from app.modules.auth.dependencies import CurrentMember
 from app.modules.events import service
 from app.modules.events.rules import MANAGE, SCAN
 from app.modules.events.schemas import (
+    ManualCheckInIn,
+    ManualCheckInOut,
     CancelIn,
     EventCreateIn,
     EventDetailOut,
@@ -117,7 +119,11 @@ def create_event(body: EventCreateIn, staff: CanManage, request: Request, db: Db
 
 @router.patch(
     "/{event_id}",
-    responses={**REFUSED, 409: {"description": "not_allowed_from:cancelled"}, 422: {"description": "event_invalid"}},
+    responses={
+        **REFUSED,
+        409: {"description": "not_allowed_from:cancelled, or silence_period for a published event moved into one"},
+        422: {"description": "event_invalid"},
+    },
 )
 def update_event(
     event_id: uuid.UUID, body: EventUpdateIn, staff: CanManage, request: Request, background: BackgroundTasks, db: Db
@@ -138,7 +144,9 @@ def update_event(
     return ManagedEventOut.managed(event, _send(background, request, notice))
 
 
-@router.post("/{event_id}/publish", responses={**REFUSED, 409: {"description": "not_allowed_from:<state>"}})
+@router.post(
+    "/{event_id}/publish", responses={**REFUSED, 409: {"description": "not_allowed_from:<state> or silence_period"}}
+)
 def publish_event(event_id: uuid.UUID, staff: CanManage, request: Request, db: Db) -> ManagedEventOut:
     try:
         event = service.publish_event(db, staff, event_id, client_ip(request))
@@ -179,7 +187,28 @@ def scan_pass(event_id: uuid.UUID, body: PassScanIn, staff: CanScan, request: Re
     except AccessRefused as error:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.code) from None
     return PassScanOut(
-        result=check_in.result,
+        result=check_in.result,  # type: ignore[arg-type]
+        full_name=check_in.full_name,
+        member_code=check_in.member_code,
+        attended_at=check_in.attended_at,
+    )
+
+
+@router.post("/{event_id}/checkin/manual", responses=REFUSED)
+def check_in_manually(
+    event_id: uuid.UUID, body: ManualCheckInIn, staff: CanScan, request: Request, db: Db
+) -> ManualCheckInOut:
+    """FR-VOI-007: check a member in by the member ID on their card when the pass cannot be scanned
+    (camera refused or broken, no phone). Same permission, window and eligibility as a scan; the
+    reason is kept on the attendance record and the roster shows it was manual."""
+    try:
+        check_in = service.check_in_manually(db, staff, event_id, body.member_code, body.reason, client_ip(request))
+    except service.EventNotFound:
+        raise _not_found() from None
+    except AccessRefused as error:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.code) from None
+    return ManualCheckInOut(
+        result=check_in.result,  # type: ignore[arg-type]
         full_name=check_in.full_name,
         member_code=check_in.member_code,
         attended_at=check_in.attended_at,
@@ -207,6 +236,7 @@ def read_attendance(event_id: uuid.UUID, staff: CanScan, request: Request, db: D
                 member_code=entry.member_code,
                 response=entry.response,  # type: ignore[arg-type]
                 attended_at=entry.attended_at,
+                checkin_method=entry.checkin_method,  # type: ignore[arg-type]
             )
             for entry in roster.entries
         ],

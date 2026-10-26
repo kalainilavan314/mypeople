@@ -87,7 +87,7 @@ Writes that carry the session cookie and come from another website are refused w
 | `POST /v1/notifications/{id}/read`, `POST /v1/notifications/read-all` | a session | `204` (reading never clears Action needed) | `404` |
 | `GET`/`PUT /v1/notifications/choices` body `{topics: [{topic, push, sms}], quietStart?, quietEnd?, clearQuietHours?}` | a session | `200` choices with `locked` topics | `409 topic_locked`, `422` |
 | `POST /v1/notifications/devices` body `{token, platform}`, `POST .../devices/unregister` body `{token}` | a session | `204` | `422` |
-| `GET /v1/notifications/broadcasts?state`, `POST` body: the texts, `topic` and `{area}`, `PATCH .../{id}` | `notifications.send` over the area | `200`/`201` | `403 outside_your_area`, `404`, `409`, `422` |
+| `GET /v1/notifications/broadcasts?state`, `POST` body: the texts, `topic` and `{area}`, `PATCH .../{id}` | `notifications.send` over the area | `200`/`201`; `heldAt` is set when an election silence first held it back | `403 outside_your_area`, `404`, `409`, `422` |
 | `POST .../{id}/preview` | as above | `200` with `reaches`, `problems`, `needsApproval` | `403`, `404` |
 | `POST .../{id}/submit` body `{sendAt?}`, `POST .../{id}/approve`, `POST .../{id}/cancel` | as above; approval by Tier 4 or 5, not the submitter | `200` | `409 own_submission`, `approver_tier_too_low`, `not_allowed_from:<state>`; `422 {code: "broadcast_invalid", problems: ["contains_id_number"]}` |
 
@@ -122,7 +122,7 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET /v1/content/albums/manage`, `GET .../manage/{id}`, `POST /v1/content/albums`, `PATCH /v1/content/albums/{id}` | `gallery.publish` over the album's area | `200`/`201` the album | `403`, `404`, `409 not_allowed_from:<state>`, `422 {code: "album_invalid", problems}` |
 | `POST /v1/content/albums/{id}/photos` body = the image (`image/jpeg`, `image/png`, `image/webp`) | as above, a draft | `201` the photo | `400 empty_file`, `413 too_large`, `too_many_pixels`, `415 unsupported_type`, `503` |
 | `PATCH /v1/content/photos/{id}` body `{captionEn?, captionTa?}`, `DELETE /v1/content/photos/{id}` | as above, a draft | `200`, `204` | `403`, `404`, `409` |
-| `POST /v1/content/albums/{id}/submit`, `.../publish`, `.../return` body `{note}` | as above | `200` the album | `409 own_submission`, `not_allowed_from:<state>`; `422 album_invalid` (`tamil_caption_missing`, `event_required`, …) |
+| `POST /v1/content/albums/{id}/submit`, `.../publish`, `.../return` body `{note}` | as above | `200` the album | `409 own_submission`, `not_allowed_from:<state>`, `silence_period` (publishing during an election silence in the area); `422 album_invalid` (`tamil_caption_missing`, `event_required`, …) |
 | `GET /v1/content/removal-requests?state&limit` | `gallery.takedown` | `200` the queue with `escalated` | `403` |
 | `POST /v1/content/removal-requests/{id}/decision` body `{decision: "remove" \| "blur" \| "keep", reason}` | `gallery.takedown` over the album's area | `200` the receipt | `403 own_record`, `404`, `409 already_decided` |
 
@@ -136,9 +136,33 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET /v1/events/{id}/pass`, `GET /v1/events/{id}/pass/code` | a session | `200` the pass; `{code, expiresAt}` valid 60 seconds | `404`, `409 not_going`, `membership_not_active`, `event_cancelled`, `event_over` |
 | `GET /v1/events/manage?state&limit`, `GET /v1/events/manage/{id}` | `events.manage` | `200` events in the caller's areas, drafts included | `403 outside_your_area`, `404` |
 | `POST /v1/events` body: the details and `{area}` | `events.manage` over the area | `201` a draft | `403`, `422 {code: "event_invalid", problems}` |
-| `PATCH /v1/events/{id}`, `POST .../publish`, `POST .../cancel` body `{reason}` | `events.manage` over the event's area | `200` the event, with `notified` (members sent an SMS) | `403`, `404`, `409 not_allowed_from:<state>`, `422` |
+| `PATCH /v1/events/{id}`, `POST .../publish`, `POST .../cancel` body `{reason}` | `events.manage` over the event's area | `200` the event, with `notified` (members sent an SMS) | `403`, `404`, `409 not_allowed_from:<state>`, `silence_period` (publishing during an election silence in the area, or an event inside one), `422` |
 | `POST /v1/events/{id}/scan` body `{code}` | `events.checkin_scan` over the event's area | `200 {result, fullName?, memberCode?, attendedAt?}`: `checked_in`, `already_checked_in`, `expired`, `wrong_event`, `outside_window`, `not_valid` | `403`, `404` |
-| `GET /v1/events/{id}/attendance` | `events.checkin_scan` (or `events.manage`) over the event's area | `200 {expected, attended, entries}` | `403`, `404` |
+| `POST /v1/events/{id}/checkin/manual` body `{memberCode, reason}` | `events.checkin_scan` over the event's area | `200 {result, fullName?, memberCode?, attendedAt?}`: `checked_in`, `already_checked_in`, `outside_window`, `not_eligible`, `not_valid` | `403`, `404`, `422` |
+| `GET /v1/events/{id}/attendance` | `events.checkin_scan` (or `events.manage`) over the event's area | `200 {expected, attended, entries}`; each entry has `checkinMethod` (`scan` or `manual`) | `403`, `404` |
+
+### Feature flags (`/v1/features`)
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /v1/features` | none | `200 {enabled: [keys]}`: the v1.1 modules that are on (every module outside production unless `ENFORCE_FEATURE_FLAGS`) | none |
+| `GET /v1/features/registry` | `system.configure` | `200 [{key, nameEn, phase, requiredGate, enabled, gate, approvalRef, gateRecordedAt}]` | `403` |
+| `POST /v1/features/{key}/gate` body `{gate, approvalRef, reason}` | `system.configure` | `200` the flag | `404`, `409 gate_must_be:<gate>` |
+| `POST /v1/features/{key}/enable`, `.../disable` body `{reason}` | `system.configure` | `200` the flag | `404`, `409 gate_not_recorded` (enable only) |
+
+Any route of a module that is off answers `404 feature_unavailable`.
+
+### Election (`/v1/election`)
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /v1/election/current` | a session; the `election_mode` feature | `200 [{periodRef, electionType, titleEn, titleTa, pollingDay, daysToPolling, inSilence, silenceStartsAt, silenceEndsAt, labelEn, labelTa, sourceUrl, sourceReference, sourcePublishedAt, notices}]` for periods whose area contains the member's | `404 feature_unavailable` |
+| `GET /v1/election/periods?state&limit` | `election.mode.manage` | `200` declared periods by default | `403` |
+| `POST /v1/election/periods` body `{electionType, titleEn, titleTa, area, startsAt, endsAt, silenceStartsAt, silenceEndsAt, pollingDay, sourceUrl, sourceReference, sourcePublishedAt}` | `election.mode.manage` over the area | `201` the period with `overlaps` (a warning) | `403`, `422 {code: "election_invalid", problems}`: `ends_before_start`, `already_over`, `silence_ends_before_start`, `silence_outside_period`, `silence_must_cover_polling_day`, `source_in_future`, `unknown_area` |
+| `GET /v1/election/periods/{id}` | as above | `200` the period with every notice | `403`, `404` |
+| `POST /v1/election/periods/{id}/close` body `{action: "end" \| "withdraw", reason}` | as above | `200` the period | `403`, `404`, `409 not_allowed_from:<state>` |
+| `POST /v1/election/periods/{id}/notices` body `{source: "election_commission" \| "party", titleEn, titleTa, bodyEn, bodyTa, sourceUrl?, documentReference?, sourcePublishedAt?}` | as above | `201` the notice with its label | `403`, `404`, `409`, `422 election_invalid` (`official_source_required`) |
+| `POST /v1/election/notices/{id}/withdraw` | as above | `200` the notice | `403`, `404`, `409 already_withdrawn` |
 
 Error bodies are `{"detail": "<code>"}`, or for a refused assignment `{"detail": {"code": "assignment_refused", "problems": [...]}}`. Problem codes: `unknown_member`, `self_assignment`, `identity_not_verified`, `tier_5_by_bootstrap_only`, `area_does_not_match_tier`, `unknown_area`, `no_permissions`, `unknown_permission:<p>`, `permission_not_for_tier:<p>`, `outside_your_area`, `tier_not_below_yours`, `permission_not_held:<p>`, `separation_of_duties`, `own_assignment`.
 

@@ -27,6 +27,7 @@ CHECKIN_OPENS_BEFORE = timedelta(hours=1)
 PASS = CodeKind(version="E1", purpose=b"my-people event pass v1")
 
 ScanResult = Literal["checked_in", "already_checked_in", "expired", "wrong_event", "outside_window", "not_valid"]
+ManualResult = Literal["checked_in", "already_checked_in", "outside_window", "not_eligible", "not_valid"]
 
 
 def checkin_window(starts_at: datetime, ends_at: datetime) -> tuple[datetime, datetime]:
@@ -125,6 +126,23 @@ def scan_result(
         return "outside_window"
     if already_attended:
         return "already_checked_in"
+    return "checked_in"
+
+
+def manual_result(
+    *, member_found: bool, within_window: bool, already_attended: bool, pass_problem: str | None
+) -> ManualResult:
+    """FR-VOI-007: a member ID typed in when no pass can be scanned (camera refused or broken, no
+    phone) is held to the same rules as the pass would be. The reason for not_eligible stays in the
+    audit log, as with a scan."""
+    if not member_found:
+        return "not_valid"
+    if not within_window:
+        return "outside_window"
+    if already_attended:
+        return "already_checked_in"
+    if pass_problem:
+        return "not_eligible"
     return "checked_in"
 
 

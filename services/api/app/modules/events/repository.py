@@ -360,18 +360,36 @@ def attended_at(db: Session, event_id: uuid.UUID, member_id: uuid.UUID) -> datet
     )
 
 
-def record_attendance(db: Session, event_id: uuid.UUID, member_id: uuid.UUID, scanned_by: uuid.UUID) -> bool:
-    """True when this scan created the record; a repeat scan creates nothing (BR-061)."""
+def record_attendance(
+    db: Session, event_id: uuid.UUID, member_id: uuid.UUID, scanned_by: uuid.UUID, *, manual_reason: str | None = None
+) -> bool:
+    """True when this check-in created the record; a repeat creates nothing (BR-061). A manual
+    check-in (FR-VOI-007) keeps the reason the pass could not be scanned."""
     created = db.scalar(
         text(
             """
-            INSERT INTO events.attendance (event_id, member_id, scanned_by) VALUES (:event, :member, :scanner)
+            INSERT INTO events.attendance (event_id, member_id, scanned_by, method, manual_reason)
+            VALUES (:event, :member, :scanner, :method, :reason)
             ON CONFLICT (event_id, member_id) DO NOTHING RETURNING 1
             """
         ),
-        {"event": event_id, "member": member_id, "scanner": scanned_by},
+        {
+            "event": event_id,
+            "member": member_id,
+            "scanner": scanned_by,
+            "method": "scan" if manual_reason is None else "manual",
+            "reason": manual_reason,
+        },
     )
     return created is not None
+
+
+def member_by_code(db: Session, member_code: str) -> uuid.UUID | None:
+    """As printed on the card, or typed in lower case on a phone keyboard."""
+    return db.scalar(
+        text("SELECT id FROM npm.member WHERE member_code IN (:code, upper(:code)) AND deleted_at IS NULL LIMIT 1"),
+        {"code": member_code},
+    )
 
 
 def member_name(db: Session, member_id: uuid.UUID) -> tuple[str, str]:
@@ -387,6 +405,7 @@ class RosterEntry:
     member_code: str
     response: str | None  # None for someone scanned in after their RSVP changed
     attended_at: datetime | None
+    checkin_method: str | None  # scan or manual
 
 
 def roster(db: Session, event_id: uuid.UUID) -> list[RosterEntry]:
@@ -394,7 +413,8 @@ def roster(db: Session, event_id: uuid.UUID) -> list[RosterEntry]:
     rows = db.execute(
         text(
             """
-            SELECT m.id AS member_id, m.full_name, m.member_code, r.response, a.scanned_at AS attended_at
+            SELECT m.id AS member_id, m.full_name, m.member_code, r.response, a.scanned_at AS attended_at,
+                   a.method AS checkin_method
             FROM npm.member m
             LEFT JOIN events.rsvp r ON r.member_id = m.id AND r.event_id = :event
             LEFT JOIN events.attendance a ON a.member_id = m.id AND a.event_id = :event
@@ -404,4 +424,7 @@ def roster(db: Session, event_id: uuid.UUID) -> list[RosterEntry]:
         ),
         {"event": event_id},
     )
-    return [RosterEntry(row.member_id, row.full_name, row.member_code, row.response, row.attended_at) for row in rows]
+    return [
+        RosterEntry(row.member_id, row.full_name, row.member_code, row.response, row.attended_at, row.checkin_method)
+        for row in rows
+    ]

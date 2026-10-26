@@ -285,6 +285,80 @@ def test_the_roster_shows_expected_and_attended(client, auth, member, member_in,
     assert [e["memberId"] for e in attended] == [str(member.id)]
 
 
+# --- Manual check-in (FR-VOI-007) ---------------------------------------------------------------------------
+
+
+def manual(client, auth, scanner: Row, event: dict, member_code: str, reason: str = "Phone camera broken") -> dict:
+    response = client.post(
+        f"/v1/events/{event['id']}/checkin/manual",
+        json={"memberCode": member_code, "reason": reason},
+        headers=auth(scanner),
+    )
+    assert response.status_code == 200, response.text
+    return response.json()
+
+
+def member_code(db_session, person: Row) -> str:
+    return db_session.scalar(text("SELECT member_code FROM npm.member WHERE id = :id"), {"id": person.id})
+
+
+def test_a_member_id_typed_in_checks_in_once_with_the_reason_kept(client, db_session, auth, member, scanner, new_event):
+    event = new_event()
+    rsvp(client, auth, member, event, "going")
+    code = member_code(db_session, member)
+
+    first = manual(client, auth, scanner, event, f"  {code} ")
+    again = manual(client, auth, scanner, event, code)
+    roster = client.get(f"/v1/events/{event['id']}/attendance", headers=auth(scanner)).json()
+
+    assert first["result"] == "checked_in" and first["memberCode"] == code and first["fullName"]
+    assert again["result"] == "already_checked_in"  # BR-061
+    assert [e["checkinMethod"] for e in roster["entries"] if e["memberId"] == str(member.id)] == ["manual"]
+    stored = db_session.execute(
+        text("SELECT method, manual_reason, scanned_by FROM events.attendance WHERE event_id = :e AND member_id = :m"),
+        {"e": event["id"], "m": member.id},
+    ).one()
+    assert (stored.method, stored.manual_reason, stored.scanned_by) == ("manual", "Phone camera broken", scanner.id)
+    details = db_session.scalars(
+        text("SELECT details FROM ops.audit_log WHERE action = 'events.attendance.manual' AND target_id = :id ORDER BY id"),
+        {"id": event["id"]},
+    ).all()
+    assert [d["result"] for d in details] == ["checked_in", "already_checked_in"]
+    assert all("Phone camera broken" not in str(d) for d in details)  # the reason stays on the record
+
+
+def test_a_typed_member_id_meets_the_same_rules_as_a_pass(client, db_session, auth, member, member_in, area, scanner, new_event):
+    event = new_event()
+    later = new_event(startsAt=iso(datetime.now(UTC) + timedelta(days=3)), endsAt=iso(datetime.now(UTC) + timedelta(days=3, hours=2)))
+    pending = member_in(area, verified=True)
+    rsvp(client, auth, pending, event, "going")
+    rsvp(client, auth, scanner, event, "going")
+
+    assert manual(client, auth, scanner, event, "WTL-00-0000000")["result"] == "not_valid"
+    assert manual(client, auth, scanner, event, member_code(db_session, member))["result"] == "not_eligible"  # not going
+    assert manual(client, auth, scanner, event, member_code(db_session, pending))["result"] == "not_eligible"  # OD-12
+    assert manual(client, auth, scanner, event, member_code(db_session, scanner))["result"] == "not_valid"  # BR-085
+    assert manual(client, auth, scanner, later, member_code(db_session, member))["result"] == "outside_window"
+    response = manual(client, auth, scanner, event, member_code(db_session, pending))
+    assert response.get("fullName") is None  # no name without a recorded attendance (BR-062)
+
+
+def test_manual_check_in_needs_the_scanning_permission_in_the_area(client, db_session, auth, member, make_reviewer, area, new_event):
+    event = new_event()
+    elsewhere = make_reviewer(
+        db_session.scalar(
+            text("SELECT district_code FROM geo.district WHERE district_code <> :code LIMIT 1"), {"code": area.district}
+        ),
+        permissions=(SCAN,),
+    )
+    response = client.post(
+        f"/v1/events/{event['id']}/checkin/manual",
+        json={"memberCode": member_code(db_session, member), "reason": "No phone"},
+        headers=auth(elsewhere),
+    )
+    assert (response.status_code, response.json()) == (403, {"detail": "outside_your_area"})
+
+
 # --- Changes and cancellation (FR-ADM-004) -----------------------------------------------------------------
 
 

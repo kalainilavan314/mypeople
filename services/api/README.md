@@ -35,6 +35,11 @@ Current scope:
 | `GET /v1/content/albums/manage`, `POST /v1/content/albums`, `PATCH .../albums/{id}`, `POST .../photos`, `PATCH`/`DELETE /v1/content/photos/{id}`, `POST .../submit`, `.../publish`, `.../return` | the media console; needs `gallery.publish` over the album's area |
 | `GET /v1/content/removal-requests`, `POST .../{id}/decision` | the 24-hour removal queue; needs `gallery.takedown` over the album's area |
 | `POST /v1/events/{id}/scan`, `GET /v1/events/{id}/attendance` | check-in and the attendance roster; need `events.checkin_scan` over the event's area (the roster also opens with `events.manage`) |
+| `POST /v1/events/{id}/checkin/manual` | check-in by the member ID on the card when a pass cannot be scanned, with a reason (FR-VOI-007) |
+| `GET /v1/features` | the v1.1 modules that are on (public) |
+| `GET /v1/features/registry`, `POST /v1/features/{key}/gate`, `.../enable`, `.../disable` | recording phase gates and switching modules; need `system.configure` |
+| `GET /v1/election/current` | elections running for the member's area: date, countdown, official source, labelled notices (behind the `election_mode` flag) |
+| `GET`/`POST /v1/election/periods`, `GET .../{id}`, `POST .../{id}/close`, `POST .../{id}/notices`, `POST /v1/election/notices/{id}/withdraw` | election periods with their silence windows, and notices; need `election.mode.manage` |
 | `GET`/`POST /v1/identity/me/phone`, `POST /v1/identity/me/phone/confirm` | the recovery number, confirmed by a one-time code |
 | `POST /v1/auth/recovery/request`, `/verify`, `/reset`, `/assisted` | account recovery by code, a new password, and assisted recovery requests |
 | `GET /v1/identity/recovery-requests`, `POST .../{id}/resolve` | the assisted-recovery queue; needs `members.verify` over the member's area |
@@ -250,6 +255,9 @@ which carries the member id, and shows it only for an official card.
   A text with an ID number is refused (BR-145). Wider than a district, a
   Tier 4 or 5 holder over the area who did not submit it approves first (an
   assumption on who approves). Emergencies are urgent and ignore quiet hours.
+  While a silence window covers the area, an announcement is held (once
+  recorded as `heldAt` and audited) and sent when the silence ends unless
+  cancelled; emergencies still go, and their audit entry names the silence.
 - **Dispatcher.** `python -m app.tasks.notifications` sends due broadcasts,
   alerts Tier 5 once about photo removal requests open 18 hours
   (FR-ADM-006), and pushes pending notices; a timer runs it every minute
@@ -380,6 +388,17 @@ Express's `/api/events` until the member app moves over.
   `outside_window` or `not_valid`. Only a recorded attendance shows the
   name and member ID (BR-062); nobody checks themselves in. Attendance
   cannot be changed or deleted, and every scan is audited.
+- **Manual check-in (FR-VOI-007).** When a pass cannot be scanned (camera
+  refused or broken, no phone), the scanner types the member ID from the
+  card and a reason. The same permission, window and eligibility apply as
+  for a pass; the answer is `checked_in`, `already_checked_in`,
+  `outside_window`, `not_eligible` (why stays in the audit log) or
+  `not_valid`. The reason is kept on the attendance record and the roster
+  shows each check-in as `scan` or `manual`.
+- **Silence periods (NFR-ELC-03, FR-THL-008).** Publishing is refused with
+  `silence_period` while a declared silence window covers the event's area,
+  or when the event itself would take place inside one; so is moving a
+  published event into one.
 - **Console (GAP-03).** Holders of `events.manage` create drafts in their
   own areas, edit, publish and cancel (with a reason). Members going,
   maybe going or waitlisted are sent an SMS, after the response, when a
@@ -392,6 +411,61 @@ to members promoted from the waitlist or checked in, the volunteer link
 (FR-EVT-008), My Activity and progress, the map and filter screens
 (FR-EVT-004 to 006, the apps), event-scoped scanning grants for
 volunteers (OD-12), and town halls and appointments.
+
+## Feature flags (BRD FR-ARCH-011, D34, PRM-26)
+
+Every v1.1 module sits behind a flag that stays off in production until its
+phase gate is recorded (§20.2): a Tier 5 holder of `system.configure`
+records the gate the module belongs to (`G1` for Phase 1, `G2` for Phase 2)
+with the approval reference, then turns it on. A module that is off answers
+`404 feature_unavailable` on every route, so no screen can half-work.
+Turning a module off works at any time. Each change keeps its reason in
+`ops.feature_flag_change` (append-only) and is audited with codes only.
+`GET /v1/features` tells the apps which modules to show.
+
+Production always enforces the flags; elsewhere they are enforced only with
+`ENFORCE_FEATURE_FLAGS=true`, so development and tests see every module.
+Gated today: identity appeals and duplicate investigations (G1) and what
+members see of elections (`election_mode`, G2). Modules from the Express
+era (sign-in, registration, events, the card) are not v1.1 modules and are
+not gated.
+
+## Election periods and silence (BRD D22, NFR-ELC-01, 03, 05, 06, 08; FR-ELX-001, 004, 008, 010)
+
+- **Periods (D22).** A Tier 5 holder of `election.mode.manage` declares a
+  period for an election type and an area from an Election Commission
+  publication (link, reference, publication time), with its own silence
+  window. The window must lie inside the period and cover the whole
+  polling day (Sri Lankan date), which is how polling-day suspension
+  (NFR-ELC-08) applies. Several periods may run at once (NFR-ELC-05); one
+  that overlaps another in time and area is accepted with a warning. A
+  period is ended when the election is over, or withdrawn if declared in
+  error, with a reason.
+- **Silence (NFR-ELC-03, FR-ELX-008).** While a window covers an area,
+  events and gallery albums there cannot be published (`409
+  silence_period`, audited as `election.silence.blocked`), no event may be
+  scheduled inside a window, and announcement broadcasts reaching the area
+  are held (`election.silence.held`, once) until it ends. A window covers a
+  place when either area contains the other, so a platform-wide broadcast
+  is held by a district's silence. [ASSUMPTION] until POL-12: every
+  announcement, event and album counts as campaign content; emergencies
+  and notices to one member about their own case still go.
+- **Members (FR-ELX-001, 004).** `GET /v1/election/current` lists the
+  periods whose area contains the member's, with the polling day, a
+  countdown in Sri Lankan days, the source and its publication time, and
+  the notices published for it. Each notice carries exactly one label,
+  Election Commission information or Party information; Election
+  Commission information must name its link, document reference and
+  publication time, and is withdrawn when superseded (NFR-ELC-06). This
+  endpoint is the `election_mode` feature.
+- **No vote data (FR-ELX-010).** No field records how anyone votes or
+  intends to vote; a test checks every field and path in the OpenAPI
+  document.
+
+Not built yet: the duty roster (FR-ELX-005 to 007), polling information and
+the voter-registration link (FR-ELX-002, 003), the election-period report
+(FR-ELX-009), tagging contributions (NFR-ELC-04, with finance), and the
+change freeze and monitoring (NFR-ELC-02, an operating procedure).
 
 ## Identity evidence (BRD FR-ARCH-007, BR-086)
 
@@ -633,6 +707,7 @@ Settings are read from environment variables, falling back to `services/api/.env
 | `EVIDENCE_ENCRYPTION_KEY` | 32 bytes, base64 (optional, with the directory) | Encrypts every identity image; keep a copy apart from the files |
 | `MEDIA_STORAGE_DIR` | directory (optional) | Where gallery photos are kept as WebP files; back it up with the database |
 | `PUSH_PROVIDER` | `none` (default), `development` | How notices are pushed; `development` keeps pushes in memory and is refused outside development |
+| `ENFORCE_FEATURE_FLAGS` | `false` (default), `true` | Keep v1.1 modules off until their gate is recorded and they are turned on; always on in production |
 
 ## Layout
 
@@ -670,6 +745,8 @@ app/
   integrations/push.py  the push interface (no provider yet)
   tasks/notifications.py  the dispatcher, run every minute
   modules/content/gallery/  albums, photos (re-encoded WebP), removal requests
+  modules/features/   feature flags for v1.1 modules and require_feature()
+  modules/election/   election periods, silence windows, notices, the member banner
   core/rotating_codes.py  60-second signed QR codes (member card, event pass)
   modules/<households, assistance, community, events, engagement, finance, content, messaging, ai>/
                        README only: not built yet

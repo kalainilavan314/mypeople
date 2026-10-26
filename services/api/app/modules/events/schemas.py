@@ -205,12 +205,28 @@ class PassScanOut(CamelModel):
     attended_at: datetime | None = None
 
 
+class ManualCheckInIn(CamelModel):
+    member_code: str = Field(min_length=3, max_length=40, description="The member ID printed on the card")
+    reason: str = Field(min_length=3, max_length=500, description="Why the pass could not be scanned")
+
+
+class ManualCheckInOut(CamelModel):
+    """checked_in, already_checked_in, outside_window, not_eligible (not going, or the membership the
+    pass needs) or not_valid (no such member ID). A name is shown only with a recorded attendance."""
+
+    result: Literal["checked_in", "already_checked_in", "outside_window", "not_eligible", "not_valid"]
+    full_name: str | None = None
+    member_code: str | None = None
+    attended_at: datetime | None = None
+
+
 class RosterEntryOut(CamelModel):
     member_id: uuid.UUID
     full_name: str
     member_code: str
     response: RsvpStateOut | None
     attended_at: datetime | None
+    checkin_method: Literal["scan", "manual"] | None
 
 
 class RosterOut(CamelModel):
