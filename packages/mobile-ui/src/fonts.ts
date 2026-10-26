@@ -1,7 +1,9 @@
 // The locked fonts (see CLAUDE.md) for the native apps: Inter for English and
-// UI text, Noto Sans Tamil for Tamil. Each app's root layout passes
-// `lockedFonts` to expo-font's useFonts() before showing any text.
+// UI text, Noto Sans Tamil for Tamil, JetBrains Mono for IDs and references.
+// Each app's root layout passes `lockedFonts` to expo-font's useFonts() before
+// showing any text.
 import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
+import { JetBrainsMono_400Regular } from '@expo-google-fonts/jetbrains-mono';
 import {
   NotoSansTamil_400Regular,
   NotoSansTamil_600SemiBold,
@@ -16,7 +18,11 @@ export const lockedFonts = {
   NotoSansTamil_400Regular,
   NotoSansTamil_600SemiBold,
   NotoSansTamil_700Bold,
+  JetBrainsMono_400Regular,
 };
+
+/** The loaded monospace font, for member IDs and reference numbers. */
+export const monoFontFamily = 'JetBrainsMono_400Regular';
 
 type Weight = 400 | 600 | 700;
 

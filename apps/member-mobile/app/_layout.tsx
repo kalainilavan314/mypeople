@@ -4,28 +4,57 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
+import { colors } from '@my-people/design-tokens';
 import { lockedFonts } from '@my-people/mobile-ui';
 
-// Keep the splash screen up until the locked fonts are ready, so text never
-// flashes in a different font first.
+import { restoreLanguage } from '@/lib/i18n';
+import { SessionProvider, useSession } from '@/providers/SessionProvider';
+
+// Keep the splash screen up until the locked fonts, the saved language and the
+// stored session are ready, so text never flashes in a different font or
+// language and a signed-in member never sees the sign-in screen first.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts(lockedFonts);
-  const ready = fontsLoaded || fontError !== null;
+  const [languageReady, setLanguageReady] = useState(false);
 
   useEffect(() => {
-    if (ready) SplashScreen.hideAsync();
-  }, [ready]);
+    restoreLanguage().finally(() => setLanguageReady(true));
+  }, []);
 
-  if (!ready) return null;
+  if (!(fontsLoaded || fontError !== null) || !languageReady) return null;
 
   return (
-    <>
+    <SessionProvider>
       <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false }} />
-    </>
+      <Routes />
+    </SessionProvider>
+  );
+}
+
+function Routes() {
+  const { state } = useSession();
+  const loading = state.status === 'loading';
+
+  useEffect(() => {
+    if (!loading) SplashScreen.hideAsync();
+  }, [loading]);
+
+  if (loading) return null;
+  const signedIn = state.status === 'signed_in';
+
+  return (
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.page } }}>
+      {/* Everything but the welcome, sign-in, registration and recovery screens needs a session. */}
+      <Stack.Protected guard={signedIn} redirectTo="/welcome">
+        <Stack.Screen name="(member)" />
+      </Stack.Protected>
+      <Stack.Protected guard={!signedIn} redirectTo="/">
+        <Stack.Screen name="(auth)" />
+      </Stack.Protected>
+    </Stack>
   );
 }

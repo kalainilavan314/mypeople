@@ -19,8 +19,10 @@ export default function TabLayout() {
         tabBarLabelStyle: { fontFamily: fontFamilyFor(language, 600) },
         headerStyle: { backgroundColor: colors.card },
         headerTitleStyle: { fontFamily: fontFamilyFor(language, 700), color: colors.text },
+        sceneStyle: { backgroundColor: colors.page },
       }}>
-      <Tabs.Screen name="index" options={{ title: t('nav.home'), tabBarIcon: tabIcon('home-outline') }} />
+      {/* Home has its own greeting header. */}
+      <Tabs.Screen name="index" options={{ title: t('nav.home'), headerShown: false, tabBarIcon: tabIcon('home-outline') }} />
       <Tabs.Screen name="events" options={{ title: t('nav.events'), tabBarIcon: tabIcon('calendar-outline') }} />
       <Tabs.Screen name="card" options={{ title: t('nav.card'), tabBarIcon: tabIcon('card-outline') }} />
       <Tabs.Screen name="gallery" options={{ title: t('nav.gallery'), tabBarIcon: tabIcon('images-outline') }} />

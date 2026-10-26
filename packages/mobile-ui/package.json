@@ -11,9 +11,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@expo/vector-icons": "^15.0.2",
     "@expo-google-fonts/inter": "^0.4.2",
+    "@expo-google-fonts/jetbrains-mono": "^0.4.1",
     "@expo-google-fonts/noto-sans-tamil": "^0.4.3",
+    "@expo/vector-icons": "^15.0.2",
     "@my-people/design-tokens": "*"
   },
   "peerDependencies": {

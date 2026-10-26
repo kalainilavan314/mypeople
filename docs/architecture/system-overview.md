@@ -25,7 +25,7 @@ The BRD's target, and the folders that hold it:
 
 | Part | Technology | Folder | Status |
 |---|---|---|---|
-| Member app (Android, iOS) | React Native, Expo SDK 58, Expo Router | `apps/member-mobile` | Shell: five tabs, fonts, API check |
+| Member app (Android, iOS) | React Native, Expo SDK 58, Expo Router | `apps/member-mobile` | Member screens on `/v1`: sign-in, registration, verification, Home, Events, Card, Gallery, Profile (Batch 21) |
 | Staff app | Separate Expo app, same shared packages (OD-26 pending) | `apps/staff-mobile` | Shell: five tabs, API check |
 | Admin dashboard | Next.js 16, Tailwind CSS 4 | `apps/admin-web` | Shell: live API status; not for deployment |
 | API | FastAPI modular monolith, SQLAlchemy 2, Alembic | `services/api` | Built and tested; not deployed |

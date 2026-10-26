@@ -53,7 +53,8 @@ The requirements are the BRD v1.1 (MP-BRD-001); see `docs/requirements/README.md
 | `services/api/` | FastAPI modular monolith (`/v1`), Alembic | Built and tested; not yet deployed |
 | `services/ai-worker/` | Private AI inference worker | Planned (BRD Phase 3); README only |
 | `packages/` | `design-tokens`, `i18n`, `api-client`, `mobile-ui` (TypeScript source) | Built and tested |
-| `apps/member-mobile`, `apps/staff-mobile` | Expo SDK 58 apps (Expo Router) | Shells: tabs, fonts, API connection check |
+| `apps/member-mobile` | Expo SDK 58 member app (Expo Router) on `/v1` | Member screens built (Batch 21); not released |
+| `apps/staff-mobile` | Expo SDK 58 staff app | Shell: tabs, fonts, API connection check |
 | `apps/admin-web` | Next.js 16 admin dashboard (Tailwind, Cache Components) | Shell: live API/database status; not for deployment |
 | `docs/` | Architecture, setup, API, database, security, requirements | Keep in step with the code |
 | `deployment/` | Release scripts and the release record | In use for production |

@@ -1,0 +1,85 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { AppText } from '@/components/AppText';
+import { Button } from '@/components/Button';
+import { Notice } from '@/components/Notice';
+import { QueryView } from '@/components/QueryView';
+import { Screen } from '@/components/Screen';
+import { SurfaceCard } from '@/components/SurfaceCard';
+import { TextField } from '@/components/TextField';
+import { useApiAction, useApiQuery } from '@/hooks/useApi';
+import { api } from '@/lib/api';
+import { errorMessage } from '@/lib/errors';
+
+/**
+ * The recovery number (FR-REG-028): recovery codes only ever go to a number
+ * the member confirmed with a code. Changing it tells the old number.
+ */
+export default function RecoveryNumberScreen() {
+  const { t } = useTranslation();
+  const current = useApiQuery(() => api().getMyRecoveryPhone());
+  const [phone, setPhone] = useState('');
+  const [code, setCode] = useState('');
+  const [sentTo, setSentTo] = useState<string | null>(null);
+  const [devCode, setDevCode] = useState<string | null>(null);
+  const [confirmed, setConfirmed] = useState(false);
+
+  const send = useApiAction(async () => {
+    const result = await api().requestPhoneConfirmation(phone.trim());
+    setSentTo(phone.trim());
+    setDevCode(result.devCode ?? null);
+  });
+  const confirm = useApiAction(async () => {
+    if (!sentTo) return;
+    await api().confirmPhone(sentTo, code.trim());
+    setConfirmed(true);
+    setSentTo(null);
+    setCode('');
+    current.reload();
+  });
+  const failed = send.error ?? confirm.error;
+
+  return (
+    <Screen edges={['bottom']}>
+      <QueryView query={current}>
+        {(data) =>
+          data ? (
+            <SurfaceCard>
+              <AppText step="label">{t('m.profile.recoveryNumber')}</AppText>
+              <AppText step="body" mono>
+                {data.phone}
+              </AppText>
+            </SurfaceCard>
+          ) : null
+        }
+      </QueryView>
+      {confirmed ? <Notice tone="success">{t('m.profile.numberConfirmed')}</Notice> : null}
+      <TextField
+        label={t('m.profile.phoneLabel')}
+        hint={t('m.errors.invalid_phone')}
+        value={phone}
+        onChangeText={setPhone}
+        keyboardType="phone-pad"
+        autoComplete="tel"
+      />
+      <Button label={t('m.profile.sendCode')} busy={send.busy} busyLabel={t('m.common.sending')} disabled={phone.trim().length < 9} onPress={() => void send.run()} />
+      {sentTo ? (
+        <>
+          {devCode ? <Notice tone="info">{t('m.profile.devCode', { code: devCode })}</Notice> : null}
+          <TextField
+            label={t('m.recover.codeLabel')}
+            value={code}
+            onChangeText={setCode}
+            keyboardType="number-pad"
+            autoComplete="one-time-code"
+            textContentType="oneTimeCode"
+            maxLength={6}
+          />
+          <Button label={t('m.profile.confirmNumber')} busy={confirm.busy} disabled={code.trim().length < 4} onPress={() => void confirm.run()} />
+        </>
+      ) : null}
+      {failed ? <Notice tone="error">{errorMessage(t, failed)}</Notice> : null}
+    </Screen>
+  );
+}

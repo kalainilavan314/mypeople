@@ -1,8 +1,20 @@
 # My People member app (Expo)
 
-The Android and iOS member app (BRD §15A.4): React Native, Expo SDK 58, Expo Router, TypeScript. It replaces the PWA in `app/` once it reaches the same features.
+The Android and iOS member app (BRD §15A.4): React Native, Expo SDK 58, Expo Router, TypeScript, on the FastAPI `/v1` API. It replaces the PWA in `app/` once it reaches the same features and FastAPI is deployed.
 
-**Status: shell.** The five permanent tabs (Home, Events, Card, Gallery, Profile) exist with the shared fonts, colours and Tamil/English text. Each tab says plainly that its feature is not built yet. Home also checks the connection to the API (`/v1/health`).
+**Status: member screens built (Batch 21), following the approved PWA designs (`design/mobile/production-design-specification.md`):**
+
+| Area | Screens |
+|---|---|
+| Before sign-in | A01 welcome and language, A02 sign-in (NIC or passport), A03 registration in three steps, A13 recovery by code, A16 assisted recovery |
+| Identity | A04 to A12 in one screen: consent, the route's photos (camera, or the phone's photos), declaration and submission, corrections, history, appeal |
+| Home | H01 and H02 (the server decides), H03 notifications with Action needed, H04 community hub; locked and unbuilt services say so |
+| Events | E01 list with My area, This week, This month and search; E02 to E05 detail and answer; E06 pass with a 60-second QR |
+| Card | C01 card with a 60-second QR, C06 why it is not available |
+| Gallery | G01 albums, G02 album, G03 photo with previous and next and a removal request with its receipt |
+| Profile | P01 profile, edit (display name and gender; legal details locked), My activity, My area and area change with proof, language and notification choices with quiet hours, recovery number, signed-in devices and password change, privacy (identity-data notice, copy and closure requests) |
+
+Not built yet: the ID-card artwork, PDF, wallet and sharing on the Card tab; the events map; push registration (no FCM or APNs credentials, INT-02); the optional survey; services the hub lists as not available yet. Tamil text in `src/i18n/ta.ts` is new and needs a Tamil speaker's review before release.
 
 ## Run
 
@@ -14,6 +26,8 @@ npm run android --workspace @my-people/member-mobile     # Expo Go or an emulato
 
 Start the FastAPI service too (`docs/development/setup.md`). Anything in an `EXPO_PUBLIC_` variable is built into the app and readable by anyone, so never put a secret there.
 
+The session token is kept in the phone's keychain or keystore (expo-secure-store). The web preview has no secure store, so it keeps the token in memory only: reloading the page signs out.
+
 ## Check
 
 ```powershell
@@ -23,16 +37,30 @@ npx expo export --platform android --output-dir dist-android
 npx expo export --platform web --output-dir dist-web
 ```
 
+`npx expo start` writes the typed routes to `.expo/types/router.d.ts`; with that file present, `tsc` also checks every link.
+
 ## Layout
 
 ```text
-app/                 routes (Expo Router)
-  _layout.tsx        loads the locked fonts and the i18n text
-  (tabs)/            the five tabs
-src/lib/             api.ts (shared API client), i18n.ts
-assets/images/       app icon, splash and favicon (from the PWA)
+app/
+  _layout.tsx          fonts, saved language, session; signed-in and signed-out routes
+  (auth)/              welcome, sign-in, register, recover, assisted-recovery
+  (member)/            everything that needs a session
+    (tabs)/            Home, Events, Card, Gallery, Profile
+    verify.tsx, notifications.tsx, hub.tsx
+    events/[id].tsx, events/[id]/pass.tsx
+    gallery/[id].tsx, gallery/photo.tsx
+    profile/           edit, activity, area, settings, security, privacy, recovery-number
+src/
+  components/          shared components (spec §3)
+  features/            auth, area, events, home, identity
+  hooks/               data loading and actions, language, rotating QR codes
+  i18n/                this app's Tamil and English text (en.ts, ta.ts)
+  lib/                 API client, secure storage, formats in Asia/Colombo, error messages
+  providers/           the session
+assets/images/         app icon, splash and favicon (from the PWA)
 ```
 
-Shared pieces come from `packages/`: `mobile-ui` (fonts, tab icons, shared screens), `design-tokens`, `i18n` and `api-client`. Feature code goes in `src/features/<feature>/` as each feature is built.
+Shared pieces come from `packages/`: `mobile-ui` (locked fonts, tab icons), `design-tokens`, `i18n` (the PWA's text) and `api-client`.
 
 The icons are 512 px; the app stores need 1024 px versions before a store build. Bundle identifiers are set when store publishing is decided.
