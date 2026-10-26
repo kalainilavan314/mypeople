@@ -22,7 +22,7 @@
 :root[data-theme='dark'] .member-shell .medtech-nav .medtech-nav-card .work-nav-icon{background:#193a5e;border-color:#0d1520;color:#fff}
 :root[data-theme='dark'] .member-shell .medtech-nav .medtech-nav-card:hover .work-nav-icon{background:#234d7d}
 .member-shell .ev-iconbtn{border-radius:8px}
-.member-shell .pf-logout-btn{min-height:48px;height:auto;padding:12px;border-radius:12px;box-shadow:0 3px 12px rgba(220,38,38,.28);background:#dc2626;color:#ffffff;font-size:.9375rem;line-height:1.4;font-weight:600}
+.member-shell .pf-logout-btn{min-height:48px;height:auto;padding:12px;border-radius:12px;box-shadow:0 3px 12px rgba(0,0,0,.18);background:var(--error);color:#ffffff;font-size:.9375rem;line-height:1.4;font-weight:600}
 .member-shell .civic-profile-row>.pf-menu-text{flex:1;min-width:0}
 .member-shell .civic-profile-row .pf-menu-title{font-size:.8125rem;line-height:1.5;font-weight:500}
 .member-shell .civic-profile-row .pf-menu-sub{display:none}
