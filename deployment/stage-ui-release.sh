@@ -71,9 +71,9 @@ assert albums
 for album in albums:
     assert album['count']==len(album['photos'])
     for photo in album['photos']: assert len(read(photo['src']))>0
-for asset in ['/member/coast-hero.webp','/member/community-hero-v1.webp','/member/home-ideas-v1.webp','/member/home-membership-v1.webp','/member/outfit-latin.woff2','/sw.js']:
+for asset in ['/member/coast-hero.webp','/member/community-hero-v1.webp','/member/home-ideas-v1.webp','/member/home-membership-v1.webp','/sw.js']:
     assert len(read(asset))>0
-print('Preflight passed: health, database access, release, gallery, hero, font, service worker')
+print('Preflight passed: health, database access, release, gallery, hero images, service worker')
 PY
 cleanup
 trap - EXIT

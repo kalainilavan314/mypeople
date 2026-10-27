@@ -5,14 +5,5 @@
     "license": "Pexels License",
     "licenseUrl": "https://www.pexels.com/license/",
     "use": "Illustrative hero, matching the supplied NorthUnity project"
-  },
-  "outfit-latin.woff2": {
-    "source": "https://github.com/google/fonts/tree/main/ofl/outfit",
-    "license": "SIL Open Font License 1.1",
-    "licenseFile": "OFL.txt"
-  },
-  "sunset-alternative.webp": {
-    "source": "Built-in imagegen tool",
-    "use": "Optional generated branding image, not documentary event photography"
   }
 }

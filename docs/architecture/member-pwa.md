@@ -25,5 +25,3 @@ Do not put authentication secrets, uploaded identity documents, database backups
 ## Validation and migrations
 
 Run `npm --prefix app run typecheck` and `npm --prefix app run build`. Browser regression scripts under `scripts/` use local API fixtures. The Home checks cover responsive English/Tamil layouts and navigation clearance; membership tests include actual PDF generation.
-
-`docs/refactor/move-files.ps1` records the exact initial filesystem moves and deletes for the pre-refactor checkout. It checks that every resolved path remains inside the workspace. Those moves have already been applied; do not run it again on the current checkout. Additional component extractions and domain model consolidation are represented by the current source files and the refactor scripts.

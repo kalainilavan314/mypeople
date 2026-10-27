@@ -14,7 +14,7 @@ assert release.encode() in read('/build-marker.txt')
 html=read('/').decode()
 assets=re.findall(r'(?:src|href)="(/assets/[^"]+)"',html)
 assert assets
-paths=assets+['/member/coast-hero.webp','/member/community-hero-v1.webp','/member/home-ideas-v1.webp','/member/home-membership-v1.webp','/member/outfit-latin.woff2','/sw.js']
+paths=assets+['/member/coast-hero.webp','/member/community-hero-v1.webp','/member/home-ideas-v1.webp','/member/home-membership-v1.webp','/sw.js']
 for path in paths:
     live=read(path)
     local=(root/'app/dist'/path.lstrip('/')).read_bytes()

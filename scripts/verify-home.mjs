@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 const require=createRequire(import.meta.url);
 const {chromium}=require(process.env.MY_PEOPLE_PLAYWRIGHT_MODULE||'playwright');
 const base=process.env.MY_PEOPLE_BASE_URL||'http://127.0.0.1:5175';
-const out=process.env.MY_PEOPLE_QA_OUT||'docs/refactor/after';await fs.mkdir(out,{recursive:true});
+const out=process.env.MY_PEOPLE_QA_OUT||'design/mobile/qa/home';await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({headless:true,channel:'msedge'});
 const context=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});
 const member={id:'fixture',fullName:'Kalaiyarasan Sinnathamby Thiruchelvam',memberCode:'WTL-26-5401749',districtName:'Jaffna',dsName:'Islands North (Kayts)',gsName:'Analaitivu North',tier:'volunteer',verificationStatus:'identity_confirmed',membershipStatus:'active',recruitCount:0,language:'en',joinedAt:'2026-10-03T00:00:00Z'};

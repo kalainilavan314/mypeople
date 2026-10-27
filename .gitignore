@@ -39,4 +39,6 @@ deployment/artifacts/
 deployment/reference*
 deployment/outfit-font.css
 deployment/.ssh-runtime/
-design/mobile/qa/overflow.png
+
+# Screenshots and results written by the scripts/verify-*.mjs browser checks.
+design/mobile/qa/

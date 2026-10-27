@@ -205,7 +205,7 @@ Production dependencies still needing backend/product work: an assigned governan
 
 Release status: the preceding detailed-ID release `civic-20261011T062725Z` was deployed and verified. This newer civic revision is validated locally before release. The corresponding live release and public asset verification are recorded separately in deployment/artifacts/*-live.json; a preceding release is not proof that a newer revision is live. Authentication routes and server data contracts remain intact.
 
-Validation results and screenshots are in design/mobile/qa. Browser tests use synthetic member/event fixtures; gallery HTTP tests use the new real local router and local assets. Production member records and database were not contacted by those tests. A passed typecheck/build and these tests are release evidence, not accessibility certification.
+Validation results and screenshots are written to design/mobile/qa (generated, not committed). Browser tests use synthetic member/event fixtures; gallery HTTP tests use the new real local router and local assets. Production member records and database were not contacted by those tests. A passed typecheck/build and these tests are release evidence, not accessibility certification.
 
 ### 11. Benchmark rationale and primary references
 

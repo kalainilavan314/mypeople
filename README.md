@@ -60,6 +60,4 @@ Authentication, member profiles, card credentials, events/RSVP, community report
 
 Gallery photos are licensed sample assets; credits are in `app/public/gallery/ATTRIBUTION.json`. Home labels its images as illustrative; prompts and originals are in `docs/assets/`.
 
-Browser checks (`scripts/verify-*.mjs`) use fixture members and mocked API responses, and can target a production preview with `MY_PEOPLE_BASE_URL`. They cover Home in English and Tamil at five widths, Profile and photo upload, membership card, civic system and feature routes.
-
-The initial directory moves are already applied. Do not rerun `docs/refactor/move-files.ps1` on this checkout.
+Browser checks (`scripts/verify-*.mjs`) use fixture members and mocked API responses, and can target a production preview with `MY_PEOPLE_BASE_URL`. They cover Home in English and Tamil at five widths, Profile and photo upload, membership card, civic system and feature routes. Their screenshots go to `design/mobile/qa/`, which is not committed.

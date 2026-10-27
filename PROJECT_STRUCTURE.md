@@ -726,7 +726,7 @@ docs/
   assets/  home-design.md  profile-design.md
 design/
   wireframes/README.md     the BRD wireframes are held by the project owner
-  mobile/                  PWA design system, specifications, review.html, qa/ screenshots
+  mobile/                  PWA design system, specification, review.html (qa/ screenshots are generated, not committed)
   admin-dashboard/README.md
 deployment/
   README.md                release record and how to deploy

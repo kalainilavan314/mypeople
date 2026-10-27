@@ -49,4 +49,4 @@ The existing measured navigation clearance and safe-area support remain in effec
 
 The production TypeScript/Vite/PWA build and `scripts/verify-home.mjs` validate English/Tamil layouts at 320, 375, 390, 768 and 1280 pixels, long names, search, ordinary-icon/label/stat alignment, raised centre styling, touch targets, footer clearance, all six photo cards and Card QR entry.
 
-`docs/refactor/home-protected-baseline.json` records the earlier Home-only change's 108 protected source fingerprints. Profile and shared navigation are intentionally changed by the subsequent user request. Screenshots use fixture data; verification scripts can target a local production preview or deployed assets without updating member data.
+Screenshots use fixture data and are written to `design/mobile/qa/home/` (not committed); verification scripts can target a local production preview or deployed assets without updating member data.
