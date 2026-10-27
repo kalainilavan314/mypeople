@@ -50,6 +50,7 @@ Current scope:
 | `GET /v1/access/assignments` | assignments in the caller's areas (W09); needs `roles.assign` |
 | `GET /v1/membership/lookup?code` | one member by exact member ID in the caller's areas (S03); needs `members.view_profile` |
 | `GET /v1/access/catalogue`, `POST /v1/access/assignments/preview`, `POST /v1/access/assignments`, `POST /v1/access/assignments/{id}/revoke` | staff assignments (W09); need `roles.assign` |
+| `GET /v1/access/reviews`, `POST /v1/access/reviews/{assignmentId}` | this quarter's access review (FR-AUTH-027, D31); need `audit.view` |
 | `GET /v1/audit`, `GET /v1/audit/verify` | the audit log and its hash-chain check; need `audit.view` |
 | `GET /v1/identity/me/documents`, `PUT /v1/identity/me/documents/{kind}` | which identity images the server holds for the member; upload or replace one (the body is the image) |
 | `GET /v1/identity/me/evidence-views` | when a reviewer viewed the member's evidence: date and role only |
@@ -116,7 +117,24 @@ recorded but, unlike the Express sign-up, never promote anyone's tier
 (SG-03). Not built yet: the mobile number and its one-time code, recovery
 and registration rate limits (account-security batch).
 
-## Sessions and the staff second factor (FR-AUTH-019 to 021, 025, NFR-SEC-04)
+## Quarterly access reviews (FR-AUTH-027, NFR-SEC-13, D31)
+
+Every staff grant except the Super Administrator's is due for review by the
+end of the quarter after it was made or last confirmed, in Sri Lankan time
+(`access.rules.review_due`; this replaces RB-05's 12 months, which covered
+explicit grants only). `GET /v1/access/reviews` lists the grants a reviewer
+may decide this quarter, the most overdue first, with how many were already
+reviewed (KPI-42). A reviewer holds `audit.view` (PRM-25) over the grant's
+area through a higher tier, and never reviews their own grant, so Tier 4
+grants go to the Super Administrator. Confirming makes the grant due a
+quarter later; revoking ends it. Each decision is a row in
+`access.assignment_review` with its reason and an audit entry with ids only.
+A grant nobody reviewed by its deadline already stops counting
+(`effective_assignments`); confirming it restores it. The Tier 5 grant is
+exempt [ASSUMPTION]: nobody ranks above it, and a lapse would leave nobody
+able to assign roles.
+
+## Sessions and the staff second factor (FR-AUTH-018 to 021, 025, NFR-SEC-04, NFR-SEC-12)
 
 - **Sessions.** Sign-in and registration record a row in
   `identity.session` (a coarse device label, never a location) and the token
@@ -143,9 +161,29 @@ and registration rate limits (account-security batch).
   endpoints, end only with "sign out", are not listed, and can never act as
   staff here.
 
+- **Short tokens, rotating refresh tokens (FR-AUTH-025).** This API's tokens
+  last 15 minutes (`ACCESS_LIFETIME`); an expired one answers
+  `401 token_expired`. Sign-in and registration also return a refresh token,
+  `<session id>.<secret>`, kept as a SHA-256 hash on the session with the one
+  before it, and set as the `mp_refresh` cookie for `/v1/auth`.
+  `POST /v1/auth/refresh` locks the session row, checks the secret before
+  saying anything about the session, and returns a new pair. A refresh token
+  that was already replaced coming back means someone holds a copy: the
+  session ends (`refresh_reuse`) and the member gets an alert. Express tokens
+  are unaffected (still 30 days).
+- **Suspicious sign-ins (FR-AUTH-018, NFR-SEC-12).** `auth/risk.py` flags a
+  sign-in after three or more wrong passwords for the account in the past
+  hour from any address, or the sixth sign-in within an hour; a new device
+  is listed as a signal only beside one of those (alone it gets the
+  new-device notice). A flagged sign-in still succeeds, and raises a
+  `security_alert`: an Action-needed inbox notice, an SMS to the confirmed
+  number, and an audit entry. The member answers through
+  `/v1/auth/security-alerts`; "this wasn't me" ends the flagged session and
+  every other one except the one they are using. No address or location is
+  stored with an alert, so impossible travel is not a signal.
+
 Not built yet: step-up codes for new devices (FR-AUTH-022), alerts to the
-old device (needs push), refresh-token rotation (FR-AUTH-025), passkeys,
-and the quarterly access review (FR-AUTH-027).
+old device (needs push), passkeys, and lost-device wipe (FR-STF-010).
 
 ## Recovery (BRD A13, A16, FR-REG-028, FR-AUTH-014 to 017)
 
@@ -727,7 +765,7 @@ app/
   core/sealing.py      AES-256-GCM sealing shared by the evidence vault and MFA secrets
   modules/membership/  /v1/members/me and membership states: rules, service, router, schemas, repository
   modules/membership/card/  the member card, QR codes and scanning
-  modules/access/      staff tiers, permissions, areas, assignments, bootstrap command
+  modules/access/      staff tiers, permissions, areas, assignments, quarterly reviews, bootstrap command
   modules/audit/       append-only, hash-chained audit log
   core/permissions.py  staff tiers and the BRD permission matrix
   modules/identity/documents/  identity images: encrypted vault, upload, signed view links

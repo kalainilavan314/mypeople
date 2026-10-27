@@ -3,7 +3,7 @@ import { Image, StyleSheet, View, type ImageStyle, type StyleProp } from 'react-
 
 import { colors, spacing } from '@my-people/design-tokens';
 
-import { readToken } from '../lib/storage';
+import { freshToken } from '../session/api';
 
 import { AppText } from './AppText';
 
@@ -27,7 +27,9 @@ export function AuthorizedImage({ uri, alt, unavailableLabel, style, resizeMode 
 
   useEffect(() => {
     let active = true;
-    readToken().then((value) => active && setToken(value));
+    freshToken()
+      .catch(() => null) // unreachable: the image then fails and says so
+      .then((value) => active && setToken(value));
     return () => {
       active = false;
     };

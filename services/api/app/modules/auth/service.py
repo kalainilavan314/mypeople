@@ -6,6 +6,11 @@ expires after 30 days without use, and it records whether the staff second
 factor was given. Tokens from the Express API name no session; they still
 work for member endpoints, end only with "sign out everywhere", and never
 count as having given the second factor.
+
+This API's tokens last 15 minutes and are renewed with a refresh token that
+changes on every use (FR-AUTH-025); an already-used one ends the session and
+alerts the member. Each sign-in is checked against the risk rules (risk.py,
+NFR-SEC-12) and a flagged one raises a security alert (FR-AUTH-018).
 """
 
 import time
@@ -18,6 +23,8 @@ from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
 
 from app.core.security import (
+    ACCESS_LIFETIME,
+    ExpiredSessionToken,
     InvalidSessionToken,
     hash_password,
     read_session_token,
@@ -26,11 +33,12 @@ from app.core.security import (
 )
 from app.core.sealing import UnsealError, derived_key, seal, unseal
 from app.modules.audit import service as audit
-from app.modules.auth import mfa_lockout, repository, throttle, totp
+from app.modules.auth import mfa_lockout, refresh, repository, risk, security_alerts, throttle, totp
 from app.modules.auth.device import Device
 from app.modules.auth.repository import (
     SessionMember,
     SignInMember,
+    StoredAlert,
     StoredSession,
     clear_failures,
     count_recent_failures,
@@ -48,7 +56,7 @@ MAX_MFA_FAILURES = 5  # wrong codes in one session before it is ended; the authe
 class NotAuthenticated(Exception):
     """No valid session. The reason is the error code the client receives."""
 
-    def __init__(self, reason: Literal["unauthorized", "session_expired"]) -> None:
+    def __init__(self, reason: Literal["unauthorized", "session_expired", "token_expired"]) -> None:
         super().__init__(reason)
         self.reason = reason
 
@@ -67,7 +75,18 @@ class InvalidCredentials(Exception):
 class SignedIn:
     member_id: uuid.UUID
     token: str
+    refresh_token: str
     new_device: bool  # a sign-in from a device this member has not used before (FR-AUTH-019)
+    alert: StoredAlert | None = None  # the risk rules flagged it (FR-AUTH-018)
+
+
+class RefreshRefused(Exception):
+    """invalid_refresh_token, refresh_reused or session_expired; alert is set for a reuse."""
+
+    def __init__(self, code: str, alert: StoredAlert | None = None) -> None:
+        super().__init__(code)
+        self.code = code
+        self.alert = alert
 
 
 class MfaRefused(Exception):
@@ -98,6 +117,8 @@ def authenticate(db: Session, token: str | None, jwt_secret: str) -> SessionMemb
 
     try:
         claims = read_session_token(token, jwt_secret)
+    except ExpiredSessionToken:
+        raise NotAuthenticated("token_expired") from None  # renew it with the refresh token
     except InvalidSessionToken:
         raise NotAuthenticated("unauthorized") from None
 
@@ -128,12 +149,81 @@ def authenticate(db: Session, token: str | None, jwt_secret: str) -> SessionMemb
     )
 
 
-def start_session(db: Session, member_id: uuid.UUID, session_version: int, device: Device, jwt_secret: str) -> SignedIn:
-    """Record a session for a sign-in or a new account and sign its token."""
+def start_session(
+    db: Session,
+    member_id: uuid.UUID,
+    session_version: int,
+    device: Device,
+    jwt_secret: str,
+    *,
+    recent_failures: int = 0,
+) -> SignedIn:
+    """Record a session for a sign-in or a new account, check it against the risk rules,
+    and sign its token and first refresh token."""
+    recent_sign_ins = repository.count_recent_sessions(db, member_id, risk.VELOCITY_WINDOW)
     session_id, new_device = repository.start_session(db, member_id, device.label, device.key)
+    refresh_token, refresh_hash = refresh.new_refresh_token(session_id)
+    repository.rotate_refresh_hash(db, session_id, refresh_hash, None)
+    signals = risk.signals(new_device=new_device, recent_failures=recent_failures, recent_sign_ins=recent_sign_ins)
+    alert = (
+        security_alerts.raise_alert(db, member_id, session_id, "suspicious_sign_in", signals, device.label)
+        if signals
+        else None
+    )
     db.commit()
-    token = sign_session_token(member_id, session_version, jwt_secret, session_id=session_id)
-    return SignedIn(member_id=member_id, token=token, new_device=new_device)
+    token = sign_session_token(member_id, session_version, jwt_secret, session_id=session_id, lifetime=ACCESS_LIFETIME)
+    return SignedIn(member_id=member_id, token=token, refresh_token=refresh_token, new_device=new_device, alert=alert)
+
+
+@dataclass(frozen=True)
+class Refreshed:
+    member_id: uuid.UUID
+    token: str
+    refresh_token: str
+
+
+def renew(db: Session, presented: str, jwt_secret: str) -> Refreshed:
+    """A new token and refresh token for a session (FR-AUTH-025). The presented refresh token
+    stops working. One that was already used means a copy exists: the session ends for every
+    copy and the member is alerted."""
+    parsed = refresh.parse(presented)
+    if parsed is None:
+        raise RefreshRefused("invalid_refresh_token")
+    session_id, secret = parsed
+    session = repository.lock_session_for_refresh(db, session_id, IDLE_LIMIT)
+    if session is None:
+        raise RefreshRefused("invalid_refresh_token")
+    secret_hash = refresh.hash_secret(secret)
+    # The secret is checked before anything about the session is revealed, so a guessed one
+    # learns nothing, not even whether the session has ended.
+    current = refresh.matches(secret_hash, session.refresh_hash)
+    reused = refresh.matches(secret_hash, session.previous_refresh_hash)
+    if not current and not reused:
+        db.commit()
+        raise RefreshRefused("invalid_refresh_token")
+    if session.revoked:
+        db.commit()
+        raise RefreshRefused("session_expired")
+    if reused:
+        repository.revoke_session(db, session.id, "refresh_reuse")
+        alert = security_alerts.raise_alert(
+            db, session.member_id, session.id, "refresh_reuse", ["refresh_token_reused"], session.device_label
+        )
+        db.commit()
+        raise RefreshRefused("refresh_reused", alert)
+    if session.idle:
+        repository.revoke_session(db, session.id, "idle")
+        db.commit()
+        raise RefreshRefused("session_expired")
+    member = find_session_member(db, session.member_id)
+    if member is None:
+        db.commit()
+        raise RefreshRefused("invalid_refresh_token")
+    new_token, new_hash = refresh.new_refresh_token(session.id)
+    repository.rotate_refresh_hash(db, session.id, new_hash, session.refresh_hash)
+    db.commit()
+    token = sign_session_token(member.id, member.session_version, jwt_secret, session_id=session.id, lifetime=ACCESS_LIFETIME)
+    return Refreshed(member_id=member.id, token=token, refresh_token=new_token)
 
 
 async def sign_in(db: Session, identifier: str, password: str, ip: str, jwt_secret: str, device: Device) -> SignedIn:
@@ -154,8 +244,10 @@ async def sign_in(db: Session, identifier: str, password: str, ip: str, jwt_secr
         raise TooManyAttempts(gate.retry_after or throttle.LOCKOUT_SECONDS)
     await throttle.wait(gate.delay_seconds)
 
-    member = await run_in_threadpool(_check_password, db, identifier, ip, password)
-    return await run_in_threadpool(start_session, db, member.id, member.session_version, device, jwt_secret)
+    member, recent_failures = await run_in_threadpool(_check_password, db, identifier, ip, password)
+    return await run_in_threadpool(
+        lambda: start_session(db, member.id, member.session_version, device, jwt_secret, recent_failures=recent_failures)
+    )
 
 
 def sign_out(db: Session, token: str | None, jwt_secret: str) -> None:
@@ -310,14 +402,19 @@ def _check_throttle(db: Session, identifier: str, ip: str) -> throttle.SignInGat
     return gate
 
 
-def _check_password(db: Session, identifier: str, ip: str, password: str) -> SignInMember:
+def _check_password(db: Session, identifier: str, ip: str, password: str) -> tuple[SignInMember, int]:
+    """The member, and how many wrong passwords the account had in the last hour before this
+    attempt, from any address (a risk signal, NFR-SEC-12)."""
     member = find_sign_in_member(db, identifier)
     # Run bcrypt even for an unknown NIC, so the response time does not reveal
     # which NICs are registered. (The Express API skips it; this is stricter.)
     succeeded = verify_password(password, member.password_hash if member else _unmatchable_hash())
     succeeded = succeeded and member is not None
 
+    recent_failures = 0
     if succeeded:
+        # This attempt's own provisional failure is among them; it is not a signal.
+        recent_failures = max(repository.count_account_failures(db, identifier, risk.FAILURE_WINDOW) - 1, 0)
         # A correct password clears the slate, this attempt's provisional failure
         # included, so a member who eventually remembers it is not still slowed down.
         clear_failures(db, identifier, ip)
@@ -326,7 +423,7 @@ def _check_password(db: Session, identifier: str, ip: str, password: str) -> Sig
 
     if not succeeded or member is None:
         raise InvalidCredentials()
-    return member
+    return member, recent_failures
 
 
 @cache

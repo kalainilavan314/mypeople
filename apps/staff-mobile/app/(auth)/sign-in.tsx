@@ -27,7 +27,7 @@ export default function StaffSignInScreen() {
       route === 'nic'
         ? await api().signIn(number.trim(), password)
         : await api().signInWithPassport(number.trim(), country.trim(), password);
-    await start(result.token, result.member);
+    await start(result);
   });
   const ready = number.trim() !== '' && password !== '' && (route === 'nic' || country.trim().length === 3);
 

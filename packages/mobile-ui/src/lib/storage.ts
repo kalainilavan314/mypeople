@@ -2,29 +2,45 @@ import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
-// The session token lives in the device's keychain or keystore (SecureStore).
-// The web preview has no secure store, so there the token stays in memory only
-// and a reload signs the member out: it is never written to localStorage,
-// where any script on the page could read it.
+// The session token and refresh token live in the device's keychain or keystore
+// (SecureStore). The web preview has no secure store, so there they stay in
+// memory only and a reload signs the member out: they are never written to
+// localStorage, where any script on the page could read them.
 const TOKEN_KEY = 'mp.session';
+const REFRESH_KEY = 'mp.refresh';
 const DEVICE_KEY = 'mp.device';
 const LANGUAGE_KEY = 'mp.language';
 
 const isWeb = Platform.OS === 'web';
 let webToken: string | null = null;
+let webRefreshToken: string | null = null;
 
 export async function readToken(): Promise<string | null> {
   return isWeb ? webToken : SecureStore.getItemAsync(TOKEN_KEY);
 }
 
-export async function saveToken(token: string): Promise<void> {
-  if (isWeb) webToken = token;
-  else await SecureStore.setItemAsync(TOKEN_KEY, token);
+export async function readRefreshToken(): Promise<string | null> {
+  return isWeb ? webRefreshToken : SecureStore.getItemAsync(REFRESH_KEY);
 }
 
-export async function clearToken(): Promise<void> {
-  if (isWeb) webToken = null;
-  else await SecureStore.deleteItemAsync(TOKEN_KEY);
+export async function saveTokens(token: string, refreshToken: string): Promise<void> {
+  if (isWeb) {
+    webToken = token;
+    webRefreshToken = refreshToken;
+    return;
+  }
+  await SecureStore.setItemAsync(TOKEN_KEY, token);
+  await SecureStore.setItemAsync(REFRESH_KEY, refreshToken);
+}
+
+export async function clearTokens(): Promise<void> {
+  if (isWeb) {
+    webToken = null;
+    webRefreshToken = null;
+    return;
+  }
+  await SecureStore.deleteItemAsync(TOKEN_KEY);
+  await SecureStore.deleteItemAsync(REFRESH_KEY);
 }
 
 /** A random id for this install, sent as X-Device-Id so a sign-in from a new device can be noticed. */

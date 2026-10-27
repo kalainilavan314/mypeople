@@ -25,6 +25,10 @@ const MESSAGES: Record<string, string> = {
   decision_refused: 'The decision is not complete.',
   change_refused: 'This change is not allowed.',
   assignment_refused: 'This assignment is not allowed.',
+  own_assignment: 'You cannot review your own role.',
+  tier_not_below_yours: 'You can review only roles below your own tier.',
+  tier_5_by_bootstrap_only: 'The Super Administrator role is not reviewed here.',
+  not_due: 'This role was already reviewed this quarter.',
   report_refused: 'The report is not complete.',
 };
 

@@ -91,6 +91,11 @@ MFA_LOCKED_MESSAGE = (
     "My People: your authenticator is locked for a while after several wrong codes. "
     "If this was not you, reset your password."
 )
+SUSPICIOUS_SIGN_IN_MESSAGE = (
+    "என் மக்கள்: உங்கள் கணக்கில் வழக்கத்துக்கு மாறான உள்நுழைவு. இது நீங்கள் இல்லையெனில் செயலியில் தெரிவித்துக் கடவுச்சொல்லை மாற்றவும்.\n"
+    "My People: an unusual sign-in to your account. If this was not you, say so in the app and change your password."
+)
+
 NEW_DEVICE_MESSAGE = (
     "என் மக்கள்: புதிய சாதனத்தில் உங்கள் கணக்கில் உள்நுழைவு. இது நீங்கள் இல்லையெனில் கடவுச்சொல்லை மாற்றவும்.\n"
     "My People: a new device signed in to your account. If this was not you, reset your password."

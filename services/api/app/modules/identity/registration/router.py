@@ -10,7 +10,7 @@ from app.modules.auth.dependencies import CurrentMember
 from app.modules.auth import service as auth_service
 from app.modules.auth.device import describe
 from app.modules.auth.repository import find_session_member
-from app.modules.auth.session_cookie import set_session_cookie
+from app.modules.auth.session_cookie import set_refresh_cookie, set_session_cookie
 from app.modules.identity.registration import service
 from app.modules.identity.registration.schemas import (
     ConsentInput,
@@ -82,14 +82,18 @@ def register(body: RegistrationInput, request: Request, response: Response, db: 
     member = find_session_member(db, registered.member_id)
     assert member is not None
     device = describe(request.headers.get("user-agent"), request.headers.get("x-device-id"))
-    token = auth_service.start_session(
+    signed_in = auth_service.start_session(
         db, member.id, member.session_version, device, settings.jwt_secret.get_secret_value()
-    ).token
-    set_session_cookie(response, token, settings)
+    )
+    set_session_cookie(response, signed_in.token, settings)
+    set_refresh_cookie(response, signed_in.refresh_token, settings)
     profile = find_member_profile(db, registered.member_id)
     assert profile is not None
     return RegistrationOut(
-        token=token, member=MemberProfile.model_validate(dict(profile)), referral_accepted=registered.referral_accepted
+        token=signed_in.token,
+        refresh_token=signed_in.refresh_token,
+        member=MemberProfile.model_validate(dict(profile)),
+        referral_accepted=registered.referral_accepted,
     )
 
 

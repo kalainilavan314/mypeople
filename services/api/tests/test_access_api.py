@@ -118,7 +118,7 @@ def test_an_assignment_is_saved_audited_and_effective_at_once(db_client, db_sess
     assert response.status_code == 201
     created = response.json()
     assert created["grantedBy"] == str(super_admin.id)
-    assert created["reviewDueAt"] is not None  # members.verify is explicit-only (RB-05)
+    assert created["reviewDueAt"] is not None  # every staff grant is reviewed quarterly (FR-AUTH-027)
     entry = last_audit(db_session)
     assert (entry.action, entry.target_id, entry.area_code) == ("access.assignment.created", created["id"], area.district)
     assert f"province:{area.province}" in entry.area_path

@@ -352,3 +352,69 @@ test('a server calling for a staff member forwards their address, and lookups se
   assert.equal(sent[0].headers['X-Forwarded-For'], '203.0.113.7');
   assert.equal(sent[0].url, 'https://api.example/v1/membership/lookup?code=WTL-26%201');
 });
+
+test('an expired token is renewed once and the request sent again', async () => {
+  const sent: string[] = [];
+  const fetch = (async (_url: string | URL | Request, init: RequestInit = {}) => {
+    const authorization = (init.headers as Record<string, string>).Authorization;
+    sent.push(authorization);
+    return authorization === 'Bearer old'
+      ? new Response(JSON.stringify({ detail: 'token_expired' }), { status: 401 })
+      : new Response(JSON.stringify(profile), { status: 200 });
+  }) as typeof globalThis.fetch;
+  let renewals = 0;
+  const refresh = async () => {
+    renewals += 1;
+    return 'new';
+  };
+
+  const me = await createApiClient({ baseUrl: 'https://api.example', fetch, getToken: () => 'old', refresh }).getMyProfile();
+
+  assert.deepEqual(me, profile);
+  assert.deepEqual(sent, ['Bearer old', 'Bearer new']);
+  assert.equal(renewals, 1);
+});
+
+test('other refusals, and a renewal the server refused, are not sent again', async () => {
+  const refused = fakeFetch(401, { detail: 'session_expired' });
+  let renewals = 0;
+  const refresh = async () => {
+    renewals += 1;
+    return null;
+  };
+
+  await assert.rejects(
+    createApiClient({ baseUrl: 'https://api.example', fetch: refused.fetch, getToken: () => 'old', refresh }).getMyProfile(),
+    (error: unknown) => error instanceof ApiError && error.code === 'session_expired',
+  );
+  const expired = fakeFetch(401, { detail: 'token_expired' });
+  await assert.rejects(
+    createApiClient({ baseUrl: 'https://api.example', fetch: expired.fetch, getToken: () => 'old', refresh }).getMyProfile(),
+    (error: unknown) => error instanceof ApiError && error.code === 'token_expired',
+  );
+
+  assert.equal(refused.sent.length + expired.sent.length, 2);
+  assert.equal(renewals, 1);
+});
+
+test('refresh tokens, security alerts and access reviews go to their endpoints', async () => {
+  const { fetch, sent } = fakeFetch(200, {});
+  const client = createApiClient({ baseUrl: 'https://api.example', fetch });
+
+  await client.refreshSession('session.secret');
+  await client.refreshSession();
+  await client.answerSecurityAlert('a1', 'not_me');
+  await client.listDueAccessReviews();
+  await client.reviewAssignment('g1', 'revoked', 'Left the district office');
+
+  assert.deepEqual(
+    sent.map((request) => [request.method, request.url.replace('https://api.example', ''), request.body]),
+    [
+      ['POST', '/v1/auth/refresh', '{"refreshToken":"session.secret"}'],
+      ['POST', '/v1/auth/refresh', '{"refreshToken":null}'],
+      ['POST', '/v1/auth/security-alerts/a1/answer', '{"answer":"not_me"}'],
+      ['GET', '/v1/access/reviews', undefined],
+      ['POST', '/v1/access/reviews/g1', '{"decision":"revoked","reason":"Left the district office"}'],
+    ],
+  );
+});

@@ -2,7 +2,7 @@ import { ApiError, type MemberProfile } from '@my-people/api-client';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { api, configureApi } from './api';
-import { clearToken, deviceId, readToken, saveToken } from '../lib/storage';
+import { clearTokens, deviceId, readToken, saveTokens } from '../lib/storage';
 
 export type SessionState =
   | { status: 'loading' }
@@ -12,13 +12,16 @@ export type SessionState =
   | { status: 'signed_out'; expired: boolean }
   | { status: 'signed_in'; member: MemberProfile };
 
+/** What sign-in and registration return. */
+type SignedIn = { token: string; refreshToken: string; member: MemberProfile };
+
 type Session = {
   state: SessionState;
-  /** After sign-in or registration: keeps the token and the member. */
-  start: (token: string, member: MemberProfile) => Promise<void>;
+  /** After sign-in or registration: keeps both tokens and the member. */
+  start: (signedIn: SignedIn) => Promise<void>;
   /** Ends the session on the server too, then forgets the token. */
   signOut: () => Promise<void>;
-  /** A 401 from any request: the session ended elsewhere or expired. */
+  /** A 401 from any request that renewing could not cure: the session ended elsewhere or expired. */
   expire: () => Promise<void>;
   /** Re-reads /v1/members/me, e.g. after verification or the area changes. */
   refresh: () => Promise<void>;
@@ -37,7 +40,7 @@ async function restore(baseUrl: string | undefined): Promise<SessionState> {
     return { status: 'signed_in', member: await api().getMyProfile() };
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
-      await clearToken();
+      await clearTokens();
       return { status: 'signed_out', expired: true };
     }
     return { status: 'unreachable' }; // keep the token: it may still be good
@@ -62,8 +65,8 @@ export function SessionProvider({ baseUrl, children }: Props) {
     };
   }, [baseUrl]);
 
-  const start = useCallback(async (token: string, member: MemberProfile) => {
-    await saveToken(token);
+  const start = useCallback(async ({ token, refreshToken, member }: SignedIn) => {
+    await saveTokens(token, refreshToken);
     setState({ status: 'signed_in', member });
   }, []);
 
@@ -71,14 +74,14 @@ export function SessionProvider({ baseUrl, children }: Props) {
     try {
       await api().signOut();
     } catch {
-      // The token is forgotten here whatever the server answered.
+      // The tokens are forgotten here whatever the server answered.
     }
-    await clearToken();
+    await clearTokens();
     setState({ status: 'signed_out', expired: false });
   }, []);
 
   const expire = useCallback(async () => {
-    await clearToken();
+    await clearTokens();
     setState({ status: 'signed_out', expired: true });
   }, []);
 

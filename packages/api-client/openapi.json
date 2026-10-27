@@ -97,6 +97,51 @@
         }
       }
     },
+    "/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Refresh Session",
+        "description": "Renew a session's 15-minute token with its refresh token (FR-AUTH-025). Each refresh token\nworks once and is replaced; presenting one a second time ends the session and alerts the member.",
+        "operationId": "refresh_session_v1_auth_refresh_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokensOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "invalid_refresh_token, refresh_reused (the session is ended) or session_expired"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/auth/sign-out": {
       "post": {
         "tags": [
@@ -223,6 +268,108 @@
             "HTTPBearer": []
           }
         ]
+      }
+    },
+    "/v1/auth/security-alerts": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "List My Security Alerts",
+        "description": "M50: flagged sign-ins and reused refresh tokens, newest first.",
+        "operationId": "list_my_security_alerts_v1_auth_security_alerts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SecurityAlertOut"
+                  },
+                  "type": "array",
+                  "title": "Response List My Security Alerts V1 Auth Security Alerts Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/auth/security-alerts/{alert_id}/answer": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Answer Security Alert",
+        "description": "It was me, or this wasn't me: the second ends the flagged session and every other one\nexcept the one in use. Then change the password (POST /v1/auth/password).",
+        "operationId": "answer_security_alert_v1_auth_security_alerts__alert_id__answer_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertAnswerIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SecurityAlertOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "already_answered"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/v1/auth/mfa": {
@@ -1091,6 +1238,131 @@
           },
           "404": {
             "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/access/reviews": {
+      "get": {
+        "tags": [
+          "access"
+        ],
+        "summary": "List Due Reviews",
+        "description": "Grants in the caller's areas, below their tier, due for review by the end of this quarter,\nthe most overdue first (FR-AUTH-027, D31). Needs audit.view.",
+        "operationId": "list_due_reviews_v1_access_reviews_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DueReviewsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/access/reviews/{assignment_id}": {
+      "post": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Review Assignment",
+        "description": "Confirm a grant for another quarter, or revoke it. A confirmed grant that had lapsed\ncounts again at once.",
+        "operationId": "review_assignment_v1_access_reviews__assignment_id__post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assignment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Assignment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_assignment, outside_your_area, tier_not_below_yours or tier_5_by_bootstrap_only"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_due"
           },
           "422": {
             "description": "Validation Error",
@@ -8841,6 +9113,23 @@
         "title": "AlbumUpdateIn",
         "description": "Only the fields sent change, in a draft; the area stays as created."
       },
+      "AlertAnswerIn": {
+        "properties": {
+          "answer": {
+            "type": "string",
+            "enum": [
+              "it_was_me",
+              "not_me"
+            ],
+            "title": "Answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answer"
+        ],
+        "title": "AlertAnswerIn"
+      },
       "AppealDecisionInput": {
         "properties": {
           "outcome": {
@@ -11564,6 +11853,168 @@
         ],
         "title": "DocumentOut",
         "description": "An identity image the server holds (BR-020). Never the image itself."
+      },
+      "DueGrantOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "1",
+              "2A",
+              "2B",
+              "3A",
+              "3B",
+              "4",
+              "5"
+            ],
+            "title": "Tier"
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaRef"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Permissions"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "revoked"
+            ],
+            "title": "State"
+          },
+          "grantedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grantedby"
+          },
+          "grantedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Grantedat"
+          },
+          "reviewDueAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewdueat"
+          },
+          "endedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endedat"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "overdue": {
+            "type": "boolean",
+            "title": "Overdue"
+          },
+          "lastReviewedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lastreviewedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "memberId",
+          "tier",
+          "area",
+          "permissions",
+          "state",
+          "grantedBy",
+          "grantedAt",
+          "reviewDueAt",
+          "endedAt",
+          "memberCode",
+          "fullName",
+          "overdue",
+          "lastReviewedAt"
+        ],
+        "title": "DueGrantOut",
+        "description": "A grant waiting for review, with whose it is."
+      },
+      "DueReviewsOut": {
+        "properties": {
+          "quarter": {
+            "type": "string",
+            "title": "Quarter"
+          },
+          "quarterEndsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Quarterendsat"
+          },
+          "reviewedThisQuarter": {
+            "type": "integer",
+            "title": "Reviewedthisquarter"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DueGrantOut"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "quarter",
+          "quarterEndsAt",
+          "reviewedThisQuarter",
+          "items"
+        ],
+        "title": "DueReviewsOut",
+        "description": "D31: the grants this reviewer may confirm or revoke this quarter (FR-AUTH-027)."
       },
       "DuplicateFlagOut": {
         "properties": {
@@ -15951,6 +16402,25 @@
         ],
         "title": "RecoveryContactOut"
       },
+      "RefreshIn": {
+        "properties": {
+          "refreshToken": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refreshtoken"
+          }
+        },
+        "type": "object",
+        "title": "RefreshIn",
+        "description": "Mobile apps send the refresh token here; browsers send the mp_refresh cookie instead."
+      },
       "RegisterEntryOut": {
         "properties": {
           "id": {
@@ -16217,6 +16687,10 @@
             "type": "string",
             "title": "Token"
           },
+          "refreshToken": {
+            "type": "string",
+            "title": "Refreshtoken"
+          },
           "member": {
             "$ref": "#/components/schemas/MemberProfile"
           },
@@ -16236,11 +16710,12 @@
         "type": "object",
         "required": [
           "token",
+          "refreshToken",
           "member",
           "referralAccepted"
         ],
         "title": "RegistrationOut",
-        "description": "The token is returned for mobile apps; browsers use the HttpOnly cookie."
+        "description": "The tokens are returned for mobile apps; browsers use the HttpOnly cookies."
       },
       "RemovalDecisionIn": {
         "properties": {
@@ -16584,6 +17059,30 @@
         ],
         "title": "ReviewFileOut",
         "description": "W02 without the images: they open one at a time through view links, once the review is claimed."
+      },
+      "ReviewInput": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "revoked"
+            ],
+            "title": "Decision"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision",
+          "reason"
+        ],
+        "title": "ReviewInput"
       },
       "ReviewMemberOut": {
         "properties": {
@@ -17019,6 +17518,84 @@
         ],
         "title": "ScanOut"
       },
+      "SecurityAlertOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "suspicious_sign_in",
+              "refresh_reuse"
+            ],
+            "title": "Kind"
+          },
+          "signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Signals",
+            "description": "new_device, recent_failures, unusual_velocity or refresh_token_reused"
+          },
+          "deviceLabel": {
+            "type": "string",
+            "title": "Devicelabel"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "answeredAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answeredat"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "it_was_me",
+                  "not_me"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer"
+          },
+          "sessionActive": {
+            "type": "boolean",
+            "title": "Sessionactive"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "signals",
+          "deviceLabel",
+          "createdAt",
+          "answeredAt",
+          "answer",
+          "sessionActive"
+        ],
+        "title": "SecurityAlertOut",
+        "description": "M50: a flagged sign-in or a reused refresh token. A coarse device label; never an address or a place."
+      },
       "SessionOut": {
         "properties": {
           "id": {
@@ -17114,7 +17691,13 @@
         "properties": {
           "token": {
             "type": "string",
-            "title": "Token"
+            "title": "Token",
+            "description": "Valid 15 minutes; renew it with refreshToken"
+          },
+          "refreshToken": {
+            "type": "string",
+            "title": "Refreshtoken",
+            "description": "Good for one renewal (POST /v1/auth/refresh); keep it secret"
           },
           "member": {
             "$ref": "#/components/schemas/MemberProfile"
@@ -17123,10 +17706,11 @@
         "type": "object",
         "required": [
           "token",
+          "refreshToken",
           "member"
         ],
         "title": "SignInResponse",
-        "description": "The token is returned for mobile apps; browsers use the HttpOnly cookie."
+        "description": "The tokens are returned for mobile apps and the dashboard's server; browsers use the HttpOnly cookies."
       },
       "StepOut": {
         "properties": {
@@ -17247,6 +17831,24 @@
           "defaultPermissions"
         ],
         "title": "TierInfo"
+      },
+      "TokensOut": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "refreshToken": {
+            "type": "string",
+            "title": "Refreshtoken"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "refreshToken"
+        ],
+        "title": "TokensOut"
       },
       "TopicChoiceIn": {
         "properties": {

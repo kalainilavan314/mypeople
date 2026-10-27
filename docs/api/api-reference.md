@@ -11,7 +11,9 @@ The complete, current `/v1` contract is the OpenAPI 3.1 document: `packages/api-
 
 ## Sessions
 
-Signing in sets an HttpOnly, SameSite=Lax cookie `mp_session` (Secure outside development) holding an HS256 token `{sub: member id, sv: session version}` valid for 30 days. Browsers send the cookie; mobile apps send the same token as `Authorization: Bearer <token>`. Signing out through either API increments the member's session version, which ends every session of that member in both APIs. Tokens from `/v1` also name a session row, so one session can be ended on its own and an unused one expires after 30 days.
+Signing in sets an HttpOnly, SameSite=Lax cookie `mp_session` (Secure outside development) holding an HS256 token `{sub: member id, sv: session version}`. Browsers send the cookie; mobile apps send the same token as `Authorization: Bearer <token>`. Signing out through either API increments the member's session version, which ends every session of that member in both APIs.
+
+Express tokens last 30 days. Tokens from `/v1` also name a session row (`sid`), so one session can be ended on its own and an unused one expires after 30 days; they last **15 minutes** and are renewed with the refresh token that sign-in and registration return (`refreshToken`, also set as the HttpOnly, SameSite=Strict cookie `mp_refresh` on path `/v1/auth`). Each refresh token works once: `POST /v1/auth/refresh` returns a new pair. An expired token answers `401 token_expired`; renew it and send the request again. A refresh token that was already used means a copy exists: the session ends for every copy (`401 refresh_reused`) and the member gets a security alert (FR-AUTH-025).
 
 Writes that carry the session cookie and come from another website are refused with `403 csrf_origin_mismatch`. Every `/v1` response has `Cache-Control: no-store`. Cross-origin browser calls are allowed only from `ALLOWED_ORIGINS`, plus `http://localhost` ports in development.
 
@@ -21,8 +23,11 @@ Writes that carry the session cookie and come from another website are refused w
 |---|---|---|---|
 | `GET /v1/health` | no | `200 {"status":"ok"}` | none |
 | `GET /v1/health/db` | no | `200 {"status":"ok"}` | `503 {"status":"unavailable"}` |
-| `POST /v1/auth/sign-in` body `{nic, password}` or `{passportNumber, passportCountry, password}` | no | `200 {token, member}` and the session cookie | `401 invalid_credentials`, `429 too_many_attempts` with `Retry-After`, `422` invalid body |
-| `POST /v1/identity/register` body `{fullName, route, idNumber, passportCountry?, password, acceptTerms: true, language, dob?, gender?, districtCode?, dsCode?, gsCode?, referralCode?, surveyAnswers?}` | no | `201 {token, member, referralAccepted}` and the session cookie | `409 already_registered`, `422 {code: "registration_refused", problems}` or an invalid body |
+| `POST /v1/auth/sign-in` body `{nic, password}` or `{passportNumber, passportCountry, password}` | no | `200 {token, refreshToken, member}` and both cookies; a sign-in the risk rules flag also raises a security alert, in the inbox and by SMS | `401 invalid_credentials`, `429 too_many_attempts` with `Retry-After`, `422` invalid body |
+| `POST /v1/auth/refresh` body `{refreshToken}` (browsers send `{}` and the `mp_refresh` cookie) | no | `200 {token, refreshToken}` and both cookies; the refresh token sent stops working | `401 invalid_refresh_token`, `session_expired` (ended or 30 days unused), `refresh_reused` (the session is ended and the member alerted); cookies cleared |
+| `GET /v1/auth/security-alerts` | yes | `200 [{id, kind: "suspicious_sign_in" \| "refresh_reuse", signals, deviceLabel, createdAt, answeredAt, answer, sessionActive}]`, newest first (M50) | `401` |
+| `POST /v1/auth/security-alerts/{id}/answer` body `{answer: "it_was_me" \| "not_me"}` | yes | `200` the alert; `not_me` ends the flagged session and every other one except the caller's | `404 not_found`, `409 already_answered` |
+| `POST /v1/identity/register` body `{fullName, route, idNumber, passportCountry?, password, acceptTerms: true, language, dob?, gender?, districtCode?, dsCode?, gsCode?, referralCode?, surveyAnswers?}` | no | `201 {token, refreshToken, member, referralAccepted}` and both cookies | `409 already_registered`, `422 {code: "registration_refused", problems}` or an invalid body |
 | `GET /v1/identity/notices` | no | `200 {termsAndPrivacy, identityReview}` notice versions | none |
 | `POST /v1/identity/me/consent` body `{noticeVersion}` | yes | `204`; recorded once | `409 notice_outdated` |
 | `GET /v1/identity/me/progress` | yes | `200 {route, steps: [{name, done}], nextStep, reviewState}` | `401` |
@@ -41,7 +46,7 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET /v1/auth/mfa` | yes | `200 {enrolled, enabled, sessionVerified}` | `401` |
 | `POST /v1/auth/mfa/totp` | yes | `200 {secret, otpauthUri}` | `409 already_enabled` |
 | `POST /v1/auth/mfa/totp/confirm`, `POST /v1/auth/mfa/verify` body `{code}` | yes | `204`; the second factor is given for this session | `401 invalid_code`, `too_many_attempts` (five in this session; it is ended); `409 not_enrolled`, `session_not_registered`; `429 mfa_locked` with `Retry-After` (five wrong codes on the authenticator in any sessions) |
-| `GET /v1/members/me` | yes | `200` member profile (camelCase) | `401 unauthorized`, `401 session_expired` |
+| `GET /v1/members/me` | yes | `200` member profile (camelCase) | `401 unauthorized`, `401 session_expired`, `401 token_expired` (renew and retry; every endpoint with a session can answer this) |
 | `GET /v1/membership/me` | yes | `200 {state, reasonCode, changedAt}`; `pending` until someone activates the member | `401` |
 | `GET /v1/membership/me/card` | yes | `200 {available, identityVerified, membershipState, reasonCode, displayName, memberCode, designation, districtName, gnName, memberSince, lastScannedAt, publicCard}` (card fields null unless available) | `401` |
 | `GET /v1/membership/me/card/code` | yes | `200 {code, expiresAt, refreshAfterSeconds: 60}` | `409 card_not_available` |
@@ -56,6 +61,8 @@ Writes that carry the session cookie and come from another website are refused w
 | `POST /v1/access/assignments/preview` body `{memberId, tier, area, permissions}` | `roles.assign` | `200 {allowed, problems, reviewDueAt}`, nothing saved | `403 forbidden` |
 | `POST /v1/access/assignments` same body, optional `note` | `roles.assign` | `201` assignment | `403 forbidden`, `403 {code: "assignment_refused", problems}` |
 | `POST /v1/access/assignments/{id}/revoke` body `{reason}` | `roles.assign` | `200` assignment, now `revoked` | `403`, `404 not_found` |
+| `GET /v1/access/reviews?limit` | `audit.view` | `200 {quarter, quarterEndsAt, reviewedThisQuarter, items}`: grants in the caller's areas, below their tier, not their own, due by the end of this quarter (overdue ones first, `overdue: true`), each with `memberCode`, `fullName` and `lastReviewedAt` (FR-AUTH-027, D31) | `403 forbidden` |
+| `POST /v1/access/reviews/{assignmentId}` body `{decision: "confirmed" \| "revoked", reason}` | `audit.view` over the grant's area, from a higher tier | `200` the assignment: confirmed ones are due at the end of the next quarter (and count again if they had lapsed); revoked ones end at once | `403 own_assignment`, `outside_your_area`, `tier_not_below_yours`, `tier_5_by_bootstrap_only`; `404 not_found`; `409 not_due` (already reviewed this quarter); `422` reason under 3 characters |
 | `GET /v1/audit?actor_id&action&before_id&limit` | `audit.view` | `200` entries, newest first; a regional auditor sees only their region | `403 forbidden` |
 | `GET /v1/audit/verify` | `audit.view` at platform scope | `200 {ok, checked, firstBrokenId}` | `403 platform_scope_required` |
 | `GET /v1/identity/me/documents` | yes | `200` the member's current identity images: `{id, kind, version, contentType, byteSize, serverAckAt}`, never the image | `401` |

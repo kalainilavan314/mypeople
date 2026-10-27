@@ -304,3 +304,130 @@ def use_factor(db: Session, member_id: uuid.UUID, step: int) -> None:
 
 def member_code(db: Session, member_id: uuid.UUID) -> str:
     return db.scalar(text("SELECT member_code FROM npm.member WHERE id = :id"), {"id": member_id})
+
+
+# --- Risk signals (NFR-SEC-12) -----------------------------------------------------------------------------
+
+
+def count_account_failures(db: Session, identifier: str, window: timedelta) -> int:
+    """Wrong passwords for this account from any address in the window."""
+    return db.execute(
+        text(
+            "SELECT count(*) FROM npm.auth_attempt "
+            "WHERE identifier = :identifier AND succeeded = false AND created_at > now() - :window"
+        ),
+        {"identifier": identifier, "window": window},
+    ).scalar_one()
+
+
+def count_recent_sessions(db: Session, member_id: uuid.UUID, window: timedelta) -> int:
+    return db.execute(
+        text("SELECT count(*) FROM identity.session WHERE member_id = :member AND created_at > now() - :window"),
+        {"member": member_id, "window": window},
+    ).scalar_one()
+
+
+# --- Refresh tokens (FR-AUTH-025) --------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class RefreshSession:
+    id: uuid.UUID
+    member_id: uuid.UUID
+    device_label: str
+    refresh_hash: str | None
+    previous_refresh_hash: str | None
+    revoked: bool
+    idle: bool
+
+
+def lock_session_for_refresh(db: Session, session_id: uuid.UUID, idle: str) -> RefreshSession | None:
+    """The session, locked, so two refreshes with one token cannot both succeed."""
+    row = db.execute(
+        text(
+            """
+            SELECT id, member_id, device_label, refresh_hash, previous_refresh_hash, revoked_at IS NOT NULL AS revoked,
+                   last_seen_at < now() - CAST(:idle AS interval) AS idle
+            FROM identity.session WHERE id = :id FOR UPDATE
+            """
+        ),
+        {"id": session_id, "idle": idle},
+    ).mappings().one_or_none()
+    return RefreshSession(**row) if row else None
+
+
+def rotate_refresh_hash(db: Session, session_id: uuid.UUID, new_hash: str, previous_hash: str | None) -> None:
+    """The new refresh token replaces the old; using it also counts as using the session."""
+    db.execute(
+        text(
+            """
+            UPDATE identity.session
+            SET refresh_hash = :new, previous_refresh_hash = :previous, refreshed_at = clock_timestamp(),
+                last_seen_at = clock_timestamp()
+            WHERE id = :id
+            """
+        ),
+        {"id": session_id, "new": new_hash, "previous": previous_hash},
+    )
+
+
+# --- Security alerts (ENT-68, FR-AUTH-018) -----------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class StoredAlert:
+    id: uuid.UUID
+    member_id: uuid.UUID
+    session_id: uuid.UUID | None
+    kind: str
+    signals: list[str]
+    device_label: str
+    created_at: datetime
+    answered_at: datetime | None
+    answer: str | None
+    session_active: bool
+
+
+_ALERT = """
+    SELECT a.id, a.member_id, a.session_id, a.kind, a.signals, a.device_label, a.created_at, a.answered_at, a.answer,
+           COALESCE(s.revoked_at IS NULL, false) AS session_active
+    FROM identity.security_alert a LEFT JOIN identity.session s ON s.id = a.session_id
+"""
+
+
+def insert_alert(
+    db: Session, member_id: uuid.UUID, session_id: uuid.UUID | None, kind: str, signals: list[str], device_label: str
+) -> StoredAlert:
+    alert_id = db.scalar(
+        text(
+            """
+            INSERT INTO identity.security_alert (member_id, session_id, kind, signals, device_label)
+            VALUES (:member, :session, :kind, :signals, :label) RETURNING id
+            """
+        ),
+        {"member": member_id, "session": session_id, "kind": kind, "signals": signals, "label": device_label},
+    )
+    alert = find_alert(db, alert_id)
+    assert alert is not None
+    return alert
+
+
+def find_alert(db: Session, alert_id: uuid.UUID, *, for_update: bool = False) -> StoredAlert | None:
+    lock = " FOR UPDATE OF a" if for_update else ""
+    row = db.execute(text(f"{_ALERT} WHERE a.id = :id{lock}"), {"id": alert_id}).mappings().one_or_none()
+    return StoredAlert(**row) if row else None
+
+
+def member_alerts(db: Session, member_id: uuid.UUID, limit: int) -> list[StoredAlert]:
+    rows = db.execute(
+        text(f"{_ALERT} WHERE a.member_id = :member ORDER BY a.created_at DESC LIMIT :limit"),
+        {"member": member_id, "limit": limit},
+    ).mappings()
+    return [StoredAlert(**row) for row in rows]
+
+
+def answer_alert(db: Session, alert_id: uuid.UUID, answer: str) -> None:
+    db.execute(
+        text("UPDATE identity.security_alert SET answer = :answer, answered_at = clock_timestamp() WHERE id = :id"),
+        {"id": alert_id, "answer": answer},
+    )

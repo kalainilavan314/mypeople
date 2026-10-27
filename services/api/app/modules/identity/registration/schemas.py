@@ -39,9 +39,10 @@ class RegistrationInput(CamelModel):
 
 
 class RegistrationOut(CamelModel):
-    """The token is returned for mobile apps; browsers use the HttpOnly cookie."""
+    """The tokens are returned for mobile apps; browsers use the HttpOnly cookies."""
 
     token: str
+    refresh_token: str
     member: MemberProfile
     referral_accepted: bool | None = Field(description="null when no referral code was given (FR-REG-031)")
 

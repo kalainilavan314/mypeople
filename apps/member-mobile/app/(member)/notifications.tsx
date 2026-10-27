@@ -39,6 +39,8 @@ function targetRoute(item: NotificationItem): Href | null {
       return '/profile/area';
     case 'privacy_request':
       return '/profile/privacy';
+    case 'security_alert':
+      return '/profile/security';
     case 'removal_request':
       return '/gallery';
     default:

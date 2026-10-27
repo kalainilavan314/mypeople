@@ -30,7 +30,7 @@ export { useRotatingCode } from './hooks/useRotatingCode';
 
 export { dateBadgeParts, formatDate, formatDateTime, formatSpan, formatTime, localHour } from './lib/format';
 export { headerOptions } from './lib/headerOptions';
-export { clearToken, deviceId, readLanguage, readToken, saveLanguage, saveToken } from './lib/storage';
+export { clearTokens, deviceId, readLanguage, readRefreshToken, readToken, saveLanguage, saveTokens } from './lib/storage';
 
-export { api } from './session/api';
+export { api, freshToken } from './session/api';
 export { SessionProvider, useMember, useSession, type SessionState } from './session/SessionProvider';

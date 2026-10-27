@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import type { SecurityAlert, SecurityAlertAnswer } from '@my-people/api-client';
 import { spacing } from '@my-people/design-tokens';
 
 import {
@@ -23,11 +24,23 @@ import { QueryView } from '@/components/QueryView';
 import { api } from '@/lib/api';
 import { errorMessage, problemsOf } from '@/lib/errors';
 
-/** Signed-in devices with sign-out per device (FR-AUTH-020, 021), and changing the password with the current one. */
+/**
+ * M50 security alerts, signed-in devices with sign-out per device (FR-AUTH-018, 020, 021),
+ * and changing the password with the current one.
+ */
 export default function SecurityScreen() {
   const { t } = useTranslation();
   const language = useLanguage();
   const sessions = useApiQuery(() => api().listMySessions());
+  const alerts = useApiQuery(() => api().listSecurityAlerts());
+  const [secured, setSecured] = useState(false);
+  // "This wasn't me" signs out every other device; the list of devices changes with it.
+  const answer = useApiAction(async (alertId: string, reply: SecurityAlertAnswer) => {
+    await api().answerSecurityAlert(alertId, reply);
+    if (reply === 'not_me') setSecured(true);
+    alerts.reload();
+    sessions.reload();
+  });
   const revoke = useApiAction(async (id: string) => {
     await api().revokeSession(id);
     sessions.reload();
@@ -37,8 +50,18 @@ export default function SecurityScreen() {
     sessions.reload();
   });
 
+  const reload = () => {
+    alerts.reload();
+    sessions.reload();
+  };
+
   return (
-    <Screen edges={['bottom']} onRefresh={sessions.reload} refreshing={sessions.loading && sessions.data !== undefined}>
+    <Screen edges={['bottom']} onRefresh={reload} refreshing={sessions.loading && sessions.data !== undefined}>
+      {secured ? <Notice tone="success">{t('m.profile.alertSecured')}</Notice> : null}
+      <QueryView query={alerts}>
+        {(list) => <SecurityAlerts alerts={list} busy={answer.busy} onAnswer={(id, reply) => void answer.run(id, reply)} />}
+      </QueryView>
+      {answer.error ? <Notice tone="error">{errorMessage(t, answer.error)}</Notice> : null}
       <AppText step="section" accessibilityRole="header">
         {t('m.profile.sessions')}
       </AppText>
@@ -70,6 +93,69 @@ export default function SecurityScreen() {
       {revoke.error || revokeOthers.error ? <Notice tone="error">{errorMessage(t, revoke.error ?? revokeOthers.error)}</Notice> : null}
       <PasswordChange />
     </Screen>
+  );
+}
+
+type AlertsProps = {
+  alerts: SecurityAlert[];
+  busy: boolean;
+  onAnswer: (alertId: string, reply: SecurityAlertAnswer) => void;
+};
+
+/** Open alerts ask "Was this you?"; answered ones stay listed with the answer given. */
+function SecurityAlerts({ alerts, busy, onAnswer }: AlertsProps) {
+  const { t } = useTranslation();
+  const open = alerts.filter((alert) => alert.answer === null);
+  const answered = alerts.filter((alert) => alert.answer !== null);
+  if (alerts.length === 0) return null;
+  return (
+    <>
+      <AppText step="section" accessibilityRole="header">
+        {t('m.profile.securityAlerts')}
+      </AppText>
+      {open.map((alert) => (
+        <SurfaceCard key={alert.id}>
+          <AlertSummary alert={alert} />
+          {alert.signals.map((signal) => (
+            <AppText key={signal} step="secondary">
+              {`• ${t(`m.profile.alertSignal_${signal}`, { defaultValue: signal })}`}
+            </AppText>
+          ))}
+          <AppText step="body">{t('m.profile.alertQuestion')}</AppText>
+          <View style={styles.actions}>
+            <Button label={t('m.profile.alertItWasMe')} variant="secondary" busy={busy} onPress={() => onAnswer(alert.id, 'it_was_me')} />
+            <Button label={t('m.profile.alertNotMe')} variant="danger" busy={busy} onPress={() => onAnswer(alert.id, 'not_me')} />
+          </View>
+        </SurfaceCard>
+      ))}
+      {answered.length > 0 ? (
+        <AppText step="secondary" tone="muted" accessibilityRole="header">
+          {t('m.profile.earlierAlerts')}
+        </AppText>
+      ) : null}
+      {answered.map((alert) => (
+        <SurfaceCard key={alert.id}>
+          <AlertSummary alert={alert} />
+          <StatusTag
+            tone={alert.answer === 'not_me' ? 'error' : 'neutral'}
+            label={t(`m.profile.alertAnswered_${alert.answer}`)}
+          />
+        </SurfaceCard>
+      ))}
+    </>
+  );
+}
+
+function AlertSummary({ alert }: { alert: SecurityAlert }) {
+  const { t } = useTranslation();
+  const language = useLanguage();
+  return (
+    <>
+      <AppText step="card">{t(`m.profile.alertKind_${alert.kind}`)}</AppText>
+      <AppText step="secondary" tone="muted">
+        {t('m.profile.alertWhen', { device: alert.deviceLabel, time: formatDateTime(alert.createdAt, language) })}
+      </AppText>
+    </>
   );
 }
 
@@ -113,5 +199,6 @@ function PasswordChange() {
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
+  actions: { gap: spacing[2] },
   flex: { flex: 1 },
 });

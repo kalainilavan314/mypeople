@@ -19,6 +19,9 @@ export type MemberCard = Schemas['CardOut'];
 export type MemberCardCode = Schemas['CardCodeOut'];
 export type CardScan = Schemas['ScanOut'];
 export type SignInResponse = Schemas['SignInResponse'];
+export type SessionTokens = Schemas['TokensOut'];
+export type SecurityAlert = Schemas['SecurityAlertOut'];
+export type SecurityAlertAnswer = Schemas['AlertAnswerIn']['answer'];
 export type RegistrationInput = Schemas['RegistrationInput'];
 export type Registration = Schemas['RegistrationOut'];
 export type Notices = Schemas['NoticesOut'];
@@ -108,6 +111,9 @@ export type Assignment = Schemas['AssignmentOut'];
 export type ListedAssignment = Schemas['AssignmentListItemOut'];
 export type AssignmentPreview = Schemas['PreviewOut'];
 export type AccessCatalogue = Schemas['Catalogue'];
+export type DueAccessReviews = Schemas['DueReviewsOut'];
+export type DueGrant = Schemas['DueGrantOut'];
+export type AccessReviewDecision = Schemas['ReviewInput']['decision'];
 export type AuditEntry = Schemas['AuditEntryOut'];
 export type AuditChainCheck = Schemas['ChainCheckOut'];
 export type IdentityDocument = Schemas['DocumentOut'];
@@ -162,6 +168,12 @@ export interface ApiClientOptions {
    * header. Browsers leave this out and rely on the HttpOnly session cookie.
    */
   getToken?: () => string | null | Promise<string | null>;
+  /**
+   * Mobile apps renew an expired token here (FR-AUTH-025): call refreshSession with the
+   * stored refresh token, keep both new tokens, and return the new token, or null when the
+   * session has ended. A request refused with "token_expired" is sent once more with it.
+   */
+  refresh?: () => Promise<string | null>;
   /** Replaces the global fetch, e.g. in tests. */
   fetch?: typeof fetch;
   /**
@@ -204,25 +216,44 @@ export interface AppealFilters {
   limit?: number;
 }
 
-export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalThis.fetch, deviceId, forwardedFor }: ApiClientOptions) {
+type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+export function createApiClient({
+  baseUrl,
+  getToken,
+  refresh,
+  fetch: fetchImpl = globalThis.fetch,
+  deviceId,
+  forwardedFor,
+}: ApiClientOptions) {
   const root = baseUrl.replace(/\/+$/, '');
 
   /** Sends `body` as JSON, or as it is when `rawType` names its media type (image uploads). */
-  async function request<T>(method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE', path: string, body?: unknown, rawType?: string): Promise<T> {
+  function send(method: Method, path: string, token: string | null | undefined, body?: unknown, rawType?: string) {
     const headers: Record<string, string> = { Accept: 'application/json' };
     if (body !== undefined) headers['Content-Type'] = rawType ?? 'application/json';
-    const token = await getToken?.();
     if (token) headers.Authorization = `Bearer ${token}`;
     if (deviceId) headers['X-Device-Id'] = deviceId;
     if (forwardedFor) headers['X-Forwarded-For'] = forwardedFor;
 
-    const response = await fetchImpl(`${root}${path}`, {
+    return fetchImpl(`${root}${path}`, {
       method,
       headers,
       body: body === undefined ? undefined : rawType ? (body as BodyInit) : JSON.stringify(body),
       // Sends the session cookie when the dashboard and API are on different origins.
       credentials: 'include',
     });
+  }
+
+  async function request<T>(method: Method, path: string, body?: unknown, rawType?: string): Promise<T> {
+    let response = await send(method, path, await getToken?.(), body, rawType);
+    if (response.status === 401 && refresh) {
+      const error = await toApiError(response);
+      // The 15-minute token ran out: renew it once and try again.
+      const renewed = error.code === 'token_expired' ? await refresh() : null;
+      if (!renewed) throw error;
+      response = await send(method, path, renewed, body, rawType);
+    }
     if (!response.ok) throw await toApiError(response);
     return (response.status === 204 ? undefined : await response.json()) as T;
   }
@@ -285,6 +316,22 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
       request<Place[]>('GET', `/v1/geography/ds-divisions/${encodeURIComponent(dsCode)}/gn-divisions`),
     /** Ends every session of the signed-in member; an old or ended token only clears the cookie. */
     signOut: () => request<void>('POST', '/v1/auth/sign-out'),
+    /**
+     * A new token and refresh token (FR-AUTH-025); the one sent stops working. Browsers leave it
+     * out and send the mp_refresh cookie. Throws ApiError (401) "invalid_refresh_token",
+     * "session_expired", or "refresh_reused": a used one came back, so the session has ended
+     * everywhere and the member is alerted.
+     */
+    refreshSession: (refreshToken?: string) =>
+      request<SessionTokens>('POST', '/v1/auth/refresh', { refreshToken: refreshToken ?? null }),
+    /** M50: flagged sign-ins and reused refresh tokens, newest first. */
+    listSecurityAlerts: () => request<SecurityAlert[]>('GET', '/v1/auth/security-alerts'),
+    /**
+     * "it_was_me" closes the alert; "not_me" ends the flagged session and every other one except
+     * this one. Throws ApiError "not_found" (404) or "already_answered" (409).
+     */
+    answerSecurityAlert: (alertId: string, answer: SecurityAlertAnswer) =>
+      request<SecurityAlert>('POST', `/v1/auth/security-alerts/${encodeURIComponent(alertId)}/answer`, { answer }),
     /** The member's signed-in devices (FR-AUTH-020). */
     listMySessions: () => request<SignedInSession[]>('GET', '/v1/auth/sessions'),
     /** Ends one session; its next request is refused. */
@@ -331,15 +378,24 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     getMyAccess: () => request<Assignment[]>('GET', '/v1/access/me'),
     /** Tiers and the permission matrix, for the W09 form. Needs roles.assign. */
     getAccessCatalogue: () => request<AccessCatalogue>('GET', '/v1/access/catalogue'),
-    /** Checks an assignment without saving it (RB-06). Needs roles.assign. */
     /** W09: assignments in the caller's own areas, newest first. Needs roles.assign. */
     listAssignments: (state: 'active' | 'revoked' = 'active') =>
       request<ListedAssignment[]>('GET', `/v1/access/assignments?state=${state}`),
+    /** Checks an assignment without saving it (RB-06). Needs roles.assign. */
     previewAssignment: (input: AssignmentInput) => request<AssignmentPreview>('POST', '/v1/access/assignments/preview', input),
     /** Throws ApiError "assignment_refused" (403) with `problems` when a rule forbids it. */
     createAssignment: (input: AssignmentInput) => request<Assignment>('POST', '/v1/access/assignments', input),
     revokeAssignment: (assignmentId: string, reason: string) =>
       request<Assignment>('POST', `/v1/access/assignments/${encodeURIComponent(assignmentId)}/revoke`, { reason }),
+    /** D31: grants the caller may review this quarter, the most overdue first (FR-AUTH-027). Needs audit.view. */
+    listDueAccessReviews: () => request<DueAccessReviews>('GET', '/v1/access/reviews'),
+    /**
+     * Confirms a grant for another quarter, or revokes it, with a reason. Throws ApiError (403)
+     * "own_assignment", "outside_your_area" or "tier_not_below_yours", "not_found" (404), or
+     * "not_due" (409) when it was already reviewed this quarter.
+     */
+    reviewAssignment: (assignmentId: string, decision: AccessReviewDecision, reason: string) =>
+      request<Assignment>('POST', `/v1/access/reviews/${encodeURIComponent(assignmentId)}`, { decision, reason }),
 
     /** Newest first. Needs audit.view; a regional auditor sees only their region. */
     listAuditEntries: (filters: AuditFilters = {}) => request<AuditEntry[]>('GET', `/v1/audit${toQuery(filters)}`),

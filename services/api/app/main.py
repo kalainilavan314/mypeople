@@ -21,6 +21,7 @@ from app.db.session import create_database_engine
 from app.integrations.sms import build_sms
 from app.integrations.push import build_push
 from app.modules.access import router as access
+from app.modules.access.reviews import router as access_reviews
 from app.modules.audit import router as audit
 from app.modules.content.gallery import router as gallery
 from app.modules.content.gallery.dependencies import build_media_store
@@ -86,6 +87,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(membership.membership_router)
     app.include_router(member_card.router)
     app.include_router(access.router)
+    app.include_router(access_reviews.router)
     app.include_router(audit.router)
     app.include_router(identity_documents.router)
     app.include_router(identity_reviews.router)

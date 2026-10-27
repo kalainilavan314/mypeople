@@ -26,7 +26,7 @@ npm run android --workspace @my-people/member-mobile     # Expo Go or an emulato
 
 Start the FastAPI service too (`docs/development/setup.md`). Anything in an `EXPO_PUBLIC_` variable is built into the app and readable by anyone, so never put a secret there.
 
-The session token is kept in the phone's keychain or keystore (expo-secure-store). The web preview has no secure store, so it keeps the token in memory only: reloading the page signs out.
+The session token and refresh token are kept in the phone's keychain or keystore (expo-secure-store). The web preview has no secure store, so it keeps them in memory only: reloading the page signs out. Tokens last 15 minutes; the client renews one that has run out and sends the request again, once (`packages/mobile-ui`). Profile → Sign-in and security shows security alerts (M50) with "It was me" and "This wasn't me".
 
 ## Check
 

@@ -83,7 +83,7 @@ export default function RegisterScreen() {
         if (steps.length > 0) setStep(Math.min(...steps));
         throw error;
       });
-    await start(result.token, result.member);
+    await start(result);
   });
 
   const problems = problemsOf(submit.error);

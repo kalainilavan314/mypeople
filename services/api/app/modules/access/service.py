@@ -71,7 +71,7 @@ def evaluate(db: Session, actor: Staff, request: AssignmentRequest) -> tuple[lis
         request=request,
         area_path=repository.area_path(db, request.area),
     )
-    return problems, rules.review_due(request.tier, request.permissions, datetime.now(UTC))
+    return problems, rules.review_due(request.tier, datetime.now(UTC))
 
 
 def create(db: Session, actor: Staff, request: AssignmentRequest, note: str | None, ip: str) -> StoredAssignment:
@@ -191,7 +191,7 @@ def bootstrap_super_administrator(db: Session, member_id: uuid.UUID, extra_permi
         permissions=permissions,
         granted_by=None,
         granted_at=now,
-        review_due_at=rules.review_due(tier, permissions, now),
+        review_due_at=rules.review_due(tier, now),
         note="Created by the bootstrap command",
     )
     audit.record(

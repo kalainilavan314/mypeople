@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
-from typing import Annotated, Self
+from typing import Annotated, Literal, Self
 
-from pydantic import BaseModel, Field, StringConstraints, model_validator
+from pydantic import Field, StringConstraints, model_validator
 
 from app.core.schemas import CamelModel
 from app.modules.membership.schemas import MemberProfile
@@ -27,11 +27,40 @@ class SignInRequest(CamelModel):
         return self
 
 
-class SignInResponse(BaseModel):
-    """The token is returned for mobile apps; browsers use the HttpOnly cookie."""
+class SignInResponse(CamelModel):
+    """The tokens are returned for mobile apps and the dashboard's server; browsers use the HttpOnly cookies."""
 
-    token: str
+    token: str = Field(description="Valid 15 minutes; renew it with refreshToken")
+    refresh_token: str = Field(description="Good for one renewal (POST /v1/auth/refresh); keep it secret")
     member: MemberProfile
+
+
+class RefreshIn(CamelModel):
+    """Mobile apps send the refresh token here; browsers send the mp_refresh cookie instead."""
+
+    refresh_token: str | None = Field(default=None, max_length=200)
+
+
+class TokensOut(CamelModel):
+    token: str
+    refresh_token: str
+
+
+class SecurityAlertOut(CamelModel):
+    """M50: a flagged sign-in or a reused refresh token. A coarse device label; never an address or a place."""
+
+    id: uuid.UUID
+    kind: Literal["suspicious_sign_in", "refresh_reuse"]
+    signals: list[str] = Field(description="new_device, recent_failures, unusual_velocity or refresh_token_reused")
+    device_label: str
+    created_at: datetime
+    answered_at: datetime | None
+    answer: Literal["it_was_me", "not_me"] | None
+    session_active: bool
+
+
+class AlertAnswerIn(CamelModel):
+    answer: Literal["it_was_me", "not_me"]
 
 
 class SessionOut(CamelModel):

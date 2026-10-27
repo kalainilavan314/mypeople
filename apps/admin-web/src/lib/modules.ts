@@ -6,6 +6,7 @@ export const builtModules = [
   { href: '/membership', ta: 'உறுப்புரிமை', en: 'Membership activation', brd: 'D06', permission: 'members.activate' },
   { href: '/access', ta: 'பொறுப்புகளும் அனுமதிகளும்', en: 'Roles and access', brd: 'W09', permission: 'roles.assign' },
   { href: '/audit', ta: 'தணிக்கைப் பதிவு', en: 'Audit log', brd: 'FR-ADM-011', permission: 'audit.view' },
+  { href: '/access-reviews', ta: 'அணுகல் மீளாய்வு', en: 'Access reviews', brd: 'D31', permission: 'audit.view' },
 ] as const;
 
 /** The dashboard's modules from BRD v1.1 §15A.6 that are not built yet. */

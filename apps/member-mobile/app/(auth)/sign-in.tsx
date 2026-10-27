@@ -20,7 +20,7 @@ export default function SignInScreen() {
       'nic' in account
         ? await api().signIn(account.nic, password)
         : await api().signInWithPassport(account.passportNumber, account.passportCountry, password);
-    await start(result.token, result.member);
+    await start(result);
   });
 
   const ready = id.number.trim().length > 0 && password.length > 0 && (id.route === 'nic' || id.country.length === 3);

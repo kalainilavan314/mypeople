@@ -8,7 +8,12 @@ import { useSession } from '../session/SessionProvider';
  * request itself (a wrong current password, a wrong one-time code).
  */
 export function sessionEnded(error: unknown): boolean {
-  return error instanceof ApiError && error.status === 401 && (error.code === 'unauthorized' || error.code === 'session_expired');
+  // token_expired reaches here only when renewing it failed: the refresh token was refused too.
+  return (
+    error instanceof ApiError &&
+    error.status === 401 &&
+    (error.code === 'unauthorized' || error.code === 'session_expired' || error.code === 'token_expired')
+  );
 }
 
 export type Loaded<T> = {

@@ -85,7 +85,8 @@ _SELECT = """
 """
 
 
-def _to_assignment(row) -> StoredAssignment:
+def to_assignment(row) -> StoredAssignment:
+    """An assignment from a row holding the columns in _SELECT."""
     return StoredAssignment(
         id=row.id,
         member_id=row.member_id,
@@ -103,7 +104,7 @@ def _to_assignment(row) -> StoredAssignment:
 
 
 def effective_assignments(db: Session, member_id: uuid.UUID) -> list[StoredAssignment]:
-    """Assignments that count right now. One whose 12-month review is overdue no longer
+    """Assignments that count right now. One whose quarterly review is overdue no longer
     counts (FR-AUTH-027: unreviewed grants are suspended automatically), and none count
     while the person's membership is not Active (BR-097), so suspending a member also
     stops their staff rights on their next request."""
@@ -118,7 +119,7 @@ def effective_assignments(db: Session, member_id: uuid.UUID) -> list[StoredAssig
         ),
         {"member_id": member_id},
     )
-    return [_to_assignment(row) for row in rows]
+    return [to_assignment(row) for row in rows]
 
 
 @dataclass(frozen=True)
@@ -143,12 +144,13 @@ def list_assignments(db: Session, *, state: str, limit: int) -> list[ListedAssig
         ),
         {"state": state, "limit": limit},
     )
-    return [ListedAssignment(_to_assignment(row), row.member_code, row.full_name) for row in rows]
+    return [ListedAssignment(to_assignment(row), row.member_code, row.full_name) for row in rows]
 
 
-def find_assignment(db: Session, assignment_id: uuid.UUID) -> StoredAssignment | None:
-    row = db.execute(text(f"{_SELECT} WHERE id = :id"), {"id": assignment_id}).one_or_none()
-    return _to_assignment(row) if row else None
+def find_assignment(db: Session, assignment_id: uuid.UUID, *, for_update: bool = False) -> StoredAssignment | None:
+    lock = " FOR UPDATE" if for_update else ""
+    row = db.execute(text(f"{_SELECT} WHERE id = :id{lock}"), {"id": assignment_id}).one_or_none()
+    return to_assignment(row) if row else None
 
 
 def insert_assignment(

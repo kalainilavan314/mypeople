@@ -17,6 +17,10 @@ import jwt
 
 SESSION_COOKIE = "mp_session"  # the cookie name the Express API uses
 SESSION_LIFETIME = timedelta(days=30)  # lib.js signToken: expiresIn "30d"
+# FR-AUTH-025: tokens this API issues for a session row are short-lived and
+# renewed with a rotating refresh token. [ASSUMPTION] 15 minutes: long enough
+# for a review screen, short enough that a copied token soon stops working.
+ACCESS_LIFETIME = timedelta(minutes=15)
 BCRYPT_COST = 10  # the Express signup uses bcrypt.hash(password, 10)
 BCRYPT_MAX_BYTES = 72
 
@@ -80,14 +84,19 @@ class InvalidSessionToken(Exception):
     """The token is malformed, expired, or not signed with our secret."""
 
 
+class ExpiredSessionToken(InvalidSessionToken):
+    """Correctly signed but past its expiry: the client may renew it with its refresh token."""
+
+
 def sign_session_token(
     member_id: uuid.UUID | str,
     session_version: int,
     secret: str,
     issued_at: datetime | None = None,
     session_id: uuid.UUID | None = None,
+    lifetime: timedelta = SESSION_LIFETIME,
 ) -> str:
-    """Sign a 30-day session token, as lib.js signToken does.
+    """Sign a session token, by default for 30 days as lib.js signToken does.
 
     session_id names this API's session row, so the session can be ended on its
     own (FR-AUTH-021). Express ignores the extra claim; without it, the token is
@@ -97,7 +106,7 @@ def sign_session_token(
     payload: dict[str, object] = {"sub": str(member_id), "sv": session_version}
     if session_id is not None:
         payload["sid"] = str(session_id)
-    payload |= {"iat": iat, "exp": iat + int(SESSION_LIFETIME.total_seconds())}
+    payload |= {"iat": iat, "exp": iat + int(lifetime.total_seconds())}
     return jwt.encode(payload, secret, algorithm="HS256")
 
 
@@ -116,6 +125,8 @@ def read_session_token(token: str, secret: str) -> SessionClaims:
         # lib.js treats them as version 0, so nobody was signed out by that change.
         session_version = int(payload.get("sv", 0))
         session_id = uuid.UUID(payload["sid"]) if "sid" in payload else None
+    except jwt.ExpiredSignatureError as error:
+        raise ExpiredSessionToken(str(error)) from error
     except (jwt.InvalidTokenError, ValueError, TypeError) as error:
         raise InvalidSessionToken(str(error)) from error
     return SessionClaims(member_id=member_id, session_version=session_version, session_id=session_id)

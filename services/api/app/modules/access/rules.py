@@ -16,7 +16,7 @@ otherwise nobody could ever grant them.
 
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.core.permissions import (
     ASSISTANCE_DECISIONS,
@@ -29,7 +29,8 @@ from app.core.permissions import (
     grant_for,
 )
 
-REVIEW_INTERVAL = timedelta(days=365)  # RB-05: explicit grants are reviewed at least every 12 months
+# Quarters follow the Sri Lankan calendar (UTC+05:30, no daylight saving).
+LOCAL_ZONE = timezone(timedelta(hours=5, minutes=30))
 
 
 @dataclass(frozen=True)
@@ -212,8 +213,29 @@ def check_revocation(
     return []
 
 
-def review_due(tier: Tier, permissions: frozenset[str], granted_at: datetime) -> datetime | None:
-    """RB-05: an assignment with any explicit-only permission must be reviewed within 12 months."""
-    if any(grant_for(permission, tier) == "explicit" for permission in permissions):
-        return granted_at + REVIEW_INTERVAL
-    return None
+def quarter_of(moment: datetime) -> str:
+    """e.g. '2026-Q4', in Sri Lankan time."""
+    local = moment.astimezone(LOCAL_ZONE)
+    return f"{local.year}-Q{(local.month - 1) // 3 + 1}"
+
+
+def quarter_end(moment: datetime) -> datetime:
+    """The instant the quarter holding this moment ends: midnight, Sri Lankan time, on the first
+    day of the next quarter."""
+    local = moment.astimezone(LOCAL_ZONE)
+    next_month = (local.month - 1) // 3 * 3 + 4
+    if next_month > 12:
+        return datetime(local.year + 1, next_month - 12, 1, tzinfo=LOCAL_ZONE)
+    return datetime(local.year, next_month, 1, tzinfo=LOCAL_ZONE)
+
+
+def review_due(tier: Tier, reviewed_at: datetime) -> datetime | None:
+    """When a grant made or confirmed at this moment must next be confirmed or revoked: the end
+    of the following quarter, so it always has one full quarter (FR-AUTH-027, NFR-SEC-13). This
+    replaces RB-05's 12 months and covers every staff grant, not only explicit ones [ASSUMPTION:
+    every staff grant is privileged access]. The Super Administrator's grant is exempt: nobody
+    ranks above it to review it, and letting it lapse would leave the platform with nobody able
+    to assign anyone."""
+    if tier == "5":
+        return None
+    return quarter_end(quarter_end(reviewed_at))

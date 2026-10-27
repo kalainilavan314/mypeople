@@ -65,6 +65,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refresh Session
+         * @description Renew a session's 15-minute token with its refresh token (FR-AUTH-025). Each refresh token
+         *     works once and is replaced; presenting one a second time ends the session and alerts the member.
+         */
+        post: operations["refresh_session_v1_auth_refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/auth/sign-out": {
         parameters: {
             query?: never;
@@ -140,6 +161,47 @@ export interface paths {
          * @description End every session except this one.
          */
         post: operations["revoke_my_other_sessions_v1_auth_sessions_revoke_others_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/security-alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List My Security Alerts
+         * @description M50: flagged sign-ins and reused refresh tokens, newest first.
+         */
+        get: operations["list_my_security_alerts_v1_auth_security_alerts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/security-alerts/{alert_id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Answer Security Alert
+         * @description It was me, or this wasn't me: the second ends the flagged session and every other one
+         *     except the one in use. Then change the password (POST /v1/auth/password).
+         */
+        post: operations["answer_security_alert_v1_auth_security_alerts__alert_id__answer_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -510,6 +572,48 @@ export interface paths {
          * @description End an assignment. The person loses its permissions on their next request.
          */
         post: operations["revoke_assignment_v1_access_assignments__assignment_id__revoke_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Due Reviews
+         * @description Grants in the caller's areas, below their tier, due for review by the end of this quarter,
+         *     the most overdue first (FR-AUTH-027, D31). Needs audit.view.
+         */
+        get: operations["list_due_reviews_v1_access_reviews_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/reviews/{assignment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Review Assignment
+         * @description Confirm a grant for another quarter, or revoke it. A confirmed grant that had lapsed
+         *     counts again at once.
+         */
+        post: operations["review_assignment_v1_access_reviews__assignment_id__post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2894,6 +2998,14 @@ export interface components {
             /** Eventid */
             eventId?: string | null;
         };
+        /** AlertAnswerIn */
+        AlertAnswerIn: {
+            /**
+             * Answer
+             * @enum {string}
+             */
+            answer: "it_was_me" | "not_me";
+        };
         /** AppealDecisionInput */
         AppealDecisionInput: {
             /**
@@ -3886,6 +3998,71 @@ export interface components {
              * Format: date-time
              */
             serverAckAt: string;
+        };
+        /**
+         * DueGrantOut
+         * @description A grant waiting for review, with whose it is.
+         */
+        DueGrantOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /**
+             * Tier
+             * @enum {string}
+             */
+            tier: "1" | "2A" | "2B" | "3A" | "3B" | "4" | "5";
+            area: components["schemas"]["AreaRef"];
+            /** Permissions */
+            permissions: string[];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "active" | "revoked";
+            /** Grantedby */
+            grantedBy: string | null;
+            /**
+             * Grantedat
+             * Format: date-time
+             */
+            grantedAt: string;
+            /** Reviewdueat */
+            reviewDueAt: string | null;
+            /** Endedat */
+            endedAt: string | null;
+            /** Membercode */
+            memberCode: string;
+            /** Fullname */
+            fullName: string;
+            /** Overdue */
+            overdue: boolean;
+            /** Lastreviewedat */
+            lastReviewedAt: string | null;
+        };
+        /**
+         * DueReviewsOut
+         * @description D31: the grants this reviewer may confirm or revoke this quarter (FR-AUTH-027).
+         */
+        DueReviewsOut: {
+            /** Quarter */
+            quarter: string;
+            /**
+             * Quarterendsat
+             * Format: date-time
+             */
+            quarterEndsAt: string;
+            /** Reviewedthisquarter */
+            reviewedThisQuarter: number;
+            /** Items */
+            items: components["schemas"]["DueGrantOut"][];
         };
         /**
          * DuplicateFlagOut
@@ -5621,6 +5798,14 @@ export interface components {
             /** Phone */
             phone: string;
         };
+        /**
+         * RefreshIn
+         * @description Mobile apps send the refresh token here; browsers send the mp_refresh cookie instead.
+         */
+        RefreshIn: {
+            /** Refreshtoken */
+            refreshToken?: string | null;
+        };
         /** RegisterEntryOut */
         RegisterEntryOut: {
             /**
@@ -5728,11 +5913,13 @@ export interface components {
         };
         /**
          * RegistrationOut
-         * @description The token is returned for mobile apps; browsers use the HttpOnly cookie.
+         * @description The tokens are returned for mobile apps; browsers use the HttpOnly cookies.
          */
         RegistrationOut: {
             /** Token */
             token: string;
+            /** Refreshtoken */
+            refreshToken: string;
             member: components["schemas"]["MemberProfile"];
             /**
              * Referralaccepted
@@ -5886,6 +6073,16 @@ export interface components {
             decisions: components["schemas"]["DecisionOut"][];
             /** Duplicateflags */
             duplicateFlags: components["schemas"]["DuplicateFlagOut"][];
+        };
+        /** ReviewInput */
+        ReviewInput: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "confirmed" | "revoked";
+            /** Reason */
+            reason: string;
         };
         /**
          * ReviewMemberOut
@@ -6046,6 +6243,40 @@ export interface components {
             /** Membercode */
             memberCode?: string | null;
         };
+        /**
+         * SecurityAlertOut
+         * @description M50: a flagged sign-in or a reused refresh token. A coarse device label; never an address or a place.
+         */
+        SecurityAlertOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "suspicious_sign_in" | "refresh_reuse";
+            /**
+             * Signals
+             * @description new_device, recent_failures, unusual_velocity or refresh_token_reused
+             */
+            signals: string[];
+            /** Devicelabel */
+            deviceLabel: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Answeredat */
+            answeredAt: string | null;
+            /** Answer */
+            answer: ("it_was_me" | "not_me") | null;
+            /** Sessionactive */
+            sessionActive: boolean;
+        };
         /** SessionOut */
         SessionOut: {
             /**
@@ -6085,11 +6316,19 @@ export interface components {
         };
         /**
          * SignInResponse
-         * @description The token is returned for mobile apps; browsers use the HttpOnly cookie.
+         * @description The tokens are returned for mobile apps and the dashboard's server; browsers use the HttpOnly cookies.
          */
         SignInResponse: {
-            /** Token */
+            /**
+             * Token
+             * @description Valid 15 minutes; renew it with refreshToken
+             */
             token: string;
+            /**
+             * Refreshtoken
+             * @description Good for one renewal (POST /v1/auth/refresh); keep it secret
+             */
+            refreshToken: string;
             member: components["schemas"]["MemberProfile"];
         };
         /** StepOut */
@@ -6141,6 +6380,13 @@ export interface components {
             areaLevel: "platform" | "province" | "district" | "ds" | "gn";
             /** Defaultpermissions */
             defaultPermissions: string[];
+        };
+        /** TokensOut */
+        TokensOut: {
+            /** Token */
+            token: string;
+            /** Refreshtoken */
+            refreshToken: string;
         };
         /** TopicChoiceIn */
         TopicChoiceIn: {
@@ -6303,6 +6549,46 @@ export interface operations {
             };
         };
     };
+    refresh_session_v1_auth_refresh_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefreshIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokensOut"];
+                };
+            };
+            /** @description invalid_refresh_token, refresh_reused (the session is ended) or session_expired */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     sign_out_v1_auth_sign_out_post: {
         parameters: {
             query?: never;
@@ -6392,6 +6678,75 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    list_my_security_alerts_v1_auth_security_alerts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SecurityAlertOut"][];
+                };
+            };
+        };
+    };
+    answer_security_alert_v1_auth_security_alerts__alert_id__answer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlertAnswerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SecurityAlertOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description already_answered */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
@@ -7012,6 +7367,93 @@ export interface operations {
             };
             /** @description not_found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_due_reviews_v1_access_reviews_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DueReviewsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    review_assignment_v1_access_reviews__assignment_id__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assignment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentOut"];
+                };
+            };
+            /** @description forbidden, own_assignment, outside_your_area, tier_not_below_yours or tier_5_by_bootstrap_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_due */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

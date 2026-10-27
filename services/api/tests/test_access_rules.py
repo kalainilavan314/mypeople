@@ -1,7 +1,7 @@
 """The access rules and the permission matrix, without a database."""
 
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, timedelta, timezone
 
 import pytest
 
@@ -15,9 +15,12 @@ from app.modules.access.rules import (
     check_assignment,
     check_revocation,
     holds,
+    quarter_end,
+    quarter_of,
     review_due,
     target_outranks,
 )
+from app.modules.access.reviews.rules import check_review, is_due
 
 PROVINCE = Area("province", "LK4")
 DISTRICT = Area("district", "LK41")
@@ -195,10 +198,48 @@ def test_revocation_rules():
     assert revoke(Assignment("5", PLATFORM, frozenset({"roles.assign"})), path=(PLATFORM,)) == ["tier_5_by_bootstrap_only"]
 
 
-def test_explicit_grants_are_due_for_review_within_a_year():  # RB-05
+COLOMBO = timezone(timedelta(hours=5, minutes=30))
+
+
+def test_quarters_follow_the_sri_lankan_calendar():
+    assert quarter_of(datetime(2026, 10, 25, tzinfo=UTC)) == "2026-Q4"
+    assert quarter_of(datetime(2026, 12, 31, 20, tzinfo=UTC)) == "2027-Q1"  # already 1 January in Sri Lanka
+    assert quarter_end(datetime(2026, 10, 25, tzinfo=UTC)) == datetime(2027, 1, 1, tzinfo=COLOMBO)
+    assert quarter_end(datetime(2026, 2, 3, tzinfo=UTC)) == datetime(2026, 4, 1, tzinfo=COLOMBO)
+
+
+def test_every_staff_grant_is_due_for_review_at_the_end_of_the_next_quarter():  # FR-AUTH-027
+    october = datetime(2026, 10, 25, tzinfo=UTC)
+    assert review_due("3A", october) == datetime(2027, 4, 1, tzinfo=COLOMBO)
+    assert review_due("1", datetime(2026, 12, 31, 20, tzinfo=UTC)) == datetime(2027, 7, 1, tzinfo=COLOMBO)
+    assert review_due("5", october) is None  # nobody ranks above the Super Administrator
+
+
+def test_a_grant_is_reviewed_once_a_quarter():
     now = datetime(2026, 10, 25, tzinfo=UTC)
-    assert review_due("3A", frozenset({"members.verify"}), now) == now + timedelta(days=365)
-    assert review_due("3A", frozenset({"cases.decide_district"}), now) is None
+    assert is_due(datetime(2026, 12, 31, tzinfo=UTC), now)
+    assert is_due(datetime(2026, 9, 1, tzinfo=UTC), now)  # overdue and suspended
+    assert not is_due(review_due("3A", now), now)  # just confirmed: next quarter's list
+    assert not is_due(None, now)
+
+
+def test_reviews_need_audit_view_over_the_area_from_a_higher_tier():  # PRM-25
+    coordinator = Assignment("3A", DISTRICT, frozenset({"members.verify"}))
+    regional = Assignment("4", PROVINCE, frozenset({"members.verify"}))
+    assigner_only = [Assignment("4", PROVINCE, frozenset({"roles.assign"}))]
+
+    def review(assignment, *, reviewer=REGIONAL_ADMIN, member_id=MEMBER_ID, path=DISTRICT_PATH):
+        return check_review(
+            reviewer_id=ADMIN_ID, reviewer_assignments=reviewer, member_id=member_id, assignment=assignment, area_path=path
+        )
+
+    assert review(coordinator) == []
+    assert review(regional, path=(PLATFORM, PROVINCE)) == ["tier_not_below_yours"]  # a peer
+    assert review(regional, reviewer=SUPER_ADMIN, path=(PLATFORM, PROVINCE)) == []
+    assert review(coordinator, path=ELSEWHERE_PATH) == ["outside_your_area"]
+    assert review(coordinator, reviewer=assigner_only) == ["outside_your_area"]
+    assert review(coordinator, member_id=ADMIN_ID) == ["own_assignment"]
+    assert review(SUPER_ADMIN[0], reviewer=SUPER_ADMIN, path=(PLATFORM,)) == ["tier_5_by_bootstrap_only"]
 
 
 def test_staff_act_on_a_staff_account_only_from_a_higher_tier():
