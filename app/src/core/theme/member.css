@@ -1,20 +1,22 @@
 .member-shell{background:var(--page);color:var(--ink);font-family:var(--font-ui);color-scheme:light}
 .member-shell .screen{scrollbar-gutter:auto;padding-bottom:calc(var(--member-nav-clearance,116px) + var(--safe-bottom));scroll-padding-bottom:calc(var(--member-nav-clearance,116px) + var(--safe-bottom))}
-/* Civic Dock: the five tabs sit in one white bar along the bottom edge. Nothing rises above it,
-   so it never covers a button on the screen; bold 30px icons and 12.5px labels on every tab;
-   the current tab is a navy tile, and the Card tab rests on pale blue so it is easy to find. */
-.member-shell .medtech-nav{position:absolute;left:0;right:0;bottom:0;transform:none;width:100%;max-width:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:8px 6px calc(8px + var(--safe-bottom));min-height:auto;border:0;border-top:1px solid var(--hairline);border-radius:0;background:var(--card);box-shadow:0 -6px 20px rgba(15,41,66,.07);z-index:50;overflow:visible;align-items:stretch}
-.member-shell .medtech-nav button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;min-height:68px;padding:6px 2px;border:0;border-radius:16px;background:transparent;color:#263e58;font-family:var(--font-ui);font-size:.78125rem;font-weight:700;line-height:1.25;cursor:pointer;transition:background-color 160ms ease,color 160ms ease,transform 120ms ease;-webkit-tap-highlight-color:transparent}
-.member-shell .medtech-nav .work-nav-icon{display:grid;place-items:center;width:32px;height:32px;max-width:100%;border-radius:0;background:transparent;color:inherit}
+/* Bottom bar (27 Oct 2026, after the member's reference): a dark navy bar with rounded top
+   corners along the bottom edge. Each tab is a small rounded tile holding its icon, with the
+   label under it; the current tab's tile is filled civic blue. Nothing rises above the bar,
+   so it never covers a button on the screen. */
+.member-shell .medtech-nav{position:absolute;left:0;right:0;bottom:0;transform:none;width:100%;max-width:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;padding:10px 4px calc(8px + var(--safe-bottom));min-height:auto;border:0;border-radius:22px 22px 0 0;background:var(--primary);box-shadow:0 -4px 18px rgba(15,41,66,.18);z-index:50;overflow:visible;align-items:start}
+.member-shell .medtech-nav button{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;min-width:0;min-height:62px;padding:0 2px;border:0;border-radius:12px;background:transparent;color:#c3cfdc;font-family:var(--font-ui);font-size:.78125rem;font-weight:600;line-height:1.25;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.member-shell .medtech-nav .work-nav-icon{display:grid;place-items:center;width:42px;height:42px;max-width:100%;border:1px solid rgba(255,255,255,.18);border-radius:13px;background:rgba(255,255,255,.07);color:#e2e8f0;transition:background-color 160ms ease,border-color 160ms ease,transform 120ms ease}
 .member-shell .medtech-nav button>span:last-child{max-width:100%;text-align:center;overflow-wrap:normal;word-break:normal}
-.member-shell .medtech-nav .civic-dock-card{background:#e9f0f9;color:var(--primary)}
-.member-shell .medtech-nav button:hover{background:#edf3f8}
-.member-shell .medtech-nav button[aria-current],.member-shell .medtech-nav button[aria-current]:hover{background:var(--primary);color:var(--on-primary)}
-.member-shell .medtech-nav button[aria-current] .work-nav-icon{background:transparent;color:inherit}
-.member-shell .medtech-nav button:active{transform:scale(.96)}
-.member-shell .medtech-nav button:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
-:lang(ta) .member-shell .medtech-nav button,.member-shell .medtech-nav button .ta{font-size:.75rem;line-height:1.35}
-@media(prefers-reduced-motion:reduce){.member-shell .medtech-nav button{transition:none}.member-shell .medtech-nav button:active{transform:none}}
+.member-shell .medtech-nav button:hover{background:transparent}
+.member-shell .medtech-nav button:hover .work-nav-icon{background:rgba(255,255,255,.14)}
+.member-shell .medtech-nav button[aria-current],.member-shell .medtech-nav button[aria-current]:hover{background:transparent;color:#fff;font-weight:700}
+.member-shell .medtech-nav button[aria-current] .work-nav-icon{background:#2563eb;border-color:#2563eb;color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.4)}
+.member-shell .medtech-nav button:active .work-nav-icon{transform:scale(.94)}
+.member-shell .medtech-nav button:focus-visible{outline:none}
+.member-shell .medtech-nav button:focus-visible .work-nav-icon{outline:2px solid #fff;outline-offset:2px}
+:lang(ta) .member-shell .medtech-nav button,.member-shell .medtech-nav button .ta{font-size:.65625rem;line-height:1.35}
+@media(prefers-reduced-motion:reduce){.member-shell .medtech-nav .work-nav-icon{transition:none}.member-shell .medtech-nav button:active .work-nav-icon{transform:none}}
 .member-shell .ev-iconbtn{border-radius:8px}
 .member-shell .pf-logout-btn{min-height:48px;height:auto;padding:12px;border-radius:8px;box-shadow:none;background:var(--primary);color:var(--on-primary);font-size:.8125rem;line-height:1.5}
 .member-shell .civic-profile-row>.pf-menu-text{flex:1;min-width:0}

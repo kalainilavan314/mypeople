@@ -1,5 +1,4 @@
 import { useEvents, useMyCommunityReports } from '@/core/api/queries';
-import { displayMemberName } from '@/core/lib/memberDisplay';
 import '@/core/theme/home.css';
 import { useWorkspaceText } from '@/shared/components/MemberWorkspace';
 import { QueryBoundary } from '@/shared/components/ui';
@@ -18,7 +17,6 @@ export function Home() {
   const reports = useMyCommunityReports();
   const t = useWorkspaceText();
   const [search, setSearch] = useState('');
-  const name = displayMemberName(me ?? null) || t('Member', 'உறுப்பினர்');
   const upcoming = (events.data ?? [])
     .filter((e) => Date.parse(e.startsAt) >= Date.now())
     .sort((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt))
@@ -26,7 +24,6 @@ export function Home() {
   return (
     <main className="home-screen">
       <HomeHeader
-        name={name}
         avatarUrl={me?.avatarUrl}
         search={search}
         onSearch={setSearch}
