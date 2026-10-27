@@ -1,10 +1,124 @@
-# Roadmap for the remaining requirements
+# Delivery plan
 
-BRD v1.1 has 466 functional requirements. About 140 are built so far, nearly all in the API (see [README.md](README.md)); the screens for them come in batches 21 to 24. The BRD plans the rest in phases with a vendor team (§20.2): Phase 0 governance (about 3 months), Phase 1 secure core (about 6), Phase 2 community and accountability (about 9), Phase 3 advanced participation and AI (9 to 12). This file is the order of batches, one tested module at a time, and what each is waiting on.
+How the rest of BRD v1.1 gets built, in what order, and what "done" means. The screens and where each one goes are in [screen-map.md](screen-map.md); what is built so far is in [README.md](README.md). The BRD commits no dates or team size (§20.2), so this plan sets the order, the size in batches and the gates, not a calendar.
 
-A batch builds the API module first (rules, service, endpoints, tests, audit), then the screens that use it. Anything that needs a decision, a vendor or legal approval is built behind an interface with a clear "not configured" answer, never a pretend success.
+## Where we stand (27 October 2026)
 
-## Phase 1: secure core
+| | Built | Of | Share |
+|---|---|---|---|
+| Functional requirements | 154 (3 in part) | 466 | 33% |
+| Business rules | 30 | 160 | 19% |
+| Non-functional requirements (recorded by ID) | 11 | 91 | 12% |
+| Screens | 54 | 174 | 31% |
+
+The built work is in the FastAPI service, the Expo member and staff apps and the Next.js dashboard. **None of it is live yet**: members use the PWA and Express API (`app/`, `server/`). Until the new stack goes live, every member-facing fix is made twice.
+
+## How every batch is done
+
+One module at a time, as a vertical slice, never screens without the rules behind them (`CLAUDE.md`: no screen that pretends a feature works):
+
+1. **Rules first.** The module's functional requirements, business rules and the non-functional ones it touches, in the API: rules as plain functions, permission and area checks on the server, audit entries, migrations. Tests against a real database.
+2. **Then its screens**, in the app and place [screen-map.md](screen-map.md) gives, from the shared components (`packages/mobile-ui`, the dashboard's components), with every state the API can return: loading, empty, refused, error, offline.
+3. **Accessibility (NFR-ACC-05, WCAG 2.2 AA)** on every new screen: text contrast 4.5:1, status never by colour alone, touch targets at least 44 px, visible focus that is never hidden behind a bar (2.4.11), no drag-only actions (2.5.7), help in the same place on every screen (3.2.6), no re-entering what the member already gave (3.3.7), sign-in without memory tests (3.3.8), text readable and unclipped at 200%, Tamil and English labels, checked with TalkBack and VoiceOver on a phone.
+4. **Checks that must pass**: API tests and the fresh-database run; typecheck, lint and build of every app touched; Android export of the Expo apps; the automated accessibility checks.
+5. **Records**: the screen map's status, the coverage counts in [README.md](README.md), the API reference and the A–H report, in the same commit. Tamil text is marked for native review.
+
+A screen whose decision is not taken stays "Blocked" in the screen map with the decision named. Nothing is built as a placeholder.
+
+## Milestones
+
+### M0: Foundations (3 batches, before more screens)
+
+| Batch | Work | Done when |
+|---|---|---|
+| F1 (done) | Screen placement: the screen map; the README-only folders `assistance`, `household`, `ideas`, `issues`, `promises` moved into `apps/member-mobile/app/(member)` and `field-visits` into `apps/staff-mobile/app/(staff)`, so new screens sit behind sign-in; `identity-reviews` moved as `(staff)/assisted-verification`, narrowed to S04, because the BRD keeps the verification queue on the dashboard (W01, W02); the four overlaps below settled | Every screen has one place; no folder outside the signed-in groups |
+| F2 | Accessibility kit: the WCAG 2.2 AA checklist above as a document; lint rules for accessibility in the dashboard and both Expo apps, and automated page checks on the dashboard in CI; shared components meet the checklist; audit and fix the 54 built screens | The audit's findings are fixed or listed with a reason |
+| F3 | Go-live plan for the new stack: FastAPI beside Express on the same database (the strangler plan), its storage and keys, the notifications timer, the member app on an internal test track, the dashboard behind Nginx | The plan is approved and the decisions it needs are taken (see the table below) |
+
+Overlaps in the BRD, settled on 27 October 2026 by the project owner so no screen is built twice:
+
+| Screens | One place |
+|---|---|
+| H13 Community ideas, M15–M17 Development ideas | One Ideas area with two kinds of entry, `(member)/ideas` (the sponsor can still ask for two) |
+| H07 Report a concern, M43 Voice report | Voice is an input option inside H07, `(member)/issues` |
+| P05 Account settings, M45 Messages and channels | M45 is added to the P05 settings screen, `(member)/profile/settings.tsx`; no second settings screen |
+| H12 My assignment, M30 Duty roster | Election duties appear in the same assignments list, `(member)/volunteer` |
+
+### M1: Finish Phase 1, then Gate G1
+
+| Batch | Work | Screens |
+|---|---|---|
+| 1.1 | Screens whose API is already built and tested | A15, A17, A18, C02, C03, M04, M45 (SMS part), D01 (queue counts), D07, D08, D09, D22, D34, D35 |
+| 1.2 | Rest of account security: step-up codes for new devices (FR-AUTH-022), passkeys, lost-device wipe (FR-STF-010) | Additions to M49/M50 and D31 |
+| 1.3 | Capture quality and OCR confirmation (FR-IDV-001 to 004) | M01, M02 |
+| 1.4 | Remaining Phase 1 requirements: registration, identity, web review, administration, architecture, staff app, card sharing and progress | C04 (share; wallet waits on INT-03), C05, S10 |
+| 1.5 | Assisted verification | M05, S04 |
+| Go-live | Run the F3 plan: the new API, member app and dashboard live; then the BRD's one-month pilot in selected GN divisions | — |
+
+**Gate G1** (BRD §20.2): the phase's Must requirements pass user acceptance testing; WCAG 2.2 AA on the new screens; an independent penetration test with no open critical or high findings; a privileged-access review (built: D31); a key-management audit; the pilot reaches at least 70% registration completion and at least 90% of reviews within 5 working days. Sign-off: Sponsor, Tier 5, DPO, vendor.
+
+After a successful pilot the PWA takes fixes only, members move to the new apps, and Express is retired once FastAPI covers everything it serves.
+
+### M2: Phase 2, community service and accountability, then Gate G2
+
+In dependency order: issues come first because scorecards are computed from them.
+
+| Batch | Module | Screens |
+|---|---|---|
+| 2.1 | Community issues and the case workflow (FR-RPT, FR-WEB-014 to 029) | H05–H09, W03–W08 |
+| 2.2 | Volunteering, surveys, learning, referrals | H10–H16, H19–H21, S10 |
+| 2.3 | Ideas and development proposals (one Ideas area) | H13, M15–M17, D15 |
+| 2.4 | Promise Tracker and accountability scorecards | M18–M20, D16, D17 |
+| 2.5 | My Household and Community Support (DPIA update, row-level security) | M06–M14, S11, S12, D02, D13, D14 |
+| 2.6 | Town hall and election mode | M21–M23, D18, M29, M30, S15 |
+| 2.7 | Official content and fact-checks | M47, M48, D12, D30 |
+| 2.8 | Field operations with offline sync | S05–S07, D24 |
+| 2.9 | Party fund by bank transfer, WhatsApp, official alert relay, renewal | H17, H18, D10, M45 (WhatsApp), M35, M33, M34, D25 |
+
+**Gate G2**: the neutrality audit design and the scorecard publication policy approved; DPIA updated for assistance, household and field data; row-level security tests; a penetration test of the new modules; the signing-key ceremony for official content; assistance piloted in one district with partner NGOs; scorecards published internally for one quarter first.
+
+### M3: Phase 3, advanced participation and AI, then Gate G3
+
+| Batch | Module | Screens |
+|---|---|---|
+| 3.1 | Tamil AI assistant, knowledge base and model registry | M28, D20, D21 |
+| 3.2 | Participatory budgeting | M24–M27, D19 |
+| 3.3 | Payment gateway beside bank transfer | M51, M52, D11 |
+| 3.4 | Wings and committees | M31, M32, S18, D23 |
+| 3.5 | Meet your representative | M41, M42, S17, D29 |
+| 3.6 | Disaster relief, blood donors, livelihood guide | M36, S16, D26, M37–M40, D27, D28 |
+| 3.7 | Voice, data saver, diaspora | M43 (in H07), M44, M46 |
+| 3.8 | Liveness and face comparison, only if OD-28 approves; analytics; Eastern Province rollout | M03, D32 |
+
+**Gate G3**: each feature meets its evaluation thresholds (BRD §15B.3); model shadow-mode and fairness reviews; PCI scoping; app-store pre-clearance for payments; pilots in one district and selected Eastern Province GN divisions.
+
+## Decisions needed, and by when
+
+| Decision | Blocks | Needed before |
+|---|---|---|
+| OD-20 Hosting | The new stack going live | F3 |
+| OD-19 Member ID format (BRD: `MP-NNNNN`; live: `WTL-26-…`) | Go-live, cards | F3 |
+| OD-03 Retention of identity images | Identity uploads in production | F3 |
+| INT-01 SMS vendor | Codes, recovery and alerts in production | F3 |
+| INT-02 Push, INT-09 staff identity provider | Step-up codes, lost-device wipe, staff sign-in at scale | 1.2 |
+| OD-42 OCR and AI provider | M02, the AI assistant | 1.3, 3.1 |
+| OD-04 Assisted verification | M05, S04 | 1.5 |
+| INT-03 Wallet passes | C04 wallet | 1.4 |
+| Purpose of each joining-survey question (BR-090, DPO) | A15 | 1.1 |
+| DEP-19 Legal opinions, POL-05 to POL-09, POL-12, POL-13 | Election information and the Phase 2 modules | M2 |
+| INT-24 Signing keys in KMS | D30, M47 | 2.7 |
+| OD-43 Renewal | M33, M34, D25 | 2.9 |
+| OD-27, OD-40 Payments | M51, M52, D11 | 3.3 |
+| OD-39 Blood donors | M37, M38, D27 | 3.6 |
+| OD-28, OD-29 Biometrics | M03 | 3.8 |
+
+The code records each assumption in its place, so it can change when a decision is taken.
+
+## How progress is reported
+
+After every batch: the A–H report (`CLAUDE.md`), the screen map's statuses and the coverage counts above. At each gate: the gate's exit criteria with evidence. Releases follow `deployment/README.md` and are recorded there.
+
+## Completed batches
 
 | Batch | Scope | BRD | Waiting on |
 |---|---|---|---|
@@ -25,16 +139,3 @@ A batch builds the API module first (rules, service, endpoints, tests, audit), t
 | 21 (done) | Member app screens on `/v1`, from the approved PWA designs: A01 to A13, A16, H01 to H04, E01 to E06, C01 and C06, G01 to G03, P01 to P06 | Screens for the API batches above; FR-VOI-007 (photo library as the manual route) | Tamil review of the new text; the ID-card artwork, PDF and wallet on the Card tab; push (INT-02) |
 | 22 (done) | Dashboard: staff sign-in with the second factor, W01, W02 with evidence links, D03 notice, D04, D05, D06, W09, audit log | FR-WEB-001 to 013, 030 to 033, FR-ADM-003, 011 (screens) | Evidence watermark (FR-WEB-006); screening (OD-42) |
 | 23–24 (done) | Staff app: S01 with the second factor, S02, S03, S08 with the camera and the member-ID route, S09, S13, S14; shared mobile components moved to `packages/mobile-ui`; `GET /v1/membership/lookup` and `GET /v1/access/assignments` | FR-STF-001, 003, 005, 006, 009, FR-ADM-001, 002 | S04 (OD-04), S10 (volunteering), offline use and device wipe (FR-STF-010) |
-| 25 | Capture quality and OCR | FR-IDV-001 to 004 | OD-42 for server-side OCR |
-
-## Phase 2: community service and accountability
-
-Community issues and the case workflow (FR-RPT, FR-WEB-014 to 029); volunteering (FR-VOL); ideas and development proposals (FR-IDEA, FR-DEV); Community Support and households with row-level security (FR-AST, FR-HH); Promise Tracker and scorecards (FR-PRM, FR-ACS); town halls (FR-THL); election information (FR-ELX, legal approval); official content and fact-checking (FR-AUT); staff field visits (FR-FLD); bank-transfer fund, surveys, learning, referrals (FR-FUND, FR-SRV, FR-LRN, FR-REF); official alerts (FR-DIS); WhatsApp (FR-MSG). Waiting on: POL-05 to POL-09, POL-12, POL-13, the WhatsApp provider, DEP-19 legal opinions.
-
-## Phase 3: advanced participation and AI
-
-Tamil AI assistant (FR-AIA, OD-42); participatory budgeting (FR-PBG); payment gateway (FR-PAY, OD-27, OD-40); diaspora (FR-DSP); wings and committees (FR-COM); voice (FR-VOI); livelihood guide (FR-LIV); blood donors (FR-BLD); disaster relief (FR-DIS); liveness and face comparison only if OD-28 approves (FR-IDV-007 to 009); advanced analytics; Eastern Province.
-
-## Decisions only the sponsor can make
-
-The G0 open decisions (BRD §22) block parts of every phase: OD-01 reviewers, OD-02 activation, OD-03 retention, OD-04 assisted verification, OD-07 and OD-27 payments, OD-20 hosting, OD-28 and OD-29 biometrics, OD-42 AI provider. The code records each assumption it makes in their place, so it can be changed when they are decided.

@@ -659,11 +659,13 @@ packages/
 apps/
   member-mobile/
     package.json  app.json  tsconfig.json  .env.example  README.md
-    app/
-      _layout.tsx
-      (tabs)/
-        _layout.tsx  index.tsx  events.tsx  card.tsx  gallery.tsx  profile.tsx
-      (auth)/  household/  assistance/  ideas/  promises/  issues/
+    app/                   every screen's place: docs/requirements/screen-map.md
+      _layout.tsx          signed-out and signed-in groups behind Stack.Protected
+      (auth)/              welcome  sign-in  register  recover  assisted-recovery
+      (member)/            everything here needs a signed-in member
+        (tabs)/            index (home)  events  card  gallery  profile
+        events/  gallery/  profile/  hub  notifications  verify
+        household/  assistance/  ideas/  promises/  issues/
                            README only in each: not built yet
     src/
       lib/
@@ -679,10 +681,12 @@ apps/
   staff-mobile/
     package.json  app.json  tsconfig.json  .env.example  README.md
     app/
-      _layout.tsx
-      (tabs)/
-        _layout.tsx  index.tsx  tasks.tsx  cases.tsx  check-in.tsx  profile.tsx
-      (auth)/  field-visits/  identity-reviews/
+      _layout.tsx          signed-out and staff groups; staff screens need the second factor
+      (auth)/              sign-in
+      (staff)/             everything here needs a staff session with MFA
+        (tabs)/            index (tasks)  check-in  approvals  alerts  profile
+        card-check  lookup  checkin/  roster/
+        field-visits/  assisted-verification/
                            README only in each: not built yet
     src/
       lib/

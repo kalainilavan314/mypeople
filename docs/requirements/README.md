@@ -4,6 +4,8 @@ The requirements are the **Business Requirements Document v1.1, "My People (à®Žà
 
 v1.1 contains 466 functional requirements, 160 business rules, 174 screens, 70 data entities and 48 open decisions. Every v1.1 module is "Proposed" until the sponsor signs it, and each is meant to sit behind a feature flag until its phase gate is recorded (FR-ARCH-011).
 
+The order of the remaining work, its gates and the decisions it waits on are in the [delivery plan](roadmap.md); the place of every screen, and whether it is built, is in the [screen map](screen-map.md).
+
 ## Sections used most during development
 
 | Section | Topic |

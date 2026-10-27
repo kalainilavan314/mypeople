@@ -1,6 +1,6 @@
 # Development ideas and participatory budgeting
 
-Proposals, their review, and participatory-budgeting ballots.
+Proposals, their review, and participatory-budgeting ballots. The screens are in `app/(member)/ideas` (community ideas and development proposals share one Ideas area, H13 and M15 to M17) and `app/(member)/budgeting` (M24 to M27).
 
 **Status: not built yet.**
 

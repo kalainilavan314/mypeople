@@ -11,7 +11,7 @@ import { errorMessage } from '@/lib/errors';
 type Stage = 'request' | 'code' | 'password' | 'done';
 
 /**
- * A13: a code to the confirmed recovery number, then a new password. The
+ * A16: a code to the confirmed recovery number, then a new password. The
  * answer is the same whether or not the number is registered (FR-AUTH-014).
  */
 export default function RecoverScreen() {
