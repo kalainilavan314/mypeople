@@ -1,6 +1,6 @@
 import type { CommunityReport } from '@/core/api/types';
 import { c, font, radius, shadow } from '@/core/theme/tokens';
-import { STAGES } from '@/features/reports/Reports.model';
+import { STAGES, reportReference } from '@/features/reports/Reports.model';
 import { catMeta } from '@/features/reports/Reports.model';
 import { fmtDate } from '@/features/reports/Reports.model';
 import { statusColor } from '@/features/reports/Reports.model';
@@ -68,13 +68,16 @@ export function ReportItem({ report }: { report: CommunityReport }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 10 }}>
         <Icon name="mapPin" size={13} color={c.ink3} strokeWidth={2.2} />
         <span style={{ font: `400 12px/1 ${font.ui}`, color: c.ink3 }}>
-          {report.districtName ?? 'Jaffna'}
+          {report.districtName ?? '—'}
         </span>
         <span style={{ flex: 1 }} />
         <Icon name="calendar" size={12} color={c.ink3} strokeWidth={2.2} />
         <span style={{ font: `400 12px/1 ${font.ui}`, color: c.ink3 }}>
           {fmtDate(report.createdAt)}
         </span>
+      </div>
+      <div style={{ marginTop: 6, font: `500 12px/1.4 ${font.mono}`, color: c.ink3 }}>
+        {reportReference(report.id)}
       </div>
 
       <div style={{ display: 'flex', alignItems: 'flex-start', marginTop: 14 }}>

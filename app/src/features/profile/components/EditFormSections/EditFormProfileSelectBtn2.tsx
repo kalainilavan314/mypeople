@@ -47,8 +47,8 @@ export function EditFormProfileSelectBtn2({ dsCode, setGsSheetOpen, t, gs }: Pro
           {gs
             ? `${gs.name} (${gs.ref})`
             : dsCode
-              ? 'GN பிரிவைத் தேர்ந்தெடுக்கவும்'
-              : 'முதலில் DS பிரிவைத் தேர்ந்தெடுக்கவும்'}
+              ? t('profileSetup.pickGs')
+              : t('profileSetup.pickDsFirst')}
         </div>
       </div>
       <Icon name="chevron" size={16} color="#94A3B8" />

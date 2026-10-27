@@ -25,7 +25,6 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { CardAvailability } from './components/CardAvailability';
 import { useCardActions } from './useCardActions';
 export function Card() {
   const meQ = useMeQuery(),
@@ -36,7 +35,6 @@ export function Card() {
     [params] = useSearchParams();
   const [showQr, setShowQr] = useState(params.get('qr') === '1');
   const [viewer, setViewer] = useState(false),
-    [wallet, setWallet] = useState(false),
     [share, setShare] = useState(false);
   const { cardHost, pdfBusy, feedback, downloadPdf, copyReferral } = useCardActions();
   useEffect(() => {
@@ -167,11 +165,6 @@ export function Card() {
                   onClick={() => void downloadPdf()}
                   disabled={pdfBusy}
                 />
-                <Action
-                  icon="card"
-                  label={t('Add to Wallet', 'வாலட்டில் சேர்')}
-                  onClick={() => setWallet(true)}
-                />
                 <Action icon="share" label={t('Share', 'பகிர்')} onClick={() => setShare(true)} />
               </div>
               {feedback && (
@@ -179,7 +172,6 @@ export function Card() {
                   {feedback}
                 </p>
               )}
-              {wallet && <CardAvailability onDismiss={() => setWallet(false)} />}
               <CardMpSection
                 t={t}
                 navigate={navigate}

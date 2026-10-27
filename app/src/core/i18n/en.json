@@ -31,18 +31,11 @@
     "otpSub": "Enter the 6-digit code sent to {{phone}}",
     "verify": "Verify",
     "resend": "Resend code",
-    "verifyNicTitle": "Verify NIC",
-    "verifyNicSub": "Confirm your identity details.",
-    "verifyNicNote": "NIC details are verified automatically now.\nA coordinator will confirm with official records after joining.",
-    "verifyFinish": "Verify & finish",
+    "verifyNicTitle": "Check your NIC details",
+    "verifyNicSub": "Read from the NIC number you entered.",
+    "verifyNicNote": "These details only show that the number is in the right format. They are not checked against official records.\nA coordinator confirms your identity before your membership becomes active. Until then your profile shows “Not verified”.",
+    "verifyFinish": "Continue",
     "nicDetails": "NIC details",
-    "nicPhotosTitle": "NIC photos",
-    "nicPhotosSub": "Take a clear photo of both sides of your NIC card.",
-    "nicPhotoFront": "Front side",
-    "nicPhotoBack": "Back side",
-    "nicPhotoAdd": "Add photo",
-    "nicPhotoRetake": "Retake",
-    "errNicPhotos": "Add a photo of both sides of your NIC.",
     "nicNumber": "NIC",
     "dob": "Date of birth",
     "gender": "Gender",
@@ -53,7 +46,7 @@
     "eligible": "Eligible",
     "notEligible": "Under 18",
     "doneTitle": "You're in!",
-    "doneSub": "Your account is created and your NIC is submitted for verification.",
+    "doneSub": "Your account is created. Your identity is not verified yet.",
     "enterApp": "Enter app",
     "errName": "Enter your full name (at least 2 characters).",
     "errNic": "Enter a valid Sri Lankan NIC (e.g. 199512345678 or 951234567V).",
@@ -101,7 +94,15 @@
     "referralPlaceholder": "e.g. KARU-4821 or NPM-XXXX",
     "referralHint": "Who invited you? (optional)",
     "ds": "DS division",
-    "pickDsFirst": "Choose a DS division first"
+    "pickDsFirst": "Choose a DS division first",
+    "heroTitle": "Tell us a little more about you",
+    "heroSub": "Your area connects you with your local community.",
+    "noResults": "No results",
+    "genderDiffers": "Your NIC number records a different gender. You can keep your choice; a coordinator may ask about it when confirming your identity.",
+    "searchDs": "Search DS divisions",
+    "pickDs": "Choose a DS division",
+    "pickGs": "Choose a GN division",
+    "dataUse": "We use these details only to connect you with your local community."
   },
   "questions": {
     "label": "Initial survey",
@@ -118,7 +119,9 @@
     "creating": "Creating your account…",
     "errNic": "This NIC is already registered. Try logging in.",
     "errPhone": "This mobile number is already registered.",
-    "finish": "Finish"
+    "finish": "Finish",
+    "next": "Next",
+    "progress": "Question {{n}} of {{total}}"
   },
   "nav": {
     "home": "Home",
@@ -160,7 +163,9 @@
     "close": "Close",
     "confirm": "Confirm",
     "empty": "Nothing here yet",
-    "search": "Search"
+    "search": "Search",
+    "dismiss": "Dismiss",
+    "saving": "Saving…"
   },
   "home": {
     "greeting": "Vanakkam 👋 {{name}}",
@@ -241,7 +246,19 @@
     "noneYet": "No upcoming events yet",
     "noneYetSub": "New events appear here as soon as they are announced. Photos of past events are in the gallery.",
     "showAll": "Show all events",
-    "openGallery": "See past events"
+    "openGallery": "See past events",
+    "filterAll": "All",
+    "filterMonth": "This month",
+    "filters": "Filter events",
+    "rsvpError": "Your response could not be saved. Please try again.",
+    "rsvpSaved": "Response saved",
+    "save": "Bookmark event",
+    "search": "Search events",
+    "searchPlaceholder": "Search by title or venue",
+    "subtitle": "Community events, programmes and opportunities near you",
+    "unsave": "Remove bookmark",
+    "upcoming": "Upcoming events",
+    "view": "Event view"
   },
   "reports": {
     "title": "Field report",
@@ -271,7 +288,7 @@
   },
   "survey": {
     "title": "Survey",
-    "privacyNote": "Your answer is aggregated by ward. Individual responses are never shown.",
+    "privacyNote": "Optional: you can skip any question. Your answers are kept apart from your profile and membership card, and are not shown to coordinators.",
     "bloodNote": "Optional. Shared only with coordinators to help organise local blood-donation drives — never shown publicly. You can skip this.",
     "membersVoted": "{{n}} members voted",
     "forVoting": "+{{points}} pts for voting",
@@ -337,7 +354,19 @@
     "skills": "Skills registry",
     "referrals": "Referrals",
     "notifications": "Notifications",
-    "privacy": "Privacy & consent"
+    "privacy": "Privacy & consent",
+    "accountSettings": "Account settings",
+    "appearance": "Appearance",
+    "areaUnset": "Area not set",
+    "communityHub": "Community hub",
+    "communityHubSub": "Invites, skills, ideas and contributions",
+    "helpAbout": "Help and about",
+    "myArea": "My area",
+    "reportActivity": "Reports and receipts",
+    "sections": "Profile sections",
+    "unavailable": "Membership information unavailable",
+    "verificationDetails": "Verification details",
+    "verificationSub": "Identity and membership status"
   },
   "onboarding": {
     "joinTitle": "Join the movement",
@@ -362,7 +391,8 @@
     "ta": "தமிழ்",
     "en": "English",
     "si": "සිංහල",
-    "title": "Choose language"
+    "title": "Choose language",
+    "betaNote": "Sinhala is in beta: text that is not translated yet appears in English."
   },
   "editProfile": {
     "dob": "Date of birth",
@@ -500,7 +530,20 @@
     "pickPriority": "Please choose how urgent the issue is",
     "required": "Required",
     "locationSub": "Which district is the issue in?",
-    "districtHint": "Your own district is filled in. Change it if the issue is somewhere else."
+    "districtHint": "Your own district is filled in. Change it if the issue is somewhere else.",
+    "calloutTitle": "Your reports help improve our community.",
+    "calloutSub": "Local coordinators review every report.",
+    "detailsSub": "Clear details help the coordinator act on it.",
+    "location": "Location",
+    "prioritySub": "How urgent is this issue?",
+    "subtitle": "Report local issues for a stronger community",
+    "whatToReportSub": "Choose the category that fits best",
+    "fixErrors": "Complete the highlighted fields to submit.",
+    "titlePlaceholder": "For example: damaged road near the temple",
+    "descPlaceholder": "What is wrong, where exactly, and who is affected?",
+    "receiptRef": "Reference: {{ref}}",
+    "receiptStatus": "Status: submitted. A local coordinator will review it. You can follow it in My reports.",
+    "viewMine": "View my reports"
   },
   "welcome": {
     "badge": "Northern & Eastern Province, Sri Lanka",
@@ -540,6 +583,51 @@
     "stepDocs": "Document review",
     "stepDocsHint": "A reviewer checks your ID photos and selfie.",
     "stepApproval": "Approval",
-    "stepApprovalHint": "An authorised person confirms your identity. Your card becomes official once your membership is approved too."
+    "stepApprovalHint": "An authorised person confirms your identity. Your card becomes official once your membership is approved too.",
+    "confirmed": "Identity verified",
+    "done": "Done",
+    "intro": "Here is what has been checked so far and what is still pending.",
+    "introConfirmed": "Your identity has been confirmed.",
+    "pending": "Pending",
+    "reviewPending": "Review pending",
+    "title": "Verification details",
+    "todo": "Not yet",
+    "unverified": "Not verified"
+  },
+  "update": {
+    "title": "New version available",
+    "body": "My People has been updated.",
+    "action": "Update now"
+  },
+  "skills": {
+    "sectionSkills": "Skills",
+    "sectionAvailability": "Availability"
+  },
+  "courses": {
+    "inProgress": "In progress",
+    "available": "Available courses"
+  },
+  "ideas": {
+    "placeholder": "Share an idea",
+    "communityIdeas": "Community ideas",
+    "statusAdopted": "Adopted",
+    "statusReviewing": "Under review",
+    "statusSubmitted": "Submitted"
+  },
+  "milestones": {
+    "badges": "Badges"
+  },
+  "notifications": {
+    "today": "Today",
+    "earlier": "Earlier"
+  },
+  "privacy": {
+    "deleteMembership": "Delete membership"
+  },
+  "referral": {
+    "yourCode": "Your code",
+    "referred": "People you referred",
+    "verified": "Verified",
+    "pending": "Pending"
   }
 }

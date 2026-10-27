@@ -96,16 +96,19 @@
           background: #14263D;
         }
         .question-blood-card {
-          height: 58px;
+          min-width: 0;
+          height: 64px;
           border-radius: 16px;
           border: 1.5px solid #E2E8F0;
           background: #FFFFFF;
           color: #14263D;
           cursor: pointer;
           display: flex;
+          flex-direction: column;
           align-items: center;
-          justify-content: space-between;
-          padding: 0 14px;
+          justify-content: center;
+          gap: 4px;
+          padding: 0 4px;
           transition: all 140ms ease;
           box-shadow: 0 2px 6px rgba(20, 38, 61, 0.03);
         }
@@ -141,4 +144,28 @@
           opacity: 0.65;
           cursor: not-allowed;
           box-shadow: none;
+        }
+        /* One full-width button: outlined while the question has no answer, filled once it has. */
+        .question-next {
+          width: 100%;
+          min-height: 52px;
+          border-radius: 14px;
+          border: 1.5px solid #14263D;
+          background: #FFFFFF;
+          color: #14263D;
+          font: 700 16px/1.3 var(--font-ui);
+          padding: 12px 16px;
+          cursor: pointer;
+        }
+        .question-next--answered {
+          background: #14263D;
+          color: #FFFFFF;
+        }
+        .question-next:disabled {
+          opacity: 0.7;
+          cursor: default;
+        }
+        .question-next:focus-visible {
+          outline: 2px solid #2563EB;
+          outline-offset: 3px;
         }

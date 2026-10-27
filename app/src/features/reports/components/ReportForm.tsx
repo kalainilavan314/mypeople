@@ -2,13 +2,13 @@ import { DISTRICTS } from '@/core/api/divisions';
 import { useMember, useSubmitCommunityReport } from '@/core/api/queries';
 import type { CommunityReportCategory, CommunityReportPriority } from '@/core/api/types';
 import { c, font, radius } from '@/core/theme/tokens';
+import { FieldError } from '@/features/reports/components/FieldError';
 import { ReportFormDiv } from '@/features/reports/components/ReportFormSections/ReportFormDiv';
 import { ReportFormSection } from '@/features/reports/components/ReportFormSections/ReportFormSection';
 import { ReportFormSection2 } from '@/features/reports/components/ReportFormSections/ReportFormSection2';
-import { CATEGORIES } from '@/features/reports/Reports.model';
-import { PRIORITIES } from '@/features/reports/Reports.model';
+import { CATEGORIES, PRIORITIES, type ReportField } from '@/features/reports/Reports.model';
 import { Icon } from '@/shared/components/Icon';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
   const { t } = useTranslation();
@@ -20,8 +20,21 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [priority, setPriority] = useState<CommunityReportPriority | null>(null);
+  // Each missing field is marked where it is, and a summary sits by the button.
+  const [invalid, setInvalid] = useState<Partial<Record<ReportField, string>>>({});
   const [error, setError] = useState<string | null>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [receipt, setReceipt] = useState<{ id: string; createdAt: string } | null>(null);
+  const formRef = useRef<HTMLDivElement>(null);
+  // Which field to bring into view once the errors are on screen; scrolling before they
+  // render is undone by the layout change.
+  const [showField, setShowField] = useState<{ field: ReportField } | null>(null);
+  useEffect(() => {
+    if (!showField) return;
+    const target = formRef.current?.querySelector<HTMLElement>(`[data-field="${showField.field}"]`);
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    target?.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'center' });
+    target?.querySelector<HTMLElement>('input, textarea, button')?.focus({ preventScroll: true });
+  }, [showField]);
 
   const defaultDistrict = useMemo(() => {
     const name = memberQ.data?.electorateNameEn;
@@ -30,21 +43,36 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
   const [district, setDistrict] = useState<string | null>(null);
   const districtVal = district ?? defaultDistrict;
 
+  const clear = (field: ReportField) =>
+    setInvalid((current) => {
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+
   const onSubmit = async () => {
     setError(null);
-    if (!category) return setError(t('creport.pickCategory', 'Please select a category'));
-    if (!title.trim()) return setError(t('creport.needTitle', 'Please enter an issue title'));
-    if (!desc.trim()) return setError(t('creport.needDesc', 'Please provide a description'));
-    if (!priority) return setError(t('creport.pickPriority', 'Please choose how urgent the issue is'));
+    const missing: Partial<Record<ReportField, string>> = {};
+    if (!category) missing.category = t('creport.pickCategory');
+    if (!title.trim()) missing.title = t('creport.needTitle');
+    if (!desc.trim()) missing.desc = t('creport.needDesc');
+    if (!priority) missing.priority = t('creport.pickPriority');
+    setInvalid(missing);
+    const first = (['category', 'title', 'desc', 'priority'] as const).find((field) => missing[field]);
+    if (first || !category || !priority) {
+      setError(t('creport.fixErrors'));
+      if (first) setShowField({ field: first });
+      return;
+    }
     try {
-      await submit.mutateAsync({
+      const report = await submit.mutateAsync({
         category,
         title: title.trim(),
         description: desc.trim(),
         districtCode: districtVal,
         priority,
       });
-      setShowSuccess(true);
+      setReceipt({ id: report.id, createdAt: report.createdAt });
       setCategory(null);
       setTitle('');
       setDesc('');
@@ -59,7 +87,7 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
   };
 
   return (
-    <div>
+    <div ref={formRef}>
       <div className="cr-callout-banner">
         <div className="cr-callout-icon">
           <Icon name="megaphone" size={18} strokeWidth={2} />
@@ -72,10 +100,9 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
             {t('creport.calloutSub', 'All submissions are reviewed by local authorities.')}
           </span>
         </div>
-        <Icon name="chevron" size={16} color="var(--accent)" strokeWidth={2.4} />
       </div>
 
-      <section>
+      <section data-field="category" className={invalid.category ? 'cr-section--invalid' : undefined}>
         <div className="cr-step-head">
           <span className="cr-step-num">1</span>
           <div>
@@ -97,23 +124,41 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
                 key={cat.key}
                 type="button"
                 aria-pressed={on}
-                onClick={() => setCategory(cat.key)}
+                onClick={() => {
+                  setCategory(cat.key);
+                  clear('category');
+                }}
                 className={`cr-cat-card ${on ? 'selected' : ''}`}
                 style={{ background: cat.bg }}
               >
                 <Icon name={cat.icon} size={24} color={cat.color} strokeWidth={2.2} />
-                <span className="cr-cat-label">{cat.label}</span>
+                <span className="cr-cat-label">{t(`creport.cat.${cat.key}`)}</span>
               </button>
             );
           })}
         </div>
+        {invalid.category && <FieldError text={invalid.category} />}
       </section>
 
-      <ReportFormSection2 t={t} title={title} setTitle={setTitle} desc={desc} setDesc={setDesc} />
+      <ReportFormSection2
+        t={t}
+        title={title}
+        setTitle={(value) => {
+          setTitle(value);
+          clear('title');
+        }}
+        desc={desc}
+        setDesc={(value) => {
+          setDesc(value);
+          clear('desc');
+        }}
+        titleError={invalid.title}
+        descError={invalid.desc}
+      />
 
       <ReportFormSection t={t} districtVal={districtVal} setDistrict={setDistrict} />
 
-      <section>
+      <section data-field="priority" className={invalid.priority ? 'cr-section--invalid' : undefined}>
         <div className="cr-step-head">
           <span className="cr-step-num">4</span>
           <div>
@@ -133,16 +178,20 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
                 key={p.key}
                 type="button"
                 aria-pressed={on}
-                onClick={() => setPriority(p.key)}
+                onClick={() => {
+                  setPriority(p.key);
+                  clear('priority');
+                }}
                 className={`cr-priority-btn ${on ? 'selected' : ''}`}
                 style={{ background: p.bg, color: p.color }}
               >
                 <span className="cr-priority-dot" />
-                <span>{p.label}</span>
+                <span>{t(`creport.prio.${p.key}`)}</span>
               </button>
             );
           })}
         </div>
+        {invalid.priority && <FieldError text={invalid.priority} />}
       </section>
 
       {error && (
@@ -154,7 +203,7 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
             background: c.errorBg,
             color: c.error,
             borderRadius: radius.md,
-            font: `500 13px/1.4 ${font.ta}`,
+            font: `500 14px/1.5 ${font.ui}`,
           }}
         >
           {error}
@@ -175,8 +224,15 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
         </span>
       </button>
 
-      {showSuccess && (
-        <ReportFormDiv setShowSuccess={setShowSuccess} onSubmitted={onSubmitted} t={t} />
+      {receipt && (
+        <ReportFormDiv
+          receipt={receipt}
+          onClose={() => {
+            setReceipt(null);
+            onSubmitted();
+          }}
+          t={t}
+        />
       )}
     </div>
   );

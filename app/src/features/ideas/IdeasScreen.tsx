@@ -38,7 +38,7 @@ export function Ideas() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={3}
-            placeholder="உங்கள் யோசனையைப் பகிருங்கள் · Share an idea"
+            placeholder={t('ideas.placeholder')}
             style={{
               width: '100%',
               boxSizing: 'border-box',
@@ -87,7 +87,7 @@ export function Ideas() {
         </div>
 
         <div style={{ font: `600 14px/1 ${font.ta}`, color: c.ink, margin: '24px 0 12px' }}>
-          சமூக யோசனைகள் · Community ideas
+          {t('ideas.communityIdeas')}
         </div>
         <QueryBoundary query={ideasQ}>
           {(ideas) => (
@@ -116,10 +116,10 @@ export function Ideas() {
                     <StatusPill
                       label={
                         idea.status === 'adopted'
-                          ? 'ஏற்கப்பட்டது'
+                          ? t('ideas.statusAdopted')
                           : idea.status === 'reviewing'
-                            ? 'பரிசீலனை'
-                            : 'சமர்ப்பிக்கப்பட்டது'
+                            ? t('ideas.statusReviewing')
+                            : t('ideas.statusSubmitted')
                       }
                       tone={
                         idea.status === 'adopted'

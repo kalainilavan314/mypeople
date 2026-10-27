@@ -2281,6 +2281,26 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
 }
 
 /* Submit Button */
+/* A field the member still has to fill: marked in place, never only by colour (WCAG 1.4.1). */
+.cr-field-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 8px 0 0;
+  color: var(--error);
+  font: 600 14px/1.45 var(--font-ui);
+}
+.cr-field-error svg {
+  flex: none;
+  margin-top: 2px;
+}
+.cr-input-card--invalid {
+  border: 1.5px solid var(--error);
+  background: var(--error-bg);
+}
+.cr-section--invalid .cr-step-title {
+  color: var(--error);
+}
 .cr-submit-btn {
   width: 100%;
   height: 48px;

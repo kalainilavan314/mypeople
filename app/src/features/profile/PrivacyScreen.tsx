@@ -83,7 +83,7 @@ export function Privacy() {
             cursor: 'pointer',
           }}
         >
-          உறுப்புரிமையை நீக்கு · Delete membership
+          {t('privacy.deleteMembership')}
         </button>
         <div
           style={{

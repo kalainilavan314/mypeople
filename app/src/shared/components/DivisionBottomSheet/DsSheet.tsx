@@ -92,7 +92,7 @@ export function DsSheet({
               autoFocus
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="தேடல் / Search DS Division"
+              placeholder={t('profileSetup.searchDs')}
               style={{
                 flex: 1,
                 border: 'none',
@@ -150,7 +150,7 @@ export function DsSheet({
                 color: '#64748B',
               }}
             >
-              முடிவுகள் எதுவும் இல்லை
+              {t('profileSetup.noResults')}
             </div>
           )}
         </div>

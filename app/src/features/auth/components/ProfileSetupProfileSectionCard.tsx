@@ -81,7 +81,7 @@ export function ProfileSetupProfileSectionCard({
               marginTop: 3,
             }}
           >
-            {currentDs ? currentDs.name_en : 'முதலில் மாவட்டத்தைத் தேர்ந்தெடுக்கவும்'}
+            {currentDs ? currentDs.name_en : t('profileSetup.pickDistrictFirst')}
           </div>
         </div>
         <Icon name="chevron" size={16} color="#94A3B8" />
@@ -124,8 +124,8 @@ export function ProfileSetupProfileSectionCard({
           >
             {gsLabel ||
               (dsCode
-                ? 'கிராம சேவை பிரிவைத் தேர்வுசெய்யுங்கள்'
-                : 'முதலில் பிரதேச செயலாளர் பிரிவைத் தேர்வுசெய்யுங்கள்')}
+                ? t('profileSetup.pickGs')
+                : t('profileSetup.pickDsFirst'))}
           </div>
         </div>
         <Icon name="chevron" size={16} color="#94A3B8" />

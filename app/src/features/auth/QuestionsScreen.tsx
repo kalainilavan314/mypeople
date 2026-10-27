@@ -4,7 +4,7 @@ import { QuestionsQuestionCardContainer } from '@/features/auth/components/Quest
 import { QUESTIONS } from '@/features/auth/Questions.model';
 import { signupDraft } from '@/features/auth/state/signupDraft';
 import { useAuth } from '@/shared/hooks/useAuth';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 export function Questions() {
@@ -15,14 +15,6 @@ export function Questions() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(
-    () => () => {
-      if (advanceTimer.current) clearTimeout(advanceTimer.current);
-    },
-    [],
-  );
 
   const total = QUESTIONS.length;
   const q = QUESTIONS[step];
@@ -67,15 +59,10 @@ export function Questions() {
     }
   };
 
+  // Choosing only records the answer: the member moves on with Next or Finish, so
+  // nothing is submitted, and no screen changes, before they have seen their choice.
   const choose = (val: string) => {
-    const next = { ...answers, [q.id]: val };
-    setAnswers(next);
-
-    if (advanceTimer.current) clearTimeout(advanceTimer.current);
-    advanceTimer.current = setTimeout(() => {
-      if (step === total - 1) void finish(next);
-      else setStep((s) => s + 1);
-    }, 320);
+    setAnswers({ ...answers, [q.id]: val });
   };
 
   const advance = () => {
@@ -87,7 +74,6 @@ export function Questions() {
   };
 
   const goBack = (to: number) => {
-    if (advanceTimer.current) clearTimeout(advanceTimer.current);
     setStep(Math.max(0, to));
   };
 

@@ -1,15 +1,17 @@
+import { FieldError } from '@/features/reports/components/FieldError';
 import { Icon } from '@/shared/components/Icon';
 import type { TFunction } from 'i18next';
-import type { Dispatch, SetStateAction } from 'react';
 
 type Props = {
   t: TFunction<'translation', undefined>;
   title: string;
-  setTitle: Dispatch<SetStateAction<string>>;
+  setTitle: (value: string) => void;
   desc: string;
-  setDesc: Dispatch<SetStateAction<string>>;
+  setDesc: (value: string) => void;
+  titleError?: string;
+  descError?: string;
 };
-export function ReportFormSection2({ t, title, setTitle, desc, setDesc }: Props) {
+export function ReportFormSection2({ t, title, setTitle, desc, setDesc, titleError, descError }: Props) {
   return (
     <section>
       <div className="cr-step-head">
@@ -25,7 +27,7 @@ export function ReportFormSection2({ t, title, setTitle, desc, setDesc }: Props)
         </div>
       </div>
 
-      <div className="cr-input-card">
+      <div data-field="title" className={`cr-input-card${titleError ? ' cr-input-card--invalid' : ''}`}>
         <Icon name="report" size={20} color="#94A3B8" style={{ marginTop: 2 }} />
         <div className="cr-input-wrap">
           <label className="cr-input-label" htmlFor="cr-title">
@@ -37,13 +39,20 @@ export function ReportFormSection2({ t, title, setTitle, desc, setDesc }: Props)
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g. Damaged road near temple"
+            placeholder={t('creport.titlePlaceholder')}
+            aria-invalid={titleError ? true : undefined}
+            aria-describedby={titleError ? 'cr-title-error' : undefined}
             className="cr-text-field"
           />
+          {titleError && <FieldError id="cr-title-error" text={titleError} />}
         </div>
       </div>
 
-      <div className="cr-input-card" style={{ marginBottom: 24 }}>
+      <div
+        data-field="desc"
+        className={`cr-input-card${descError ? ' cr-input-card--invalid' : ''}`}
+        style={{ marginBottom: 24 }}
+      >
         <Icon name="clipboard" size={20} color="#94A3B8" style={{ marginTop: 2 }} />
         <div className="cr-input-wrap">
           <label className="cr-input-label" htmlFor="cr-desc">
@@ -55,11 +64,14 @@ export function ReportFormSection2({ t, title, setTitle, desc, setDesc }: Props)
             value={desc}
             maxLength={500}
             onChange={(e) => setDesc(e.target.value)}
-            placeholder="Add more details about the issue, location, and impact..."
+            placeholder={t('creport.descPlaceholder')}
+            aria-invalid={descError ? true : undefined}
+            aria-describedby={descError ? 'cr-desc-error' : undefined}
             rows={3}
             className="cr-text-field"
             style={{ resize: 'vertical' }}
           />
+          {descError && <FieldError id="cr-desc-error" text={descError} />}
           <div className="cr-char-counter">{desc.length}/500</div>
         </div>
       </div>

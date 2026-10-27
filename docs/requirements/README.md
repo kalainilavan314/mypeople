@@ -74,7 +74,7 @@ v1.1 contains 466 functional requirements, 160 business rules, 174 screens, 70 d
 | FR-ARCH-010 | One design-token package for the new apps | `packages/design-tokens` |
 | FR-AUTH-021 | Revoking sessions ends every session of the member at once | both APIs |
 | AP-06, NFR-ARCH-01 | Modular monolith with one folder per module | `services/api/app/modules` |
-| AP-07 (part) | Tamil and English text shared; parity checked, 82 older gaps recorded | `packages/i18n` |
+| AP-07 (part) | Tamil and English text shared; parity checked, 49 older gaps recorded | `packages/i18n` |
 | §13.8 migrations | Alembic, forward-only, baseline guarded, run in CI | `services/api/alembic` |
 
 ## Where the rest will be built

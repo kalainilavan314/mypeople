@@ -83,3 +83,8 @@ export const statusColor = (s: CommunityReportStatus): string =>
       : s === 'under_review'
         ? c.warning
         : c.ink3;
+
+/** A short reference for a report, the same on the receipt and in My reports: CR- and 8 characters of its id. */
+export const reportReference = (id: string) => `CR-${id.replace(/-/g, '').slice(0, 8).toUpperCase()}`;
+
+export type ReportField = 'category' | 'title' | 'desc' | 'priority';

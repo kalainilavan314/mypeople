@@ -23,6 +23,7 @@ export function QuestionsDiv({ q, selectedVal, i18n, choose, t }: Props) {
                 type="button"
                 onClick={() => choose(val)}
                 className={`question-stacked-card ${active ? 'active' : ''}`}
+                aria-pressed={active}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                   <span className={`question-key-chip ${active ? 'active' : ''}`}>
@@ -46,7 +47,7 @@ export function QuestionsDiv({ q, selectedVal, i18n, choose, t }: Props) {
           })}
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 8 }}>
           {q.options.map((val) => {
             const active = selectedVal === val;
             return (
@@ -55,6 +56,7 @@ export function QuestionsDiv({ q, selectedVal, i18n, choose, t }: Props) {
                 type="button"
                 onClick={() => choose(val)}
                 className={`question-blood-card ${active ? 'active' : ''}`}
+                aria-pressed={active}
               >
                 <span style={{ font: `800 16px/1 var(--font-ui, sans-serif)` }}>{val}</span>
                 <Icon

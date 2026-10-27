@@ -29,6 +29,7 @@ export function ProfileSetupIntroduction() {
   );
 }
 export function ProfileSetupPrivacyNote() {
+  const { t } = useTranslation();
   return (
     <div
       style={{
@@ -42,12 +43,12 @@ export function ProfileSetupPrivacyNote() {
       <Icon name="info" size={16} color="#64748B" style={{ flexShrink: 0 }} />
       <div
         style={{
-          font: `500 12px/1.4 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
-          color: '#64748B',
+          font: `500 13px/1.5 var(--font-ui)`,
+          color: '#475569',
           textAlign: 'center',
         }}
       >
-        இந்த தகவல்கள் உங்கள் சமூக இணைப்புக்காக மட்டுமே பயன்படுத்தப்படும்.
+        {t('profileSetup.dataUse')}
       </div>
     </div>
   );

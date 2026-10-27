@@ -86,10 +86,10 @@ export function Notifications() {
           const earlier = all.filter((n) => !isToday(n.createdAt));
           return (
             <div style={{ paddingBottom: 24 }}>
-              <Section title="இன்று · Today" show={today.length > 0}>
+              <Section title={t('notifications.today')} show={today.length > 0}>
                 {today.map(row)}
               </Section>
-              <Section title="முன்பு · Earlier" show={earlier.length > 0}>
+              <Section title={t('notifications.earlier')} show={earlier.length > 0}>
                 {earlier.map(row)}
               </Section>
             </div>

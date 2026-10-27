@@ -47,8 +47,8 @@ export function EditFormProfileSelectBtn({ district, setDsSheetOpen, t, ds }: Pr
           {ds
             ? ds.name_en
             : district
-              ? 'DS பிரிவைத் தேர்ந்தெடுக்கவும்'
-              : 'முதலில் மாவட்டத்தைத் தேர்ந்தெடுக்கவும்'}
+              ? t('profileSetup.pickDs')
+              : t('profileSetup.pickDistrictFirst')}
         </div>
       </div>
       <Icon name="chevron" size={16} color="#94A3B8" />

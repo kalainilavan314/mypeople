@@ -1,18 +1,21 @@
 import { c, font, radius, shadow } from '@/core/theme/tokens';
+import { fmtDate, reportReference } from '@/features/reports/Reports.model';
 import { Icon } from '@/shared/components/Icon';
 import type { TFunction } from 'i18next';
-import type { Dispatch, SetStateAction } from 'react';
 
 type Props = {
-  setShowSuccess: Dispatch<SetStateAction<boolean>>;
-  onSubmitted: () => void;
+  receipt: { id: string; createdAt: string };
+  onClose: () => void;
   t: TFunction<'translation', undefined>;
 };
-export function ReportFormDiv({ setShowSuccess, onSubmitted, t }: Props) {
+
+/** The submission receipt: what was received, its reference, and where to follow it. */
+export function ReportFormDiv({ receipt, onClose, t }: Props) {
   return (
     <div
       role="dialog"
       aria-modal="true"
+      aria-labelledby="cr-receipt-title"
       style={{
         position: 'fixed',
         inset: 0,
@@ -22,10 +25,7 @@ export function ReportFormDiv({ setShowSuccess, onSubmitted, t }: Props) {
         alignItems: 'flex-end',
         justifyContent: 'center',
       }}
-      onClick={() => {
-        setShowSuccess(false);
-        onSubmitted();
-      }}
+      onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -53,34 +53,36 @@ export function ReportFormDiv({ setShowSuccess, onSubmitted, t }: Props) {
         >
           <Icon name="check" size={32} color={c.success} strokeWidth={2.4} />
         </span>
-        <div style={{ font: `700 20px/1.2 ${font.ta}`, color: c.ink, marginTop: 16 }}>
-          {t('creport.successTitle', 'Report Submitted')}
-        </div>
-        <div style={{ font: `400 14px/1.5 ${font.ta}`, color: c.ink2, marginTop: 8 }}>
-          {t(
-            'creport.successBody',
-            'Thank you for your report. Local coordinators will review it soon.',
-          )}
-        </div>
+        <h2 id="cr-receipt-title" style={{ font: `700 20px/1.3 ${font.ui}`, color: c.ink, margin: '16px 0 0' }}>
+          {t('creport.successTitle')}
+        </h2>
+        <p style={{ font: `600 16px/1.4 ${font.mono}`, color: c.ink, margin: '12px 0 0' }}>
+          {t('creport.receiptRef', { ref: reportReference(receipt.id) })}
+        </p>
+        <p style={{ font: `400 14px/1.5 ${font.ui}`, color: c.ink2, margin: '4px 0 0' }}>
+          {fmtDate(receipt.createdAt)}
+        </p>
+        <p style={{ font: `400 15px/1.6 ${font.ui}`, color: c.ink2, margin: '12px 0 0' }}>
+          {t('creport.receiptStatus')}
+        </p>
         <button
           type="button"
-          onClick={() => {
-            setShowSuccess(false);
-            onSubmitted();
-          }}
+          onClick={onClose}
+          autoFocus
           style={{
             width: '100%',
+            minHeight: 48,
             marginTop: 20,
-            padding: '14px 0',
+            padding: '12px 0',
             border: 'none',
             borderRadius: radius.lg,
             cursor: 'pointer',
             background: c.primary,
             color: c.onPrimary,
-            font: `700 15px/1 ${font.ui}`,
+            font: `700 16px/1.2 ${font.ui}`,
           }}
         >
-          {t('creport.done', 'Done')}
+          {t('creport.viewMine')}
         </button>
       </div>
     </div>

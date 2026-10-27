@@ -1,4 +1,4 @@
-import { radius } from '@/core/theme/tokens';
+import { font, radius } from '@/core/theme/tokens';
 import { BackChip } from '@/features/auth/components/parts';
 import { QuestionsDiv } from '@/features/auth/components/QuestionsDiv';
 import { QuestionsDiv2 } from '@/features/auth/components/QuestionsDiv2';
@@ -43,8 +43,6 @@ export function QuestionsQuestionCardContainer({
 }: Props) {
   return (
     <div className="question-card-container">
-      <img src="/signup-bg.png" alt="" className="question-bottom-art" aria-hidden="true" />
-
       <div className="question-content">
         <div
           style={{
@@ -58,21 +56,24 @@ export function QuestionsQuestionCardContainer({
           <button
             type="button"
             onClick={() => void finish(answers)}
+            disabled={busy}
             style={{
+              minHeight: 44,
               background: 'none',
               border: 'none',
               padding: '6px 8px',
-              cursor: 'pointer',
-              font: `700 14px/1 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
+              cursor: busy ? 'default' : 'pointer',
+              font: `700 15px/1.2 ${font.ui}`,
               color: '#14263D',
-              letterSpacing: 'normal',
+              textDecoration: 'underline',
+              textUnderlineOffset: 3,
             }}
           >
-            {t('questions.skipSurvey', 'கணிப்பைத் தவிர்')}
+            {t('questions.skipSurvey')}
           </button>
         </div>
 
-        <QuestionsDiv2 step={step} total={total} />
+        <QuestionsDiv2 step={step} total={total} t={t} />
 
         <div style={{ marginBottom: 12 }}>
           <span
@@ -84,32 +85,29 @@ export function QuestionsQuestionCardContainer({
               background: '#EFF6FF',
               border: '1px solid #BFDBFE',
               borderRadius: radius.pill,
-              font: `700 12.5px/1 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
+              font: `700 13px/1.2 ${font.ui}`,
               color: '#1D4ED8',
-              letterSpacing: 'normal',
             }}
           >
             <Icon name="users" size={14} color="#1D4ED8" strokeWidth={2.4} />
-            <span>{t('survey.joiningSurvey', 'இணைவுக் கணிப்பு')}</span>
+            <span>{t('survey.joiningSurvey')}</span>
           </span>
         </div>
 
         <h1
           style={{
-            font: `900 27px/1.25 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
+            font: `800 24px/1.3 ${font.ui}`,
             color: '#14263D',
             margin: '0 0 10px',
-            letterSpacing: 'normal',
           }}
         >
           {t(`survey.q.${q.id}`)}
         </h1>
         <p
           style={{
-            font: `500 13.5px/1.55 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
+            font: `400 15px/1.6 ${font.ui}`,
             color: '#475569',
             margin: 0,
-            letterSpacing: 'normal',
           }}
         >
           {t('survey.privacyNote')}
@@ -126,7 +124,7 @@ export function QuestionsQuestionCardContainer({
               borderRadius: 10,
               background: '#FEF2F2',
               color: '#DC2626',
-              font: `500 12.5px/1.4 var(--font-ta, sans-serif)`,
+              font: `500 14px/1.5 ${font.ui}`,
             }}
           >
             {error}
@@ -135,27 +133,23 @@ export function QuestionsQuestionCardContainer({
 
         <div style={{ flex: 1, minHeight: 32 }} />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <BackChip onClick={() => goBack(step - 1)} />
-        </div>
-
+        {/* One button moves on, and its words say what happens to the answer on screen. */}
         <button
           type="button"
           onClick={advance}
           disabled={busy}
-          style={{
-            margin: '14px auto 0',
-            background: 'none',
-            border: 'none',
-            cursor: busy ? 'default' : 'pointer',
-            font: `500 13px/1 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
-            color: '#64748B',
-            letterSpacing: 'normal',
-          }}
+          aria-busy={busy}
+          className={selectedVal ? 'question-next question-next--answered' : 'question-next'}
         >
-          {isLast
-            ? t('questions.finishWithout', 'பதிலளிக்காமல் முடிக்கவும்')
-            : t('questions.skipQuestion', 'இந்தக் கேள்வியைத் தவிர்')}
+          {busy
+            ? t('questions.creating')
+            : isLast
+              ? selectedVal
+                ? t('questions.finish')
+                : t('questions.finishWithout')
+              : selectedVal
+                ? t('questions.next')
+                : t('questions.skipQuestion')}
         </button>
       </div>
     </div>

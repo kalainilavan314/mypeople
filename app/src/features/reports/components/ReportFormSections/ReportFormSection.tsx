@@ -2,6 +2,7 @@ import { DISTRICTS } from '@/core/api/divisions';
 import { font } from '@/core/theme/tokens';
 import { CustomSelect } from '@/shared/components/ui';
 import type { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import type { Dispatch, SetStateAction } from 'react';
 
 type Props = {
@@ -10,6 +11,8 @@ type Props = {
   setDistrict: Dispatch<SetStateAction<string | null>>;
 };
 export function ReportFormSection({ t, districtVal, setDistrict }: Props) {
+  const { i18n } = useTranslation();
+  const tamil = i18n.language.startsWith('ta');
   return (
     <section>
       <div className="cr-step-head">
@@ -44,7 +47,7 @@ export function ReportFormSection({ t, districtVal, setDistrict }: Props) {
           onChange={(val) => setDistrict(val)}
           placeholder={t('creport.district', 'District')}
           ariaLabel={t('creport.district', 'District')}
-          options={DISTRICTS.map((d) => ({ value: d.code, label: d.name_en }))}
+          options={DISTRICTS.map((d) => ({ value: d.code, label: tamil && d.name_ta ? d.name_ta : d.name_en }))}
         />
       </div>
     </section>

@@ -22,7 +22,7 @@ export function Courses() {
             <div style={{ padding: '16px 16px 28px' }}>
               {inProgress.length > 0 && (
                 <div style={{ font: `600 14px/1 ${font.ta}`, color: c.ink, marginBottom: 12 }}>
-                  தொடர்கிறது · In progress
+                  {t('courses.inProgress')}
                 </div>
               )}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -73,7 +73,7 @@ export function Courses() {
               </div>
 
               <div style={{ font: `600 14px/1 ${font.ta}`, color: c.ink, margin: '24px 0 12px' }}>
-                கிடைக்கும் பயிற்சிகள் · Available
+                {t('courses.available')}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {available.map((course) => (

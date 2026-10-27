@@ -71,7 +71,7 @@ export function Milestones() {
         </QueryBoundary>
 
         <div style={{ font: `600 14px/1 ${font.ta}`, color: c.ink, margin: '26px 0 14px' }}>
-          பதக்கங்கள் · Badges
+          {t('milestones.badges')}
         </div>
         <QueryBoundary query={badgesQ}>
           {(badges) => (

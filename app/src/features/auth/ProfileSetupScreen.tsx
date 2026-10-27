@@ -1,3 +1,4 @@
+import { parseNic } from '@/core/lib/nic';
 import { DISTRICTS, gsByCode } from '@/core/api/divisions';
 import embeddedStyles0 from '@/core/theme/embedded/ProfileSetupScreen.css?inline';
 import { Steps } from '@/features/auth/components/parts';
@@ -19,7 +20,10 @@ export function ProfileSetup() {
   const d = signupDraft.get();
   const [name, setName] = useState(d.name);
 
-  const [gender, setGender] = useState<'male' | 'female' | 'other' | null>(d.gender);
+  // The NIC number records male or female; it is the starting choice, and a different
+  // choice is kept and noted for the identity review, never refused.
+  const nicGender = parseNic(d.nic).gender ?? null;
+  const [gender, setGender] = useState<'male' | 'female' | 'other' | null>(d.gender ?? nicGender);
   const [districtCode, setDistrictCode] = useState<string | null>(d.districtCode);
   const [dsCode, setDsCode] = useState<string | null>(d.dsCode);
   const [gsCode, setGsCode] = useState<string | null>(d.gsCode);
@@ -86,14 +90,14 @@ export function ProfileSetup() {
             gap: 4,
           }}
         >
-          <Steps step={1} total={4} />
+          <Steps step={2} total={4} />
           <div
             style={{
               font: `600 11.5px/1 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
               color: '#64748B',
             }}
           >
-            {t('profileSetup.stepLabel', { step: 2, total: 4 })}
+            {t('profileSetup.stepLabel', { step: 3, total: 4 })}
           </div>
         </div>
 
@@ -124,7 +128,7 @@ export function ProfileSetup() {
             </div>
           </div>
 
-          <ProfileSetupProfileSectionCard2 t={t} gender={gender} setGender={setGender} />
+          <ProfileSetupProfileSectionCard2 t={t} gender={gender} setGender={setGender} nicGender={nicGender} />
 
           <ProfileSetupProfileSectionCard
             t={t}

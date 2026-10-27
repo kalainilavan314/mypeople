@@ -11,9 +11,6 @@ export interface SignupDraft {
   referralId: string;
   answers: Record<string, string>;
   inviteCode: string;
-
-  nicFrontPhoto: string | null;
-  nicBackPhoto: string | null;
 }
 
 const empty = (): SignupDraft => ({
@@ -29,8 +26,6 @@ const empty = (): SignupDraft => ({
   referralId: '',
   answers: {},
   inviteCode: '',
-  nicFrontPhoto: null,
-  nicBackPhoto: null,
 });
 
 let draft: SignupDraft = empty();

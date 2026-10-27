@@ -9,7 +9,7 @@ type Tab = {
   label: string;
   icon: LucideIcon;
   match: string[];
-  elevated?: boolean; // the raised centre button
+  featured?: boolean; // the Card tab: a pale-blue resting tile, level with the others
 };
 
 export function BottomNav() {
@@ -66,7 +66,7 @@ export function BottomNav() {
       label: t('Card', 'அட்டை'),
       icon: IdCard,
       match: ['/card', '/milestones'],
-      elevated: true,
+      featured: true,
     },
     {
       to: '/gallery',
@@ -101,7 +101,7 @@ export function BottomNav() {
           <button
             key={tab.to}
             type="button"
-            className={tab.elevated ? 'medtech-nav-card' : undefined}
+            className={tab.featured ? 'civic-dock-card' : undefined}
             onClick={() => {
               navigate(tab.to);
               document.querySelector<HTMLElement>('.screen')?.scrollTo({ top: 0 });
@@ -109,7 +109,7 @@ export function BottomNav() {
             aria-current={active ? 'page' : undefined}
           >
             <span className="work-nav-icon">
-              <IconComp size={23} strokeWidth={2} aria-hidden="true" />
+              <IconComp size={30} strokeWidth={2.75} aria-hidden="true" />
             </span>
             <span className={t('en', 'ta') === 'ta' ? 'ta' : undefined}>{tab.label}</span>
           </button>

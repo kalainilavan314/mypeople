@@ -20,7 +20,7 @@ export function Skills() {
       <ScreenHeader titleTa={t('profile.skills')} titleEn="Skills registry" />
       <div style={{ padding: '16px 16px 28px' }}>
         <div style={{ font: `600 13px/1 ${font.ta}`, color: c.ink2, marginBottom: 12 }}>
-          திறன்கள் · Skills
+          {t('skills.sectionSkills')}
         </div>
         <QueryBoundary query={skillsQ}>
           {(skills) => (
@@ -38,7 +38,7 @@ export function Skills() {
         </QueryBoundary>
 
         <div style={{ font: `600 13px/1 ${font.ta}`, color: c.ink2, margin: '26px 0 12px' }}>
-          கிடைக்கும் தன்மை · Availability
+          {t('skills.sectionAvailability')}
         </div>
         <div
           style={{

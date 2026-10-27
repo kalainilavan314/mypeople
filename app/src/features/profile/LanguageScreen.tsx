@@ -67,7 +67,7 @@ export function Language() {
           })}
         </div>
         <div style={{ font: `400 12px/1.6 ${font.ui}`, color: c.ink3, marginTop: 14 }}>
-          தமிழ் முதன்மை மொழி. Sinhala is in beta — untranslated text falls back to Tamil.
+          {t('language.betaNote')}
         </div>
       </div>
     </div>

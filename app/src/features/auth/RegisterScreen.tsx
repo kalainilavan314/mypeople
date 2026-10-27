@@ -17,11 +17,6 @@ export function SignUp() {
   const [nic, setNic] = useState('');
   const [password, setPassword] = useState('');
   const [touched, setTouched] = useState(false);
-  const [nicFrontPhoto, setNicFrontPhoto] = useState<string | null>(
-    signupDraft.get().nicFrontPhoto,
-  );
-  const [nicBackPhoto, setNicBackPhoto] = useState<string | null>(signupDraft.get().nicBackPhoto);
-  const [photosTouched, setPhotosTouched] = useState(false);
 
   const nicInfo = useMemo(() => parseNic(nic), [nic]);
 
@@ -68,7 +63,7 @@ export function SignUp() {
         <div className="signup-content">
           <div className="signup-topbar">
             <BackChip onClick={back} />
-            <Steps step={step} total={3} />
+            <Steps step={step} total={4} />
             <LangToggle />
           </div>
 
@@ -89,17 +84,7 @@ export function SignUp() {
           )}
 
           {step === 1 && (
-            <RegisterFields2
-              t={t}
-              nicInfo={nicInfo}
-              nicFrontPhoto={nicFrontPhoto}
-              setNicFrontPhoto={setNicFrontPhoto}
-              nicBackPhoto={nicBackPhoto}
-              setNicBackPhoto={setNicBackPhoto}
-              photosTouched={photosTouched}
-              setPhotosTouched={setPhotosTouched}
-              navigate={navigate}
-            />
+            <RegisterFields2 t={t} nicInfo={nicInfo} navigate={navigate} />
           )}
         </div>
       </div>

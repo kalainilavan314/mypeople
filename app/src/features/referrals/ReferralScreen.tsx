@@ -45,7 +45,7 @@ export function Referral() {
                   textTransform: 'uppercase',
                 }}
               >
-                உங்கள் அழைப்புக் குறியீடு · Your code
+                {t('referral.yourCode')}
               </div>
               <div
                 style={{
@@ -109,7 +109,7 @@ export function Referral() {
             </div>
 
             <div style={{ font: `600 14px/1 ${font.ta}`, color: c.ink, margin: '24px 0 12px' }}>
-              அழைத்தவர்கள் · Referred
+              {t('referral.referred')}
             </div>
             <div
               style={{
@@ -150,7 +150,7 @@ export function Referral() {
                     {p.name}
                   </span>
                   <StatusPill
-                    label={p.status === 'verified' ? 'சரிபார்க்கப்பட்டது' : 'நிலுவையில்'}
+                    label={p.status === 'verified' ? t('referral.verified') : t('referral.pending')}
                     tone={p.status === 'verified' ? 'success' : 'warning'}
                   />
                 </div>
