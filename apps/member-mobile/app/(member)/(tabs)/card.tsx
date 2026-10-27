@@ -6,21 +6,25 @@ import { useTranslation } from 'react-i18next';
 
 import { colors, radius, spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { Button } from '@/components/Button';
-import { Notice } from '@/components/Notice';
-import { QrCode } from '@/components/QrCode';
+import {
+  AppText,
+  Button,
+  formatDate,
+  formatDateTime,
+  Notice,
+  QrCode,
+  Screen,
+  StatusTag,
+  SurfaceCard,
+  useApiQuery,
+  useLanguage,
+  useReloadOnFocus,
+  useRotatingCode,
+} from '@my-people/mobile-ui';
+
 import { QueryView } from '@/components/QueryView';
-import { Screen } from '@/components/Screen';
-import { StatusTag } from '@/components/StatusTag';
-import { SurfaceCard } from '@/components/SurfaceCard';
-import { useApiQuery } from '@/hooks/useApi';
-import { useReloadOnFocus } from '@/hooks/useReloadOnFocus';
-import { useLanguage } from '@/hooks/useLanguage';
-import { useRotatingCode } from '@/hooks/useRotatingCode';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
-import { formatDate, formatDateTime } from '@/lib/format';
 
 /**
  * C01 to C06: the membership card, only while identity is Verified and
@@ -65,7 +69,7 @@ function AvailableCard({ card }: { card: MemberCard }) {
             என் மக்கள் · My People
           </AppText>
           <AppText step="caption" tone="inverse" style={styles.fieldLabel}>
-            {card.designation ?? t('m.card.member')}
+            {card.designation ? t('m.card.tier', { tier: card.designation }) : t('m.card.member')}
           </AppText>
         </View>
         <AppText step="page" tone="inverse">

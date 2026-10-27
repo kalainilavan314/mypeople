@@ -47,6 +47,8 @@ Current scope:
 | `GET /v1/auth/sessions`, `POST /v1/auth/sessions/{id}/revoke`, `POST /v1/auth/sessions/revoke-others` | the member's signed-in devices; end one or all others |
 | `GET /v1/auth/mfa`, `POST /v1/auth/mfa/totp`, `.../totp/confirm`, `POST /v1/auth/mfa/verify` | the staff second factor: enrol an authenticator app, give its code in each session |
 | `GET /v1/access/me` | the caller's staff assignments that count now |
+| `GET /v1/access/assignments` | assignments in the caller's areas (W09); needs `roles.assign` |
+| `GET /v1/membership/lookup?code` | one member by exact member ID in the caller's areas (S03); needs `members.view_profile` |
 | `GET /v1/access/catalogue`, `POST /v1/access/assignments/preview`, `POST /v1/access/assignments`, `POST /v1/access/assignments/{id}/revoke` | staff assignments (W09); need `roles.assign` |
 | `GET /v1/audit`, `GET /v1/audit/verify` | the audit log and its hash-chain check; need `audit.view` |
 | `GET /v1/identity/me/documents`, `PUT /v1/identity/me/documents/{kind}` | which identity images the server holds for the member; upload or replace one (the body is the image) |

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "React Native components and the locked fonts shared by the My People member and staff apps",
+  "description": "The locked fonts, screen components, stored session and data hooks shared by the My People member and staff apps",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -15,10 +15,21 @@
     "@expo-google-fonts/jetbrains-mono": "^0.4.1",
     "@expo-google-fonts/noto-sans-tamil": "^0.4.3",
     "@expo/vector-icons": "^15.0.2",
-    "@my-people/design-tokens": "*"
+    "@my-people/api-client": "*",
+    "@my-people/design-tokens": "*",
+    "qrcode": "^1.5.4"
   },
   "peerDependencies": {
+    "expo-crypto": "*",
+    "expo-router": "*",
+    "expo-secure-store": "*",
     "react": "*",
-    "react-native": "*"
+    "react-i18next": "*",
+    "react-native": "*",
+    "react-native-safe-area-context": "*",
+    "react-native-svg": "*"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.5"
   }
 }

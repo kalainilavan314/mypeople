@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { colors, radius, spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
+import { AppText } from '@my-people/mobile-ui';
 
 import { FEATURE_ICONS, FEATURE_ROUTES } from './features';
 

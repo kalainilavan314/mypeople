@@ -4,20 +4,24 @@ import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { Button } from '@/components/Button';
-import { Notice } from '@/components/Notice';
+import {
+  AppText,
+  Button,
+  formatDateTime,
+  Notice,
+  Screen,
+  StatusTag,
+  SurfaceCard,
+  TextField,
+  useApiAction,
+  useApiQuery,
+  useLanguage,
+  useSession,
+} from '@my-people/mobile-ui';
+
 import { QueryView } from '@/components/QueryView';
-import { Screen } from '@/components/Screen';
-import { StatusTag } from '@/components/StatusTag';
-import { SurfaceCard } from '@/components/SurfaceCard';
-import { TextField } from '@/components/TextField';
-import { useApiAction, useApiQuery } from '@/hooks/useApi';
-import { useLanguage } from '@/hooks/useLanguage';
 import { api } from '@/lib/api';
 import { errorMessage, problemsOf } from '@/lib/errors';
-import { formatDateTime } from '@/lib/format';
-import { useSession } from '@/providers/SessionProvider';
 
 /** Signed-in devices with sign-out per device (FR-AUTH-020, 021), and changing the password with the current one. */
 export default function SecurityScreen() {

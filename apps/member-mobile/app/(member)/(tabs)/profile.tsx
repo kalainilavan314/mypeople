@@ -5,17 +5,21 @@ import { useTranslation } from 'react-i18next';
 
 import { colors, radius, spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { Button } from '@/components/Button';
-import { MenuRow } from '@/components/MenuRow';
+import {
+  AppText,
+  Button,
+  MenuRow,
+  Screen,
+  StatusTag,
+  SurfaceCard,
+  type Tone,
+  useApiQuery,
+  useReloadOnFocus,
+  useSession,
+} from '@my-people/mobile-ui';
+
 import { QueryView } from '@/components/QueryView';
-import { Screen } from '@/components/Screen';
-import { StatusTag, type Tone } from '@/components/StatusTag';
-import { SurfaceCard } from '@/components/SurfaceCard';
-import { useApiQuery } from '@/hooks/useApi';
-import { useReloadOnFocus } from '@/hooks/useReloadOnFocus';
 import { api } from '@/lib/api';
-import { useSession } from '@/providers/SessionProvider';
 
 const IDENTITY_TONE: Record<ProfileView['identityState'], Tone> = {
   not_submitted: 'neutral',

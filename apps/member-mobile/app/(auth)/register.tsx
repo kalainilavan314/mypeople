@@ -4,20 +4,23 @@ import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { Button } from '@/components/Button';
-import { Checkbox } from '@/components/Checkbox';
-import { ChipRow } from '@/components/ChipRow';
-import { Notice } from '@/components/Notice';
-import { Screen } from '@/components/Screen';
-import { TextField } from '@/components/TextField';
+import {
+  AppText,
+  Button,
+  Checkbox,
+  ChipRow,
+  Notice,
+  Screen,
+  TextField,
+  useApiAction,
+  useLanguage,
+  useSession,
+} from '@my-people/mobile-ui';
+
 import { AreaFields, NO_AREA, type AreaChoice } from '@/features/area/AreaFields';
 import { accountNumber, IdRouteFields, type IdNumber } from '@/features/auth/IdRouteFields';
-import { useApiAction } from '@/hooks/useApi';
-import { useLanguage } from '@/hooks/useLanguage';
 import { api } from '@/lib/api';
 import { errorMessage, problemsOf } from '@/lib/errors';
-import { useSession } from '@/providers/SessionProvider';
 
 type Gender = 'male' | 'female' | 'other' | 'skip';
 

@@ -4,14 +4,10 @@ import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { ChipRow } from '@/components/ChipRow';
+import { AppText, ChipRow, Screen, TextField, useApiQuery, useReloadOnFocus } from '@my-people/mobile-ui';
+
 import { QueryView } from '@/components/QueryView';
-import { Screen } from '@/components/Screen';
-import { TextField } from '@/components/TextField';
 import { EventRow } from '@/features/events/EventRow';
-import { useApiQuery } from '@/hooks/useApi';
-import { useReloadOnFocus } from '@/hooks/useReloadOnFocus';
 import { api } from '@/lib/api';
 
 type Filter = 'mine' | 'all' | 'week' | 'month';

@@ -25,7 +25,7 @@ from app.modules.membership import repository, rules
 from app.modules.messaging.notifications import service as notifications
 from app.modules.membership.card import repository as card_repository
 from app.modules.membership.repository import AwaitingMember, MembershipChange, MembershipState
-from app.modules.membership.rules import ACTIVATE, Action
+from app.modules.membership.rules import ACTIVATE, VIEW_PROFILE, Action
 
 
 class MemberNotFound(Exception):
@@ -73,6 +73,30 @@ def membership_file(db: Session, staff: Staff, member_id: uuid.UUID, ip: str) ->
         current=repository.current_state(db, member_id),
         history=repository.history(db, member_id),
     )
+
+
+def lookup(db: Session, staff: Staff, member_code: str, ip: str) -> repository.LookedUpMember:
+    """S03 member support lookup (FR-STF-003): one exact member ID, minimal fields, for a member
+    in the caller's areas. A member outside them gets the same "not found" as an unknown ID,
+    so the lookup cannot be used to learn who exists elsewhere (SG-02); the refusal is still
+    logged. Every lookup that finds someone is audited."""
+    found = repository.lookup_member(db, member_code.strip())
+    if found is None:
+        raise MemberNotFound()
+    path = access_repository.member_area_path(db, found.id)
+    if not access.has_permission_over(staff, VIEW_PROFILE, path):
+        access.record_denial(
+            db, actor_id=staff.member_id, permission=VIEW_PROFILE, reason="outside_your_area", ip=ip,
+            target=("member", str(found.id)), area_path=path,
+        )
+        db.commit()
+        raise MemberNotFound()
+    audit.record(
+        db, actor_id=staff.member_id, action="members.looked_up", target_type="member", target_id=str(found.id),
+        area_path=path, ip=ip,
+    )
+    db.commit()
+    return found
 
 
 def awaiting_activation(db: Session, staff: Staff, limit: int) -> list[AwaitingMember]:

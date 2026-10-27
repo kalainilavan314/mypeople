@@ -5,12 +5,15 @@ import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { DateBadge } from '@/components/DateBadge';
-import { StatusTag } from '@/components/StatusTag';
-import { SurfaceCard } from '@/components/SurfaceCard';
-import { useLanguage, useLocalized } from '@/hooks/useLanguage';
-import { formatSpan } from '@/lib/format';
+import {
+  AppText,
+  DateBadge,
+  formatSpan,
+  StatusTag,
+  SurfaceCard,
+  useLanguage,
+  useLocalized,
+} from '@my-people/mobile-ui';
 
 /** An event in a list: the whole card opens it (spec §6), with the member's own answer from the API. */
 export function EventRow({ event }: { event: EventSummary }) {

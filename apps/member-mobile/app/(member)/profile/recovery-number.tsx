@@ -1,14 +1,18 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AppText } from '@/components/AppText';
-import { Button } from '@/components/Button';
-import { Notice } from '@/components/Notice';
+import {
+  AppText,
+  Button,
+  Notice,
+  Screen,
+  SurfaceCard,
+  TextField,
+  useApiAction,
+  useApiQuery,
+} from '@my-people/mobile-ui';
+
 import { QueryView } from '@/components/QueryView';
-import { Screen } from '@/components/Screen';
-import { SurfaceCard } from '@/components/SurfaceCard';
-import { TextField } from '@/components/TextField';
-import { useApiAction, useApiQuery } from '@/hooks/useApi';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 

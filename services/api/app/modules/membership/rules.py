@@ -14,6 +14,7 @@ recommendation, is not built until OD-02 is decided.
 from typing import Literal
 
 ACTIVATE = "members.activate"  # PRM-05
+VIEW_PROFILE = "members.view_profile"  # PRM-02: non-sensitive fields
 
 State = Literal["pending", "active", "suspended", "inactive"]
 Action = Literal["activate", "suspend", "reinstate", "inactivate"]

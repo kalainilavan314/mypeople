@@ -186,3 +186,43 @@ def test_the_history_cannot_be_changed(db_client, db_session, auth, activator, m
 
     with pytest.raises(DBAPIError), db_session.begin_nested():
         db_session.execute(text("DELETE FROM membership.membership_change WHERE member_id = :id"), {"id": member.id})
+
+
+# --- S03 member support lookup (FR-STF-003, PRM-02) ---------------------------------------------------
+
+
+def member_code(db_session, person: Row) -> str:
+    return db_session.scalar(text("SELECT member_code FROM npm.member WHERE id = :id"), {"id": person.id})
+
+
+def test_support_staff_find_a_member_in_their_area_by_exact_id(db_client, db_session, auth, make_reviewer, member, area):
+    support = make_reviewer(area.district, permissions=("members.view_profile",))
+    code = member_code(db_session, member)
+
+    found = db_client.get("/v1/membership/lookup", params={"code": code}, headers=auth(support))
+    partial = db_client.get("/v1/membership/lookup", params={"code": code[:-2]}, headers=auth(support))
+
+    assert found.status_code == 200
+    assert found.json()["memberId"] == str(member.id) and found.json()["memberCode"] == code
+    assert set(found.json()) == {
+        "memberId", "memberCode", "fullName", "districtName", "gnName", "identityVerified", "membershipState",
+    }  # minimal fields: no phone, date of birth or ID number
+    assert (partial.status_code, partial.json()) == (404, {"detail": "not_found"})  # exact match only
+    entry = db_session.execute(
+        text("SELECT action, target_id FROM ops.audit_log WHERE action = 'members.looked_up' ORDER BY id DESC LIMIT 1")
+    ).one()
+    assert entry.target_id == str(member.id)
+
+
+def test_a_member_outside_the_area_looks_unknown(db_client, db_session, auth, make_reviewer, member, area):
+    other = db_session.scalar(
+        text("SELECT district_code FROM geo.district WHERE district_code <> :code LIMIT 1"), {"code": area.district}
+    )
+    elsewhere = make_reviewer(other, permissions=("members.view_profile",))
+
+    outside = db_client.get("/v1/membership/lookup", params={"code": member_code(db_session, member)}, headers=auth(elsewhere))
+    unknown = db_client.get("/v1/membership/lookup", params={"code": "WTL-00-0000000"}, headers=auth(elsewhere))
+    not_staff = db_client.get("/v1/membership/lookup", params={"code": member_code(db_session, member)}, headers=auth(member))
+
+    assert outside.json() == unknown.json() == {"detail": "not_found"}  # SG-02: no hint that the member exists
+    assert not_staff.status_code == 403

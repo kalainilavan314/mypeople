@@ -315,5 +315,17 @@ def has_platform_permission(staff: Staff, permission: str) -> bool:
     return any(permission in a.permissions and a.area.level == "platform" for a in staff.assignments)
 
 
+def visible_assignments(db: Session, staff: Staff, state: str, limit: int) -> list[repository.ListedAssignment]:
+    """W09: assignments whose area lies inside the caller's own roles.assign areas (RB-03)."""
+    shown = []
+    for listed in repository.list_assignments(db, state=state, limit=500):
+        path = repository.area_path(db, listed.assignment.area)
+        if path is not None and has_permission_over(staff, "roles.assign", path):
+            shown.append(listed)
+        if len(shown) == limit:
+            break
+    return shown
+
+
 def to_request(member_id: uuid.UUID, tier: Tier, area: Area, permissions: list[str]) -> AssignmentRequest:
     return AssignmentRequest(member_id=member_id, tier=tier, area=area, permissions=frozenset(permissions))

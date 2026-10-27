@@ -3,11 +3,10 @@ import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
+import { AppText, Screen, useApiQuery } from '@my-people/mobile-ui';
+
 import { QueryView } from '@/components/QueryView';
-import { Screen } from '@/components/Screen';
 import { FeatureTile } from '@/features/home/FeatureTile';
-import { useApiQuery } from '@/hooks/useApi';
 import { api } from '@/lib/api';
 
 /** H04: the community hub, a destination inside Home rather than a sixth tab (BRD §15A.4). */

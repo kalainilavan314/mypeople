@@ -3,8 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
 
-import { ChipRow } from '@/components/ChipRow';
-import { TextField } from '@/components/TextField';
+import { ChipRow, TextField } from '@my-people/mobile-ui';
 
 export type IdRoute = 'nic' | 'passport';
 

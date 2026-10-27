@@ -11,15 +11,19 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
     "@my-people/api-client": "*",
     "@my-people/design-tokens": "*",
     "@my-people/i18n": "*",
     "@my-people/mobile-ui": "*",
     "expo": "~58.0.19",
+    "expo-camera": "~58.0.12",
     "expo-constants": "~58.0.13",
+    "expo-crypto": "~58.0.7",
     "expo-font": "~58.0.10",
     "expo-linking": "~58.0.14",
     "expo-router": "~58.0.26",
+    "expo-secure-store": "~58.0.2",
     "expo-splash-screen": "~58.0.11",
     "expo-status-bar": "~58.0.4",
     "expo-system-ui": "~58.0.6",
@@ -30,6 +34,7 @@
     "react-native": "0.88.0",
     "react-native-safe-area-context": "~5.10.1",
     "react-native-screens": "~4.30.0",
+    "react-native-svg": "15.16.0",
     "react-native-web": "~0.21.4"
   },
   "devDependencies": {

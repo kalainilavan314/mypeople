@@ -5,16 +5,20 @@ import { useTranslation } from 'react-i18next';
 
 import { colors, spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { Button } from '@/components/Button';
-import { ChipRow } from '@/components/ChipRow';
-import { Notice } from '@/components/Notice';
+import {
+  AppText,
+  Button,
+  ChipRow,
+  Notice,
+  Screen,
+  SurfaceCard,
+  TextField,
+  useApiAction,
+  useApiQuery,
+  useLanguage,
+} from '@my-people/mobile-ui';
+
 import { QueryView } from '@/components/QueryView';
-import { Screen } from '@/components/Screen';
-import { SurfaceCard } from '@/components/SurfaceCard';
-import { TextField } from '@/components/TextField';
-import { useApiAction, useApiQuery } from '@/hooks/useApi';
-import { useLanguage } from '@/hooks/useLanguage';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 import { chooseLanguage, type AppLanguage } from '@/lib/i18n';

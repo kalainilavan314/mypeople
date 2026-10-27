@@ -6,15 +6,11 @@ import { useTranslation } from 'react-i18next';
 
 import { colors, radius, spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { ChipRow } from '@/components/ChipRow';
+import { AppText, ChipRow, formatDate, Screen, useApiQuery, useLanguage, useLocalized } from '@my-people/mobile-ui';
+
 import { GalleryImage } from '@/components/GalleryImage';
 import { QueryView } from '@/components/QueryView';
-import { Screen } from '@/components/Screen';
-import { useApiQuery } from '@/hooks/useApi';
-import { useLanguage, useLocalized } from '@/hooks/useLanguage';
 import { api } from '@/lib/api';
-import { formatDate } from '@/lib/format';
 
 type Category = 'all' | 'events' | 'community';
 

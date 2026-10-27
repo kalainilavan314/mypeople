@@ -451,6 +451,65 @@
         ]
       }
     },
+    "/v1/membership/lookup": {
+      "get": {
+        "tags": [
+          "membership"
+        ],
+        "summary": "Lookup Member",
+        "description": "S03: a member in the caller's areas by exact member ID, with minimal fields (FR-STF-003).\nNeeds members.view_profile. Outside the caller's areas the answer is the same 404 as an\nunknown ID; there is no partial match and no list.",
+        "operationId": "lookup_member_v1_membership_lookup_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 40,
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberLookupOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/membership/awaiting-activation": {
       "get": {
         "tags": [
@@ -805,6 +864,129 @@
         ]
       }
     },
+    "/v1/access/assignments": {
+      "get": {
+        "tags": [
+          "access"
+        ],
+        "summary": "List Assignments",
+        "description": "W09: assignments in the caller's own areas, newest first. Needs roles.assign.",
+        "operationId": "list_assignments_v1_access_assignments_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "active",
+                "revoked"
+              ],
+              "type": "string",
+              "default": "active",
+              "title": "State"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssignmentListItemOut"
+                  },
+                  "title": "Response List Assignments V1 Access Assignments Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Create Assignment",
+        "description": "Assign a tier, an area and explicit permissions to a verified member (W09, RB-02, RB-03).",
+        "operationId": "create_assignment_v1_access_assignments_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignmentInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, or {\"code\": \"assignment_refused\", \"problems\": [...]}"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/access/assignments/preview": {
       "post": {
         "tags": [
@@ -833,59 +1015,6 @@
                 }
               }
             }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "APIKeyCookie": []
-          },
-          {
-            "HTTPBearer": []
-          }
-        ]
-      }
-    },
-    "/v1/access/assignments": {
-      "post": {
-        "tags": [
-          "access"
-        ],
-        "summary": "Create Assignment",
-        "description": "Assign a tier, an area and explicit permissions to a verified member (W09, RB-02, RB-03).",
-        "operationId": "create_assignment_v1_access_assignments_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AssignmentInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AssignmentOut"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "forbidden, or {\"code\": \"assignment_refused\", \"problems\": [...]}"
           },
           "422": {
             "description": "Validation Error",
@@ -9357,6 +9486,117 @@
         ],
         "title": "AssignmentInput"
       },
+      "AssignmentListItemOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "1",
+              "2A",
+              "2B",
+              "3A",
+              "3B",
+              "4",
+              "5"
+            ],
+            "title": "Tier"
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaRef"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Permissions"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "revoked"
+            ],
+            "title": "State"
+          },
+          "grantedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grantedby"
+          },
+          "grantedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Grantedat"
+          },
+          "reviewDueAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewdueat"
+          },
+          "endedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endedat"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "memberId",
+          "tier",
+          "area",
+          "permissions",
+          "state",
+          "grantedBy",
+          "grantedAt",
+          "reviewDueAt",
+          "endedAt",
+          "memberCode",
+          "fullName"
+        ],
+        "title": "AssignmentListItemOut",
+        "description": "W09: an assignment with whose it is."
+      },
       "AssignmentOut": {
         "properties": {
           "id": {
@@ -13487,6 +13727,71 @@
         ],
         "title": "MemberDecisionOut",
         "description": "A decision as the member sees it: the reviewer's tier, never their name (FR-PROF-006)."
+      },
+      "MemberLookupOut": {
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "districtName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Districtname"
+          },
+          "gnName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gnname"
+          },
+          "identityVerified": {
+            "type": "boolean",
+            "title": "Identityverified"
+          },
+          "membershipState": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "active",
+              "suspended",
+              "inactive"
+            ],
+            "title": "Membershipstate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberId",
+          "memberCode",
+          "fullName",
+          "districtName",
+          "gnName",
+          "identityVerified",
+          "membershipState"
+        ],
+        "title": "MemberLookupOut",
+        "description": "S03: the minimal fields support staff need; no contact details, no ID number."
       },
       "MemberProfile": {
         "properties": {

@@ -7,10 +7,10 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 
 import { colors } from '@my-people/design-tokens';
-import { lockedFonts } from '@my-people/mobile-ui';
+import { lockedFonts, SessionProvider, useSession } from '@my-people/mobile-ui';
 
+import { API_URL } from '@/lib/api';
 import { restoreLanguage } from '@/lib/i18n';
-import { SessionProvider, useSession } from '@/providers/SessionProvider';
 
 // Keep the splash screen up until the locked fonts, the saved language and the
 // stored session are ready, so text never flashes in a different font or
@@ -28,7 +28,7 @@ export default function RootLayout() {
   if (!(fontsLoaded || fontError !== null) || !languageReady) return null;
 
   return (
-    <SessionProvider>
+    <SessionProvider baseUrl={API_URL}>
       <StatusBar style="dark" />
       <Routes />
     </SessionProvider>

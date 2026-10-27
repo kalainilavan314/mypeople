@@ -85,3 +85,10 @@ class Catalogue(CamelModel):
 
     tiers: list[TierInfo]
     permissions: dict[str, dict[str, Literal["default", "explicit"]]]
+
+
+class AssignmentListItemOut(AssignmentOut):
+    """W09: an assignment with whose it is."""
+
+    member_code: str
+    full_name: str

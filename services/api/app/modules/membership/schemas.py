@@ -1,6 +1,6 @@
 import uuid
 from datetime import date, datetime
-from typing import Self
+from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
@@ -91,6 +91,18 @@ class MembershipChangeInput(CamelModel):
     action: Action
     reason_code: str = Field(max_length=50)
     note: str | None = Field(default=None, max_length=500)
+
+
+class MemberLookupOut(CamelModel):
+    """S03: the minimal fields support staff need; no contact details, no ID number."""
+
+    member_id: uuid.UUID
+    member_code: str
+    full_name: str
+    district_name: str | None
+    gn_name: str | None
+    identity_verified: bool
+    membership_state: Literal["pending", "active", "suspended", "inactive"]
 
 
 class AwaitingMemberOut(CamelModel):

@@ -4,19 +4,24 @@ import { useTranslation } from 'react-i18next';
 
 import { colors, radius, spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { Notice } from '@/components/Notice';
-import { QrCode } from '@/components/QrCode';
+import {
+  AppText,
+  formatDateTime,
+  formatTime,
+  Notice,
+  QrCode,
+  Screen,
+  StatusTag,
+  SurfaceCard,
+  useApiQuery,
+  useLanguage,
+  useLocalized,
+  useRotatingCode,
+} from '@my-people/mobile-ui';
+
 import { QueryView } from '@/components/QueryView';
-import { Screen } from '@/components/Screen';
-import { StatusTag } from '@/components/StatusTag';
-import { SurfaceCard } from '@/components/SurfaceCard';
-import { useApiQuery } from '@/hooks/useApi';
-import { useLanguage, useLocalized } from '@/hooks/useLanguage';
-import { useRotatingCode } from '@/hooks/useRotatingCode';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
-import { formatDateTime, formatTime } from '@/lib/format';
 
 /**
  * E06: the event pass. Its QR is a 60-second code bound to this event and this

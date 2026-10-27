@@ -2,11 +2,10 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import { fallbackLanguage, resources } from '@my-people/i18n';
+import { readLanguage, saveLanguage, type AppLanguage } from '@my-people/mobile-ui';
 
 import { en } from '@/i18n/en';
 import { ta } from '@/i18n/ta';
-
-import { readLanguage, saveLanguage } from './storage';
 
 // The PWA's shared text, plus this app's own screens under "m"
 // (t('m.signIn.title')). It starts in English, as the PWA does, until the
@@ -21,7 +20,7 @@ void i18n.use(initReactI18next).init({
   interpolation: { escapeValue: false }, // React already escapes text
 });
 
-export type AppLanguage = 'ta' | 'en';
+export type { AppLanguage };
 
 /** Applies the language saved on this device, if any. */
 export async function restoreLanguage(): Promise<void> {

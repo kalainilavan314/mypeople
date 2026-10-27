@@ -313,6 +313,7 @@ export const ta: AppStrings = {
   card: {
     title: 'உறுப்பினர் அட்டை',
     member: 'உறுப்பினர்',
+    tier: 'நிலை {{tier}} பணியாளர்',
     memberId: 'உறுப்பினர் இலக்கம்',
     district: 'மாவட்டம்',
     gn: 'கிராம சேவகர் பிரிவு',

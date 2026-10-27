@@ -178,6 +178,38 @@ def awaiting_activation(db: Session, *, visible_areas: list[str] | None, limit: 
     return [AwaitingMember(**row) for row in rows]
 
 
+@dataclass(frozen=True)
+class LookedUpMember:
+    id: uuid.UUID
+    member_code: str
+    full_name: str
+    district_name: str | None
+    gn_name: str | None
+    identity_verified: bool
+    membership_state: str
+
+
+def lookup_member(db: Session, member_code: str) -> LookedUpMember | None:
+    """FR-STF-003: an exact member ID, as printed or typed in lower case; never a partial match."""
+    row = db.execute(
+        text(
+            """
+            SELECT m.id, m.member_code, m.full_name, d.name_en AS district_name, g.name_en AS gn_name,
+                   m.verification_status = 'identity_confirmed' AS identity_verified,
+                   COALESCE(ms.state, 'pending') AS membership_state
+            FROM npm.member m
+            LEFT JOIN geo.district d ON d.district_code = m.district_code
+            LEFT JOIN geo.gn_division g ON g.gn_code = m.gs_code
+            LEFT JOIN membership.membership ms ON ms.member_id = m.id
+            WHERE m.member_code IN (:code, upper(:code)) AND m.deleted_at IS NULL
+            LIMIT 1
+            """
+        ),
+        {"code": member_code},
+    ).mappings().one_or_none()
+    return LookedUpMember(**row) if row else None
+
+
 # --- Consent records (ENT-05) -------------------------------------------------------------
 
 

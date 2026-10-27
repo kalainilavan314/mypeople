@@ -46,11 +46,13 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET /v1/membership/me/card` | yes | `200 {available, identityVerified, membershipState, reasonCode, displayName, memberCode, designation, districtName, gnName, memberSince, lastScannedAt, publicCard}` (card fields null unless available) | `401` |
 | `GET /v1/membership/me/card/code` | yes | `200 {code, expiresAt, refreshAfterSeconds: 60}` | `409 card_not_available` |
 | `POST /v1/membership/card/scan` body `{code}` | `events.checkin_scan` | `200 {result: "valid" \| "expired" \| "not_valid", displayName, memberCode}` | `403` |
+| `GET /v1/membership/lookup?code` | `members.view_profile` | `200 {memberId, memberCode, fullName, districtName, gnName, identityVerified, membershipState}` for one member in the caller's areas, exact member ID only; audited | `403`, `404 not_found` (also outside the caller's areas) |
 | `GET /v1/membership/awaiting-activation?limit` | `members.activate` | `200` verified members still pending in the caller's areas | `403 forbidden` |
 | `GET /v1/membership/members/{memberId}` | `members.activate` over the member's area | `200 {memberId, identityVerified, state, reasonCode, changedAt, history}` | `403 own_record`, `outside_your_area`; `404` |
 | `POST /v1/membership/members/{memberId}/changes` body `{action, reasonCode, note}` | as above | `200` the membership file | as above; `403 target_outranks_you` (a staff member at or above your tier); `422 {code: "change_refused", problems}` |
 | `GET /v1/access/me` | yes | `200` the caller's staff assignments that count now (empty for members) | `401` |
 | `GET /v1/access/catalogue` | `roles.assign` | `200` tiers, their area levels and the permission matrix | `403 forbidden` |
+| `GET /v1/access/assignments?state=active\|revoked&limit` | `roles.assign` | `200` assignments in the caller's own areas with `memberCode` and `fullName`, newest first | `403 forbidden` |
 | `POST /v1/access/assignments/preview` body `{memberId, tier, area, permissions}` | `roles.assign` | `200 {allowed, problems, reviewDueAt}`, nothing saved | `403 forbidden` |
 | `POST /v1/access/assignments` same body, optional `note` | `roles.assign` | `201` assignment | `403 forbidden`, `403 {code: "assignment_refused", problems}` |
 | `POST /v1/access/assignments/{id}/revoke` body `{reason}` | `roles.assign` | `200` assignment, now `revoked` | `403`, `404 not_found` |

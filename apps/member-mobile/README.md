@@ -52,15 +52,13 @@ app/
     gallery/[id].tsx, gallery/photo.tsx
     profile/           edit, activity, area, settings, security, privacy, recovery-number
 src/
-  components/          shared components (spec §3)
+  components/          GalleryImage, QueryView (with this app's error words)
   features/            auth, area, events, home, identity
-  hooks/               data loading and actions, language, rotating QR codes
   i18n/                this app's Tamil and English text (en.ts, ta.ts)
-  lib/                 API client, secure storage, formats in Asia/Colombo, error messages
-  providers/           the session
+  lib/                 API address, language, error messages
 assets/images/         app icon, splash and favicon (from the PWA)
 ```
 
-Shared pieces come from `packages/`: `mobile-ui` (locked fonts, tab icons), `design-tokens`, `i18n` (the PWA's text) and `api-client`.
+Shared pieces come from `packages/`: `mobile-ui` (locked fonts, the screen components of spec §3, the stored session, the data hooks, formats in Asia/Colombo), `design-tokens`, `i18n` (the PWA's text) and `api-client`.
 
 The icons are 512 px; the app stores need 1024 px versions before a store build. Bundle identifiers are set when store publishing is decided.

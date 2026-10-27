@@ -1,13 +1,9 @@
 import { useTranslation } from 'react-i18next';
 
-import { AppText } from '@/components/AppText';
+import { AppText, formatDateTime, Screen, SurfaceCard, useApiQuery, useLanguage } from '@my-people/mobile-ui';
+
 import { QueryView } from '@/components/QueryView';
-import { Screen } from '@/components/Screen';
-import { SurfaceCard } from '@/components/SurfaceCard';
-import { useApiQuery } from '@/hooks/useApi';
-import { useLanguage } from '@/hooks/useLanguage';
 import { api } from '@/lib/api';
-import { formatDateTime } from '@/lib/format';
 
 // Each kind's states already have words elsewhere in the app.
 const STATE_KEYS: Record<string, string> = {

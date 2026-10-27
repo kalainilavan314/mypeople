@@ -5,20 +5,24 @@ import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { Button } from '@/components/Button';
-import { ChipRow } from '@/components/ChipRow';
-import { Notice } from '@/components/Notice';
+import {
+  AppText,
+  Button,
+  ChipRow,
+  formatDate,
+  Notice,
+  Screen,
+  SurfaceCard,
+  TextField,
+  useApiAction,
+  useApiQuery,
+  useLanguage,
+  useSession,
+} from '@my-people/mobile-ui';
+
 import { QueryView } from '@/components/QueryView';
-import { Screen } from '@/components/Screen';
-import { SurfaceCard } from '@/components/SurfaceCard';
-import { TextField } from '@/components/TextField';
-import { useApiAction, useApiQuery } from '@/hooks/useApi';
-import { useLanguage } from '@/hooks/useLanguage';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
-import { formatDate } from '@/lib/format';
-import { useSession } from '@/providers/SessionProvider';
 
 type Gender = NonNullable<ProfileView['gender']> | 'skip';
 

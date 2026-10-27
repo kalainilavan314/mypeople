@@ -4,11 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { StatusTag } from '@/components/StatusTag';
-import { SurfaceCard } from '@/components/SurfaceCard';
-import { useLanguage } from '@/hooks/useLanguage';
-import { formatDate } from '@/lib/format';
+import { AppText, formatDate, StatusTag, SurfaceCard, useLanguage } from '@my-people/mobile-ui';
 
 /** FR-PROF-006: each decision with the reviewer's level and date, never their name, and any appeal. */
 export function DecisionHistory({ review }: { review: IdentityReview }) {

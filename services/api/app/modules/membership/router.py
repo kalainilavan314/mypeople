@@ -11,9 +11,10 @@ from app.modules.access.service import AccessRefused, Staff
 from app.modules.auth.dependencies import CurrentMember
 from app.modules.membership import service
 from app.modules.membership.repository import find_member_profile
-from app.modules.membership.rules import ACTIVATE
+from app.modules.membership.rules import ACTIVATE, VIEW_PROFILE
 from app.modules.membership.schemas import (
     AwaitingMemberOut,
+    MemberLookupOut,
     MemberProfile,
     MembershipChangeInput,
     MembershipChangeOut,
@@ -26,6 +27,7 @@ membership_router = APIRouter(prefix="/v1/membership", tags=["membership"])
 
 Db = Annotated[Session, Depends(get_db)]
 CanActivate = Annotated[Staff, Depends(require_permission(ACTIVATE))]
+CanViewProfile = Annotated[Staff, Depends(require_permission(VIEW_PROFILE))]
 REFUSED = {403: {"description": "forbidden, own_record or outside_your_area"}, 404: {"description": "not_found"}}
 
 
@@ -44,6 +46,28 @@ def read_my_membership(member: CurrentMember, db: Db) -> MyMembershipOut:
     """The member's membership state: pending, active, suspended or inactive, with the reason
     code (A12, C06). The card is available only when it is active (BR-065)."""
     return MyMembershipOut.from_state(service.my_membership(db, member.id))
+
+
+@membership_router.get("/lookup", responses={403: {"description": "forbidden"}, 404: {"description": "not_found"}})
+def lookup_member(
+    staff: CanViewProfile, request: Request, db: Db, code: Annotated[str, Query(min_length=3, max_length=40)]
+) -> MemberLookupOut:
+    """S03: a member in the caller's areas by exact member ID, with minimal fields (FR-STF-003).
+    Needs members.view_profile. Outside the caller's areas the answer is the same 404 as an
+    unknown ID; there is no partial match and no list."""
+    try:
+        found = service.lookup(db, staff, code, client_ip(request))
+    except service.MemberNotFound:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not_found") from None
+    return MemberLookupOut(
+        member_id=found.id,
+        member_code=found.member_code,
+        full_name=found.full_name,
+        district_name=found.district_name,
+        gn_name=found.gn_name,
+        identity_verified=found.identity_verified,
+        membership_state=found.membership_state,  # type: ignore[arg-type]
+    )
 
 
 @membership_router.get("/awaiting-activation")

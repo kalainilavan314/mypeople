@@ -1,5 +1,5 @@
 # Member-app hooks
 
-`useApiQuery` and `useApiAction` (loading, errors, and the return to sign-in when the session has ended), `useLanguage` and `useLocalized`, `useRotatingCode` (60-second QR codes), `useReloadOnFocus`.
+None of its own: the data hooks (`useApiQuery`, `useApiAction`), `useLanguage`, `useRotatingCode` and `useReloadOnFocus` are shared with the staff app in `packages/mobile-ui`.
 
 BRD v1.1: —

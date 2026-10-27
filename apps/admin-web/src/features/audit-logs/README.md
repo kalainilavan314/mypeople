@@ -1,7 +1,7 @@
 # Audit log
 
-Searching the audit log and checking its hash chain.
+Searching the audit log by action, paging back, and checking its hash chain (`app/(staff)/audit`).
 
-**Status: not built yet.** API: `/v1/audit` and `/v1/audit/verify` exist; export does not.
+**Status: built (Batch 22).** Export is not built (FR-ADM-011 export, RPT-28).
 
 BRD v1.1: FR-ADM-011; BR-082, BR-086.

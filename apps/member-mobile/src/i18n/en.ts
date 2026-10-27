@@ -312,6 +312,7 @@ export const en = {
   card: {
     title: 'Membership card',
     member: 'Member',
+    tier: 'Tier {{tier}} staff',
     memberId: 'Member ID',
     district: 'District',
     gn: 'GN division',

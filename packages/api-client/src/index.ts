@@ -14,6 +14,7 @@ export type MembershipState = MyMembership['state'];
 export type MembershipFile = Schemas['MembershipFileOut'];
 export type MembershipChangeInput = Schemas['MembershipChangeInput'];
 export type AwaitingMember = Schemas['AwaitingMemberOut'];
+export type MemberLookup = Schemas['MemberLookupOut'];
 export type MemberCard = Schemas['CardOut'];
 export type MemberCardCode = Schemas['CardCodeOut'];
 export type CardScan = Schemas['ScanOut'];
@@ -104,6 +105,7 @@ export type AssistedResolutionInput = Schemas['AssistedResolutionInput'];
 export type AreaRef = Schemas['AreaRef'];
 export type AssignmentInput = Schemas['AssignmentInput'];
 export type Assignment = Schemas['AssignmentOut'];
+export type ListedAssignment = Schemas['AssignmentListItemOut'];
 export type AssignmentPreview = Schemas['PreviewOut'];
 export type AccessCatalogue = Schemas['Catalogue'];
 export type AuditEntry = Schemas['AuditEntryOut'];
@@ -167,6 +169,13 @@ export interface ApiClientOptions {
    * device can be noticed (FR-AUTH-019). Not personal data; browsers leave it out.
    */
   deviceId?: string;
+  /**
+   * The browser's address, when a server (the dashboard) calls the API for a staff
+   * member. Sent as X-Forwarded-For; the API uses it only when it trusts the caller as
+   * its proxy (uvicorn --forwarded-allow-ips), so sign-in limits and the audit log see
+   * the real address rather than the dashboard's.
+   */
+  forwardedFor?: string;
 }
 
 export interface AuditFilters {
@@ -195,7 +204,7 @@ export interface AppealFilters {
   limit?: number;
 }
 
-export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalThis.fetch, deviceId }: ApiClientOptions) {
+export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalThis.fetch, deviceId, forwardedFor }: ApiClientOptions) {
   const root = baseUrl.replace(/\/+$/, '');
 
   /** Sends `body` as JSON, or as it is when `rawType` names its media type (image uploads). */
@@ -205,6 +214,7 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     const token = await getToken?.();
     if (token) headers.Authorization = `Bearer ${token}`;
     if (deviceId) headers['X-Device-Id'] = deviceId;
+    if (forwardedFor) headers['X-Forwarded-For'] = forwardedFor;
 
     const response = await fetchImpl(`${root}${path}`, {
       method,
@@ -307,6 +317,9 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     /** Checks a member's code: valid (name and member ID only), expired or not_valid. Needs events.checkin_scan. */
     scanMemberCard: (code: string) => request<CardScan>('POST', '/v1/membership/card/scan', { code }),
     /** Verified members still pending, in the caller's areas. Needs members.activate. */
+    /** S03: one member in the caller's areas by exact member ID (FR-STF-003); 404 also outside them. Needs members.view_profile. */
+    lookupMember: (memberCode: string) =>
+      request<MemberLookup>('GET', `/v1/membership/lookup?code=${encodeURIComponent(memberCode)}`),
     listAwaitingActivation: (limit?: number) =>
       request<AwaitingMember[]>('GET', `/v1/membership/awaiting-activation${limit === undefined ? '' : `?limit=${limit}`}`),
     getMembership: (memberId: string) => request<MembershipFile>('GET', `/v1/membership/members/${encodeURIComponent(memberId)}`),
@@ -319,6 +332,9 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     /** Tiers and the permission matrix, for the W09 form. Needs roles.assign. */
     getAccessCatalogue: () => request<AccessCatalogue>('GET', '/v1/access/catalogue'),
     /** Checks an assignment without saving it (RB-06). Needs roles.assign. */
+    /** W09: assignments in the caller's own areas, newest first. Needs roles.assign. */
+    listAssignments: (state: 'active' | 'revoked' = 'active') =>
+      request<ListedAssignment[]>('GET', `/v1/access/assignments?state=${state}`),
     previewAssignment: (input: AssignmentInput) => request<AssignmentPreview>('POST', '/v1/access/assignments/preview', input),
     /** Throws ApiError "assignment_refused" (403) with `problems` when a rule forbids it. */
     createAssignment: (input: AssignmentInput) => request<Assignment>('POST', '/v1/access/assignments', input),
@@ -544,6 +560,8 @@ export function createApiClient({ baseUrl, getToken, fetch: fetchImpl = globalTh
     withdrawAreaChange: (changeId: string) =>
       request<AreaChange>('POST', `/v1/profile/area-changes/${encodeURIComponent(changeId)}/withdraw`),
     /** Requests to move into the caller's areas. Needs members.verify. */
+    /** The proof of residence, for a reviewer over the requested area; send the session with it. */
+    areaChangeProofUrl: (changeId: string) => `${root}/v1/profile/area-changes/${encodeURIComponent(changeId)}/proof`,
     listAreaChanges: (filters: { states?: readonly AreaChange['state'][]; limit?: number } = {}) =>
       request<QueuedAreaChange[]>('GET', `/v1/profile/area-changes${toQueueQuery(filters)}`),
     /** Approve (the member's area changes now) or decline, with a reason. */

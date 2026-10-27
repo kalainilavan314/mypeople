@@ -16,6 +16,8 @@
   --color-warning: var(--mp-warning-text);
   --color-warning-bg: var(--mp-warning-background);
   --color-error: var(--mp-error);
+  --color-error-bg: var(--mp-error-background);
+  --color-success-bg: var(--mp-success-background);
   --font-sans: var(--mp-font-ui);
   --font-mono: var(--mp-font-mono);
 }

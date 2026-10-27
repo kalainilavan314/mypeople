@@ -121,6 +121,31 @@ def effective_assignments(db: Session, member_id: uuid.UUID) -> list[StoredAssig
     return [_to_assignment(row) for row in rows]
 
 
+@dataclass(frozen=True)
+class ListedAssignment:
+    assignment: StoredAssignment
+    member_code: str
+    full_name: str
+
+
+def list_assignments(db: Session, *, state: str, limit: int) -> list[ListedAssignment]:
+    """Newest first, with whose they are; the caller filters them to its own areas."""
+    rows = db.execute(
+        text(
+            """
+            SELECT a.id, a.member_id, a.tier, a.area_level, a.area_code, a.permissions, a.state, a.granted_by,
+                   a.granted_at, a.review_due_at, a.ended_at, a.ended_by, a.end_reason, m.member_code, m.full_name
+            FROM access.staff_assignment a JOIN npm.member m ON m.id = a.member_id
+            WHERE a.state = :state
+            ORDER BY a.granted_at DESC
+            LIMIT :limit
+            """
+        ),
+        {"state": state, "limit": limit},
+    )
+    return [ListedAssignment(_to_assignment(row), row.member_code, row.full_name) for row in rows]
+
+
 def find_assignment(db: Session, assignment_id: uuid.UUID) -> StoredAssignment | None:
     row = db.execute(text(f"{_SELECT} WHERE id = :id"), {"id": assignment_id}).one_or_none()
     return _to_assignment(row) if row else None

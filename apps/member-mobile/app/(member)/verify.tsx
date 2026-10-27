@@ -5,22 +5,27 @@ import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { Button } from '@/components/Button';
-import { Checkbox } from '@/components/Checkbox';
-import { Notice } from '@/components/Notice';
+import {
+  AppText,
+  Button,
+  Checkbox,
+  Notice,
+  Screen,
+  StatusTag,
+  SurfaceCard,
+  TextField,
+  type Tone,
+  useApiAction,
+  useApiQuery,
+  useLocalized,
+  useSession,
+} from '@my-people/mobile-ui';
+
 import { QueryView } from '@/components/QueryView';
-import { Screen } from '@/components/Screen';
-import { StatusTag, type Tone } from '@/components/StatusTag';
-import { SurfaceCard } from '@/components/SurfaceCard';
-import { TextField } from '@/components/TextField';
 import { DecisionHistory } from '@/features/identity/DecisionHistory';
 import { PhotoRow } from '@/features/identity/PhotoRow';
-import { useApiAction, useApiQuery } from '@/hooks/useApi';
-import { useLocalized } from '@/hooks/useLanguage';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
-import { useSession } from '@/providers/SessionProvider';
 
 type State = IdentityReview['state'] | 'not_submitted';
 

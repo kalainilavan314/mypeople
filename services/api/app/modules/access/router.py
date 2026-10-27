@@ -1,7 +1,7 @@
 import uuid
-from typing import Annotated
+from typing import Annotated, Literal
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.orm import Session
 
 from app.core.request_info import client_ip
@@ -11,6 +11,7 @@ from app.modules.access.dependencies import require_permission
 from app.core.permissions import MATRIX, TIER_AREA_LEVEL, TIERS, default_permissions
 from app.modules.access.schemas import (
     AssignmentInput,
+    AssignmentListItemOut,
     AssignmentOut,
     Catalogue,
     PreviewOut,
@@ -52,6 +53,24 @@ def read_catalogue(staff: CanAssign) -> Catalogue:
         ],
         permissions={permission: dict(tiers) for permission, tiers in MATRIX.items()},
     )
+
+
+@router.get("/assignments")
+def list_assignments(
+    staff: CanAssign,
+    db: Db,
+    state: Literal["active", "revoked"] = "active",
+    limit: Annotated[int, Query(ge=1, le=200)] = 100,
+) -> list[AssignmentListItemOut]:
+    """W09: assignments in the caller's own areas, newest first. Needs roles.assign."""
+    return [
+        AssignmentListItemOut(
+            **AssignmentOut.from_stored(listed.assignment).model_dump(),
+            member_code=listed.member_code,
+            full_name=listed.full_name,
+        )
+        for listed in service.visible_assignments(db, staff, state, limit)
+    ]
 
 
 @router.post("/assignments/preview")

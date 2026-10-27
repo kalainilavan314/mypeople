@@ -2,16 +2,11 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AppText } from '@/components/AppText';
-import { Button } from '@/components/Button';
-import { Notice } from '@/components/Notice';
-import { Screen } from '@/components/Screen';
-import { TextField } from '@/components/TextField';
+import { AppText, Button, Notice, Screen, TextField, useApiAction, useSession } from '@my-people/mobile-ui';
+
 import { accountNumber, IdRouteFields, type IdNumber } from '@/features/auth/IdRouteFields';
-import { useApiAction } from '@/hooks/useApi';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
-import { useSession } from '@/providers/SessionProvider';
 
 /** A02: sign in with the NIC, or a passport number and country, and a password. One generic error (FR-AUTH-013). */
 export default function SignInScreen() {

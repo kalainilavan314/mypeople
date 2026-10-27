@@ -6,17 +6,22 @@ import { useTranslation } from 'react-i18next';
 
 import { colors, spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { Button } from '@/components/Button';
-import { ChipRow } from '@/components/ChipRow';
+import {
+  AppText,
+  Button,
+  ChipRow,
+  formatDateTime,
+  Screen,
+  StatusTag,
+  SurfaceCard,
+  useApiAction,
+  useApiQuery,
+  useLanguage,
+  useLocalized,
+} from '@my-people/mobile-ui';
+
 import { QueryView } from '@/components/QueryView';
-import { Screen } from '@/components/Screen';
-import { StatusTag } from '@/components/StatusTag';
-import { SurfaceCard } from '@/components/SurfaceCard';
-import { useApiAction, useApiQuery } from '@/hooks/useApi';
-import { useLanguage, useLocalized } from '@/hooks/useLanguage';
 import { api } from '@/lib/api';
-import { formatDateTime } from '@/lib/format';
 
 type View_ = 'all' | 'action_needed';
 

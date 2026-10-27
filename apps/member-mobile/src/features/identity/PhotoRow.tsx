@@ -5,12 +5,8 @@ import { useTranslation } from 'react-i18next';
 
 import { colors, spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { Button } from '@/components/Button';
-import { Notice } from '@/components/Notice';
-import { StatusTag } from '@/components/StatusTag';
-import { SurfaceCard } from '@/components/SurfaceCard';
-import { useApiAction } from '@/hooks/useApi';
+import { AppText, Button, Notice, StatusTag, SurfaceCard, useApiAction } from '@my-people/mobile-ui';
+
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 

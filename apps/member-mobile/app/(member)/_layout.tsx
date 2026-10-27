@@ -1,8 +1,7 @@
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { useLanguage } from '@/hooks/useLanguage';
-import { headerOptions } from '@/lib/headerOptions';
+import { headerOptions, useLanguage } from '@my-people/mobile-ui';
 
 export const unstable_settings = { initialRouteName: '(tabs)' };
 

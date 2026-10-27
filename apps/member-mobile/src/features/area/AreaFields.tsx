@@ -4,9 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
 
-import { SelectField, type SelectOption } from '@/components/SelectField';
-import { useApiQuery } from '@/hooks/useApi';
-import { useLanguage } from '@/hooks/useLanguage';
+import { SelectField, type SelectOption, useApiQuery, useLanguage } from '@my-people/mobile-ui';
+
 import { api } from '@/lib/api';
 
 export type AreaChoice = { district: string | null; ds: string | null; gn: string | null };

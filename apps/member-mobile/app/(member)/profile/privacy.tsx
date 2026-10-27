@@ -5,19 +5,24 @@ import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { Button } from '@/components/Button';
-import { Notice } from '@/components/Notice';
+import {
+  AppText,
+  Button,
+  formatDate,
+  Notice,
+  Screen,
+  StatusTag,
+  SurfaceCard,
+  TextField,
+  useApiAction,
+  useApiQuery,
+  useLanguage,
+  useLocalized,
+} from '@my-people/mobile-ui';
+
 import { QueryView } from '@/components/QueryView';
-import { Screen } from '@/components/Screen';
-import { StatusTag } from '@/components/StatusTag';
-import { SurfaceCard } from '@/components/SurfaceCard';
-import { TextField } from '@/components/TextField';
-import { useApiAction, useApiQuery } from '@/hooks/useApi';
-import { useLanguage, useLocalized } from '@/hooks/useLanguage';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
-import { formatDate } from '@/lib/format';
 
 /**
  * P06: the identity data we keep and why (FR-PROF-010), and data-subject

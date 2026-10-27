@@ -343,3 +343,12 @@ test('enabled features are read without sign-in and election periods are listed 
   assert.equal(sent[0].url, 'https://api.example/v1/features');
   assert.equal(sent[1].url, 'https://api.example/v1/election/periods?state=declared&state=ended');
 });
+
+test('a server calling for a staff member forwards their address, and lookups send the exact ID', async () => {
+  const { fetch, sent } = fakeFetch(200, { memberId: 'm1' });
+
+  await createApiClient({ baseUrl: 'https://api.example', fetch, forwardedFor: '203.0.113.7' }).lookupMember('WTL-26 1');
+
+  assert.equal(sent[0].headers['X-Forwarded-For'], '203.0.113.7');
+  assert.equal(sent[0].url, 'https://api.example/v1/membership/lookup?code=WTL-26%201');
+});

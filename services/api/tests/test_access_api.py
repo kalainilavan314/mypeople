@@ -201,3 +201,26 @@ def test_verifying_the_chain_needs_platform_scope(db_client, auth, super_admin, 
     assert result["ok"] is True
 
     assert db_client.get("/v1/audit", headers=auth(create_member())).status_code == 403
+
+
+# --- W09 assignment list ---------------------------------------------------------------------------------
+
+
+def test_an_administrator_lists_assignments_in_their_own_area_only(db_client, db_session, auth, regional_admin, super_admin, create_member, assign, area):
+    inside = create_member(verified=True, active=True)
+    assign(inside, "3A", "district", area.district, ["members.verify"], granted_by=super_admin)
+    other_province = db_session.scalar(
+        text("SELECT province_code FROM geo.province WHERE province_code <> :code LIMIT 1"), {"code": area.province}
+    )
+    outside = create_member(verified=True, active=True)
+    if other_province:
+        assign(outside, "4", "province", other_province, ["roles.assign"], granted_by=super_admin)
+
+    regional = db_client.get("/v1/access/assignments", headers=auth(regional_admin)).json()
+    platform = db_client.get("/v1/access/assignments", headers=auth(super_admin)).json()
+
+    regional_members = {item["memberId"] for item in regional}
+    assert str(inside.id) in regional_members and str(outside.id) not in regional_members
+    assert {str(inside.id), str(outside.id) if other_province else str(inside.id)} <= {item["memberId"] for item in platform}
+    listed = next(item for item in regional if item["memberId"] == str(inside.id))
+    assert listed["memberCode"] and listed["fullName"] == "Test Member" and listed["tier"] == "3A"

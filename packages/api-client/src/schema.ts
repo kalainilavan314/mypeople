@@ -265,6 +265,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/membership/lookup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lookup Member
+         * @description S03: a member in the caller's areas by exact member ID, with minimal fields (FR-STF-003).
+         *     Needs members.view_profile. Outside the caller's areas the answer is the same 404 as an
+         *     unknown ID; there is no partial match and no list.
+         */
+        get: operations["lookup_member_v1_membership_lookup_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/membership/awaiting-activation": {
         parameters: {
             query?: never;
@@ -430,6 +452,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/access/assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Assignments
+         * @description W09: assignments in the caller's own areas, newest first. Needs roles.assign.
+         */
+        get: operations["list_assignments_v1_access_assignments_get"];
+        put?: never;
+        /**
+         * Create Assignment
+         * @description Assign a tier, an area and explicit permissions to a verified member (W09, RB-02, RB-03).
+         */
+        post: operations["create_assignment_v1_access_assignments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/access/assignments/preview": {
         parameters: {
             query?: never;
@@ -444,26 +490,6 @@ export interface paths {
          * @description Check an assignment without saving it (RB-06, FR-WEB-031).
          */
         post: operations["preview_assignment_v1_access_assignments_preview_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/access/assignments": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Create Assignment
-         * @description Assign a tier, an area and explicit permissions to a verified member (W09, RB-02, RB-03).
-         */
-        post: operations["create_assignment_v1_access_assignments_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3108,6 +3134,50 @@ export interface components {
             /** Note */
             note?: string | null;
         };
+        /**
+         * AssignmentListItemOut
+         * @description W09: an assignment with whose it is.
+         */
+        AssignmentListItemOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /**
+             * Tier
+             * @enum {string}
+             */
+            tier: "1" | "2A" | "2B" | "3A" | "3B" | "4" | "5";
+            area: components["schemas"]["AreaRef"];
+            /** Permissions */
+            permissions: string[];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "active" | "revoked";
+            /** Grantedby */
+            grantedBy: string | null;
+            /**
+             * Grantedat
+             * Format: date-time
+             */
+            grantedAt: string;
+            /** Reviewdueat */
+            reviewDueAt: string | null;
+            /** Endedat */
+            endedAt: string | null;
+            /** Membercode */
+            memberCode: string;
+            /** Fullname */
+            fullName: string;
+        };
         /** AssignmentOut */
         AssignmentOut: {
             /**
@@ -4664,6 +4734,32 @@ export interface components {
             /** Note */
             note: string | null;
             appeal: components["schemas"]["AppealOut"] | null;
+        };
+        /**
+         * MemberLookupOut
+         * @description S03: the minimal fields support staff need; no contact details, no ID number.
+         */
+        MemberLookupOut: {
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Membercode */
+            memberCode: string;
+            /** Fullname */
+            fullName: string;
+            /** Districtname */
+            districtName: string | null;
+            /** Gnname */
+            gnName: string | null;
+            /** Identityverified */
+            identityVerified: boolean;
+            /**
+             * Membershipstate
+             * @enum {string}
+             */
+            membershipState: "pending" | "active" | "suspended" | "inactive";
         };
         /**
          * MemberProfile
@@ -6490,6 +6586,51 @@ export interface operations {
             };
         };
     };
+    lookup_member_v1_membership_lookup_get: {
+        parameters: {
+            query: {
+                code: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberLookupOut"];
+                };
+            };
+            /** @description forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_awaiting_activation_v1_membership_awaiting_activation_get: {
         parameters: {
             query?: {
@@ -6733,18 +6874,17 @@ export interface operations {
             };
         };
     };
-    preview_assignment_v1_access_assignments_preview_post: {
+    list_assignments_v1_access_assignments_get: {
         parameters: {
-            query?: never;
+            query?: {
+                state?: "active" | "revoked";
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AssignmentInput"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -6752,7 +6892,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PreviewOut"];
+                    "application/json": components["schemas"]["AssignmentListItemOut"][];
                 };
             };
             /** @description Validation Error */
@@ -6794,6 +6934,39 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_assignment_v1_access_assignments_preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviewOut"];
+                };
             };
             /** @description Validation Error */
             422: {

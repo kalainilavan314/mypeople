@@ -4,13 +4,9 @@ import { useTranslation } from 'react-i18next';
 
 import { colors, control, radius, spacing } from '@my-people/design-tokens';
 
-import { AppText } from '@/components/AppText';
-import { Button } from '@/components/Button';
-import { Notice } from '@/components/Notice';
-import { Screen } from '@/components/Screen';
-import { useLanguage } from '@/hooks/useLanguage';
+import { AppText, Button, Notice, Screen, useLanguage, useSession } from '@my-people/mobile-ui';
+
 import { chooseLanguage, type AppLanguage } from '@/lib/i18n';
-import { useSession } from '@/providers/SessionProvider';
 
 const LANGUAGES: { key: AppLanguage; label: string }[] = [
   { key: 'ta', label: 'தமிழ்' },
