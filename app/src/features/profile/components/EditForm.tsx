@@ -1,10 +1,10 @@
 import { type ServerMember } from '@/core/api/authApi';
 import { DISTRICTS } from '@/core/api/divisions';
-import { EditFormDiv2 } from '@/features/profile/components/EditFormSections/EditFormDiv2';
-import { EditFormDiv3 } from '@/features/profile/components/EditFormSections/EditFormDiv3';
+import { EditFormGenderPicker } from '@/features/profile/components/EditFormSections/EditFormGenderPicker';
+import { EditFormGsSelectButton } from '@/features/profile/components/EditFormSections/EditFormGsSelectButton';
+import { EditFormHeader } from '@/features/profile/components/EditFormSections/EditFormHeader';
 import { EditFormPress } from '@/features/profile/components/EditFormSections/EditFormPress';
 import { EditFormProfileSelectBtn } from '@/features/profile/components/EditFormSections/EditFormProfileSelectBtn';
-import { EditFormProfileSelectBtn2 } from '@/features/profile/components/EditFormSections/EditFormProfileSelectBtn2';
 import { DsSheet, GsSheet } from '@/shared/components/DivisionBottomSheet';
 import { FormError } from '@/shared/components/FormError';
 import { c } from '@/core/theme/tokens';
@@ -39,7 +39,7 @@ export function EditForm({ me }: { me: ServerMember }) {
 
   return (
     <div className="fade-up" style={{ background: c.page, minHeight: '100%' }}>
-      <EditFormDiv2
+      <EditFormHeader
         navigate={navigate}
         t={t}
         avatarPreview={avatarPreview}
@@ -73,7 +73,7 @@ export function EditForm({ me }: { me: ServerMember }) {
         />
 
         <span style={labelStyle}>{t('editProfile.gender')}</span>
-        <EditFormDiv3 t={t} gender={gender} setGender={setGender} />
+        <EditFormGenderPicker t={t} gender={gender} setGender={setGender} />
 
         <label style={labelStyle} htmlFor="ep-phone">
           {t('editProfile.phone')}
@@ -113,7 +113,7 @@ export function EditForm({ me }: { me: ServerMember }) {
           ds={ds}
         />
 
-        <EditFormProfileSelectBtn2 dsCode={dsCode} setGsSheetOpen={setGsSheetOpen} t={t} gs={gs} />
+        <EditFormGsSelectButton dsCode={dsCode} setGsSheetOpen={setGsSheetOpen} t={t} gs={gs} />
 
         {dsSheetOpen && district && (
           <DsSheet

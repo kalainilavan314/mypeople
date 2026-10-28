@@ -12,7 +12,7 @@ type Props = {
   t: TFunction<'translation', undefined>;
   done: Donation;
 };
-export function CardFlowSheet2({ setDone, onDone, t, done }: Props) {
+export function CardFlowThanksSheet({ setDone, onDone, t, done }: Props) {
   return (
     <Sheet
       onClose={() => {

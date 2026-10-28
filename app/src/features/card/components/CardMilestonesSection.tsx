@@ -12,7 +12,7 @@ type Props = {
   badgesQ: ReturnType<typeof useBadges>;
   me: ServerMember;
 };
-export function CardMpSection2({ t, navigate, badgesQ, me }: Props) {
+export function CardMilestonesSection({ t, navigate, badgesQ, me }: Props) {
   return (
     <section className="mp-section">
       <div className="mp-section-heading">

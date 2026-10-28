@@ -9,7 +9,7 @@ type Props = {
   showPassword: boolean;
   setShowPassword: Dispatch<SetStateAction<boolean>>;
 };
-export function LoginDiv2({ t, password, setPassword, showPassword, setShowPassword }: Props) {
+export function LoginPasswordField({ t, password, setPassword, showPassword, setShowPassword }: Props) {
   return (
     <div>
       <label

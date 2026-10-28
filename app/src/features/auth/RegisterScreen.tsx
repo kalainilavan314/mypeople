@@ -2,7 +2,7 @@ import { parseNic } from '@/core/lib/nic';
 import embeddedStyles0 from '@/core/theme/embedded/RegisterScreen.css?inline';
 import { BackChip, LangToggle, Steps } from '@/features/auth/components/parts';
 import { RegisterFields } from '@/features/auth/components/RegisterFields';
-import { RegisterFields2 } from '@/features/auth/components/RegisterFields2';
+import { RegisterNicReview } from '@/features/auth/components/RegisterNicReview';
 import { Step } from '@/features/auth/Register.model';
 import { signupDraft } from '@/features/auth/state/signupDraft';
 import { useMemo, useState } from 'react';
@@ -84,7 +84,7 @@ export function SignUp() {
           )}
 
           {step === 1 && (
-            <RegisterFields2 t={t} nicInfo={nicInfo} navigate={navigate} />
+            <RegisterNicReview t={t} nicInfo={nicInfo} navigate={navigate} />
           )}
         </div>
       </div>

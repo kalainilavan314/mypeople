@@ -176,9 +176,9 @@ app/src/
           Steps.tsx
           Wordmark.tsx
         LoginDiv.tsx
-        LoginDiv2.tsx
         LoginForm.tsx
         LoginLoginCardContainer.tsx
+        LoginPasswordField.tsx
         NameHint.tsx
         NicCard.tsx
         NicHint.tsx
@@ -188,13 +188,13 @@ app/src/
         ProfileSetupContinue.tsx
         ProfileSetupCopy.tsx
         ProfileSetupDiv.tsx
+        ProfileSetupGenderCard.tsx
         ProfileSetupProfileSectionCard.tsx
-        ProfileSetupProfileSectionCard2.tsx
         QuestionsDiv.tsx
-        QuestionsDiv2.tsx
+        QuestionsProgress.tsx
         QuestionsQuestionCardContainer.tsx
         RegisterFields.tsx
-        RegisterFields2.tsx
+        RegisterNicReview.tsx
       ForgotScreen.tsx
       LoginScreen.tsx
       onboarding/
@@ -223,9 +223,9 @@ app/src/
       components/
         Action.tsx
         CardAvailability.tsx
+        CardCommunityProgressSection.tsx
+        CardMilestonesSection.tsx
         CardMpSection.tsx
-        CardMpSection2.tsx
-        CardMpSection3.tsx
         CardViewer.tsx
         Close.tsx
         components/
@@ -268,7 +268,7 @@ app/src/
         CardFlowSections/
           CardFlowDiv.tsx
           CardFlowSheet.tsx
-          CardFlowSheet2.tsx
+          CardFlowThanksSheet.tsx
         DonateTab.tsx
         DonorsTab.tsx
         MethodCard.tsx
@@ -305,11 +305,11 @@ app/src/
         EditForm.tsx
         EditFormSections/
           EditFormDiv.tsx
-          EditFormDiv2.tsx
-          EditFormDiv3.tsx
+          EditFormGenderPicker.tsx
+          EditFormGsSelectButton.tsx
+          EditFormHeader.tsx
           EditFormPress.tsx
           EditFormProfileSelectBtn.tsx
-          EditFormProfileSelectBtn2.tsx
         HeaderChipButton.tsx
         ProfileSection.tsx
         Row.tsx
@@ -331,9 +331,9 @@ app/src/
         MyReports.tsx
         ReportForm.tsx
         ReportFormSections/
+          ReportFormDetailsSection.tsx
           ReportFormDiv.tsx
           ReportFormSection.tsx
-          ReportFormSection2.tsx
         ReportItem.tsx
       Reports.model.ts
       ReportsScreen.tsx

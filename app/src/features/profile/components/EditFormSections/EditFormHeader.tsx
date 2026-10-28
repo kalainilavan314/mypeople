@@ -19,7 +19,7 @@ type Props = {
   cameraRef: import('react').RefObject<HTMLInputElement>;
   onFile: (f: File | undefined | null) => Promise<void>;
 };
-export function EditFormDiv2({
+export function EditFormHeader({
   navigate,
   t,
   avatarPreview,

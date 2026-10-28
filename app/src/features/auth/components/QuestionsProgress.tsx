@@ -5,7 +5,7 @@ import type { TFunction } from 'i18next';
 type Props = { step: number; total: number; t: TFunction<'translation', undefined> };
 
 /** The survey is step 4 of sign-up; its questions are counted in words, not with a second track of numbered circles. */
-export function QuestionsDiv2({ step, total, t }: Props) {
+export function QuestionsProgress({ step, total, t }: Props) {
   return (
     <div
       style={{

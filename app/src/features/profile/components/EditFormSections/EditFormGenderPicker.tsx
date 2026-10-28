@@ -7,7 +7,7 @@ type Props = {
   gender: string | null;
   setGender: Dispatch<SetStateAction<string | null>>;
 };
-export function EditFormDiv3({ t, gender, setGender }: Props) {
+export function EditFormGenderPicker({ t, gender, setGender }: Props) {
   return (
     <div style={{ display: 'flex', gap: 10 }}>
       {(

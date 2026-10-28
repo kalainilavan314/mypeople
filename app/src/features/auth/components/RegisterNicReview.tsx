@@ -19,7 +19,7 @@ type Props = {
  * end of sign-up while the screen said the NIC was "verified automatically".
  * Identity review with photos and a selfie belongs to the /v1 identity flow.
  */
-export function RegisterFields2({ t, nicInfo, navigate }: Props) {
+export function RegisterNicReview({ t, nicInfo, navigate }: Props) {
   return (
     <>
       <div style={{ marginBottom: 18 }}>

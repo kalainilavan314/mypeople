@@ -1,6 +1,6 @@
 import { isValidNic } from '@/core/lib/nic';
 import { authC } from '@/core/theme/tokens';
-import { LoginDiv2 } from '@/features/auth/components/LoginDiv2';
+import { LoginPasswordField } from '@/features/auth/components/LoginPasswordField';
 import { Icon } from '@/shared/components/Icon';
 import type { TFunction } from 'i18next';
 import type { Dispatch, SetStateAction } from 'react';
@@ -84,7 +84,7 @@ export function LoginForm({
         )}
       </div>
 
-      <LoginDiv2
+      <LoginPasswordField
         t={t}
         password={password}
         setPassword={setPassword}

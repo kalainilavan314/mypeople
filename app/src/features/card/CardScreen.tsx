@@ -3,9 +3,9 @@ import { useBadges } from '@/core/api/queries';
 import '@/core/theme/membership-card.css';
 import { tierDef } from '@/core/theme/tiers';
 import { Action } from '@/features/card/components/Action';
+import { CardCommunityProgressSection } from '@/features/card/components/CardCommunityProgressSection';
+import { CardMilestonesSection } from '@/features/card/components/CardMilestonesSection';
 import { CardMpSection } from '@/features/card/components/CardMpSection';
-import { CardMpSection2 } from '@/features/card/components/CardMpSection2';
-import { CardMpSection3 } from '@/features/card/components/CardMpSection3';
 import { CardViewer } from '@/features/card/components/CardViewer';
 import {
   ScaledMembershipCredential,
@@ -182,8 +182,8 @@ export function Card() {
                 status={status}
                 copyReferral={copyReferral}
               />
-              {prog && <CardMpSection3 t={t} navigate={navigate} prog={prog} />}
-              <CardMpSection2 t={t} navigate={navigate} badgesQ={badgesQ} me={me} />
+              {prog && <CardCommunityProgressSection t={t} navigate={navigate} prog={prog} />}
+              <CardMilestonesSection t={t} navigate={navigate} badgesQ={badgesQ} me={me} />
               {viewer && <CardViewer data={data} onClose={() => setViewer(false)} t={t} />}
               {showQr && official && (
                 <QrDialog

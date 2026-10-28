@@ -10,7 +10,7 @@ type Props = {
   navigate: ReturnType<typeof useNavigate>;
   prog: TierProgress;
 };
-export function CardMpSection3({ t, navigate, prog }: Props) {
+export function CardCommunityProgressSection({ t, navigate, prog }: Props) {
   return (
     <section className="mp-section">
       <div className="mp-section-heading">

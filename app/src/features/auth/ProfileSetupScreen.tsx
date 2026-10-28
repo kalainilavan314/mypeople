@@ -5,7 +5,7 @@ import { Steps } from '@/features/auth/components/parts';
 import { ProfileSetupContinue } from './components/ProfileSetupContinue';
 import { ProfileSetupDiv } from '@/features/auth/components/ProfileSetupDiv';
 import { ProfileSetupProfileSectionCard } from '@/features/auth/components/ProfileSetupProfileSectionCard';
-import { ProfileSetupProfileSectionCard2 } from '@/features/auth/components/ProfileSetupProfileSectionCard2';
+import { ProfileSetupGenderCard } from '@/features/auth/components/ProfileSetupGenderCard';
 import { signupDraft } from '@/features/auth/state/signupDraft';
 import { DsSheet, GsSheet } from '@/shared/components/DivisionBottomSheet';
 import { Icon } from '@/shared/components/Icon';
@@ -128,7 +128,7 @@ export function ProfileSetup() {
             </div>
           </div>
 
-          <ProfileSetupProfileSectionCard2 t={t} gender={gender} setGender={setGender} nicGender={nicGender} />
+          <ProfileSetupGenderCard t={t} gender={gender} setGender={setGender} nicGender={nicGender} />
 
           <ProfileSetupProfileSectionCard
             t={t}
