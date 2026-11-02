@@ -27,7 +27,11 @@ export default function StaffLayout({ children }: LayoutProps<'/'>) {
 
 async function StaffMenu() {
   const staff = await requireStaff();
-  const allowed = builtModules.filter((module) => staff.permissions.has(module.permission));
+  const allowed = builtModules.filter((module) =>
+    Array.isArray(module.permission)
+      ? module.permission.some((p) => staff.permissions.has(p))
+      : staff.permissions.has(module.permission as string),
+  );
   return (
     <>
       <div className="rounded-xl border border-line bg-card px-3 py-2 text-sm">

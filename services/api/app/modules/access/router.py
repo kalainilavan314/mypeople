@@ -17,6 +17,7 @@ from app.modules.access.schemas import (
     PreviewOut,
     RevokeInput,
     TierInfo,
+    WorkQueuesOut,
 )
 from app.modules.access.service import Staff
 from app.modules.auth.dependencies import CurrentMember
@@ -41,6 +42,18 @@ def read_my_access(member: CurrentMember, db: Db) -> list[AssignmentOut]:
     """The signed-in person's assignments that count right now. Apps use this to show
     or hide staff controls; the API still checks every request (RB-01)."""
     return [AssignmentOut.from_stored(a) for a in repository.effective_assignments(db, member.id)]
+
+
+@router.get("/work-queues")
+def read_work_queues(member: CurrentMember, request: Request, db: Db) -> WorkQueuesOut:
+    """Audit-safe aggregate-only work queue counts for the signed-in staff member's visible areas and permissions (D01)."""
+    staff = service.load_staff(db, member.id)
+    if not staff.assignments:
+        return WorkQueuesOut()
+    settings = request.app.state.settings
+    if settings.staff_mfa_required and not member.mfa_verified:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="mfa_required")
+    return service.work_queues(db, staff)
 
 
 @router.get("/catalogue")

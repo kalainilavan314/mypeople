@@ -4,19 +4,23 @@ Each change and its audit entry are saved in one transaction (BRD §13.8), so
 there is never a grant without a record of who made it.
 """
 
+import logging
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import NoReturn
 
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.modules.access import repository, rules
+from app.modules.access import repository, rules, schemas
 from app.core.permissions import Tier, default_permissions, grant_for
 from app.modules.access.repository import StoredAssignment
 from app.modules.access.rules import Area, AreaPath, AssignmentRequest, Grantee
 from app.modules.audit import service as audit
 from app.modules.membership import repository as membership_repository
+
+logger = logging.getLogger(__name__)
 
 
 class AssignmentRefused(Exception):
@@ -329,3 +333,235 @@ def visible_assignments(db: Session, staff: Staff, state: str, limit: int) -> li
 
 def to_request(member_id: uuid.UUID, tier: Tier, area: Area, permissions: list[str]) -> AssignmentRequest:
     return AssignmentRequest(member_id=member_id, tier=tier, area=area, permissions=frozenset(permissions))
+
+
+def work_queues(db: Session, staff: Staff) -> schemas.WorkQueuesOut:
+    """Aggregate work queue counts for the staff member's visible areas and permissions (D01).
+
+    Uses true scoped SQL COUNT(*) queries without limit cutoffs. Errors are captured
+    and returned in `unavailable` so failures are never silently swallowed or mistaken
+    for lack of permission.
+    """
+    verification = None
+    appeals = None
+    duplicates = None
+    membership = None
+    events = None
+    gallery_removals = None
+    gallery_albums = None
+    messaging = None
+    configuration = None
+    unavailable: list[str] = []
+
+    rule_assignments = staff.rule_assignments()
+
+    # 1. Identity Reviews (members.verify)
+    if rules.holds(rule_assignments, "members.verify"):
+        try:
+            from app.modules.identity.reviews import service as reviews_service
+
+            counts = reviews_service.queue_counts(db, staff)
+            verification = schemas.VerificationQueueCount(
+                awaiting_review=counts.awaiting_review,
+                needs_update=counts.needs_update,
+                assigned_to_me=counts.assigned_to_me,
+            )
+        except Exception:
+            db.rollback()
+            logger.exception("Failed to query verification queue counts for member %s", staff.member_id)
+            unavailable.append("verification")
+
+    # 2. Appeals (idv.appeal.decide)
+    if rules.holds(rule_assignments, "idv.appeal.decide"):
+        try:
+            areas = visible_areas(staff, "idv.appeal.decide")
+            cond = "WHERE a.state = 'submitted'"
+            params: dict[str, object] = {}
+            if areas is not None:
+                cond += " AND a.area_path && CAST(:areas AS text[])"
+                params["areas"] = areas
+            waiting = db.scalar(text(f"SELECT count(*) FROM identity.identity_appeal a {cond}"), params) or 0
+            appeals = schemas.SimpleQueueCount(waiting=int(waiting))
+        except Exception:
+            db.rollback()
+            logger.exception("Failed to query appeals queue counts for member %s", staff.member_id)
+            unavailable.append("appeals")
+
+    # 3. Duplicate Cases (idv.duplicate.investigate)
+    if rules.holds(rule_assignments, "idv.duplicate.investigate"):
+        try:
+            areas = visible_areas(staff, "idv.duplicate.investigate")
+            cond = "WHERE c.state = 'open'"
+            params = {}
+            if areas is not None:
+                cond += " AND c.area_path && CAST(:areas AS text[])"
+                params["areas"] = areas
+            open_cases = db.scalar(text(f"SELECT count(*) FROM identity.duplicate_case c {cond}"), params) or 0
+            duplicates = schemas.DuplicateQueueCount(open=int(open_cases))
+        except Exception:
+            db.rollback()
+            logger.exception("Failed to query duplicates queue counts for member %s", staff.member_id)
+            unavailable.append("duplicates")
+
+    # 4. Membership Activation (members.activate)
+    if rules.holds(rule_assignments, "members.activate"):
+        try:
+            areas = visible_areas(staff, "members.activate")
+            area_cond = "AND areas.keys && CAST(:areas AS text[])" if areas is not None else ""
+            params = {"areas": areas} if areas is not None else {}
+            sql = f"""
+                SELECT count(*)
+                FROM npm.member m
+                LEFT JOIN membership.membership ms ON ms.member_id = m.id
+                LEFT JOIN geo.district d ON d.district_code = m.district_code
+                CROSS JOIN LATERAL (
+                    SELECT array_remove(
+                        ARRAY['platform', 'province:' || d.province_code, 'district:' || m.district_code,
+                              'ds:' || m.ds_code, 'gn:' || m.gs_code],
+                        NULL
+                    ) AS keys
+                ) areas
+                WHERE m.verified_at IS NOT NULL
+                  AND m.deleted_at IS NULL
+                  AND (ms.state = 'pending' OR (ms.state IS NULL AND m.membership_number IS NULL))
+                  {area_cond}
+            """
+            awaiting = db.scalar(text(sql), params) or 0
+            membership = schemas.MembershipQueueCount(awaiting_activation=int(awaiting))
+        except Exception:
+            db.rollback()
+            logger.exception("Failed to query membership queue counts for member %s", staff.member_id)
+            unavailable.append("membership")
+
+    # 5. Events Management (events.manage)
+    if rules.holds(rule_assignments, "events.manage"):
+        try:
+            areas = visible_areas(staff, "events.manage")
+            cond = "WHERE e.state IN ('draft', 'published')"
+            params = {}
+            if areas is not None:
+                cond += " AND e.area_path && CAST(:areas AS text[])"
+                params["areas"] = areas
+            sql = f"""
+                SELECT
+                    count(*) FILTER (WHERE e.state = 'draft') AS drafts,
+                    count(*) FILTER (WHERE e.state = 'published') AS published,
+                    count(*) AS total
+                FROM events.event e
+                {cond}
+            """
+            row = db.execute(text(sql), params).one()
+            events = schemas.EventsQueueCount(
+                drafts=int(row.drafts or 0),
+                published=int(row.published or 0),
+                total=int(row.total or 0),
+            )
+        except Exception:
+            db.rollback()
+            logger.exception("Failed to query events queue counts for member %s", staff.member_id)
+            unavailable.append("events")
+
+    # 6. Photo Removal Requests (gallery.takedown)
+    if rules.holds(rule_assignments, "gallery.takedown"):
+        try:
+            areas = visible_areas(staff, "gallery.takedown")
+            cond = "WHERE r.state = 'open'"
+            params = {}
+            if areas is not None:
+                cond += " AND r.area_path && CAST(:areas AS text[])"
+                params["areas"] = areas
+            sql = f"""
+                SELECT
+                    count(*) AS open,
+                    count(*) FILTER (WHERE r.due_at < now() + interval '6 hours' OR r.escalated_at IS NOT NULL) AS escalated_18h
+                FROM content.removal_request r
+                {cond}
+            """
+            row = db.execute(text(sql), params).one()
+            gallery_removals = schemas.GalleryRemovalsQueueCount(
+                open=int(row.open or 0),
+                escalated_18h=int(row.escalated_18h or 0),
+            )
+        except Exception:
+            db.rollback()
+            logger.exception("Failed to query gallery removals queue counts for member %s", staff.member_id)
+            unavailable.append("gallery_removals")
+
+    # 7. Gallery Album Publishing (gallery.publish)
+    if rules.holds(rule_assignments, "gallery.publish"):
+        try:
+            areas = visible_areas(staff, "gallery.publish")
+            cond = "WHERE a.state IN ('draft', 'submitted')"
+            params = {}
+            if areas is not None:
+                cond += " AND a.area_path && CAST(:areas AS text[])"
+                params["areas"] = areas
+            sql = f"""
+                SELECT
+                    count(*) FILTER (WHERE a.state = 'draft') AS drafts,
+                    count(*) FILTER (WHERE a.state = 'submitted') AS submitted
+                FROM content.album a
+                {cond}
+            """
+            row = db.execute(text(sql), params).one()
+            gallery_albums = schemas.GalleryAlbumsQueueCount(
+                drafts=int(row.drafts or 0),
+                submitted=int(row.submitted or 0),
+            )
+        except Exception:
+            db.rollback()
+            logger.exception("Failed to query gallery albums queue counts for member %s", staff.member_id)
+            unavailable.append("gallery_albums")
+
+    # 8. Broadcast Messaging (notifications.send)
+    if rules.holds(rule_assignments, "notifications.send"):
+        try:
+            areas = visible_areas(staff, "notifications.send")
+            cond = "WHERE b.state IN ('draft', 'pending_approval')"
+            params = {}
+            if areas is not None:
+                cond += " AND b.area_path && CAST(:areas AS text[])"
+                params["areas"] = areas
+            sql = f"""
+                SELECT
+                    count(*) FILTER (WHERE b.state = 'draft') AS drafts,
+                    count(*) FILTER (WHERE b.state = 'pending_approval') AS pending_approval
+                FROM notifications.broadcast b
+                {cond}
+            """
+            row = db.execute(text(sql), params).one()
+            messaging = schemas.BroadcastsQueueCount(
+                drafts=int(row.drafts or 0),
+                pending_approval=int(row.pending_approval or 0),
+            )
+        except Exception:
+            db.rollback()
+            logger.exception("Failed to query messaging queue counts for member %s", staff.member_id)
+            unavailable.append("messaging")
+
+    # 9. Configuration & Feature Flags (system.configure)
+    if rules.holds(rule_assignments, "system.configure"):
+        try:
+            from app.modules.features import service as features_service
+
+            registry = features_service.registry(db)
+            total = len(registry)
+            enabled = sum(1 for f in registry if f.enabled)
+            configuration = schemas.ConfigurationQueueCount(total=total, enabled=enabled)
+        except Exception:
+            db.rollback()
+            logger.exception("Failed to query configuration queue counts for member %s", staff.member_id)
+            unavailable.append("configuration")
+
+    return schemas.WorkQueuesOut(
+        verification=verification,
+        appeals=appeals,
+        duplicates=duplicates,
+        membership=membership,
+        events=events,
+        gallery_removals=gallery_removals,
+        gallery_albums=gallery_albums,
+        messaging=messaging,
+        configuration=configuration,
+        unavailable=unavailable,
+    )

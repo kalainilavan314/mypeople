@@ -41,6 +41,8 @@ export type EventPassCode = Schemas['PassCodeOut'];
 export type ManagedEvent = Schemas['ManagedEventOut'];
 export type EventCreateInput = Schemas['EventCreateIn'];
 export type EventUpdateInput = Schemas['EventUpdateIn'];
+export type EventType = Schemas['EventCreateIn']['eventType'];
+export type AreaLevel = Schemas['AreaRef']['level'];
 export type PassScan = Schemas['PassScanOut'];
 export type ManualCheckIn = Schemas['ManualCheckInOut'];
 export type EventRoster = Schemas['RosterOut'];
@@ -51,6 +53,7 @@ export type GalleryPhoto = Schemas['GalleryPhotoOut'];
 export type ManagedAlbum = Schemas['ManagedAlbumOut'];
 export type AlbumCreateInput = Schemas['AlbumCreateIn'];
 export type AlbumUpdateInput = Schemas['AlbumUpdateIn'];
+export type AlbumCategory = Schemas['AlbumCreateIn']['category'];
 export type PhotoCaptionsInput = Schemas['PhotoCaptionsIn'];
 export type RemovalRequestInput = Schemas['RemovalRequestIn'];
 export type PublicRemovalRequestInput = Schemas['PublicRemovalRequestIn'];
@@ -91,6 +94,7 @@ export type ElectionPeriodState = ElectionPeriod['state'];
 export type ElectionPeriodInput = Schemas['PeriodIn'];
 export type DeclaredElectionPeriod = Schemas['DeclaredOut'];
 export type ElectionPeriodFile = Schemas['PeriodFileOut'];
+export type WorkQueues = Schemas['WorkQueuesOut'];
 export type EventFilters = {
   /** 'mine' (the default) narrows to the member's area; 'all' widens it (BR-057). */
   scope?: 'mine' | 'all';
@@ -376,6 +380,8 @@ export function createApiClient({
 
     /** The signed-in person's staff assignments; empty for members. The API still checks every action. */
     getMyAccess: () => request<Assignment[]>('GET', '/v1/access/me'),
+    /** D01: Aggregate work queue counts for the caller's permitted areas. Null for unheld permissions. */
+    getWorkQueues: () => request<WorkQueues>('GET', '/v1/access/work-queues'),
     /** Tiers and the permission matrix, for the W09 form. Needs roles.assign. */
     getAccessCatalogue: () => request<AccessCatalogue>('GET', '/v1/access/catalogue'),
     /** W09: assignments in the caller's own areas, newest first. Needs roles.assign. */

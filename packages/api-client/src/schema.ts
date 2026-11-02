@@ -494,6 +494,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/access/work-queues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Work Queues
+         * @description Audit-safe aggregate-only work queue counts for the signed-in staff member's visible areas and permissions (D01).
+         */
+        get: operations["read_work_queues_v1_access_work_queues_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/access/catalogue": {
         parameters: {
             query?: never;
@@ -3585,6 +3605,13 @@ export interface components {
             /** Bodyta */
             bodyTa?: string | null;
         };
+        /** BroadcastsQueueCount */
+        BroadcastsQueueCount: {
+            /** Drafts */
+            drafts: number;
+            /** Pendingapproval */
+            pendingApproval: number;
+        };
         /** CancelIn */
         CancelIn: {
             /** Reason */
@@ -3813,6 +3840,13 @@ export interface components {
             sent: boolean;
             /** Devcode */
             devCode?: string | null;
+        };
+        /** ConfigurationQueueCount */
+        ConfigurationQueueCount: {
+            /** Total */
+            total: number;
+            /** Enabled */
+            enabled: number;
         };
         /** ConsentInput */
         ConsentInput: {
@@ -4080,6 +4114,11 @@ export interface components {
              * Format: uuid
              */
             otherMemberId: string;
+        };
+        /** DuplicateQueueCount */
+        DuplicateQueueCount: {
+            /** Open */
+            open: number;
         };
         /**
          * ElectionBannerOut
@@ -4461,6 +4500,15 @@ export interface components {
             /** Admitspending */
             admitsPending?: boolean | null;
         };
+        /** EventsQueueCount */
+        EventsQueueCount: {
+            /** Drafts */
+            drafts: number;
+            /** Published */
+            published: number;
+            /** Total */
+            total: number;
+        };
         /** EvidenceVersion */
         EvidenceVersion: {
             /**
@@ -4520,6 +4568,13 @@ export interface components {
             /** Gaterecordedat */
             gateRecordedAt: string | null;
         };
+        /** GalleryAlbumsQueueCount */
+        GalleryAlbumsQueueCount: {
+            /** Drafts */
+            drafts: number;
+            /** Submitted */
+            submitted: number;
+        };
         /**
          * GalleryPhotoOut
          * @description A photo with its captions. The image is at /v1/content/photos/{id}/thumb or /display;
@@ -4546,6 +4601,13 @@ export interface components {
             height: number;
             /** Blurred */
             blurred: boolean;
+        };
+        /** GalleryRemovalsQueueCount */
+        GalleryRemovalsQueueCount: {
+            /** Open */
+            open: number;
+            /** Escalated18H */
+            escalated18H: number;
         };
         /** GateIn */
         GateIn: {
@@ -5053,6 +5115,11 @@ export interface components {
             changedAt: string | null;
             /** History */
             history: components["schemas"]["MembershipChangeOut"][];
+        };
+        /** MembershipQueueCount */
+        MembershipQueueCount: {
+            /** Awaitingactivation */
+            awaitingActivation: number;
         };
         /** MfaCodeInput */
         MfaCodeInput: {
@@ -6331,6 +6398,11 @@ export interface components {
             refreshToken: string;
             member: components["schemas"]["MemberProfile"];
         };
+        /** SimpleQueueCount */
+        SimpleQueueCount: {
+            /** Waiting */
+            waiting: number;
+        };
         /** StepOut */
         StepOut: {
             /** Name */
@@ -6440,6 +6512,15 @@ export interface components {
             /** Context */
             ctx?: Record<string, never>;
         };
+        /** VerificationQueueCount */
+        VerificationQueueCount: {
+            /** Awaitingreview */
+            awaitingReview: number;
+            /** Needsupdate */
+            needsUpdate: number;
+            /** Assignedtome */
+            assignedToMe: number;
+        };
         /**
          * ViewLinkOut
          * @description A path on this API that shows one image to the reviewer it was issued to, until expiresAt.
@@ -6452,6 +6533,23 @@ export interface components {
              * Format: date-time
              */
             expiresAt: string;
+        };
+        /**
+         * WorkQueuesOut
+         * @description Aggregate work queue counts for the caller's permitted areas (D01). Null for unheld permissions.
+         */
+        WorkQueuesOut: {
+            verification?: components["schemas"]["VerificationQueueCount"] | null;
+            appeals?: components["schemas"]["SimpleQueueCount"] | null;
+            duplicates?: components["schemas"]["DuplicateQueueCount"] | null;
+            membership?: components["schemas"]["MembershipQueueCount"] | null;
+            events?: components["schemas"]["EventsQueueCount"] | null;
+            galleryRemovals?: components["schemas"]["GalleryRemovalsQueueCount"] | null;
+            galleryAlbums?: components["schemas"]["GalleryAlbumsQueueCount"] | null;
+            messaging?: components["schemas"]["BroadcastsQueueCount"] | null;
+            configuration?: components["schemas"]["ConfigurationQueueCount"] | null;
+            /** Unavailable */
+            unavailable?: string[];
         };
     };
     responses: never;
@@ -7205,6 +7303,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AssignmentOut"][];
+                };
+            };
+        };
+    };
+    read_work_queues_v1_access_work_queues_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkQueuesOut"];
                 };
             };
         };

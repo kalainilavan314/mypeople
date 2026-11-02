@@ -92,3 +92,62 @@ class AssignmentListItemOut(AssignmentOut):
 
     member_code: str
     full_name: str
+
+
+class VerificationQueueCount(CamelModel):
+    awaiting_review: int
+    needs_update: int
+    assigned_to_me: int
+
+
+class SimpleQueueCount(CamelModel):
+    waiting: int
+
+
+class DuplicateQueueCount(CamelModel):
+    open: int
+
+
+class MembershipQueueCount(CamelModel):
+    awaiting_activation: int
+
+
+class EventsQueueCount(CamelModel):
+    drafts: int
+    published: int
+    total: int
+
+
+class GalleryRemovalsQueueCount(CamelModel):
+    open: int
+    escalated_18h: int
+
+
+class GalleryAlbumsQueueCount(CamelModel):
+    drafts: int
+    submitted: int
+
+
+class BroadcastsQueueCount(CamelModel):
+    drafts: int
+    pending_approval: int
+
+
+class ConfigurationQueueCount(CamelModel):
+    total: int
+    enabled: int
+
+
+class WorkQueuesOut(CamelModel):
+    """Aggregate work queue counts for the caller's permitted areas (D01). Null for unheld permissions."""
+
+    verification: VerificationQueueCount | None = None
+    appeals: SimpleQueueCount | None = None
+    duplicates: DuplicateQueueCount | None = None
+    membership: MembershipQueueCount | None = None
+    events: EventsQueueCount | None = None
+    gallery_removals: GalleryRemovalsQueueCount | None = None
+    gallery_albums: GalleryAlbumsQueueCount | None = None
+    messaging: BroadcastsQueueCount | None = None
+    configuration: ConfigurationQueueCount | None = None
+    unavailable: list[str] = Field(default_factory=list)

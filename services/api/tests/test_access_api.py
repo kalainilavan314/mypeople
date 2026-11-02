@@ -224,3 +224,23 @@ def test_an_administrator_lists_assignments_in_their_own_area_only(db_client, db
     assert {str(inside.id), str(outside.id) if other_province else str(inside.id)} <= {item["memberId"] for item in platform}
     listed = next(item for item in regional if item["memberId"] == str(inside.id))
     assert listed["memberCode"] and listed["fullName"] == "Test Member" and listed["tier"] == "3A"
+
+
+# --- Work queues (D01) -----------------------------------------------------------------------------------
+
+
+def test_work_queues_empty_for_regular_member(db_client, auth, create_member):
+    member = create_member()
+    res = db_client.get("/v1/access/work-queues", headers=auth(member))
+    assert res.status_code == 200
+    data = res.json()
+    assert data["verification"] is None
+    assert data["events"] is None
+
+
+def test_work_queues_returns_counts_for_permitted_queues(db_client, auth, super_admin):
+    res = db_client.get("/v1/access/work-queues", headers=auth(super_admin))
+    assert res.status_code == 200
+    data = res.json()
+    assert data["verification"] is not None
+    assert data["configuration"] is not None

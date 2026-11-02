@@ -981,6 +981,36 @@
         ]
       }
     },
+    "/v1/access/work-queues": {
+      "get": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Read Work Queues",
+        "description": "Audit-safe aggregate-only work queue counts for the signed-in staff member's visible areas and permissions (D01).",
+        "operationId": "read_work_queues_v1_access_work_queues_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkQueuesOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/v1/access/catalogue": {
       "get": {
         "tags": [
@@ -10777,6 +10807,24 @@
         "type": "object",
         "title": "BroadcastUpdateIn"
       },
+      "BroadcastsQueueCount": {
+        "properties": {
+          "drafts": {
+            "type": "integer",
+            "title": "Drafts"
+          },
+          "pendingApproval": {
+            "type": "integer",
+            "title": "Pendingapproval"
+          }
+        },
+        "type": "object",
+        "required": [
+          "drafts",
+          "pendingApproval"
+        ],
+        "title": "BroadcastsQueueCount"
+      },
       "CancelIn": {
         "properties": {
           "reason": {
@@ -11453,6 +11501,24 @@
         "title": "CodeSentOut",
         "description": "devCode appears only with SMS_PROVIDER=development, for local testing."
       },
+      "ConfigurationQueueCount": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "enabled": {
+            "type": "integer",
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "enabled"
+        ],
+        "title": "ConfigurationQueueCount"
+      },
       "ConsentInput": {
         "properties": {
           "noticeVersion": {
@@ -12045,6 +12111,19 @@
         ],
         "title": "DuplicateFlagOut",
         "description": "A possible duplicate account (FR-WEB-012): a flag for the reviewer, never a decision."
+      },
+      "DuplicateQueueCount": {
+        "properties": {
+          "open": {
+            "type": "integer",
+            "title": "Open"
+          }
+        },
+        "type": "object",
+        "required": [
+          "open"
+        ],
+        "title": "DuplicateQueueCount"
       },
       "ElectionBannerOut": {
         "properties": {
@@ -12981,6 +13060,29 @@
         "title": "EventUpdateIn",
         "description": "Only the fields sent change; the area stays as created."
       },
+      "EventsQueueCount": {
+        "properties": {
+          "drafts": {
+            "type": "integer",
+            "title": "Drafts"
+          },
+          "published": {
+            "type": "integer",
+            "title": "Published"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "drafts",
+          "published",
+          "total"
+        ],
+        "title": "EventsQueueCount"
+      },
       "EvidenceVersion": {
         "properties": {
           "id": {
@@ -13125,6 +13227,24 @@
         ],
         "title": "FlagOut"
       },
+      "GalleryAlbumsQueueCount": {
+        "properties": {
+          "drafts": {
+            "type": "integer",
+            "title": "Drafts"
+          },
+          "submitted": {
+            "type": "integer",
+            "title": "Submitted"
+          }
+        },
+        "type": "object",
+        "required": [
+          "drafts",
+          "submitted"
+        ],
+        "title": "GalleryAlbumsQueueCount"
+      },
       "GalleryPhotoOut": {
         "properties": {
           "id": {
@@ -13170,6 +13290,24 @@
         ],
         "title": "GalleryPhotoOut",
         "description": "A photo with its captions. The image is at /v1/content/photos/{id}/thumb or /display;\nthere is no download, share or tagging (BR-071)."
+      },
+      "GalleryRemovalsQueueCount": {
+        "properties": {
+          "open": {
+            "type": "integer",
+            "title": "Open"
+          },
+          "escalated18H": {
+            "type": "integer",
+            "title": "Escalated18H"
+          }
+        },
+        "type": "object",
+        "required": [
+          "open",
+          "escalated18H"
+        ],
+        "title": "GalleryRemovalsQueueCount"
       },
       "GateIn": {
         "properties": {
@@ -14594,6 +14732,19 @@
         ],
         "title": "MembershipFileOut",
         "description": "A member's membership for staff: state, whether identity is verified, and every change."
+      },
+      "MembershipQueueCount": {
+        "properties": {
+          "awaitingActivation": {
+            "type": "integer",
+            "title": "Awaitingactivation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "awaitingActivation"
+        ],
+        "title": "MembershipQueueCount"
       },
       "MfaCodeInput": {
         "properties": {
@@ -17712,6 +17863,19 @@
         "title": "SignInResponse",
         "description": "The tokens are returned for mobile apps and the dashboard's server; browsers use the HttpOnly cookies."
       },
+      "SimpleQueueCount": {
+        "properties": {
+          "waiting": {
+            "type": "integer",
+            "title": "Waiting"
+          }
+        },
+        "type": "object",
+        "required": [
+          "waiting"
+        ],
+        "title": "SimpleQueueCount"
+      },
       "StepOut": {
         "properties": {
           "name": {
@@ -17975,6 +18139,29 @@
         ],
         "title": "ValidationError"
       },
+      "VerificationQueueCount": {
+        "properties": {
+          "awaitingReview": {
+            "type": "integer",
+            "title": "Awaitingreview"
+          },
+          "needsUpdate": {
+            "type": "integer",
+            "title": "Needsupdate"
+          },
+          "assignedToMe": {
+            "type": "integer",
+            "title": "Assignedtome"
+          }
+        },
+        "type": "object",
+        "required": [
+          "awaitingReview",
+          "needsUpdate",
+          "assignedToMe"
+        ],
+        "title": "VerificationQueueCount"
+      },
       "ViewLinkOut": {
         "properties": {
           "url": {
@@ -17994,6 +18181,110 @@
         ],
         "title": "ViewLinkOut",
         "description": "A path on this API that shows one image to the reviewer it was issued to, until expiresAt."
+      },
+      "WorkQueuesOut": {
+        "properties": {
+          "verification": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerificationQueueCount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "appeals": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SimpleQueueCount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "duplicates": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DuplicateQueueCount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "membership": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MembershipQueueCount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "events": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventsQueueCount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "galleryRemovals": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GalleryRemovalsQueueCount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "galleryAlbums": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GalleryAlbumsQueueCount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "messaging": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BroadcastsQueueCount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "configuration": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConfigurationQueueCount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unavailable": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unavailable"
+          }
+        },
+        "type": "object",
+        "title": "WorkQueuesOut",
+        "description": "Aggregate work queue counts for the caller's permitted areas (D01). Null for unheld permissions."
       }
     },
     "securitySchemes": {
