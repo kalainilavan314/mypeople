@@ -28,8 +28,8 @@ def read_profile(member: CurrentMember, db: Db) -> ProfileOut:
 
 @router.patch("")
 def update_profile(body: ProfileUpdateIn, member: CurrentMember, request: Request, db: Db) -> ProfileOut:
-    """Display name and gender only (FR-PROF-003). The legal name, date of birth and ID number are
-    not fields here at all."""
+    """Display name, gender and language preference (FR-PROF-003, FR-PROF-011). The legal name,
+    date of birth and ID number are not fields here at all."""
     return ProfileOut.build(service.update(db, member.id, body.model_dump(exclude_unset=True), client_ip(request)))
 
 

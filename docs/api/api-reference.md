@@ -105,7 +105,7 @@ Writes that carry the session cookie and come from another website are refused w
 
 | Endpoint | Needs | Success | Errors |
 |---|---|---|---|
-| `GET /v1/profile`, `PATCH /v1/profile` body `{displayName?, gender?}` | a session | `200` the profile with `lockedFields`, `mobileMasked`, `verificationValidUntil`, `openAreaChange` | `401` |
+| `GET /v1/profile`, `PATCH /v1/profile` body `{displayName?, gender?, language?: "ta" \| "en"}` | a session | `200` the profile with `lockedFields`, `mobileMasked`, `verificationValidUntil`, `openAreaChange`, `language` | `401`, `422` |
 | `GET /v1/profile/activity?kind&limit` | a session | `200` receipts newest first | `422` unknown kind |
 | `GET`/`PUT /v1/profile/survey-answers` body `{answers}`, `DELETE` | a session | `200` the answers; `204` | `422` |
 | `GET /v1/profile/identity-data` | a session | `200` purpose and retention of each kind of identity data | `401` |

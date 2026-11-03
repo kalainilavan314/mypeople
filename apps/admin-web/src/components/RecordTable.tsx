@@ -1,5 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+
+import { useLocale } from '@/lib/i18n/context';
 
 export type Column<T> = { header: ReactNode; cell: (row: T) => ReactNode };
 
@@ -17,6 +21,8 @@ type Props<T> = {
 
 /** A queue table: the reference links to the record; nothing is decided from the list. */
 export function RecordTable<T>({ caption, rows, columns, href, linkText, rowKey, empty, refHeader }: Props<T>) {
+  const locale = useLocale();
+
   if (rows.length === 0) {
     if (typeof empty === 'string') {
       return (
@@ -35,14 +41,13 @@ export function RecordTable<T>({ caption, rows, columns, href, linkText, rowKey,
           <tr>
             <th scope="col" className="px-3 py-2">
               {refHeader ?? (
-                <>
-                  <span lang="ta" className="block text-text font-semibold">குறிப்பு எண்</span>
-                  <span lang="en" className="block text-[11px] text-muted font-normal">Reference</span>
-                </>
+                <span lang={locale} className="font-semibold text-text">
+                  {locale === 'ta' ? 'குறிப்பு எண்' : 'Reference'}
+                </span>
               )}
             </th>
             {columns.map((column, idx) => (
-              <th key={idx} scope="col" className="px-3 py-2">
+              <th key={idx} scope="col" className="px-3 py-2 font-semibold text-text">
                 {column.header}
               </th>
             ))}

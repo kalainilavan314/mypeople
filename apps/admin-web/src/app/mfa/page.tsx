@@ -3,8 +3,10 @@ import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 
 import { Feedback } from '@/components/Feedback';
+import { LanguageSelector } from '@/components/LanguageSelector';
 import { PageHeader } from '@/components/PageHeader';
 import { SubmitButton } from '@/components/SubmitButton';
+import { getAdminLocale } from '@/lib/i18n';
 import { readStaffToken, staffApi } from '@/lib/session';
 
 import { giveCode } from './actions';
@@ -13,7 +15,10 @@ import { Enrolment } from './Enrolment';
 export default function MfaPage(props: PageProps<'/mfa'>) {
   return (
     <main className="mx-auto flex max-w-md flex-col gap-6 px-4 py-12">
-      <PageHeader ta="இரண்டாவது காரணி" en="Authenticator code" />
+      <div className="flex items-center justify-between">
+        <PageHeader ta="இரண்டாவது காரணி" en="Authenticator code" />
+        <LanguageSelector />
+      </div>
       <Suspense fallback={<p className="text-muted">… Checking</p>}>
         <MfaStep searchParams={props.searchParams} />
       </Suspense>
@@ -31,30 +36,31 @@ async function MfaStep({ searchParams }: { searchParams: PageProps<'/mfa'>['sear
     throw error;
   }
   if (status.sessionVerified) redirect('/');
+  const locale = await getAdminLocale();
   const params = await searchParams;
   const enrolling = !status.enabled;
 
   return (
     <>
       <div className="flex flex-col gap-0.5 text-sm text-muted">
-        <p lang="ta">
+        <p lang={locale}>
           {enrolling
-            ? 'பணியாளர்கள் ஒவ்வொரு அமர்விலும் அங்கீகாரக் குறியீட்டை உள்ளிட வேண்டும். செயலியைப் பயன்படுத்தி குறியீட்டை ஸ்கேன் செய்யவும் அல்லது விசையை உள்ளிட்டு, தோன்றும் ஆறு இலக்கக் குறியீட்டைப் பதிவுசெய்யவும்.'
-            : 'உங்கள் அங்கீகாரச் செயலியைத் திறந்து "என் மக்கள்" (My People) கணக்கிற்கான 6 இலக்கக் குறியீட்டை உள்ளிடவும்.'}
-        </p>
-        <p lang="en" className="text-xs">
-          {enrolling
-            ? 'Staff give an authenticator code in every session. Set one up: scan the code with an authenticator app or type the key, then enter the six-digit code it shows.'
-            : 'Open your authenticator app and enter the six-digit code for My People.'}
+            ? locale === 'ta'
+              ? 'பணியாளர்கள் ஒவ்வொரு அமர்விலும் அங்கீகாரக் குறியீட்டை உள்ளிட வேண்டும். செயலியைப் பயன்படுத்தி குறியீட்டை ஸ்கேன் செய்யவும் அல்லது விசையை உள்ளிட்டு, தோன்றும் ஆறு இலக்கக் குறியீட்டைப் பதிவுசெய்யவும்.'
+              : 'Staff give an authenticator code in every session. Set one up: scan the code with an authenticator app or type the key, then enter the six-digit code it shows.'
+            : locale === 'ta'
+              ? 'உங்கள் அங்கீகாரச் செயலியைத் திறந்து "என் மக்கள்" (My People) கணக்கிற்கான 6 இலக்கக் குறியீட்டை உள்ளிடவும்.'
+              : 'Open your authenticator app and enter the six-digit code for My People.'}
         </p>
       </div>
+
       <Feedback error={params.error} />
       {enrolling ? <Enrolment /> : null}
+
       <form action={giveCode} className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4">
         <input type="hidden" name="enrolling" value={enrolling ? '1' : '0'} />
-        <label className="flex flex-col gap-1 text-sm font-semibold">
-          <span lang="ta" className="text-xs text-muted">ஆறு இலக்கக் குறியீடு *</span>
-          <span lang="en" className="text-xs">Six-digit code *</span>
+        <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+          <span lang={locale}>{locale === 'ta' ? 'ஆறு இலக்கக் குறியீடு *' : 'Six-digit code *'}</span>
           <input
             name="code"
             required
@@ -66,10 +72,7 @@ async function MfaStep({ searchParams }: { searchParams: PageProps<'/mfa'>['sear
           />
         </label>
         <SubmitButton>
-          <span className="flex flex-col items-center">
-            <span lang="ta">உறுதிப்படுத்துக</span>
-            <span lang="en" className="text-xs font-normal opacity-90">Confirm</span>
-          </span>
+          <span lang={locale}>{locale === 'ta' ? 'உறுதிப்படுத்துக' : 'Confirm'}</span>
         </SubmitButton>
       </form>
     </>

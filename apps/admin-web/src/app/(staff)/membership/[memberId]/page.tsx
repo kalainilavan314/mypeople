@@ -8,9 +8,9 @@ import { StateTag } from '@/components/StateTag';
 import { SubmitButton } from '@/components/SubmitButton';
 import { changeMembership } from '@/features/members/actions';
 import { formatDateTime, words } from '@/lib/format';
-import { messageFor } from '@/lib/messages';
+import { getAdminLocale, getLocalizedMessage, getLocalizedProblem } from '@/lib/i18n';
 import { staffApi } from '@/lib/session';
-import { isRefusal } from '@/lib/staff';
+import { isRefusal, requireStaff } from '@/lib/staff';
 
 const one = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
 
@@ -51,13 +51,15 @@ export default function MembershipFilePage(props: PageProps<'/membership/[member
 }
 
 async function FileView({ params, searchParams }: Pick<PageProps<'/membership/[memberId]'>, 'params' | 'searchParams'>) {
+  const staff = await requireStaff();
   const { memberId } = await params;
   const query = await searchParams;
+  const locale = await getAdminLocale(staff.member.language);
   let file: MembershipFile;
   try {
     file = await (await staffApi()).getMembership(memberId);
   } catch (error) {
-    if (isRefusal(error)) return <p className="text-error">! {messageFor(error.code)}</p>;
+    if (isRefusal(error)) return <p className="text-error">! {getLocalizedMessage(error.code, locale)}</p>;
     throw error;
   }
   const allowed = Object.entries(CHANGES).filter(([, change]) => change.from.includes(file.state));
@@ -68,29 +70,31 @@ async function FileView({ params, searchParams }: Pick<PageProps<'/membership/[m
     <>
       <PageHeader ta="உறுப்புரிமைக் கோப்பு" en="Membership file">
         <Link href="/membership" className="text-sm text-primary underline">
-          <span lang="ta">உறுப்பினர் பட்டியலுக்குத் திரும்புக</span> · Back to member list
+          <span lang={locale}>{locale === 'ta' ? 'உறுப்பினர் பட்டியலுக்குத் திரும்புக' : 'Back to member list'}</span>
         </Link>
       </PageHeader>
       <Feedback error={query.error} problems={query.problems} done={query.done} />
 
       <section className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 text-sm" aria-label="Membership status">
         <div>
-          <span lang="ta" className="block text-xs font-semibold text-muted">தற்போதைய உறுப்புரிமை நிலை</span>
-          <span lang="en" className="block text-xs text-muted">Current membership state</span>
+          <span lang={locale} className="block text-xs font-semibold text-muted">
+            {locale === 'ta' ? 'தற்போதைய உறுப்புரிமை நிலை' : 'Current membership state'}
+          </span>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <StateTag state={file.state} />
-            {file.reasonCode ? <span className="font-medium text-text">· {REASON_LABELS[file.reasonCode]?.ta ?? words(file.reasonCode)}</span> : ''}
-            <span className="text-muted">· <span lang="ta">மாற்றப்பட்ட திகதி:</span> {formatDateTime(file.changedAt)}</span>
+            {file.reasonCode ? <span className="font-medium text-text">· {REASON_LABELS[file.reasonCode]?.[locale] ?? words(file.reasonCode)}</span> : ''}
+            <span className="text-muted">· {locale === 'ta' ? 'மாற்றப்பட்ட திகதி:' : 'Changed:'} {formatDateTime(file.changedAt)}</span>
           </div>
         </div>
         <div className="rounded-lg border border-line bg-surface p-3 text-xs">
-          <span lang="ta" className="block text-xs font-semibold text-muted">அடையாளச் சரிபார்ப்பு நிலை</span>
-          <span lang="en" className="block text-xs text-muted">Identity verification status</span>
+          <span lang={locale} className="block text-xs font-semibold text-muted">
+            {locale === 'ta' ? 'அடையாளச் சரிபார்ப்பு நிலை' : 'Identity verification status'}
+          </span>
           <p className="mt-1 font-semibold text-text">
             {file.identityVerified ? (
-              <span className="text-success"><span lang="ta">✓ அடையாளம் உறுதிசெய்யப்பட்டது</span> · Verified</span>
+              <span className="text-success"><span lang={locale}>✓ {locale === 'ta' ? 'அடையாளம் உறுதிசெய்யப்பட்டது' : 'Identity verified'}</span></span>
             ) : (
-              <span className="text-error"><span lang="ta">! அடையாளம் உறுதிசெய்யப்படவில்லை (செயற்படுத்தலுக்கு சரிபார்க்கப்பட்ட அடையாளம் தேவை)</span> · Not verified (activation requires a verified identity)</span>
+              <span className="text-error"><span lang={locale}>! {locale === 'ta' ? 'அடையாளம் உறுதிசெய்யப்படவில்லை (செயற்படுத்தலுக்கு சரிபார்க்கப்பட்ட அடையாளம் தேவை)' : 'Not verified (activation requires a verified identity)'}</span></span>
             )}
           </p>
         </div>
@@ -100,13 +104,15 @@ async function FileView({ params, searchParams }: Pick<PageProps<'/membership/[m
         <form action={changeMembership} className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4">
           <input type="hidden" name="memberId" value={memberId} />
           <div>
-            <p lang="ta" className="text-xs font-semibold text-primary">உறுப்புரிமை நிலை மாற்றம்</p>
-            <h2 className="text-base font-bold">Record state transition</h2>
+            <h2 className="text-base font-bold text-text">
+              <span lang={locale}>{locale === 'ta' ? 'உறுப்புரிமை நிலை மாற்றம்' : 'Record state transition'}</span>
+            </h2>
           </div>
 
-          <label className="flex flex-col gap-1 text-sm font-semibold">
-            <span lang="ta" className="text-xs text-muted">நிலை மாற்றம் மற்றும் காரணம்</span>
-            <span lang="en" className="text-xs">Change and reason</span>
+          <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+            <span lang={locale} className="text-xs">
+              {locale === 'ta' ? 'நிலை மாற்றம் மற்றும் காரணம் *' : 'Change and reason *'}
+            </span>
             <select
               id="input-change"
               name="change"
@@ -114,13 +120,13 @@ async function FileView({ params, searchParams }: Pick<PageProps<'/membership/[m
               defaultValue=""
               className="min-h-11 rounded-lg border border-line px-2 font-normal">
               <option value="" disabled>
-                தெரிவுசெய்க… · Choose…
+                {locale === 'ta' ? 'தெரிவுசெய்க…' : 'Choose…'}
               </option>
               {allowed.map(([action, change]) => (
-                <optgroup key={action} label={`${ACTION_LABELS[action]?.ta ?? action} · ${ACTION_LABELS[action]?.en ?? action}`}>
+                <optgroup key={action} label={ACTION_LABELS[action]?.[locale] ?? action}>
                   {change.reasons.map((reason) => (
                     <option key={reason} value={`${action}:${reason}`}>
-                      {ACTION_LABELS[action]?.ta ?? action}: {REASON_LABELS[reason]?.ta ?? words(reason)} · {ACTION_LABELS[action]?.en ?? action}: {REASON_LABELS[reason]?.en ?? words(reason)}
+                      {ACTION_LABELS[action]?.[locale] ?? action}: {REASON_LABELS[reason]?.[locale] ?? words(reason)}
                     </option>
                   ))}
                 </optgroup>
@@ -128,9 +134,10 @@ async function FileView({ params, searchParams }: Pick<PageProps<'/membership/[m
             </select>
           </label>
 
-          <label className="flex flex-col gap-1 text-sm font-semibold">
-            <span lang="ta" className="text-xs text-muted">விளக்கக் குறிப்பு (“ஏனையவை” காரணத்திற்கு அவசியமானது)</span>
-            <span lang="en" className="text-xs">Note (needed for “other”)</span>
+          <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+            <span lang={locale} className="text-xs">
+              {locale === 'ta' ? 'விளக்கக் குறிப்பு (“ஏனையவை” காரணத்திற்கு அவசியமானது)' : 'Note (needed for “other”)'}
+            </span>
             <textarea
               id="input-note"
               name="note"
@@ -143,19 +150,19 @@ async function FileView({ params, searchParams }: Pick<PageProps<'/membership/[m
           </label>
           {hasProblem('note_required') ? (
             <p id="field-error-note" role="alert" className="text-xs font-semibold text-error">
-              <span lang="ta">! “ஏனையவை” காரணத்தைத் தெரிவுசெய்யும்போது விளக்கக் குறிப்பு அவசியமாகும்.</span> · Note required.
+              ! {getLocalizedProblem('note_required', locale)}
             </p>
           ) : null}
 
           <div className="rounded-lg border border-line bg-surface p-3 text-xs text-muted">
-            <p lang="ta" className="font-semibold text-text">நிலை மாற்ற அறிவிப்பு</p>
-            <p lang="en" className="text-[11px] font-semibold text-muted">Status transition notice</p>
+            <p className="font-semibold text-text">
+              <span lang={locale}>{locale === 'ta' ? 'நிலை மாற்ற அறிவிப்பு' : 'Status transition notice'}</span>
+            </p>
             <p className="mt-1">
-              <span lang="ta" className="block text-text font-medium">
-                செயற்படுத்தல் மூலம் வாக்களிக்கும் உரிமை, உத்தியோகபூர்வ எண்ணிம உறுப்பினர் அட்டை மற்றும் நிகழ்வுப் பதிவு உரிமைகள் கிடைக்கின்றன. இடைநிறுத்தல் அல்லது முடக்குதல் மூலம் அனைத்து உள்சேவைகளும் பணியாளர் பொறுப்புகளும் முடக்கப்படும்; இவை தணிக்கைப் பதிவேட்டில் நிரந்தரமாகப் பதிவுசெய்யப்படும்.
-              </span>
-              <span lang="en" className="mt-0.5 block text-muted">
-                Activation enables civic rights, official digital membership credentials, and event registration. Suspension or inactivation revokes access to internal services, freezes any held staff assignments, and is recorded in the permanent audit trail.
+              <span lang={locale} className="block text-text font-medium">
+                {locale === 'ta'
+                  ? 'செயற்படுத்தல் மூலம் வாக்களிக்கும் உரிமை, உத்தியோகபூர்வ எண்ணிம உறுப்பினர் அட்டை மற்றும் நிகழ்வுப் பதிவு உரிமைகள் கிடைக்கின்றன. இடைநிறுத்தல் அல்லது முடக்குதல் மூலம் அனைத்து உள்சேவைகளும் பணியாளர் பொறுப்புகளும் முடக்கப்படும்; இவை தணிக்கைப் பதிவேட்டில் நிரந்தரமாகப் பதிவுசெய்யப்படும்.'
+                  : 'Activation enables civic rights, official digital membership credentials, and event registration. Suspension or inactivation revokes access to internal services, freezes any held staff assignments, and is recorded in the permanent audit trail.'}
               </span>
             </p>
           </div>
@@ -171,56 +178,57 @@ async function FileView({ params, searchParams }: Pick<PageProps<'/membership/[m
               aria-describedby={hasProblem('confirmation_required') ? 'field-error-confirm' : undefined}
               className="mt-0.5 rounded border-line"
             />
-            <span>
-              <span lang="ta" className="block font-semibold text-text">
-                இந்த நிலை மாற்றமும் அதன் காரணமும் சரியானவை என உறுதிப்படுத்துகிறேன்.
-              </span>
-              <span lang="en" className="block text-muted">
-                I confirm that this status change and justification are accurate and verified against party records.
-              </span>
+            <span lang={locale} className="font-semibold text-text">
+              {locale === 'ta'
+                ? 'இந்த நிலை மாற்றமும் அதன் காரணமும் சரியானவை என உறுதிப்படுத்துகிறேன்.'
+                : 'I confirm that this status change and justification are accurate and verified against party records.'}
             </span>
           </label>
           {hasProblem('confirmation_required') ? (
             <p id="field-error-confirm" role="alert" className="text-xs font-semibold text-error">
-              <span lang="ta">! தொடர்வதற்கு உறுதிப்படுத்தல் பெட்டி தெரிவுசெய்யப்பட வேண்டும்.</span> · Confirmation required.
+              ! {getLocalizedProblem('confirmation_required', locale)}
             </p>
           ) : null}
 
           <div>
             <SubmitButton>
-              <span className="flex flex-col items-center">
-                <span lang="ta">மாற்றத்தைப் பதிவுசெய்க</span>
-                <span lang="en" className="text-xs font-normal opacity-90">Record the change</span>
-              </span>
+              <span lang={locale}>{locale === 'ta' ? 'மாற்றத்தைப் பதிவுசெய்க' : 'Record the change'}</span>
             </SubmitButton>
           </div>
         </form>
       ) : (
         <div className="rounded-xl border border-line bg-card p-4 text-sm text-muted">
-          <p lang="ta" className="font-semibold text-text">இந்த நிலைக்கு அனுமதிக்கப்பட்ட மேலதிக மாற்றங்கள் எதுவும் இல்லை.</p>
-          <p lang="en" className="mt-0.5">No further state transitions allowed for this membership state.</p>
+          <p lang={locale} className="font-semibold text-text">
+            {locale === 'ta'
+              ? 'இந்த நிலைக்கு அனுமதிக்கப்பட்ட மேலதிக மாற்றங்கள் எதுவும் இல்லை.'
+              : 'No further state transitions allowed for this membership state.'}
+          </p>
         </div>
       )}
 
       <section className="flex flex-col gap-2">
         <div>
-          <p lang="ta" className="text-xs font-semibold text-muted">உறுப்புரிமை நிலை வரலாற்றுப் பதிவேடு</p>
-          <h2 className="text-base font-bold">State transition history</h2>
+          <h2 className="text-base font-bold text-text">
+            <span lang={locale}>{locale === 'ta' ? 'உறுப்புரிமை நிலை வரலாற்றுப் பதிவேடு' : 'State transition history'}</span>
+          </h2>
         </div>
         {file.history.length === 0 ? (
           <div className="rounded-xl border border-line bg-card p-4 text-sm text-muted">
-            <p lang="ta" className="font-semibold text-text">இன்னும் மாற்றங்கள் எதுவும் இல்லை: பதிவுசெய்ததிலிருந்து நிலுவையில் உள்ளது.</p>
-            <p lang="en" className="mt-0.5">No changes yet: pending since sign-up.</p>
+            <p lang={locale} className="font-semibold text-text">
+              {locale === 'ta'
+                ? 'இன்னும் மாற்றங்கள் எதுவும் இல்லை: பதிவுசெய்ததிலிருந்து நிலுவையில் உள்ளது.'
+                : 'No changes yet: pending since sign-up.'}
+            </p>
           </div>
         ) : null}
         <ul className="flex flex-col gap-2">
           {file.history.map((change) => (
             <li key={change.changedAt} className="rounded-xl border border-line bg-card p-3 text-sm">
-              <p className="font-semibold">
-                {ACTION_LABELS[change.action]?.ta ?? words(change.action)}: {change.fromState} → {change.toState}
+              <p className="font-semibold text-text">
+                {ACTION_LABELS[change.action]?.[locale] ?? words(change.action)}: {change.fromState} → {change.toState}
               </p>
               <p className="text-xs text-muted">
-                <span lang="ta">காரணம்:</span> {REASON_LABELS[change.reasonCode]?.ta ?? words(change.reasonCode)} · {formatDateTime(change.changedAt)}
+                {locale === 'ta' ? 'காரணம்:' : 'Reason:'} {REASON_LABELS[change.reasonCode]?.[locale] ?? words(change.reasonCode)} · {formatDateTime(change.changedAt)}
               </p>
               {change.note ? <p className="mt-1 rounded bg-surface p-2 text-xs text-muted">{change.note}</p> : null}
             </li>

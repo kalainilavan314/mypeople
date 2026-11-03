@@ -21,7 +21,7 @@ Current scope:
 | `GET /v1/geography/districts`, `.../districts/{code}/ds-divisions`, `.../ds-divisions/{code}/gn-divisions` | the area lists, public |
 | `GET /v1/events`, `GET /v1/events/{id}`, `PUT /v1/events/{id}/rsvp`, `GET /v1/events/{id}/pass`, `.../pass/code` | events for members: list with filters, detail, RSVP, the event pass and its 60-second QR code |
 | `GET /v1/events/manage`, `GET /v1/events/manage/{id}`, `POST /v1/events`, `PATCH /v1/events/{id}`, `POST .../publish`, `.../cancel` | the event console; needs `events.manage` over the event's area |
-| `GET`/`PATCH /v1/profile`, `GET /v1/profile/activity`, `GET`/`PUT`/`DELETE /v1/profile/survey-answers`, `GET /v1/profile/identity-data` | the member's profile: locked legal details, display name and gender, My Activity, optional survey answers, the identity-data notice |
+| `GET`/`PATCH /v1/profile`, `GET /v1/profile/activity`, `GET`/`PUT`/`DELETE /v1/profile/survey-answers`, `GET /v1/profile/identity-data` | the member's profile: locked legal details, display name, gender, and language preference (`ta` or `en`), My Activity, optional survey answers, the identity-data notice |
 | `POST /v1/profile/area-changes`, `GET .../mine`, `PUT .../{id}/proof`, `POST .../{id}/withdraw` | GN area-change requests with proof of residence |
 | `GET /v1/profile/area-changes`, `GET .../{id}/proof`, `POST .../{id}/decision` | reviewing area changes; needs `members.verify` over the requested area |
 | `POST /v1/auth/password` | a new password, only with the current one |

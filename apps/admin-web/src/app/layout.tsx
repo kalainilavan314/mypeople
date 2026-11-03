@@ -10,6 +10,8 @@ import type { Metadata } from 'next';
 import type { CSSProperties } from 'react';
 
 import { colors, cssFontStack } from '@my-people/design-tokens';
+import { getAdminLocale } from '@/lib/i18n';
+import { LanguageProvider } from '@/lib/i18n/context';
 
 export const metadata: Metadata = {
   title: 'My People · Administration',
@@ -17,6 +19,8 @@ export const metadata: Metadata = {
   // A staff tool: never listed by search engines.
   robots: { index: false, follow: false },
 };
+
+export const instant = false;
 
 // The design tokens become CSS variables here, and globals.css maps them into
 // Tailwind's theme, so packages/design-tokens stays the one source of colours
@@ -28,10 +32,18 @@ const tokenVariables = {
   '--mp-font-mono': cssFontStack.mono,
 } as CSSProperties;
 
-export default function RootLayout({ children }: LayoutProps<'/'>) {
+export default async function RootLayout({ children }: LayoutProps<'/'>) {
+  const locale = await getAdminLocale();
+
   return (
-    <html lang="en" style={tokenVariables} className="h-full antialiased">
-      <body className="min-h-full bg-page font-sans text-ink">{children}</body>
+    <html
+      lang={locale}
+      dir="ltr"
+      style={tokenVariables}
+      className={`h-full antialiased ${locale === 'ta' ? 'ta' : ''}`}>
+      <body className="min-h-full bg-page font-sans text-ink">
+        <LanguageProvider initialLocale={locale}>{children}</LanguageProvider>
+      </body>
     </html>
   );
 }

@@ -2181,8 +2181,8 @@ export interface paths {
         head?: never;
         /**
          * Update Profile
-         * @description Display name and gender only (FR-PROF-003). The legal name, date of birth and ID number are
-         *     not fields here at all.
+         * @description Display name, gender and language preference (FR-PROF-003, FR-PROF-011). The legal name,
+         *     date of birth and ID number are not fields here at all.
          */
         patch: operations["update_profile_v1_profile_patch"];
         trace?: never;
@@ -5795,6 +5795,12 @@ export interface components {
             /** Gender */
             gender: ("male" | "female" | "other") | null;
             /**
+             * Language
+             * @default ta
+             * @enum {string}
+             */
+            language: "ta" | "en";
+            /**
              * Tier
              * @description As assigned; there is no way to change it here (FR-PROF-002)
              */
@@ -5840,6 +5846,8 @@ export interface components {
             displayName?: string | null;
             /** Gender */
             gender?: ("male" | "female" | "other") | null;
+            /** Language */
+            language?: ("ta" | "en") | null;
         };
         /** ProgressOut */
         ProgressOut: {

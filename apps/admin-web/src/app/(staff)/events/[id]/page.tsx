@@ -7,17 +7,17 @@ import { StateTag } from '@/components/StateTag';
 import { SubmitButton } from '@/components/SubmitButton';
 import { cancelEvent, publishEvent, updateEvent } from '@/features/events/actions';
 import { areaText, formatDateTime, toSriLankaDateTimeInput } from '@/lib/format';
-import { messageFor } from '@/lib/messages';
+import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
 import { staffApi } from '@/lib/session';
-import { isRefusal } from '@/lib/staff';
+import { isRefusal, requireStaff } from '@/lib/staff';
 
 const EVENT_TYPES = [
-  { value: 'community_meeting', label: 'Community meeting' },
-  { value: 'service_day', label: 'Service day' },
-  { value: 'training', label: 'Training' },
-  { value: 'cultural', label: 'Cultural' },
-  { value: 'town_hall', label: 'Town hall' },
-  { value: 'other', label: 'Other' },
+  { value: 'community_meeting', ta: 'சமூகக் கூட்டம்', en: 'Community meeting' },
+  { value: 'service_day', ta: 'சேவை நாள்', en: 'Service day' },
+  { value: 'training', ta: 'பயிற்சி', en: 'Training' },
+  { value: 'cultural', ta: 'கலாச்சார நிகழ்வு', en: 'Cultural' },
+  { value: 'town_hall', ta: 'மக்கள் மன்றம்', en: 'Town hall' },
+  { value: 'other', ta: 'ஏனையவை', en: 'Other' },
 ] as const;
 
 export default function EventDetailPage(props: PageProps<'/events/[id]'>) {
@@ -29,8 +29,10 @@ export default function EventDetailPage(props: PageProps<'/events/[id]'>) {
 }
 
 async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id]'>, 'params' | 'searchParams'>) {
+  const staff = await requireStaff();
   const { id } = await params;
   const query = await searchParams;
+  const locale = await getAdminLocale(staff.member.language);
   const error = Array.isArray(query.error) ? query.error[0] : query.error;
   const problems = Array.isArray(query.problems) ? query.problems[0] : query.problems;
   const done = Array.isArray(query.done) ? query.done[0] : query.done;
@@ -53,9 +55,9 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
       return (
         <div className="flex flex-col gap-4">
           <Link href="/events" className="text-sm font-semibold text-primary underline">
-            ← Back to events
+            <span lang={locale}>{locale === 'ta' ? '← நிகழ்வுகளுக்குத் திரும்புக' : '← Back to events'}</span>
           </Link>
-          <p className="text-error">! {messageFor(err.code)}</p>
+          <p className="text-error">! {getLocalizedMessage(err.code, locale)}</p>
         </div>
       );
     }
@@ -69,9 +71,8 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
   return (
     <>
       <div className="flex items-center gap-2">
-        <Link href="/events" className="flex flex-col text-sm font-semibold text-primary underline">
-          <span lang="ta">← நிகழ்வுகளுக்குத் திரும்புக</span>
-          <span lang="en" className="text-xs font-normal text-muted">Back to events</span>
+        <Link href="/events" className="text-sm font-semibold text-primary underline">
+          <span lang={locale}>{locale === 'ta' ? '← நிகழ்வுகளுக்குத் திரும்புக' : '← Back to events'}</span>
         </Link>
       </div>
 
@@ -81,16 +82,11 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
             <span className="font-mono text-xs text-muted">{event.eventRef}</span>
             <StateTag state={event.state} />
           </div>
-          <h1 className="flex flex-col gap-0.5 text-2xl font-bold">
-            <span lang="ta" className="text-2xl font-bold text-text">
-              {event.titleTa}
-            </span>
-            <span lang="en" className="text-sm font-medium text-muted">
-              {event.titleEn}
-            </span>
+          <h1 lang={locale} className="text-2xl font-bold text-text">
+            {locale === 'ta' ? event.titleTa || event.titleEn : event.titleEn || event.titleTa}
           </h1>
           <p className="text-xs text-muted">
-            Area: {areaText(event.areaKey)} · Type: {event.eventType.replace(/_/g, ' ')}
+            {locale === 'ta' ? 'பகுதி:' : 'Area:'} {areaText(event.areaKey)} · {locale === 'ta' ? 'வகை:' : 'Type:'} {event.eventType.replace(/_/g, ' ')}
           </p>
         </div>
       </header>
@@ -100,38 +96,42 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
       {/* Summary KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-line bg-card p-4">
-          <span className="text-xs text-muted">Schedule & Check-in</span>
+          <span className="text-xs text-muted">{locale === 'ta' ? 'நேர அட்டவணை & வருகைப்பதிவு' : 'Schedule & Check-in'}</span>
           <p className="mt-1 font-semibold">{formatDateTime(event.startsAt)}</p>
-          <p className="text-xs text-muted">until {formatDateTime(event.endsAt)}</p>
+          <p className="text-xs text-muted">{locale === 'ta' ? 'முடிவு:' : 'until'} {formatDateTime(event.endsAt)}</p>
           <p className="mt-1 text-xs text-muted">
-            Check-in: {formatDateTime(event.checkinOpensAt)} – {formatDateTime(event.checkinClosesAt)}
+            {locale === 'ta' ? 'வருகைப்பதிவு:' : 'Check-in:'} {formatDateTime(event.checkinOpensAt)} – {formatDateTime(event.checkinClosesAt)}
           </p>
         </div>
 
         <div className="rounded-xl border border-line bg-card p-4">
-          <span className="text-xs text-muted">RSVP status</span>
+          <span className="text-xs text-muted">{locale === 'ta' ? 'பதிவு நிலை (RSVP)' : 'RSVP status'}</span>
           <p className="mt-1 font-semibold">
-            {event.going} {event.capacity ? `/ ${event.capacity}` : 'going'}
+            {event.going} {event.capacity ? `/ ${event.capacity}` : (locale === 'ta' ? 'பதிவானவர்கள்' : 'going')}
           </p>
-          <p className="text-xs text-muted">{event.waitlisted > 0 ? `${event.waitlisted} on waitlist` : 'Capacity available'}</p>
+          <p className="text-xs text-muted">
+            {event.waitlisted > 0
+              ? `${event.waitlisted} ${locale === 'ta' ? 'காத்திருப்போர் பட்டியலில்' : 'on waitlist'}`
+              : (locale === 'ta' ? 'இடங்கள் உள்ளன' : 'Capacity available')}
+          </p>
         </div>
 
         <div className="rounded-xl border border-line bg-card p-4">
-          <span className="text-xs text-muted">Venue</span>
+          <span className="text-xs text-muted">{locale === 'ta' ? 'நிகழ்விடம்' : 'Venue'}</span>
           <p className="mt-1 font-semibold">{event.venue}</p>
-          {event.meetingPoint ? <p className="text-xs text-muted">Meeting: {event.meetingPoint}</p> : null}
+          {event.meetingPoint ? <p className="text-xs text-muted">{locale === 'ta' ? 'சந்திக்கும் இடம்:' : 'Meeting:'} {event.meetingPoint}</p> : null}
         </div>
       </div>
 
       {isCancelled ? (
         <section aria-labelledby="cancelled-notice" className="rounded-xl border border-error bg-error-bg p-4 text-error">
           <h2 id="cancelled-notice" className="font-bold">
-            ! Event has been cancelled
+            ! {locale === 'ta' ? 'இந்நிகழ்வு ரத்துசெய்யப்பட்டுள்ளது' : 'Event has been cancelled'}
           </h2>
           <p className="mt-1 text-sm">
-            Cancelled on {formatDateTime(event.cancelledAt)}. Reason recorded: {event.cancelReason ?? 'No reason provided.'}
+            {locale === 'ta' ? 'ரத்து செய்யப்பட்ட திகதி:' : 'Cancelled on'} {formatDateTime(event.cancelledAt)}. {locale === 'ta' ? 'காரணம்:' : 'Reason:'} {event.cancelReason ?? (locale === 'ta' ? 'காரணம் குறிப்பிடப்படவில்லை.' : 'No reason provided.')}
           </p>
-          <p className="mt-1 text-xs">All issued event passes are invalidated and members were notified.</p>
+          <p className="mt-1 text-xs">{locale === 'ta' ? 'வழங்கப்பட்ட அனைத்து நுழைவுச்சீட்டுகளும் முடக்கப்பட்டு உறுப்பினர்களுக்கு அறிவிக்கப்பட்டது.' : 'All issued event passes are invalidated and members were notified.'}</p>
         </section>
       ) : null}
 
@@ -139,27 +139,27 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
       {isPublished && attendance ? (
         <section aria-labelledby="attendance-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
           <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-3">
-            <h2 id="attendance-heading" className="text-base font-bold">
-              Attendance roster & check-in
+            <h2 id="attendance-heading" className="text-base font-bold text-text">
+              <span lang={locale}>{locale === 'ta' ? 'வருகைப்பதிவேடு மற்றும் அனுமதி' : 'Attendance roster & check-in'}</span>
             </h2>
             <span className="text-xs text-muted">
-              {attendance.attended} attended of {attendance.expected} expected (
+              {attendance.attended} {locale === 'ta' ? 'பங்கேற்றவர்கள் /' : 'attended of'} {attendance.expected} {locale === 'ta' ? 'எதிர்பார்க்கப்படுபவர்கள்' : 'expected'} (
               {attendance.expected > 0 ? Math.round((attendance.attended / attendance.expected) * 100) : 0}%)
             </span>
           </div>
 
           {attendance.entries.length === 0 ? (
-            <p className="text-sm text-muted">No attendees checked in yet.</p>
+            <p className="text-sm text-muted">{locale === 'ta' ? 'இதுவரை வருகைப்பதிவு எதுவும் செய்யப்படவில்லை.' : 'No attendees checked in yet.'}</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <caption className="sr-only">Attendees list</caption>
                 <thead className="border-b border-line text-xs text-muted">
                   <tr>
-                    <th scope="col" className="px-3 py-2">Member</th>
-                    <th scope="col" className="px-3 py-2">Name</th>
-                    <th scope="col" className="px-3 py-2">Check-in time</th>
-                    <th scope="col" className="px-3 py-2">Method</th>
+                    <th scope="col" className="px-3 py-2 font-semibold text-text">{locale === 'ta' ? 'உறுப்பினர் இலக்கம்' : 'Member'}</th>
+                    <th scope="col" className="px-3 py-2 font-semibold text-text">{locale === 'ta' ? 'பெயர்' : 'Name'}</th>
+                    <th scope="col" className="px-3 py-2 font-semibold text-text">{locale === 'ta' ? 'வருகைப்பதிவு நேரம்' : 'Check-in time'}</th>
+                    <th scope="col" className="px-3 py-2 font-semibold text-text">{locale === 'ta' ? 'முறை' : 'Method'}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line">
@@ -186,11 +186,13 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
       {isDraft ? (
         <section aria-labelledby="publish-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
           <div className="border-b border-line pb-2">
-            <h2 id="publish-heading" className="text-base font-bold">
-              Publish event
+            <h2 id="publish-heading" className="text-base font-bold text-text">
+              <span lang={locale}>{locale === 'ta' ? 'நிகழ்வை வெளியிடல்' : 'Publish event'}</span>
             </h2>
             <p className="text-xs text-muted">
-              Publishing will make this event visible to members in {areaText(event.areaKey)} and open RSVPs.
+              {locale === 'ta'
+                ? `வெளியிடுவதன் மூலம் ${areaText(event.areaKey)} பகுதியிலுள்ள உறுப்பினர்கள் இந்நிகழ்வைக் காணவும் பதிவுசெய்யவும் முடியும்.`
+                : `Publishing will make this event visible to members in ${areaText(event.areaKey)} and open RSVPs.`}
             </p>
           </div>
 
@@ -198,17 +200,20 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
             <input type="hidden" name="eventId" value={event.id} />
 
             <div className="rounded-lg border border-warning/50 bg-warning-bg/30 p-4">
-              <label className="flex items-start gap-2 text-sm font-semibold">
+              <label className="flex items-start gap-2 text-sm font-semibold text-text">
                 <input type="checkbox" name="confirmPublish" value="1" required className="mt-0.5" />
-                <span>
-                  I confirm this event details are verified and ready for public attendance. Publishing cannot be quietly
-                  undone; cancellation requires an audited reason.
+                <span lang={locale}>
+                  {locale === 'ta'
+                    ? 'இந்நிகழ்வு விவரங்கள் சரிபார்க்கப்பட்டு பொது பார்வைக்குத் தயாராக உள்ளன என்பதை உறுதிப்படுத்துகிறேன். வெளியிடப்பட்ட பின் ரத்துசெய்வதற்கு முறையான காரணம் அவசியமாகும்.'
+                    : 'I confirm this event details are verified and ready for public attendance. Publishing cannot be quietly undone; cancellation requires an audited reason.'}
                 </span>
               </label>
             </div>
 
             <div className="flex justify-end">
-              <SubmitButton tone="primary">Publish event now</SubmitButton>
+              <SubmitButton tone="primary">
+                <span lang={locale}>{locale === 'ta' ? 'நிகழ்வை இப்போது வெளியிடுக' : 'Publish event now'}</span>
+              </SubmitButton>
             </div>
           </form>
         </section>
@@ -218,13 +223,18 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
       {!isCancelled ? (
         <section aria-labelledby="edit-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
           <div className="border-b border-line pb-2">
-            <h2 id="edit-heading" className="text-base font-bold">
-              {isDraft ? 'Edit draft details' : 'Update event details'}
+            <h2 id="edit-heading" className="text-base font-bold text-text">
+              <span lang={locale}>
+                {isDraft
+                  ? locale === 'ta' ? 'வரைவு விவரங்களைத் திருத்துக' : 'Edit draft details'
+                  : locale === 'ta' ? 'நிகழ்வு விவரங்களைப் புதுப்பிக்க' : 'Update event details'}
+              </span>
             </h2>
             {isPublished ? (
               <p className="text-xs text-warning">
-                ! Note: Modifying dates, timing, or venue on a published event will automatically trigger notification SMS
-                updates to members who have RSVP&apos;d.
+                ! {locale === 'ta'
+                  ? 'வெளியிடப்பட்ட நிகழ்வில் திகதிகள், நேரம் அல்லது இடத்தை மாற்றுவது பதிவுசெய்த உறுப்பினர்களுக்கு தானியங்கி குறுஞ்செய்தி அறிவிப்பை அனுப்பும்.'
+                  : 'Modifying dates, timing, or venue on a published event will automatically trigger notification SMS updates to members who have RSVP’d.'}
               </p>
             ) : null}
           </div>
@@ -233,18 +243,8 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
             <input type="hidden" name="eventId" value={event.id} />
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="flex flex-col gap-1 text-sm font-semibold">
-                Title (English)
-                <input
-                  name="titleEn"
-                  defaultValue={event.titleEn}
-                  maxLength={160}
-                  className="min-h-11 rounded-lg border border-line px-3"
-                />
-              </label>
-
-              <label className="flex flex-col gap-1 text-sm font-semibold">
-                Title (Tamil / தமிழ்)
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+                <span lang={locale}>{locale === 'ta' ? 'தலைப்பு (தமிழ்) *' : 'Title (Tamil) *'}</span>
                 <input
                   name="titleTa"
                   defaultValue={event.titleTa}
@@ -253,22 +253,32 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
                   className="min-h-11 rounded-lg border border-line px-3"
                 />
               </label>
+
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+                <span lang={locale}>{locale === 'ta' ? 'தலைப்பு (ஆங்கிலம்) *' : 'Title (English) *'}</span>
+                <input
+                  name="titleEn"
+                  defaultValue={event.titleEn}
+                  maxLength={160}
+                  className="min-h-11 rounded-lg border border-line px-3"
+                />
+              </label>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="flex flex-col gap-1 text-sm font-semibold">
-                Event type
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+                <span lang={locale}>{locale === 'ta' ? 'நிகழ்வு வகை *' : 'Event type *'}</span>
                 <select name="eventType" defaultValue={event.eventType} className="min-h-11 rounded-lg border border-line px-3 bg-surface">
                   {EVENT_TYPES.map((t) => (
                     <option key={t.value} value={t.value}>
-                      {t.label}
+                      {t[locale]}
                     </option>
                   ))}
                 </select>
               </label>
 
-              <label className="flex flex-col gap-1 text-sm font-semibold">
-                Capacity limit (leave empty for unlimited)
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+                <span lang={locale}>{locale === 'ta' ? 'பங்கேற்பாளர் எல்லை (வரம்பற்றதாயின் காலியாக விடவும்)' : 'Capacity limit (leave empty for unlimited)'}</span>
                 <input
                   name="capacity"
                   type="number"
@@ -280,19 +290,8 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="flex flex-col gap-1 text-sm font-semibold">
-                Description (English)
-                <textarea
-                  name="descriptionEn"
-                  defaultValue={event.descriptionEn}
-                  rows={3}
-                  maxLength={4000}
-                  className="rounded-lg border border-line p-3"
-                />
-              </label>
-
-              <label className="flex flex-col gap-1 text-sm font-semibold">
-                Description (Tamil / தமிழ்)
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+                <span lang={locale}>{locale === 'ta' ? 'விளக்கம் (தமிழ்)' : 'Description (Tamil)'}</span>
                 <textarea
                   name="descriptionTa"
                   defaultValue={event.descriptionTa}
@@ -302,11 +301,22 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
                   className="rounded-lg border border-line p-3"
                 />
               </label>
+
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+                <span lang={locale}>{locale === 'ta' ? 'விளக்கம் (ஆங்கிலம்)' : 'Description (English)'}</span>
+                <textarea
+                  name="descriptionEn"
+                  defaultValue={event.descriptionEn}
+                  rows={3}
+                  maxLength={4000}
+                  className="rounded-lg border border-line p-3"
+                />
+              </label>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="flex flex-col gap-1 text-sm font-semibold">
-                Starts at (Sri Lankan time) *
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+                <span lang={locale}>{locale === 'ta' ? 'ஆரம்ப நேரம் (இலங்கை நேரம்) *' : 'Starts at (Sri Lankan time) *'}</span>
                 <input
                   name="startsAt"
                   type="datetime-local"
@@ -315,8 +325,8 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
                 />
               </label>
 
-              <label className="flex flex-col gap-1 text-sm font-semibold">
-                Ends at (Sri Lankan time) *
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+                <span lang={locale}>{locale === 'ta' ? 'முடிவு நேரம் (இலங்கை நேரம்) *' : 'Ends at (Sri Lankan time) *'}</span>
                 <input
                   name="endsAt"
                   type="datetime-local"
@@ -327,9 +337,8 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="flex flex-col gap-1 text-sm font-semibold">
-                Check-in opens at (Sri Lankan time)
-                <span className="text-xs font-normal text-muted">Defaults to 1 hour before start</span>
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+                <span lang={locale}>{locale === 'ta' ? 'வருகைப்பதிவு திறக்கும் நேரம் (இலங்கை நேரம்)' : 'Check-in opens at (Sri Lankan time)'}</span>
                 <input
                   name="checkinOpensAt"
                   type="datetime-local"
@@ -338,9 +347,8 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
                 />
               </label>
 
-              <label className="flex flex-col gap-1 text-sm font-semibold">
-                Check-in closes at (Sri Lankan time)
-                <span className="text-xs font-normal text-muted">Defaults to event end time</span>
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+                <span lang={locale}>{locale === 'ta' ? 'வருகைப்பதிவு முடிவடையும் நேரம் (இலங்கை நேரம்)' : 'Check-in closes at (Sri Lankan time)'}</span>
                 <input
                   name="checkinClosesAt"
                   type="datetime-local"
@@ -351,8 +359,8 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="flex flex-col gap-1 text-sm font-semibold">
-                Venue name and address
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+                <span lang={locale}>{locale === 'ta' ? 'நிகழ்விடம் மற்றும் முகவரி' : 'Venue name and address'}</span>
                 <input
                   name="venue"
                   defaultValue={event.venue}
@@ -361,8 +369,8 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
                 />
               </label>
 
-              <label className="flex flex-col gap-1 text-sm font-semibold">
-                Meeting point
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+                <span lang={locale}>{locale === 'ta' ? 'சந்திக்கும் இடம்' : 'Meeting point'}</span>
                 <input
                   name="meetingPoint"
                   defaultValue={event.meetingPoint}
@@ -373,8 +381,8 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="flex flex-col gap-1 text-sm font-semibold">
-                Accessibility details
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+                <span lang={locale}>{locale === 'ta' ? 'அணுகல்தன்மைத் தகவல்' : 'Accessibility details'}</span>
                 <input
                   name="accessibility"
                   defaultValue={event.accessibility}
@@ -383,8 +391,8 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
                 />
               </label>
 
-              <label className="flex flex-col gap-1 text-sm font-semibold">
-                Contact route
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+                <span lang={locale}>{locale === 'ta' ? 'தொடர்பு வழி' : 'Contact route'}</span>
                 <input
                   name="contactRoute"
                   defaultValue={event.contactRoute}
@@ -395,7 +403,9 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
             </div>
 
             <div className="flex justify-end">
-              <SubmitButton tone="primary">Save changes</SubmitButton>
+              <SubmitButton tone="primary">
+                <span lang={locale}>{locale === 'ta' ? 'மாற்றங்களைச் சேமிக்குக' : 'Save changes'}</span>
+              </SubmitButton>
             </div>
           </form>
         </section>
@@ -406,35 +416,43 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
         <section aria-labelledby="cancel-heading" className="flex flex-col gap-4 rounded-xl border border-error/50 bg-card p-6">
           <div className="border-b border-line pb-2">
             <h2 id="cancel-heading" className="text-base font-bold text-error">
-              Cancel event
+              <span lang={locale}>{locale === 'ta' ? 'நிகழ்வை ரத்துசெய்க' : 'Cancel event'}</span>
             </h2>
             <p className="text-xs text-muted">
-              Cancelling is an irreversible privileged action. Issued QR passes will expire and RSVP&apos;d members will be notified.
+              {locale === 'ta'
+                ? 'ரத்துசெய்தல் மாற்றமுடியாத நடவடிக்கையாகும். வழங்கப்பட்ட QR அனுமதிச்சீட்டுகள் காலாவதியாகும் மற்றும் பதிவுசெய்த உறுப்பினர்களுக்கு அறிவிக்கப்படும்.'
+                : 'Cancelling is an irreversible privileged action. Issued QR passes will expire and RSVP’d members will be notified.'}
             </p>
           </div>
 
           <form action={cancelEvent} className="flex flex-col gap-4">
             <input type="hidden" name="eventId" value={event.id} />
 
-            <label className="flex flex-col gap-1 text-sm font-semibold">
-              Cancellation reason (required) *
+            <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+              <span lang={locale}>{locale === 'ta' ? 'ரத்துசெய்வதற்கான காரணம் (கட்டாயமானது) *' : 'Cancellation reason (required) *'}</span>
               <textarea
                 name="reason"
                 required
                 minLength={3}
                 maxLength={500}
-                placeholder="Explain why this event is being cancelled (sent to attendees)..."
+                placeholder={locale === 'ta' ? 'இந்நிகழ்வு ஏன் ரத்து செய்யப்படுகிறது என்பதை விளக்குக (பங்கேற்பாளர்களுக்கு அனுப்பப்படும்)...' : 'Explain why this event is being cancelled (sent to attendees)...'}
                 className="rounded-lg border border-line p-3"
               />
             </label>
 
-            <label className="flex items-center gap-2 text-sm font-semibold">
+            <label className="flex items-center gap-2 text-sm font-semibold text-text">
               <input type="checkbox" name="confirmCancel" value="1" required />
-              <span>I confirm that this event must be cancelled and attendees notified.</span>
+              <span lang={locale}>
+                {locale === 'ta'
+                  ? 'இந்நிகழ்வு ரத்துசெய்யப்பட வேண்டும் மற்றும் பங்கேற்பாளர்களுக்கு அறிவிக்கப்பட வேண்டும் என்பதை உறுதிப்படுத்துகிறேன்.'
+                  : 'I confirm that this event must be cancelled and attendees notified.'}
+              </span>
             </label>
 
             <div className="flex justify-end">
-              <SubmitButton tone="danger">Cancel event</SubmitButton>
+              <SubmitButton tone="danger">
+                <span lang={locale}>{locale === 'ta' ? 'நிகழ்வை ரத்துசெய்க' : 'Cancel event'}</span>
+              </SubmitButton>
             </div>
           </form>
         </section>

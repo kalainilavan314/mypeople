@@ -1,4 +1,7 @@
+'use client';
+
 import { SubmitButton } from '@/components/SubmitButton';
+import { useLocale } from '@/lib/i18n/context';
 import { bilingualMessageFor, bilingualProblemText } from '@/lib/messages';
 
 import { claimOrReleaseCase, decideCase } from './caseActions';
@@ -38,6 +41,8 @@ export function CaseControls({
   error,
   problems,
 }: Props) {
+  const locale = useLocale();
+
   if (!open) return null;
 
   const problemList = Array.isArray(problems) ? problems : typeof problems === 'string' && problems ? problems.split(',') : [];
@@ -52,17 +57,11 @@ export function CaseControls({
         <input type="hidden" name="id" value={id} />
         {claimedByMe ? (
           <SubmitButton tone="secondary" name="do" value="release">
-            <span className="flex flex-col items-center">
-              <span lang="ta">விடுவிக்க</span>
-              <span lang="en" className="text-xs font-normal opacity-90">Release case</span>
-            </span>
+            <span lang={locale}>{locale === 'ta' ? 'விடுவிக்க' : 'Release case'}</span>
           </SubmitButton>
         ) : (
           <SubmitButton name="do" value="claim">
-            <span className="flex flex-col items-center">
-              <span lang="ta">பொறுப்பேற்க</span>
-              <span lang="en" className="text-xs font-normal opacity-90">Claim case</span>
-            </span>
+            <span lang={locale}>{locale === 'ta' ? 'பொறுப்பேற்க' : 'Claim case'}</span>
           </SubmitButton>
         )}
       </form>
@@ -77,29 +76,28 @@ export function CaseControls({
             aria-describedby={isOutcomeError ? 'error-outcome' : undefined}
             className="flex flex-col gap-2">
             <legend className="mb-1">
-              <span lang="ta" className="block text-sm font-semibold text-text">தீர்மான முடிவு</span>
-              <span lang="en" className="block text-xs font-normal text-muted">Decision finding (required)</span>
+              <span lang={locale} className="text-sm font-semibold text-text">
+                {locale === 'ta' ? 'தீர்மான முடிவு (கட்டாயமானது)' : 'Decision finding (required)'}
+              </span>
             </legend>
             {isOutcomeError ? (
               <p id="error-outcome" className="text-xs font-semibold text-error">
-                {bilingualProblemText('outcome_required').ta} ({bilingualProblemText('outcome_required').en})
+                {locale === 'ta' ? bilingualProblemText('outcome_required').ta : bilingualProblemText('outcome_required').en}
               </p>
             ) : null}
             {outcomes.map((raw) => {
               const option = normalizeOutcome(raw);
               return (
-                <label key={option.value} className="flex min-h-11 items-start gap-3 rounded-lg border border-transparent p-2 text-sm hover:border-line hover:bg-surface">
+                <label key={option.value} className="flex min-h-11 items-center gap-3 rounded-lg border border-transparent p-2 text-sm hover:border-line hover:bg-surface">
                   <input
                     type="radio"
                     id={`input-outcome-${option.value}`}
                     name="outcome"
                     value={option.value}
                     required
-                    className="mt-1"
                   />
-                  <span className="flex flex-col">
-                    <span lang="ta" className="font-semibold text-text">{option.ta}</span>
-                    <span lang="en" className="text-xs text-muted">{option.en}</span>
+                  <span lang={locale} className="font-semibold text-text">
+                    {locale === 'ta' ? option.ta : option.en}
                   </span>
                 </label>
               );
@@ -107,8 +105,11 @@ export function CaseControls({
           </fieldset>
 
           <label htmlFor="input-reason" className="flex flex-col gap-1 text-sm font-semibold">
-            <span lang="ta" className="text-text">காரணம் (தணிக்கைப் பதிவுக்குரியது மற்றும் இறுதியானது) *</span>
-            <span lang="en" className="text-xs font-normal text-muted">Reason (recorded in audit trail and final) *</span>
+            <span lang={locale} className="text-text">
+              {locale === 'ta'
+                ? 'காரணம் (தணிக்கைப் பதிவுக்குரியது மற்றும் இறுதியானது) *'
+                : 'Reason (recorded in audit trail and final) *'}
+            </span>
             <textarea
               id="input-reason"
               name="reason"
@@ -123,7 +124,7 @@ export function CaseControls({
           </label>
           {isReasonError ? (
             <p id="error-reason" className="text-xs font-semibold text-error">
-              {bilingualProblemText('reason_required').ta} ({bilingualProblemText('reason_required').en})
+              {locale === 'ta' ? bilingualProblemText('reason_required').ta : bilingualProblemText('reason_required').en}
             </p>
           ) : null}
 
@@ -138,27 +139,21 @@ export function CaseControls({
               aria-describedby={isConfirmError ? 'error-confirm' : undefined}
               className="mt-0.5 rounded border-line"
             />
-            <span>
-              <span lang="ta" className="block font-semibold text-text">
-                இத்தீர்மான முடிவு முழுமையானது, ஆதாரமுடையது மற்றும் தணிக்கைப் பதிவுக்குத் தயாரானது என்பதை உறுதிப்படுத்துகிறேன்.
-              </span>
-              <span lang="en" className="block text-muted">
-                I confirm this decision finding is complete, evidenced, and ready to be recorded in the audit trail.
-              </span>
+            <span lang={locale} className="font-semibold text-text">
+              {locale === 'ta'
+                ? 'இத்தீர்மான முடிவு முழுமையானது, ஆதாரமுடையது மற்றும் தணிக்கைப் பதிவுக்குத் தயாரானது என்பதை உறுதிப்படுத்துகிறேன்.'
+                : 'I confirm this decision finding is complete, evidenced, and ready to be recorded in the audit trail.'}
             </span>
           </label>
           {isConfirmError ? (
             <p id="error-confirm" className="text-xs font-semibold text-error">
-              {bilingualMessageFor('confirmation_required').ta} ({bilingualMessageFor('confirmation_required').en})
+              {locale === 'ta' ? bilingualMessageFor('confirmation_required').ta : bilingualMessageFor('confirmation_required').en}
             </p>
           ) : null}
 
           <div>
             <SubmitButton>
-              <span className="flex flex-col items-center">
-                <span lang="ta">முடிவைப் பதிவுசெய்க</span>
-                <span lang="en" className="text-xs font-normal opacity-90">Record the decision</span>
-              </span>
+              <span lang={locale}>{locale === 'ta' ? 'முடிவைப் பதிவுசெய்க' : 'Record the decision'}</span>
             </SubmitButton>
           </div>
         </form>

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
+import { useLocale } from '@/lib/i18n/context';
 import { bilingualConfirmation, bilingualMessageFor, bilingualProblemText, problemTargetField } from '@/lib/messages';
 
 type Props = {
@@ -16,9 +17,10 @@ const first = (value: string | string[] | undefined) => (Array.isArray(value) ? 
  * The result of the last action, carried back in the address after the
  * action redirected: a refusal with its reasons, or a confirmation. Only
  * codes travel in the address, never personal data.
- * Always renders Tamil first, English supporting directly below (Priority 2).
+ * Renders in the active language cleanly (Milestone 1).
  */
 export function Feedback({ error, problems, done }: Props) {
+  const locale = useLocale();
   const alertRef = useRef<HTMLDivElement>(null);
   const code = first(error);
   const list = (first(problems) ?? '').split(',').filter(Boolean);
@@ -32,6 +34,8 @@ export function Feedback({ error, problems, done }: Props) {
 
   if (code) {
     const msg = bilingualMessageFor(code);
+    const messageText = locale === 'ta' ? msg.ta : msg.en;
+
     return (
       <div
         ref={alertRef}
@@ -40,21 +44,19 @@ export function Feedback({ error, problems, done }: Props) {
         aria-live="assertive"
         tabIndex={-1}
         className="flex flex-col gap-2 rounded-xl border border-error bg-error-bg px-4 py-3 text-sm text-error outline-none focus:ring-2 focus:ring-error">
-        <div className="flex flex-col gap-0.5">
-          <p lang="ta" className="font-semibold">
-            ! {msg.ta}
-          </p>
-          <p lang="en" className="text-xs opacity-90">
-            {msg.en}
-          </p>
-        </div>
+        <p lang={locale} className="font-semibold">
+          ! {messageText}
+        </p>
+
         {list.length > 0 ? (
           <ul className="flex list-disc flex-col gap-1.5 pl-5 text-xs">
             {list.map((problem) => {
               const p = bilingualProblemText(problem);
+              const problemText = locale === 'ta' ? p.ta : p.en;
               const fieldTarget = problemTargetField(problem);
+
               return (
-                <li key={problem} className="flex flex-col gap-0.5">
+                <li key={problem}>
                   {fieldTarget ? (
                     <a
                       href={`#input-${fieldTarget}`}
@@ -67,22 +69,14 @@ export function Feedback({ error, problems, done }: Props) {
                           target.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         }
                       }}>
-                      <span lang="ta" className="font-semibold">
-                        {p.ta}
-                      </span>
-                      <span lang="en" className="block opacity-90">
-                        {p.en}
+                      <span lang={locale} className="font-semibold">
+                        {problemText}
                       </span>
                     </a>
                   ) : (
-                    <>
-                      <span lang="ta" className="font-semibold">
-                        {p.ta}
-                      </span>
-                      <span lang="en" className="opacity-80">
-                        {p.en}
-                      </span>
-                    </>
+                    <span lang={locale} className="font-semibold">
+                      {problemText}
+                    </span>
                   )}
                 </li>
               );
@@ -95,13 +89,12 @@ export function Feedback({ error, problems, done }: Props) {
 
   if (confirmation) {
     const conf = bilingualConfirmation(confirmation);
+    const confText = locale === 'ta' ? conf.ta : conf.en;
+
     return (
       <div role="status" className="flex flex-col gap-0.5 rounded-xl border border-success bg-success-bg px-4 py-3 text-sm text-success">
-        <p lang="ta" className="font-semibold">
-          ✓ {conf.ta}
-        </p>
-        <p lang="en" className="text-xs opacity-90">
-          {conf.en}
+        <p lang={locale} className="font-semibold">
+          ✓ {confText}
         </p>
       </div>
     );

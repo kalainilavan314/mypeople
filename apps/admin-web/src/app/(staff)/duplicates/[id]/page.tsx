@@ -7,7 +7,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { StateTag } from '@/components/StateTag';
 import { CaseControls, type OutcomeOption } from '@/features/verification/CaseControls';
 import { formatDateTime, words } from '@/lib/format';
-import { messageFor } from '@/lib/messages';
+import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
 
@@ -39,11 +39,12 @@ async function DuplicateCase({ params, searchParams }: Pick<PageProps<'/duplicat
   const { id } = await params;
   const query = await searchParams;
   const staff = await requireStaff();
+  const locale = await getAdminLocale(staff.member.language);
   let file: DuplicateCaseFile;
   try {
     file = await (await staffApi()).getDuplicateCase(id);
   } catch (error) {
-    if (isRefusal(error)) return <p className="text-error">! {messageFor(error.code)}</p>;
+    if (isRefusal(error)) return <p className="text-error">! {getLocalizedMessage(error.code, locale)}</p>;
     throw error;
   }
   const claimedByMe = file.claimedBy === staff.member.id;
@@ -52,30 +53,29 @@ async function DuplicateCase({ params, searchParams }: Pick<PageProps<'/duplicat
   return (
     <>
       <PageHeader ta="இரட்டைக் கணக்கு" en={`Case ${file.caseRef}`}>
-        <Link href="/duplicates" className="flex flex-col items-end text-sm text-primary underline">
-          <span lang="ta">← விசாரணைகளுக்குத் திரும்புக</span>
-          <span lang="en" className="text-xs font-normal text-muted">Back to investigations</span>
+        <Link href="/duplicates" className="text-sm text-primary underline">
+          <span lang={locale}>{locale === 'ta' ? '← விசாரணைகளுக்குத் திரும்புக' : '← Back to investigations'}</span>
         </Link>
       </PageHeader>
       <Feedback error={query.error} problems={query.problems} done={query.done} />
       <p className="text-sm">
-        <StateTag state={file.state} /> · {words(file.signal)} · opened {formatDateTime(file.openedAt)}
+        <StateTag state={file.state} /> · {words(file.signal)} · {locale === 'ta' ? 'தொடங்கப்பட்டது' : 'opened'} {formatDateTime(file.openedAt)}
         {file.openedReason ? ` · ${file.openedReason}` : ''}
       </p>
       <div className="grid gap-3 md:grid-cols-2">
         {file.members.map((member) => (
           <section key={member.memberId} className="flex flex-col gap-2 rounded-xl border border-line bg-card p-4 text-sm">
-            <h2 className="font-bold">{member.details.fullName}</h2>
+            <h2 className="font-bold text-text">{member.details.fullName}</h2>
             <p className="font-mono text-muted">{member.details.memberCode}</p>
             <p className="flex flex-wrap items-baseline gap-1">
-              <span lang="ta" className="font-semibold text-text">பிறந்த திகதி:</span>
+              <span lang={locale} className="font-semibold text-text">{locale === 'ta' ? 'பிறந்த திகதி:' : 'Date of birth:'}</span>
               <span className="text-muted">({member.details.dob ?? '—'})</span>
             </p>
             <p className="flex flex-wrap items-baseline gap-1">
-              <span lang="ta" className="font-semibold text-text">அடையாளம்:</span>
+              <span lang={locale} className="font-semibold text-text">{locale === 'ta' ? 'அடையாளம்:' : 'Identity:'}</span>
               <span>{words(member.verificationStatus)}</span>
               <span className="text-muted">·</span>
-              <span lang="ta" className="font-semibold text-text">உறுப்புரிமை:</span>
+              <span lang={locale} className="font-semibold text-text">{locale === 'ta' ? 'உறுப்புரிமை:' : 'Membership:'}</span>
               <span>{words(member.membershipState)}</span>
             </p>
             <ul className="divide-y divide-line">
@@ -86,10 +86,7 @@ async function DuplicateCase({ params, searchParams }: Pick<PageProps<'/duplicat
                   </span>
                   {claimedByMe ? (
                     <a href={`/evidence/${document.id}`} target="_blank" rel="noopener noreferrer" className="min-h-11 rounded-lg border border-line px-3 py-2 font-semibold text-primary">
-                      <span className="flex flex-col items-center">
-                        <span lang="ta">படத்தைத் திறக்க</span>
-                        <span lang="en" className="text-xs font-normal opacity-90">Open image</span>
-                      </span>
+                      <span lang={locale}>{locale === 'ta' ? 'படத்தைத் திறக்க' : 'Open image'}</span>
                     </a>
                   ) : null}
                 </li>
@@ -98,12 +95,6 @@ async function DuplicateCase({ params, searchParams }: Pick<PageProps<'/duplicat
           </section>
         ))}
       </div>
-      {file.outcomeReason ? (
-        <p className="flex flex-wrap items-baseline gap-1 text-sm">
-          <span lang="ta" className="font-semibold text-text">கண்டறிதல் முடிவு:</span>
-          <span>{file.outcomeReason}</span>
-        </p>
-      ) : null}
       <CaseControls
         kind="duplicates"
         id={file.id}

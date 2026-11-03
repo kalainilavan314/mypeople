@@ -6326,7 +6326,7 @@
           "profile"
         ],
         "summary": "Update Profile",
-        "description": "Display name and gender only (FR-PROF-003). The legal name, date of birth and ID number are\nnot fields here at all.",
+        "description": "Display name, gender and language preference (FR-PROF-003, FR-PROF-011). The legal name,\ndate of birth and ID number are not fields here at all.",
         "operationId": "update_profile_v1_profile_patch",
         "requestBody": {
           "content": {
@@ -16275,6 +16275,15 @@
             ],
             "title": "Gender"
           },
+          "language": {
+            "type": "string",
+            "enum": [
+              "ta",
+              "en"
+            ],
+            "title": "Language",
+            "default": "ta"
+          },
           "tier": {
             "type": "string",
             "title": "Tier",
@@ -16441,6 +16450,21 @@
               }
             ],
             "title": "Gender"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "ta",
+                  "en"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language"
           }
         },
         "type": "object",

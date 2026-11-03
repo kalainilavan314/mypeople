@@ -34,3 +34,19 @@ def test_a_closure_receipt_says_what_is_kept_and_promises_no_instant_deletion():
     kept = [item["kept_en"] for item in privacy.CLOSURE_RETENTION]
     assert any("30 days" in text for text in kept) and any("7 years" in text for text in kept)
     assert all(item["kept_ta"] for item in privacy.CLOSURE_RETENTION)
+
+
+def test_profile_update_schema_accepts_valid_languages_and_rejects_others():
+    import pytest
+    from pydantic import ValidationError
+    from app.modules.profile.schemas import ProfileUpdateIn
+
+    assert ProfileUpdateIn(language="ta").language == "ta"
+    assert ProfileUpdateIn(language="en").language == "en"
+    assert ProfileUpdateIn().language is None
+
+    with pytest.raises(ValidationError):
+        ProfileUpdateIn(language="fr")
+
+    with pytest.raises(ValidationError):
+        ProfileUpdateIn(language="invalid")

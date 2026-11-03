@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 import QRCode from 'qrcode';
 
+import { setAdminLocaleCookie } from '@/lib/i18n/server';
 import { failure } from '@/lib/messages';
 import { staffApi } from '@/lib/session';
 
@@ -31,6 +32,11 @@ export async function giveCode(formData: FormData): Promise<void> {
     const api = await staffApi();
     if (enrolling) await api.confirmTotp(code);
     else await api.verifyMfa(code);
+
+    // A new browser has no locale cookie. Copy the durable profile preference
+    // before the first authenticated page renders so client and server agree.
+    const profile = await api.getMyProfile();
+    await setAdminLocaleCookie(profile.language);
   } catch (error) {
     redirect(`/mfa?error=${failure(error).code}`);
   }

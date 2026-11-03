@@ -1,26 +1,34 @@
+'use client';
+
 import type { ReactNode } from 'react';
 
+import { useLocale } from '@/lib/i18n/context';
+import type { Locale } from '@/lib/i18n/types';
+
 type Props = {
-  /** Tamil first, English directly below it. */
+  /** Tamil title */
   ta: string;
+  /** English title */
   en: string;
+  /** Optional override for locale */
+  locale?: Locale;
   children?: ReactNode;
 };
 
-/** The page's one h1, with Tamil first and English directly below it. */
-export function PageHeader({ ta, en, children }: Props) {
+/**
+ * The page's one h1, rendered cleanly in the active language (Priority 1 / Milestone 1).
+ * Eliminates noisy stacked duplication while preserving type safety and accessibility.
+ */
+export function PageHeader({ ta, en, locale: propLocale, children }: Props) {
+  const contextLocale = useLocale();
+  const locale = propLocale ?? contextLocale;
+  const title = locale === 'ta' ? ta : en;
+
   return (
     <header className="flex flex-wrap items-end justify-between gap-3">
-      <div className="flex flex-col gap-0.5">
-        <h1 className="flex flex-col gap-0.5 text-2xl font-bold">
-          <span lang="ta" className="text-2xl font-bold text-text">
-            {ta}
-          </span>
-          <span lang="en" className="text-sm font-medium text-muted">
-            {en}
-          </span>
-        </h1>
-      </div>
+      <h1 lang={locale} className="text-2xl font-bold text-text">
+        {title}
+      </h1>
       {children}
     </header>
   );
