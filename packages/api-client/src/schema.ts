@@ -547,11 +547,7 @@ export interface paths {
          */
         get: operations["list_assignments_v1_access_assignments_get"];
         put?: never;
-        /**
-         * Create Assignment
-         * @description Assign a tier, an area and explicit permissions to a verified member (W09, RB-02, RB-03).
-         */
-        post: operations["create_assignment_v1_access_assignments_post"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -572,6 +568,86 @@ export interface paths {
          * @description Check an assignment without saving it (RB-06, FR-WEB-031).
          */
         post: operations["preview_assignment_v1_access_assignments_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignment-previews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Assignment Preview
+         * @description Create a durable, single-use, 10-minute preview record after rule validation.
+         */
+        post: operations["create_assignment_preview_v1_access_assignment_previews_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignment-previews/{preview_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Assignment Preview
+         * @description Retrieve an active preview for display. Returns 404 for missing, expired, consumed, or other-user previews.
+         */
+        get: operations["get_assignment_preview_v1_access_assignment_previews__preview_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignment-previews/{preview_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm Assignment Preview
+         * @description Atomic confirmation with row lock, revalidation, assignment creation, and audit logging.
+         */
+        post: operations["confirm_assignment_preview_v1_access_assignment_previews__preview_id__confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignment-previews/{preview_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel Assignment Preview
+         * @description Cancel an active preview belonging to the caller.
+         */
+        post: operations["cancel_assignment_preview_v1_access_assignment_previews__preview_id__cancel_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3346,6 +3422,89 @@ export interface components {
             reviewDueAt: string | null;
             /** Endedat */
             endedAt: string | null;
+        };
+        /**
+         * AssignmentPreviewCreateInput
+         * @description Input for creating a durable shared assignment preview.
+         */
+        AssignmentPreviewCreateInput: {
+            /** Membercode */
+            memberCode?: string | null;
+            /** Memberid */
+            memberId?: string | null;
+            /**
+             * Tier
+             * @enum {string}
+             */
+            tier: "1" | "2A" | "2B" | "3A" | "3B" | "4" | "5";
+            area: components["schemas"]["AreaRef"];
+            /** Permissions */
+            permissions: string[];
+            /** Note */
+            note?: string | null;
+        };
+        /**
+         * AssignmentPreviewCreatedOut
+         * @description Opaque preview token returned to the caller.
+         */
+        AssignmentPreviewCreatedOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+        };
+        /**
+         * AssignmentPreviewOut
+         * @description Details of a durable preview retrieved for confirmation display.
+         */
+        AssignmentPreviewOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Membercode */
+            memberCode: string;
+            /** Fullname */
+            fullName: string;
+            /**
+             * Tier
+             * @enum {string}
+             */
+            tier: "1" | "2A" | "2B" | "3A" | "3B" | "4" | "5";
+            area: components["schemas"]["AreaRef"];
+            /** Permissions */
+            permissions: string[];
+            /** Note */
+            note: string | null;
+            /** Reviewdueat */
+            reviewDueAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "consumed" | "cancelled";
         };
         /** AssistedRecoveryInput */
         AssistedRecoveryInput: {
@@ -7379,7 +7538,7 @@ export interface operations {
             };
         };
     };
-    create_assignment_v1_access_assignments_post: {
+    preview_assignment_v1_access_assignments_preview_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -7391,6 +7550,108 @@ export interface operations {
                 "application/json": components["schemas"]["AssignmentInput"];
             };
         };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_assignment_preview_v1_access_assignment_previews_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentPreviewCreateInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentPreviewCreatedOut"];
+                };
+            };
+            /** @description forbidden, or {"code": "assignment_refused", "problems": [...]} */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_assignment_preview_v1_access_assignment_previews__preview_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                preview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentPreviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    confirm_assignment_preview_v1_access_assignment_previews__preview_id__confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                preview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             201: {
@@ -7419,18 +7680,16 @@ export interface operations {
             };
         };
     };
-    preview_assignment_v1_access_assignments_preview_post: {
+    cancel_assignment_preview_v1_access_assignment_previews__preview_id__cancel_post: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                preview_id: string;
+            };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AssignmentInput"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -7438,7 +7697,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PreviewOut"];
+                    "application/json": {
+                        [key: string]: string;
+                    };
                 };
             };
             /** @description Validation Error */

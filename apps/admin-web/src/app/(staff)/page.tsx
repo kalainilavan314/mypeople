@@ -11,10 +11,14 @@ import { isRefusal, requireStaff } from '@/lib/staff';
 export default function DashboardHome() {
   return (
     <>
-      <PageHeader ta="நிர்வாகம் மற்றும் பணி வரிசைகள்" en="Work queues & administration" brd="D01, §15A.6" />
-      <p className="rounded-xl border border-line bg-warning-bg px-4 py-3 text-sm text-warning">
-        ! Not deployed yet. The API this dashboard uses (/v1) is not live, and evidence watermarking (FR-WEB-006) and a
-        strict content-security policy come before release.
+      <PageHeader ta="நிர்வாகம் மற்றும் பணி வரிசைகள்" en="Work queues & administration" />
+      <p className="flex flex-col gap-1 rounded-xl border border-line bg-warning-bg px-4 py-3 text-sm text-warning">
+        <span lang="ta" className="font-semibold">
+          ! வெளியீட்டுக்கு முந்தைய சூழல். பாதுகாப்பு கட்டுப்பாடுகள், தணிக்கை நீர்வரி மற்றும் உற்பத்தி உள்ளடக்கப் பாதுகாப்புக் கொள்கைகள் அனைத்துப் பணியாளர் தொகுதிகளிலும் செயலில் உள்ளன.
+        </span>
+        <span lang="en" className="text-xs opacity-90">
+          Pre-release environment. Security controls, audit watermarking, and production content security policies remain active across all staff modules.
+        </span>
       </p>
 
       <Suspense fallback={<p className="text-muted">… Loading your work queues</p>}>
@@ -26,8 +30,9 @@ export default function DashboardHome() {
       </Suspense>
 
       <section aria-labelledby="status-heading" className="flex flex-col gap-3">
-        <h2 id="status-heading" className="text-base font-bold">
-          System status
+        <h2 id="status-heading" className="flex flex-col text-base font-bold">
+          <span lang="ta">கணினி நிலைமை</span>
+          <span lang="en" className="text-xs font-normal text-muted">System status</span>
         </h2>
         <Suspense fallback={<p className="text-muted">… Checking</p>}>
           <SystemStatus />
@@ -35,15 +40,19 @@ export default function DashboardHome() {
       </section>
 
       <section aria-labelledby="planned-heading" className="flex flex-col gap-3">
-        <h2 id="planned-heading" className="text-base font-bold">
-          Remaining modules (Phase 2 & 3)
+        <h2 id="planned-heading" className="flex flex-col text-base font-bold">
+          <span lang="ta">அடுத்தகட்ட தொகுதிகள் (கட்டம் 2 & 3)</span>
+          <span lang="en" className="text-xs font-normal text-muted">Remaining modules (Phase 2 & 3)</span>
         </h2>
         <ul className="divide-y divide-line rounded-xl border border-line bg-card">
           {plannedModules.map((module) => (
             <li key={module.name} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
               <span>
-                <span className="font-semibold">{module.name}</span>
-                <span className="block text-xs text-muted">BRD {module.brd}</span>
+                <span lang="ta" className="block text-sm font-semibold text-text">
+                  {module.ta}
+                </span>
+                <span lang="en" className="block text-xs font-normal text-muted">{module.name}</span>
+                <span className="block text-xs text-muted">{module.desc}</span>
               </span>
               <span className="rounded-full bg-surface px-3 py-1 text-xs font-semibold text-muted">Phase 2 / 3</span>
             </li>
@@ -54,7 +63,7 @@ export default function DashboardHome() {
   );
 }
 
-/** Operational action cards showing only queues the staff member is permitted to access (D01). */
+/** Operational action cards showing only queues the staff member is permitted to access. */
 async function PriorityWorkQueues() {
   await requireStaff();
   let queues: WorkQueues | null = null;
@@ -71,8 +80,9 @@ async function PriorityWorkQueues() {
   if (unavailable || !queues) {
     return (
       <section aria-labelledby="priority-heading" className="flex flex-col gap-3">
-        <h2 id="priority-heading" className="text-base font-bold">
-          Priority work queues
+        <h2 id="priority-heading" className="flex flex-col text-base font-bold">
+          <span lang="ta">முன்னுரிமைப் பணி வரிசைகள்</span>
+          <span lang="en" className="text-xs font-normal text-muted">Priority work queues</span>
         </h2>
         <p className="rounded-xl border border-line bg-surface p-4 text-sm text-muted">
           Operational work queue counts are unavailable or you do not have permission to view them.
@@ -229,8 +239,9 @@ async function PriorityWorkQueues() {
   return (
     <section aria-labelledby="priority-heading" className="flex flex-col gap-3">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id="priority-heading" className="text-base font-bold">
-          Priority work queues
+        <h2 id="priority-heading" className="flex flex-col text-base font-bold">
+          <span lang="ta">முன்னுரிமைப் பணி வரிசைகள்</span>
+          <span lang="en" className="text-xs font-normal text-muted">Priority work queues</span>
         </h2>
         <span className="text-xs text-muted">
           {totalUrgent > 0 ? `${totalUrgent} items requiring staff action` : 'All assigned queues clear'}
@@ -251,11 +262,13 @@ async function PriorityWorkQueues() {
             className={`flex flex-col justify-between gap-3 rounded-xl border p-4 transition-colors hover:bg-surface ${
               card.urgent && card.count > 0 ? 'border-warning/60 bg-warning-bg/20' : 'border-line bg-card'
             }`}>
-            <div className="flex flex-col gap-1">
-              <span lang="ta" className="text-xs text-muted">
+            <div className="flex flex-col gap-0.5">
+              <span lang="ta" className="font-semibold text-text">
                 {card.titleTa}
               </span>
-              <span className="font-semibold">{card.titleEn}</span>
+              <span lang="en" className="text-xs font-normal text-muted">
+                {card.titleEn}
+              </span>
               {card.urgentNotice ? (
                 <p className="mt-1 rounded bg-error-bg px-2 py-0.5 text-xs font-semibold text-error">
                   ! {card.urgentNotice}
@@ -288,8 +301,9 @@ async function MyModules() {
 
   return (
     <section aria-labelledby="modules-heading" className="flex flex-col gap-3">
-      <h2 id="modules-heading" className="text-base font-bold">
-        All assigned modules
+      <h2 id="modules-heading" className="flex flex-col text-base font-bold">
+        <span lang="ta">ஒதுக்கப்பட்ட அனைத்துத் தொகுதிகள்</span>
+        <span lang="en" className="text-xs font-normal text-muted">All assigned modules</span>
       </h2>
       {allowed.length === 0 ? <p className="text-sm text-muted">Your role has no dashboard modules.</p> : null}
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -297,12 +311,13 @@ async function MyModules() {
           <li key={module.href}>
             <Link
               href={module.href}
-              className="flex min-h-20 flex-col gap-1 rounded-xl border border-line bg-card p-4 hover:bg-surface">
-              <span lang="ta" className="text-xs text-muted">
+              className="flex min-h-20 flex-col gap-0.5 rounded-xl border border-line bg-card p-4 hover:bg-surface">
+              <span lang="ta" className="text-sm font-semibold text-text">
                 {module.ta}
               </span>
-              <span className="font-semibold">{module.en}</span>
-              <span className="text-xs text-muted">BRD {module.brd}</span>
+              <span lang="en" className="text-xs font-normal text-muted">
+                {module.en}
+              </span>
             </Link>
           </li>
         ))}

@@ -7,7 +7,7 @@ there is never a grant without a record of who made it.
 import logging
 import uuid
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import NoReturn
 
 from sqlalchemy import text
@@ -139,6 +139,102 @@ def revoke(db: Session, actor: Staff, assignment_id: uuid.UUID, reason: str, ip:
     )
     db.commit()
     return revoked
+
+
+def create_preview(
+    db: Session, actor: Staff, proposal: AssignmentRequest, note: str | None, member_id: uuid.UUID
+) -> repository.StoredAssignmentPreview:
+    """Validate assignment rules and store a durable 10-minute preview record."""
+    problems, review_due_at = evaluate(db, actor, proposal)
+    if problems:
+        raise AssignmentRefused(problems)
+
+    expires_at = datetime.now(UTC) + timedelta(minutes=10)
+    preview = repository.insert_assignment_preview(
+        db,
+        created_by=actor.member_id,
+        member_id=member_id,
+        tier=proposal.tier,
+        area=proposal.area,
+        permissions=proposal.permissions,
+        note=note,
+        review_due_at=review_due_at,
+        expires_at=expires_at,
+    )
+    db.commit()
+    return preview
+
+
+def get_preview(
+    db: Session, actor: Staff, preview_id: uuid.UUID
+) -> tuple[repository.StoredAssignmentPreview, str, str]:
+    """Retrieve an active preview belonging to the caller. Refuse missing, expired, consumed, or other-user previews."""
+    preview = repository.find_assignment_preview(db, preview_id)
+    now = datetime.now(UTC)
+    if preview is None or preview.created_by != actor.member_id or preview.status != "active" or preview.expires_at <= now:
+        raise AccessRefused("preview_expired_or_invalid")
+
+    member_info = repository.member_code_and_name(db, preview.member_id)
+    if member_info is None:
+        raise AccessRefused("preview_expired_or_invalid")
+
+    return preview, member_info[0], member_info[1]
+
+
+def confirm_preview(db: Session, actor: Staff, preview_id: uuid.UUID, ip: str) -> StoredAssignment:
+    """Atomic confirmation with row lock, re-validation, assignment creation, audit logging, and single-use consumption."""
+    preview = repository.find_assignment_preview(db, preview_id, for_update=True)
+    now = datetime.now(UTC)
+    if preview is None or preview.created_by != actor.member_id or preview.status != "active" or preview.expires_at <= now:
+        raise AccessRefused("preview_expired_or_invalid")
+
+    proposal = to_request(preview.member_id, preview.tier, preview.area, list(preview.permissions))
+    problems, review_due_at = evaluate(db, actor, proposal)
+    if problems:
+        raise AssignmentRefused(problems)
+
+    assignment = repository.insert_assignment(
+        db,
+        member_id=preview.member_id,
+        tier=preview.tier,
+        area=preview.area,
+        permissions=preview.permissions,
+        granted_by=actor.member_id,
+        granted_at=now,
+        review_due_at=review_due_at,
+        note=preview.note,
+    )
+    audit.record(
+        db,
+        actor_id=actor.member_id,
+        action="access.assignment.created",
+        target_type="staff_assignment",
+        target_id=str(assignment.id),
+        area_path=repository.area_path(db, preview.area),
+        details={"memberId": str(preview.member_id), "tier": preview.tier, "permissions": sorted(preview.permissions)},
+        ip=ip,
+    )
+    repository.consume_assignment_preview(db, preview.id)
+    db.commit()
+    return assignment
+
+
+def cancel_preview(db: Session, actor: Staff, preview_id: uuid.UUID) -> None:
+    """Cancel an active preview belonging to the caller."""
+    preview = repository.find_assignment_preview(db, preview_id, for_update=True)
+    now = datetime.now(UTC)
+    if preview is None or preview.created_by != actor.member_id or preview.status != "active" or preview.expires_at <= now:
+        raise AccessRefused("preview_expired_or_invalid")
+
+    repository.cancel_assignment_preview(db, preview.id)
+    db.commit()
+
+
+def cleanup_previews(db: Session, *, older_than_hours: int = 1) -> int:
+    """Clean up expired and consumed/cancelled previews."""
+    cleaned = repository.cleanup_expired_previews(db, older_than_hours=older_than_hours)
+    db.commit()
+    return cleaned
 
 
 def bootstrap_super_administrator(db: Session, member_id: uuid.UUID, extra_permissions: list[str]) -> StoredAssignment:

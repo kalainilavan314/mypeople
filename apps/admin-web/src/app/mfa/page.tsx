@@ -13,7 +13,7 @@ import { Enrolment } from './Enrolment';
 export default function MfaPage(props: PageProps<'/mfa'>) {
   return (
     <main className="mx-auto flex max-w-md flex-col gap-6 px-4 py-12">
-      <PageHeader ta="இரண்டாவது காரணி" en="Authenticator code" brd="FR-STF-001, NFR-SEC-04" />
+      <PageHeader ta="இரண்டாவது காரணி" en="Authenticator code" />
       <Suspense fallback={<p className="text-muted">… Checking</p>}>
         <MfaStep searchParams={props.searchParams} />
       </Suspense>
@@ -36,17 +36,25 @@ async function MfaStep({ searchParams }: { searchParams: PageProps<'/mfa'>['sear
 
   return (
     <>
-      <p className="text-sm text-muted">
-        {enrolling
-          ? 'Staff give an authenticator code in every session. Set one up: scan the code with an authenticator app or type the key, then enter the six-digit code it shows.'
-          : 'Open your authenticator app and enter the six-digit code for My People.'}
-      </p>
+      <div className="flex flex-col gap-0.5 text-sm text-muted">
+        <p lang="ta">
+          {enrolling
+            ? 'பணியாளர்கள் ஒவ்வொரு அமர்விலும் அங்கீகாரக் குறியீட்டை உள்ளிட வேண்டும். செயலியைப் பயன்படுத்தி குறியீட்டை ஸ்கேன் செய்யவும் அல்லது விசையை உள்ளிட்டு, தோன்றும் ஆறு இலக்கக் குறியீட்டைப் பதிவுசெய்யவும்.'
+            : 'உங்கள் அங்கீகாரச் செயலியைத் திறந்து "என் மக்கள்" (My People) கணக்கிற்கான 6 இலக்கக் குறியீட்டை உள்ளிடவும்.'}
+        </p>
+        <p lang="en" className="text-xs">
+          {enrolling
+            ? 'Staff give an authenticator code in every session. Set one up: scan the code with an authenticator app or type the key, then enter the six-digit code it shows.'
+            : 'Open your authenticator app and enter the six-digit code for My People.'}
+        </p>
+      </div>
       <Feedback error={params.error} />
       {enrolling ? <Enrolment /> : null}
       <form action={giveCode} className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4">
         <input type="hidden" name="enrolling" value={enrolling ? '1' : '0'} />
         <label className="flex flex-col gap-1 text-sm font-semibold">
-          Six-digit code
+          <span lang="ta" className="text-xs text-muted">ஆறு இலக்கக் குறியீடு *</span>
+          <span lang="en" className="text-xs">Six-digit code *</span>
           <input
             name="code"
             required
@@ -57,7 +65,12 @@ async function MfaStep({ searchParams }: { searchParams: PageProps<'/mfa'>['sear
             className="min-h-11 rounded-lg border border-line px-3 font-mono text-base"
           />
         </label>
-        <SubmitButton>Confirm</SubmitButton>
+        <SubmitButton>
+          <span className="flex flex-col items-center">
+            <span lang="ta">உறுதிப்படுத்துக</span>
+            <span lang="en" className="text-xs font-normal opacity-90">Confirm</span>
+          </span>
+        </SubmitButton>
       </form>
     </>
   );

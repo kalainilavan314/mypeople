@@ -1111,57 +1111,6 @@
             }
           }
         }
-      },
-      "post": {
-        "tags": [
-          "access"
-        ],
-        "summary": "Create Assignment",
-        "description": "Assign a tier, an area and explicit permissions to a verified member (W09, RB-02, RB-03).",
-        "operationId": "create_assignment_v1_access_assignments_post",
-        "security": [
-          {
-            "APIKeyCookie": []
-          },
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AssignmentInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AssignmentOut"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "forbidden, or {\"code\": \"assignment_refused\", \"problems\": [...]}"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/v1/access/assignments/preview": {
@@ -1212,6 +1161,222 @@
             "HTTPBearer": []
           }
         ]
+      }
+    },
+    "/v1/access/assignment-previews": {
+      "post": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Create Assignment Preview",
+        "description": "Create a durable, single-use, 10-minute preview record after rule validation.",
+        "operationId": "create_assignment_preview_v1_access_assignment_previews_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignmentPreviewCreateInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentPreviewCreatedOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, or {\"code\": \"assignment_refused\", \"problems\": [...]}"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/access/assignment-previews/{preview_id}": {
+      "get": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Get Assignment Preview",
+        "description": "Retrieve an active preview for display. Returns 404 for missing, expired, consumed, or other-user previews.",
+        "operationId": "get_assignment_preview_v1_access_assignment_previews__preview_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "preview_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Preview Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentPreviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/access/assignment-previews/{preview_id}/confirm": {
+      "post": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Confirm Assignment Preview",
+        "description": "Atomic confirmation with row lock, revalidation, assignment creation, and audit logging.",
+        "operationId": "confirm_assignment_preview_v1_access_assignment_previews__preview_id__confirm_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "preview_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Preview Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, or {\"code\": \"assignment_refused\", \"problems\": [...]}"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/access/assignment-previews/{preview_id}/cancel": {
+      "post": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Cancel Assignment Preview",
+        "description": "Cancel an active preview belonging to the caller.",
+        "operationId": "cancel_assignment_preview_v1_access_assignment_previews__preview_id__cancel_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "preview_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Preview Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Cancel Assignment Preview V1 Access Assignment Previews  Preview Id  Cancel Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/v1/access/assignments/{assignment_id}/revoke": {
@@ -10015,6 +10180,202 @@
           "endedAt"
         ],
         "title": "AssignmentOut"
+      },
+      "AssignmentPreviewCreateInput": {
+        "properties": {
+          "memberCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Membercode"
+          },
+          "memberId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memberid"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "1",
+              "2A",
+              "2B",
+              "3A",
+              "3B",
+              "4",
+              "5"
+            ],
+            "title": "Tier"
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaRef"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 60,
+            "title": "Permissions"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tier",
+          "area",
+          "permissions"
+        ],
+        "title": "AssignmentPreviewCreateInput",
+        "description": "Input for creating a durable shared assignment preview."
+      },
+      "AssignmentPreviewCreatedOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiresat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "expiresAt"
+        ],
+        "title": "AssignmentPreviewCreatedOut",
+        "description": "Opaque preview token returned to the caller."
+      },
+      "AssignmentPreviewOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "1",
+              "2A",
+              "2B",
+              "3A",
+              "3B",
+              "4",
+              "5"
+            ],
+            "title": "Tier"
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaRef"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Permissions"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "reviewDueAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewdueat"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiresat"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "consumed",
+              "cancelled"
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "memberId",
+          "memberCode",
+          "fullName",
+          "tier",
+          "area",
+          "permissions",
+          "note",
+          "reviewDueAt",
+          "createdAt",
+          "expiresAt",
+          "status"
+        ],
+        "title": "AssignmentPreviewOut",
+        "description": "Details of a durable preview retrieved for confirmation display."
       },
       "AssistedRecoveryInput": {
         "properties": {

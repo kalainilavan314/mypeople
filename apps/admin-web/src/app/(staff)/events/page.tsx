@@ -17,11 +17,14 @@ const one = (value: string | string[] | undefined) => (Array.isArray(value) ? va
 export default function EventsConsolePage(props: PageProps<'/events'>) {
   return (
     <>
-      <PageHeader ta="நிகழ்வுகள் மேலாண்மை" en="Event console" brd="D07, GAP-03, FR-ADM-004">
+      <PageHeader ta="நிகழ்வுகள் மேலாண்மை" en="Event console">
         <Link
           href="/events/new"
           className="inline-flex min-h-11 items-center rounded-lg bg-primary px-4 text-sm font-semibold text-on-primary hover:opacity-90">
-          + Create event
+          <span className="flex flex-col items-center">
+            <span lang="ta">+ புதிய நிகழ்வு</span>
+            <span lang="en" className="text-xs font-normal opacity-90">+ Create event</span>
+          </span>
         </Link>
       </PageHeader>
       <Suspense fallback={<p className="text-muted">… Loading events</p>}>

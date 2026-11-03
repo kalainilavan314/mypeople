@@ -43,18 +43,32 @@ async function StaffMenu() {
           </p>
         ))}
       </div>
-      <ul className="flex flex-col">
+      <ul className="flex flex-col gap-1">
         {allowed.map((module) => (
           <li key={module.href}>
-            <Link href={module.href} className="flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold hover:bg-surface">
-              {module.en}
+            <Link
+              href={module.href}
+              className="flex min-h-11 flex-col justify-center rounded-lg px-3 py-1.5 hover:bg-surface">
+              <span lang="ta" className="text-sm font-semibold text-text">
+                {module.ta}
+              </span>
+              <span lang="en" className="text-xs font-normal text-muted">
+                {module.en}
+              </span>
             </Link>
           </li>
         ))}
       </ul>
       <form action={signOut}>
-        <button type="submit" className="min-h-11 w-full rounded-lg border border-line px-3 text-left text-sm text-error hover:bg-error-bg">
-          Sign out
+        <button
+          type="submit"
+          className="flex min-h-11 w-full flex-col justify-center rounded-lg border border-line px-3 py-1.5 text-left text-error hover:bg-error-bg">
+          <span lang="ta" className="text-sm font-semibold">
+            வெளியேறுக
+          </span>
+          <span lang="en" className="text-xs font-normal opacity-80">
+            Sign out
+          </span>
         </button>
       </form>
     </>

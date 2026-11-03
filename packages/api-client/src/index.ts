@@ -111,6 +111,9 @@ export type AssistedRecoveryRequest = Schemas['AssistedRequestOut'];
 export type AssistedResolutionInput = Schemas['AssistedResolutionInput'];
 export type AreaRef = Schemas['AreaRef'];
 export type AssignmentInput = Schemas['AssignmentInput'];
+export type AssignmentPreviewInput = Schemas['AssignmentPreviewCreateInput'];
+export type AssignmentPreviewCreated = Schemas['AssignmentPreviewCreatedOut'];
+export type AssignmentPreviewDetails = Schemas['AssignmentPreviewOut'];
 export type Assignment = Schemas['AssignmentOut'];
 export type ListedAssignment = Schemas['AssignmentListItemOut'];
 export type AssignmentPreview = Schemas['PreviewOut'];
@@ -389,8 +392,18 @@ export function createApiClient({
       request<ListedAssignment[]>('GET', `/v1/access/assignments?state=${state}`),
     /** Checks an assignment without saving it (RB-06). Needs roles.assign. */
     previewAssignment: (input: AssignmentInput) => request<AssignmentPreview>('POST', '/v1/access/assignments/preview', input),
-    /** Throws ApiError "assignment_refused" (403) with `problems` when a rule forbids it. */
-    createAssignment: (input: AssignmentInput) => request<Assignment>('POST', '/v1/access/assignments', input),
+    /** Creates a durable 10-minute preview record after rule validation. Needs roles.assign. */
+    createAssignmentPreview: (input: AssignmentPreviewInput) =>
+      request<AssignmentPreviewCreated>('POST', '/v1/access/assignment-previews', input),
+    /** Retrieves an active assignment preview for display. Needs roles.assign. */
+    getAssignmentPreview: (previewId: string) =>
+      request<AssignmentPreviewDetails>('GET', `/v1/access/assignment-previews/${encodeURIComponent(previewId)}`),
+    /** Atomically confirms an assignment preview, creating the role. Needs roles.assign. */
+    confirmAssignmentPreview: (previewId: string) =>
+      request<Assignment>('POST', `/v1/access/assignment-previews/${encodeURIComponent(previewId)}/confirm`),
+    /** Cancels an active assignment preview. Needs roles.assign. */
+    cancelAssignmentPreview: (previewId: string) =>
+      request<{ status: string }>('POST', `/v1/access/assignment-previews/${encodeURIComponent(previewId)}/cancel`),
     revokeAssignment: (assignmentId: string, reason: string) =>
       request<Assignment>('POST', `/v1/access/assignments/${encodeURIComponent(assignmentId)}/revoke`, { reason }),
     /** D31: grants the caller may review this quarter, the most overdue first (FR-AUTH-027). Needs audit.view. */

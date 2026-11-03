@@ -12,11 +12,11 @@ import { isRefusal } from '@/lib/staff';
 const STATES: ReviewState[] = ['submitted', 'in_review', 'needs_update', 'verified', 'unable_to_verify'];
 const one = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
 
-/** W01: the review queue for the reviewer's own areas, oldest waiting first (FR-WEB-001 to 004). */
+/** The review queue for the reviewer's own areas, oldest waiting first. */
 export default function VerificationQueuePage(props: PageProps<'/verification'>) {
   return (
     <>
-      <PageHeader ta="அடையாளச் சரிபார்ப்பு வரிசை" en="Verification queue" brd="W01, FR-WEB-001 to 005" />
+      <PageHeader ta="அடையாளச் சரிபார்ப்பு வரிசை" en="Verification queue" />
       <Suspense fallback={<p className="text-muted">… Loading the queue</p>}>
         <Queue searchParams={props.searchParams} />
       </Suspense>
@@ -44,12 +44,18 @@ async function Queue({ searchParams }: { searchParams: PageProps<'/verification'
 
   return (
     <>
-      <p className="text-sm text-muted">
-        {counts.awaitingReview} waiting · {counts.needsUpdate} with the member · {counts.assignedToMe} claimed by you
-      </p>
+      <div className="flex flex-col gap-0.5 text-sm">
+        <p lang="ta" className="font-semibold text-text">
+          {counts.awaitingReview} காத்திருக்கின்றன · {counts.needsUpdate} உறுப்பினருக்காக · {counts.assignedToMe} உங்களிடம்
+        </p>
+        <p className="text-xs text-muted">
+          {counts.awaitingReview} waiting · {counts.needsUpdate} with the member · {counts.assignedToMe} claimed by you
+        </p>
+      </div>
       <form className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3" role="search">
         <label className="flex flex-col gap-1 text-sm font-semibold">
-          State
+          <span lang="ta" className="text-xs text-muted">நிலை</span>
+          <span lang="en" className="text-xs">State</span>
           <select name="state" defaultValue={state ?? ''} className="min-h-11 rounded-lg border border-line px-2">
             <option value="">Open (waiting, in review, with the member)</option>
             {STATES.map((s) => (
@@ -60,28 +66,61 @@ async function Queue({ searchParams }: { searchParams: PageProps<'/verification'
           </select>
         </label>
         <label className="flex min-h-11 items-center gap-2 text-sm">
-          <input type="checkbox" name="mine" value="1" defaultChecked={mine} /> Claimed by me
+          <input type="checkbox" name="mine" value="1" defaultChecked={mine} />
+          <span>
+            <span lang="ta" className="block text-xs font-semibold text-text">எனக்குரியவை</span>
+            <span lang="en" className="block text-xs text-muted">Claimed by me</span>
+          </span>
         </label>
         <label className="flex flex-col gap-1 text-sm font-semibold">
-          Review reference
+          <span lang="ta" className="text-xs text-muted">சரிபார்ப்புக் குறிப்பு</span>
+          <span lang="en" className="text-xs">Review reference</span>
           <input name="ref" defaultValue={ref} placeholder="VR-00421" className="min-h-11 rounded-lg border border-line px-3 font-mono" />
         </label>
         <button type="submit" className="min-h-11 rounded-lg bg-primary px-4 text-sm font-semibold text-on-primary">
-          Show
+          <span className="flex flex-col items-center">
+            <span lang="ta">காட்டுக</span>
+            <span lang="en" className="text-xs font-normal opacity-90">Show</span>
+          </span>
         </button>
       </form>
-      {reviews.length === 0 ? <p className="text-sm text-muted">No reviews match.</p> : null}
+      {reviews.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-xl border border-line bg-card p-8 text-center">
+          <p lang="ta" className="text-sm font-semibold text-muted">
+            சரிபார்ப்புகள் எதுவும் பொருந்தவில்லை.
+          </p>
+          <p className="text-xs text-muted">No identity reviews match the selected filters.</p>
+        </div>
+      ) : null}
       <div hidden={reviews.length === 0} className="overflow-x-auto rounded-xl border border-line bg-card">
         <table className="w-full text-left text-sm">
           <caption className="sr-only">Identity reviews</caption>
           <thead className="border-b border-line text-xs text-muted">
             <tr>
-              <th scope="col" className="px-3 py-2">Reference</th>
-              <th scope="col" className="px-3 py-2">State</th>
-              <th scope="col" className="px-3 py-2">Route</th>
-              <th scope="col" className="px-3 py-2">Area</th>
-              <th scope="col" className="px-3 py-2">Submitted</th>
-              <th scope="col" className="px-3 py-2">Claimed by</th>
+              <th scope="col" className="px-3 py-2">
+                <span lang="ta" className="block text-text font-semibold">குறிப்பு எண்</span>
+                <span lang="en" className="block text-[11px] text-muted font-normal">Reference</span>
+              </th>
+              <th scope="col" className="px-3 py-2">
+                <span lang="ta" className="block text-text font-semibold">நிலை</span>
+                <span lang="en" className="block text-[11px] text-muted font-normal">State</span>
+              </th>
+              <th scope="col" className="px-3 py-2">
+                <span lang="ta" className="block text-text font-semibold">ஆவண வகை</span>
+                <span lang="en" className="block text-[11px] text-muted font-normal">Route</span>
+              </th>
+              <th scope="col" className="px-3 py-2">
+                <span lang="ta" className="block text-text font-semibold">பகுதி</span>
+                <span lang="en" className="block text-[11px] text-muted font-normal">Area</span>
+              </th>
+              <th scope="col" className="px-3 py-2">
+                <span lang="ta" className="block text-text font-semibold">சமர்ப்பிக்கப்பட்டது</span>
+                <span lang="en" className="block text-[11px] text-muted font-normal">Submitted</span>
+              </th>
+              <th scope="col" className="px-3 py-2">
+                <span lang="ta" className="block text-text font-semibold">பொறுப்பேற்றவர்</span>
+                <span lang="en" className="block text-[11px] text-muted font-normal">Claimed by</span>
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line">

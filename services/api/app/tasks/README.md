@@ -2,7 +2,7 @@
 
 Jobs that run outside a request.
 
-**Status: the notification dispatcher is built (`notifications.py`, Batch 19), as a plain command a systemd timer runs every minute.** Celery and Redis are not part of the project; they are added only when a job needs them. Still to come: deleting identity images when their retention ends, SLA timers, privileged-access review deadlines, the 10-working-day appeal target, event reminders, anonymising closed accounts.
+**Status: the notification dispatcher is built (`notifications.py`, Batch 19), as a plain command a systemd timer runs every minute.** `cleanup.py` removes expired or terminal role-assignment previews daily. Celery and Redis are not part of the project; they are added only when a job needs them. Still to come: deleting identity images when their retention ends, SLA timers, privileged-access review deadlines, the 10-working-day appeal target, event reminders, anonymising closed accounts.
 
 ### 1. Local Development Dispatch Runner
 
@@ -59,10 +59,41 @@ Persistent=true
 WantedBy=timers.target
 ```
 
+Enable it after adding both units:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now mypeople-preview-cleanup.timer
+```
+
 Enable and start with:
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now mypeople-notifications.timer
+```
+
+### Assignment-preview cleanup
+
+Run the same container/image command once per day. Expired previews are rejected by every read, confirm, and cancel request even if this timer is delayed; the timer only removes stale records.
+
+```ini
+# /etc/systemd/system/mypeople-preview-cleanup.service
+[Service]
+Type=oneshot
+User=mypeople
+WorkingDirectory=/srv/mypeople/services/api
+EnvironmentFile=/srv/mypeople/services/api/.env
+ExecStart=/srv/mypeople/services/api/.venv/bin/python -m app.tasks.cleanup
+```
+
+```ini
+# /etc/systemd/system/mypeople-preview-cleanup.timer
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target
 ```
 
 ### 3. Container / Kubernetes CronJob

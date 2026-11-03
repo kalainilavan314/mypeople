@@ -20,12 +20,13 @@ export default function NewEventPage(props: PageProps<'/events/new'>) {
   return (
     <>
       <div className="flex items-center gap-2">
-        <Link href="/events" className="text-sm font-semibold text-primary underline">
-          ← Back to events
+        <Link href="/events" className="flex flex-col text-sm font-semibold text-primary underline">
+          <span lang="ta">← நிகழ்வுகளுக்குத் திரும்புக</span>
+          <span lang="en" className="text-xs font-normal text-muted">Back to events</span>
         </Link>
       </div>
 
-      <PageHeader ta="புதிய நிகழ்வை உருவாக்குதல்" en="Create draft event" brd="D07, FR-ADM-004" />
+      <PageHeader ta="புதிய நிகழ்வை உருவாக்குதல்" en="Create draft event" />
 
       <Suspense fallback={<p className="text-muted">… Loading form</p>}>
         <NewEventForm searchParams={props.searchParams} />
@@ -50,23 +51,14 @@ async function NewEventForm({ searchParams }: { searchParams: PageProps<'/events
       <form action={createEvent} className="flex flex-col gap-6 rounded-xl border border-line bg-card p-6">
         <section aria-labelledby="section-basic" className="flex flex-col gap-4">
           <h2 id="section-basic" className="text-base font-bold">
-            1. Event details
+            <span lang="ta" className="block text-xs font-semibold text-muted">1. நிகழ்வு விவரங்கள்</span>
+            <span lang="en">1. Event details</span>
           </h2>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1 text-sm font-semibold">
-              Title (English) *
-              <input
-                name="titleEn"
-                required
-                maxLength={160}
-                placeholder="e.g. Jaffna Town Community Meeting"
-                className="min-h-11 rounded-lg border border-line px-3"
-              />
-            </label>
-
-            <label className="flex flex-col gap-1 text-sm font-semibold">
-              Title (Tamil / தமிழ்) *
+              <span lang="ta" className="text-xs text-muted">நிகழ்வுத் தலைப்பு (தமிழ்) *</span>
+              <span lang="en" className="text-xs">Title (Tamil) *</span>
               <input
                 name="titleTa"
                 required
@@ -76,11 +68,24 @@ async function NewEventForm({ searchParams }: { searchParams: PageProps<'/events
                 className="min-h-11 rounded-lg border border-line px-3"
               />
             </label>
+
+            <label className="flex flex-col gap-1 text-sm font-semibold">
+              <span lang="ta" className="text-xs text-muted">நிகழ்வுத் தலைப்பு (ஆங்கிலம்) *</span>
+              <span lang="en" className="text-xs">Title (English) *</span>
+              <input
+                name="titleEn"
+                required
+                maxLength={160}
+                placeholder="e.g. Jaffna Town Community Meeting"
+                className="min-h-11 rounded-lg border border-line px-3"
+              />
+            </label>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1 text-sm font-semibold">
-              Event type *
+              <span lang="ta" className="text-xs text-muted">நிகழ்வு வகை *</span>
+              <span lang="en" className="text-xs">Event type *</span>
               <select name="eventType" required defaultValue="community_meeting" className="min-h-11 rounded-lg border border-line px-3 bg-surface">
                 {EVENT_TYPES.map((t) => (
                   <option key={t.value} value={t.value}>
@@ -91,7 +96,8 @@ async function NewEventForm({ searchParams }: { searchParams: PageProps<'/events
             </label>
 
             <label className="flex flex-col gap-1 text-sm font-semibold">
-              Assigned area *
+              <span lang="ta" className="text-xs text-muted">ஒதுக்கப்பட்ட பகுதி *</span>
+              <span lang="en" className="text-xs">Assigned area *</span>
               <select name="areaSelection" required className="min-h-11 rounded-lg border border-line px-3 bg-surface">
                 {managedAssignments.map((a) => {
                   const label = a.area.level === 'platform' ? 'Platform wide' : `${a.area.level} ${a.area.code}`;
@@ -108,18 +114,8 @@ async function NewEventForm({ searchParams }: { searchParams: PageProps<'/events
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1 text-sm font-semibold">
-              Description (English)
-              <textarea
-                name="descriptionEn"
-                rows={3}
-                maxLength={4000}
-                placeholder="Purpose and details of the event..."
-                className="rounded-lg border border-line p-3"
-              />
-            </label>
-
-            <label className="flex flex-col gap-1 text-sm font-semibold">
-              Description (Tamil / தமிழ்)
+              <span lang="ta" className="text-xs text-muted">விளக்கம் (தமிழ்)</span>
+              <span lang="en" className="text-xs">Description (Tamil)</span>
               <textarea
                 name="descriptionTa"
                 rows={3}
@@ -129,36 +125,51 @@ async function NewEventForm({ searchParams }: { searchParams: PageProps<'/events
                 className="rounded-lg border border-line p-3"
               />
             </label>
+
+            <label className="flex flex-col gap-1 text-sm font-semibold">
+              <span lang="ta" className="text-xs text-muted">விளக்கம் (ஆங்கிலம்)</span>
+              <span lang="en" className="text-xs">Description (English)</span>
+              <textarea
+                name="descriptionEn"
+                rows={3}
+                maxLength={4000}
+                placeholder="Purpose and details of the event..."
+                className="rounded-lg border border-line p-3"
+              />
+            </label>
           </div>
         </section>
 
         <section aria-labelledby="section-schedule" className="flex flex-col gap-4 border-t border-line pt-6">
           <h2 id="section-schedule" className="text-base font-bold">
-            2. Schedule and check-in
+            <span lang="ta" className="block text-xs font-semibold text-muted">2. நேர அட்டவணை மற்றும் வருகைப் பதிவு</span>
+            <span lang="en">2. Schedule and check-in</span>
           </h2>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1 text-sm font-semibold">
-              Starts at (Sri Lankan time) *
+              <span lang="ta" className="text-xs text-muted">ஆரம்ப நேரம் (இலங்கை நேரம்) *</span>
+              <span lang="en" className="text-xs">Starts at (Sri Lankan time) *</span>
               <input name="startsAt" type="datetime-local" required className="min-h-11 rounded-lg border border-line px-3" />
             </label>
 
             <label className="flex flex-col gap-1 text-sm font-semibold">
-              Ends at (Sri Lankan time) *
+              <span lang="ta" className="text-xs text-muted">முடிவு நேரம் (இலங்கை நேரம்) *</span>
+              <span lang="en" className="text-xs">Ends at (Sri Lankan time) *</span>
               <input name="endsAt" type="datetime-local" required className="min-h-11 rounded-lg border border-line px-3" />
             </label>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1 text-sm font-semibold">
-              Check-in opens at (optional)
-              <span className="text-xs font-normal text-muted">Defaults to 1 hour before start</span>
+              <span lang="ta" className="text-xs text-muted">வருகைப்பதிவு திறக்கும் நேரம் (விருப்பமானது)</span>
+              <span lang="en" className="text-xs">Check-in opens at (optional)</span>
               <input name="checkinOpensAt" type="datetime-local" className="min-h-11 rounded-lg border border-line px-3" />
             </label>
 
             <label className="flex flex-col gap-1 text-sm font-semibold">
-              Check-in closes at (optional)
-              <span className="text-xs font-normal text-muted">Defaults to event end time</span>
+              <span lang="ta" className="text-xs text-muted">வருகைப்பதிவு முடிவடையும் நேரம் (விருப்பமானது)</span>
+              <span lang="en" className="text-xs">Check-in closes at (optional)</span>
               <input name="checkinClosesAt" type="datetime-local" className="min-h-11 rounded-lg border border-line px-3" />
             </label>
           </div>
@@ -166,12 +177,14 @@ async function NewEventForm({ searchParams }: { searchParams: PageProps<'/events
 
         <section aria-labelledby="section-venue" className="flex flex-col gap-4 border-t border-line pt-6">
           <h2 id="section-venue" className="text-base font-bold">
-            3. Venue and access
+            <span lang="ta" className="block text-xs font-semibold text-muted">3. நிகழ்விடம் மற்றும் அணுகல்தன்மை</span>
+            <span lang="en">3. Venue and access</span>
           </h2>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1 text-sm font-semibold">
-              Venue name and address *
+              <span lang="ta" className="text-xs text-muted">நிகழ்விடம் மற்றும் முகவரி *</span>
+              <span lang="en" className="text-xs">Venue name and address *</span>
               <input
                 name="venue"
                 required
@@ -182,7 +195,8 @@ async function NewEventForm({ searchParams }: { searchParams: PageProps<'/events
             </label>
 
             <label className="flex flex-col gap-1 text-sm font-semibold">
-              Meeting point
+              <span lang="ta" className="text-xs text-muted">சந்திக்கும் இடம்</span>
+              <span lang="en" className="text-xs">Meeting point</span>
               <input
                 name="meetingPoint"
                 maxLength={300}
@@ -194,7 +208,8 @@ async function NewEventForm({ searchParams }: { searchParams: PageProps<'/events
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1 text-sm font-semibold">
-              Accessibility information
+              <span lang="ta" className="text-xs text-muted">அணுகல்தன்மைத் தகவல்</span>
+              <span lang="en" className="text-xs">Accessibility information</span>
               <input
                 name="accessibility"
                 maxLength={1000}
@@ -204,7 +219,8 @@ async function NewEventForm({ searchParams }: { searchParams: PageProps<'/events
             </label>
 
             <label className="flex flex-col gap-1 text-sm font-semibold">
-              Contact route
+              <span lang="ta" className="text-xs text-muted">தொடர்பு வழி</span>
+              <span lang="en" className="text-xs">Contact route</span>
               <input
                 name="contactRoute"
                 maxLength={300}
@@ -216,8 +232,8 @@ async function NewEventForm({ searchParams }: { searchParams: PageProps<'/events
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1 text-sm font-semibold">
-              Capacity limit (optional)
-              <span className="text-xs font-normal text-muted">Leave empty for unlimited RSVP capacity</span>
+              <span lang="ta" className="text-xs text-muted">பங்கேற்பாளர் எல்லை (விருப்பமானது)</span>
+              <span lang="en" className="text-xs">Capacity limit (optional)</span>
               <input
                 name="capacity"
                 type="number"
@@ -230,17 +246,28 @@ async function NewEventForm({ searchParams }: { searchParams: PageProps<'/events
             <div className="flex flex-col justify-end">
               <label className="flex min-h-11 items-center gap-2 text-sm font-semibold">
                 <input name="admitsPending" type="checkbox" value="1" />
-                Admit pending members (passes issued to unverified / pending)
+                <span>
+                  <span lang="ta" className="block text-xs font-semibold text-text">நிலுவையிலுள்ள உறுப்பினர்களை அனுமதிக்குக</span>
+                  <span lang="en" className="block text-xs text-muted">Admit pending members (passes issued to unverified / pending)</span>
+                </span>
               </label>
             </div>
           </div>
         </section>
 
         <div className="flex flex-wrap items-center justify-end gap-3 border-t border-line pt-6">
-          <Link href="/events" className="min-h-11 rounded-lg border border-line px-4 py-2 text-sm font-semibold text-muted hover:bg-surface">
-            Cancel
+          <Link href="/events" className="min-h-11 rounded-lg border border-line px-4 py-2.5 text-sm font-semibold text-muted hover:bg-surface">
+            <span className="flex flex-col items-center">
+              <span lang="ta">ரத்துசெய்க</span>
+              <span lang="en" className="text-xs font-normal">Cancel</span>
+            </span>
           </Link>
-          <SubmitButton tone="primary">Save draft event</SubmitButton>
+          <SubmitButton tone="primary">
+            <span className="flex flex-col items-center">
+              <span lang="ta">வரைவு நிகழ்வைச் சேமிக்குக</span>
+              <span lang="en" className="text-xs font-normal opacity-90">Save draft event</span>
+            </span>
+          </SubmitButton>
         </div>
       </form>
     </>

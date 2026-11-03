@@ -132,7 +132,7 @@ test('signOut accepts the empty 204 response', async () => {
   assert.equal(sent[0].url, 'https://api.example/v1/auth/sign-out');
 });
 
-test('a refused assignment carries the reasons', async () => {
+test('a refused assignment preview carries the reasons', async () => {
   const { fetch } = fakeFetch(403, { detail: { code: 'assignment_refused', problems: ['tier_not_below_yours'] } });
   const input = {
     memberId: '3f1c2a9e-5b7d-4e8a-9c0f-1a2b3c4d5e6f',
@@ -141,7 +141,7 @@ test('a refused assignment carries the reasons', async () => {
     permissions: ['cases.decide_district'],
   };
 
-  await assert.rejects(createApiClient({ baseUrl: 'https://api.example', fetch }).createAssignment(input), (error) => {
+  await assert.rejects(createApiClient({ baseUrl: 'https://api.example', fetch }).createAssignmentPreview(input), (error) => {
     assert.ok(error instanceof ApiError);
     assert.equal(error.code, 'assignment_refused');
     assert.deepEqual(error.problems, ['tier_not_below_yours']);

@@ -1,23 +1,25 @@
 import type { ReactNode } from 'react';
 
 type Props = {
-  /** Tamil first, English under it, as everywhere in the product (CLAUDE.md). */
+  /** Tamil first, English directly below it. */
   ta: string;
   en: string;
-  brd?: string;
   children?: ReactNode;
 };
 
-/** The page's one h1, with the screen's BRD reference and an optional action area. */
-export function PageHeader({ ta, en, brd, children }: Props) {
+/** The page's one h1, with Tamil first and English directly below it. */
+export function PageHeader({ ta, en, children }: Props) {
   return (
     <header className="flex flex-wrap items-end justify-between gap-3">
       <div className="flex flex-col gap-0.5">
-        <p lang="ta" className="text-sm font-semibold text-muted">
-          {ta}
-        </p>
-        <h1 className="text-2xl font-bold">{en}</h1>
-        {brd ? <p className="text-xs text-muted">BRD {brd}</p> : null}
+        <h1 className="flex flex-col gap-0.5 text-2xl font-bold">
+          <span lang="ta" className="text-2xl font-bold text-text">
+            {ta}
+          </span>
+          <span lang="en" className="text-sm font-medium text-muted">
+            {en}
+          </span>
+        </h1>
       </div>
       {children}
     </header>

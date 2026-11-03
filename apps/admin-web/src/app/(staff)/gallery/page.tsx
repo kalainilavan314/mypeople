@@ -33,7 +33,7 @@ async function GalleryContent({ searchParams }: { searchParams: PageProps<'/gall
   if (!canPublish && !canTakeDown) {
     return (
       <div className="flex flex-col gap-4">
-        <PageHeader ta="புகைப்படத் தொகுப்பு & நீக்கங்கள்" en="Gallery console" brd="D08, GAP-04, FR-ADM-005, FR-ADM-006" />
+        <PageHeader ta="புகைப்படத் தொகுப்பு & நீக்கங்கள்" en="Gallery console" />
         <p className="rounded-xl border border-line bg-surface p-4 text-sm text-error">
           ! You do not have permission to view gallery albums (gallery.publish) or removal requests (gallery.takedown).
         </p>
@@ -55,12 +55,15 @@ async function GalleryContent({ searchParams }: { searchParams: PageProps<'/gall
 
   return (
     <>
-      <PageHeader ta="புகைப்படத் தொகுப்பு & நீக்கங்கள்" en="Gallery console" brd="D08, GAP-04, FR-ADM-005, FR-ADM-006">
+      <PageHeader ta="புகைப்படத் தொகுப்பு & நீக்கங்கள்" en="Gallery console">
         {canPublish && tab === 'albums' ? (
           <Link
             href="/gallery/new"
             className="inline-flex min-h-11 items-center rounded-lg bg-primary px-4 text-sm font-semibold text-on-primary hover:opacity-90">
-            + Create album
+            <span className="flex flex-col items-center">
+              <span lang="ta">+ புதிய தொகுப்பு</span>
+              <span lang="en" className="text-xs font-normal opacity-90">+ Create album</span>
+            </span>
           </Link>
         ) : null}
       </PageHeader>
@@ -71,14 +74,20 @@ async function GalleryContent({ searchParams }: { searchParams: PageProps<'/gall
           <Link
             href="/gallery?tab=albums"
             className={`border-b-2 px-4 py-3 ${tab === 'albums' ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-foreground'}`}>
-            Albums management
+            <span className="flex flex-col items-center">
+              <span lang="ta">புகைப்படத் தொகுப்புகள்</span>
+              <span lang="en" className="text-xs font-normal opacity-90">Albums management</span>
+            </span>
           </Link>
         ) : null}
         {canTakeDown ? (
           <Link
             href="/gallery?tab=removals"
             className={`border-b-2 px-4 py-3 ${tab === 'removals' ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-foreground'}`}>
-            Photo removal queue (24h)
+            <span className="flex flex-col items-center">
+              <span lang="ta">நீக்கல் கோரிக்கைகள் (24 மணி)</span>
+              <span lang="en" className="text-xs font-normal opacity-90">Photo removal queue (24h)</span>
+            </span>
           </Link>
         ) : null}
       </nav>
@@ -201,7 +210,6 @@ async function RemovalsQueueContent({ searchParams }: { searchParams: PageProps<
   const error = one(params.error);
   const problems = one(params.problems);
   const done = one(params.done);
-
   const api = await staffApi();
   let requests: QueuedRemoval[] = [];
 
@@ -305,26 +313,59 @@ async function RemovalsQueueContent({ searchParams }: { searchParams: PageProps<
               {req.state === 'open' ? (
                 <form action={decideRemoval} className="flex flex-col gap-3 rounded-lg border border-line bg-surface p-3">
                   <input type="hidden" name="requestId" value={req.id} />
-                  <p className="text-xs font-semibold">Moderation decision (required):</p>
-
-                  <div className="flex flex-wrap items-center gap-4">
-                    <label className="flex items-center gap-1.5 text-xs font-medium">
-                      <input type="radio" name="decision" value="remove" required defaultChecked />
-                      <span>Remove photo (delete permanently)</span>
-                    </label>
-                    <label className="flex items-center gap-1.5 text-xs font-medium">
-                      <input type="radio" name="decision" value="blur" required />
-                      <span>Blur photo</span>
-                    </label>
-                    <label className="flex items-center gap-1.5 text-xs font-medium">
-                      <input type="radio" name="decision" value="keep" required />
-                      <span>Keep photo (refuse removal)</span>
-                    </label>
+                  <div>
+                    <span lang="ta" className="block text-xs font-semibold text-muted">நீக்கல் கோரிக்கை முடிவு *</span>
+                    <span lang="en" className="block text-xs font-semibold">Moderation decision (required):</span>
                   </div>
 
-                  <label className="flex flex-col gap-1 text-xs font-semibold">
-                    Decision rationale / audit reason *
+                  <fieldset id="input-decision" className="flex flex-wrap items-center gap-4">
+                    <legend className="sr-only">Moderation decision</legend>
+                    <label className="flex items-start gap-1.5 text-xs font-medium">
+                      <input
+                        type="radio"
+                        name="decision"
+                        value="remove"
+                        required
+                        className="mt-0.5"
+                      />
+                      <span className="flex flex-col">
+                        <span lang="ta" className="font-semibold text-text">புகைப்படத்தை நீக்குக</span>
+                        <span lang="en" className="text-[11px] text-muted">Remove photo</span>
+                      </span>
+                    </label>
+                    <label className="flex items-start gap-1.5 text-xs font-medium">
+                      <input
+                        type="radio"
+                        name="decision"
+                        value="blur"
+                        required
+                        className="mt-0.5"
+                      />
+                      <span className="flex flex-col">
+                        <span lang="ta" className="font-semibold text-text">புகைப்படத்தை மங்கலாக்குக</span>
+                        <span lang="en" className="text-[11px] text-muted">Blur photo</span>
+                      </span>
+                    </label>
+                    <label className="flex items-start gap-1.5 text-xs font-medium">
+                      <input
+                        type="radio"
+                        name="decision"
+                        value="keep"
+                        required
+                        className="mt-0.5"
+                      />
+                      <span className="flex flex-col">
+                        <span lang="ta" className="font-semibold text-text">தக்கவைத்துக்கொள்க</span>
+                        <span lang="en" className="text-[11px] text-muted">Keep photo</span>
+                      </span>
+                    </label>
+                  </fieldset>
+
+                  <label htmlFor="input-reason" className="flex flex-col gap-1 text-xs font-semibold">
+                    <span lang="ta" className="text-xs text-muted">தீர்மான நியாயப்படுத்தல் / தணிக்கைக் காரணம் *</span>
+                    <span lang="en" className="text-xs">Decision rationale / audit reason *</span>
                     <input
+                      id="input-reason"
                       name="reason"
                       required
                       minLength={3}
@@ -334,8 +375,32 @@ async function RemovalsQueueContent({ searchParams }: { searchParams: PageProps<
                     />
                   </label>
 
+                  <label className="flex items-start gap-2 text-xs font-medium text-muted">
+                    <input
+                      type="checkbox"
+                      id="input-confirm"
+                      name="confirmRemoval"
+                      value="1"
+                      required
+                      className="mt-0.5 rounded border-line"
+                    />
+                    <span>
+                      <span lang="ta" className="block font-semibold text-text">
+                        இப்பட நீக்கல் கோரிக்கைத் தீர்மானத்தை உறுதிப்படுத்துகிறேன்.
+                      </span>
+                      <span lang="en" className="block text-muted">
+                        I confirm this photo removal moderation decision.
+                      </span>
+                    </span>
+                  </label>
+
                   <div className="flex justify-end">
-                    <SubmitButton tone="primary">Record decision</SubmitButton>
+                    <SubmitButton tone="primary">
+                      <span className="flex flex-col items-center">
+                        <span lang="ta">முடிவைப் பதிவுசெய்க</span>
+                        <span lang="en" className="text-xs font-normal opacity-90">Record decision</span>
+                      </span>
+                    </SubmitButton>
                   </div>
                 </form>
               ) : (

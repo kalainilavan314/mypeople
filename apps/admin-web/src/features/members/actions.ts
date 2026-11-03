@@ -8,7 +8,7 @@ import { staffApi } from '@/lib/session';
 
 const UUID = /^[0-9a-f-]{36}$/i;
 
-/** Finds a member by exact member ID (FR-STF-003) and opens their membership file. */
+/** Finds a member by exact member ID and opens their membership file. */
 export async function findMember(formData: FormData): Promise<void> {
   const code = String(formData.get('code') ?? '').trim();
   let memberId: string;
@@ -20,12 +20,19 @@ export async function findMember(formData: FormData): Promise<void> {
   redirect(`/membership/${memberId}`);
 }
 
-/** D06: activate, suspend, reinstate or inactivate, always with a reason (BR-015). */
+/** Activate, suspend, reinstate or inactivate, always with a confirmed reason. */
 export async function changeMembership(formData: FormData): Promise<void> {
   const memberId = String(formData.get('memberId') ?? '');
   if (!UUID.test(memberId)) redirect('/membership');
+
   const [action, reasonCode] = String(formData.get('change') ?? '').split(':') as [MembershipChangeInput['action'], string];
   const note = String(formData.get('note') ?? '').trim();
+  const confirmed = formData.get('confirmChange') === '1';
+
+  if (!confirmed) {
+    redirect(`/membership/${memberId}?error=confirmation_required`);
+  }
+
   try {
     await (await staffApi()).changeMembership(memberId, { action, reasonCode, note: note || null });
   } catch (error) {

@@ -69,8 +69,9 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
   return (
     <>
       <div className="flex items-center gap-2">
-        <Link href="/events" className="text-sm font-semibold text-primary underline">
-          ← Back to events
+        <Link href="/events" className="flex flex-col text-sm font-semibold text-primary underline">
+          <span lang="ta">← நிகழ்வுகளுக்குத் திரும்புக</span>
+          <span lang="en" className="text-xs font-normal text-muted">Back to events</span>
         </Link>
       </div>
 
@@ -80,10 +81,14 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
             <span className="font-mono text-xs text-muted">{event.eventRef}</span>
             <StateTag state={event.state} />
           </div>
-          <p lang="ta" className="text-sm font-semibold text-muted">
-            {event.titleTa}
-          </p>
-          <h1 className="text-2xl font-bold">{event.titleEn}</h1>
+          <h1 className="flex flex-col gap-0.5 text-2xl font-bold">
+            <span lang="ta" className="text-2xl font-bold text-text">
+              {event.titleTa}
+            </span>
+            <span lang="en" className="text-sm font-medium text-muted">
+              {event.titleEn}
+            </span>
+          </h1>
           <p className="text-xs text-muted">
             Area: {areaText(event.areaKey)} · Type: {event.eventType.replace(/_/g, ' ')}
           </p>

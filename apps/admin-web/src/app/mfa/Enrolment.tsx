@@ -22,7 +22,10 @@ export function Enrolment() {
           width={220}
           height={220}
         />
-        <p className="text-sm font-semibold">Key</p>
+        <p className="flex flex-col items-center">
+          <span lang="ta" className="text-sm font-semibold">இரகசிய விசை</span>
+          <span lang="en" className="text-xs text-muted">Secret key</span>
+        </p>
         <p className="select-all break-all font-mono text-base">{state.secret}</p>
       </div>
     );
@@ -38,7 +41,10 @@ export function Enrolment() {
         type="submit"
         disabled={pending}
         className="min-h-11 rounded-lg bg-primary px-4 text-sm font-semibold text-on-primary disabled:opacity-60">
-        {pending ? 'Working…' : 'Set up an authenticator'}
+        <span className="flex flex-col items-center">
+          <span lang="ta">{pending ? 'செயற்படுகிறது…' : 'அங்கீகாரச் செயலியை அமைத்தல்'}</span>
+          <span lang="en" className="text-xs font-normal opacity-90">{pending ? 'Working…' : 'Set up an authenticator'}</span>
+        </span>
       </button>
     </form>
   );

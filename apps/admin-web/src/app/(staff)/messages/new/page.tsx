@@ -11,21 +11,27 @@ export default function NewBroadcastPage(props: PageProps<'/messages/new'>) {
   return (
     <>
       <div className="flex items-center gap-2">
-        <Link href="/messages" className="text-sm font-semibold text-primary underline">
-          ← Back to broadcasts
+        <Link href="/messages" className="flex flex-col text-sm font-semibold text-primary underline">
+          <span lang="ta">← அறிவித்தல்களுக்குத் திரும்புக</span>
+          <span lang="en" className="text-xs font-normal text-muted">Back to broadcasts</span>
         </Link>
       </div>
 
-      <PageHeader ta="புதிய அறிவித்தலை உருவாக்குதல்" en="Compose staff broadcast" brd="D09, GAP-05, FR-ADM-007" />
+      <PageHeader ta="புதிய அறிவித்தலை உருவாக்குதல்" en="Compose staff broadcast" />
 
       {/* Security Warning Banner */}
       <section aria-labelledby="policy-notice" className="rounded-xl border border-warning bg-warning-bg p-4 text-warning text-sm">
-        <h2 id="policy-notice" className="font-bold">
-          ! Privacy and Sensitive Data Policy
+        <h2 id="policy-notice" className="flex flex-col font-bold">
+          <span lang="ta">! தனியுரிமை மற்றும் முக்கியமான தரவுக் கொள்கை</span>
+          <span lang="en" className="text-xs font-normal">! Privacy and Sensitive Data Policy</span>
         </h2>
-        <p className="mt-1">
-          Do not include National Identity Card (NIC) numbers, passport numbers, phone numbers, or private case records
-          in broadcasts. Broadcasts reach all members in the target geography and cannot be recalled once sent.
+        <p className="mt-1 flex flex-col gap-1">
+          <span lang="ta">
+            தேசிய அடையாள அட்டை (NIC) எண்கள், கடவுச்சீட்டு எண்கள், தொலைபேசி எண்கள் அல்லது தனிப்பட்ட கோப்புப் பதிவுகளை அறிவித்தல்களில் சேர்க்க வேண்டாம். இலக்குப் பகுதியிலுள்ள அனைத்து உறுப்பினர்களையும் சென்றடையும் இவ்வறிவித்தல்கள், அனுப்பிய பின் மீளப்பெறப்பட முடியாது.
+          </span>
+          <span lang="en" className="text-xs opacity-90">
+            Do not include National Identity Card (NIC) numbers, passport numbers, phone numbers, or private case records in broadcasts. Broadcasts reach all members in the target geography and cannot be recalled once sent.
+          </span>
         </p>
       </section>
 

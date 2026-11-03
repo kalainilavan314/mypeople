@@ -16,11 +16,14 @@ const STATES = ['draft', 'pending_approval', 'scheduled', 'sent', 'cancelled'] a
 export default function BroadcastsListPage(props: PageProps<'/messages'>) {
   return (
     <>
-      <PageHeader ta="அறிவித்தல்கள் & செய்திகள்" en="Broadcasts & messaging" brd="D09, GAP-05, FR-ADM-007">
+      <PageHeader ta="அறிவித்தல்கள் & செய்திகள்" en="Broadcasts & messaging">
         <Link
           href="/messages/new"
           className="inline-flex min-h-11 items-center rounded-lg bg-primary px-4 text-sm font-semibold text-on-primary hover:opacity-90">
-          + Compose broadcast
+          <span className="flex flex-col items-center">
+            <span lang="ta">+ புதிய அறிவித்தல்</span>
+            <span lang="en" className="text-xs font-normal opacity-90">+ Compose broadcast</span>
+          </span>
         </Link>
       </PageHeader>
       <Suspense fallback={<p className="text-muted">… Loading broadcasts</p>}>

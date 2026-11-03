@@ -17,7 +17,7 @@ const GATES = ['G0', 'G1', 'G2', 'G3'] as const;
 export default function SettingsPage(props: PageProps<'/settings'>) {
   return (
     <>
-      <PageHeader ta="கணினி அமைப்புகள் & பதிவேடு" en="Settings & registry administration" brd="D34, FR-ARCH-011, PRM-26" />
+      <PageHeader ta="கணினி அமைப்புகள் & பதிவேடு" en="Settings & registry administration" />
       <Suspense fallback={<p className="text-muted">… Loading system settings and registries</p>}>
         <SettingsContent searchParams={props.searchParams} />
       </Suspense>
@@ -196,7 +196,7 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
           <div className="rounded-xl border border-line bg-card p-4">
             <span className="text-xs font-semibold text-muted">Authentication policy</span>
             <p className="mt-1 font-bold">Mandatory Staff MFA (TOTP)</p>
-            <p className="mt-1 text-xs text-muted">RFC 6238 authenticator code required per staff session (NFR-SEC-04).</p>
+            <p className="mt-1 text-xs text-muted">RFC 6238 time-based authenticator code required per staff session.</p>
           </div>
 
           <div className="rounded-xl border border-line bg-card p-4">

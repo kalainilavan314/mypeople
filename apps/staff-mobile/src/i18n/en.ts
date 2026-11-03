@@ -48,7 +48,7 @@ export const en = {
   mfa: {
     enrolTitle: 'Set up your authenticator',
     enrolBody:
-      'Staff sign in with a second factor every time (NFR-SEC-04). Scan this code with an authenticator app, or type the key, then enter the 6-digit code it shows.',
+      'Staff sign in with a second factor every time. Scan this code with an authenticator app, or type the key, then enter the 6-digit code it shows.',
     key: 'Key',
     verifyTitle: 'Enter your authenticator code',
     verifyBody: 'Open your authenticator app and enter the 6-digit code for My People.',
@@ -85,7 +85,7 @@ export const en = {
     cameraAsk: 'Allow the camera',
     scanAgain: 'Scan the next code',
     manualTitle: 'No pass to scan?',
-    manualBody: 'Type the member ID from their card and why the pass could not be scanned (FR-VOI-007).',
+    manualBody: 'Type the member ID from their card and why the pass could not be scanned.',
     memberId: 'Member ID',
     reason: 'Why the pass was not scanned',
     checkIn: 'Check in',

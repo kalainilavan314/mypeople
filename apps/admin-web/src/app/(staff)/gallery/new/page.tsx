@@ -11,12 +11,13 @@ export default function NewAlbumPage(props: PageProps<'/gallery/new'>) {
   return (
     <>
       <div className="flex items-center gap-2">
-        <Link href="/gallery" className="text-sm font-semibold text-primary underline">
-          ← Back to gallery console
+        <Link href="/gallery" className="flex flex-col text-sm font-semibold text-primary underline">
+          <span lang="ta">← புகைப்படத் தொகுப்புக்குத் திரும்புக</span>
+          <span lang="en" className="text-xs font-normal text-muted">Back to gallery console</span>
         </Link>
       </div>
 
-      <PageHeader ta="புதிய புகைப்படத் தொகுப்பை உருவாக்குதல்" en="Create draft album" brd="D08, FR-ADM-005" />
+      <PageHeader ta="புதிய புகைப்படத் தொகுப்பை உருவாக்குதல்" en="Create draft album" />
 
       <Suspense fallback={<p className="text-muted">… Loading form</p>}>
         <NewAlbumForm searchParams={props.searchParams} />
@@ -40,25 +41,17 @@ async function NewAlbumForm({ searchParams }: { searchParams: PageProps<'/galler
 
       <form action={createAlbum} className="flex flex-col gap-6 rounded-xl border border-line bg-card p-6">
         <section aria-labelledby="section-basic" className="flex flex-col gap-4">
-          <h2 id="section-basic" className="text-base font-bold">
-            1. Album identity
+          <h2 id="section-basic" className="flex flex-col text-base font-bold">
+            <span lang="ta">1. புகைப்படத் தொகுப்பின் அடையாளம்</span>
+            <span lang="en" className="text-xs font-normal text-muted">1. Album identity</span>
           </h2>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1 text-sm font-semibold">
-              Title (English) *
+            <label htmlFor="input-titleTa" className="flex flex-col gap-1 text-sm font-semibold">
+              <span lang="ta" className="text-xs text-muted">தொகுப்புத் தலைப்பு (தமிழ்) *</span>
+              <span lang="en" className="text-xs">Title (Tamil) *</span>
               <input
-                name="titleEn"
-                required
-                maxLength={160}
-                placeholder="e.g. Vavuniya Community Outreach Day"
-                className="min-h-11 rounded-lg border border-line px-3"
-              />
-            </label>
-
-            <label className="flex flex-col gap-1 text-sm font-semibold">
-              Title (Tamil / தமிழ்) *
-              <input
+                id="input-titleTa"
                 name="titleTa"
                 required
                 maxLength={160}
@@ -67,20 +60,35 @@ async function NewAlbumForm({ searchParams }: { searchParams: PageProps<'/galler
                 className="min-h-11 rounded-lg border border-line px-3"
               />
             </label>
+
+            <label htmlFor="input-titleEn" className="flex flex-col gap-1 text-sm font-semibold">
+              <span lang="ta" className="text-xs text-muted">தொகுப்புத் தலைப்பு (ஆங்கிலம்) *</span>
+              <span lang="en" className="text-xs">Title (English) *</span>
+              <input
+                id="input-titleEn"
+                name="titleEn"
+                required
+                maxLength={160}
+                placeholder="e.g. Vavuniya Community Outreach Day"
+                className="min-h-11 rounded-lg border border-line px-3"
+              />
+            </label>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1 text-sm font-semibold">
-              Category *
-              <select name="category" required defaultValue="community" className="min-h-11 rounded-lg border border-line px-3 bg-surface">
-                <option value="community">Community</option>
-                <option value="events">Events</option>
+            <label htmlFor="input-category" className="flex flex-col gap-1 text-sm font-semibold">
+              <span lang="ta" className="text-xs text-muted">பிரிவு *</span>
+              <span lang="en" className="text-xs">Category *</span>
+              <select id="input-category" name="category" required defaultValue="community" className="min-h-11 rounded-lg border border-line px-3 bg-surface">
+                <option value="community">சமூகம் (Community)</option>
+                <option value="events">நிகழ்வுகள் (Events)</option>
               </select>
             </label>
 
-            <label className="flex flex-col gap-1 text-sm font-semibold">
-              Area *
-              <select name="areaSelection" required className="min-h-11 rounded-lg border border-line px-3 bg-surface">
+            <label htmlFor="input-area" className="flex flex-col gap-1 text-sm font-semibold">
+              <span lang="ta" className="text-xs text-muted">பகுதி *</span>
+              <span lang="en" className="text-xs">Area *</span>
+              <select id="input-area" name="areaSelection" required className="min-h-11 rounded-lg border border-line px-3 bg-surface">
                 {publishAssignments.map((a) => {
                   const label = a.area.level === 'platform' ? 'Platform wide' : `${a.area.level} ${a.area.code}`;
                   const value = `${a.area.level}:${a.area.code ?? ''}`;
@@ -95,20 +103,11 @@ async function NewAlbumForm({ searchParams }: { searchParams: PageProps<'/galler
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1 text-sm font-semibold">
-              Summary (English)
+            <label htmlFor="input-summaryTa" className="flex flex-col gap-1 text-sm font-semibold">
+              <span lang="ta" className="text-xs text-muted">சுருக்கம் (தமிழ்)</span>
+              <span lang="en" className="text-xs">Summary (Tamil)</span>
               <textarea
-                name="summaryEn"
-                rows={3}
-                maxLength={2000}
-                placeholder="Brief summary of what this album documents..."
-                className="rounded-lg border border-line p-3"
-              />
-            </label>
-
-            <label className="flex flex-col gap-1 text-sm font-semibold">
-              Summary (Tamil / தமிழ்)
-              <textarea
+                id="input-summaryTa"
                 name="summaryTa"
                 rows={3}
                 maxLength={2000}
@@ -117,46 +116,67 @@ async function NewAlbumForm({ searchParams }: { searchParams: PageProps<'/galler
                 className="rounded-lg border border-line p-3"
               />
             </label>
+
+            <label htmlFor="input-summaryEn" className="flex flex-col gap-1 text-sm font-semibold">
+              <span lang="ta" className="text-xs text-muted">சுருக்கம் (ஆங்கிலம்)</span>
+              <span lang="en" className="text-xs">Summary (English)</span>
+              <textarea
+                id="input-summaryEn"
+                name="summaryEn"
+                rows={3}
+                maxLength={2000}
+                placeholder="Brief summary of what this album documents..."
+                className="rounded-lg border border-line p-3"
+              />
+            </label>
           </div>
         </section>
 
         <section aria-labelledby="section-metadata" className="flex flex-col gap-4 border-t border-line pt-6">
-          <h2 id="section-metadata" className="text-base font-bold">
-            2. Location, date and publisher credit
+          <h2 id="section-metadata" className="flex flex-col text-base font-bold">
+            <span lang="ta">2. இடம், திகதி மற்றும் வெளியீட்டாளர் விபரம்</span>
+            <span lang="en" className="text-xs font-normal text-muted">2. Location, date and publisher credit</span>
           </h2>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1 text-sm font-semibold">
-              Place / Venue name
+            <label htmlFor="input-place" className="flex flex-col gap-1 text-sm font-semibold">
+              <span lang="ta" className="text-xs text-muted">நடைபெறும் இடம் / மண்டபம்</span>
+              <span lang="en" className="text-xs">Place / Venue name</span>
               <input
+                id="input-place"
                 name="place"
                 maxLength={200}
-                placeholder="e.g. Vavuniya Cultural Hall"
+                placeholder="எ.கா. வவுனியா கலாசார மண்டபம்"
                 className="min-h-11 rounded-lg border border-line px-3"
               />
             </label>
 
-            <label className="flex flex-col gap-1 text-sm font-semibold">
-              Album date *
-              <input name="albumDate" type="date" required className="min-h-11 rounded-lg border border-line px-3" />
+            <label htmlFor="input-albumDate" className="flex flex-col gap-1 text-sm font-semibold">
+              <span lang="ta" className="text-xs text-muted">திகதி *</span>
+              <span lang="en" className="text-xs">Album date *</span>
+              <input id="input-albumDate" name="albumDate" type="date" required className="min-h-11 rounded-lg border border-line px-3" />
             </label>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1 text-sm font-semibold">
-              Publisher credit *
+            <label htmlFor="input-publisher" className="flex flex-col gap-1 text-sm font-semibold">
+              <span lang="ta" className="text-xs text-muted">வெளியீட்டாளர் பெயர் *</span>
+              <span lang="en" className="text-xs">Publisher credit *</span>
               <input
+                id="input-publisher"
                 name="publisher"
                 required
                 maxLength={160}
-                placeholder="e.g. Northern Province Media Team"
+                placeholder="எ.கா. வட மாகாண ஊடகப் பிரிவு"
                 className="min-h-11 rounded-lg border border-line px-3"
               />
             </label>
 
-            <label className="flex flex-col gap-1 text-sm font-semibold">
-              Linked event ID (optional, for Events category)
+            <label htmlFor="input-eventId" className="flex flex-col gap-1 text-sm font-semibold">
+              <span lang="ta" className="text-xs text-muted">தொடர்புடைய நிகழ்வு இலக்கம் (விருப்பத்தேர்வு)</span>
+              <span lang="en" className="text-xs">Linked event ID (optional, for Events category)</span>
               <input
+                id="input-eventId"
                 name="eventId"
                 placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000"
                 className="min-h-11 rounded-lg border border-line px-3 font-mono text-xs"
@@ -166,10 +186,16 @@ async function NewAlbumForm({ searchParams }: { searchParams: PageProps<'/galler
         </section>
 
         <div className="flex flex-wrap items-center justify-end gap-3 border-t border-line pt-6">
-          <Link href="/gallery" className="min-h-11 rounded-lg border border-line px-4 py-2 text-sm font-semibold text-muted hover:bg-surface">
-            Cancel
+          <Link href="/gallery" className="flex min-h-11 flex-col items-center justify-center rounded-lg border border-line px-4 py-2 text-sm font-semibold text-muted hover:bg-surface">
+            <span lang="ta">கைவிடுக</span>
+            <span lang="en" className="text-xs font-normal">Cancel</span>
           </Link>
-          <SubmitButton tone="primary">Save draft album</SubmitButton>
+          <SubmitButton tone="primary">
+            <span className="flex flex-col items-center">
+              <span lang="ta">வரைவுத் தொகுப்பைச் சேமிக்க</span>
+              <span lang="en" className="text-xs font-normal opacity-90">Save draft album</span>
+            </span>
+          </SubmitButton>
         </div>
       </form>
     </>

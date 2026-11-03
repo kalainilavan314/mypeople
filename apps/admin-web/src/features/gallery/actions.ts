@@ -235,8 +235,12 @@ export async function decideRemoval(formData: FormData): Promise<void> {
   const requestId = String(formData.get('requestId') ?? '');
   if (!UUID.test(requestId)) redirect('/gallery?tab=removals');
 
+  const confirmed = formData.get('confirmRemoval') === '1';
   const decision = String(formData.get('decision') ?? '') as RemovalDecisionInput['decision'];
   const reason = String(formData.get('reason') ?? '').trim();
+  if (!confirmed) {
+    back('/gallery?tab=removals', 'error=confirmation_required');
+  }
 
   if (!['remove', 'blur', 'keep'].includes(decision)) {
     back('/gallery?tab=removals', 'error=decision_refused&problems=invalid_decision');

@@ -70,6 +70,41 @@ class PreviewOut(CamelModel):
     review_due_at: datetime | None
 
 
+class AssignmentPreviewCreateInput(CamelModel):
+    """Input for creating a durable shared assignment preview."""
+
+    member_code: str | None = None
+    member_id: uuid.UUID | None = None
+    tier: Tier
+    area: AreaRef
+    permissions: list[str] = Field(max_length=60)
+    note: str | None = Field(default=None, max_length=500)
+
+
+class AssignmentPreviewCreatedOut(CamelModel):
+    """Opaque preview token returned to the caller."""
+
+    id: uuid.UUID
+    expires_at: datetime
+
+
+class AssignmentPreviewOut(CamelModel):
+    """Details of a durable preview retrieved for confirmation display."""
+
+    id: uuid.UUID
+    member_id: uuid.UUID
+    member_code: str
+    full_name: str
+    tier: Tier
+    area: AreaRef
+    permissions: list[str]
+    note: str | None
+    review_due_at: datetime | None
+    created_at: datetime
+    expires_at: datetime
+    status: Literal["active", "consumed", "cancelled"]
+
+
 class RevokeInput(CamelModel):
     reason: str = Field(min_length=3, max_length=500)
 
