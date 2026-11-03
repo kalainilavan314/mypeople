@@ -8364,6 +8364,467 @@
         }
       }
     },
+    "/v1/households/mine": {
+      "get": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Read My Household",
+        "operationId": "read_my_household_v1_households_mine_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/HouseholdOut"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Read My Household V1 Households Mine Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Update Household",
+        "operationId": "update_household_v1_households_mine_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HouseholdUpdateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/households": {
+      "post": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Create Household",
+        "operationId": "create_household_v1_households_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HouseholdCreateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/households/invitations/mine": {
+      "get": {
+        "tags": [
+          "households"
+        ],
+        "summary": "List My Invitations",
+        "operationId": "list_my_invitations_v1_households_invitations_mine_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationsListOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/households/invitations": {
+      "post": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Invite Adult",
+        "operationId": "invite_adult_v1_households_invitations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteAdultIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdInvitationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/households/invitations/{invitation_id}/respond": {
+      "post": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Respond Invitation",
+        "operationId": "respond_invitation_v1_households_invitations__invitation_id__respond_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "invitation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Invitation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationRespondIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/HouseholdOut"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Respond Invitation V1 Households Invitations  Invitation Id  Respond Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/households/invitations/{invitation_id}/revoke": {
+      "post": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Revoke Invitation",
+        "operationId": "revoke_invitation_v1_households_invitations__invitation_id__revoke_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "invitation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Invitation Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/households/members/{member_record_id}/remove": {
+      "post": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Remove Member",
+        "operationId": "remove_member_v1_households_members__member_record_id__remove_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "member_record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Member Record Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/households/leave": {
+      "post": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Leave Household",
+        "operationId": "leave_household_v1_households_leave_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/households/privacy": {
+      "get": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Read Privacy Notice",
+        "operationId": "read_privacy_notice_v1_households_privacy_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentNoticeOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/households/staff/{target_member_id}": {
+      "get": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Staff View Household",
+        "operationId": "staff_view_household_v1_households_staff__target_member_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "target_member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Target Member Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffHouseholdViewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/election/periods": {
       "get": {
         "tags": [
@@ -11894,6 +12355,131 @@
         ],
         "title": "ConsentInput"
       },
+      "ConsentLogOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "householdId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Householdid"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "memberId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memberid"
+          },
+          "actorId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Actorid"
+          },
+          "actorName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actorname"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "householdId",
+          "action",
+          "actorId",
+          "createdAt"
+        ],
+        "title": "ConsentLogOut"
+      },
+      "ConsentNoticeOut": {
+        "properties": {
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "noticeTa": {
+            "type": "string",
+            "title": "Noticeta"
+          },
+          "noticeEn": {
+            "type": "string",
+            "title": "Noticeen"
+          },
+          "voluntaryClauseTa": {
+            "type": "string",
+            "title": "Voluntaryclauseta"
+          },
+          "voluntaryClauseEn": {
+            "type": "string",
+            "title": "Voluntaryclauseen"
+          },
+          "isVoluntary": {
+            "type": "boolean",
+            "title": "Isvoluntary",
+            "default": true
+          },
+          "purposeLimitationTa": {
+            "type": "string",
+            "title": "Purposelimitationta"
+          },
+          "purposeLimitationEn": {
+            "type": "string",
+            "title": "Purposelimitationen"
+          }
+        },
+        "type": "object",
+        "required": [
+          "titleTa",
+          "titleEn",
+          "noticeTa",
+          "noticeEn",
+          "voluntaryClauseTa",
+          "voluntaryClauseEn",
+          "purposeLimitationTa",
+          "purposeLimitationEn"
+        ],
+        "title": "ConsentNoticeOut"
+      },
       "DecisionInput": {
         "properties": {
           "decision": {
@@ -14023,6 +14609,334 @@
         ],
         "title": "HomeOut"
       },
+      "HouseholdCreateIn": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "title": "HouseholdCreateIn"
+      },
+      "HouseholdInvitationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "householdId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Householdid"
+          },
+          "householdName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Householdname"
+          },
+          "inviterMemberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Invitermemberid"
+          },
+          "inviterName": {
+            "type": "string",
+            "title": "Invitername"
+          },
+          "inviteeMemberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Inviteememberid"
+          },
+          "inviteeName": {
+            "type": "string",
+            "title": "Inviteename"
+          },
+          "inviteeCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inviteecode"
+          },
+          "relationship": {
+            "type": "string",
+            "title": "Relationship"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "accepted",
+              "declined",
+              "revoked",
+              "expired"
+            ],
+            "title": "Status"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiresat"
+          },
+          "respondedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Respondedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "householdId",
+          "inviterMemberId",
+          "inviterName",
+          "inviteeMemberId",
+          "inviteeName",
+          "relationship",
+          "status",
+          "createdAt",
+          "expiresAt"
+        ],
+        "title": "HouseholdInvitationOut"
+      },
+      "HouseholdMemberOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "householdId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Householdid"
+          },
+          "memberId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memberid"
+          },
+          "memberCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Membercode"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "head",
+              "adult"
+            ],
+            "title": "Role"
+          },
+          "displayName": {
+            "type": "string",
+            "title": "Displayname"
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "head",
+              "spouse",
+              "parent",
+              "sibling",
+              "other"
+            ],
+            "title": "Relationship"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "removed"
+            ],
+            "title": "Status"
+          },
+          "joinedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Joinedat"
+          },
+          "removedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Removedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "householdId",
+          "role",
+          "displayName",
+          "relationship",
+          "status",
+          "joinedAt"
+        ],
+        "title": "HouseholdMemberOut"
+      },
+      "HouseholdOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "createdBy": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Createdby"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "dissolvedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dissolvedat"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/HouseholdMemberOut"
+            },
+            "type": "array",
+            "title": "Members",
+            "default": []
+          },
+          "pendingInvitations": {
+            "items": {
+              "$ref": "#/components/schemas/HouseholdInvitationOut"
+            },
+            "type": "array",
+            "title": "Pendinginvitations",
+            "default": []
+          },
+          "myRole": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "head",
+                  "adult"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Myrole"
+          },
+          "isHead": {
+            "type": "boolean",
+            "title": "Ishead",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "createdBy",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "HouseholdOut"
+      },
+      "HouseholdUpdateIn": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "title": "HouseholdUpdateIn"
+      },
       "IdentityDataItemOut": {
         "properties": {
           "dataEn": {
@@ -14086,6 +15000,71 @@
           "actionNeeded"
         ],
         "title": "InboxOut"
+      },
+      "InvitationRespondIn": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "accept",
+              "decline"
+            ],
+            "title": "Action"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "InvitationRespondIn"
+      },
+      "InvitationsListOut": {
+        "properties": {
+          "received": {
+            "items": {
+              "$ref": "#/components/schemas/HouseholdInvitationOut"
+            },
+            "type": "array",
+            "title": "Received",
+            "default": []
+          },
+          "sent": {
+            "items": {
+              "$ref": "#/components/schemas/HouseholdInvitationOut"
+            },
+            "type": "array",
+            "title": "Sent",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "InvitationsListOut"
+      },
+      "InviteAdultIn": {
+        "properties": {
+          "memberCode": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 3,
+            "title": "Membercode"
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "spouse",
+              "parent",
+              "sibling",
+              "other"
+            ],
+            "title": "Relationship"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberCode",
+          "relationship"
+        ],
+        "title": "InviteAdultIn"
       },
       "LockedFieldOut": {
         "properties": {
@@ -18260,6 +19239,53 @@
           "waiting"
         ],
         "title": "SimpleQueueCount"
+      },
+      "StaffHouseholdViewOut": {
+        "properties": {
+          "permitted": {
+            "type": "boolean",
+            "title": "Permitted",
+            "default": true
+          },
+          "targetMemberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Targetmemberid"
+          },
+          "targetMemberCode": {
+            "type": "string",
+            "title": "Targetmembercode"
+          },
+          "targetMemberName": {
+            "type": "string",
+            "title": "Targetmembername"
+          },
+          "household": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HouseholdOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "consentLogs": {
+            "items": {
+              "$ref": "#/components/schemas/ConsentLogOut"
+            },
+            "type": "array",
+            "title": "Consentlogs",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "targetMemberId",
+          "targetMemberCode",
+          "targetMemberName"
+        ],
+        "title": "StaffHouseholdViewOut"
       },
       "StepOut": {
         "properties": {

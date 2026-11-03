@@ -83,11 +83,11 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | M03 | Guided liveness capture | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-28, OD-29 (biometrics) | `apps/member-mobile/app/(member)/verify/` |  |
 | M04 | Verification appeal | AI-assisted identity screening (SC-21) | 1–2 | API ready (/v1/identity/me/appeal) | `apps/member-mobile/app/(member)/verify/` |  |
 | M05 | Assisted verification request | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-04 (assisted verification) | `apps/member-mobile/app/(member)/verify/` |  |
-| M06 | My Household / எனது குடும்பம் | My Household (SC-22) | 2 | To build | `apps/member-mobile/app/(member)/household/` |  |
-| M07 | Add household member | My Household (SC-22) | 2 | To build | `apps/member-mobile/app/(member)/household/` |  |
-| M08 | Invite adult member | My Household (SC-22) | 2 | To build | `apps/member-mobile/app/(member)/household/` |  |
-| M09 | Household invitation response | My Household (SC-22) | 2 | To build | `apps/member-mobile/app/(member)/household/` |  |
-| M10 | Household privacy and consent | My Household (SC-22) | 2 | To build | `apps/member-mobile/app/(member)/household/` |  |
+| M06 | My Household / எனது குடும்பம் | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
+| M07 | Add household member | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
+| M08 | Invite adult member | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
+| M09 | Household invitation response | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
+| M10 | Household privacy and consent | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
 | M11 | Community Support / சமூக உதவி | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/assistance/` |  |
 | M12 | Request support | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/assistance/` |  |
 | M13 | Support case status | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/assistance/` |  |
@@ -168,7 +168,7 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | W08 | Implementation and closure | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
 | W09 | Role, area and permission assignment | Verification and roles (SC-15) | 1 | Built | `apps/admin-web/src/app/(staff)/access/page.tsx` |  |
 | D01 | Admin home and work queues | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/page.tsx` | Operational priority work queues |
-| D02 | Member and household administration | My Household (SC-22) | 2 | To build | `apps/admin-web/src/app/(staff)/members/` |  |
+| D02 | Member and household administration | My Household (SC-22) | 2 | Built | `apps/admin-web/src/app/(staff)/members/` |  |
 | D03 | Identity screening panel | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/verification/[id]/page.tsx` | Shown on the W02 review page |
 | D04 | Duplicate investigation workspace | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/duplicates/` |  |
 | D05 | Verification appeals queue | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/appeals/` |  |

@@ -95,6 +95,17 @@ export type ElectionPeriodInput = Schemas['PeriodIn'];
 export type DeclaredElectionPeriod = Schemas['DeclaredOut'];
 export type ElectionPeriodFile = Schemas['PeriodFileOut'];
 export type WorkQueues = Schemas['WorkQueuesOut'];
+export type Household = Schemas['HouseholdOut'];
+export type HouseholdMember = Schemas['HouseholdMemberOut'];
+export type HouseholdInvitation = Schemas['HouseholdInvitationOut'];
+export type HouseholdCreateInput = Schemas['HouseholdCreateIn'];
+export type HouseholdUpdateInput = Schemas['HouseholdUpdateIn'];
+export type InviteAdultInput = Schemas['InviteAdultIn'];
+export type InvitationRespondInput = Schemas['InvitationRespondIn'];
+export type ConsentNotice = Schemas['ConsentNoticeOut'];
+export type ConsentLog = Schemas['ConsentLogOut'];
+export type InvitationsList = Schemas['InvitationsListOut'];
+export type StaffHouseholdView = Schemas['StaffHouseholdViewOut'];
 export type EventFilters = {
   /** 'mine' (the default) narrows to the member's area; 'all' widens it (BR-057). */
   scope?: 'mine' | 'all';
@@ -726,6 +737,22 @@ export function createApiClient({
       request<ElectionNotice>('POST', `/v1/election/periods/${encodeURIComponent(periodId)}/notices`, input),
     withdrawElectionNotice: (noticeId: string) =>
       request<ElectionNotice>('POST', `/v1/election/notices/${encodeURIComponent(noticeId)}/withdraw`),
+    // Household endpoints (Phase 2.5a SC-22)
+    getMyHousehold: () => request<Household | null>('GET', '/v1/households/mine'),
+    createHousehold: (body: HouseholdCreateInput) => request<Household>('POST', '/v1/households', body),
+    updateHousehold: (body: HouseholdUpdateInput) => request<Household>('PATCH', '/v1/households/mine', body),
+    getMyInvitations: () => request<InvitationsList>('GET', '/v1/households/invitations/mine'),
+    inviteAdult: (body: InviteAdultInput) => request<HouseholdInvitation>('POST', '/v1/households/invitations', body),
+    respondInvitation: (invitationId: string, body: InvitationRespondInput) =>
+      request<Household | null>('POST', `/v1/households/invitations/${encodeURIComponent(invitationId)}/respond`, body),
+    revokeInvitation: (invitationId: string) =>
+      request<void>('POST', `/v1/households/invitations/${encodeURIComponent(invitationId)}/revoke`),
+    removeHouseholdMember: (memberRecordId: string) =>
+      request<void>('POST', `/v1/households/members/${encodeURIComponent(memberRecordId)}/remove`),
+    leaveHousehold: () => request<void>('POST', '/v1/households/leave'),
+    getHouseholdPrivacyNotice: () => request<ConsentNotice>('GET', '/v1/households/privacy'),
+    staffViewHousehold: (targetMemberId: string) =>
+      request<StaffHouseholdView>('GET', `/v1/households/staff/${encodeURIComponent(targetMemberId)}`),
   };
 }
 

@@ -18,11 +18,11 @@ export const builtModules: readonly AdminModule[] = [
   { href: '/access', ta: 'பொறுப்புகளும் அனுமதிகளும்', en: 'Roles and access', permission: 'roles.assign' },
   { href: '/audit', ta: 'தணிக்கைப் பதிவு', en: 'Audit log', permission: 'audit.view' },
   { href: '/access-reviews', ta: 'அணுகல் மீளாய்வு', en: 'Access reviews', permission: 'audit.view' },
+  { href: '/members', ta: 'உறுப்பினர்களும் குடும்பங்களும்', en: 'Members and households', permission: 'household.view_for_case' },
 ] as const;
 
 /** Planned modules in later phases with user-facing bilingual labels. */
 export const plannedModules = [
-  { name: 'Members and households', ta: 'உறுப்பினர்கள் மற்றும் குடும்பங்கள்', desc: 'Household linking and records' },
   { name: 'Community cases', ta: 'சமூக விவகாரங்கள்', desc: 'Issue reporting and grievance resolution' },
   { name: 'Assistance case management', ta: 'உதவி விவகார மேலாண்மை', desc: 'Welfare and emergency assistance cases' },
   { name: 'Finance and reconciliation', ta: 'நிதி மற்றும் கணக்கிணக்கம்', desc: 'Donations, payments, and financial auditing' },

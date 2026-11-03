@@ -26,6 +26,11 @@ export default function MemberLayout() {
       <Stack.Screen name="profile/security" options={{ title: t('m.profile.security') }} />
       <Stack.Screen name="profile/privacy" options={{ title: t('m.profile.privacy') }} />
       <Stack.Screen name="profile/recovery-number" options={{ title: t('m.profile.recoveryNumber') }} />
+      <Stack.Screen name="household/index" options={{ title: t('m.household.title') }} />
+      <Stack.Screen name="household/add" options={{ title: t('m.household.addMember') }} />
+      <Stack.Screen name="household/invite" options={{ title: t('m.household.inviteAdult') }} />
+      <Stack.Screen name="household/invitations" options={{ title: t('m.household.pendingInvitations') }} />
+      <Stack.Screen name="household/privacy" options={{ title: t('m.household.privacyConsent') }} />
     </Stack>
   );
 }

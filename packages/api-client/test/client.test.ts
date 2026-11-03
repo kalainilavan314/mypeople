@@ -418,3 +418,37 @@ test('refresh tokens, security alerts and access reviews go to their endpoints',
     ],
   );
 });
+
+test('household endpoints call their routes with correct payload', async () => {
+  const { fetch, sent } = fakeFetch(200, {});
+  const client = createApiClient({ baseUrl: 'https://api.example', fetch });
+
+  await client.getMyHousehold();
+  await client.createHousehold({ name: 'Our Home' });
+  await client.updateHousehold({ name: 'Renamed Home' });
+  await client.getMyInvitations();
+  await client.inviteAdult({ memberCode: 'NPM-1234', relationship: 'spouse' });
+  await client.respondInvitation('inv-1', { action: 'accept' });
+  await client.revokeInvitation('inv-1');
+  await client.removeHouseholdMember('rec-1');
+  await client.leaveHousehold();
+  await client.getHouseholdPrivacyNotice();
+  await client.staffViewHousehold('target-1');
+
+  assert.deepEqual(
+    sent.map((request) => [request.method, request.url.replace('https://api.example', ''), request.body]),
+    [
+      ['GET', '/v1/households/mine', undefined],
+      ['POST', '/v1/households', '{"name":"Our Home"}'],
+      ['PATCH', '/v1/households/mine', '{"name":"Renamed Home"}'],
+      ['GET', '/v1/households/invitations/mine', undefined],
+      ['POST', '/v1/households/invitations', '{"memberCode":"NPM-1234","relationship":"spouse"}'],
+      ['POST', '/v1/households/invitations/inv-1/respond', '{"action":"accept"}'],
+      ['POST', '/v1/households/invitations/inv-1/revoke', undefined],
+      ['POST', '/v1/households/members/rec-1/remove', undefined],
+      ['POST', '/v1/households/leave', undefined],
+      ['GET', '/v1/households/privacy', undefined],
+      ['GET', '/v1/households/staff/target-1', undefined],
+    ],
+  );
+});
