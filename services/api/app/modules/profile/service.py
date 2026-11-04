@@ -40,6 +40,7 @@ class Profile:
     display_name: str | None
     date_of_birth: object | None
     gender: str | None
+    language: str
     tier: str  # as assigned; no control changes it (FR-PROF-002)
     identity_state: str
     membership_state: str
@@ -66,6 +67,7 @@ def profile(db: Session, member_id: uuid.UUID) -> Profile:
         display_name=repository.display_name(db, member_id),
         date_of_birth=row["dob"],
         gender=row["gender"],
+        language=row["language"] if row["language"] in ("ta", "en") else "ta",
         tier=row["tier"],
         identity_state="verified" if status.identity_verified else (review.state if review else "not_submitted"),
         membership_state=membership.current_state(db, member_id).state,
@@ -80,12 +82,14 @@ def profile(db: Session, member_id: uuid.UUID) -> Profile:
 
 
 def update(db: Session, member_id: uuid.UUID, changes: dict[str, str | None], ip: str) -> Profile:
-    """Display name and gender only; nothing else can be changed here."""
+    """Display name, gender and language preference; nothing else can be changed here."""
     if "display_name" in changes:
         name = changes["display_name"]
         repository.set_display_name(db, member_id, name.strip() if name and name.strip() else None)
     if "gender" in changes:
         repository.set_gender(db, member_id, changes["gender"])
+    if "language" in changes and changes["language"] in ("ta", "en"):
+        repository.set_language(db, member_id, str(changes["language"]))
     if changes:
         audit.record(
             db, actor_id=member_id, action="profile.updated", target_type="member", target_id=str(member_id),

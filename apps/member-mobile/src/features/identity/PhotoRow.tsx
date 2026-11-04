@@ -28,8 +28,10 @@ type Props = {
 export function PhotoRow({ kind, received, requested, onUploaded }: Props) {
   const { t } = useTranslation();
   const [denied, setDenied] = useState(false);
+  const [lastSource, setLastSource] = useState<'camera' | 'library' | null>(null);
   const selfie = kind === 'selfie';
   const upload = useApiAction(async (source: 'camera' | 'library') => {
+    setLastSource(source);
     setDenied(false);
     const picked = await pickImage(source, selfie);
     if ('denied' in picked) {
@@ -78,7 +80,12 @@ export function PhotoRow({ kind, received, requested, onUploaded }: Props) {
         ) : null}
       </View>
       {denied ? <Notice tone="warning">{selfie ? t('m.verify.selfieDenied') : t('m.verify.cameraDenied')}</Notice> : null}
-      {upload.error ? <Notice tone="error">{errorMessage(t, upload.error)}</Notice> : null}
+      {upload.error ? (
+        <>
+          <Notice tone="error">{errorMessage(t, upload.error)}</Notice>
+          {lastSource ? <Button label={t('m.verify.retryUpload')} variant="secondary" busy={upload.busy} onPress={() => void upload.run(lastSource)} /> : null}
+        </>
+      ) : null}
     </SurfaceCard>
   );
 }

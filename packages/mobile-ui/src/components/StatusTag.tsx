@@ -18,8 +18,8 @@ const TONES: Record<Tone, { icon: 'checkmark-circle' | 'time-outline' | 'ellipse
 export function StatusTag({ label, tone }: { label: string; tone: Tone }) {
   const style = TONES[tone];
   return (
-    <View style={[styles.tag, { backgroundColor: style.background }]}>
-      <Ionicons name={style.icon} size={14} color={style.color} accessibilityElementsHidden importantForAccessibility="no" />
+    <View accessible accessibilityRole="text" accessibilityLabel={label} style={[styles.tag, { backgroundColor: style.background }]}>
+      <Ionicons name={style.icon} size={14} color={style.color} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
       <AppText step="caption" tone={style.text}>
         {label}
       </AppText>

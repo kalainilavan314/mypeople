@@ -86,6 +86,7 @@ export default function ProfileScreen() {
         <MenuRow icon="time-outline" label={t('m.profile.myActivity')} onPress={() => router.push('/profile/activity')} />
         <MenuRow icon="create-outline" label={t('m.profile.editProfile')} onPress={() => router.push('/profile/edit')} />
         <MenuRow icon="shield-checkmark-outline" label={t('m.profile.verification')} onPress={() => router.push('/verify')} />
+        <MenuRow icon="home-outline" label={t('m.household.title')} onPress={() => router.push('/household/index')} />
         <MenuRow icon="people-outline" label={t('m.profile.hub')} onPress={() => router.push('/hub')} />
       </SurfaceCard>
 

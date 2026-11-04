@@ -1,6 +1,5 @@
 import type { MemberCard } from '@my-people/api-client';
 import { router } from 'expo-router';
-import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -12,19 +11,16 @@ import {
   formatDate,
   formatDateTime,
   Notice,
-  QrCode,
   Screen,
   StatusTag,
   SurfaceCard,
   useApiQuery,
   useLanguage,
   useReloadOnFocus,
-  useRotatingCode,
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
 import { api } from '@/lib/api';
-import { errorMessage } from '@/lib/errors';
 
 /**
  * C01 to C06: the membership card, only while identity is Verified and
@@ -58,8 +54,6 @@ function Field({ label, value, mono = false }: { label: string; value: string | 
 function AvailableCard({ card }: { card: MemberCard }) {
   const { t } = useTranslation();
   const language = useLanguage();
-  const [showCode, setShowCode] = useState(false);
-  const code = useRotatingCode(() => api().getMyCardCode(), showCode);
 
   return (
     <>
@@ -87,28 +81,11 @@ function AvailableCard({ card }: { card: MemberCard }) {
       </View>
 
       <Button
-        label={showCode ? t('m.card.hideCode') : t('m.card.showCode')}
+        label={t('m.card.showCode')}
         icon="qr-code-outline"
-        variant={showCode ? 'secondary' : 'primary'}
-        onPress={() => setShowCode(!showCode)}
+        onPress={() => router.push('/card/code')}
       />
-      {showCode ? (
-        <SurfaceCard>
-          <View style={styles.qr}>
-            {code.data ? (
-              <QrCode value={code.data.code} size={240} label={t('m.card.showCode')} />
-            ) : (
-              <AppText step="secondary" tone="muted">
-                {t('m.events.passRefreshing')}
-              </AppText>
-            )}
-          </View>
-          <AppText step="secondary" tone="secondary" style={styles.center}>
-            {t('m.card.codeHint')}
-          </AppText>
-          {code.error ? <Notice tone="error">{errorMessage(t, code.error)}</Notice> : null}
-        </SurfaceCard>
-      ) : null}
+      <Button label={t('m.card.progressTitle')} variant="secondary" onPress={() => router.push('/card/progress')} />
 
       {card.lastScannedAt ? (
         <AppText step="secondary" tone="muted">{`${t('m.card.lastScan')}: ${formatDateTime(card.lastScannedAt, language)}`}</AppText>
@@ -147,6 +124,4 @@ const styles = StyleSheet.create({
   fieldLabel: { color: colors.inputBorder }, // #CBD5E1 on navy, the spec's metadata colour (§2)
   row: { flexDirection: 'row', gap: spacing[3] },
   verified: { flexDirection: 'row' },
-  qr: { alignItems: 'center', justifyContent: 'center', minHeight: 256 },
-  center: { textAlign: 'center' },
 });

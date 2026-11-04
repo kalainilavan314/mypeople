@@ -35,11 +35,16 @@ export function fontFamilyFor(language: string, weight: Weight): string {
 /** Font, size and line height for a step of the type scale. */
 export function textStyle(language: string, step: keyof typeof typeScale) {
   const { size, lineHeight, weight } = typeScale[step];
-  // Tamil script needs taller lines than Latin text at the same size.
+  // Text must remain readable when system font scaling expands Tamil glyphs.
+  // Keep every shared text step above the 1.4 accessibility baseline; Tamil
+  // still gets its larger script-specific leading.
+  const accessibleLineHeight = Math.ceil(size * 1.45);
   const tamilLineHeight = Math.ceil(size * lineHeightRatio.tamil);
   return {
     fontFamily: fontFamilyFor(language, weight),
     fontSize: size,
-    lineHeight: language === 'ta' ? Math.max(lineHeight, tamilLineHeight) : lineHeight,
+    lineHeight: language === 'ta'
+      ? Math.max(lineHeight, accessibleLineHeight, tamilLineHeight)
+      : Math.max(lineHeight, accessibleLineHeight),
   };
 }

@@ -1,6 +1,7 @@
 import type { IdentityDocumentKind, IdentityReview, RegistrationProgress } from '@my-people/api-client';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
@@ -141,7 +142,13 @@ function VerifyBody({ data, reload }: { data: Loaded; reload: () => void }) {
           {latest?.note ?? ''}
         </Notice>
       ) : null}
-      {state === 'unable_to_verify' && latest && !latest.appeal && data.appealsOpen ? <AppealCard onSent={reload} /> : null}
+      {state === 'unable_to_verify' && latest && !latest.appeal && data.appealsOpen ? (
+        <SurfaceCard accent>
+          <AppText step="section" accessibilityRole="header">{t('m.verify.appealTitle')}</AppText>
+          <AppText step="body" tone="secondary">{t('m.verify.appealHint')}</AppText>
+          <Button label={t('m.verify.appealTitle')} onPress={() => router.push('/verify/appeal')} />
+        </SurfaceCard>
+      ) : null}
 
       {review ? <DecisionHistory review={review} /> : null}
     </>
@@ -203,38 +210,6 @@ function SubmitCard({ route, resubmit, ready, onSent }: { route: 'nic' | 'passpo
         busyLabel={t('m.common.sending')}
         disabled={!ready || !declared}
         onPress={() => void submit.run()}
-      />
-    </SurfaceCard>
-  );
-}
-
-function AppealCard({ onSent }: { onSent: () => void }) {
-  const { t } = useTranslation();
-  const [statement, setStatement] = useState('');
-  const appeal = useApiAction(async () => {
-    await api().appealMyIdentityDecision(statement.trim());
-    onSent();
-  });
-  return (
-    <SurfaceCard accent>
-      <AppText step="section" accessibilityRole="header">
-        {t('m.verify.appealTitle')}
-      </AppText>
-      <TextField
-        label={t('m.verify.appealTitle')}
-        hint={t('m.verify.appealHint')}
-        value={statement}
-        onChangeText={setStatement}
-        multiline
-        maxLength={1000}
-      />
-      {appeal.error ? <Notice tone="error">{errorMessage(t, appeal.error)}</Notice> : null}
-      <Button
-        label={t('m.verify.appealSubmit')}
-        busy={appeal.busy}
-        busyLabel={t('m.common.sending')}
-        disabled={statement.trim().length === 0}
-        onPress={() => void appeal.run()}
       />
     </SurfaceCard>
   );

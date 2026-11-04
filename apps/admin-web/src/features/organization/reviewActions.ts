@@ -13,6 +13,12 @@ export async function reviewGrant(formData: FormData): Promise<void> {
   const decision = String(formData.get('decision') ?? '');
   const reason = String(formData.get('reason') ?? '').trim();
   if (!UUID.test(id) || (decision !== 'confirmed' && decision !== 'revoked')) redirect('/access-reviews');
+
+  const confirmed = formData.get('confirmReview') === '1';
+  if (!confirmed) {
+    redirect('/access-reviews?error=confirmation_required');
+  }
+
   try {
     await (await staffApi()).reviewAssignment(id, decision, reason);
   } catch (error) {

@@ -31,6 +31,7 @@ export async function giveCode(formData: FormData): Promise<void> {
     const api = await staffApi();
     if (enrolling) await api.confirmTotp(code);
     else await api.verifyMfa(code);
+
   } catch (error) {
     redirect(`/mfa?error=${failure(error).code}`);
   }

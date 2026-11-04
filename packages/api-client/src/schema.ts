@@ -494,6 +494,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/access/work-queues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Work Queues
+         * @description Audit-safe aggregate-only work queue counts for the signed-in staff member's visible areas and permissions (D01).
+         */
+        get: operations["read_work_queues_v1_access_work_queues_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/access/catalogue": {
         parameters: {
             query?: never;
@@ -527,11 +547,7 @@ export interface paths {
          */
         get: operations["list_assignments_v1_access_assignments_get"];
         put?: never;
-        /**
-         * Create Assignment
-         * @description Assign a tier, an area and explicit permissions to a verified member (W09, RB-02, RB-03).
-         */
-        post: operations["create_assignment_v1_access_assignments_post"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -552,6 +568,86 @@ export interface paths {
          * @description Check an assignment without saving it (RB-06, FR-WEB-031).
          */
         post: operations["preview_assignment_v1_access_assignments_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignment-previews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Assignment Preview
+         * @description Create a durable, single-use, 10-minute preview record after rule validation.
+         */
+        post: operations["create_assignment_preview_v1_access_assignment_previews_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignment-previews/{preview_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Assignment Preview
+         * @description Retrieve an active preview for display. Returns 404 for missing, expired, consumed, or other-user previews.
+         */
+        get: operations["get_assignment_preview_v1_access_assignment_previews__preview_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignment-previews/{preview_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm Assignment Preview
+         * @description Atomic confirmation with row lock, revalidation, assignment creation, and audit logging.
+         */
+        post: operations["confirm_assignment_preview_v1_access_assignment_previews__preview_id__confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignment-previews/{preview_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel Assignment Preview
+         * @description Cancel an active preview belonging to the caller.
+         */
+        post: operations["cancel_assignment_preview_v1_access_assignment_previews__preview_id__cancel_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2085,8 +2181,8 @@ export interface paths {
         head?: never;
         /**
          * Update Profile
-         * @description Display name and gender only (FR-PROF-003). The legal name, date of birth and ID number are
-         *     not fields here at all.
+         * @description Display name, gender and language preference (FR-PROF-003, FR-PROF-011). The legal name,
+         *     date of birth and ID number are not fields here at all.
          */
         patch: operations["update_profile_v1_profile_patch"];
         trace?: never;
@@ -2675,6 +2771,177 @@ export interface paths {
          * @description At any time; members lose the module on their next request.
          */
         post: operations["disable_v1_features__key__disable_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read My Household */
+        get: operations["read_my_household_v1_households_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Household */
+        patch: operations["update_household_v1_households_mine_patch"];
+        trace?: never;
+    };
+    "/v1/households": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Household */
+        post: operations["create_household_v1_households_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/invitations/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List My Invitations */
+        get: operations["list_my_invitations_v1_households_invitations_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Invite Adult */
+        post: operations["invite_adult_v1_households_invitations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/invitations/{invitation_id}/respond": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Respond Invitation */
+        post: operations["respond_invitation_v1_households_invitations__invitation_id__respond_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/invitations/{invitation_id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke Invitation */
+        post: operations["revoke_invitation_v1_households_invitations__invitation_id__revoke_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/members/{member_record_id}/remove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Remove Member */
+        post: operations["remove_member_v1_households_members__member_record_id__remove_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Leave Household */
+        post: operations["leave_household_v1_households_leave_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/privacy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Privacy Notice */
+        get: operations["read_privacy_notice_v1_households_privacy_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/staff/{target_member_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Staff View Household */
+        get: operations["staff_view_household_v1_households_staff__target_member_id__get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -3327,6 +3594,89 @@ export interface components {
             /** Endedat */
             endedAt: string | null;
         };
+        /**
+         * AssignmentPreviewCreateInput
+         * @description Input for creating a durable shared assignment preview.
+         */
+        AssignmentPreviewCreateInput: {
+            /** Membercode */
+            memberCode?: string | null;
+            /** Memberid */
+            memberId?: string | null;
+            /**
+             * Tier
+             * @enum {string}
+             */
+            tier: "1" | "2A" | "2B" | "3A" | "3B" | "4" | "5";
+            area: components["schemas"]["AreaRef"];
+            /** Permissions */
+            permissions: string[];
+            /** Note */
+            note?: string | null;
+        };
+        /**
+         * AssignmentPreviewCreatedOut
+         * @description Opaque preview token returned to the caller.
+         */
+        AssignmentPreviewCreatedOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+        };
+        /**
+         * AssignmentPreviewOut
+         * @description Details of a durable preview retrieved for confirmation display.
+         */
+        AssignmentPreviewOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Membercode */
+            memberCode: string;
+            /** Fullname */
+            fullName: string;
+            /**
+             * Tier
+             * @enum {string}
+             */
+            tier: "1" | "2A" | "2B" | "3A" | "3B" | "4" | "5";
+            area: components["schemas"]["AreaRef"];
+            /** Permissions */
+            permissions: string[];
+            /** Note */
+            note: string | null;
+            /** Reviewdueat */
+            reviewDueAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "consumed" | "cancelled";
+        };
         /** AssistedRecoveryInput */
         AssistedRecoveryInput: {
             /** Nic */
@@ -3585,6 +3935,13 @@ export interface components {
             /** Bodyta */
             bodyTa?: string | null;
         };
+        /** BroadcastsQueueCount */
+        BroadcastsQueueCount: {
+            /** Drafts */
+            drafts: number;
+            /** Pendingapproval */
+            pendingApproval: number;
+        };
         /** CancelIn */
         CancelIn: {
             /** Reason */
@@ -3814,10 +4171,74 @@ export interface components {
             /** Devcode */
             devCode?: string | null;
         };
+        /** ConfigurationQueueCount */
+        ConfigurationQueueCount: {
+            /** Total */
+            total: number;
+            /** Enabled */
+            enabled: number;
+        };
         /** ConsentInput */
         ConsentInput: {
             /** Noticeversion */
             noticeVersion: string;
+        };
+        /** ConsentLogOut */
+        ConsentLogOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Householdid
+             * Format: uuid
+             */
+            householdId: string;
+            /** Action */
+            action: string;
+            /** Memberid */
+            memberId?: string | null;
+            /**
+             * Actorid
+             * Format: uuid
+             */
+            actorId: string;
+            /** Actorname */
+            actorName?: string | null;
+            /** Details */
+            details?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** ConsentNoticeOut */
+        ConsentNoticeOut: {
+            /** Titleta */
+            titleTa: string;
+            /** Titleen */
+            titleEn: string;
+            /** Noticeta */
+            noticeTa: string;
+            /** Noticeen */
+            noticeEn: string;
+            /** Voluntaryclauseta */
+            voluntaryClauseTa: string;
+            /** Voluntaryclauseen */
+            voluntaryClauseEn: string;
+            /**
+             * Isvoluntary
+             * @default true
+             */
+            isVoluntary: boolean;
+            /** Purposelimitationta */
+            purposeLimitationTa: string;
+            /** Purposelimitationen */
+            purposeLimitationEn: string;
         };
         /** DecisionInput */
         DecisionInput: {
@@ -4080,6 +4501,11 @@ export interface components {
              * Format: uuid
              */
             otherMemberId: string;
+        };
+        /** DuplicateQueueCount */
+        DuplicateQueueCount: {
+            /** Open */
+            open: number;
         };
         /**
          * ElectionBannerOut
@@ -4461,6 +4887,15 @@ export interface components {
             /** Admitspending */
             admitsPending?: boolean | null;
         };
+        /** EventsQueueCount */
+        EventsQueueCount: {
+            /** Drafts */
+            drafts: number;
+            /** Published */
+            published: number;
+            /** Total */
+            total: number;
+        };
         /** EvidenceVersion */
         EvidenceVersion: {
             /**
@@ -4520,6 +4955,13 @@ export interface components {
             /** Gaterecordedat */
             gateRecordedAt: string | null;
         };
+        /** GalleryAlbumsQueueCount */
+        GalleryAlbumsQueueCount: {
+            /** Drafts */
+            drafts: number;
+            /** Submitted */
+            submitted: number;
+        };
         /**
          * GalleryPhotoOut
          * @description A photo with its captions. The image is at /v1/content/photos/{id}/thumb or /display;
@@ -4546,6 +4988,13 @@ export interface components {
             height: number;
             /** Blurred */
             blurred: boolean;
+        };
+        /** GalleryRemovalsQueueCount */
+        GalleryRemovalsQueueCount: {
+            /** Open */
+            open: number;
+            /** Escalated18H */
+            escalated18H: number;
         };
         /** GateIn */
         GateIn: {
@@ -4670,6 +5119,151 @@ export interface components {
             tabs: components["schemas"]["HomeFeatureOut"][];
             hub: components["schemas"]["HomeHubOut"];
         };
+        /** HouseholdCreateIn */
+        HouseholdCreateIn: {
+            /** Name */
+            name?: string | null;
+        };
+        /** HouseholdInvitationOut */
+        HouseholdInvitationOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Householdid
+             * Format: uuid
+             */
+            householdId: string;
+            /** Householdname */
+            householdName?: string | null;
+            /**
+             * Invitermemberid
+             * Format: uuid
+             */
+            inviterMemberId: string;
+            /** Invitername */
+            inviterName: string;
+            /**
+             * Inviteememberid
+             * Format: uuid
+             */
+            inviteeMemberId: string;
+            /** Inviteename */
+            inviteeName: string;
+            /** Inviteecode */
+            inviteeCode?: string | null;
+            /** Relationship */
+            relationship: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending" | "accepted" | "declined" | "revoked" | "expired";
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+            /** Respondedat */
+            respondedAt?: string | null;
+        };
+        /** HouseholdMemberOut */
+        HouseholdMemberOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Householdid
+             * Format: uuid
+             */
+            householdId: string;
+            /** Memberid */
+            memberId?: string | null;
+            /** Membercode */
+            memberCode?: string | null;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "head" | "adult";
+            /** Displayname */
+            displayName: string;
+            /**
+             * Relationship
+             * @enum {string}
+             */
+            relationship: "head" | "spouse" | "parent" | "sibling" | "other";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "removed";
+            /**
+             * Joinedat
+             * Format: date-time
+             */
+            joinedAt: string;
+            /** Removedat */
+            removedAt?: string | null;
+        };
+        /** HouseholdOut */
+        HouseholdOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Createdby
+             * Format: uuid
+             */
+            createdBy: string;
+            /** Name */
+            name?: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Dissolvedat */
+            dissolvedAt?: string | null;
+            /**
+             * Members
+             * @default []
+             */
+            members: components["schemas"]["HouseholdMemberOut"][];
+            /**
+             * Pendinginvitations
+             * @default []
+             */
+            pendingInvitations: components["schemas"]["HouseholdInvitationOut"][];
+            /** Myrole */
+            myRole?: ("head" | "adult") | null;
+            /**
+             * Ishead
+             * @default false
+             */
+            isHead: boolean;
+        };
+        /** HouseholdUpdateIn */
+        HouseholdUpdateIn: {
+            /** Name */
+            name?: string | null;
+        };
         /** IdentityDataItemOut */
         IdentityDataItemOut: {
             /** Dataen */
@@ -4693,6 +5287,37 @@ export interface components {
             unread: number;
             /** Actionneeded */
             actionNeeded: number;
+        };
+        /** InvitationRespondIn */
+        InvitationRespondIn: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "accept" | "decline";
+        };
+        /** InvitationsListOut */
+        InvitationsListOut: {
+            /**
+             * Received
+             * @default []
+             */
+            received: components["schemas"]["HouseholdInvitationOut"][];
+            /**
+             * Sent
+             * @default []
+             */
+            sent: components["schemas"]["HouseholdInvitationOut"][];
+        };
+        /** InviteAdultIn */
+        InviteAdultIn: {
+            /** Membercode */
+            memberCode: string;
+            /**
+             * Relationship
+             * @enum {string}
+             */
+            relationship: "spouse" | "parent" | "sibling" | "other";
         };
         /** LockedFieldOut */
         LockedFieldOut: {
@@ -5053,6 +5678,11 @@ export interface components {
             changedAt: string | null;
             /** History */
             history: components["schemas"]["MembershipChangeOut"][];
+        };
+        /** MembershipQueueCount */
+        MembershipQueueCount: {
+            /** Awaitingactivation */
+            awaitingActivation: number;
         };
         /** MfaCodeInput */
         MfaCodeInput: {
@@ -5569,6 +6199,12 @@ export interface components {
             /** Gender */
             gender: ("male" | "female" | "other") | null;
             /**
+             * Language
+             * @default ta
+             * @enum {string}
+             */
+            language: "ta" | "en";
+            /**
              * Tier
              * @description As assigned; there is no way to change it here (FR-PROF-002)
              */
@@ -5614,6 +6250,8 @@ export interface components {
             displayName?: string | null;
             /** Gender */
             gender?: ("male" | "female" | "other") | null;
+            /** Language */
+            language?: ("ta" | "en") | null;
         };
         /** ProgressOut */
         ProgressOut: {
@@ -6331,6 +6969,34 @@ export interface components {
             refreshToken: string;
             member: components["schemas"]["MemberProfile"];
         };
+        /** SimpleQueueCount */
+        SimpleQueueCount: {
+            /** Waiting */
+            waiting: number;
+        };
+        /** StaffHouseholdViewOut */
+        StaffHouseholdViewOut: {
+            /**
+             * Permitted
+             * @default true
+             */
+            permitted: boolean;
+            /**
+             * Targetmemberid
+             * Format: uuid
+             */
+            targetMemberId: string;
+            /** Targetmembercode */
+            targetMemberCode: string;
+            /** Targetmembername */
+            targetMemberName: string;
+            household?: components["schemas"]["HouseholdOut"] | null;
+            /**
+             * Consentlogs
+             * @default []
+             */
+            consentLogs: components["schemas"]["ConsentLogOut"][];
+        };
         /** StepOut */
         StepOut: {
             /** Name */
@@ -6440,6 +7106,15 @@ export interface components {
             /** Context */
             ctx?: Record<string, never>;
         };
+        /** VerificationQueueCount */
+        VerificationQueueCount: {
+            /** Awaitingreview */
+            awaitingReview: number;
+            /** Needsupdate */
+            needsUpdate: number;
+            /** Assignedtome */
+            assignedToMe: number;
+        };
         /**
          * ViewLinkOut
          * @description A path on this API that shows one image to the reviewer it was issued to, until expiresAt.
@@ -6452,6 +7127,23 @@ export interface components {
              * Format: date-time
              */
             expiresAt: string;
+        };
+        /**
+         * WorkQueuesOut
+         * @description Aggregate work queue counts for the caller's permitted areas (D01). Null for unheld permissions.
+         */
+        WorkQueuesOut: {
+            verification?: components["schemas"]["VerificationQueueCount"] | null;
+            appeals?: components["schemas"]["SimpleQueueCount"] | null;
+            duplicates?: components["schemas"]["DuplicateQueueCount"] | null;
+            membership?: components["schemas"]["MembershipQueueCount"] | null;
+            events?: components["schemas"]["EventsQueueCount"] | null;
+            galleryRemovals?: components["schemas"]["GalleryRemovalsQueueCount"] | null;
+            galleryAlbums?: components["schemas"]["GalleryAlbumsQueueCount"] | null;
+            messaging?: components["schemas"]["BroadcastsQueueCount"] | null;
+            configuration?: components["schemas"]["ConfigurationQueueCount"] | null;
+            /** Unavailable */
+            unavailable?: string[];
         };
     };
     responses: never;
@@ -7209,6 +7901,26 @@ export interface operations {
             };
         };
     };
+    read_work_queues_v1_access_work_queues_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkQueuesOut"];
+                };
+            };
+        };
+    };
     read_catalogue_v1_access_catalogue_get: {
         parameters: {
             query?: never;
@@ -7261,7 +7973,7 @@ export interface operations {
             };
         };
     };
-    create_assignment_v1_access_assignments_post: {
+    preview_assignment_v1_access_assignments_preview_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -7273,6 +7985,108 @@ export interface operations {
                 "application/json": components["schemas"]["AssignmentInput"];
             };
         };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_assignment_preview_v1_access_assignment_previews_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentPreviewCreateInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentPreviewCreatedOut"];
+                };
+            };
+            /** @description forbidden, or {"code": "assignment_refused", "problems": [...]} */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_assignment_preview_v1_access_assignment_previews__preview_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                preview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentPreviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    confirm_assignment_preview_v1_access_assignment_previews__preview_id__confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                preview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             201: {
@@ -7301,18 +8115,16 @@ export interface operations {
             };
         };
     };
-    preview_assignment_v1_access_assignments_preview_post: {
+    cancel_assignment_preview_v1_access_assignment_previews__preview_id__cancel_post: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                preview_id: string;
+            };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AssignmentInput"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -7320,7 +8132,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PreviewOut"];
+                    "application/json": {
+                        [key: string]: string;
+                    };
                 };
             };
             /** @description Validation Error */
@@ -12259,6 +13073,307 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_my_household_v1_households_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"] | null;
+                };
+            };
+        };
+    };
+    update_household_v1_households_mine_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HouseholdUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_household_v1_households_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HouseholdCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_my_invitations_v1_households_invitations_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationsListOut"];
+                };
+            };
+        };
+    };
+    invite_adult_v1_households_invitations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InviteAdultIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdInvitationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    respond_invitation_v1_households_invitations__invitation_id__respond_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvitationRespondIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"] | null;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_invitation_v1_households_invitations__invitation_id__revoke_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_member_v1_households_members__member_record_id__remove_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                member_record_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    leave_household_v1_households_leave_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_privacy_notice_v1_households_privacy_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentNoticeOut"];
+                };
+            };
+        };
+    };
+    staff_view_household_v1_households_staff__target_member_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                target_member_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffHouseholdViewOut"];
+                };
             };
             /** @description Validation Error */
             422: {

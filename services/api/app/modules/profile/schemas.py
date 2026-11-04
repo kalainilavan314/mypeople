@@ -68,6 +68,7 @@ class ProfileOut(CamelModel):
     display_name: str | None = Field(description="Greets the member; never replaces the legal name (BR-074)")
     date_of_birth: date | None
     gender: Literal["male", "female", "other"] | None
+    language: Literal["ta", "en"] = "ta"
     tier: str = Field(description="As assigned; there is no way to change it here (FR-PROF-002)")
     identity_state: Literal["not_submitted", "submitted", "in_review", "needs_update", "verified", "unable_to_verify"]
     membership_state: Literal["pending", "active", "suspended", "inactive"]
@@ -88,6 +89,7 @@ class ProfileOut(CamelModel):
             display_name=profile.display_name,
             date_of_birth=profile.date_of_birth,  # type: ignore[arg-type]
             gender=profile.gender,  # type: ignore[arg-type]
+            language=profile.language if profile.language in ("ta", "en") else "ta",  # type: ignore[arg-type]
             tier=profile.tier,
             identity_state=profile.identity_state,  # type: ignore[arg-type]
             membership_state=profile.membership_state,  # type: ignore[arg-type]
@@ -107,6 +109,7 @@ class ProfileUpdateIn(CamelModel):
 
     display_name: str | None = Field(default=None, max_length=60)
     gender: Literal["male", "female", "other"] | None = None
+    language: Literal["ta", "en"] | None = None
 
 
 class ActivityItemOut(CamelModel):

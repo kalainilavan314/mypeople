@@ -41,6 +41,8 @@ export type EventPassCode = Schemas['PassCodeOut'];
 export type ManagedEvent = Schemas['ManagedEventOut'];
 export type EventCreateInput = Schemas['EventCreateIn'];
 export type EventUpdateInput = Schemas['EventUpdateIn'];
+export type EventType = Schemas['EventCreateIn']['eventType'];
+export type AreaLevel = Schemas['AreaRef']['level'];
 export type PassScan = Schemas['PassScanOut'];
 export type ManualCheckIn = Schemas['ManualCheckInOut'];
 export type EventRoster = Schemas['RosterOut'];
@@ -51,6 +53,7 @@ export type GalleryPhoto = Schemas['GalleryPhotoOut'];
 export type ManagedAlbum = Schemas['ManagedAlbumOut'];
 export type AlbumCreateInput = Schemas['AlbumCreateIn'];
 export type AlbumUpdateInput = Schemas['AlbumUpdateIn'];
+export type AlbumCategory = Schemas['AlbumCreateIn']['category'];
 export type PhotoCaptionsInput = Schemas['PhotoCaptionsIn'];
 export type RemovalRequestInput = Schemas['RemovalRequestIn'];
 export type PublicRemovalRequestInput = Schemas['PublicRemovalRequestIn'];
@@ -91,6 +94,18 @@ export type ElectionPeriodState = ElectionPeriod['state'];
 export type ElectionPeriodInput = Schemas['PeriodIn'];
 export type DeclaredElectionPeriod = Schemas['DeclaredOut'];
 export type ElectionPeriodFile = Schemas['PeriodFileOut'];
+export type WorkQueues = Schemas['WorkQueuesOut'];
+export type Household = Schemas['HouseholdOut'];
+export type HouseholdMember = Schemas['HouseholdMemberOut'];
+export type HouseholdInvitation = Schemas['HouseholdInvitationOut'];
+export type HouseholdCreateInput = Schemas['HouseholdCreateIn'];
+export type HouseholdUpdateInput = Schemas['HouseholdUpdateIn'];
+export type InviteAdultInput = Schemas['InviteAdultIn'];
+export type InvitationRespondInput = Schemas['InvitationRespondIn'];
+export type ConsentNotice = Schemas['ConsentNoticeOut'];
+export type ConsentLog = Schemas['ConsentLogOut'];
+export type InvitationsList = Schemas['InvitationsListOut'];
+export type StaffHouseholdView = Schemas['StaffHouseholdViewOut'];
 export type EventFilters = {
   /** 'mine' (the default) narrows to the member's area; 'all' widens it (BR-057). */
   scope?: 'mine' | 'all';
@@ -107,6 +122,9 @@ export type AssistedRecoveryRequest = Schemas['AssistedRequestOut'];
 export type AssistedResolutionInput = Schemas['AssistedResolutionInput'];
 export type AreaRef = Schemas['AreaRef'];
 export type AssignmentInput = Schemas['AssignmentInput'];
+export type AssignmentPreviewInput = Schemas['AssignmentPreviewCreateInput'];
+export type AssignmentPreviewCreated = Schemas['AssignmentPreviewCreatedOut'];
+export type AssignmentPreviewDetails = Schemas['AssignmentPreviewOut'];
 export type Assignment = Schemas['AssignmentOut'];
 export type ListedAssignment = Schemas['AssignmentListItemOut'];
 export type AssignmentPreview = Schemas['PreviewOut'];
@@ -376,6 +394,8 @@ export function createApiClient({
 
     /** The signed-in person's staff assignments; empty for members. The API still checks every action. */
     getMyAccess: () => request<Assignment[]>('GET', '/v1/access/me'),
+    /** D01: Aggregate work queue counts for the caller's permitted areas. Null for unheld permissions. */
+    getWorkQueues: () => request<WorkQueues>('GET', '/v1/access/work-queues'),
     /** Tiers and the permission matrix, for the W09 form. Needs roles.assign. */
     getAccessCatalogue: () => request<AccessCatalogue>('GET', '/v1/access/catalogue'),
     /** W09: assignments in the caller's own areas, newest first. Needs roles.assign. */
@@ -383,8 +403,18 @@ export function createApiClient({
       request<ListedAssignment[]>('GET', `/v1/access/assignments?state=${state}`),
     /** Checks an assignment without saving it (RB-06). Needs roles.assign. */
     previewAssignment: (input: AssignmentInput) => request<AssignmentPreview>('POST', '/v1/access/assignments/preview', input),
-    /** Throws ApiError "assignment_refused" (403) with `problems` when a rule forbids it. */
-    createAssignment: (input: AssignmentInput) => request<Assignment>('POST', '/v1/access/assignments', input),
+    /** Creates a durable 10-minute preview record after rule validation. Needs roles.assign. */
+    createAssignmentPreview: (input: AssignmentPreviewInput) =>
+      request<AssignmentPreviewCreated>('POST', '/v1/access/assignment-previews', input),
+    /** Retrieves an active assignment preview for display. Needs roles.assign. */
+    getAssignmentPreview: (previewId: string) =>
+      request<AssignmentPreviewDetails>('GET', `/v1/access/assignment-previews/${encodeURIComponent(previewId)}`),
+    /** Atomically confirms an assignment preview, creating the role. Needs roles.assign. */
+    confirmAssignmentPreview: (previewId: string) =>
+      request<Assignment>('POST', `/v1/access/assignment-previews/${encodeURIComponent(previewId)}/confirm`),
+    /** Cancels an active assignment preview. Needs roles.assign. */
+    cancelAssignmentPreview: (previewId: string) =>
+      request<{ status: string }>('POST', `/v1/access/assignment-previews/${encodeURIComponent(previewId)}/cancel`),
     revokeAssignment: (assignmentId: string, reason: string) =>
       request<Assignment>('POST', `/v1/access/assignments/${encodeURIComponent(assignmentId)}/revoke`, { reason }),
     /** D31: grants the caller may review this quarter, the most overdue first (FR-AUTH-027). Needs audit.view. */
@@ -707,6 +737,22 @@ export function createApiClient({
       request<ElectionNotice>('POST', `/v1/election/periods/${encodeURIComponent(periodId)}/notices`, input),
     withdrawElectionNotice: (noticeId: string) =>
       request<ElectionNotice>('POST', `/v1/election/notices/${encodeURIComponent(noticeId)}/withdraw`),
+    // Household endpoints (Phase 2.5a SC-22)
+    getMyHousehold: () => request<Household | null>('GET', '/v1/households/mine'),
+    createHousehold: (body: HouseholdCreateInput) => request<Household>('POST', '/v1/households', body),
+    updateHousehold: (body: HouseholdUpdateInput) => request<Household>('PATCH', '/v1/households/mine', body),
+    getMyInvitations: () => request<InvitationsList>('GET', '/v1/households/invitations/mine'),
+    inviteAdult: (body: InviteAdultInput) => request<HouseholdInvitation>('POST', '/v1/households/invitations', body),
+    respondInvitation: (invitationId: string, body: InvitationRespondInput) =>
+      request<Household | null>('POST', `/v1/households/invitations/${encodeURIComponent(invitationId)}/respond`, body),
+    revokeInvitation: (invitationId: string) =>
+      request<void>('POST', `/v1/households/invitations/${encodeURIComponent(invitationId)}/revoke`),
+    removeHouseholdMember: (memberRecordId: string) =>
+      request<void>('POST', `/v1/households/members/${encodeURIComponent(memberRecordId)}/remove`),
+    leaveHousehold: () => request<void>('POST', '/v1/households/leave'),
+    getHouseholdPrivacyNotice: () => request<ConsentNotice>('GET', '/v1/households/privacy'),
+    staffViewHousehold: (targetMemberId: string) =>
+      request<StaffHouseholdView>('GET', `/v1/households/staff/${encodeURIComponent(targetMemberId)}`),
   };
 }
 

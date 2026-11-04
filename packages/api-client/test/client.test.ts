@@ -132,7 +132,7 @@ test('signOut accepts the empty 204 response', async () => {
   assert.equal(sent[0].url, 'https://api.example/v1/auth/sign-out');
 });
 
-test('a refused assignment carries the reasons', async () => {
+test('a refused assignment preview carries the reasons', async () => {
   const { fetch } = fakeFetch(403, { detail: { code: 'assignment_refused', problems: ['tier_not_below_yours'] } });
   const input = {
     memberId: '3f1c2a9e-5b7d-4e8a-9c0f-1a2b3c4d5e6f',
@@ -141,7 +141,7 @@ test('a refused assignment carries the reasons', async () => {
     permissions: ['cases.decide_district'],
   };
 
-  await assert.rejects(createApiClient({ baseUrl: 'https://api.example', fetch }).createAssignment(input), (error) => {
+  await assert.rejects(createApiClient({ baseUrl: 'https://api.example', fetch }).createAssignmentPreview(input), (error) => {
     assert.ok(error instanceof ApiError);
     assert.equal(error.code, 'assignment_refused');
     assert.deepEqual(error.problems, ['tier_not_below_yours']);
@@ -415,6 +415,40 @@ test('refresh tokens, security alerts and access reviews go to their endpoints',
       ['POST', '/v1/auth/security-alerts/a1/answer', '{"answer":"not_me"}'],
       ['GET', '/v1/access/reviews', undefined],
       ['POST', '/v1/access/reviews/g1', '{"decision":"revoked","reason":"Left the district office"}'],
+    ],
+  );
+});
+
+test('household endpoints call their routes with correct payload', async () => {
+  const { fetch, sent } = fakeFetch(200, {});
+  const client = createApiClient({ baseUrl: 'https://api.example', fetch });
+
+  await client.getMyHousehold();
+  await client.createHousehold({ name: 'Our Home' });
+  await client.updateHousehold({ name: 'Renamed Home' });
+  await client.getMyInvitations();
+  await client.inviteAdult({ memberCode: 'NPM-1234', relationship: 'spouse' });
+  await client.respondInvitation('inv-1', { action: 'accept' });
+  await client.revokeInvitation('inv-1');
+  await client.removeHouseholdMember('rec-1');
+  await client.leaveHousehold();
+  await client.getHouseholdPrivacyNotice();
+  await client.staffViewHousehold('target-1');
+
+  assert.deepEqual(
+    sent.map((request) => [request.method, request.url.replace('https://api.example', ''), request.body]),
+    [
+      ['GET', '/v1/households/mine', undefined],
+      ['POST', '/v1/households', '{"name":"Our Home"}'],
+      ['PATCH', '/v1/households/mine', '{"name":"Renamed Home"}'],
+      ['GET', '/v1/households/invitations/mine', undefined],
+      ['POST', '/v1/households/invitations', '{"memberCode":"NPM-1234","relationship":"spouse"}'],
+      ['POST', '/v1/households/invitations/inv-1/respond', '{"action":"accept"}'],
+      ['POST', '/v1/households/invitations/inv-1/revoke', undefined],
+      ['POST', '/v1/households/members/rec-1/remove', undefined],
+      ['POST', '/v1/households/leave', undefined],
+      ['GET', '/v1/households/privacy', undefined],
+      ['GET', '/v1/households/staff/target-1', undefined],
     ],
   );
 });

@@ -1,0 +1,17 @@
+[Unit]
+Description=My People notification and escalation dispatcher
+After=network.target postgresql.service
+
+[Service]
+Type=oneshot
+User=mypeople
+WorkingDirectory=/srv/mypeople/services/api
+EnvironmentFile=/srv/mypeople/services/api/.env
+ExecStart=/srv/mypeople/services/api/.venv/bin/python -m app.tasks.notifications
+StandardOutput=journal
+StandardError=journal
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+UMask=0077

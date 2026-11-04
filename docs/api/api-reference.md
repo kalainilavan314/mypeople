@@ -59,7 +59,8 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET /v1/access/catalogue` | `roles.assign` | `200` tiers, their area levels and the permission matrix | `403 forbidden` |
 | `GET /v1/access/assignments?state=active\|revoked&limit` | `roles.assign` | `200` assignments in the caller's own areas with `memberCode` and `fullName`, newest first | `403 forbidden` |
 | `POST /v1/access/assignments/preview` body `{memberId, tier, area, permissions}` | `roles.assign` | `200 {allowed, problems, reviewDueAt}`, nothing saved | `403 forbidden` |
-| `POST /v1/access/assignments` same body, optional `note` | `roles.assign` | `201` assignment | `403 forbidden`, `403 {code: "assignment_refused", problems}` |
+| `POST /v1/access/assignment-previews` body `{memberCode, tier, area, permissions, note?}` | `roles.assign` | `201 {id, expiresAt}` opaque, 10-minute staff-bound preview | `403 forbidden`, `403 {code: "assignment_refused", problems}` |
+| `GET /v1/access/assignment-previews/{id}`, `POST .../{id}/confirm`, `POST .../{id}/cancel` | `roles.assign`, and only the preview owner | display, create one assignment atomically, or cancel | `404 preview_expired_or_invalid` |
 | `POST /v1/access/assignments/{id}/revoke` body `{reason}` | `roles.assign` | `200` assignment, now `revoked` | `403`, `404 not_found` |
 | `GET /v1/access/reviews?limit` | `audit.view` | `200 {quarter, quarterEndsAt, reviewedThisQuarter, items}`: grants in the caller's areas, below their tier, not their own, due by the end of this quarter (overdue ones first, `overdue: true`), each with `memberCode`, `fullName` and `lastReviewedAt` (FR-AUTH-027, D31) | `403 forbidden` |
 | `POST /v1/access/reviews/{assignmentId}` body `{decision: "confirmed" \| "revoked", reason}` | `audit.view` over the grant's area, from a higher tier | `200` the assignment: confirmed ones are due at the end of the next quarter (and count again if they had lapsed); revoked ones end at once | `403 own_assignment`, `outside_your_area`, `tier_not_below_yours`, `tier_5_by_bootstrap_only`; `404 not_found`; `409 not_due` (already reviewed this quarter); `422` reason under 3 characters |
@@ -104,7 +105,7 @@ Writes that carry the session cookie and come from another website are refused w
 
 | Endpoint | Needs | Success | Errors |
 |---|---|---|---|
-| `GET /v1/profile`, `PATCH /v1/profile` body `{displayName?, gender?}` | a session | `200` the profile with `lockedFields`, `mobileMasked`, `verificationValidUntil`, `openAreaChange` | `401` |
+| `GET /v1/profile`, `PATCH /v1/profile` body `{displayName?, gender?, language?: "ta" \| "en"}` | a session | `200` the profile with `lockedFields`, `mobileMasked`, `verificationValidUntil`, `openAreaChange`, `language` | `401`, `422` |
 | `GET /v1/profile/activity?kind&limit` | a session | `200` receipts newest first | `422` unknown kind |
 | `GET`/`PUT /v1/profile/survey-answers` body `{answers}`, `DELETE` | a session | `200` the answers; `204` | `422` |
 | `GET /v1/profile/identity-data` | a session | `200` purpose and retention of each kind of identity data | `401` |

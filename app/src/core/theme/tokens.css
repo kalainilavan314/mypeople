@@ -65,7 +65,8 @@
   --warning: #d97706;
   --warning-text: #92400e;
   --warning-bg: #fffbeb;
-  --error: #dc2626;
+  /* #B91C1C keeps error text at WCAG AA contrast on --error-bg. */
+  --error: #b91c1c;
   --error-bg: #fef2f2;
   --info: #0f2942;
 

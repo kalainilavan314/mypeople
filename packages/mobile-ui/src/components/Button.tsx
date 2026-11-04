@@ -36,7 +36,10 @@ export function Button({ label, onPress, variant = 'primary', busy = false, busy
     <Pressable
       onPress={onPress}
       disabled={inactive}
+      accessible
       accessibilityRole="button"
+      accessibilityLabel={busy && busyLabel ? busyLabel : label}
+      accessibilityState={{ disabled: inactive, busy }}
       aria-disabled={inactive}
       aria-busy={busy}
       accessibilityHint={accessibilityHint}
@@ -45,7 +48,7 @@ export function Button({ label, onPress, variant = 'primary', busy = false, busy
         { backgroundColor: pressed ? fill.pressed : fill.background, borderColor: fill.border },
         disabled && styles.disabled,
       ]}>
-      <View style={styles.inner}>
+      <View accessible={false} style={styles.inner}>
         {busy ? <ActivityIndicator size="small" color={textColor} /> : icon ? <Ionicons name={icon} size={20} color={textColor} /> : null}
         <AppText step="label" tone={fill.text} style={styles.label}>
           {busy && busyLabel ? busyLabel : label}

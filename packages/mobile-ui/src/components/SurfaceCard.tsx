@@ -20,6 +20,7 @@ export function SurfaceCard({ children, accent = false, onPress, accessibilityLa
   return (
     <Pressable
       onPress={onPress}
+      accessible
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       style={({ pressed }) => [cardStyle, pressed && styles.pressed]}>

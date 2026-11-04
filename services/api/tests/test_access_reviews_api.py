@@ -144,6 +144,10 @@ def test_new_grants_are_due_at_the_end_of_the_next_quarter(db_client, auth, supe
         "permissions": ["cases.decide_district"],  # default-only grants are reviewed too
     }
 
-    created = db_client.post("/v1/access/assignments", json=body, headers=auth(super_admin)).json()
+    preview = db_client.post("/v1/access/assignment-previews", json=body, headers=auth(super_admin))
+    assert preview.status_code == 201
+    created = db_client.post(
+        f"/v1/access/assignment-previews/{preview.json()['id']}/confirm", headers=auth(super_admin)
+    ).json()
 
     assert datetime.fromisoformat(created["reviewDueAt"]) == review_due("3A", NOW)
