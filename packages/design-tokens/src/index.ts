@@ -38,7 +38,8 @@ export const colors = {
   warning: '#d97706',
   warningText: '#92400e',
   warningBackground: '#fffbeb',
-  error: '#dc2626',
+  // AA body-text contrast on the pale error surface.
+  error: '#b91c1c',
   errorBackground: '#fef2f2',
 } as const;
 

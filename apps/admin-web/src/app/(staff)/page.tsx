@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 
 import { PageHeader } from '@/components/PageHeader';
+import { ConsoleLoading } from '@/components/ConsoleLoading';
 import { SystemStatus } from '@/components/SystemStatus';
 import { getAdminLocale } from '@/lib/i18n';
 import { builtModules, plannedModules } from '@/lib/modules';
@@ -18,11 +19,11 @@ export default function DashboardHome() {
         <DashboardNotice />
       </Suspense>
 
-      <Suspense fallback={<p className="text-muted">… Loading your work queues</p>}>
+      <Suspense fallback={<ConsoleLoading rows={3} />}>
         <PriorityWorkQueues />
       </Suspense>
 
-      <Suspense fallback={<p className="text-muted">… Loading your modules</p>}>
+      <Suspense fallback={<ConsoleLoading rows={3} />}>
         <MyModules />
       </Suspense>
 

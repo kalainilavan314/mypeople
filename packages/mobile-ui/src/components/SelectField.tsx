@@ -37,8 +37,10 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
       <Pressable
         onPress={() => setOpen(true)}
         disabled={disabled}
+        accessible
         accessibilityRole="button"
         accessibilityLabel={`${label}: ${chosen?.label ?? placeholder}`}
+        accessibilityState={{ disabled, expanded: open }}
         aria-disabled={disabled}
         style={[styles.box, disabled && styles.disabled, error ? styles.invalid : null]}>
         <AppText step="body" tone={chosen ? 'default' : 'muted'} style={styles.value}>
@@ -59,6 +61,7 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
             </AppText>
             <Pressable
               onPress={() => setOpen(false)}
+              accessible
               accessibilityRole="button"
               accessibilityLabel={text.close}
               style={styles.close}>
@@ -79,7 +82,10 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
                   setQuery('');
                   setOpen(false);
                 }}
+                accessible
                 accessibilityRole="button"
+                accessibilityLabel={item.label}
+                accessibilityState={{ selected: item.value === value }}
                 aria-selected={item.value === value}
                 style={({ pressed }) => [styles.option, pressed && styles.pressed]}>
                 <AppText step="body" style={styles.value}>
@@ -113,7 +119,7 @@ const styles = StyleSheet.create({
   value: { flex: 1 },
   sheet: { flex: 1, backgroundColor: colors.page, padding: spacing.gutter, gap: spacing[3] },
   sheetHeader: { flexDirection: 'row', alignItems: 'center' },
-  close: { width: control.touchMin, height: control.touchMin, alignItems: 'center', justifyContent: 'center' },
+  close: { width: control.height, height: control.height, alignItems: 'center', justifyContent: 'center' },
   option: {
     minHeight: control.height,
     flexDirection: 'row',

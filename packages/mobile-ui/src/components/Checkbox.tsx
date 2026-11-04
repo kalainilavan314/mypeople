@@ -5,16 +5,28 @@ import { colors, control, spacing } from '@my-people/design-tokens';
 
 import { AppText } from './AppText';
 
-type Props = { label: string; checked: boolean; onChange: (checked: boolean) => void };
+type Props = {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  disabled?: boolean;
+  accessibilityHint?: string;
+};
 
-export function Checkbox({ label, checked, onChange }: Props) {
+export function Checkbox({ label, checked, onChange, disabled = false, accessibilityHint }: Props) {
   return (
     <Pressable
       onPress={() => onChange(!checked)}
+      disabled={disabled}
+      accessible
       accessibilityRole="checkbox"
+      accessibilityLabel={label}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{ checked, disabled }}
       aria-checked={checked}
-      style={styles.row}>
-      <Ionicons name={checked ? 'checkbox' : 'square-outline'} size={24} color={checked ? colors.primary : colors.controlBorder} />
+      aria-disabled={disabled}
+      style={[styles.row, disabled && styles.disabled]}>
+      <Ionicons accessible={false} name={checked ? 'checkbox' : 'square-outline'} size={24} color={checked ? colors.primary : colors.controlBorder} />
       <AppText step="body" style={styles.label}>
         {label}
       </AppText>
@@ -23,6 +35,7 @@ export function Checkbox({ label, checked, onChange }: Props) {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3], minHeight: control.touchMin, paddingVertical: spacing[2] },
+  row: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3], minHeight: control.height, paddingVertical: spacing[2] },
   label: { flex: 1 },
+  disabled: { opacity: 0.5 },
 });

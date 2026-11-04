@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 
 import { Feedback } from '@/components/Feedback';
+import { ConsoleLoading } from '@/components/ConsoleLoading';
 import { PageHeader } from '@/components/PageHeader';
 import { StateTag } from '@/components/StateTag';
 import { areaText, formatDateTime } from '@/lib/format';
@@ -24,7 +25,7 @@ export default function EventsConsolePage(props: PageProps<'/events'>) {
           + Create event
         </Link>
       </PageHeader>
-      <Suspense fallback={<p className="text-muted">… Loading events</p>}>
+      <Suspense fallback={<ConsoleLoading />}>
         <EventsContent searchParams={props.searchParams} />
       </Suspense>
     </>

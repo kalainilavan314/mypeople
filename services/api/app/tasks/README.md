@@ -59,14 +59,7 @@ Persistent=true
 WantedBy=timers.target
 ```
 
-Enable it after adding both units:
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable --now mypeople-preview-cleanup.timer
-```
-
-Enable and start with:
+Enable and start it after adding both units:
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now mypeople-notifications.timer

@@ -125,7 +125,7 @@ export const authC = {
   text3: '#475569', // muted / placeholder
   onGreen: '#FFFFFF',
 
-  error: '#DC2626',
+  error: '#B91C1C',
   errorSoft: '#FEF2F2',
   success: '#059669',
 } as const;

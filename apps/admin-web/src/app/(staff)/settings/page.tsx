@@ -2,6 +2,7 @@ import type { FeatureFlag, Place } from '@my-people/api-client';
 import { Suspense } from 'react';
 
 import { Feedback } from '@/components/Feedback';
+import { ConsoleLoading } from '@/components/ConsoleLoading';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { PageHeader } from '@/components/PageHeader';
 import { StateTag } from '@/components/StateTag';
@@ -19,7 +20,7 @@ export default function SettingsPage(props: PageProps<'/settings'>) {
   return (
     <>
       <PageHeader ta="கணினி அமைப்புகள் & பதிவேடு" en="Settings & registry administration" />
-      <Suspense fallback={<p className="text-muted">… Loading system settings</p>}>
+      <Suspense fallback={<ConsoleLoading />}>
         <SettingsContent searchParams={props.searchParams} />
       </Suspense>
     </>

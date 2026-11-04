@@ -46,6 +46,7 @@ export function TextField({ label, hint, error, secret = false, optional = false
         <TextInput
           {...input}
           multiline={multiline}
+          accessible
           accessibilityLabel={label}
           accessibilityHint={hint}
           secureTextEntry={secret && hidden}
@@ -64,6 +65,7 @@ export function TextField({ label, hint, error, secret = false, optional = false
         {secret ? (
           <Pressable
             onPress={() => setHidden((value) => !value)}
+            accessible
             accessibilityRole="button"
             accessibilityLabel={hidden ? text.showPassword : text.hidePassword}
             hitSlop={8}
@@ -96,5 +98,5 @@ const styles = StyleSheet.create({
   focused: { borderColor: colors.focusRing, borderWidth: 2 },
   invalid: { borderColor: colors.error },
   input: { flex: 1, paddingHorizontal: spacing[3], paddingVertical: spacing[2], color: colors.text },
-  reveal: { width: control.touchMin, height: control.touchMin, alignItems: 'center', justifyContent: 'center' },
+  reveal: { width: control.height, height: control.height, alignItems: 'center', justifyContent: 'center' },
 });
