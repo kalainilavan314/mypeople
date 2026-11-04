@@ -45,13 +45,12 @@ export async function SystemStatus({ locale: propLocale }: { locale?: Locale } =
   ]);
 
   return (
-    <ul className="divide-y divide-line rounded-xl border border-line bg-card">
+    <ul className="divide-y divide-line rounded-lg border border-line bg-card">
       {checks.map((check) => (
-        <li key={check.name} className="flex items-center justify-between px-4 py-3">
-          <span className="font-semibold">{check.name}</span>
-          {/* Symbol and words, never colour alone. */}
-          <span className={check.ok ? 'text-success' : 'text-error'}>
-            {check.ok ? '✓' : '!'} {check.result}
+        <li key={check.name} className="flex min-h-14 items-center justify-between gap-4 px-5 py-3">
+          <span className="text-sm font-medium text-text">{check.name}</span>
+          <span className={`text-sm font-medium ${check.ok ? 'text-success' : 'text-error'}`}>
+            {check.result}
           </span>
         </li>
       ))}

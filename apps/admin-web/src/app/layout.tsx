@@ -10,8 +10,8 @@ import type { Metadata } from 'next';
 import type { CSSProperties } from 'react';
 
 import { colors, cssFontStack } from '@my-people/design-tokens';
-import { getAdminLocale } from '@/lib/i18n';
 import { LanguageProvider } from '@/lib/i18n/context';
+import type { Locale } from '@/lib/i18n/types';
 
 export const metadata: Metadata = {
   title: 'My People · Administration',
@@ -33,16 +33,16 @@ const tokenVariables = {
 } as CSSProperties;
 
 export default async function RootLayout({ children }: LayoutProps<'/'>) {
-  const locale = await getAdminLocale();
+  const locale: Locale = 'en';
 
   return (
     <html
       lang={locale}
       dir="ltr"
       style={tokenVariables}
-      className={`h-full antialiased ${locale === 'ta' ? 'ta' : ''}`}>
+      className="h-full antialiased">
       <body className="min-h-full bg-page font-sans text-ink">
-        <LanguageProvider initialLocale={locale}>{children}</LanguageProvider>
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

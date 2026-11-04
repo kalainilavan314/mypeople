@@ -48,7 +48,6 @@ export const taMessages: TranslationDictionary = {
     required: 'கட்டாயமானது',
     optional: 'விருப்பமானது',
     language: 'மொழி',
-    switchLanguage: 'மொழியை மாற்றுக',
     tamil: 'தமிழ்',
     english: 'English',
     preview: 'முன்மாதிரி',

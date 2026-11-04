@@ -130,18 +130,9 @@ export function getTranslator(locale: Locale) {
   return t;
 }
 
-/**
- * Server helper to read the active locale from incoming request cookies and/or staff profile.
- */
-export async function getAdminLocale(staffLocale?: string | null): Promise<Locale> {
-  try {
-    const { cookies } = await import('next/headers');
-    const cookieStore = await cookies();
-    const cookieVal = cookieStore.get(LOCALE_COOKIE_NAME)?.value;
-    return resolveLocale(cookieVal, staffLocale);
-  } catch {
-    return resolveLocale(null, staffLocale);
-  }
+/** The administrative console is intentionally English-only. */
+export async function getAdminLocale(_staffLocale?: string | null): Promise<Locale> {
+  return 'en';
 }
 
 /**

@@ -92,9 +92,9 @@ export function Feedback({ error, problems, done }: Props) {
     const confText = locale === 'ta' ? conf.ta : conf.en;
 
     return (
-      <div role="status" className="flex flex-col gap-0.5 rounded-xl border border-success bg-success-bg px-4 py-3 text-sm text-success">
+      <div role="status" className="flex flex-col gap-0.5 rounded-lg border border-success bg-success-bg px-4 py-3 text-sm text-success">
         <p lang={locale} className="font-semibold">
-          ✓ {confText}
+          {confText}
         </p>
       </div>
     );

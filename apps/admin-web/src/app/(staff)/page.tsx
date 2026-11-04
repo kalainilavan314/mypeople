@@ -13,27 +13,36 @@ import { isRefusal, requireStaff } from '@/lib/staff';
 export default function DashboardHome() {
   return (
     <>
-      <PageHeader ta="நிர்வாகம் மற்றும் பணி வரிசைகள்" en="Work queues & administration" />
+      <div className="flex flex-col gap-1 border-b border-line pb-6">
+        <PageHeader ta="நிர்வாகம் மற்றும் பணி வரிசைகள்" en="Operations desk" />
+        <p className="max-w-2xl text-sm leading-6 text-muted">
+          Review assigned work, resolve time-sensitive requests, and open the administration tools you are permitted to use.
+        </p>
+      </div>
 
       <Suspense fallback={null}>
         <DashboardNotice />
       </Suspense>
 
-      <Suspense fallback={<ConsoleLoading rows={3} />}>
-        <PriorityWorkQueues />
-      </Suspense>
+      <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <Suspense fallback={<ConsoleLoading rows={4} />}>
+          <PriorityWorkQueues />
+        </Suspense>
 
-      <Suspense fallback={<ConsoleLoading rows={3} />}>
-        <MyModules />
-      </Suspense>
+        <aside className="flex flex-col gap-8 xl:sticky xl:top-6" aria-label="Administration overview">
+          <Suspense fallback={<ConsoleLoading rows={3} />}>
+            <MyModules />
+          </Suspense>
 
-      <Suspense fallback={<p className="text-muted">… Loading status</p>}>
-        <StatusSection />
-      </Suspense>
+          <Suspense fallback={<p className="text-sm text-muted">Loading system status…</p>}>
+            <StatusSection />
+          </Suspense>
 
-      <Suspense fallback={<p className="text-muted">… Loading</p>}>
-        <PlannedModulesSection />
-      </Suspense>
+          <Suspense fallback={<p className="text-sm text-muted">Loading planned modules…</p>}>
+            <PlannedModulesSection />
+          </Suspense>
+        </aside>
+      </div>
     </>
   );
 }
@@ -43,7 +52,7 @@ async function DashboardNotice() {
   const locale = await getAdminLocale(staff.member.language);
 
   return (
-    <p className="flex flex-col gap-1 rounded-xl border border-line bg-warning-bg px-4 py-3 text-sm text-warning">
+    <p className="flex flex-col gap-1 rounded-lg border border-warning/50 bg-warning-bg px-4 py-3 text-sm text-warning">
       <span lang={locale} className="font-semibold">
         {locale === 'ta'
           ? '! வெளியீட்டுக்கு முந்தைய சூழல். பாதுகாப்பு கட்டுப்பாடுகள், தணிக்கை நீர்வரி மற்றும் உற்பத்தி உள்ளடக்கப் பாதுகாப்புக் கொள்கைகள் அனைத்துப் பணியாளர் தொகுதிகளிலும் செயலில் உள்ளன.'
@@ -59,7 +68,7 @@ async function StatusSection() {
 
   return (
     <section aria-labelledby="status-heading" className="flex flex-col gap-3">
-      <h2 id="status-heading" className="text-base font-bold text-text">
+      <h2 id="status-heading" className="text-sm font-semibold text-text">
         <span lang={locale}>{locale === 'ta' ? 'கணினி நிலைமை' : 'System status'}</span>
       </h2>
       <SystemStatus locale={locale} />
@@ -73,19 +82,19 @@ async function PlannedModulesSection() {
 
   return (
     <section aria-labelledby="planned-heading" className="flex flex-col gap-3">
-      <h2 id="planned-heading" className="text-base font-bold text-text">
-        <span lang={locale}>{locale === 'ta' ? 'அடுத்தகட்ட தொகுதிகள் (கட்டம் 2 & 3)' : 'Remaining modules (Phase 2 & 3)'}</span>
+      <h2 id="planned-heading" className="text-sm font-semibold text-text">
+        <span lang={locale}>{locale === 'ta' ? 'அடுத்தகட்ட தொகுதிகள் (கட்டம் 2 & 3)' : 'Planned modules'}</span>
       </h2>
-      <ul className="divide-y divide-line rounded-xl border border-line bg-card">
+      <ul className="divide-y divide-line rounded-lg border border-line bg-card">
         {plannedModules.map((module) => (
-          <li key={module.name} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
+          <li key={module.name} className="flex min-h-14 flex-wrap items-center justify-between gap-3 px-4 py-3">
             <span>
               <span lang={locale} className="block text-sm font-semibold text-text">
                 {locale === 'ta' ? module.ta : module.name}
               </span>
-              <span className="block text-xs text-muted">{module.desc}</span>
+              <span className="mt-0.5 block text-xs text-muted">{module.desc}</span>
             </span>
-            <span className="rounded-full bg-surface px-3 py-1 text-xs font-semibold text-muted">Phase 2 / 3</span>
+            <span className="rounded-md bg-surface px-2 py-1 text-[11px] font-medium text-muted">Phase 2 / 3</span>
           </li>
         ))}
       </ul>
@@ -110,11 +119,11 @@ async function PriorityWorkQueues() {
 
   if (unavailable || !queues) {
     return (
-      <section aria-labelledby="priority-heading" className="flex flex-col gap-3">
-        <h2 id="priority-heading" className="text-base font-bold text-text">
+      <section aria-labelledby="priority-heading" className="flex flex-col gap-4">
+        <h2 id="priority-heading" className="text-lg font-semibold text-text">
           <span lang={locale}>{locale === 'ta' ? 'முன்னுரிமைப் பணி வரிசைகள்' : 'Priority work queues'}</span>
         </h2>
-        <p className="rounded-xl border border-line bg-surface p-4 text-sm text-muted">
+        <p className="rounded-lg border border-line bg-card p-5 text-sm text-muted">
           {locale === 'ta'
             ? 'செயல்பாட்டுப் பணி வரிசை எண்ணிக்கைகள் கிடைக்கவில்லை அல்லது அதைப் பார்க்க உங்களுக்கு அனுமதி இல்லை.'
             : 'Operational work queue counts are unavailable or you do not have permission to view them.'}
@@ -271,16 +280,16 @@ async function PriorityWorkQueues() {
 
   if (cards.length === 0) {
     return (
-      <section aria-labelledby="priority-heading" className="flex flex-col gap-3">
-        <h2 id="priority-heading" className="text-base font-bold text-text">
+      <section aria-labelledby="priority-heading" className="flex flex-col gap-4">
+        <h2 id="priority-heading" className="text-lg font-semibold text-text">
           <span lang={locale}>{locale === 'ta' ? 'முன்னுரிமைப் பணி வரிசைகள்' : 'Priority work queues'}</span>
         </h2>
         {queues.unavailable && queues.unavailable.length > 0 ? (
-          <p className="rounded-xl border border-warning bg-warning-bg p-4 text-sm text-warning">
+          <p className="rounded-lg border border-warning bg-warning-bg p-4 text-sm text-warning">
             ! {locale === 'ta' ? 'சில பணி வரிசைத் தரவுகளைப் பெற முடியவில்லை' : 'Some work queue counts could not be retrieved'} ({queues.unavailable.join(', ')}).
           </p>
         ) : (
-          <p className="rounded-xl border border-line bg-card p-4 text-sm text-muted">
+          <p className="rounded-lg border border-line bg-card p-5 text-sm text-muted">
             {locale === 'ta'
               ? 'உங்கள் பணியாளர் பொறுப்புக்கு எந்தவொரு செயல்பாட்டு வரிசையையும் அணுக அனுமதி இல்லை.'
               : 'Your active staff roles do not grant access to operational work queues.'}
@@ -293,11 +302,14 @@ async function PriorityWorkQueues() {
   const totalUrgent = cards.reduce((sum, c) => sum + (c.urgent ? c.count : 0), 0);
 
   return (
-    <section aria-labelledby="priority-heading" className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id="priority-heading" className="text-base font-bold text-text">
+    <section aria-labelledby="priority-heading" className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <h2 id="priority-heading" className="text-lg font-semibold text-text">
           <span lang={locale}>{locale === 'ta' ? 'முன்னுரிமைப் பணி வரிசைகள்' : 'Priority work queues'}</span>
-        </h2>
+          </h2>
+          <p className="text-sm text-muted">Open a queue to review and record the next decision.</p>
+        </div>
         <span className="text-xs text-muted">
           {totalUrgent > 0
             ? locale === 'ta'
@@ -310,37 +322,35 @@ async function PriorityWorkQueues() {
       </div>
 
       {queues.unavailable && queues.unavailable.length > 0 ? (
-        <p className="rounded-xl border border-warning/50 bg-warning-bg p-3 text-xs text-warning">
+        <p className="rounded-lg border border-warning/50 bg-warning-bg p-3 text-xs text-warning">
           ! {locale === 'ta' ? 'சில பணி வரிசைகள் தற்காலிகமாகக் கிடைக்கவில்லை' : 'Some work queues could not be retrieved and are temporarily unavailable'} ({queues.unavailable.join(', ')}).
         </p>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-2">
         {cards.map((card) => (
           <Link
             key={card.href}
             href={card.href}
-            className={`flex flex-col justify-between gap-3 rounded-xl border p-4 transition-colors hover:bg-surface ${
-              card.urgent && card.count > 0 ? 'border-warning/60 bg-warning-bg/20' : 'border-line bg-card'
+            className={`group flex min-h-36 flex-col justify-between gap-5 rounded-lg border p-5 transition-colors hover:border-primary/40 hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+              card.urgent && card.count > 0 ? 'border-warning/60 bg-warning-bg/30' : 'border-line bg-card'
             }`}>
-            <div className="flex flex-col gap-0.5">
-              <span lang={locale} className="font-semibold text-text">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col gap-1">
+              <span lang={locale} className="text-sm font-semibold text-text group-hover:text-primary">
                 {card.title}
               </span>
+              <span className="text-xs text-muted">{card.countLabel}</span>
               {card.urgentNotice ? (
-                <p className="mt-1 rounded bg-error-bg px-2 py-0.5 text-xs font-semibold text-error">
+                <p className="mt-2 rounded-md bg-error-bg px-2 py-1 text-xs font-medium text-error">
                   ! {card.urgentNotice}
                 </p>
               ) : null}
+              </div>
+              <span className="text-3xl font-semibold tabular-nums text-text">{card.count}</span>
             </div>
 
-            <div className="flex flex-col gap-1">
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold">{card.count}</span>
-                <span className="text-xs text-muted">{card.countLabel}</span>
-              </div>
-              <p className="text-xs text-muted">{card.subtext}</p>
-            </div>
+            <p className="text-xs leading-5 text-muted">{card.subtext}</p>
           </Link>
         ))}
       </div>
@@ -361,20 +371,20 @@ async function MyModules() {
 
   return (
     <section aria-labelledby="modules-heading" className="flex flex-col gap-3">
-      <h2 id="modules-heading" className="text-base font-bold text-text">
-        <span lang={locale}>{locale === 'ta' ? 'ஒதுக்கப்பட்ட அனைத்துத் தொகுதிகள்' : 'All assigned modules'}</span>
+      <h2 id="modules-heading" className="text-sm font-semibold text-text">
+        <span lang={locale}>{locale === 'ta' ? 'ஒதுக்கப்பட்ட அனைத்துத் தொகுதிகள்' : 'Your modules'}</span>
       </h2>
       {allowed.length === 0 ? (
         <p className="text-sm text-muted">
           {locale === 'ta' ? 'உங்கள் பொறுப்புக்கு எந்த தொகுதியும் ஒதுக்கப்படவில்லை.' : 'Your role has no dashboard modules.'}
         </p>
       ) : null}
-      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="flex flex-col divide-y divide-line rounded-lg border border-line bg-card">
         {allowed.map((module) => (
           <li key={module.href}>
             <Link
               href={module.href}
-              className="flex min-h-20 flex-col gap-0.5 rounded-xl border border-line bg-card p-4 hover:bg-surface">
+              className="flex min-h-12 items-center px-4 py-3 text-sm font-medium text-text transition-colors hover:bg-surface hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset">
               <span lang={locale} className="text-sm font-semibold text-text">
                 {locale === 'ta' ? module.ta : module.en}
               </span>

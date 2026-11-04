@@ -307,8 +307,8 @@ async function AlbumDetail({ params, searchParams }: Pick<PageProps<'/gallery/al
       {isPublished ? (
         <div className="rounded-xl border border-success bg-success-bg p-4 text-xs font-medium text-success">
           {locale === 'ta'
-            ? `✓ இத்தொகுப்பு வெளியிடப்பட்டு உறுப்பினர்கள் காட்சியகத்தில் தென்படுகிறது. வெளியிடப்பட்ட நேரம்: ${formatDateTime(album.publishedAt)}`
-            : `✓ This album is published and visible in the member gallery. Published on ${formatDateTime(album.publishedAt)}.`}
+            ? `இத்தொகுப்பு வெளியிடப்பட்டு உறுப்பினர்கள் காட்சியகத்தில் தென்படுகிறது. வெளியிடப்பட்ட நேரம்: ${formatDateTime(album.publishedAt)}`
+            : `This album is published and visible in the member gallery. Published on ${formatDateTime(album.publishedAt)}.`}
         </div>
       ) : null}
     </>

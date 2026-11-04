@@ -3,7 +3,6 @@
 import { createApiClient } from '@my-people/api-client';
 import { redirect } from 'next/navigation';
 
-import { setAdminLocaleCookie } from '@/lib/i18n/server';
 import { failure } from '@/lib/messages';
 import { API_URL, clearStaffTokens, saveStaffTokens, staffApi } from '@/lib/session';
 
@@ -23,15 +22,6 @@ export async function signIn(formData: FormData): Promise<void> {
   }
   await saveStaffTokens(tokens.token, tokens.refreshToken);
 
-  // The profile remains available before the second factor is verified. Sync its
-  // durable locale now so the MFA page and all following renders use one language.
-  try {
-    const profile = await (await staffApi()).getMyProfile();
-    await setAdminLocaleCookie(profile.language);
-  } catch {
-    // Sign-in succeeds even if the profile service is temporarily unavailable;
-    // MFA repeats this best-effort sync after verification.
-  }
   redirect('/mfa');
 }
 

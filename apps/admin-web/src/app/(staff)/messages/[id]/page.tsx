@@ -132,7 +132,7 @@ async function BroadcastDetail({ params, searchParams }: Pick<PageProps<'/messag
       {isScheduled ? (
         <section aria-labelledby="scheduled-banner" className="rounded-xl border border-primary/40 bg-surface p-4 text-xs">
           <h2 id="scheduled-banner" className="font-bold text-primary">
-            {locale === 'ta' ? '✓ பின்புலப் பணியாளரால் அனுப்ப வரிசைப்படுத்தப்பட்டுள்ளது' : '✓ Queued for background worker dispatch'}
+            {locale === 'ta' ? 'பின்புலப் பணியாளரால் அனுப்ப வரிசைப்படுத்தப்பட்டுள்ளது' : 'Queued for background worker dispatch'}
           </h2>
           <p className="mt-1 text-muted">
             {locale === 'ta'

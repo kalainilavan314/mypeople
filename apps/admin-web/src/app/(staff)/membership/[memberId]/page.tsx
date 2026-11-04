@@ -92,7 +92,7 @@ async function FileView({ params, searchParams }: Pick<PageProps<'/membership/[m
           </span>
           <p className="mt-1 font-semibold text-text">
             {file.identityVerified ? (
-              <span className="text-success"><span lang={locale}>✓ {locale === 'ta' ? 'அடையாளம் உறுதிசெய்யப்பட்டது' : 'Identity verified'}</span></span>
+              <span className="text-success"><span lang={locale}>{locale === 'ta' ? 'அடையாளம் உறுதிசெய்யப்பட்டது' : 'Identity verified'}</span></span>
             ) : (
               <span className="text-error"><span lang={locale}>! {locale === 'ta' ? 'அடையாளம் உறுதிசெய்யப்படவில்லை (செயற்படுத்தலுக்கு சரிபார்க்கப்பட்ட அடையாளம் தேவை)' : 'Not verified (activation requires a verified identity)'}</span></span>
             )}

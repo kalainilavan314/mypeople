@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 
 import { Feedback } from '@/components/Feedback';
-import { LanguageSelector } from '@/components/LanguageSelector';
 import { PageHeader } from '@/components/PageHeader';
 import { SubmitButton } from '@/components/SubmitButton';
 import { getAdminLocale } from '@/lib/i18n';
@@ -15,10 +14,7 @@ import { Enrolment } from './Enrolment';
 export default function MfaPage(props: PageProps<'/mfa'>) {
   return (
     <main className="mx-auto flex max-w-md flex-col gap-6 px-4 py-12">
-      <div className="flex items-center justify-between">
-        <PageHeader ta="இரண்டாவது காரணி" en="Authenticator code" />
-        <LanguageSelector />
-      </div>
+      <PageHeader ta="இரண்டாவது காரணி" en="Authenticator code" />
       <Suspense fallback={<p className="text-muted">… Checking</p>}>
         <MfaStep searchParams={props.searchParams} />
       </Suspense>

@@ -72,6 +72,7 @@ async function Awaiting({ searchParams }: { searchParams: PageProps<'/membership
       </h2>
       <RecordTable
         caption="Members awaiting activation"
+        locale={locale}
         rows={members}
         rowKey={(member) => member.id}
         href={(member) => `/membership/${member.id}`}

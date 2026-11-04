@@ -48,7 +48,6 @@ export const enMessages: TranslationDictionary = {
     required: 'Required',
     optional: 'Optional',
     language: 'Language',
-    switchLanguage: 'Switch language',
     tamil: 'தமிழ்',
     english: 'English',
     preview: 'Preview',

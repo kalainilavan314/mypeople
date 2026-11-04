@@ -1,9 +1,7 @@
-'use client';
-
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-import { useLocale } from '@/lib/i18n/context';
+import type { Locale } from '@/lib/i18n/types';
 
 export type Column<T> = { header: ReactNode; cell: (row: T) => ReactNode };
 
@@ -17,11 +15,11 @@ type Props<T> = {
   rowKey: (row: T) => string;
   empty: ReactNode | string;
   refHeader?: ReactNode;
+  locale: Locale;
 };
 
 /** A queue table: the reference links to the record; nothing is decided from the list. */
-export function RecordTable<T>({ caption, rows, columns, href, linkText, rowKey, empty, refHeader }: Props<T>) {
-  const locale = useLocale();
+export function RecordTable<T>({ caption, rows, columns, href, linkText, rowKey, empty, refHeader, locale }: Props<T>) {
 
   if (rows.length === 0) {
     if (typeof empty === 'string') {

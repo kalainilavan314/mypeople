@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 
 import { signOut } from '@/app/sign-in/actions';
-import { LanguageSelector } from '@/components/LanguageSelector';
 import { StaffBrand } from '@/components/StaffBrand';
 import { useLocale } from '@/lib/i18n/context';
 import type { Locale } from '@/lib/i18n/types';
@@ -134,6 +133,66 @@ function SignOutIcon({ className }: { className?: string }) {
   );
 }
 
+function SignOutControl({ collapsed }: { collapsed?: boolean }) {
+  const [isConfirming, setIsConfirming] = useState(false);
+
+  useEffect(() => {
+    if (!isConfirming) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsConfirming(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [isConfirming]);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setIsConfirming(true)}
+        title={collapsed ? 'Sign out' : undefined}
+        aria-label={collapsed ? 'Sign out' : undefined}
+        className={collapsed
+          ? 'mx-auto flex h-11 w-11 items-center justify-center rounded-lg text-error transition-colors hover:bg-error-bg focus:outline-none focus:ring-2 focus:ring-error'
+          : 'flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-error transition-colors hover:bg-error-bg focus:outline-none focus:ring-2 focus:ring-error'}>
+        <SignOutIcon className="h-5 w-5 shrink-0" />
+        {!collapsed ? <span>Sign out</span> : null}
+      </button>
+
+      {isConfirming ? (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4" role="presentation">
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="sign-out-title"
+            aria-describedby="sign-out-description"
+            className="w-full max-w-sm rounded-lg border border-line bg-card p-6 shadow-lg">
+            <div className="flex flex-col gap-3">
+              <h2 id="sign-out-title" className="text-lg font-semibold text-text">Sign out?</h2>
+              <p id="sign-out-description" className="text-sm leading-6 text-muted">
+                This ends your active staff sessions. You will need your password and authenticator code to sign in again.
+              </p>
+            </div>
+            <div className="mt-6 flex flex-wrap justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setIsConfirming(false)}
+                className="min-h-11 rounded-lg border border-line px-4 text-sm font-medium text-text transition-colors hover:bg-surface focus:outline-none focus:ring-2 focus:ring-primary">
+                Stay signed in
+              </button>
+              <form action={signOut}>
+                <button type="submit" className="min-h-11 rounded-lg bg-error px-4 text-sm font-semibold text-on-primary focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2">
+                  Sign out
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
 function getModuleIcon(href: string) {
   switch (href) {
     case '/verification':
@@ -241,7 +300,6 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
     };
   }, [isMobileOpen]);
 
-  const signOutLabel = locale === 'ta' ? 'வெளியேறுக' : 'Sign out';
   const collapseLabel = isCollapsed
     ? locale === 'ta'
       ? 'வழிசெலுத்தலை விரிவாக்குக'
@@ -253,10 +311,9 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
   return (
     <>
       {/* Mobile Top Bar (< md) */}
-      <div className="sticky top-0 z-30 -mx-4 -mt-4 mb-2 flex items-center justify-between border-b border-line bg-card/95 px-4 py-3 backdrop-blur md:hidden">
+      <div className="sticky top-0 z-30 -mx-4 -mt-4 mb-4 flex min-h-14 items-center justify-between border-b border-line bg-page px-4 py-2 md:hidden">
         <StaffBrand />
         <div className="flex items-center gap-2">
-          <LanguageSelector className="scale-95" />
           <button
             type="button"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -280,7 +337,7 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
       {isMobileOpen && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-xs md:hidden"
+            className="fixed inset-0 z-40 bg-black/40 md:hidden"
             onClick={() => setIsMobileOpen(false)}
             aria-hidden="true"
           />
@@ -288,7 +345,7 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
             role="dialog"
             aria-modal="true"
             aria-label="Staff navigation"
-            className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col gap-4 border-r border-line bg-card p-5 shadow-2xl overflow-y-auto md:hidden">
+            className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col gap-5 border-r border-line bg-page p-5 shadow-lg overflow-y-auto md:hidden">
             <div className="flex items-center justify-between border-b border-line pb-3">
               <StaffBrand />
               <button
@@ -302,9 +359,7 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
               </button>
             </div>
 
-            <LanguageSelector className="self-start" />
-
-            <div className="rounded-xl border border-line bg-surface px-3 py-2 text-sm">
+            <div className="border-y border-line py-3 text-sm">
               <p className="font-semibold text-text">{staff.fullName}</p>
               <p className="font-mono text-xs text-muted">{staff.memberCode}</p>
               {staff.assignments.map((assignment) => (
@@ -319,9 +374,9 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
                 <Link
                   href="/"
                   onClick={() => setIsMobileOpen(false)}
-                  className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 transition-colors ${
+                    className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                     pathname === '/'
-                      ? 'bg-primary text-on-primary font-semibold shadow-xs'
+                      ? 'bg-primary/10 text-primary font-semibold'
                       : 'text-text hover:bg-surface'
                   }`}>
                   <HomeIcon className="h-5 w-5 shrink-0" />
@@ -338,9 +393,9 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
                     <Link
                       href={module.href}
                       onClick={() => setIsMobileOpen(false)}
-                      className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 transition-colors ${
+                      className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                         isActive
-                          ? 'bg-primary text-on-primary font-semibold shadow-xs'
+                          ? 'bg-primary/10 text-primary font-semibold'
                           : 'text-text hover:bg-surface'
                       }`}>
                       <Icon className="h-5 w-5 shrink-0" />
@@ -353,14 +408,9 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
               })}
             </ul>
 
-            <form action={signOut} className="mt-auto border-t border-line pt-4">
-              <button
-                type="submit"
-                className="flex min-h-11 w-full items-center gap-3 rounded-lg border border-line px-3 py-2 text-left text-sm font-semibold text-error hover:bg-error-bg transition-colors focus:outline-none focus:ring-2 focus:ring-error">
-                <SignOutIcon className="h-5 w-5 shrink-0" />
-                <span lang={locale}>{signOutLabel}</span>
-              </button>
-            </form>
+            <div className="mt-auto border-t border-line pt-4">
+              <SignOutControl />
+            </div>
           </div>
         </>
       )}
@@ -368,8 +418,8 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
       {/* Desktop Fixed & Collapsible Sidebar (md: and above) */}
       <aside
         aria-label="Staff navigation"
-        className={`hidden md:flex flex-col gap-4 sticky top-6 self-start max-h-[calc(100vh-3rem)] overflow-y-auto overscroll-contain transition-all duration-200 ease-in-out shrink-0 pr-1 ${
-          isCollapsed ? 'w-16 items-center' : 'w-60'
+        className={`hidden md:flex h-screen flex-col gap-5 sticky top-0 self-start overflow-y-auto overscroll-contain border-r border-line bg-page px-4 py-6 transition-[width] duration-200 ease-in-out shrink-0 ${
+          isCollapsed ? 'w-20 items-center' : 'w-60'
         }`}>
         {/* Top Header Row with Brand & Collapse Toggle */}
         {isCollapsed ? (
@@ -380,7 +430,7 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
               aria-expanded={false}
               aria-label={collapseLabel}
               title={collapseLabel}
-              className="flex h-10 w-10 items-center justify-center rounded-lg border border-line bg-card text-muted hover:bg-surface hover:text-text transition-colors focus:outline-none focus:ring-2 focus:ring-primary shadow-xs">
+              className="flex h-10 w-10 items-center justify-center rounded-lg text-muted hover:bg-surface hover:text-text transition-colors focus:outline-none focus:ring-2 focus:ring-primary">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
               </svg>
@@ -389,13 +439,13 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
               href="/"
               title={locale === 'ta' ? 'என் மக்கள் · முகப்பலகை' : 'My People · Dashboard'}
               aria-label="Dashboard"
-              className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary font-bold text-sm hover:bg-primary/20 transition-colors">
+              className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary font-semibold text-sm hover:bg-primary/20 transition-colors">
               MP
             </Link>
             <div
               title={`${staff.fullName} · ${staff.memberCode}`}
               aria-label={`${staff.fullName} (${staff.memberCode})`}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-line bg-card text-xs font-bold text-text shadow-xs cursor-default">
+              className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface text-xs font-semibold text-text cursor-default">
               {staff.fullName.charAt(0).toUpperCase()}
             </div>
           </div>
@@ -409,14 +459,13 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
                 aria-expanded={true}
                 aria-label={collapseLabel}
                 title={collapseLabel}
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-line bg-card text-muted hover:bg-surface hover:text-text transition-colors focus:outline-none focus:ring-2 focus:ring-primary shadow-xs">
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-surface hover:text-text transition-colors focus:outline-none focus:ring-2 focus:ring-primary">
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
                 </svg>
               </button>
             </div>
-            <LanguageSelector className="self-start" />
-            <div className="rounded-xl border border-line bg-card px-3 py-2 text-sm shadow-xs">
+            <div className="border-y border-line py-3 text-sm">
               <p className="font-semibold text-text truncate">{staff.fullName}</p>
               <p className="font-mono text-xs text-muted truncate">{staff.memberCode}</p>
               {staff.assignments.map((assignment) => (
@@ -440,7 +489,7 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
                   aria-label={locale === 'ta' ? 'முகப்பலகை' : 'Dashboard'}
                   className={`mx-auto flex h-11 w-11 items-center justify-center rounded-lg transition-colors ${
                     pathname === '/'
-                      ? 'bg-primary text-on-primary shadow-xs'
+                      ? 'bg-primary/10 text-primary'
                       : 'text-muted hover:bg-surface hover:text-text'
                   }`}>
                   <HomeIcon className="h-5 w-5 shrink-0" />
@@ -450,7 +499,7 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
                   href="/"
                   className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 transition-colors ${
                     pathname === '/'
-                      ? 'bg-primary text-on-primary font-semibold shadow-xs'
+                      ? 'bg-primary/10 text-primary font-semibold'
                       : 'text-text hover:bg-surface'
                   }`}>
                   <HomeIcon className="h-5 w-5 shrink-0" />
@@ -475,7 +524,7 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
                       aria-label={label}
                       className={`mx-auto flex h-11 w-11 items-center justify-center rounded-lg transition-colors ${
                         isActive
-                          ? 'bg-primary text-on-primary shadow-xs'
+                        ? 'bg-primary/10 text-primary'
                           : 'text-muted hover:bg-surface hover:text-text'
                       }`}>
                       <Icon className="h-5 w-5 shrink-0" />
@@ -485,7 +534,7 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
                       href={module.href}
                       className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 transition-colors ${
                         isActive
-                          ? 'bg-primary text-on-primary font-semibold shadow-xs'
+                        ? 'bg-primary/10 text-primary font-semibold'
                           : 'text-text hover:bg-surface'
                       }`}>
                       <Icon className="h-5 w-5 shrink-0" />
@@ -501,24 +550,9 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
         </nav>
 
         {/* Sign Out Action */}
-        <form action={signOut} className="mt-auto w-full pt-3">
-          {isCollapsed ? (
-            <button
-              type="submit"
-              title={signOutLabel}
-              aria-label={signOutLabel}
-              className="mx-auto flex h-11 w-11 items-center justify-center rounded-lg border border-line text-error hover:bg-error-bg transition-colors focus:outline-none focus:ring-2 focus:ring-error shadow-xs">
-              <SignOutIcon className="h-5 w-5 shrink-0" />
-            </button>
-          ) : (
-            <button
-              type="submit"
-              className="flex min-h-11 w-full items-center gap-3 rounded-lg border border-line px-3 py-2 text-left text-sm font-semibold text-error hover:bg-error-bg transition-colors focus:outline-none focus:ring-2 focus:ring-error shadow-xs">
-              <SignOutIcon className="h-5 w-5 shrink-0" />
-              <span lang={locale}>{signOutLabel}</span>
-            </button>
-          )}
-        </form>
+        <div className="mt-auto w-full pt-3">
+          <SignOutControl collapsed={isCollapsed} />
+        </div>
       </aside>
     </>
   );

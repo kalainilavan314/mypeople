@@ -4,11 +4,11 @@ import { useLocale } from '@/lib/i18n/context';
 
 type Tone = 'done' | 'waiting' | 'neutral' | 'refused';
 
-const TONES: Record<Tone, { mark: string; className: string }> = {
-  done: { mark: '✓', className: 'bg-success-bg text-success' },
-  waiting: { mark: '…', className: 'bg-warning-bg text-warning' },
-  neutral: { mark: '•', className: 'bg-surface text-muted' },
-  refused: { mark: '!', className: 'bg-error-bg text-error' },
+const TONES: Record<Tone, { className: string }> = {
+  done: { className: 'bg-success-bg text-success' },
+  waiting: { className: 'bg-warning-bg text-warning' },
+  neutral: { className: 'bg-surface text-muted' },
+  refused: { className: 'bg-error-bg text-error' },
 };
 
 const STATE_TONES: Record<string, Tone> = {
@@ -73,15 +73,14 @@ const STATE_LABELS_TA: Record<string, string> = {
   inactive: 'செயலற்றது',
 };
 
-/** A state with a mark and words, never colour alone (WCAG 1.4.1). Localized cleanly per active staff language. */
+/** A state with words, never colour alone (WCAG 1.4.1). Localized cleanly per active staff language. */
 export function StateTag({ state }: { state: string }) {
   const locale = useLocale();
   const tone = TONES[STATE_TONES[state] ?? 'neutral'];
   const label = locale === 'ta' && STATE_LABELS_TA[state] ? STATE_LABELS_TA[state] : state.replace(/_/g, ' ');
 
   return (
-    <span className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-semibold ${tone.className}`}>
-      <span aria-hidden="true">{tone.mark}</span>
+    <span className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold ${tone.className}`}>
       <span lang={locale}>{label}</span>
     </span>
   );

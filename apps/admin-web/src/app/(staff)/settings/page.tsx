@@ -3,7 +3,6 @@ import { Suspense } from 'react';
 
 import { Feedback } from '@/components/Feedback';
 import { ConsoleLoading } from '@/components/ConsoleLoading';
-import { LanguageSelector } from '@/components/LanguageSelector';
 import { PageHeader } from '@/components/PageHeader';
 import { StateTag } from '@/components/StateTag';
 import { SubmitButton } from '@/components/SubmitButton';
@@ -55,12 +54,7 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
     <>
       <Feedback error={error} problems={problems} done={done} />
       <div className="flex flex-col gap-8">
-        {/* 1. Language Preference Settings Card */}
-        <section aria-labelledby="language-heading" className="flex flex-col gap-3">
-          <LanguageSelector variant="card" />
-        </section>
-
-        {/* 2. Feature Flags & Phase Gates */}
+        {/* Feature Flags & Phase Gates */}
         <section aria-labelledby="flags-heading" className="flex flex-col gap-4">
           <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-2">
             <div>

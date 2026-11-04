@@ -41,18 +41,19 @@ async function Appeals() {
       </div>
       <RecordTable
         caption="Open appeals"
-      rows={appeals}
-      rowKey={(appeal) => appeal.id}
-      href={(appeal) => `/appeals/${appeal.id}`}
-      linkText={(appeal) => appeal.appealRef}
-      empty={
-        <div className="flex flex-col items-center justify-center text-center text-muted">
-          <p lang={locale} className="text-sm font-semibold">
-            {locale === 'ta' ? 'மேன்முறையீடுகள் எதுவும் நிலுவையில் இல்லை' : 'No open verification appeals in your assigned areas.'}
-          </p>
-        </div>
-      }
-      columns={[
+        locale={locale}
+        rows={appeals}
+        rowKey={(appeal) => appeal.id}
+        href={(appeal) => `/appeals/${appeal.id}`}
+        linkText={(appeal) => appeal.appealRef}
+        empty={
+          <div className="flex flex-col items-center justify-center text-center text-muted">
+            <p lang={locale} className="text-sm font-semibold">
+              {locale === 'ta' ? 'மேன்முறையீடுகள் எதுவும் நிலுவையில் இல்லை' : 'No open verification appeals in your assigned areas.'}
+            </p>
+          </div>
+        }
+        columns={[
         {
           header: <span lang={locale}>{locale === 'ta' ? 'நிலை' : 'State'}</span>,
           cell: (appeal) => <StateTag state={appeal.state} />,

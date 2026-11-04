@@ -62,8 +62,8 @@ async function Audit({ searchParams }: { searchParams: PageProps<'/audit'>['sear
         <p role="status" className={chain.ok ? 'text-success font-semibold text-sm' : 'text-error font-semibold text-sm'}>
           {chain.ok
             ? locale === 'ta'
-              ? `✓ தணிக்கைச் சங்கிலி ஒருமைப்பாடு உறுதிசெய்யப்பட்டது: ${chain.checked} பதிவுகள் சரிபார்க்கப்பட்டன.`
-              : `✓ Chain intact: ${chain.checked} entries checked.`
+              ? `தணிக்கைச் சங்கிலி ஒருமைப்பாடு உறுதிசெய்யப்பட்டது: ${chain.checked} பதிவுகள் சரிபார்க்கப்பட்டன.`
+              : `Chain intact: ${chain.checked} entries checked.`
             : locale === 'ta'
               ? `! பதிவு ${chain.firstBrokenId} இல் சங்கிலி முறிந்துள்ளது.`
               : `! Chain broken at entry ${chain.firstBrokenId}.`}

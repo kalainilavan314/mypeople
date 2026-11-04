@@ -253,7 +253,7 @@ async function RemovalsQueueContent({ searchParams }: { searchParams: PageProps<
 
       {requests.length === 0 ? (
         <div className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">
-          ✓ {locale === 'ta' ? 'உங்கள் பகுதியில் நிலுவையில் உள்ள நீக்கல் கோரிக்கைகள் எதுவும் இல்லை.' : 'All caught up. No photo removal requests currently awaiting action in your area.'}
+          {locale === 'ta' ? 'உங்கள் பகுதியில் நிலுவையில் உள்ள நீக்கல் கோரிக்கைகள் எதுவும் இல்லை.' : 'All caught up. No photo removal requests currently awaiting action in your area.'}
         </div>
       ) : null}
 

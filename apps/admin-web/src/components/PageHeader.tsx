@@ -25,8 +25,8 @@ export function PageHeader({ ta, en, locale: propLocale, children }: Props) {
   const title = locale === 'ta' ? ta : en;
 
   return (
-    <header className="flex flex-wrap items-end justify-between gap-3">
-      <h1 lang={locale} className="text-2xl font-bold text-text">
+    <header className="flex min-h-10 flex-wrap items-end justify-between gap-4">
+      <h1 lang={locale} className="text-2xl font-semibold tracking-tight text-text">
         {title}
       </h1>
       {children}

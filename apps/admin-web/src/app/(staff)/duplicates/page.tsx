@@ -41,18 +41,19 @@ async function Cases() {
       </div>
       <RecordTable
         caption="Open investigations"
-      rows={cases}
-      rowKey={(item) => item.id}
-      href={(item) => `/duplicates/${item.id}`}
-      linkText={(item) => item.caseRef}
-      empty={
-        <div className="flex flex-col items-center justify-center text-center text-muted">
-          <p lang={locale} className="text-sm font-semibold">
-            {locale === 'ta' ? 'விசாரணைகள் எதுவும் நிலுவையில் இல்லை' : 'No open duplicate investigations in your assigned areas.'}
-          </p>
-        </div>
-      }
-      columns={[
+        locale={locale}
+        rows={cases}
+        rowKey={(item) => item.id}
+        href={(item) => `/duplicates/${item.id}`}
+        linkText={(item) => item.caseRef}
+        empty={
+          <div className="flex flex-col items-center justify-center text-center text-muted">
+            <p lang={locale} className="text-sm font-semibold">
+              {locale === 'ta' ? 'விசாரணைகள் எதுவும் நிலுவையில் இல்லை' : 'No open duplicate investigations in your assigned areas.'}
+            </p>
+          </div>
+        }
+        columns={[
         {
           header: <span lang={locale}>{locale === 'ta' ? 'நிலை' : 'State'}</span>,
           cell: (item) => <StateTag state={item.state} />,

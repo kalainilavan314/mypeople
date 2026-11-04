@@ -58,7 +58,6 @@ export type TranslationDictionary = {
     required: string;
     optional: string;
     language: string;
-    switchLanguage: string;
     tamil: string;
     english: string;
     preview: string;
