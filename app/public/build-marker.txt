@@ -1,2 +1,2 @@
-release=civic-20261027T105516Z
-base_commit=eb95fd0cd15885b2ce1be86b34e1ec3e6691fb93
+release=civic-20261106T082034Z
+base_commit=9f9547fa6c0e17ae6435c8e890e1f4e5ce597648
