@@ -9,7 +9,7 @@ import { fmtLKR } from '@/features/fundraising/PartyFund.model';
 import { luhnOk } from '@/features/fundraising/PartyFund.model';
 import { CardFlowDiv } from '@/features/fundraising/components/CardFlowSections/CardFlowDiv';
 import { CardFlowSheet } from '@/features/fundraising/components/CardFlowSections/CardFlowSheet';
-import { CardFlowSheet2 } from '@/features/fundraising/components/CardFlowSections/CardFlowSheet2';
+import { CardFlowThanksSheet } from '@/features/fundraising/components/CardFlowSections/CardFlowThanksSheet';
 import { Icon } from '@/shared/components/Icon';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -191,7 +191,7 @@ export function CardFlow({ amount, onDone }: { amount: number; onDone: () => voi
         />
       )}
 
-      {done && <CardFlowSheet2 setDone={setDone} onDone={onDone} t={t} done={done} />}
+      {done && <CardFlowThanksSheet setDone={setDone} onDone={onDone} t={t} done={done} />}
     </div>
   );
 }

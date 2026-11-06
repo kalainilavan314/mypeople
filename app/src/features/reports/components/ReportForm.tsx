@@ -5,7 +5,7 @@ import { c, font, radius } from '@/core/theme/tokens';
 import { FieldError } from '@/features/reports/components/FieldError';
 import { ReportFormDiv } from '@/features/reports/components/ReportFormSections/ReportFormDiv';
 import { ReportFormSection } from '@/features/reports/components/ReportFormSections/ReportFormSection';
-import { ReportFormSection2 } from '@/features/reports/components/ReportFormSections/ReportFormSection2';
+import { ReportFormDetailsSection } from '@/features/reports/components/ReportFormSections/ReportFormDetailsSection';
 import { CATEGORIES, PRIORITIES, type ReportField } from '@/features/reports/Reports.model';
 import { Icon } from '@/shared/components/Icon';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -140,7 +140,7 @@ export function ReportForm({ onSubmitted }: { onSubmitted: () => void }) {
         {invalid.category && <FieldError text={invalid.category} />}
       </section>
 
-      <ReportFormSection2
+      <ReportFormDetailsSection
         t={t}
         title={title}
         setTitle={(value) => {

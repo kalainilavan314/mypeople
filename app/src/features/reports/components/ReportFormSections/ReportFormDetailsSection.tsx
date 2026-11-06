@@ -11,7 +11,7 @@ type Props = {
   titleError?: string;
   descError?: string;
 };
-export function ReportFormSection2({ t, title, setTitle, desc, setDesc, titleError, descError }: Props) {
+export function ReportFormDetailsSection({ t, title, setTitle, desc, setDesc, titleError, descError }: Props) {
   return (
     <section>
       <div className="cr-step-head">

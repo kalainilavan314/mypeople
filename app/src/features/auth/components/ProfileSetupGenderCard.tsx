@@ -10,7 +10,7 @@ type Props = {
   /** The gender the NIC number records, when the number could be read. */
   nicGender: 'male' | 'female' | null;
 };
-export function ProfileSetupProfileSectionCard2({ t, gender, setGender, nicGender }: Props) {
+export function ProfileSetupGenderCard({ t, gender, setGender, nicGender }: Props) {
   const differs = nicGender !== null && gender !== null && gender !== nicGender;
   return (
     <div className="profile-section-card">

@@ -9,7 +9,7 @@ type Props = {
   t: TFunction<'translation', undefined>;
   gs: import('@/core/api/divisions').GsDivision | null;
 };
-export function EditFormProfileSelectBtn2({ dsCode, setGsSheetOpen, t, gs }: Props) {
+export function EditFormGsSelectButton({ dsCode, setGsSheetOpen, t, gs }: Props) {
   return (
     <button
       type="button"

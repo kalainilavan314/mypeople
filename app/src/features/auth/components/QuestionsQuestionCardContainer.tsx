@@ -1,7 +1,7 @@
 import { font, radius } from '@/core/theme/tokens';
 import { BackChip } from '@/features/auth/components/parts';
 import { QuestionsDiv } from '@/features/auth/components/QuestionsDiv';
-import { QuestionsDiv2 } from '@/features/auth/components/QuestionsDiv2';
+import { QuestionsProgress } from '@/features/auth/components/QuestionsProgress';
 import type { SurveyQuestion } from '@/features/auth/Questions.model';
 import { Icon } from '@/shared/components/Icon';
 import type { i18n, TFunction } from 'i18next';
@@ -73,7 +73,7 @@ export function QuestionsQuestionCardContainer({
           </button>
         </div>
 
-        <QuestionsDiv2 step={step} total={total} t={t} />
+        <QuestionsProgress step={step} total={total} t={t} />
 
         <div style={{ marginBottom: 12 }}>
           <span
