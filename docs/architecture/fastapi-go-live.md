@@ -17,6 +17,12 @@ member PWA until a separately approved deployment.
 - Keep every endpoint owned by exactly one backend. A client moves only after
   its endpoint group is live and verified; `/api` and `/v1` must not implement
   competing writes.
+- Record the release commit, migration head, backup ID, storage permissions,
+  feature-flag state and responsible operator before staging. Confirm a restore
+  of the PostgreSQL backup and the private-file backup in an isolated environment.
+- Keep policy-dependent finance, election, assisted-verification and payment
+  features disabled until their named owners record approval. A successful
+  health check does not authorise those workflows.
 
 ## Proxy cutover
 
@@ -25,6 +31,12 @@ The candidate Nginx location is in
 after staging verification, run `sudo nginx -t`, then reload Nginx. Uvicorn
 must run with `--proxy-headers --forwarded-allow-ips=127.0.0.1`; Nginx replaces
 client-supplied forwarding headers with `$remote_addr`.
+
+Stage the admin dashboard on an internal address before routing public traffic.
+Verify staff MFA, role and area restrictions, sign-out, evidence access and
+denied requests with synthetic accounts. Keep its origin and callback settings
+in the host-only configuration. Record the Nginx configuration hash and the
+result of `nginx -t` before and after the route change.
 
 ## Background jobs
 
@@ -43,3 +55,18 @@ investigated rather than replayed blindly.
 3. If the `/v1` proxy fails, remove only its Nginx location and reload after
    `nginx -t`; Express `/api` remains available. Do not roll back database
    migrations unless their migration-specific rollback procedure says it is safe.
+4. Exercise member registration and resumption, staff check-in and scoped lookup,
+   and admin review with test identities. Confirm no duplicate write is sent to
+   both backends and no private evidence appears in logs or public storage.
+5. Capture the error rate, request latency, failed background-job count and
+   database connection count before cutover and during the pilot. Assign an
+   operator to inspect them and to record the rollback decision and time.
+
+## Open release decisions
+
+This runbook is a candidate, not evidence of deployment. Before activation,
+record the approved host and domain, admin origin, storage and key ownership,
+backup/restore owner, notification delivery credentials, mobile internal-test
+track, pilot area, and sign-off record. The Phase 1 blocker register also
+requires separate finance, staff, governance and card decisions. Until those
+are approved, their production feature flags stay off.
