@@ -151,3 +151,13 @@ jobs:
           -e JWT_SECRET=ci-only-jwt-secret-not-used-anywhere-else
           -e NIC_PEPPER=ci-only-nic-pepper-not-used-anywhere-else
           my-people-api python -c "from app.main import create_app; print(len(create_app().routes), 'routes')"
+
+  gate-g1-validator:
+    name: Gate G1 evidence validation tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m unittest discover -s deployment/tests -p 'test_gate_g1.py'

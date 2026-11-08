@@ -64,6 +64,10 @@ investigated rather than replayed blindly.
 
 ## Open release decisions
 
+Gate G1 and the one-month pilot use the separate
+[evidence procedure](../requirements/gate-g1.md). The local validator checks
+record completeness but does not approve a release or enable feature flags.
+
 This runbook is a candidate, not evidence of deployment. Before activation,
 record the approved host and domain, admin origin, storage and key ownership,
 backup/restore owner, notification delivery credentials, mobile internal-test
