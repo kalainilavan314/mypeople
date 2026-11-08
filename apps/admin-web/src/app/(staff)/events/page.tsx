@@ -65,6 +65,7 @@ async function EventsContent({ searchParams }: { searchParams: PageProps<'/event
             : `${publishedCount} published · ${draftCount} in draft`}
         </p>
       </div>
+      {events.length === 100 ? <p className="text-sm text-warning">Showing the first 100 matching events. Narrow the filter to review a specific state; additional results require pagination.</p> : null}
 
       <form className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3" role="search">
         <label className="flex flex-col gap-1 text-sm font-semibold text-text">

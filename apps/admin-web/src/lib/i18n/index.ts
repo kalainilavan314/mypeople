@@ -8,7 +8,6 @@ import { taMessages } from './ta.ts';
 import {
   DEFAULT_LOCALE,
   isSupportedLocale,
-  LOCALE_COOKIE_NAME,
   type Locale,
   type TranslationDictionary,
 } from './types.ts';
@@ -132,6 +131,7 @@ export function getTranslator(locale: Locale) {
 
 /** The administrative console is intentionally English-only. */
 export async function getAdminLocale(_staffLocale?: string | null): Promise<Locale> {
+  void _staffLocale;
   return 'en';
 }
 

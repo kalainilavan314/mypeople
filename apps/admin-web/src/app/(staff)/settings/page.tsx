@@ -257,8 +257,8 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
               <p className="mt-1 font-bold">{locale === 'ta' ? 'அமைதிக்கால தன்னியக்கம்' : 'Silence window automation'}</p>
               <p className="mt-1 text-xs text-muted">
                 {locale === 'ta'
-                  ? 'பொது நிகழ்வுகள் மற்றும் பிரச்சார அறிவித்தல்கள் தானாகவே இடைநிறுத்தப்படும்.'
-                  : 'Automatic suspension of public events and announcement campaigns.'}
+                  ? 'அங்கீகரிக்கப்பட்ட தேர்தல் விதிகள் பதிவு செய்யப்பட்ட பின்னரே உள்ளடக்கக் கட்டுப்பாடுகளை இயக்கவும்.'
+                  : 'Enable content restrictions only after approved election rules are recorded.'}
               </p>
             </div>
           </div>
@@ -268,12 +268,12 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
         <section aria-labelledby="geo-heading" className="flex flex-col gap-4">
           <div className="border-b border-line pb-2">
             <h2 id="geo-heading" className="text-lg font-bold text-text">
-              <span lang={locale}>{locale === 'ta' ? 'நிர்வாக புவியியல் பதிவேடு (பார்வை மட்டும்)' : 'Administrative geography registry (Read-only status)'}</span>
+              <span lang={locale}>{locale === 'ta' ? 'மாவட்டப் பதிவேடு (பார்வை மட்டும்)' : 'District registry (read only)'}</span>
             </h2>
             <p className="text-xs text-muted">
               {locale === 'ta'
                 ? 'பணியாளர் அதிகார வரம்புகள் மற்றும் செயல்பாட்டு வழிகாட்டலுக்குப் பயன்படுத்தப்படும் உத்தியோகபூர்வ பகுதிகள்.'
-                : 'Official territorial units of Sri Lanka utilized for granular role scoping and operational routing.'}
+                : 'District reference data used for area scoping. DS and GN divisions are available through the geography API.'}
             </p>
           </div>
 
