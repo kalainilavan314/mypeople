@@ -353,6 +353,11 @@ export const en = {
     unavailable_membership_suspended: 'Your membership is suspended, so the card cannot be used.',
     unavailable_membership_inactive: 'Your membership is inactive, so the card cannot be used.',
     noIdNumbers: 'The card never shows your NIC or passport number.',
+    shareTitle: 'Share card details', shareAction: 'Share details',
+    shareWarning: 'This shared information is not proof of current membership. Ask a coordinator to verify your live card.',
+    shareMessage: 'My People member\n{{name}}\nMember ID: {{memberCode}}\nThis information is not proof of current membership. Verify the live card with a coordinator.',
+    shareFailed: 'Unable to open the share sheet. Try again.',
+    shareMobileOnly: 'Sharing is available in the mobile app.',
   },
   gallery: {
     title: 'Gallery',

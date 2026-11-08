@@ -27,6 +27,7 @@ export default function MemberLayout() {
       <Stack.Screen name="verify/appeal" options={{ title: t('m.verify.appealTitle') }} />
       <Stack.Screen name="card/code" options={{ presentation: 'fullScreenModal', headerShown: false }} />
       <Stack.Screen name="card/progress" options={{ title: t('m.card.progressTitle') }} />
+      <Stack.Screen name="card/share" options={{ title: t('m.card.shareTitle') }} />
       <Stack.Screen name="setup/index" options={{ title: t('m.setup.title') }} />
       <Stack.Screen name="setup/survey" options={{ title: t('m.setup.surveyTitle') }} />
       <Stack.Screen name="notifications" options={{ title: t('m.inbox.title') }} />
