@@ -3,7 +3,6 @@
 // §3), the stored session, and the hooks that load data through the API client.
 export { fontFamilyFor, lockedFonts, monoFontFamily, textStyle } from './fonts';
 export { tabIcon } from './tabIcon';
-export { stringsFor } from './strings';
 
 export { AppText } from './components/AppText';
 export { AuthorizedImage } from './components/AuthorizedImage';
@@ -14,7 +13,7 @@ export { DateBadge } from './components/DateBadge';
 export { MenuRow } from './components/MenuRow';
 export { Notice } from './components/Notice';
 export { QrCode } from './components/QrCode';
-export { QueryView } from './components/QueryView';
+export { QueryView, createQueryView } from './components/QueryView';
 export { Screen } from './components/Screen';
 export { SelectField, type SelectOption } from './components/SelectField';
 export { StatusTag, type Tone } from './components/StatusTag';

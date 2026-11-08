@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { colors, spacing } from '@my-people/design-tokens';
 
@@ -39,6 +40,14 @@ export function QueryView<T>({ query, children, describeError }: Props<T>) {
       <Button label={text.tryAgain} variant="secondary" icon="refresh" onPress={query.reload} />
     </View>
   );
+}
+
+/** Keep app-specific API error wording at each app boundary without duplicating loading UI. */
+export function createQueryView(describeError: (t: ReturnType<typeof useTranslation>['t'], error: unknown) => string) {
+  return function AppQueryView<T>({ query, children }: Omit<Props<T>, 'describeError'>) {
+    const { t } = useTranslation();
+    return <QueryView query={query} describeError={(error) => describeError(t, error)}>{children}</QueryView>;
+  };
 }
 
 const styles = StyleSheet.create({
