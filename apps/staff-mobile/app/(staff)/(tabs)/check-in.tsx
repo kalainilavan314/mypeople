@@ -8,6 +8,7 @@ import {
   Button,
   DateBadge,
   formatSpan,
+  Notice,
   Screen,
   SurfaceCard,
   useApiQuery,
@@ -32,14 +33,20 @@ export default function CheckInScreen() {
   const language = useLanguage();
   const localized = useLocalized();
   const { permissions } = useStaff();
-  const events = useApiQuery(() => api().listEvents({ scope: 'all', until: new Date(Date.now() + WEEK_MS).toISOString() }));
+  const canScan = permissions.has('events.checkin_scan');
+  const events = useApiQuery(
+    async () => canScan ? api().listEvents({ scope: 'all', until: new Date(Date.now() + WEEK_MS).toISOString() }) : [],
+    [canScan],
+  );
   useReloadOnFocus(events.reload);
+
+  if (!canScan) {
+    return <Screen edges={[]}><Notice tone="warning">{t('s.checkIn.noAccess')}</Notice></Screen>;
+  }
 
   return (
     <Screen edges={[]} onRefresh={events.reload} refreshing={events.loading && events.data !== undefined}>
-      {permissions.has('events.checkin_scan') ? (
-        <Button label={t('s.checkIn.cardCheck')} variant="secondary" icon="card-outline" onPress={() => router.push('/card-check')} />
-      ) : null}
+      <Button label={t('s.checkIn.cardCheck')} variant="secondary" icon="card-outline" onPress={() => router.push('/card-check')} />
       <AppText step="section" accessibilityRole="header">
         {t('s.checkIn.chooseEvent')}
       </AppText>
@@ -66,13 +73,11 @@ export default function CheckInScreen() {
                       </AppText>
                     </View>
                   </View>
-                  {permissions.has('events.checkin_scan') ? (
-                    <Button
-                      label={t('s.checkIn.scanPass')}
-                      icon="qr-code-outline"
-                      onPress={() => router.push({ pathname: '/checkin/[id]', params: { id: event.id } })}
-                    />
-                  ) : null}
+                  <Button
+                    label={t('s.checkIn.scanPass')}
+                    icon="qr-code-outline"
+                    onPress={() => router.push({ pathname: '/checkin/[id]', params: { id: event.id } })}
+                  />
                   <Button
                     label={t('s.checkIn.roster')}
                     variant="secondary"
