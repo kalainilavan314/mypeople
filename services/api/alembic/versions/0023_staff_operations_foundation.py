@@ -45,7 +45,9 @@ def upgrade() -> None:
         )
         """
     )
-    op.execute("CREATE INDEX volunteer_assignment_event ON staff_ops.volunteer_assignment (event_id, shift_start)")
+    # Not "volunteer_assignment_event": indexes share a schema's namespace with
+    # tables, and that is the name of the history table created below.
+    op.execute("CREATE INDEX volunteer_assignment_by_event ON staff_ops.volunteer_assignment (event_id, shift_start)")
     op.execute("CREATE INDEX volunteer_assignment_member ON staff_ops.volunteer_assignment (member_id, shift_start DESC)")
     op.execute(
         """
