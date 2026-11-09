@@ -40,6 +40,11 @@ const STATE_TONES: Record<string, Tone> = {
   removed: 'refused',
   revoked: 'neutral',
   inactive: 'neutral',
+  declared: 'done',
+  ended: 'neutral',
+  withdrawn: 'neutral',
+  completed: 'done',
+  refused: 'refused',
 };
 
 const STATE_LABELS_TA: Record<string, string> = {
@@ -71,6 +76,11 @@ const STATE_LABELS_TA: Record<string, string> = {
   removed: 'நீக்கப்பட்டது',
   revoked: 'திரும்பப் பெறப்பட்டது',
   inactive: 'செயலற்றது',
+  declared: 'அறிவிக்கப்பட்டது',
+  ended: 'முடிவுற்றது',
+  withdrawn: 'மீளப்பெறப்பட்டது',
+  completed: 'நிறைவேற்றப்பட்டது',
+  refused: 'நிராகரிக்கப்பட்டது',
 };
 
 /** A state with words, never colour alone (WCAG 1.4.1). Localized cleanly per active staff language. */

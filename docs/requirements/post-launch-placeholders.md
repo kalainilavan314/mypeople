@@ -38,7 +38,8 @@ M1.4 database foundation is absent.
 | `src/features/ai-monitoring` | D21 model registry, evaluations and inference metrics; FR-IDV-016-017, PRM-30-31, §15B.3/5 | OD-28 and OD-42; no model is in use |
 | `src/features/analytics` | Area-scoped KPI dashboards and reports; §4, §17, RPT-01-016, INT-10 | Approved small-group and differencing controls |
 | `src/features/assistance` | D13-D14 assistance cases and D26 relief; FR-AST-001-013, FR-DIS-001-008 | Assistance policy and purpose separation |
-| `src/features/elections` | D22 periods, official notices and volunteer roster; FR-ELX-001-010, NFR-ELC-01-09, SG-01 | Election-mode gate and POL-12 legal review |
+| `src/features/elections` (rest of D22) | Periods, silence windows and labelled notices are built; still to come: the volunteer duty roster FR-ELX-005-007, polling information FR-ELX-002-003 and the election-period report FR-ELX-009 | API endpoints for these (not built); PRM-49; POL-12 legal review |
 | `src/features/finance` | D10-D11 contribution queue, second approval, reconciliation and ledger; FR-FUND-001-011, FR-ADM-008, FR-PAY-001-014, BR-050/052, CMP-02 | Approved finance policy |
 | `src/features/issues` | W03-W08 GN-to-executive case workflow; FR-WEB-014-029, FR-RPT-001-017 | Phase 2 issue module |
+| `src/features/privacy` (rest of D35) | The data-subject request register is built; still to come: policy approvals (the §16.11 policy matrix, owner and approver) and consent statistics per purpose | API endpoints for these (not built); DPO role |
 | `src/features/promises` | D16-D17 promises, approvals and scorecard periods; FR-PRM-001-010, FR-ACS-001-008 | Promise and scorecard publication policies |

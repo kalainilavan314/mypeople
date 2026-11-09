@@ -8,8 +8,8 @@ Built screens are in the Expo member and staff apps and the Next.js dashboard; n
 |---|---|---|
 | Member app | 112 | 53 |
 | Staff app | 18 | 7 |
-| Dashboard | 44 | 15 |
-| **All** | **174** | **75** |
+| Dashboard | 44 | 17 |
+| **All** | **174** | **77** |
 
 Status: **Built**; **API ready** (the endpoint exists and is tested, only the screen is missing); **To build**; **Blocked** (waits on the decision or integration named).
 
@@ -188,7 +188,7 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | D19 | Budgeting administration | Participatory budgeting (SC-28) | 3 | To build | `apps/admin-web/src/app/(staff)/budgeting/` |  |
 | D20 | Assistant knowledge base | Tamil AI assistant (SC-29) | 3 | Blocked: OD-42 | `apps/admin-web/src/app/(staff)/assistant/` |  |
 | D21 | AI model registry and monitoring | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-42 | `apps/admin-web/src/app/(staff)/ai-models/` |  |
-| D22 | Election mode administration | Election mode (SC-30) | 2 | API ready (/v1/election) | `apps/admin-web/src/app/(staff)/elections/` |  |
+| D22 | Election mode administration | Election mode (SC-30) | 2 | Built (periods, silence windows, notices; duty roster, polling information and period report have no API yet) | `apps/admin-web/src/app/(staff)/elections/` |  |
 | D23 | Committees and wings administration | Wings and committees (SC-31) | 3 | To build | `apps/admin-web/src/app/(staff)/committees/` |  |
 | D24 | Field operations oversight | Field operations (SC-32) | 2 | To build | `apps/admin-web/src/app/(staff)/field/` |  |
 | D25 | Renewals and certificates | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 | `apps/admin-web/src/app/(staff)/renewals/` |  |
@@ -201,4 +201,4 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | D32 | Analytics dashboards | Administration (SC-17, SC-20) | 1–3 | To build | `apps/admin-web/src/app/(staff)/analytics/` |  |
 | D33 | Audit log viewer | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/audit/page.tsx` |  |
 | D34 | Geography and configuration | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/settings/` | Feature flags and read-only geography registry |
-| D35 | Policy and consent register | Administration (SC-17, SC-20) | 1–3 | API ready (/v1/privacy register (requests only)) | `apps/admin-web/src/app/(staff)/privacy/` |  |
+| D35 | Policy and consent register | Administration (SC-17, SC-20) | 1–3 | Built (data-subject request register; policy approvals and consent statistics have no API yet) | `apps/admin-web/src/app/(staff)/privacy/` |  |

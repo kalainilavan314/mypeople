@@ -164,6 +164,26 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     ta: 'சேவை தற்போது கிடைக்கவில்லை. பின்னர் மீண்டும் முயற்சிக்கவும்.',
     en: 'The service is currently unavailable. Please try again later.',
   },
+  invalid_request: {
+    ta: 'சில விவரங்கள் இல்லை அல்லது எதிர்பார்த்த வடிவத்தில் இல்லை. புலங்களைச் சரிபார்த்து மீண்டும் முயலவும்.',
+    en: 'Some details are missing or not in the expected format. Check the fields and try again.',
+  },
+  election_invalid: {
+    ta: 'தேர்தல் காலப்பகுதி அல்லது அறிவிப்பு விவரங்கள் செல்லுபடியற்றவை.',
+    en: 'The election period or notice details are not valid.',
+  },
+  already_withdrawn: {
+    ta: 'இந்த அறிவிப்பு ஏற்கனவே மீளப்பெறப்பட்டுவிட்டது.',
+    en: 'This notice has already been withdrawn.',
+  },
+  privacy_invalid: {
+    ta: 'கோரிக்கையின் முடிவு விவரங்கள் முழுமையடையவில்லை.',
+    en: 'The outcome details are not complete.',
+  },
+  already_closed: {
+    ta: 'இக்கோரிக்கை ஏற்கனவே மூடப்பட்டுவிட்டது.',
+    en: 'This request has already been closed.',
+  },
 };
 
 const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
@@ -275,6 +295,116 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'தீர்மான முடிவு தெரிவுசெய்யப்பட வேண்டும்.',
     en: 'An outcome must be selected.',
   },
+  confirmation_required: {
+    ta: 'தொடர்வதற்கு உறுதிப்படுத்தல் பெட்டியைத் தெரிவுசெய்யவும்.',
+    en: 'Tick the confirmation box to continue.',
+  },
+  // Election periods and notices (D22). The API's own codes first, then the dashboard's field checks.
+  ends_before_start: {
+    ta: 'காலப்பகுதி தொடங்கிய பின்னரே முடிவடைய வேண்டும்.',
+    en: 'The period must end after it starts.',
+  },
+  already_over: {
+    ta: 'காலப்பகுதியின் முடிவு நேரம் ஏற்கனவே கடந்துவிட்டது.',
+    en: 'The period’s end time has already passed.',
+  },
+  silence_ends_before_start: {
+    ta: 'அமைதிக்காலம் தொடங்கிய பின்னரே முடிவடைய வேண்டும்.',
+    en: 'The silence window must end after it starts.',
+  },
+  silence_outside_period: {
+    ta: 'அமைதிக்காலம் தேர்தல் காலப்பகுதிக்குள் அமைய வேண்டும்.',
+    en: 'The silence window must sit inside the election period.',
+  },
+  silence_must_cover_polling_day: {
+    ta: 'அமைதிக்காலம் வாக்களிப்பு நாள் முழுவதையும் (இலங்கை நேரம்) உள்ளடக்க வேண்டும்.',
+    en: 'The silence window must cover the whole polling day (Sri Lanka time).',
+  },
+  source_in_future: {
+    ta: 'வெளியீட்டு நேரம் எதிர்காலத்தில் இருக்க முடியாது.',
+    en: 'The publication time cannot be in the future.',
+  },
+  official_source_required: {
+    ta: 'தேர்தல்கள் ஆணைக்குழு தகவலுக்கு மூல இணைப்பு, ஆவணக் குறிப்பு, வெளியீட்டு நேரம் ஆகியவை அவசியம்.',
+    en: 'Election Commission information needs its source link, document reference and publication time.',
+  },
+  election_type_required: {
+    ta: 'தேர்தல் வகையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the election type.',
+  },
+  title_en_required: {
+    ta: 'ஆங்கிலத் தலைப்பை உள்ளிடவும் (160 எழுத்துகள் வரை).',
+    en: 'Enter the English title (up to 160 characters).',
+  },
+  title_ta_required: {
+    ta: 'தமிழ்த் தலைப்பை உள்ளிடவும் (160 எழுத்துகள் வரை).',
+    en: 'Enter the Tamil title (up to 160 characters).',
+  },
+  body_en_required: {
+    ta: 'ஆங்கில உரையை உள்ளிடவும் (2,000 எழுத்துகள் வரை).',
+    en: 'Enter the English text (up to 2,000 characters).',
+  },
+  body_ta_required: {
+    ta: 'தமிழ் உரையை உள்ளிடவும் (2,000 எழுத்துகள் வரை).',
+    en: 'Enter the Tamil text (up to 2,000 characters).',
+  },
+  area_level_required: {
+    ta: 'பகுதி நிலையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the area level.',
+  },
+  area_code_required: {
+    ta: 'பகுதிக் குறியீட்டை உள்ளிடவும், அல்லது நாடு முழுவதையும் தெரிவுசெய்யவும்.',
+    en: 'Enter the area code, or choose the whole country.',
+  },
+  starts_at_required: {
+    ta: 'காலப்பகுதி தொடங்கும் நேரத்தை உள்ளிடவும்.',
+    en: 'Enter when the period starts.',
+  },
+  ends_at_required: {
+    ta: 'காலப்பகுதி முடிவடையும் நேரத்தை உள்ளிடவும்.',
+    en: 'Enter when the period ends.',
+  },
+  silence_starts_at_required: {
+    ta: 'அமைதிக்காலம் தொடங்கும் நேரத்தை உள்ளிடவும்.',
+    en: 'Enter when the silence window starts.',
+  },
+  silence_ends_at_required: {
+    ta: 'அமைதிக்காலம் முடிவடையும் நேரத்தை உள்ளிடவும்.',
+    en: 'Enter when the silence window ends.',
+  },
+  polling_day_required: {
+    ta: 'வாக்களிப்பு நாளை உள்ளிடவும்.',
+    en: 'Enter the polling day.',
+  },
+  source_url_https: {
+    ta: 'https:// என்று தொடங்கும் இணைப்பை உள்ளிடவும் (500 எழுத்துகள் வரை).',
+    en: 'Enter a link that starts with https:// (up to 500 characters).',
+  },
+  source_reference_required: {
+    ta: 'வெளியீட்டுக் குறிப்பை உள்ளிடவும் (200 எழுத்துகள் வரை).',
+    en: 'Enter the publication reference (up to 200 characters).',
+  },
+  source_published_at_required: {
+    ta: 'மூலம் வெளியிடப்பட்ட நேரத்தை உள்ளிடவும்.',
+    en: 'Enter when the source was published.',
+  },
+  notice_source_required: {
+    ta: 'அறிவிப்பின் அடையாளத்தைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the notice label.',
+  },
+  document_reference_invalid: {
+    ta: 'ஆவணக் குறிப்பு 200 எழுத்துகள் வரை இருக்கலாம்.',
+    en: 'The document reference can be up to 200 characters.',
+  },
+  close_action_required: {
+    ta: 'காலப்பகுதியை முடிவுறுத்துவதா மீளப்பெறுவதா எனத் தெரிவுசெய்யவும்.',
+    en: 'Choose whether to end or withdraw the period.',
+  },
+  // Data-subject requests (D35).
+  outcome_note_required: {
+    ta: 'உறுப்பினருக்கான குறிப்பை எழுதவும் (3 முதல் 2,000 எழுத்துகள்).',
+    en: 'Write a note for the member (3 to 2,000 characters).',
+  },
 };
 
 export const PROBLEM_FIELD_MAP: Record<string, string> = {
@@ -303,6 +433,32 @@ export const PROBLEM_FIELD_MAP: Record<string, string> = {
   checkin_window_invalid: 'checkinOpensAt',
   tamil_caption_missing: 'captionTa',
   summary_missing: 'summaryTa',
+  election_type_required: 'electionType',
+  title_en_required: 'titleEn',
+  title_ta_required: 'titleTa',
+  body_en_required: 'bodyEn',
+  body_ta_required: 'bodyTa',
+  area_level_required: 'areaLevel',
+  area_code_required: 'areaCode',
+  starts_at_required: 'startsAt',
+  ends_at_required: 'endsAt',
+  ends_before_start: 'endsAt',
+  already_over: 'endsAt',
+  silence_starts_at_required: 'silenceStartsAt',
+  silence_ends_at_required: 'silenceEndsAt',
+  silence_ends_before_start: 'silenceEndsAt',
+  silence_outside_period: 'silenceStartsAt',
+  silence_must_cover_polling_day: 'pollingDay',
+  polling_day_required: 'pollingDay',
+  source_url_https: 'sourceUrl',
+  official_source_required: 'sourceUrl',
+  source_reference_required: 'sourceReference',
+  source_published_at_required: 'sourcePublishedAt',
+  source_in_future: 'sourcePublishedAt',
+  notice_source_required: 'source',
+  document_reference_invalid: 'documentReference',
+  close_action_required: 'closeAction',
+  outcome_note_required: 'note',
 };
 
 export function problemTargetField(problem: string): string | undefined {
@@ -350,10 +506,47 @@ const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
     ta: 'உறுப்புரிமை முடக்கப்பட்டது.',
     en: 'Membership inactivated.',
   },
+  period_declared: {
+    ta: 'தேர்தல் காலப்பகுதி அறிவிக்கப்பட்டது. அதன் பகுதிக்கு அமைதிக்காலக் கட்டுப்பாடுகள் இப்போது பொருந்தும்.',
+    en: 'Election period declared. Silence controls now apply to its area.',
+  },
+  period_ended: {
+    ta: 'தேர்தல் காலப்பகுதி முடிவுறுத்தப்பட்டது. அதன் அமைதிக்காலக் கட்டுப்பாடுகள் நிறுத்தப்பட்டன.',
+    en: 'Election period ended. Its silence controls have stopped.',
+  },
+  period_withdrawn: {
+    ta: 'தேர்தல் காலப்பகுதி மீளப்பெறப்பட்டது. அதன் அமைதிக்காலக் கட்டுப்பாடுகள் நிறுத்தப்பட்டன.',
+    en: 'Election period withdrawn. Its silence controls have stopped.',
+  },
+  notice_published: {
+    ta: 'அறிவிப்பு வெளியிடப்பட்டது.',
+    en: 'Notice published.',
+  },
+  notice_withdrawn: {
+    ta: 'அறிவிப்பு மீளப்பெறப்பட்டது. உறுப்பினர்கள் இனி அதனைக் காணமாட்டார்கள்.',
+    en: 'Notice withdrawn. Members no longer see it.',
+  },
+  request_completed: {
+    ta: 'கோரிக்கை நிறைவேற்றப்பட்டது. உறுப்பினருக்கு அறிவிக்கப்படும்.',
+    en: 'Request completed. The member is notified.',
+  },
+  request_refused: {
+    ta: 'கோரிக்கை நிராகரிக்கப்பட்டது. உறுப்பினருக்குக் காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'Request refused. The member is notified with your note.',
+  },
 };
 
 export function bilingualMessageFor(code: string): BilingualText {
   if (BILINGUAL_MESSAGES[code]) return BILINGUAL_MESSAGES[code];
+  // The API refuses a change to a closed record as "not_allowed_from:<state>".
+  const [base, state] = code.split(':', 2);
+  if (base === 'not_allowed_from' && state) {
+    const readableState = state.replace(/_/g, ' ');
+    return {
+      ta: `தற்போதைய நிலையில் (${readableState}) இது அனுமதிக்கப்படவில்லை.`,
+      en: `Not allowed while the state is ${readableState}.`,
+    };
+  }
   const readable = code.replace(/_/g, ' ');
   return { ta: readable, en: readable };
 }

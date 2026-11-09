@@ -12,6 +12,8 @@ The staff web dashboard (BRD §15A.6, screens W01–W09 and D01–D35): Next.js 
 | Membership activation | D06, with exact member-ID look-up |
 | Roles and access | W09: roles in your areas, preview, assign, end |
 | Audit log | FR-ADM-011, with the hash-chain check |
+| Election mode | D22: declare, end or withdraw election periods and their silence windows; publish and withdraw labelled notices (`election.mode.manage`) |
+| Privacy requests | D35: the DPO's data-subject request register with overdue marks; complete or refuse a request (`privacy.requests.handle`) |
 
 Before it goes anywhere public: a strict content-security policy, the evidence watermark (FR-WEB-006), `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` set on the server, and running behind Nginx as described in `deployment/README.md`.
 
