@@ -2,7 +2,7 @@ import { ApiError, type MemberProfile } from '@my-people/api-client';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { api, configureApi } from './api';
-import { clearTokens, deviceId, readToken, saveTokens } from '../lib/storage';
+import { clearSession, deviceId, readToken, saveTokens } from '../lib/storage';
 
 export type SessionState =
   | { status: 'loading' }
@@ -40,7 +40,7 @@ async function restore(baseUrl: string | undefined): Promise<SessionState> {
     return { status: 'signed_in', member: await api().getMyProfile() };
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
-      await clearTokens();
+      await clearSession();
       return { status: 'signed_out', expired: true };
     }
     return { status: 'unreachable' }; // keep the token: it may still be good
@@ -76,12 +76,12 @@ export function SessionProvider({ baseUrl, children }: Props) {
     } catch {
       // The tokens are forgotten here whatever the server answered.
     }
-    await clearTokens();
+    await clearSession();
     setState({ status: 'signed_out', expired: false });
   }, []);
 
   const expire = useCallback(async () => {
-    await clearTokens();
+    await clearSession();
     setState({ status: 'signed_out', expired: true });
   }, []);
 

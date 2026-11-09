@@ -48,10 +48,10 @@ Overlaps in the BRD, settled on 27 October 2026 by the project owner so no scree
 
 | Batch | Work | Screens |
 |---|---|---|
-| 1.1 | Screens whose API is already built and tested | A15, A17, A18, C02, C03, M04, M45 (SMS part), D01 (queue counts), D07, D08, D09, D22, D34, D35 |
+| 1.1 (part done) | Screens whose API is already built and tested. Done: A15, A18, C02, M04, D01, D07, D08, D09, D34 (Puvi branch); A17, C03, M45 SMS part (Batch 1.1). Left: D22, D35 | A15, A17, A18, C02, C03, M04, M45 (SMS part), D01 (queue counts), D07, D08, D09, D22, D34, D35 |
 | 1.2 | Rest of account security: step-up codes for new devices (FR-AUTH-022), passkeys, lost-device wipe (FR-STF-010) | Additions to M49/M50 and D31 |
 | 1.3 | Capture quality and OCR confirmation (FR-IDV-001 to 004) | M01, M02 |
-| 1.4 | Remaining Phase 1 requirements: registration, identity, web review, administration, architecture, staff app, card sharing and progress | C04 (share; wallet waits on INT-03), C05, S10 |
+| 1.4 (part done) | Remaining Phase 1 requirements: registration, identity, web review, administration, architecture, staff app, card sharing and progress. Done: C04 share, C05 (Puvi branch). Left: S10 | C04 (share; wallet waits on INT-03), C05, S10 |
 | 1.5 | Assisted verification | M05, S04 |
 | Go-live | Run the F3 plan: the new API, member app and dashboard live; then the BRD's one-month pilot in selected GN divisions | — |
 

@@ -1,4 +1,5 @@
 import type { NotificationChoices } from '@my-people/api-client';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +26,13 @@ import { chooseLanguage, type AppLanguage } from '@/lib/i18n';
 
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 
-/** P04 and P05: the app's language, and push and SMS per topic with quiet hours (FR-PROF-012, FR-STF-009). */
+/**
+ * P04 and P05 with M45 (SMS part): the app's language, and how each kind of
+ * message reaches the member — push and SMS per topic, quiet hours, and the
+ * confirmed number texts go to (FR-PROF-012, FR-STF-009, FR-MSG-002, 004).
+ * The API saves the SMS choices, but nothing is texted until an SMS vendor
+ * is contracted (INT-01), so the screen says so rather than imply delivery.
+ */
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const language = useLanguage();
@@ -45,10 +52,42 @@ export default function SettingsScreen() {
         ]}
       />
       <AppText step="section" accessibilityRole="header">
-        {t('m.profile.notifications')}
+        {t('m.profile.channelsTitle')}
+      </AppText>
+      <AppText step="secondary" tone="muted">
+        {t('m.profile.channelsHint')}
       </AppText>
       <QueryView query={choices}>{(data) => <ChoicesForm initial={data} />}</QueryView>
+      <ChannelsCard />
     </Screen>
+  );
+}
+
+/** M45: where texts go, how to change that number (confirmed with a code), and what is not connected yet. */
+function ChannelsCard() {
+  const { t } = useTranslation();
+  const phone = useApiQuery(() => api().getMyRecoveryPhone());
+  let number: string;
+  if (phone.data) number = phone.data.phone;
+  else if (phone.data === null) number = t('m.profile.smsNoNumber');
+  else number = phone.loading ? t('m.common.loading') : t('m.common.loadFailed');
+  return (
+    <SurfaceCard>
+      <AppText step="label">{t('m.profile.smsNumber')}</AppText>
+      <AppText step="body" mono={Boolean(phone.data)} tone={phone.data ? 'default' : 'muted'}>
+        {number}
+      </AppText>
+      <Button
+        label={phone.data ? t('m.profile.changeNumber') : t('m.profile.addNumber')}
+        variant="secondary"
+        icon="call-outline"
+        onPress={() => router.push('/profile/recovery-number')}
+      />
+      <Notice tone="info">{t('m.profile.smsNotConnected')}</Notice>
+      <AppText step="caption" tone="muted">
+        {t('m.profile.whatsappLater')}
+      </AppText>
+    </SurfaceCard>
   );
 }
 

@@ -6,10 +6,10 @@ Built screens are in the Expo member and staff apps and the Next.js dashboard; n
 
 | App | Screens | Built |
 |---|---|---|
-| Member app | 112 | 38 |
+| Member app | 112 | 52 |
 | Staff app | 18 | 7 |
-| Dashboard | 44 | 14 |
-| **All** | **174** | **59** |
+| Dashboard | 44 | 15 |
+| **All** | **174** | **74** |
 
 Status: **Built**; **API ready** (the endpoint exists and is tested, only the screen is missing); **To build**; **Blocked** (waits on the decision or integration named).
 
@@ -32,10 +32,10 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | A12 | Identity approved | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/app/(member)/verify.tsx` |  |
 | A13 | Basic profile | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/app/(auth)/register.tsx (date of birth, gender; mobile in profile/recovery-number.tsx)` |  |
 | A14 | Your area | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/app/(auth)/register.tsx (district, DS, GN, referral)` |  |
-| A15 | Optional joining survey | Identity verification (SC-02) | 1 | API ready (/v1/profile/survey-answers) | `apps/member-mobile/app/(member)/setup/survey.tsx` |  |
+| A15 | Optional joining survey | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/app/(member)/setup/survey.tsx` |  |
 | A16 | Recover access | Sign-in and account (SC-01) | 1 | Built | `apps/member-mobile/app/(auth)/recover.tsx, assisted-recovery.tsx` |  |
-| A17 | Upload interrupted | Identity verification (SC-02) | 1 | API ready (/v1/identity/me/documents) | `apps/member-mobile/app/(member)/verify.tsx (upload-interrupted state)` |  |
-| A18 | Resume setup | Identity verification (SC-02) | 1 | API ready (/v1/identity/me/progress) | `apps/member-mobile/app/(member)/setup/index.tsx` |  |
+| A17 | Upload interrupted | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/app/(member)/verify.tsx (upload-interrupted state)` | Per-photo state with Retry upload of the same photo; the cached copy is deleted after the server acknowledges it |
+| A18 | Resume setup | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/app/(member)/setup/index.tsx` |  |
 | H01 | Home — active member | Home and inbox (SC-03) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/index.tsx` |  |
 | H02 | Home — awaiting review | Home and inbox (SC-03) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/index.tsx` |  |
 | H03 | Notifications | Home and inbox (SC-03) | 1 | Built | `apps/member-mobile/app/(member)/notifications.tsx` |  |
@@ -64,10 +64,10 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | E05 | Your RSVP | Events (SC-11) | 1 | Built | `apps/member-mobile/app/(member)/events/[id].tsx` |  |
 | E06 | Event pass | Events (SC-11) | 1 | Built | `apps/member-mobile/app/(member)/events/[id]/pass.tsx` |  |
 | C01 | My member card | Membership card (SC-12) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/card.tsx` |  |
-| C02 | Show secure code | Membership card (SC-12) | 1 | API ready (/v1/membership/me/card/code) | `apps/member-mobile/app/(member)/card/code.tsx` |  |
-| C03 | Card while offline | Membership card (SC-12) | 1 | API ready (card code and card) | `apps/member-mobile/app/(member)/(tabs)/card.tsx (offline state)` |  |
-| C04 | Wallet and share | Membership card (SC-12) | 1 | Blocked: INT-03 for wallet passes (share can be built) | `apps/member-mobile/app/(member)/card/share.tsx` |  |
-| C05 | My progress | Membership card (SC-12) | 1 | To build | `apps/member-mobile/app/(member)/card/progress.tsx` |  |
+| C02 | Show secure code | Membership card (SC-12) | 1 | Built | `apps/member-mobile/app/(member)/card/code.tsx` |  |
+| C03 | Card while offline | Membership card (SC-12) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/card.tsx (offline state)` | Saved card with its last-confirmed time, no QR (OD-08 open); also offered on the welcome screen when the app opens offline |
+| C04 | Wallet and share | Membership card (SC-12) | 1 | Built (share; wallet passes wait on INT-03) | `apps/member-mobile/app/(member)/card/share.tsx` | Share sends the name and member ID as text only, never a code or proof of membership (Puvi branch) |
+| C05 | My progress | Membership card (SC-12) | 1 | Built | `apps/member-mobile/app/(member)/card/progress.tsx` |  |
 | C06 | Card not available | Membership card (SC-12) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/card.tsx` |  |
 | G01 | Gallery albums | Gallery (SC-13) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/gallery.tsx` |  |
 | G02 | Album detail | Gallery (SC-13) | 1 | Built | `apps/member-mobile/app/(member)/gallery/[id].tsx` |  |
@@ -81,7 +81,7 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | M01 | Document capture assistant | AI-assisted identity screening (SC-21) | 1–2 | To build | `apps/member-mobile/app/(member)/verify/` |  |
 | M02 | Confirm extracted NIC number | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-42 (OCR provider) | `apps/member-mobile/app/(member)/verify/` |  |
 | M03 | Guided liveness capture | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-28, OD-29 (biometrics) | `apps/member-mobile/app/(member)/verify/` |  |
-| M04 | Verification appeal | AI-assisted identity screening (SC-21) | 1–2 | API ready (/v1/identity/me/appeal) | `apps/member-mobile/app/(member)/verify/` |  |
+| M04 | Verification appeal | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/member-mobile/app/(member)/verify/` |  |
 | M05 | Assisted verification request | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-04 (assisted verification) | `apps/member-mobile/app/(member)/verify/` |  |
 | M06 | My Household / எனது குடும்பம் | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
 | M07 | Add household member | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
@@ -122,7 +122,7 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | M42 | Book or manage appointment | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/representatives/` |  |
 | M43 | Voice report | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Blocked: Voice is Phase 3 | `apps/member-mobile/app/(member)/issues/new (voice mode of H07)` | Decided: a voice option inside H07, not a second report screen |
 | M44 | Accessibility and data saver | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | To build | `apps/member-mobile/app/(member)/profile/accessibility.tsx` |  |
-| M45 | Messages and channels | SMS and WhatsApp (SC-39) | 1 SMS, 2 WhatsApp | API ready (/v1/notifications/choices (SMS part)) | `apps/member-mobile/app/(member)/profile/settings.tsx (channels, with P05)` | Decided: extends the P05 settings screen; no second preferences screen |
+| M45 | Messages and channels | SMS and WhatsApp (SC-39) | 1 SMS, 2 WhatsApp | Built (SMS choices; texts wait on INT-01; WhatsApp in Phase 2) | `apps/member-mobile/app/(member)/profile/settings.tsx (channels, with P05)` | Decided: extends the P05 settings screen; no second preferences screen |
 | M46 | Diaspora participation | Diaspora (SC-40) | 3 | To build | `apps/member-mobile/app/(member)/diaspora.tsx` |  |
 | M47 | Official updates | Official content and fact-checks (SC-41) | 2 | Blocked: INT-24 | `apps/member-mobile/app/(member)/official/` |  |
 | M48 | Check or report a statement | Official content and fact-checks (SC-41) | 2 | To build | `apps/member-mobile/app/(member)/official/` |  |

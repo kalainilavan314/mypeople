@@ -19,6 +19,14 @@ export function errorMessage(t: TFunction, error: unknown): string {
   return t('m.errors.unknown');
 }
 
+/**
+ * No answer reached the app (no network, a timeout) or the server failed, as
+ * opposed to the server refusing the request: trying again later can work.
+ */
+export function noAnswer(error: unknown): boolean {
+  return !(error instanceof ApiError) || error.status === 408 || error.status >= 500;
+}
+
 /** Problem codes from a refused form, e.g. ["password_too_short"], to show beside the fields. */
 export function problemsOf(error: unknown): string[] {
   return error instanceof ApiError ? error.problems : [];

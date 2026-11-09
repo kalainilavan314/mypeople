@@ -10,10 +10,12 @@ const TOKEN_KEY = 'mp.session';
 const REFRESH_KEY = 'mp.refresh';
 const DEVICE_KEY = 'mp.device';
 const LANGUAGE_KEY = 'mp.language';
+const CARD_KEY = 'mp.card';
 
 const isWeb = Platform.OS === 'web';
 let webToken: string | null = null;
 let webRefreshToken: string | null = null;
+let webCard: string | null = null;
 
 export async function readToken(): Promise<string | null> {
   return isWeb ? webToken : SecureStore.getItemAsync(TOKEN_KEY);
@@ -33,14 +35,46 @@ export async function saveTokens(token: string, refreshToken: string): Promise<v
   await SecureStore.setItemAsync(REFRESH_KEY, refreshToken);
 }
 
-export async function clearTokens(): Promise<void> {
+/**
+ * Forgets the session and the personal data it left on this device: both
+ * tokens and the saved member card, at sign-out or when the session ends
+ * (FR-PROF-016).
+ */
+export async function clearSession(): Promise<void> {
   if (isWeb) {
     webToken = null;
     webRefreshToken = null;
+    webCard = null;
     return;
   }
   await SecureStore.deleteItemAsync(TOKEN_KEY);
   await SecureStore.deleteItemAsync(REFRESH_KEY);
+  await SecureStore.deleteItemAsync(CARD_KEY);
+}
+
+/**
+ * The member card's display fields, saved in the keychain or keystore so the
+ * card can be shown offline (C03, FR-CARD-008). Never a QR code: those are
+ * fetched fresh and never stored (C02). Memory only in the web preview.
+ */
+export async function readSavedCard(): Promise<string | null> {
+  return isWeb ? webCard : SecureStore.getItemAsync(CARD_KEY);
+}
+
+export async function saveCard(json: string): Promise<void> {
+  if (isWeb) {
+    webCard = json;
+    return;
+  }
+  await SecureStore.setItemAsync(CARD_KEY, json);
+}
+
+export async function clearSavedCard(): Promise<void> {
+  if (isWeb) {
+    webCard = null;
+    return;
+  }
+  await SecureStore.deleteItemAsync(CARD_KEY);
 }
 
 /** A random id for this install, sent as X-Device-Id so a sign-in from a new device can be noticed. */

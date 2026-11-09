@@ -1,53 +1,67 @@
 import type { MemberCard } from '@my-people/api-client';
 import { router, type Href } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { colors, radius, spacing } from '@my-people/design-tokens';
 
 import {
   AppText,
   Button,
-  formatDate,
   formatDateTime,
   Notice,
   Screen,
-  StatusTag,
-  SurfaceCard,
   useApiQuery,
   useLanguage,
   useReloadOnFocus,
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
+import { MemberCardView } from '@/features/membership/MemberCardView';
+import { OfflineCard } from '@/features/membership/OfflineCard';
+import { loadSavedCard, rememberCard, type SavedCard } from '@/features/membership/savedCard';
 import { api } from '@/lib/api';
+import { noAnswer } from '@/lib/errors';
+
+/** While offline the card asks the server again this often (FR-CARD-009). */
+const OFFLINE_RETRY_MS = 30_000;
 
 /**
  * C01 to C06: the membership card, only while identity is Verified and
  * membership Active (BR-065); otherwise why not and what comes next. It never
  * shows the NIC or passport number; the QR is a 60-second opaque code.
+ *
+ * C03: when the server cannot be reached, the card last confirmed online is
+ * shown with its time and without a QR code, and the screen keeps trying; the
+ * live card returns as soon as an answer arrives.
  */
 export default function CardScreen() {
-  const card = useApiQuery(() => api().getMyCard());
+  const card = useApiQuery(async () => {
+    const loaded = await api().getMyCard();
+    await rememberCard(loaded);
+    return loaded;
+  });
   useReloadOnFocus(card.reload);
+  const offline = !card.loading && card.error !== null && noAnswer(card.error);
+  const [saved, setSaved] = useState<SavedCard | null>(null);
+
+  useEffect(() => {
+    if (!offline) return;
+    let active = true;
+    void loadSavedCard().then((found) => active && setSaved(found));
+    const timer = setInterval(card.reload, OFFLINE_RETRY_MS);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, [offline, card.reload]);
+
   return (
     <Screen edges={[]} onRefresh={card.reload} refreshing={card.loading && card.data !== undefined}>
-      <QueryView query={card}>{(data) => (data.available ? <AvailableCard card={data} /> : <Unavailable card={data} />)}</QueryView>
+      {offline && saved ? (
+        <OfflineCard saved={saved} onRetry={card.reload} retrying={card.loading} />
+      ) : (
+        <QueryView query={card}>{(data) => (data.available ? <AvailableCard card={data} /> : <Unavailable card={data} />)}</QueryView>
+      )}
     </Screen>
-  );
-}
-
-function Field({ label, value, mono = false }: { label: string; value: string | null; mono?: boolean }) {
-  if (!value) return null;
-  return (
-    <View style={styles.field}>
-      <AppText step="caption" tone="inverse" style={styles.fieldLabel}>
-        {label}
-      </AppText>
-      <AppText step="body" tone="inverse" mono={mono}>
-        {value}
-      </AppText>
-    </View>
   );
 }
 
@@ -57,28 +71,7 @@ function AvailableCard({ card }: { card: MemberCard }) {
 
   return (
     <>
-      <View style={styles.card} accessible accessibilityLabel={`${t('m.card.title')}, ${card.displayName}, ${card.memberCode}`}>
-        <View style={styles.cardHeader}>
-          <AppText step="label" tone="inverse">
-            என் மக்கள் · My People
-          </AppText>
-          <AppText step="caption" tone="inverse" style={styles.fieldLabel}>
-            {card.designation ? t('m.card.tier', { tier: card.designation }) : t('m.card.member')}
-          </AppText>
-        </View>
-        <AppText step="page" tone="inverse">
-          {card.displayName}
-        </AppText>
-        <Field label={t('m.card.memberId')} value={card.memberCode} mono />
-        <View style={styles.row}>
-          <Field label={t('m.card.district')} value={card.districtName} />
-          <Field label={t('m.card.gn')} value={card.gnName} />
-        </View>
-        <Field label={t('m.card.since')} value={card.memberSince ? formatDate(card.memberSince, language) : null} />
-        <View style={styles.verified}>
-          <StatusTag tone="verified" label={t('m.card.identityVerified')} />
-        </View>
-      </View>
+      <MemberCardView card={card} />
 
       <Button
         label={t('m.card.showCode')}
@@ -112,17 +105,3 @@ function Unavailable({ card }: { card: MemberCard }) {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.primary,
-    borderRadius: radius.card,
-    padding: spacing[4],
-    gap: spacing[3],
-  },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing[2] },
-  field: { gap: 2, flex: 1 },
-  fieldLabel: { color: colors.inputBorder }, // #CBD5E1 on navy, the spec's metadata colour (§2)
-  row: { flexDirection: 'row', gap: spacing[3] },
-  verified: { flexDirection: 'row' },
-});

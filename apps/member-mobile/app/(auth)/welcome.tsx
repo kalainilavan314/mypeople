@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -6,6 +7,8 @@ import { colors, control, radius, spacing } from '@my-people/design-tokens';
 
 import { AppText, Button, Notice, Screen, useLanguage, useSession } from '@my-people/mobile-ui';
 
+import { OfflineCard } from '@/features/membership/OfflineCard';
+import { loadSavedCard, type SavedCard } from '@/features/membership/savedCard';
 import { chooseLanguage, type AppLanguage } from '@/lib/i18n';
 
 const LANGUAGES: { key: AppLanguage; label: string }[] = [
@@ -13,11 +16,27 @@ const LANGUAGES: { key: AppLanguage; label: string }[] = [
   { key: 'en', label: 'English' },
 ];
 
-/** A01: the app's name, the language choice, and the way in. */
+/**
+ * A01: the app's name, the language choice, and the way in. When the app
+ * opens without a connection the stored session cannot be checked, so the
+ * card saved at the last online visit is offered here (C03).
+ */
 export default function WelcomeScreen() {
   const { t } = useTranslation();
   const language = useLanguage();
   const { state, retry } = useSession();
+  const unreachable = state.status === 'unreachable';
+  const [saved, setSaved] = useState<SavedCard | null>(null);
+  const [showCard, setShowCard] = useState(false);
+
+  useEffect(() => {
+    if (!unreachable) return;
+    let active = true;
+    void loadSavedCard().then((found) => active && setSaved(found));
+    return () => {
+      active = false;
+    };
+  }, [unreachable]);
 
   return (
     <Screen edges={['top', 'bottom']}>
@@ -36,10 +55,19 @@ export default function WelcomeScreen() {
 
       {state.status === 'signed_out' && state.expired ? <Notice tone="warning">{t('m.welcome.expired')}</Notice> : null}
       {state.status === 'not_configured' ? <Notice tone="error">{t('m.welcome.notConfigured')}</Notice> : null}
-      {state.status === 'unreachable' ? (
+      {unreachable ? (
         <View style={styles.gap}>
           <Notice tone="error">{t('m.welcome.unreachable')}</Notice>
           <Button label={t('m.common.retry')} variant="secondary" icon="refresh" onPress={retry} />
+          {saved ? (
+            <Button
+              label={showCard ? t('m.card.hideSavedCard') : t('m.card.showSavedCard')}
+              variant="quiet"
+              icon={showCard ? 'chevron-up' : 'card-outline'}
+              onPress={() => setShowCard(!showCard)}
+            />
+          ) : null}
+          {saved && showCard ? <OfflineCard saved={saved} /> : null}
         </View>
       ) : null}
 

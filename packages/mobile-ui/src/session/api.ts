@@ -1,6 +1,6 @@
 import { ApiError, createApiClient, type ApiClient } from '@my-people/api-client';
 
-import { clearTokens, readRefreshToken, readToken, saveTokens } from '../lib/storage';
+import { clearSession, readRefreshToken, readToken, saveTokens } from '../lib/storage';
 
 let client: ApiClient | null = null;
 let renewing: Promise<string | null> | null = null;
@@ -41,7 +41,7 @@ async function renew(): Promise<string | null> {
     // Refused: the session ended, sat unused for 30 days, or its refresh token was used twice.
     // Anything else (no network) keeps the tokens for the next try.
     if (error instanceof ApiError && error.status === 401) {
-      await clearTokens();
+      await clearSession();
       return null;
     }
     throw error;

@@ -8,9 +8,9 @@ import { colors, spacing } from '@my-people/design-tokens';
 import { AppText, Button, Notice, StatusTag, SurfaceCard, useApiAction } from '@my-people/mobile-ui';
 
 import { api } from '@/lib/api';
-import { errorMessage } from '@/lib/errors';
+import { errorMessage, noAnswer } from '@/lib/errors';
 
-import { pickImage, type PickedImage } from './pickImage';
+import { discardImage, pickImage, type PickedImage } from './pickImage';
 
 type Props = {
   kind: IdentityDocumentKind;
@@ -20,43 +20,79 @@ type Props = {
   onUploaded: () => void;
 };
 
+type Next = { source: 'camera' | 'library' } | { image: PickedImage };
+
 /**
  * One identity image: whether the server holds it, and how to send it. A
  * selfie needs the live camera (FR-REG-014); ID pages may also come from the
  * phone's photos, the manual route when the camera is refused (FR-VOI-007).
+ *
+ * A17: only a photo the server acknowledged counts as received (BR-020). When
+ * an upload is interrupted the row says so and keeps the photo, in memory and
+ * the app's private cache, so "Retry upload" sends the same photo without
+ * taking it again (FR-REG-034). The cached copy is deleted once the server
+ * has it, or when it is replaced or the screen is left (FR-REG-035).
  */
 export function PhotoRow({ kind, received, requested, onUploaded }: Props) {
   const { t } = useTranslation();
   const [denied, setDenied] = useState(false);
-  const pendingImage = useRef<PickedImage | null>(null);
-  useEffect(() => () => { pendingImage.current = null; }, []);
+  const [held, setHeld] = useState<PickedImage | null>(null);
+  const [interrupted, setInterrupted] = useState(false);
+  const heldRef = useRef<PickedImage | null>(null);
   const selfie = kind === 'selfie';
-  const upload = useApiAction(async (source?: 'camera' | 'library') => {
-    if (source) {
-      pendingImage.current = null;
+
+  const hold = (image: PickedImage | null) => {
+    if (heldRef.current && heldRef.current !== image) discardImage(heldRef.current);
+    heldRef.current = image;
+    setHeld(image);
+  };
+
+  // Leaving the screen abandons a photo that was never sent.
+  useEffect(
+    () => () => {
+      if (heldRef.current) discardImage(heldRef.current);
+    },
+    [],
+  );
+
+  const upload = useApiAction(async (next: Next) => {
+    let image: PickedImage;
+    if ('image' in next) {
+      image = next.image;
+    } else {
       setDenied(false);
-      const picked = await pickImage(source, selfie);
+      const picked = await pickImage(next.source, selfie);
       if ('denied' in picked) {
         setDenied(true);
         return;
       }
       if ('cancelled' in picked) return;
-      pendingImage.current = picked.image;
+      hold(picked.image);
+      image = picked.image;
     }
-    const image = pendingImage.current;
-    if (!image) return;
-    await api().uploadIdentityDocument(kind, image.body, image.contentType);
-    pendingImage.current = null;
+    setInterrupted(false);
+    try {
+      await api().uploadIdentityDocument(kind, image.body, image.contentType);
+    } catch (error) {
+      if (noAnswer(error)) setInterrupted(true);
+      else hold(null); // refused (wrong type, too large): the same file cannot succeed
+      throw error;
+    }
+    hold(null);
     onUploaded();
   });
 
+  const showInterrupted = interrupted && held !== null;
+
   return (
-    <SurfaceCard style={requested && styles.requested}>
+    <SurfaceCard style={(requested || showInterrupted) && styles.attention}>
       <View style={styles.header}>
         <AppText step="card" style={styles.flex}>
           {t(`m.verify.${kind}`)}
         </AppText>
-        {requested ? (
+        {showInterrupted ? (
+          <StatusTag tone="error" label={t('m.verify.notReceived')} />
+        ) : requested ? (
           <StatusTag tone="pending" label={t('m.verify.status_needs_update')} />
         ) : (
           <StatusTag tone={received ? 'verified' : 'neutral'} label={received ? t('m.verify.received') : t('m.verify.needed')} />
@@ -67,14 +103,33 @@ export function PhotoRow({ kind, received, requested, onUploaded }: Props) {
           {t('m.verify.selfieCameraOnly')}
         </AppText>
       ) : null}
+
+      {showInterrupted ? (
+        <>
+          <Notice tone="warning" title={t('m.verify.interruptedTitle')}>
+            {t('m.verify.interruptedBody')}
+          </Notice>
+          <Button
+            label={t('m.verify.retryUpload')}
+            icon="refresh-outline"
+            busy={upload.busy}
+            busyLabel={t('m.verify.uploading')}
+            onPress={() => {
+              if (held) void upload.run({ image: held });
+            }}
+          />
+        </>
+      ) : null}
+
       <View style={styles.actions}>
         <Button
           label={received && !requested ? t('m.verify.replace') : t('m.verify.takePhoto')}
           icon="camera-outline"
-          variant={received && !requested ? 'secondary' : 'primary'}
-          busy={upload.busy}
+          variant={showInterrupted || (received && !requested) ? 'secondary' : 'primary'}
+          busy={upload.busy && !showInterrupted}
           busyLabel={t('m.verify.uploading')}
-          onPress={() => void upload.run('camera')}
+          disabled={upload.busy && showInterrupted}
+          onPress={() => void upload.run({ source: 'camera' })}
         />
         {!selfie ? (
           <Button
@@ -82,23 +137,18 @@ export function PhotoRow({ kind, received, requested, onUploaded }: Props) {
             icon="images-outline"
             variant="secondary"
             disabled={upload.busy}
-            onPress={() => void upload.run('library')}
+            onPress={() => void upload.run({ source: 'library' })}
           />
         ) : null}
       </View>
       {denied ? <Notice tone="warning">{selfie ? t('m.verify.selfieDenied') : t('m.verify.cameraDenied')}</Notice> : null}
-      {upload.error ? (
-        <>
-          <Notice tone="error">{errorMessage(t, upload.error)}</Notice>
-          {pendingImage.current ? <Button label={t('m.verify.retryUpload')} variant="secondary" busy={upload.busy} onPress={() => void upload.run()} /> : null}
-        </>
-      ) : null}
+      {upload.error && !showInterrupted ? <Notice tone="error">{errorMessage(t, upload.error)}</Notice> : null}
     </SurfaceCard>
   );
 }
 
 const styles = StyleSheet.create({
-  requested: { borderColor: colors.warning },
+  attention: { borderColor: colors.warning },
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
   flex: { flex: 1 },
   actions: { gap: spacing[2] },
