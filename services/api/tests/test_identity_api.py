@@ -90,6 +90,16 @@ def test_a_member_uploads_both_sides_and_replaces_one(client, db_session, auth, 
     assert entry.details == {"memberId": str(member.id), "kind": "nic_front", "version": 2}
 
 
+def test_the_upload_answer_carries_capture_advice_but_the_photo_still_counts(client, auth, upload, member):
+    """M01 (FR-IDV-001): advice comes back with the acknowledgement; the image is stored whatever it says."""
+    answered = upload(member, "nic_front", JPEG)
+    assert answered["quality"]["checked"] in (True, False)
+    assert set(answered["quality"]["problems"]) <= {"blurry", "too_dark", "glare", "too_small"}
+    listed = client.get("/v1/identity/me/documents", headers=auth(member)).json()
+    assert [d["kind"] for d in listed] == ["nic_front"]
+    assert listed[0]["quality"] is None  # advice belongs to the upload answer only
+
+
 def test_uploads_are_capped_per_day_before_any_file_is_written(
     client, db_session, auth, upload, member, evidence_dir
 ):

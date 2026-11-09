@@ -1,4 +1,6 @@
 import type { IdentityDocumentKind } from '@my-people/api-client';
+
+type Advice = 'blurry' | 'too_dark' | 'glare' | 'too_small';
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -32,12 +34,18 @@ type Next = { source: 'camera' | 'library' } | { image: PickedImage };
  * the app's private cache, so "Retry upload" sends the same photo without
  * taking it again (FR-REG-034). The cached copy is deleted once the server
  * has it, or when it is replaced or the screen is left (FR-REG-035).
+ *
+ * M01: after an upload the server's capture advice (blur, darkness, glare,
+ * size) is shown under the photo. The photo still counts as received; the
+ * member decides whether to retake it (FR-IDV-001, BR-091).
  */
 export function PhotoRow({ kind, received, requested, onUploaded }: Props) {
   const { t } = useTranslation();
   const [denied, setDenied] = useState(false);
   const [held, setHeld] = useState<PickedImage | null>(null);
   const [interrupted, setInterrupted] = useState(false);
+  // M01: what the server noticed about the photo it just received; advice only, it still counts.
+  const [advice, setAdvice] = useState<Advice[]>([]);
   const heldRef = useRef<PickedImage | null>(null);
   const selfie = kind === 'selfie';
 
@@ -71,8 +79,10 @@ export function PhotoRow({ kind, received, requested, onUploaded }: Props) {
       image = picked.image;
     }
     setInterrupted(false);
+    setAdvice([]);
     try {
-      await api().uploadIdentityDocument(kind, image.body, image.contentType);
+      const received = await api().uploadIdentityDocument(kind, image.body, image.contentType);
+      setAdvice(received.quality?.problems ?? []);
     } catch (error) {
       if (noAnswer(error)) setInterrupted(true);
       else hold(null); // refused (wrong type, too large): the same file cannot succeed
@@ -142,6 +152,11 @@ export function PhotoRow({ kind, received, requested, onUploaded }: Props) {
         ) : null}
       </View>
       {denied ? <Notice tone="warning">{selfie ? t('m.verify.selfieDenied') : t('m.verify.cameraDenied')}</Notice> : null}
+      {advice.length > 0 && !upload.busy ? (
+        <Notice tone="warning" title={t('m.verify.adviceTitle')}>
+          {advice.map((problem) => t(`m.verify.advice_${problem}`)).join('\n')}
+        </Notice>
+      ) : null}
       {upload.error && !showInterrupted ? <Notice tone="error">{errorMessage(t, upload.error)}</Notice> : null}
     </SurfaceCard>
   );

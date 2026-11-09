@@ -12853,6 +12853,17 @@
             "type": "string",
             "format": "date-time",
             "title": "Serverackat"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QualityOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Only in the upload response (M01)"
           }
         },
         "type": "object",
@@ -17589,6 +17600,35 @@
         ],
         "title": "PublicRemovalRequestIn",
         "description": "FR-GAL-007, for someone who is not a member: the album reference (AL-…) and the photo's number."
+      },
+      "QualityOut": {
+        "properties": {
+          "checked": {
+            "type": "boolean",
+            "title": "Checked",
+            "description": "False when the photo could not be read here (HEIC), so no advice is given"
+          },
+          "problems": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "blurry",
+                "too_dark",
+                "glare",
+                "too_small"
+              ]
+            },
+            "type": "array",
+            "title": "Problems"
+          }
+        },
+        "type": "object",
+        "required": [
+          "checked",
+          "problems"
+        ],
+        "title": "QualityOut",
+        "description": "M01 capture advice for the member (FR-IDV-001): never a decision, and the photo still counts as received."
       },
       "QueueCountsOut": {
         "properties": {

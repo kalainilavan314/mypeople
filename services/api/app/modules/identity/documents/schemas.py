@@ -2,9 +2,23 @@ import uuid
 from datetime import datetime
 from typing import Literal, Self
 
+from pydantic import Field
+
 from app.core.schemas import CamelModel
+from app.modules.identity.documents.quality import Problem, Quality
 from app.modules.identity.documents.repository import DocumentKind, StoredDocument
 from app.modules.identity.documents.service import EvidenceView
+
+
+class QualityOut(CamelModel):
+    """M01 capture advice for the member (FR-IDV-001): never a decision, and the photo still counts as received."""
+
+    checked: bool = Field(description="False when the photo could not be read here (HEIC), so no advice is given")
+    problems: list[Problem]
+
+    @classmethod
+    def from_quality(cls, quality: Quality) -> Self:
+        return cls(checked=quality.checked, problems=list(quality.problems))
 
 
 class DocumentOut(CamelModel):
@@ -16,6 +30,7 @@ class DocumentOut(CamelModel):
     content_type: str
     byte_size: int
     server_ack_at: datetime
+    quality: QualityOut | None = Field(default=None, description="Only in the upload response (M01)")
 
     @classmethod
     def from_stored(cls, document: StoredDocument) -> Self:

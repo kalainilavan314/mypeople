@@ -205,6 +205,11 @@ export const en = {
     replace: 'Replace',
     uploading: 'Uploading…',
     retryUpload: 'Retry upload',
+    adviceTitle: 'Received, but it may be hard to check',
+    advice_blurry: 'The photo looks blurry. Hold the phone still and let it focus, then retake it.',
+    advice_too_dark: 'The photo is too dark. Move to better light, then retake it.',
+    advice_glare: 'Light is reflecting off the card. Tilt it slightly away from the light, then retake it.',
+    advice_too_small: 'The photo is too small to read. Move closer so the card fills the frame, then retake it.',
     notReceived: 'Not yet received by the server',
     interruptedTitle: 'Upload interrupted',
     interruptedBody:

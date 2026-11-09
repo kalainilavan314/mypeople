@@ -6,10 +6,10 @@ Built screens are in the Expo member and staff apps and the Next.js dashboard; n
 
 | App | Screens | Built |
 |---|---|---|
-| Member app | 112 | 53 |
+| Member app | 112 | 54 |
 | Staff app | 18 | 7 |
 | Dashboard | 44 | 17 |
-| **All** | **174** | **77** |
+| **All** | **174** | **78** |
 
 Status: **Built**; **API ready** (the endpoint exists and is tested, only the screen is missing); **To build**; **Blocked** (waits on the decision or integration named).
 
@@ -78,7 +78,7 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | P04 | My activity | Profile (SC-14) | 1 | Built | `apps/member-mobile/app/(member)/profile/settings.tsx` |  |
 | P05 | Account settings | Profile (SC-14) | 1 | Built | `apps/member-mobile/app/(member)/profile/settings.tsx` | M45 messages and channels are added here |
 | P06 | Privacy and account | Profile (SC-14) | 1 | Built | `apps/member-mobile/app/(member)/profile/privacy.tsx` |  |
-| M01 | Document capture assistant | AI-assisted identity screening (SC-21) | 1–2 | To build | `apps/member-mobile/app/(member)/verify/` |  |
+| M01 | Document capture assistant | AI-assisted identity screening (SC-21) | 1–2 | Built (server-side advice: blur, darkness, glare, size; edge visibility not built) | `apps/member-mobile/app/(member)/verify/` | Advice shown under each photo after upload; thresholds to tune on consented test photos (DEP-16) |
 | M02 | Confirm extracted NIC number | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-42 (OCR provider) | `apps/member-mobile/app/(member)/verify/` |  |
 | M03 | Guided liveness capture | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-28, OD-29 (biometrics) | `apps/member-mobile/app/(member)/verify/` |  |
 | M04 | Verification appeal | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/member-mobile/app/(member)/verify/` |  |

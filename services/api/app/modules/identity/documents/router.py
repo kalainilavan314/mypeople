@@ -12,8 +12,9 @@ from app.modules.auth.dependencies import CurrentMember
 from app.modules.identity.documents import service
 from app.modules.identity.documents.dependencies import Image, Vault
 from app.modules.identity.documents.images import ACCEPTED_TYPES
+from app.modules.identity.documents.quality import assess
 from app.modules.identity.documents.repository import DocumentKind
-from app.modules.identity.documents.schemas import DocumentOut, EvidenceViewOut, ViewLinkOut
+from app.modules.identity.documents.schemas import DocumentOut, EvidenceViewOut, QualityOut, ViewLinkOut
 from app.modules.identity.documents.vault import EvidenceUnreadable
 
 router = APIRouter(prefix="/v1/identity", tags=["identity"])
@@ -90,7 +91,9 @@ def upload_my_document(
             detail="upload_limit",
             headers={"Retry-After": str(error.retry_after)},
         ) from None
-    return DocumentOut.from_stored(document)
+    # M01: advice on the photo just stored; the upload already counts (BR-020) whatever it says.
+    quality = assess(image.data, document_page=kind != "selfie")
+    return DocumentOut.from_stored(document).model_copy(update={"quality": QualityOut.from_quality(quality)})
 
 
 @router.get("/me/evidence-views")

@@ -4419,6 +4419,8 @@ export interface components {
              * Format: date-time
              */
             serverAckAt: string;
+            /** @description Only in the upload response (M01) */
+            quality?: components["schemas"]["QualityOut"] | null;
         };
         /**
          * DueGrantOut
@@ -6305,6 +6307,19 @@ export interface components {
              * @description A phone number or address to send the outcome to
              */
             contact: string;
+        };
+        /**
+         * QualityOut
+         * @description M01 capture advice for the member (FR-IDV-001): never a decision, and the photo still counts as received.
+         */
+        QualityOut: {
+            /**
+             * Checked
+             * @description False when the photo could not be read here (HEIC), so no advice is given
+             */
+            checked: boolean;
+            /** Problems */
+            problems: ("blurry" | "too_dark" | "glare" | "too_small")[];
         };
         /** QueueCountsOut */
         QueueCountsOut: {
