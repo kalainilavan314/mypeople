@@ -364,6 +364,7 @@ export const en = {
     identityVerified: 'Identity verified',
     showCode: 'Show QR code',
     hideCode: 'Hide QR code',
+    brightnessHint: 'Turn your screen brightness up so the coordinator can scan this code.',
     codeHint: 'The code changes every minute. Only a coordinator can check it.',
     closeCode: 'Close secure code', antiScreenshot: 'Show this directly to the coordinator. Do not share or screenshot it.', codeSeconds: '{{seconds}} seconds remaining',
     progressTitle: 'My progress', progressHint: 'Your own activity record. It has no points, rank, or comparison.', progressEmpty: 'Your personal milestones will appear here.',
