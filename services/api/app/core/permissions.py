@@ -95,6 +95,8 @@ MATRIX: dict[str, dict[Tier, Grant]] = {
     # Not in the BRD matrix [ASSUMPTION]: FR-PROF-018 and 019 route data-subject requests to
     # the DPO without naming a permission; the DPO's account holds it as an explicit Tier 5 grant.
     "privacy.requests.handle": {"5": E},
+    # Community Reporting operational work queue (D01):
+    "reports.view": {"1": D, "2A": D, "2B": E, "3A": D, "3B": E, "4": D, "5": D},
 }
 
 # RB-12 [ASSUMPTION; OD-32]: no person may hold assistance decision rights

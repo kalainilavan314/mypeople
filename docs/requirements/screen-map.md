@@ -158,7 +158,7 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 
 | Screen | Name | Module | Phase | Status | Place | Note |
 |---|---|---|---|---|---|---|
-| W01 | Verification queue | Verification and roles (SC-15) | 1 | Built | `apps/admin-web/src/app/(staff)/verification/page.tsx` |  |
+| W01 | Verification queue | Verification and roles (SC-15) | 1 | Built | `apps/admin-web/src/app/(staff)/verification/page.tsx` | Scoped, filtered and paginated review queue |
 | W02 | Identity decision | Verification and roles (SC-15) | 1 | Built | `apps/admin-web/src/app/(staff)/verification/[id]/page.tsx` |  |
 | W03 | GN case file | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
 | W04 | DS research | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
@@ -167,15 +167,15 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | W07 | Final approval | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
 | W08 | Implementation and closure | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
 | W09 | Role, area and permission assignment | Verification and roles (SC-15) | 1 | Built | `apps/admin-web/src/app/(staff)/access/page.tsx` |  |
-| D01 | Admin home and work queues | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/page.tsx` | Operational priority work queues |
+| D01 | Admin home and work queues | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/page.tsx` | Area-scoped queues refresh each minute; community reports have filtered pagination, record detail, audited access and an immutable submission-area snapshot. |
 | D02 | Member and household administration | My Household (SC-22) | 2 | Built | `apps/admin-web/src/app/(staff)/members/` |  |
 | D03 | Identity screening panel | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/verification/[id]/page.tsx` | Shown on the W02 review page |
-| D04 | Duplicate investigation workspace | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/duplicates/` |  |
-| D05 | Verification appeals queue | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/appeals/` |  |
+| D04 | Duplicate investigation workspace | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/duplicates/` | Paginated investigations and case decisions |
+| D05 | Verification appeals queue | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/appeals/` | Paginated appeals and decision records |
 | D06 | Membership activation console (GAP-02) | Membership activation (§9, BR-097) | 1 | Built | `apps/admin-web/src/app/(staff)/membership/` |  |
-| D07 | Event console (GAP-03) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/events/` | Event list, create, edit, attendance roster, cancellation |
-| D08 | Gallery console and removal queue (GAP-04) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/gallery/` | Album publishing and 24h photo removal queue |
-| D09 | Notification and messaging composer (GAP-05) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/messages/` | Staff broadcast composer with reach preview |
+| D07 | Event console (GAP-03) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/events/` | Paginated list, create, edit, audited roster CSV, cancellation |
+| D08 | Gallery console and removal queue (GAP-04) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/gallery/` | Paginated album and 24h removal queues, protected display-size preview |
+| D09 | Notification and messaging composer (GAP-05) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/messages/` | Paginated bilingual broadcasts with area and effective staff-authorization-tier targeting, live reach, final reach recalculation, approval and audited dispatch. No member ranking. |
 | D10 | Finance queue and ledger (GAP-06) | Administration (SC-17, SC-20) | 1–3 | To build | `apps/admin-web/src/app/(staff)/finance/` |  |
 | D11 | Payment reconciliation | Payment gateway (SC-43) | 3, subject to OD-27 | Blocked: OD-27, OD-40 | `apps/admin-web/src/app/(staff)/finance/payments/` |  |
 | D12 | Moderation and fact-check queue (GAP-07) | Official content and fact-checks (SC-41) | 2 | To build | `apps/admin-web/src/app/(staff)/moderation/` |  |
@@ -200,5 +200,5 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | D31 | Security centre | Account and device security (SC-42) | 1 | Built | `apps/admin-web/src/app/(staff)/access-reviews/page.tsx` |  |
 | D32 | Analytics dashboards | Administration (SC-17, SC-20) | 1–3 | To build | `apps/admin-web/src/app/(staff)/analytics/` |  |
 | D33 | Audit log viewer | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/audit/page.tsx` |  |
-| D34 | Geography and configuration | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/settings/` | Feature flags and read-only geography registry |
+| D34 | Geography and configuration | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/settings/` | Feature flags and read-only district → DS → GN registry |
 | D35 | Policy and consent register | Administration (SC-17, SC-20) | 1–3 | API ready (/v1/privacy register (requests only)) | `apps/admin-web/src/app/(staff)/privacy/` |  |

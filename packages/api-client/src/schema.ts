@@ -1624,6 +1624,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/events/manage/{event_id}/attendance.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Managed Attendance
+         * @description D07: audited, area-scoped UTF-8 RSVP roster for an event manager.
+         */
+        get: operations["export_managed_attendance_v1_events_manage__event_id__attendance_csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/events": {
         parameters: {
             query?: never;
@@ -2141,6 +2161,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/community/reports/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Report Counts
+         * @description Lightweight aggregate actionable report counts for D01 operational work queues.
+         */
+        get: operations["get_report_counts_v1_community_reports_counts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/community/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Reports
+         * @description Bounded, paginated list of area-scoped community reports.
+         */
+        get: operations["list_reports_v1_community_reports_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/community/reports/{report_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Report
+         * @description One area-scoped report, audited without returning reporter identity or contact data.
+         */
+        get: operations["get_report_v1_community_reports__report_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -2456,6 +2536,26 @@ export interface paths {
          * @description A bilingual draft for an area inside the caller's own scope (FR-ADM-007, BR-083).
          */
         post: operations["create_broadcast_v1_notifications_broadcasts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/broadcasts/reach": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Estimate Reach
+         * @description Area-scoped estimate for the composer; submit computes recipients again.
+         */
+        post: operations["estimate_reach_v1_notifications_broadcasts_reach_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3752,6 +3852,17 @@ export interface components {
             /** Note */
             note: string;
         };
+        /** AudienceReachIn */
+        AudienceReachIn: {
+            area: components["schemas"]["AreaRef"];
+            /** Audiencetiers */
+            audienceTiers?: ("1" | "2A" | "2B" | "3A" | "3B" | "4" | "5")[] | null;
+        };
+        /** AudienceReachOut */
+        AudienceReachOut: {
+            /** Reaches */
+            reaches: number;
+        };
         /** AuditEntryOut */
         AuditEntryOut: {
             /** Id */
@@ -3812,6 +3923,8 @@ export interface components {
             /** Bodyta */
             bodyTa: string;
             area: components["schemas"]["AreaRef"];
+            /** Audiencetiers */
+            audienceTiers?: ("1" | "2A" | "2B" | "3A" | "3B" | "4" | "5")[] | null;
         };
         /** BroadcastOut */
         BroadcastOut: {
@@ -3839,6 +3952,8 @@ export interface components {
             areaLevel: string;
             /** Areakey */
             areaKey: string;
+            /** Audiencetiers */
+            audienceTiers: ("1" | "2A" | "2B" | "3A" | "3B" | "4" | "5")[] | null;
             /**
              * State
              * @enum {string}
@@ -3885,6 +4000,8 @@ export interface components {
             areaLevel: string;
             /** Areakey */
             areaKey: string;
+            /** Audiencetiers */
+            audienceTiers: ("1" | "2A" | "2B" | "3A" | "3B" | "4" | "5")[] | null;
             /**
              * State
              * @enum {string}
@@ -3934,6 +4051,8 @@ export interface components {
             bodyEn?: string | null;
             /** Bodyta */
             bodyTa?: string | null;
+            /** Audiencetiers */
+            audienceTiers?: ("1" | "2A" | "2B" | "3A" | "3B" | "4" | "5")[] | null;
         };
         /** BroadcastsQueueCount */
         BroadcastsQueueCount: {
@@ -4170,6 +4289,88 @@ export interface components {
             sent: boolean;
             /** Devcode */
             devCode?: string | null;
+        };
+        /**
+         * CommunityReportListOut
+         * @description Bounded, paginated list of area-scoped community reports.
+         */
+        CommunityReportListOut: {
+            /** Items */
+            items: components["schemas"]["CommunityReportSummaryOut"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+        };
+        /**
+         * CommunityReportSummaryOut
+         * @description Operational report summary without reporter contact data or identity disclosure.
+         */
+        CommunityReportSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Category */
+            category: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+            /** Districtcode */
+            districtCode?: string | null;
+            /** Dscode */
+            dsCode?: string | null;
+            /** Gscode */
+            gsCode?: string | null;
+            /** Areapath */
+            areaPath?: string[];
+            /** Priority */
+            priority: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "submitted" | "under_review" | "in_progress" | "resolved";
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /**
+         * CommunityReportsQueueCount
+         * @description Aggregate actionable report counts for D01 operational work queues.
+         */
+        CommunityReportsQueueCount: {
+            /**
+             * Submitted
+             * @default 0
+             */
+            submitted: number;
+            /**
+             * Underreview
+             * @default 0
+             */
+            underReview: number;
+            /**
+             * Inprogress
+             * @default 0
+             */
+            inProgress: number;
+            /**
+             * Totalactionable
+             * @default 0
+             */
+            totalActionable: number;
         };
         /** ConfigurationQueueCount */
         ConfigurationQueueCount: {
@@ -7152,6 +7353,7 @@ export interface components {
             galleryAlbums?: components["schemas"]["GalleryAlbumsQueueCount"] | null;
             messaging?: components["schemas"]["BroadcastsQueueCount"] | null;
             configuration?: components["schemas"]["ConfigurationQueueCount"] | null;
+            reports?: components["schemas"]["CommunityReportsQueueCount"] | null;
             /** Unavailable */
             unavailable?: string[];
         };
@@ -8714,6 +8916,7 @@ export interface operations {
                 /** @description A review reference, e.g. VR-00421 */
                 ref?: string | null;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -9017,6 +9220,7 @@ export interface operations {
                 state?: ("submitted" | "in_review" | "upheld" | "overturned")[] | null;
                 mine?: boolean;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -9262,6 +9466,7 @@ export interface operations {
                 state?: ("open" | "in_review" | "not_duplicate" | "duplicate_confirmed")[] | null;
                 mine?: boolean;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -10182,6 +10387,7 @@ export interface operations {
             query?: {
                 state?: ("draft" | "published" | "cancelled")[] | null;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -10227,6 +10433,51 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ManagedEventOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_managed_attendance_v1_events_manage__event_id__attendance_csv_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description forbidden or outside_your_area */
@@ -10827,6 +11078,7 @@ export interface operations {
             query?: {
                 state?: ("draft" | "submitted" | "published")[] | null;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -11501,6 +11753,7 @@ export interface operations {
             query?: {
                 state?: ("open" | "removed" | "blurred" | "kept")[] | null;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -11659,6 +11912,97 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RemovalReceiptOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_report_counts_v1_community_reports_counts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunityReportsQueueCount"];
+                };
+            };
+        };
+    };
+    list_reports_v1_community_reports_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunityReportListOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_report_v1_community_reports__report_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunityReportSummaryOut"];
                 };
             };
             /** @description not_found */
@@ -12399,6 +12743,7 @@ export interface operations {
             query?: {
                 state?: ("draft" | "pending_approval" | "scheduled" | "sent" | "cancelled")[] | null;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -12468,6 +12813,53 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    estimate_reach_v1_notifications_broadcasts_reach_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AudienceReachIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AudienceReachOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };

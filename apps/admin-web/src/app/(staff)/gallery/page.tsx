@@ -4,12 +4,15 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 
 import { Feedback } from '@/components/Feedback';
+import { ConsolePagination } from '@/components/ConsolePagination';
+import { ConsoleLoading } from '@/components/ConsoleLoading';
 import { PageHeader } from '@/components/PageHeader';
 import { StateTag } from '@/components/StateTag';
 import { SubmitButton } from '@/components/SubmitButton';
 import { decideRemoval } from '@/features/gallery/actions';
 import { formatDate, formatDateTime } from '@/lib/format';
 import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
+import { CONSOLE_PAGE_SIZE, consolePage } from '@/lib/pagination';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
 
@@ -17,7 +20,7 @@ const one = (value: string | string[] | undefined) => (Array.isArray(value) ? va
 
 export default function GalleryPage(props: PageProps<'/gallery'>) {
   return (
-    <Suspense fallback={<p className="text-muted">… Loading gallery console</p>}>
+    <Suspense fallback={<ConsoleLoading rows={5} />}>
       <GalleryContent searchParams={props.searchParams} />
     </Suspense>
   );
@@ -86,7 +89,7 @@ async function GalleryContent({ searchParams }: { searchParams: PageProps<'/gall
         ) : null}
       </nav>
 
-      <Suspense fallback={<p className="text-muted">… {locale === 'ta' ? 'ஏற்றப்படுகிறது' : 'Loading'}</p>}>
+      <Suspense fallback={<ConsoleLoading rows={5} />}>
         {tab === 'removals' ? (
           <RemovalsQueueContent searchParams={searchParams} />
         ) : (
@@ -101,7 +104,9 @@ async function AlbumsContent({ searchParams }: { searchParams: PageProps<'/galle
   const staff = await requireStaff();
   const locale = await getAdminLocale(staff.member.language);
   const params = await searchParams;
-  const state = one(params.state) as 'draft' | 'submitted' | 'published' | undefined;
+  const requestedState = one(params.state);
+  const state = (['draft', 'submitted', 'published'] as const).find((candidate) => candidate === requestedState);
+  const page = consolePage(params.page);
   const error = one(params.error);
   const problems = one(params.problems);
   const done = one(params.done);
@@ -111,11 +116,14 @@ async function AlbumsContent({ searchParams }: { searchParams: PageProps<'/galle
 
   try {
     const states = state ? [state] : (['draft', 'submitted', 'published'] as const);
-    albums = await api.listManagedAlbums({ states, limit: 100 });
+    albums = await api.listManagedAlbums({ states, limit: CONSOLE_PAGE_SIZE + 1, offset: (page - 1) * CONSOLE_PAGE_SIZE });
   } catch (err) {
     if (isRefusal(err)) return <p className="text-error">! {getLocalizedMessage(err.code, locale)}</p>;
     throw err;
   }
+
+  const hasMore = albums.length > CONSOLE_PAGE_SIZE;
+  albums = albums.slice(0, CONSOLE_PAGE_SIZE);
 
   return (
     <>
@@ -135,7 +143,6 @@ async function AlbumsContent({ searchParams }: { searchParams: PageProps<'/galle
           <span lang={locale}>{locale === 'ta' ? 'வடிகட்டுக' : 'Filter'}</span>
         </button>
       </form>
-      {albums.length === 100 ? <p className="text-sm text-warning">Showing the first 100 matching albums. Additional results require pagination.</p> : null}
 
       {albums.length === 0 ? (
         <div className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">
@@ -194,6 +201,7 @@ async function AlbumsContent({ searchParams }: { searchParams: PageProps<'/galle
           </tbody>
         </table>
       </div>
+      <ConsolePagination pathname="/gallery" page={page} hasMore={hasMore} filters={{ tab: 'albums', state }} />
     </>
   );
 }
@@ -202,7 +210,9 @@ async function RemovalsQueueContent({ searchParams }: { searchParams: PageProps<
   const staff = await requireStaff();
   const locale = await getAdminLocale(staff.member.language);
   const params = await searchParams;
-  const state = one(params.state) as 'open' | 'removed' | 'blurred' | 'kept' | undefined;
+  const requestedState = one(params.state);
+  const state = (['open', 'removed', 'blurred', 'kept'] as const).find((candidate) => candidate === requestedState);
+  const page = consolePage(params.page);
   const error = one(params.error);
   const problems = one(params.problems);
   const done = one(params.done);
@@ -211,12 +221,14 @@ async function RemovalsQueueContent({ searchParams }: { searchParams: PageProps<
 
   try {
     const states = state ? [state] : (['open'] as const);
-    requests = await api.listRemovalRequests({ states, limit: 100 });
+    requests = await api.listRemovalRequests({ states, limit: CONSOLE_PAGE_SIZE + 1, offset: (page - 1) * CONSOLE_PAGE_SIZE });
   } catch (err) {
     if (isRefusal(err)) return <p className="text-error">! {getLocalizedMessage(err.code, locale)}</p>;
     throw err;
   }
 
+  const hasMore = requests.length > CONSOLE_PAGE_SIZE;
+  requests = requests.slice(0, CONSOLE_PAGE_SIZE);
   const escalatedCount = requests.filter((r) => r.escalated).length;
 
   return (
@@ -235,7 +247,6 @@ async function RemovalsQueueContent({ searchParams }: { searchParams: PageProps<
           </span>
         ) : null}
       </div>
-      {requests.length === 100 ? <p className="text-sm text-warning">Showing the first 100 matching removal requests. Additional results require pagination.</p> : null}
 
       <form className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3" role="search">
         <input type="hidden" name="tab" value="removals" />
@@ -268,15 +279,17 @@ async function RemovalsQueueContent({ searchParams }: { searchParams: PageProps<
             }`}>
             {/* Safe photo preview */}
             <div className="flex shrink-0 flex-col items-center gap-2">
-              <Image
-                src={`/evidence/photo/${req.photoId}/thumb`}
-                alt="Protected photo evidence"
-                width={128}
-                height={128}
-                className="size-32 rounded-lg object-cover border border-line bg-surface"
-                unoptimized
-              />
-              <span className="text-xs text-muted">{locale === 'ta' ? 'பாதுகாக்கப்பட்ட முன்னோட்டம்' : 'Protected preview'}</span>
+              <a href={`/evidence/photo/${req.photoId}/display`} target="_blank" rel="noopener noreferrer" className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label={`Open larger protected preview for ${req.requestRef}`}>
+                <Image
+                  src={`/evidence/photo/${req.photoId}/thumb`}
+                  alt="Protected photo evidence"
+                  width={128}
+                  height={128}
+                  className="size-32 rounded-lg object-cover border border-line bg-surface"
+                  unoptimized
+                />
+              </a>
+              <span className="text-xs text-muted">Open larger protected preview</span>
             </div>
 
             {/* Request context */}
@@ -403,6 +416,7 @@ async function RemovalsQueueContent({ searchParams }: { searchParams: PageProps<
           </article>
         ))}
       </div>
+      <ConsolePagination pathname="/gallery" page={page} hasMore={hasMore} filters={{ tab: 'removals', state }} />
     </>
   );
 }

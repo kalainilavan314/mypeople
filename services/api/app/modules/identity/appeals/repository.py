@@ -128,11 +128,11 @@ def decide(
 
 
 def queue(
-    db: Session, *, visible_areas: list[str] | None, states: list[str], claimed_by: uuid.UUID | None, limit: int
+    db: Session, *, visible_areas: list[str] | None, states: list[str], claimed_by: uuid.UUID | None, limit: int, offset: int = 0
 ) -> list[StoredAppeal]:
     """Oldest first (D05). visible_areas=None means every area."""
     conditions = ["a.state = ANY(CAST(:states AS text[]))"]
-    params: dict[str, Any] = {"states": states, "limit": limit}
+    params: dict[str, Any] = {"states": states, "limit": limit, "offset": offset}
     if visible_areas is not None:
         conditions.append("a.area_path && CAST(:areas AS text[])")
         params["areas"] = visible_areas
@@ -140,7 +140,7 @@ def queue(
         conditions.append("a.claimed_by = :claimed_by")
         params["claimed_by"] = claimed_by
     rows = db.execute(
-        text(f"{_SELECT} WHERE {' AND '.join(conditions)} ORDER BY a.submitted_at, a.appeal_ref LIMIT :limit"),
+        text(f"{_SELECT} WHERE {' AND '.join(conditions)} ORDER BY a.submitted_at, a.appeal_ref LIMIT :limit OFFSET :offset"),
         params,
     ).mappings()
     return [StoredAppeal(**row) for row in rows]

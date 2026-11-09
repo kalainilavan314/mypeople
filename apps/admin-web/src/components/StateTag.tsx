@@ -10,7 +10,6 @@ const TONES: Record<Tone, { className: string }> = {
   neutral: { className: 'bg-surface text-muted' },
   refused: { className: 'bg-error-bg text-error' },
 };
-
 const STATE_TONES: Record<string, Tone> = {
   verified: 'done',
   approved: 'done',

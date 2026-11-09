@@ -45,7 +45,7 @@ def upgrade() -> None:
         )
         """
     )
-    op.execute("CREATE INDEX volunteer_assignment_event ON staff_ops.volunteer_assignment (event_id, shift_start)")
+    op.execute("CREATE INDEX volunteer_assignment_event_idx ON staff_ops.volunteer_assignment (event_id, shift_start)")
     op.execute("CREATE INDEX volunteer_assignment_member ON staff_ops.volunteer_assignment (member_id, shift_start DESC)")
     op.execute(
         """

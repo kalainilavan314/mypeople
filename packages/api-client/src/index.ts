@@ -81,6 +81,7 @@ export type NotificationChoicesInput = Schemas['ChoicesIn'];
 export type PushPlatform = Schemas['DeviceIn']['platform'];
 export type Broadcast = Schemas['BroadcastOut'];
 export type BroadcastPreview = Schemas['BroadcastPreviewOut'];
+export type AudienceReach = Schemas['AudienceReachOut'];
 export type BroadcastCreateInput = Schemas['BroadcastCreateIn'];
 export type BroadcastUpdateInput = Schemas['BroadcastUpdateIn'];
 export type EnabledFeatures = Schemas['FeaturesOut'];
@@ -95,6 +96,10 @@ export type ElectionPeriodInput = Schemas['PeriodIn'];
 export type DeclaredElectionPeriod = Schemas['DeclaredOut'];
 export type ElectionPeriodFile = Schemas['PeriodFileOut'];
 export type WorkQueues = Schemas['WorkQueuesOut'];
+export type CommunityReportsQueueCount = Schemas['CommunityReportsQueueCount'];
+export type CommunityReportSummary = Schemas['CommunityReportSummaryOut'];
+export type CommunityReportList = Schemas['CommunityReportListOut'];
+export type CommunityReportStatus = Schemas['CommunityReportSummaryOut']['status'];
 export type Household = Schemas['HouseholdOut'];
 export type HouseholdMember = Schemas['HouseholdMemberOut'];
 export type HouseholdInvitation = Schemas['HouseholdInvitationOut'];
@@ -126,6 +131,7 @@ export type AssignmentPreviewInput = Schemas['AssignmentPreviewCreateInput'];
 export type AssignmentPreviewCreated = Schemas['AssignmentPreviewCreatedOut'];
 export type AssignmentPreviewDetails = Schemas['AssignmentPreviewOut'];
 export type Assignment = Schemas['AssignmentOut'];
+export type StaffTier = Assignment['tier'];
 export type ListedAssignment = Schemas['AssignmentListItemOut'];
 export type AssignmentPreview = Schemas['PreviewOut'];
 export type AccessCatalogue = Schemas['Catalogue'];
@@ -226,6 +232,7 @@ export interface ReviewFilters {
   /** A review reference, e.g. "VR-00421". */
   ref?: string;
   limit?: number;
+  offset?: number;
 }
 
 export interface AppealFilters {
@@ -234,6 +241,7 @@ export interface AppealFilters {
   /** Only appeals the caller has claimed. */
   mine?: boolean;
   limit?: number;
+  offset?: number;
 }
 
 type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -566,7 +574,7 @@ export function createApiClient({
     /** Report that a member may hold another account (needs members.verify). An existing pair returns its case. */
     reportDuplicate: (input: DuplicateReportInput) => request<DuplicateCase>('POST', '/v1/identity/duplicates', input),
     /** D04: open duplicate investigations in the caller's areas. Needs idv.duplicate.investigate. */
-    listDuplicateCases: (filters: { states?: DuplicateCaseState[]; mine?: boolean; limit?: number } = {}) =>
+    listDuplicateCases: (filters: { states?: DuplicateCaseState[]; mine?: boolean; limit?: number; offset?: number } = {}) =>
       request<DuplicateCase[]>('GET', `/v1/identity/duplicates${toQueueQuery(filters)}`),
     getDuplicateCase: (caseId: string) => request<DuplicateCaseFile>('GET', `/v1/identity/duplicates/${encodeURIComponent(caseId)}`),
     claimDuplicateCase: (caseId: string) =>
@@ -594,7 +602,7 @@ export function createApiClient({
       request<EventPassCode>('GET', `/v1/events/${encodeURIComponent(eventId)}/pass/code`),
 
     /** Events in the caller's areas, drafts included. Needs events.manage. */
-    listManagedEvents: (filters: { states?: readonly ('draft' | 'published' | 'cancelled')[]; limit?: number } = {}) =>
+    listManagedEvents: (filters: { states?: readonly ('draft' | 'published' | 'cancelled')[]; limit?: number; offset?: number } = {}) =>
       request<ManagedEvent[]>('GET', `/v1/events/manage${toQueueQuery(filters)}`),
     getManagedEvent: (eventId: string) =>
       request<ManagedEvent>('GET', `/v1/events/manage/${encodeURIComponent(eventId)}`),
@@ -649,7 +657,7 @@ export function createApiClient({
       request<RemovalReceipt>('POST', '/v1/content/removal-requests/public', input),
 
     /** Albums in the caller's areas (drafts and submitted by default). Needs gallery.publish. */
-    listManagedAlbums: (filters: { states?: readonly ('draft' | 'submitted' | 'published')[]; limit?: number } = {}) =>
+    listManagedAlbums: (filters: { states?: readonly ('draft' | 'submitted' | 'published')[]; limit?: number; offset?: number } = {}) =>
       request<AlbumSummary[]>('GET', `/v1/content/albums/manage${toQueueQuery(filters)}`),
     getManagedAlbum: (albumId: string) =>
       request<ManagedAlbum>('GET', `/v1/content/albums/manage/${encodeURIComponent(albumId)}`),
@@ -671,7 +679,7 @@ export function createApiClient({
     returnAlbum: (albumId: string, note: string) =>
       request<ManagedAlbum>('POST', `/v1/content/albums/${encodeURIComponent(albumId)}/return`, { note }),
     /** The removal queue, soonest due first, with the 18-hour escalation flag. Needs gallery.takedown. */
-    listRemovalRequests: (filters: { states?: readonly ('open' | 'removed' | 'blurred' | 'kept')[]; limit?: number } = {}) =>
+    listRemovalRequests: (filters: { states?: readonly ('open' | 'removed' | 'blurred' | 'kept')[]; limit?: number; offset?: number } = {}) =>
       request<QueuedRemoval[]>('GET', `/v1/content/removal-requests${toQueueQuery(filters)}`),
     /** Remove, blur or keep, with a reason. Throws ApiError "already_decided" (409). */
     decideRemovalRequest: (requestId: string, input: RemovalDecisionInput) =>
@@ -751,8 +759,13 @@ export function createApiClient({
     unregisterPushDevice: (token: string) => request<void>('POST', '/v1/notifications/devices/unregister', { token }),
 
     /** Broadcasts in the caller's areas. Needs notifications.send. */
-    listBroadcasts: (filters: { states?: readonly Broadcast['state'][]; limit?: number } = {}) =>
+    listBroadcasts: (filters: { states?: readonly Broadcast['state'][]; limit?: number; offset?: number } = {}) =>
       request<Broadcast[]>('GET', `/v1/notifications/broadcasts${toQueueQuery(filters)}`),
+    estimateBroadcastReach: (area: AreaRef, audienceTiers?: readonly StaffTier[]) =>
+      request<AudienceReach>('POST', '/v1/notifications/broadcasts/reach', {
+        area,
+        audienceTiers: audienceTiers?.length ? audienceTiers : null,
+      }),
     /** A bilingual draft for an area in the caller's own scope; another area is "outside_your_area" (403). */
     createBroadcast: (input: BroadcastCreateInput) => request<Broadcast>('POST', '/v1/notifications/broadcasts', input),
     updateBroadcast: (broadcastId: string, input: BroadcastUpdateInput) =>
@@ -813,6 +826,20 @@ export function createApiClient({
     getHouseholdPrivacyNotice: () => request<ConsentNotice>('GET', '/v1/households/privacy'),
     staffViewHousehold: (targetMemberId: string) =>
       request<StaffHouseholdView>('GET', `/v1/households/staff/${encodeURIComponent(targetMemberId)}`),
+    /** Lightweight community report counts grouped by state for area-scoped queues. Needs reports.view. */
+    getCommunityReportCounts: () => request<CommunityReportsQueueCount>('GET', '/v1/community/reports/counts'),
+    /** Bounded paginated list of area-scoped community reports. Needs reports.view. */
+    listCommunityReports: (params?: { status?: CommunityReportStatus; limit?: number; offset?: number }) => {
+      const q = new URLSearchParams();
+      if (params?.status) q.set('status', params.status);
+      if (params?.limit !== undefined) q.set('limit', String(params.limit));
+      if (params?.offset !== undefined) q.set('offset', String(params.offset));
+      const qs = q.toString();
+      return request<CommunityReportList>('GET', `/v1/community/reports${qs ? `?${qs}` : ''}`);
+    },
+    /** Area-scoped operational detail without reporter identity or contact data. Needs reports.view. */
+    getCommunityReport: (reportId: string) =>
+      request<CommunityReportSummary>('GET', `/v1/community/reports/${encodeURIComponent(reportId)}`),
   };
 }
 
@@ -834,15 +861,17 @@ function toReviewQuery(filters: ReviewFilters): string {
   if (filters.mine) params.set('mine', 'true');
   if (filters.ref) params.set('ref', filters.ref);
   if (filters.limit !== undefined) params.set('limit', String(filters.limit));
+  if (filters.offset !== undefined) params.set('offset', String(filters.offset));
   const query = params.toString();
   return query ? `?${query}` : '';
 }
 
-function toQueueQuery(filters: { states?: readonly string[]; mine?: boolean; limit?: number }): string {
+function toQueueQuery(filters: { states?: readonly string[]; mine?: boolean; limit?: number; offset?: number }): string {
   const params = new URLSearchParams();
   for (const state of filters.states ?? []) params.append('state', state);
   if (filters.mine) params.set('mine', 'true');
   if (filters.limit !== undefined) params.set('limit', String(filters.limit));
+  if (filters.offset !== undefined) params.set('offset', String(filters.offset));
   const query = params.toString();
   return query ? `?${query}` : '';
 }

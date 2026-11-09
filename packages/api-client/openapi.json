@@ -2273,6 +2273,18 @@
               "default": 50,
               "title": "Limit"
             }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
           }
         ],
         "responses": {
@@ -2696,6 +2708,18 @@
               "default": 50,
               "title": "Limit"
             }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
           }
         ],
         "responses": {
@@ -3091,6 +3115,18 @@
               "minimum": 1,
               "default": 50,
               "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
             }
           }
         ],
@@ -4172,6 +4208,18 @@
               "default": 50,
               "title": "Limit"
             }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
           }
         ],
         "responses": {
@@ -4237,6 +4285,62 @@
                 "schema": {
                   "$ref": "#/components/schemas/ManagedEventOut"
                 }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/manage/{event_id}/attendance.csv": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Export Managed Attendance",
+        "description": "D07: audited, area-scoped UTF-8 RSVP roster for an event manager.",
+        "operationId": "export_managed_attendance_v1_events_manage__event_id__attendance_csv_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           },
@@ -5154,6 +5258,18 @@
               "default": 50,
               "title": "Limit"
             }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
           }
         ],
         "responses": {
@@ -6050,6 +6166,18 @@
               "default": 100,
               "title": "Limit"
             }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
           }
         ],
         "responses": {
@@ -6271,6 +6399,174 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RemovalReceiptOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/community/reports/counts": {
+      "get": {
+        "tags": [
+          "community-reports"
+        ],
+        "summary": "Get Report Counts",
+        "description": "Lightweight aggregate actionable report counts for D01 operational work queues.",
+        "operationId": "get_report_counts_v1_community_reports_counts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityReportsQueueCount"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/community/reports": {
+      "get": {
+        "tags": [
+          "community-reports"
+        ],
+        "summary": "List Reports",
+        "description": "Bounded, paginated list of area-scoped community reports.",
+        "operationId": "list_reports_v1_community_reports_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityReportListOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/community/reports/{report_id}": {
+      "get": {
+        "tags": [
+          "community-reports"
+        ],
+        "summary": "Get Report",
+        "description": "One area-scoped report, audited without returning reporter identity or contact data.",
+        "operationId": "get_report_v1_community_reports__report_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Report Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityReportSummaryOut"
                 }
               }
             }
@@ -7397,6 +7693,18 @@
               "default": 50,
               "title": "Limit"
             }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
           }
         ],
         "responses": {
@@ -7472,6 +7780,62 @@
             "description": "broadcast_invalid"
           }
         }
+      }
+    },
+    "/v1/notifications/broadcasts/reach": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Estimate Reach",
+        "description": "Area-scoped estimate for the composer; submit computes recipients again.",
+        "operationId": "estimate_reach_v1_notifications_broadcasts_reach_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AudienceReachIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AudienceReachOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/v1/notifications/broadcasts/{broadcast_id}": {
@@ -11114,6 +11478,55 @@
         ],
         "title": "AssistedResolutionInput"
       },
+      "AudienceReachIn": {
+        "properties": {
+          "area": {
+            "$ref": "#/components/schemas/AreaRef"
+          },
+          "audienceTiers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2A",
+                    "2B",
+                    "3A",
+                    "3B",
+                    "4",
+                    "5"
+                  ]
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiencetiers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "area"
+        ],
+        "title": "AudienceReachIn"
+      },
+      "AudienceReachOut": {
+        "properties": {
+          "reaches": {
+            "type": "integer",
+            "title": "Reaches"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reaches"
+        ],
+        "title": "AudienceReachOut"
+      },
       "AuditEntryOut": {
         "properties": {
           "id": {
@@ -11288,6 +11701,30 @@
           },
           "area": {
             "$ref": "#/components/schemas/AreaRef"
+          },
+          "audienceTiers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2A",
+                    "2B",
+                    "3A",
+                    "3B",
+                    "4",
+                    "5"
+                  ]
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiencetiers"
           }
         },
         "type": "object",
@@ -11343,6 +11780,29 @@
           "areaKey": {
             "type": "string",
             "title": "Areakey"
+          },
+          "audienceTiers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2A",
+                    "2B",
+                    "3A",
+                    "3B",
+                    "4",
+                    "5"
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiencetiers"
           },
           "state": {
             "type": "string",
@@ -11415,6 +11875,7 @@
           "bodyTa",
           "areaLevel",
           "areaKey",
+          "audienceTiers",
           "state",
           "sendAt",
           "sentAt",
@@ -11465,6 +11926,29 @@
           "areaKey": {
             "type": "string",
             "title": "Areakey"
+          },
+          "audienceTiers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2A",
+                    "2B",
+                    "3A",
+                    "3B",
+                    "4",
+                    "5"
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiencetiers"
           },
           "state": {
             "type": "string",
@@ -11554,6 +12038,7 @@
           "bodyTa",
           "areaLevel",
           "areaKey",
+          "audienceTiers",
           "state",
           "sendAt",
           "sentAt",
@@ -11653,6 +12138,30 @@
               }
             ],
             "title": "Bodyta"
+          },
+          "audienceTiers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2A",
+                    "2B",
+                    "3A",
+                    "3B",
+                    "4",
+                    "5"
+                  ]
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiencetiers"
           }
         },
         "type": "object",
@@ -12351,6 +12860,163 @@
         ],
         "title": "CodeSentOut",
         "description": "devCode appears only with SMS_PROVIDER=development, for local testing."
+      },
+      "CommunityReportListOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CommunityReportSummaryOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "CommunityReportListOut",
+        "description": "Bounded, paginated list of area-scoped community reports."
+      },
+      "CommunityReportSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "districtCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Districtcode"
+          },
+          "dsCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dscode"
+          },
+          "gsCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gscode"
+          },
+          "areaPath": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Areapath"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "submitted",
+              "under_review",
+              "in_progress",
+              "resolved"
+            ],
+            "title": "Status"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "title",
+          "description",
+          "priority",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "CommunityReportSummaryOut",
+        "description": "Operational report summary without reporter contact data or identity disclosure."
+      },
+      "CommunityReportsQueueCount": {
+        "properties": {
+          "submitted": {
+            "type": "integer",
+            "title": "Submitted",
+            "default": 0
+          },
+          "underReview": {
+            "type": "integer",
+            "title": "Underreview",
+            "default": 0
+          },
+          "inProgress": {
+            "type": "integer",
+            "title": "Inprogress",
+            "default": 0
+          },
+          "totalActionable": {
+            "type": "integer",
+            "title": "Totalactionable",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "CommunityReportsQueueCount",
+        "description": "Aggregate actionable report counts for D01 operational work queues."
       },
       "ConfigurationQueueCount": {
         "properties": {
@@ -19735,6 +20401,16 @@
             "anyOf": [
               {
                 "$ref": "#/components/schemas/ConfigurationQueueCount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reports": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CommunityReportsQueueCount"
               },
               {
                 "type": "null"

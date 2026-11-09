@@ -3,10 +3,13 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 
 import { Feedback } from '@/components/Feedback';
+import { ConsolePagination } from '@/components/ConsolePagination';
+import { ConsoleLoading } from '@/components/ConsoleLoading';
 import { PageHeader } from '@/components/PageHeader';
 import { StateTag } from '@/components/StateTag';
 import { areaText, formatDateTime } from '@/lib/format';
 import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
+import { CONSOLE_PAGE_SIZE, consolePage } from '@/lib/pagination';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
 
@@ -23,7 +26,7 @@ export default function BroadcastsListPage(props: PageProps<'/messages'>) {
           + Compose broadcast
         </Link>
       </PageHeader>
-      <Suspense fallback={<p className="text-muted">… Loading broadcasts</p>}>
+      <Suspense fallback={<ConsoleLoading rows={5} />}>
         <BroadcastsContent searchParams={props.searchParams} />
       </Suspense>
     </>
@@ -34,7 +37,9 @@ async function BroadcastsContent({ searchParams }: { searchParams: PageProps<'/m
   const staff = await requireStaff();
   const locale = await getAdminLocale(staff.member.language);
   const params = await searchParams;
-  const state = one(params.state) as Broadcast['state'] | undefined;
+  const requestedState = one(params.state);
+  const state = STATES.find((candidate) => candidate === requestedState);
+  const page = consolePage(params.page);
   const error = one(params.error);
   const problems = one(params.problems);
   const done = one(params.done);
@@ -43,13 +48,15 @@ async function BroadcastsContent({ searchParams }: { searchParams: PageProps<'/m
   let broadcasts: Broadcast[] = [];
 
   try {
-    const states = state && (STATES as readonly string[]).includes(state) ? [state] : (['draft', 'pending_approval', 'scheduled', 'sent'] as const);
-    broadcasts = await api.listBroadcasts({ states, limit: 100 });
+    const states = state ? [state] : (['draft', 'pending_approval', 'scheduled', 'sent'] as const);
+    broadcasts = await api.listBroadcasts({ states, limit: CONSOLE_PAGE_SIZE + 1, offset: (page - 1) * CONSOLE_PAGE_SIZE });
   } catch (err) {
     if (isRefusal(err)) return <p className="text-error">! {getLocalizedMessage(err.code, locale)}</p>;
     throw err;
   }
 
+  const hasMore = broadcasts.length > CONSOLE_PAGE_SIZE;
+  broadcasts = broadcasts.slice(0, CONSOLE_PAGE_SIZE);
   const pendingCount = broadcasts.filter((b) => b.state === 'pending_approval').length;
 
   return (
@@ -58,7 +65,7 @@ async function BroadcastsContent({ searchParams }: { searchParams: PageProps<'/m
 
       <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
         <p>
-          {locale === 'ta' ? `வடிகட்டியில் ${broadcasts.length} அறிவித்தல்கள்` : `${broadcasts.length} broadcasts in this filter`}
+          {locale === 'ta' ? `இந்தப் பக்கத்தில் ${broadcasts.length} அறிவித்தல்கள்` : `${broadcasts.length} broadcasts on this page`}
         </p>
         {pendingCount > 0 ? (
           <span className="rounded bg-warning-bg px-2.5 py-1 text-xs font-semibold text-warning">
@@ -68,7 +75,6 @@ async function BroadcastsContent({ searchParams }: { searchParams: PageProps<'/m
           </span>
         ) : null}
       </div>
-      {broadcasts.length === 100 ? <p className="text-sm text-warning">Showing the first 100 matching broadcasts. Additional results require pagination.</p> : null}
 
       <form className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3" role="search">
         <label className="flex flex-col gap-1 text-sm font-semibold">
@@ -143,6 +149,7 @@ async function BroadcastsContent({ searchParams }: { searchParams: PageProps<'/m
           </tbody>
         </table>
       </div>
+      <ConsolePagination pathname="/messages" page={page} hasMore={hasMore} filters={{ state }} />
     </>
   );
 }

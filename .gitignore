@@ -10,6 +10,9 @@ app/dev-dist/
 __pycache__/
 *.pyc
 .pytest_cache/
+.pytest_tmp*/
+.test-tmp*/
+pytest_*/
 *.egg-info/
 
 # Secrets — DATABASE_URL, JWT_SECRET, NIC_PEPPER, invite codes.

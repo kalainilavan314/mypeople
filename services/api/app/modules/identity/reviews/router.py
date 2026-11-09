@@ -87,10 +87,11 @@ def list_reviews(
     mine: bool = False,
     ref: Annotated[str | None, Query(max_length=20, description="A review reference, e.g. VR-00421")] = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    offset: Annotated[int, Query(ge=0, le=100000)] = 0,
 ) -> list[ReviewSummaryOut]:
     """W01: identity reviews in the caller's areas, oldest waiting first (FR-WEB-001, 002).
     Open reviews unless states are given; mine=true for the caller's claimed reviews."""
-    reviews = service.queue(db, staff, states=list(state or OPEN_STATES), mine=mine, review_ref=ref, limit=limit)
+    reviews = service.queue(db, staff, states=list(state or OPEN_STATES), mine=mine, review_ref=ref, limit=limit, offset=offset)
     return [ReviewSummaryOut.from_stored(review) for review in reviews]
 
 

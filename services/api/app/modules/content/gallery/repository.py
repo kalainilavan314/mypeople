@@ -136,14 +136,14 @@ def published_albums(db: Session, *, category: str | None, search: str | None, l
     return [_album(row) for row in rows]
 
 
-def managed_albums(db: Session, *, visible_areas: list[str] | None, states: list[str], limit: int) -> list[StoredAlbum]:
+def managed_albums(db: Session, *, visible_areas: list[str] | None, states: list[str], limit: int, offset: int = 0) -> list[StoredAlbum]:
     conditions = ["a.state = ANY(CAST(:states AS text[]))"]
-    params: dict[str, Any] = {"states": states, "limit": limit}
+    params: dict[str, Any] = {"states": states, "limit": limit, "offset": offset}
     if visible_areas is not None:
         conditions.append("a.area_path && CAST(:areas AS text[])")
         params["areas"] = visible_areas
     rows = db.execute(
-        text(f"{_SELECT} WHERE {' AND '.join(conditions)} ORDER BY a.created_at DESC LIMIT :limit"), params
+        text(f"{_SELECT} WHERE {' AND '.join(conditions)} ORDER BY a.created_at DESC, a.id DESC LIMIT :limit OFFSET :offset"), params
     ).mappings()
     return [_album(row) for row in rows]
 
@@ -324,15 +324,15 @@ def public_requests_from(db: Session, ip: str) -> int:
     )
 
 
-def queue(db: Session, *, visible_areas: list[str] | None, states: list[str], limit: int) -> list[StoredRequest]:
+def queue(db: Session, *, visible_areas: list[str] | None, states: list[str], limit: int, offset: int = 0) -> list[StoredRequest]:
     """Soonest due first (FR-ADM-006). visible_areas=None means every area."""
     conditions = ["r.state = ANY(CAST(:states AS text[]))"]
-    params: dict[str, Any] = {"states": states, "limit": limit}
+    params: dict[str, Any] = {"states": states, "limit": limit, "offset": offset}
     if visible_areas is not None:
         conditions.append("r.area_path && CAST(:areas AS text[])")
         params["areas"] = visible_areas
     rows = db.execute(
-        text(f"{_REQUEST} WHERE {' AND '.join(conditions)} ORDER BY r.due_at, r.request_ref LIMIT :limit"), params
+        text(f"{_REQUEST} WHERE {' AND '.join(conditions)} ORDER BY r.due_at, r.request_ref LIMIT :limit OFFSET :offset"), params
     ).mappings()
     return [StoredRequest(**row) for row in rows]
 

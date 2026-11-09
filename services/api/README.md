@@ -28,7 +28,8 @@ Current scope:
 | `POST /v1/privacy/closure-code`, `POST /v1/privacy/requests`, `GET /v1/privacy/requests/mine` | data-subject requests: a copy of one's data, or closing the account |
 | `GET /v1/privacy/requests`, `POST .../{id}/decision` | the DPO register; needs `privacy.requests.handle` |
 | `GET /v1/notifications`, `POST .../{id}/read`, `POST .../read-all`, `GET`/`PUT .../choices`, `POST .../devices`, `.../devices/unregister` | the in-app inbox (All, Action needed), channel choices and quiet hours, push devices |
-| `GET`/`POST /v1/notifications/broadcasts`, `PATCH .../{id}`, `POST .../preview`, `.../submit`, `.../approve`, `.../cancel` | staff broadcasts; need `notifications.send` over the area |
+| `GET`/`POST /v1/notifications/broadcasts`, `POST .../reach`, `PATCH .../{id}`, `POST .../preview`, `.../submit`, `.../approve`, `.../cancel` | staff broadcasts by area and optional effective staff tier; need `notifications.send` over the area |
+| `GET /v1/community/reports/counts`, `GET /v1/community/reports`, `GET /v1/community/reports/{id}` | area-scoped operational reports; need `reports.view`; list/detail access is audited |
 | `GET /v1/home` | the Home tab: H01 or H02, one next step, the next event nearby, open and locked features with reasons, the hub |
 | `GET /v1/content/albums`, `GET /v1/content/albums/{id}`, `GET /v1/content/photos/{id}/{thumb\|display}` | the gallery for members: published albums, album detail, the photos |
 | `POST /v1/content/photos/{id}/removal-requests`, `GET /v1/content/removal-requests/mine`, `POST /v1/content/removal-requests/public` | photo removal requests with receipts, for members and, through a public form, for people who are not |

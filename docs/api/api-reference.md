@@ -97,9 +97,17 @@ Writes that carry the session cookie and come from another website are refused w
 | `POST /v1/notifications/{id}/read`, `POST /v1/notifications/read-all` | a session | `204` (reading never clears Action needed) | `404` |
 | `GET`/`PUT /v1/notifications/choices` body `{topics: [{topic, push, sms}], quietStart?, quietEnd?, clearQuietHours?}` | a session | `200` choices with `locked` topics | `409 topic_locked`, `422` |
 | `POST /v1/notifications/devices` body `{token, platform}`, `POST .../devices/unregister` body `{token}` | a session | `204` | `422` |
-| `GET /v1/notifications/broadcasts?state`, `POST` body: the texts, `topic` and `{area}`, `PATCH .../{id}` | `notifications.send` over the area | `200`/`201`; `heldAt` is set when an election silence first held it back | `403 outside_your_area`, `404`, `409`, `422` |
-| `POST .../{id}/preview` | as above | `200` with `reaches`, `problems`, `needsApproval` | `403`, `404` |
+| `GET /v1/notifications/broadcasts?state`, `POST` body: the texts, `topic`, `{area}` and optional `audienceTiers`, `PATCH .../{id}` | `notifications.send` over the area | `200`/`201`; tiers are effective staff authorization tiers, never member ranks; `heldAt` is set when election silence first held it back | `403 outside_your_area`, `404`, `409`, `422` |
+| `POST /v1/notifications/broadcasts/reach` body `{area, audienceTiers?}`, `POST .../{id}/preview` | as above | `200` with `reaches`; preview also has `problems`, `needsApproval` | `403`, `404`, `422` |
 | `POST .../{id}/submit` body `{sendAt?}`, `POST .../{id}/approve`, `POST .../{id}/cancel` | as above; approval by Tier 4 or 5, not the submitter | `200` | `409 own_submission`, `approver_tier_too_low`, `not_allowed_from:<state>`; `422 {code: "broadcast_invalid", problems: ["contains_id_number"]}` |
+
+### Community reports operations (`/v1/community/reports`)
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /counts` | `reports.view` | `200` actionable counts inside the caller's areas | `403` |
+| `GET ?status&limit&offset` | `reports.view` | `200 {items,total,limit,offset}`; bounded and audited, without reporter identity/contact | `400 invalid_state`, `403`, `422` |
+| `GET /{reportId}` | `reports.view` over the immutable submission area | `200` report detail without reporter identity/contact; access is audited | `403`, `404` |
 
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 

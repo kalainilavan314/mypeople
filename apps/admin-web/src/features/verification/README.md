@@ -1,6 +1,6 @@
 # Identity verification
 
-The verification queue (W01, `app/(staff)/verification`), the identity decision screen with evidence, checklist and decisions (W02, `verification/[id]`), the screening notice (D03), duplicate investigations (D04, `app/(staff)/duplicates`) and appeals (D05, `app/(staff)/appeals`). `actions.ts` claims, releases, decides and reports a duplicate; `caseActions.ts` and `CaseControls.tsx` claim and decide appeals and investigations. Images open through `app/evidence/[documentId]/route.ts`.
+The paginated verification queue (W01, `app/(staff)/verification`), the identity decision screen with evidence, checklist and decisions (W02, `verification/[id]`), the screening notice (D03), paginated duplicate investigations (D04, `app/(staff)/duplicates`) and paginated appeals (D05, `app/(staff)/appeals`). `actions.ts` claims, releases, decides and reports a duplicate; `caseActions.ts` and `CaseControls.tsx` claim and decide appeals and investigations. Images open through `app/evidence/[documentId]/route.ts`.
 
 **Status: built (Batch 22).** Not built: screening results (D03 shows "No screening" until the AI worker exists, OD-42, OD-28), the evidence watermark (FR-WEB-006), the 10-working-day appeal target.
 

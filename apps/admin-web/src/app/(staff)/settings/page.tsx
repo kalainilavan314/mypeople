@@ -33,10 +33,14 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
   const error = one(params.error);
   const problems = one(params.problems);
   const done = one(params.done);
+  const selectedDistrict = one(params.district);
+  const selectedDs = one(params.ds);
 
   const api = await staffApi();
   let flags: FeatureFlag[] = [];
   let districts: Place[] = [];
+  let dsDivisions: Place[] = [];
+  let gnDivisions: Place[] = [];
 
   try {
     [flags, districts] = await Promise.all([
@@ -47,6 +51,11 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
     if (isRefusal(err)) return <p className="text-error">! {getLocalizedMessage(err.code, locale)}</p>;
     throw err;
   }
+
+  const district = districts.find((item) => item.code === selectedDistrict);
+  if (district) dsDivisions = await api.listDsDivisions(district.code);
+  const ds = dsDivisions.find((item) => item.code === selectedDs);
+  if (ds) gnDivisions = await api.listGnDivisions(ds.code);
 
   const enabledCount = flags.filter((f) => f.enabled).length;
 
@@ -273,9 +282,44 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
             <p className="text-xs text-muted">
               {locale === 'ta'
                 ? 'பணியாளர் அதிகார வரம்புகள் மற்றும் செயல்பாட்டு வழிகாட்டலுக்குப் பயன்படுத்தப்படும் உத்தியோகபூர்வ பகுதிகள்.'
-                : 'District reference data used for area scoping. DS and GN divisions are available through the geography API.'}
+                : 'Explore the district, DS and GN divisions used for area scoping. This registry is read only.'}
             </p>
           </div>
+
+          <form action="/settings" className="flex flex-wrap items-end gap-3" role="search">
+            <label className="flex min-w-56 flex-col gap-1 text-sm font-medium text-text">
+              District
+              <select name="district" defaultValue={district?.code ?? ''} className="min-h-11 rounded-lg border border-line bg-card px-3">
+                <option value="">Select a district</option>
+                {districts.map((item) => <option key={item.code} value={item.code}>{item.nameEn ?? item.code}</option>)}
+              </select>
+            </label>
+            {district ? (
+              <label className="flex min-w-56 flex-col gap-1 text-sm font-medium text-text">
+                DS division
+                <select name="ds" defaultValue={ds?.code ?? ''} className="min-h-11 rounded-lg border border-line bg-card px-3">
+                  <option value="">All DS divisions</option>
+                  {dsDivisions.map((item) => <option key={item.code} value={item.code}>{item.nameEn ?? item.code}</option>)}
+                </select>
+              </label>
+            ) : null}
+            <button type="submit" className="min-h-11 rounded-lg border border-line px-4 text-sm font-medium text-text hover:bg-surface">View divisions</button>
+          </form>
+
+          {district ? (
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div className="rounded-lg border border-line bg-card p-4">
+                <h3 className="mb-3 text-sm font-semibold text-text">DS divisions in {district.nameEn}</h3>
+                <ul className="max-h-80 divide-y divide-line overflow-y-auto text-sm">
+                  {dsDivisions.map((item) => <li key={item.code} className="flex justify-between gap-3 py-2"><span>{item.nameEn ?? item.code}</span><span className="font-mono text-xs text-muted">{item.code}</span></li>)}
+                </ul>
+              </div>
+              <div className="rounded-lg border border-line bg-card p-4">
+                <h3 className="mb-3 text-sm font-semibold text-text">{ds ? `GN divisions in ${ds.nameEn}` : 'Select a DS division to view GN divisions'}</h3>
+                {ds ? <ul className="max-h-80 divide-y divide-line overflow-y-auto text-sm">{gnDivisions.map((item) => <li key={item.code} className="flex justify-between gap-3 py-2"><span>{item.nameEn ?? item.code}</span><span className="font-mono text-xs text-muted">{item.code}</span></li>)}</ul> : null}
+              </div>
+            </div>
+          ) : null}
 
           <div className="overflow-x-auto rounded-xl border border-line bg-card">
             <table className="w-full text-left text-sm">

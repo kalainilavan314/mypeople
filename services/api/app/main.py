@@ -25,6 +25,7 @@ from app.modules.access.reviews import router as access_reviews
 from app.modules.audit import router as audit
 from app.modules.content.gallery import router as gallery
 from app.modules.content.gallery.dependencies import build_media_store
+from app.modules.community.reports.router import router as community_reports
 from app.modules.election import router as election
 from app.modules.events import router as events
 from app.modules.features import router as features
@@ -99,6 +100,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(geography.router)
     app.include_router(events.router)
     app.include_router(gallery.router)
+    app.include_router(community_reports)
     app.include_router(home.router)
     app.include_router(profile.router)
     app.include_router(area_changes.router)

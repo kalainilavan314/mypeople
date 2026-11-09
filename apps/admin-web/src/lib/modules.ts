@@ -18,6 +18,7 @@ export const builtModules: readonly AdminModule[] = [
   { href: '/access', ta: 'பொறுப்புகளும் அனுமதிகளும்', en: 'Roles and access', permission: 'roles.assign' },
   { href: '/audit', ta: 'தணிக்கைப் பதிவு', en: 'Audit log', permission: 'audit.view' },
   { href: '/access-reviews', ta: 'அணுகல் மீளாய்வு', en: 'Access reviews', permission: 'audit.view' },
+  { href: '/reports', ta: 'சமூகப் புகார்கள்', en: 'Community reports', permission: 'reports.view' },
   { href: '/members', ta: 'உறுப்பினர்களும் குடும்பங்களும்', en: 'Members and households', permission: 'household.view_for_case' },
 ] as const;
 

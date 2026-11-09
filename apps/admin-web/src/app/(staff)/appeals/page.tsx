@@ -1,35 +1,41 @@
 import { Suspense } from 'react';
 
 import { PageHeader } from '@/components/PageHeader';
+import { ConsolePagination } from '@/components/ConsolePagination';
+import { ConsoleLoading } from '@/components/ConsoleLoading';
 import { RecordTable } from '@/components/RecordTable';
 import { StateTag } from '@/components/StateTag';
 import { areaText, formatDateTime, words } from '@/lib/format';
 import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
+import { CONSOLE_PAGE_SIZE, consolePage } from '@/lib/pagination';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
 
 /** Open appeals in the person's areas, oldest first. */
-export default function AppealsPage() {
+export default function AppealsPage(props: PageProps<'/appeals'>) {
   return (
     <>
       <PageHeader ta="சரிபார்ப்பு மேன்முறையீடுகள்" en="Verification appeals" />
-      <Suspense fallback={<p className="text-muted">… Loading</p>}>
-        <Appeals />
+      <Suspense fallback={<ConsoleLoading rows={5} />}>
+        <Appeals searchParams={props.searchParams} />
       </Suspense>
     </>
   );
 }
 
-async function Appeals() {
+async function Appeals({ searchParams }: { searchParams: PageProps<'/appeals'>['searchParams'] }) {
   const staff = await requireStaff();
   const locale = await getAdminLocale(staff.member.language);
+  const page = consolePage((await searchParams).page);
   let appeals;
   try {
-    appeals = await (await staffApi()).listIdentityAppeals({ limit: 100 });
+    appeals = await (await staffApi()).listIdentityAppeals({ limit: CONSOLE_PAGE_SIZE + 1, offset: (page - 1) * CONSOLE_PAGE_SIZE });
   } catch (error) {
     if (isRefusal(error)) return <p className="text-error">! {getLocalizedMessage(error.code, locale)}</p>;
     throw error;
   }
+  const hasMore = appeals.length > CONSOLE_PAGE_SIZE;
+  appeals = appeals.slice(0, CONSOLE_PAGE_SIZE);
   return (
     <>
       <div className="flex flex-col gap-0.5 text-sm">
@@ -80,6 +86,7 @@ async function Appeals() {
         },
       ]}
     />
+    <ConsolePagination pathname="/appeals" page={page} hasMore={hasMore} />
     </>
   );
 }
