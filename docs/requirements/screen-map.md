@@ -32,10 +32,10 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | A12 | Identity approved | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/app/(member)/verify.tsx` |  |
 | A13 | Basic profile | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/app/(auth)/register.tsx (date of birth, gender; mobile in profile/recovery-number.tsx)` |  |
 | A14 | Your area | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/app/(auth)/register.tsx (district, DS, GN, referral)` |  |
-| A15 | Optional joining survey | Identity verification (SC-02) | 1 | API ready (/v1/profile/survey-answers) | `apps/member-mobile/app/(member)/setup/survey.tsx` |  |
+| A15 | Optional joining survey | Identity verification (SC-02) | 1 | Built (DPO question-purpose approval pending) | `apps/member-mobile/app/(member)/setup/survey.tsx` | Optional fields; Skip remains available even when loading fails. |
 | A16 | Recover access | Sign-in and account (SC-01) | 1 | Built | `apps/member-mobile/app/(auth)/recover.tsx, assisted-recovery.tsx` |  |
-| A17 | Upload interrupted | Identity verification (SC-02) | 1 | API ready (/v1/identity/me/documents) | `apps/member-mobile/app/(member)/verify.tsx (upload-interrupted state)` |  |
-| A18 | Resume setup | Identity verification (SC-02) | 1 | API ready (/v1/identity/me/progress) | `apps/member-mobile/app/(member)/setup/index.tsx` |  |
+| A17 | Upload interrupted | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/src/features/identity/PhotoRow.tsx` | Per-file byte progress and retry; server-acknowledged files remain received. |
+| A18 | Resume setup | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/app/(member)/setup/index.tsx` | Server-derived next step; completed steps link to review status and correction requests. Consent remains before document upload. |
 | H01 | Home — active member | Home and inbox (SC-03) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/index.tsx` |  |
 | H02 | Home — awaiting review | Home and inbox (SC-03) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/index.tsx` |  |
 | H03 | Notifications | Home and inbox (SC-03) | 1 | Built | `apps/member-mobile/app/(member)/notifications.tsx` |  |
@@ -81,7 +81,7 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | M01 | Document capture assistant | AI-assisted identity screening (SC-21) | 1–2 | To build | `apps/member-mobile/app/(member)/verify/` |  |
 | M02 | Confirm extracted NIC number | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-42 (OCR provider) | `apps/member-mobile/app/(member)/verify/` |  |
 | M03 | Guided liveness capture | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-28, OD-29 (biometrics) | `apps/member-mobile/app/(member)/verify/` |  |
-| M04 | Verification appeal | AI-assisted identity screening (SC-21) | 1–2 | API ready (/v1/identity/me/appeal) | `apps/member-mobile/app/(member)/verify/` |  |
+| M04 | Verification appeal | AI-assisted identity screening (SC-21) | 1–2 | Built (feature-gated) | `apps/member-mobile/app/(member)/verify/appeal.tsx` | Uses `/v1/identity/me/review/appeal`; shows decision reasons and 10-working-day target. |
 | M05 | Assisted verification request | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-04 (assisted verification) | `apps/member-mobile/app/(member)/verify/` |  |
 | M06 | My Household / எனது குடும்பம் | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
 | M07 | Add household member | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |

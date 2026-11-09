@@ -9,11 +9,13 @@ import { errorMessage } from '@/lib/errors';
 
 /** A15: optional answers are saved only when the member chooses to provide them. */
 export default function SurveyScreen() {
+  const { t } = useTranslation();
   const answers = useApiQuery(() => api().getSurveyAnswers());
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.select({ ios: 'padding', android: 'height' })}>
       <Screen edges={['bottom']}>
         <QueryView query={answers}>{(saved) => <SurveyForm saved={saved} />}</QueryView>
+        <Button label={t('m.setup.skip')} variant="quiet" onPress={() => router.back()} />
       </Screen>
     </KeyboardAvoidingView>
   );
@@ -40,7 +42,6 @@ function SurveyForm({ saved }: { saved: Record<string, string> }) {
       <TextField label={t('m.setup.interests')} optional value={interests} onChangeText={setInterests} multiline maxLength={200} />
       {save.error ? <Notice tone="error">{errorMessage(t, save.error)}</Notice> : null}
       <Button label={t('m.setup.saveSurvey')} busy={save.busy} onPress={() => void save.run()} />
-      <Button label={t('m.setup.skip')} variant="quiet" onPress={() => router.back()} />
     </SurfaceCard>
   );
 }

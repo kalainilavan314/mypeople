@@ -15,7 +15,7 @@ export default function MemberLayout() {
     // A18: progress comes from the API, so a stale device can never choose a
     // completed step or bypass consent locally.
     void api().getMyRegistrationProgress().then((progress) => {
-      if (progress.nextStep) router.replace('/setup/index');
+      if (progress.nextStep || progress.reviewState === 'needs_update') router.replace('/setup/index');
     }).catch(() => {
       // The destination remains usable when the network is temporarily down.
     });

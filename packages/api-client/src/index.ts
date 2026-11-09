@@ -194,6 +194,8 @@ export interface ApiClientOptions {
   refresh?: () => Promise<string | null>;
   /** Replaces the global fetch, e.g. in tests. */
   fetch?: typeof fetch;
+  /** Native upload transport; injectable for byte-progress tests. */
+  xhrFactory?: () => XMLHttpRequest;
   /**
    * A stable id for this app install, sent as X-Device-Id, so sign-ins from a new
    * device can be noticed (FR-AUTH-019). Not personal data; browsers leave it out.
@@ -241,6 +243,7 @@ export function createApiClient({
   getToken,
   refresh,
   fetch: fetchImpl = globalThis.fetch,
+  xhrFactory,
   deviceId,
   forwardedFor,
 }: ApiClientOptions) {
@@ -274,6 +277,55 @@ export function createApiClient({
     }
     if (!response.ok) throw await toApiError(response);
     return (response.status === 204 ? undefined : await response.json()) as T;
+  }
+
+  /** XHR supplies actual transmitted-byte progress, which fetch does not expose on React Native. */
+  async function uploadImage(
+    path: string,
+    image: Blob | ArrayBuffer,
+    contentType: IdentityImageType,
+    onProgress: (sent: number, total: number) => void,
+  ): Promise<IdentityDocument> {
+    const total = image instanceof ArrayBuffer ? image.byteLength : image.size;
+    if (!xhrFactory && typeof XMLHttpRequest === 'undefined') {
+      const result = await request<IdentityDocument>('PUT', path, image, contentType);
+      onProgress(total, total);
+      return result;
+    }
+    const sendImage = (token: string | null | undefined): Promise<Response> => new Promise((resolve, reject) => {
+      const xhr = xhrFactory ? xhrFactory() : new XMLHttpRequest();
+      xhr.open('PUT', `${root}${path}`);
+      xhr.timeout = 120_000;
+      xhr.withCredentials = true;
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.setRequestHeader('Content-Type', contentType);
+      if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      if (deviceId) xhr.setRequestHeader('X-Device-Id', deviceId);
+      xhr.upload.onprogress = (event) => onProgress(Math.min(event.loaded, total), total);
+      xhr.onload = () => {
+        const headers = new Headers({ 'content-type': xhr.getResponseHeader('Content-Type') ?? 'application/json' });
+        const retryAfter = xhr.getResponseHeader('Retry-After');
+        if (retryAfter) headers.set('Retry-After', retryAfter);
+        resolve(new Response(xhr.responseText, { status: xhr.status, headers }));
+      };
+      xhr.onerror = () => reject(new TypeError('Network request failed'));
+      xhr.ontimeout = () => reject(new TypeError('Upload timed out'));
+      xhr.onabort = () => reject(new TypeError('Upload interrupted'));
+      xhr.send(image);
+    });
+
+    let response = await sendImage(await getToken?.());
+    if (response.status === 401 && refresh) {
+      const error = await toApiError(response);
+      const renewed = error.code === 'token_expired' ? await refresh() : null;
+      if (!renewed) throw error;
+      onProgress(0, total);
+      response = await sendImage(renewed);
+    }
+    if (!response.ok) throw await toApiError(response);
+    const document = await response.json() as IdentityDocument;
+    onProgress(total, total);
+    return document;
   }
 
   return {
@@ -440,8 +492,14 @@ export function createApiClient({
      * "unsupported_type" (415), "too_large" (413), "empty_file" (400) or "upload_limit" (429, retryAfter:
      * 12 images in 24 hours).
      */
-    uploadIdentityDocument: (kind: IdentityDocumentKind, image: Blob | ArrayBuffer, contentType: IdentityImageType) =>
-      request<IdentityDocument>('PUT', `/v1/identity/me/documents/${kind}`, image, contentType),
+    uploadIdentityDocument: (
+      kind: IdentityDocumentKind,
+      image: Blob | ArrayBuffer,
+      contentType: IdentityImageType,
+      onProgress?: (sent: number, total: number) => void,
+    ) => onProgress
+      ? uploadImage(`/v1/identity/me/documents/${kind}`, image, contentType, onProgress)
+      : request<IdentityDocument>('PUT', `/v1/identity/me/documents/${kind}`, image, contentType),
     /** When reviewers viewed the member's identity evidence: date and role only (FR-AUTH-024). */
     getMyEvidenceViews: () => request<EvidenceView[]>('GET', '/v1/identity/me/evidence-views'),
     /** A member's identity images, without the images. Needs members.view_identity_evidence over their area. */

@@ -187,6 +187,92 @@ test('an identity image is sent as it is, with its own media type', async () => 
   assert.equal(sent[0].body as unknown, image);
 });
 
+test('identity upload reports transmitted bytes and keeps the authenticated request', async () => {
+  const document = { id: 'd2', kind: 'selfie', version: 1 };
+  const progress: Array<[number, number]> = [];
+  const headers: Record<string, string> = {};
+  let sentBody: Document | Blob | ArrayBuffer | null = null;
+  class FakeXhr {
+    upload = { onprogress: null as ((event: ProgressEvent) => void) | null };
+    onload: (() => void) | null = null;
+    onerror: (() => void) | null = null;
+    ontimeout: (() => void) | null = null;
+    onabort: (() => void) | null = null;
+    timeout = 0;
+    withCredentials = false;
+    status = 201;
+    responseText = JSON.stringify(document);
+    open(method: string, url: string) {
+      assert.equal(method, 'PUT');
+      assert.equal(url, 'https://api.example/v1/identity/me/documents/selfie');
+    }
+    setRequestHeader(name: string, value: string) { headers[name] = value; }
+    getResponseHeader(name: string) { return name === 'Content-Type' ? 'application/json' : null; }
+    send(body: Document | Blob | ArrayBuffer | null) {
+      sentBody = body;
+      this.upload.onprogress?.({ loaded: 2 } as ProgressEvent);
+      this.onload?.();
+    }
+  }
+  const image = new Blob([new Uint8Array([1, 2, 3, 4])], { type: 'image/jpeg' });
+  const result = await createApiClient({
+    baseUrl: 'https://api.example',
+    getToken: () => 'member-token',
+    xhrFactory: () => new FakeXhr() as unknown as XMLHttpRequest,
+  }).uploadIdentityDocument('selfie', image, 'image/jpeg', (sent, total) => progress.push([sent, total]));
+
+  assert.deepEqual(result, document);
+  assert.equal(sentBody, image);
+  assert.equal(headers.Authorization, 'Bearer member-token');
+  assert.equal(headers['Content-Type'], 'image/jpeg');
+  assert.deepEqual(progress, [[2, 4], [4, 4]]);
+});
+
+test('identity upload retries once with a renewed token after expiry', async () => {
+  const attempts: string[] = [];
+  let renewals = 0;
+  const progress: Array<[number, number]> = [];
+  const payloads = [
+    { status: 401, body: { detail: 'token_expired' } },
+    { status: 201, body: { id: 'd3', kind: 'nic_front' } },
+  ];
+  class FakeXhr {
+    upload = { onprogress: null as ((event: ProgressEvent) => void) | null };
+    onload: (() => void) | null = null;
+    onerror: (() => void) | null = null;
+    ontimeout: (() => void) | null = null;
+    onabort: (() => void) | null = null;
+    timeout = 0;
+    withCredentials = false;
+    status = 0;
+    responseText = '';
+    open() { /* The path is covered by the normal upload test. */ }
+    setRequestHeader(name: string, value: string) {
+      if (name === 'Authorization') attempts.push(value);
+    }
+    getResponseHeader(name: string) { return name === 'Content-Type' ? 'application/json' : null; }
+    send() {
+      const response = payloads.shift();
+      assert.ok(response);
+      this.status = response.status;
+      this.responseText = JSON.stringify(response.body);
+      this.onload?.();
+    }
+  }
+  const image = new Blob([new Uint8Array([1, 2])], { type: 'image/jpeg' });
+  const client = createApiClient({
+    baseUrl: 'https://api.example',
+    getToken: () => 'expired-token',
+    refresh: async () => { renewals += 1; return 'renewed-token'; },
+    xhrFactory: () => new FakeXhr() as unknown as XMLHttpRequest,
+  });
+  const result = await client.uploadIdentityDocument('nic_front', image, 'image/jpeg', (sent, total) => progress.push([sent, total]));
+  assert.deepEqual(result, { id: 'd3', kind: 'nic_front' });
+  assert.deepEqual(attempts, ['Bearer expired-token', 'Bearer renewed-token']);
+  assert.equal(renewals, 1);
+  assert.deepEqual(progress, [[0, 2], [2, 2]]);
+});
+
 test('openEvidence returns an absolute link on the API', async () => {
   const { fetch, sent } = fakeFetch(200, { url: '/v1/identity/evidence/abc.def.ghi', expiresAt: '2026-10-25T00:05:00Z' });
 
