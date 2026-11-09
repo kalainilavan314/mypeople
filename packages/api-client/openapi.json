@@ -4091,6 +4091,253 @@
         }
       }
     },
+    "/v1/events/scanner-devices": {
+      "post": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Register Scanner Device",
+        "description": "Bind this staff phone for offline check-in (MP-DEC-001 4.4); needs events.checkin_scan.",
+        "operationId": "register_scanner_device_v1_events_scanner_devices_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScannerDeviceIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "device_not_yours"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/events/{event_id}/checkin/offline": {
+      "post": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Sync Offline Scans",
+        "description": "Judge scans this phone queued without a connection, each as at the time it was recorded.\nSending a scan again returns its first outcome; nothing the phone decided is final.",
+        "operationId": "sync_offline_scans_v1_events__event_id__checkin_offline_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfflineSyncIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfflineSyncOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area or device_not_registered"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/{event_id}/checkin/exceptions": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Read Scan Exceptions",
+        "description": "Queued scans waiting for a person, oldest first; for the event managers who settle them (events.manage).",
+        "operationId": "read_scan_exceptions_v1_events__event_id__checkin_exceptions_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ScanExceptionOut"
+                  },
+                  "title": "Response Read Scan Exceptions V1 Events  Event Id  Checkin Exceptions Get"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area or device_not_registered"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/checkin/exceptions/{scan_event_id}/decision": {
+      "post": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Decide Scan Exception",
+        "description": "Accept or reject a waiting scan with a reason (needs events.manage; never the person who\nscanned it). Accepting still needs a genuine pass for the event as at the recorded time.",
+        "operationId": "decide_scan_exception_v1_events_checkin_exceptions__scan_event_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scan_event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scan Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScanDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanOutcomeOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area or device_not_registered"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "already_settled, own_scan or pass_<reason>"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/events/manage": {
       "get": {
         "tags": [
@@ -16487,6 +16734,53 @@
         "title": "NotificationOut",
         "description": "An inbox item. targetKind and targetId say what it opens (BR-027); actionNeeded stays true\nuntil the task is done, whether or not it was read."
       },
+      "OfflineSyncIn": {
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Deviceid"
+          },
+          "deviceKey": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 32,
+            "title": "Devicekey"
+          },
+          "scans": {
+            "items": {
+              "$ref": "#/components/schemas/QueuedScanIn"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "Scans"
+          }
+        },
+        "type": "object",
+        "required": [
+          "deviceId",
+          "deviceKey",
+          "scans"
+        ],
+        "title": "OfflineSyncIn"
+      },
+      "OfflineSyncOut": {
+        "properties": {
+          "outcomes": {
+            "items": {
+              "$ref": "#/components/schemas/ScanOutcomeOut"
+            },
+            "type": "array",
+            "title": "Outcomes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcomes"
+        ],
+        "title": "OfflineSyncOut"
+      },
       "OperationsOut": {
         "properties": {
           "periodDays": {
@@ -18149,6 +18443,47 @@
         ],
         "title": "QueuedRemovalOut"
       },
+      "QueuedScanIn": {
+        "properties": {
+          "scanEventId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scaneventid"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Idempotencykey"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "Code"
+          },
+          "clientScanAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Clientscanat",
+            "description": "When the phone recorded the scan, with its time zone"
+          },
+          "localOutcome": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Localoutcome"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scanEventId",
+          "idempotencyKey",
+          "code",
+          "clientScanAt",
+          "localOutcome"
+        ],
+        "title": "QueuedScanIn"
+      },
       "RecoveryCodeInput": {
         "properties": {
           "nic": {
@@ -19277,6 +19612,81 @@
         ],
         "title": "RsvpOut"
       },
+      "ScanDecisionIn": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "rejected"
+            ],
+            "title": "Decision"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision",
+          "reason"
+        ],
+        "title": "ScanDecisionIn"
+      },
+      "ScanExceptionOut": {
+        "properties": {
+          "scanEventId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scaneventid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "DUPLICATE",
+              "REJECTED",
+              "NEEDS_REVIEW",
+              "EXPIRED_QUEUE"
+            ],
+            "title": "Status"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "clientScanAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Clientscanat"
+          },
+          "serverReceivedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Serverreceivedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scanEventId",
+          "status",
+          "reason",
+          "clientScanAt",
+          "serverReceivedAt"
+        ],
+        "title": "ScanExceptionOut",
+        "description": "A queued scan waiting for a person. No member is named: the pass is checked when it is accepted."
+      },
       "ScanInput": {
         "properties": {
           "code": {
@@ -19330,6 +19740,85 @@
           "result"
         ],
         "title": "ScanOut"
+      },
+      "ScanOutcomeOut": {
+        "properties": {
+          "scanEventId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scaneventid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "DUPLICATE",
+              "REJECTED",
+              "NEEDS_REVIEW",
+              "EXPIRED_QUEUE"
+            ],
+            "title": "Status"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "memberCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Membercode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scanEventId",
+          "status",
+          "reason"
+        ],
+        "title": "ScanOutcomeOut",
+        "description": "ACCEPTED (attendance recorded), DUPLICATE (already checked in), REJECTED with the reason\n(expired, not_valid, own_pass, wrong_event, outside_window), or waiting for a person:\nNEEDS_REVIEW (clock_ahead) and EXPIRED_QUEUE (too_old, past the 72-hour window)."
+      },
+      "ScannerDeviceIn": {
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Deviceid"
+          },
+          "deviceKey": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 32,
+            "title": "Devicekey"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "deviceId",
+          "deviceKey",
+          "label"
+        ],
+        "title": "ScannerDeviceIn",
+        "description": "A staff phone's own id and a random secret it keeps; the server stores only the secret's hash."
       },
       "SecurityAlertOut": {
         "properties": {

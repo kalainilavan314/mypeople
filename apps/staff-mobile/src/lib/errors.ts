@@ -12,3 +12,11 @@ export function errorMessage(t: TFunction, error: unknown): string {
   if (error.code in en.errors) return t(`s.errors.${error.code}`);
   return t('s.errors.unknown');
 }
+
+/**
+ * No answer reached the app (no network, a timeout) or the server failed, as opposed to the
+ * server refusing the request: a scan can then wait in the offline queue.
+ */
+export function noAnswer(error: unknown): boolean {
+  return !(error instanceof ApiError) || error.status === 408 || error.status >= 500;
+}

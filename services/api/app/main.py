@@ -37,6 +37,7 @@ from app.modules.profile import router as profile
 from app.modules.profile.area_changes import router as area_changes
 from app.modules.analytics import router as analytics
 from app.modules.auth import router as auth
+from app.modules.events.offline import router as events_offline
 from app.modules.identity.appeals import router as identity_appeals
 from app.modules.identity.documents import router as identity_documents
 from app.modules.identity.documents.dependencies import build_vault
@@ -98,6 +99,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(identity_registration.router)
     app.include_router(identity_recovery.router)
     app.include_router(geography.router)
+    app.include_router(events_offline.router)
     app.include_router(events.router)
     app.include_router(gallery.router)
     app.include_router(home.router)

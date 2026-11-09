@@ -180,6 +180,38 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     ta: 'கோரிக்கையின் முடிவு விவரங்கள் முழுமையடையவில்லை.',
     en: 'The outcome details are not complete.',
   },
+  own_scan: {
+    ta: 'நீங்கள் ஸ்கேன் செய்ததை நீங்களே தீர்மானிக்க முடியாது; வேறொருவர் தீர்மானிக்க வேண்டும்.',
+    en: 'You cannot decide a scan you made yourself; someone else must decide it.',
+  },
+  already_settled: {
+    ta: 'இந்த ஸ்கேன் ஏற்கனவே தீர்மானிக்கப்பட்டுவிட்டது.',
+    en: 'This scan has already been decided.',
+  },
+  pass_expired: {
+    ta: 'ஸ்கேன் செய்த நேரத்தில் அனுமதிச்சீட்டு காலாவதியாகியிருந்தது; ஏற்றுக்கொள்ள முடியாது.',
+    en: 'The pass had expired at the recorded time, so the scan cannot be accepted.',
+  },
+  pass_not_valid: {
+    ta: 'அனுமதிச்சீட்டு செல்லுபடியற்றது; ஏற்றுக்கொள்ள முடியாது.',
+    en: 'The pass is not valid, so the scan cannot be accepted.',
+  },
+  pass_wrong_event: {
+    ta: 'அனுமதிச்சீட்டு வேறொரு நிகழ்வுக்கானது.',
+    en: 'The pass is for a different event.',
+  },
+  pass_outside_window: {
+    ta: 'பதிவான நேரம் இந்த நிகழ்வின் வருகைப் பதிவு நேரத்துக்கு வெளியே உள்ளது.',
+    en: 'The recorded time is outside this event’s check-in window.',
+  },
+  pass_own_pass: {
+    ta: 'ஸ்கேன் செய்தவர் தன்னையே பதிவுசெய்ய முடியாது.',
+    en: 'The scanner cannot check themselves in.',
+  },
+  reason_required: {
+    ta: 'தீர்மானத்துக்கான காரணத்தை (குறைந்தது 3 எழுத்துகள்) எழுதுங்கள்.',
+    en: 'Give a reason for the decision (at least 3 characters).',
+  },
   already_closed: {
     ta: 'இக்கோரிக்கை ஏற்கனவே மூடப்பட்டுவிட்டது.',
     en: 'This request has already been closed.',

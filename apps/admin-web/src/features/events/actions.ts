@@ -193,3 +193,26 @@ export async function cancelEvent(formData: FormData): Promise<void> {
 
   back(`/events/${eventId}`, 'done=event_cancelled');
 }
+
+/**
+ * Settle an offline scan that waits for a person (MP-DEC-001 4.5; needs events.manage, never the
+ * person who scanned it). Accepting still needs a genuine pass as at the recorded time, which the
+ * API checks. Only codes go back in the address, never the reason typed.
+ */
+export async function decideOfflineScan(formData: FormData): Promise<void> {
+  const eventId = String(formData.get('eventId') ?? '');
+  const scanId = String(formData.get('scanId') ?? '');
+  const decision = String(formData.get('decision') ?? '');
+  const reason = String(formData.get('reason') ?? '').trim();
+  if (!UUID.test(eventId)) redirect('/events');
+  const page = `/events/${eventId}/offline-scans`;
+  if (!UUID.test(scanId) || (decision !== 'accepted' && decision !== 'rejected')) back(page, 'error=invalid_request');
+  if (reason.length < 3 || reason.length > 1000) back(page, 'error=reason_required');
+  try {
+    await (await staffApi()).decideScanException(scanId, decision as 'accepted' | 'rejected', reason);
+  } catch (error) {
+    const { code } = failure(error);
+    back(page, `error=${encodeURIComponent(code)}`);
+  }
+  back(page, `done=scan_${decision}`);
+}

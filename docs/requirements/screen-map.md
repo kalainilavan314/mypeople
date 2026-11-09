@@ -142,7 +142,7 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | S05 | Field case capture | Field operations (SC-32) | 2 | To build | `apps/staff-mobile/app/(staff)/field-visits/` |  |
 | S06 | Field visit record | Field operations (SC-32) | 2 | To build | `apps/staff-mobile/app/(staff)/field-visits/` |  |
 | S07 | Offline sync and conflicts | Field operations (SC-32) | 2 | To build | `apps/staff-mobile/app/(staff)/field-visits/` |  |
-| S08 | Attendance scanner (GAP-01) | Staff app (SC-19) | 1–2 | Built | `apps/staff-mobile/app/(staff)/(tabs)/check-in.tsx` |  |
+| S08 | Attendance scanner (GAP-01) | Staff app (SC-19) | 1–2 | Built | `apps/staff-mobile/app/(staff)/(tabs)/check-in.tsx` | Also works offline: scans are queued on the phone and judged by the server at their recorded time; waiting scans are settled on the dashboard event page |
 | S09 | Attendance roster and exceptions | Staff app (SC-19) | 1–2 | Built | `apps/staff-mobile/app/(staff)/roster/[id].tsx` |  |
 | S10 | Volunteer assignment manager | Staff app (SC-19) | 1–2 | To build | `apps/staff-mobile/app/(staff)/volunteers/` |  |
 | S11 | Referral intake and screening | Community Support (SC-23) | 2 | To build | `apps/staff-mobile/app/(staff)/assistance/` |  |

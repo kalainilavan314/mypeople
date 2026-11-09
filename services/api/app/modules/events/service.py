@@ -208,6 +208,12 @@ def _managed(db: Session, staff: Staff, event_id: uuid.UUID, ip: str, *, permiss
     return event
 
 
+def event_for_staff(db: Session, staff: Staff, event_id: uuid.UUID, ip: str, *, permission: str) -> StoredEvent:
+    """The event, locked, once the caller is shown to hold `permission` over its area (for the offline
+    check-in sub-feature, which shares the events' scope rules)."""
+    return _managed(db, staff, event_id, ip, permission=permission)
+
+
 def _record(db: Session, staff: Staff, action: str, event: StoredEvent, ip: str, **details: object) -> None:
     audit.record(
         db,

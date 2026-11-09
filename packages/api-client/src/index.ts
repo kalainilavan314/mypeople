@@ -44,6 +44,9 @@ export type EventUpdateInput = Schemas['EventUpdateIn'];
 export type EventType = Schemas['EventCreateIn']['eventType'];
 export type AreaLevel = Schemas['AreaRef']['level'];
 export type PassScan = Schemas['PassScanOut'];
+export type QueuedScanInput = Schemas['QueuedScanIn'];
+export type ScanOutcome = Schemas['ScanOutcomeOut'];
+export type ScanException = Schemas['ScanExceptionOut'];
 export type ManualCheckIn = Schemas['ManualCheckInOut'];
 export type EventRoster = Schemas['RosterOut'];
 export type HomeView = Schemas['HomeOut'];
@@ -555,6 +558,23 @@ export function createApiClient({
      */
     scanEventPass: (eventId: string, code: string) =>
       request<PassScan>('POST', `/v1/events/${encodeURIComponent(eventId)}/scan`, { code }),
+    // Offline check-in (MP-DEC-001 4.3): bind this phone, then send queued scans for the server to judge.
+    registerScannerDevice: (deviceId: string, deviceKey: string, label: string) =>
+      request<void>('POST', '/v1/events/scanner-devices', { deviceId, deviceKey, label }),
+    syncOfflineScans: (eventId: string, deviceId: string, deviceKey: string, scans: QueuedScanInput[]) =>
+      request<{ outcomes: ScanOutcome[] }>('POST', `/v1/events/${encodeURIComponent(eventId)}/checkin/offline`, {
+        deviceId,
+        deviceKey,
+        scans,
+      }),
+    // For event managers (events.manage), who settle what waits.
+    listScanExceptions: (eventId: string) =>
+      request<ScanException[]>('GET', `/v1/events/${encodeURIComponent(eventId)}/checkin/exceptions`),
+    decideScanException: (scanEventId: string, decision: 'accepted' | 'rejected', reason: string) =>
+      request<ScanOutcome>('POST', `/v1/events/checkin/exceptions/${encodeURIComponent(scanEventId)}/decision`, {
+        decision,
+        reason,
+      }),
     /**
      * FR-VOI-007: checks a member in by the member ID on their card when the pass cannot be scanned.
      * Same rules as a scan; the reason is kept on the attendance record.

@@ -143,3 +143,5 @@ After every batch: the A–H report (`CLAUDE.md`), the screen map's statuses and
 | 23–24 (done) | Staff app: S01 with the second factor, S02, S03, S08 with the camera and the member-ID route, S09, S13, S14; shared mobile components moved to `packages/mobile-ui`; `GET /v1/membership/lookup` and `GET /v1/access/assignments` | FR-STF-001, 003, 005, 006, 009, FR-ADM-001, 002 | S04 (OD-04), S10 (volunteering), offline use and device wipe (FR-STF-010) |
 
 **D32, 10 November 2026:** the Phase 1 operational figures (MP-DEC-001 5.2) are built with small-group suppression at 10 (GOV-01, proposed); the RPT-15 to RPT-28 dashboards and exports remain for their phases.
+
+**Offline check-in, 10 November 2026:** queued scans on the staff phone, judged by the server at their recorded time, with a manager's review queue (MP-DEC-001 4.3 to 4.5; 72-hour window per STF-01, proposed). A public-key offline verifier was not built: the phone never verifies, it only queues.

@@ -136,6 +136,11 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
       ) : null}
 
       {/* Attendance & Check-in Roster (for published events) */}
+      {isPublished ? (
+        <Link href={`/events/${event.id}/offline-scans`} className="inline-flex min-h-11 w-fit items-center text-sm font-semibold text-primary underline">
+          <span lang={locale}>{locale === 'ta' ? 'மீளாய்வுக்குக் காத்திருக்கும் இணைப்பற்ற ஸ்கேன்கள்' : 'Offline scans waiting for review'}</span>
+        </Link>
+      ) : null}
       {isPublished && attendance ? (
         <section aria-labelledby="attendance-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
           <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-3">

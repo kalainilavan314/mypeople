@@ -207,3 +207,12 @@ The member profile never contains the NIC, its hash, the password hash or staff 
 | Endpoint | Signed in | Answer | Refusals |
 |---|---|---|---|
 | `GET /v1/analytics/operations?periodDays=7\|30\|90` (default 30) | staff with `analytics.view` | `200` counts for the caller's areas: `started, submitted, verified, active, completionRate`, `decided, medianHours, withinTargetRate`, `waiting, overTarget`, `events, going, attended, attendanceRate`, `periodDays, generatedAt, platformWide`. A count is `null` when it would show 1 to 9 people, directly or by subtraction (RR-02) | `401`, `403 forbidden`, `422` for another period |
+
+## Offline check-in (MP-DEC-001 4.3 to 4.5)
+
+| Endpoint | Signed in | Answer | Refusals |
+|---|---|---|---|
+| `POST /v1/events/scanner-devices` `{deviceId, deviceKey, label}` | staff with `events.checkin_scan` | `204`; only the key's hash is kept | `403 device_not_yours` |
+| `POST /v1/events/{id}/checkin/offline` `{deviceId, deviceKey, scans: [{scanEventId, idempotencyKey, code, clientScanAt, localOutcome}]}` (1 to 200) | `events.checkin_scan` over the event | `200 {outcomes: [{scanEventId, status, reason, memberCode}]}`; status `ACCEPTED`, `DUPLICATE`, `REJECTED`, `NEEDS_REVIEW` (`clock_ahead`) or `EXPIRED_QUEUE` (`too_old`); a repeated idempotency key returns the first outcome | `403 device_not_registered`, `forbidden`, `outside_your_area`; `404` |
+| `GET /v1/events/{id}/checkin/exceptions` | `events.manage` over the event | `200` waiting scans: `scanEventId, status, reason, clientScanAt, serverReceivedAt`; no member named | `403`, `404` |
+| `POST /v1/events/checkin/exceptions/{scanEventId}/decision` `{decision: accepted\|rejected, reason}` | `events.manage` | `200` the outcome | `409 own_scan`, `already_settled`, `pass_<reason>`; `403`, `404` |

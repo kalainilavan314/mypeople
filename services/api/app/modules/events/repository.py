@@ -361,15 +361,22 @@ def attended_at(db: Session, event_id: uuid.UUID, member_id: uuid.UUID) -> datet
 
 
 def record_attendance(
-    db: Session, event_id: uuid.UUID, member_id: uuid.UUID, scanned_by: uuid.UUID, *, manual_reason: str | None = None
+    db: Session,
+    event_id: uuid.UUID,
+    member_id: uuid.UUID,
+    scanned_by: uuid.UUID,
+    *,
+    manual_reason: str | None = None,
+    scanned_at: datetime | None = None,
 ) -> bool:
     """True when this check-in created the record; a repeat creates nothing (BR-061). A manual
-    check-in (FR-VOI-007) keeps the reason the pass could not be scanned."""
+    check-in (FR-VOI-007) keeps the reason the pass could not be scanned. An offline scan keeps the
+    time the staff phone recorded it (scanned_at) rather than the time it reached the server."""
     created = db.scalar(
         text(
             """
-            INSERT INTO events.attendance (event_id, member_id, scanned_by, method, manual_reason)
-            VALUES (:event, :member, :scanner, :method, :reason)
+            INSERT INTO events.attendance (event_id, member_id, scanned_by, method, manual_reason, scanned_at)
+            VALUES (:event, :member, :scanner, :method, :reason, COALESCE(CAST(:scanned_at AS timestamptz), clock_timestamp()))
             ON CONFLICT (event_id, member_id) DO NOTHING RETURNING 1
             """
         ),
@@ -379,6 +386,7 @@ def record_attendance(
             "scanner": scanned_by,
             "method": "scan" if manual_reason is None else "manual",
             "reason": manual_reason,
+            "scanned_at": scanned_at,
         },
     )
     return created is not None

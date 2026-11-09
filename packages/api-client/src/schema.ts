@@ -1587,6 +1587,88 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/events/scanner-devices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register Scanner Device
+         * @description Bind this staff phone for offline check-in (MP-DEC-001 4.4); needs events.checkin_scan.
+         */
+        post: operations["register_scanner_device_v1_events_scanner_devices_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/{event_id}/checkin/offline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sync Offline Scans
+         * @description Judge scans this phone queued without a connection, each as at the time it was recorded.
+         *     Sending a scan again returns its first outcome; nothing the phone decided is final.
+         */
+        post: operations["sync_offline_scans_v1_events__event_id__checkin_offline_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/{event_id}/checkin/exceptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Scan Exceptions
+         * @description Queued scans waiting for a person, oldest first; for the event managers who settle them (events.manage).
+         */
+        get: operations["read_scan_exceptions_v1_events__event_id__checkin_exceptions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/checkin/exceptions/{scan_event_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Scan Exception
+         * @description Accept or reject a waiting scan with a reason (needs events.manage; never the person who
+         *     scanned it). Accepting still needs a genuine pass for the event as at the recorded time.
+         */
+        post: operations["decide_scan_exception_v1_events_checkin_exceptions__scan_event_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/events/manage": {
         parameters: {
             query?: never;
@@ -5836,6 +5918,23 @@ export interface components {
             /** Read */
             read: boolean;
         };
+        /** OfflineSyncIn */
+        OfflineSyncIn: {
+            /**
+             * Deviceid
+             * Format: uuid
+             */
+            deviceId: string;
+            /** Devicekey */
+            deviceKey: string;
+            /** Scans */
+            scans: components["schemas"]["QueuedScanIn"][];
+        };
+        /** OfflineSyncOut */
+        OfflineSyncOut: {
+            /** Outcomes */
+            outcomes: components["schemas"]["ScanOutcomeOut"][];
+        };
         /**
          * OperationsOut
          * @description D32 operational figures for the viewer's areas over the last `periodDays` days.
@@ -6544,6 +6643,29 @@ export interface components {
              */
             escalated: boolean;
         };
+        /** QueuedScanIn */
+        QueuedScanIn: {
+            /**
+             * Scaneventid
+             * Format: uuid
+             */
+            scanEventId: string;
+            /**
+             * Idempotencykey
+             * Format: uuid
+             */
+            idempotencyKey: string;
+            /** Code */
+            code: string;
+            /**
+             * Clientscanat
+             * Format: date-time
+             * @description When the phone recorded the scan, with its time zone
+             */
+            clientScanAt: string;
+            /** Localoutcome */
+            localOutcome: string;
+        };
         /** RecoveryCodeInput */
         RecoveryCodeInput: {
             /** Nic */
@@ -6988,6 +7110,44 @@ export interface components {
              */
             response: "going" | "maybe" | "declined" | "waitlisted";
         };
+        /** ScanDecisionIn */
+        ScanDecisionIn: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "accepted" | "rejected";
+            /** Reason */
+            reason: string;
+        };
+        /**
+         * ScanExceptionOut
+         * @description A queued scan waiting for a person. No member is named: the pass is checked when it is accepted.
+         */
+        ScanExceptionOut: {
+            /**
+             * Scaneventid
+             * Format: uuid
+             */
+            scanEventId: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "ACCEPTED" | "DUPLICATE" | "REJECTED" | "NEEDS_REVIEW" | "EXPIRED_QUEUE";
+            /** Reason */
+            reason: string | null;
+            /**
+             * Clientscanat
+             * Format: date-time
+             */
+            clientScanAt: string;
+            /**
+             * Serverreceivedat
+             * Format: date-time
+             */
+            serverReceivedAt: string;
+        };
         /** ScanInput */
         ScanInput: {
             /** Code */
@@ -7004,6 +7164,43 @@ export interface components {
             displayName?: string | null;
             /** Membercode */
             memberCode?: string | null;
+        };
+        /**
+         * ScanOutcomeOut
+         * @description ACCEPTED (attendance recorded), DUPLICATE (already checked in), REJECTED with the reason
+         *     (expired, not_valid, own_pass, wrong_event, outside_window), or waiting for a person:
+         *     NEEDS_REVIEW (clock_ahead) and EXPIRED_QUEUE (too_old, past the 72-hour window).
+         */
+        ScanOutcomeOut: {
+            /**
+             * Scaneventid
+             * Format: uuid
+             */
+            scanEventId: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "ACCEPTED" | "DUPLICATE" | "REJECTED" | "NEEDS_REVIEW" | "EXPIRED_QUEUE";
+            /** Reason */
+            reason: string | null;
+            /** Membercode */
+            memberCode?: string | null;
+        };
+        /**
+         * ScannerDeviceIn
+         * @description A staff phone's own id and a random secret it keeps; the server stores only the secret's hash.
+         */
+        ScannerDeviceIn: {
+            /**
+             * Deviceid
+             * Format: uuid
+             */
+            deviceId: string;
+            /** Devicekey */
+            deviceKey: string;
+            /** Label */
+            label: string;
         };
         /**
          * SecurityAlertOut
@@ -10241,6 +10438,194 @@ export interface operations {
             };
             /** @description not_found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    register_scanner_device_v1_events_scanner_devices_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScannerDeviceIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description device_not_yours */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sync_offline_scans_v1_events__event_id__checkin_offline_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfflineSyncIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfflineSyncOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area or device_not_registered */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_scan_exceptions_v1_events__event_id__checkin_exceptions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScanExceptionOut"][];
+                };
+            };
+            /** @description forbidden, outside_your_area or device_not_registered */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_scan_exception_v1_events_checkin_exceptions__scan_event_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scan_event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScanDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScanOutcomeOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area or device_not_registered */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description already_settled, own_scan or pass_<reason> */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

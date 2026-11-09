@@ -4,6 +4,7 @@ Everything is rolled back afterwards; SMS go to an in-memory outbox.
 """
 
 import random
+import uuid
 import time
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
@@ -400,3 +401,145 @@ def test_a_new_place_or_time_is_told_but_a_new_agenda_is_not(client, db_session,
         text("SELECT details FROM ops.audit_log WHERE action = 'events.event.updated' ORDER BY id DESC LIMIT 1")
     ).one()
     assert entry.details["changed"] == ["venue"]
+
+
+# --- Offline check-in (MP-DEC-001 4.3 to 4.5, FR-STF-005) -------------------------------------------
+
+
+DEVICE_KEY = "a-phone-secret-that-is-long-enough-0123456789"
+
+
+def register_device(client, auth, person: Row) -> str:
+    device_id = str(uuid.uuid4())
+    answer = client.post(
+        "/v1/events/scanner-devices",
+        json={"deviceId": device_id, "deviceKey": DEVICE_KEY, "label": "Staff phone"},
+        headers=auth(person),
+    )
+    assert answer.status_code == 204, answer.text
+    return device_id
+
+
+def queued(code: str, at: datetime, key: str | None = None) -> dict:
+    return {
+        "scanEventId": str(uuid.uuid4()),
+        "idempotencyKey": key or str(uuid.uuid4()),
+        "code": code,
+        "clientScanAt": iso(at),
+        "localOutcome": "queued_offline",
+    }
+
+
+def sync(client, auth, scanner: Row, event: dict, device_id: str, scans: list[dict], key: str = DEVICE_KEY):
+    return client.post(
+        f"/v1/events/{event['id']}/checkin/offline",
+        json={"deviceId": device_id, "deviceKey": key, "scans": scans},
+        headers=auth(scanner),
+    )
+
+
+def code_at(database_settings, client, auth, member: Row, event: dict, moment: datetime) -> str:
+    """The member's pass code as the phone saw it at `moment`."""
+    ref = pass_code(client, auth, member, event).split(".")[1]
+    return rules.PASS.sign(ref, database_settings.jwt_secret.get_secret_value(), int(moment.timestamp())).code
+
+
+def test_an_offline_scan_is_judged_as_at_the_moment_it_was_recorded(client, db_session, database_settings, auth, member, scanner, new_event):
+    event = new_event()
+    rsvp(client, auth, member, event, "going")
+    device = register_device(client, auth, scanner)
+    seen_at = datetime.now(UTC) - timedelta(minutes=2)  # the code has expired since; it was current then
+    scan_body = queued(code_at(database_settings, client, auth, member, event, seen_at), seen_at + timedelta(seconds=10))
+
+    first = sync(client, auth, scanner, event, device, [scan_body])
+    again = sync(client, auth, scanner, event, device, [scan_body])
+
+    assert first.status_code == 200, first.text
+    outcome = first.json()["outcomes"][0]
+    assert (outcome["status"], outcome["reason"]) == ("ACCEPTED", None)
+    assert outcome["memberCode"] == db_session.scalar(text("SELECT member_code FROM npm.member WHERE id = :id"), {"id": member.id})
+    assert again.json()["outcomes"][0]["status"] == "ACCEPTED"  # the same scan sent twice keeps its first outcome
+    attended = db_session.execute(
+        text("SELECT count(*) AS n, min(scanned_at) AS at FROM events.attendance WHERE event_id = :id"), {"id": event["id"]}
+    ).one()
+    assert attended.n == 1
+    assert abs((attended.at - (seen_at + timedelta(seconds=10))).total_seconds()) < 1  # the phone's time, not the sync's
+
+
+def test_offline_scans_are_rejected_held_for_a_person_or_counted_once(client, database_settings, auth, member, scanner, manager, new_event):
+    event = new_event()
+    rsvp(client, auth, member, event, "going")
+    device = register_device(client, auth, scanner)
+    now = datetime.now(UTC)
+    stale = code_at(database_settings, client, auth, member, event, now - timedelta(minutes=10))
+    current = code_at(database_settings, client, auth, member, event, now)
+    scans = [
+        queued(stale, now),  # expired when it was scanned
+        queued(current, now + timedelta(hours=1)),  # the phone's clock is ahead
+        queued(current, now - timedelta(hours=73)),  # past the 72-hour window (STF-01)
+        queued(current, now),
+        queued(current, now + timedelta(seconds=5)),  # a second scan of the same member
+    ]
+    outcomes = sync(client, auth, scanner, event, device, scans).json()["outcomes"]
+    assert [(o["status"], o["reason"]) for o in outcomes] == [
+        ("REJECTED", "expired"),
+        ("NEEDS_REVIEW", "clock_ahead"),
+        ("EXPIRED_QUEUE", "too_old"),
+        ("ACCEPTED", None),
+        ("DUPLICATE", "already_checked_in"),
+    ]
+    assert client.get(f"/v1/events/{event['id']}/checkin/exceptions", headers=auth(scanner)).status_code == 403
+    waiting = client.get(f"/v1/events/{event['id']}/checkin/exceptions", headers=auth(manager)).json()
+    assert [(w["status"], w["reason"]) for w in waiting] == [("EXPIRED_QUEUE", "too_old"), ("NEEDS_REVIEW", "clock_ahead")]
+    assert all("memberCode" not in w for w in waiting)  # nobody is named before a person checks the pass
+
+
+def test_only_a_registered_phone_of_the_scanner_may_sync(client, auth, member, scanner, make_reviewer, area, new_event):
+    event = new_event()
+    unknown = sync(client, auth, scanner, event, str(uuid.uuid4()), [queued("E1.x", datetime.now(UTC))])
+    assert (unknown.status_code, unknown.json()["detail"]) == (403, "device_not_registered")
+    device = register_device(client, auth, scanner)
+    wrong_key = sync(client, auth, scanner, event, device, [queued("E1.x", datetime.now(UTC))], key="x" * 40)
+    assert wrong_key.status_code == 403
+    colleague = make_reviewer(area.district, permissions=(SCAN,))
+    taken = client.post(
+        "/v1/events/scanner-devices",
+        json={"deviceId": device, "deviceKey": DEVICE_KEY, "label": "Staff phone"},
+        headers=auth(colleague),
+    )
+    assert (taken.status_code, taken.json()["detail"]) == (403, "device_not_yours")
+
+
+def test_a_waiting_scan_is_settled_by_another_person_with_a_reason(client, db_session, database_settings, auth, member, scanner, manager, make_reviewer, area, new_event):
+    event = new_event()
+    rsvp(client, auth, member, event, "going")
+    device = register_device(client, auth, scanner)
+    ahead = datetime.now(UTC) + timedelta(hours=1)  # inside the event's check-in window
+    scan_body = queued(code_at(database_settings, client, auth, member, event, ahead), ahead)
+    waiting = sync(client, auth, scanner, event, device, [scan_body]).json()["outcomes"][0]
+    assert waiting["status"] == "NEEDS_REVIEW"
+
+    both = make_reviewer(area.district, permissions=(SCAN, MANAGE))
+    own_device = register_device(client, auth, both)
+    own = sync(client, auth, both, event, own_device, [queued(scan_body["code"], ahead)]).json()["outcomes"][0]
+    refused = client.post(
+        f"/v1/events/checkin/exceptions/{own['scanEventId']}/decision",
+        json={"decision": "accepted", "reason": "Checked at the gate"},
+        headers=auth(both),
+    )
+    assert (refused.status_code, refused.json()["detail"]) == (409, "own_scan")
+
+    decided = client.post(
+        f"/v1/events/checkin/exceptions/{waiting['scanEventId']}/decision",
+        json={"decision": "accepted", "reason": "Phone clock was wrong; member was at the gate"},
+        headers=auth(manager),
+    )
+    assert decided.status_code == 200, decided.text
+    assert decided.json()["status"] == "ACCEPTED"
+    assert db_session.scalar(text("SELECT count(*) FROM events.attendance WHERE event_id = :id"), {"id": event["id"]}) == 1
+    again = client.post(
+        f"/v1/events/checkin/exceptions/{waiting['scanEventId']}/decision",
+        json={"decision": "rejected", "reason": "Changed my mind"},
+        headers=auth(manager),
+    )
+    assert (again.status_code, again.json()["detail"]) == (409, "already_settled")
