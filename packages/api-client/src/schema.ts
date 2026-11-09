@@ -14216,7 +14216,8 @@ export interface operations {
     read_operations_v1_analytics_operations_get: {
         parameters: {
             query?: {
-                periodDays?: 7 | 30 | 90;
+                /** @description 7, 30 or 90 */
+                periodDays?: number;
             };
             header?: never;
             path?: never;
@@ -14233,14 +14234,12 @@ export interface operations {
                     "application/json": components["schemas"]["OperationsOut"];
                 };
             };
-            /** @description Validation Error */
+            /** @description period_days_must_be_7_30_or_90 */
             422: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
+                content?: never;
             };
         };
     };

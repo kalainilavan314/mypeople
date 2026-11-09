@@ -93,6 +93,7 @@ def test_a_small_group_comes_back_hidden_not_as_a_number(client, db_session, aut
     assert figures["started"] is None and figures["submitted"] is None
     assert figures["waiting"] is None
     assert figures["completionRate"] is None
+    assert client.get("/v1/analytics/operations?periodDays=5", headers=auth(viewer)).status_code == 422
 
 
 def test_another_district_sees_none_of_these_members(client, db_session, auth, create_member, assign, super_admin, member_in, area):

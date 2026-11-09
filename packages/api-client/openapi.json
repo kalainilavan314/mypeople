@@ -9517,15 +9517,12 @@
             "in": "query",
             "required": false,
             "schema": {
-              "enum": [
-                7,
-                30,
-                90
-              ],
               "type": "integer",
+              "description": "7, 30 or 90",
               "default": 30,
               "title": "Perioddays"
-            }
+            },
+            "description": "7, 30 or 90"
           }
         ],
         "responses": {
@@ -9540,14 +9537,7 @@
             }
           },
           "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
+            "description": "period_days_must_be_7_30_or_90"
           }
         }
       }

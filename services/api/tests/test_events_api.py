@@ -406,18 +406,16 @@ def test_a_new_place_or_time_is_told_but_a_new_agenda_is_not(client, db_session,
 # --- Offline check-in (MP-DEC-001 4.3 to 4.5, FR-STF-005) -------------------------------------------
 
 
-DEVICE_KEY = "a-phone-secret-that-is-long-enough-0123456789"
-
-
-def register_device(client, auth, person: Row) -> str:
-    device_id = str(uuid.uuid4())
+def register_device(client, auth, person: Row) -> tuple[str, str]:
+    """A phone's own id and secret, as the staff app makes them: every phone's secret is different."""
+    device_id, key = str(uuid.uuid4()), uuid.uuid4().hex + uuid.uuid4().hex
     answer = client.post(
         "/v1/events/scanner-devices",
-        json={"deviceId": device_id, "deviceKey": DEVICE_KEY, "label": "Staff phone"},
+        json={"deviceId": device_id, "deviceKey": key, "label": "Staff phone"},
         headers=auth(person),
     )
     assert answer.status_code == 204, answer.text
-    return device_id
+    return device_id, key
 
 
 def queued(code: str, at: datetime, key: str | None = None) -> dict:
@@ -430,7 +428,8 @@ def queued(code: str, at: datetime, key: str | None = None) -> dict:
     }
 
 
-def sync(client, auth, scanner: Row, event: dict, device_id: str, scans: list[dict], key: str = DEVICE_KEY):
+def sync(client, auth, scanner: Row, event: dict, device: tuple[str, str], scans: list[dict]):
+    device_id, key = device
     return client.post(
         f"/v1/events/{event['id']}/checkin/offline",
         json={"deviceId": device_id, "deviceKey": key, "scans": scans},
@@ -496,15 +495,15 @@ def test_offline_scans_are_rejected_held_for_a_person_or_counted_once(client, da
 
 def test_only_a_registered_phone_of_the_scanner_may_sync(client, auth, member, scanner, make_reviewer, area, new_event):
     event = new_event()
-    unknown = sync(client, auth, scanner, event, str(uuid.uuid4()), [queued("E1.x", datetime.now(UTC))])
+    unknown = sync(client, auth, scanner, event, (str(uuid.uuid4()), "k" * 64), [queued("E1.x", datetime.now(UTC))])
     assert (unknown.status_code, unknown.json()["detail"]) == (403, "device_not_registered")
     device = register_device(client, auth, scanner)
-    wrong_key = sync(client, auth, scanner, event, device, [queued("E1.x", datetime.now(UTC))], key="x" * 40)
+    wrong_key = sync(client, auth, scanner, event, (device[0], "x" * 64), [queued("E1.x", datetime.now(UTC))])
     assert wrong_key.status_code == 403
     colleague = make_reviewer(area.district, permissions=(SCAN,))
     taken = client.post(
         "/v1/events/scanner-devices",
-        json={"deviceId": device, "deviceKey": DEVICE_KEY, "label": "Staff phone"},
+        json={"deviceId": device[0], "deviceKey": device[1], "label": "Staff phone"},
         headers=auth(colleague),
     )
     assert (taken.status_code, taken.json()["detail"]) == (403, "device_not_yours")
