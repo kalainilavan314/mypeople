@@ -111,6 +111,28 @@ export type ConsentNotice = Schemas['ConsentNoticeOut'];
 export type ConsentLog = Schemas['ConsentLogOut'];
 export type InvitationsList = Schemas['InvitationsListOut'];
 export type StaffHouseholdView = Schemas['StaffHouseholdViewOut'];
+export type FundConfig = Schemas['FundConfigResponse'];
+export type ContributionCreateInput = Omit<Schemas['ContributionCreateRequest'], 'currency' | 'declarationVersion'> & {
+  currency?: 'LKR';
+  declarationVersion?: string;
+};
+export type ContributionDetail = Schemas['ContributionDetailResponse'];
+export type ContributionReceipt = Schemas['ReceiptResponse'];
+export type StaffContributionsList = Schemas['StaffContributionsListResponse'];
+export type StaffContributionSummary = Schemas['StaffContributionSummary'];
+export type StaffContributionDetail = Schemas['StaffContributionDetail'];
+export type StaffSlipViewToken = Schemas['StaffSlipViewTokenResponse'];
+export type StaffReconcileInput = Schemas['StaffReconcileRequest'];
+export type StaffApproveInput = Schemas['StaffApproveRequest'];
+export type FinanceContributionFilters = {
+  status?: string;
+  month?: string;
+  riskFlag?: string;
+  reference?: string;
+  mine?: boolean;
+  limit?: number;
+  offset?: number;
+};
 export type EventFilters = {
   /** 'mine' (the default) narrows to the member's area; 'all' widens it (BR-057). */
   scope?: 'mine' | 'all';
@@ -258,8 +280,15 @@ export function createApiClient({
   const root = baseUrl.replace(/\/+$/, '');
 
   /** Sends `body` as JSON, or as it is when `rawType` names its media type (image uploads). */
-  function send(method: Method, path: string, token: string | null | undefined, body?: unknown, rawType?: string) {
-    const headers: Record<string, string> = { Accept: 'application/json' };
+  function send(
+    method: Method,
+    path: string,
+    token: string | null | undefined,
+    body?: unknown,
+    rawType?: string,
+    extraHeaders?: Record<string, string>,
+  ) {
+    const headers: Record<string, string> = { Accept: 'application/json', ...extraHeaders };
     if (body !== undefined) headers['Content-Type'] = rawType ?? 'application/json';
     if (token) headers.Authorization = `Bearer ${token}`;
     if (deviceId) headers['X-Device-Id'] = deviceId;
@@ -274,14 +303,20 @@ export function createApiClient({
     });
   }
 
-  async function request<T>(method: Method, path: string, body?: unknown, rawType?: string): Promise<T> {
-    let response = await send(method, path, await getToken?.(), body, rawType);
+  async function request<T>(
+    method: Method,
+    path: string,
+    body?: unknown,
+    rawType?: string,
+    extraHeaders?: Record<string, string>,
+  ): Promise<T> {
+    let response = await send(method, path, await getToken?.(), body, rawType, extraHeaders);
     if (response.status === 401 && refresh) {
       const error = await toApiError(response);
       // The 15-minute token ran out: renew it once and try again.
       const renewed = error.code === 'token_expired' ? await refresh() : null;
       if (!renewed) throw error;
-      response = await send(method, path, renewed, body, rawType);
+      response = await send(method, path, renewed, body, rawType, extraHeaders);
     }
     if (!response.ok) throw await toApiError(response);
     return (response.status === 204 ? undefined : await response.json()) as T;
@@ -840,6 +875,68 @@ export function createApiClient({
     /** Area-scoped operational detail without reporter identity or contact data. Needs reports.view. */
     getCommunityReport: (reportId: string) =>
       request<CommunityReportSummary>('GET', `/v1/community/reports/${encodeURIComponent(reportId)}`),
+    // Community Finance endpoints (Milestone 1.4)
+    getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),
+    createContribution: (body: ContributionCreateInput, idempotencyKey?: string) =>
+      request<ContributionDetail>(
+        'POST',
+        '/v1/fund/contributions',
+        { currency: 'LKR', declarationVersion: 'v1', ...body },
+        undefined,
+        idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : undefined,
+      ),
+    uploadContributionSlip: (
+      id: string,
+      image: Blob | ArrayBuffer | Uint8Array,
+      contentType: 'image/jpeg' | 'image/png' = 'image/jpeg',
+    ) =>
+      request<void>('PUT', `/v1/fund/contributions/${encodeURIComponent(id)}/slip`, image, contentType),
+    submitContribution: (id: string) =>
+      request<ContributionDetail>('POST', `/v1/fund/contributions/${encodeURIComponent(id)}/submit`),
+    getMyContributions: (limit?: number, offset?: number) => {
+      const q = new URLSearchParams();
+      if (limit !== undefined) q.set('limit', String(limit));
+      if (offset !== undefined) q.set('offset', String(offset));
+      const qs = q.toString();
+      return request<ContributionDetail[]>('GET', `/v1/fund/contributions/mine${qs ? `?${qs}` : ''}`);
+    },
+    getMyContribution: (id: string) =>
+      request<ContributionDetail>('GET', `/v1/fund/contributions/${encodeURIComponent(id)}`),
+    getMyContributionReceipt: (id: string) =>
+      request<ContributionReceipt>('GET', `/v1/fund/contributions/${encodeURIComponent(id)}/receipt`),
+
+    // Staff Finance Operations
+    listFinanceContributions: (filters: FinanceContributionFilters = {}) => {
+      const q = new URLSearchParams();
+      if (filters.status) q.set('status', filters.status);
+      if (filters.month) q.set('month', filters.month);
+      if (filters.riskFlag) q.set('risk_flag', filters.riskFlag);
+      if (filters.reference) q.set('reference', filters.reference);
+      if (filters.mine) q.set('mine', 'true');
+      if (filters.limit !== undefined) q.set('limit', String(filters.limit));
+      if (filters.offset !== undefined) q.set('offset', String(filters.offset));
+      const qs = q.toString();
+      return request<StaffContributionsList>('GET', `/v1/finance/contributions${qs ? `?${qs}` : ''}`);
+    },
+    getFinanceContribution: (id: string) =>
+      request<StaffContributionDetail>('GET', `/v1/finance/contributions/${encodeURIComponent(id)}`),
+    claimFinanceContribution: (id: string) =>
+      request<void>('POST', `/v1/finance/contributions/${encodeURIComponent(id)}/claim`),
+    getFinanceSlipViewToken: (id: string) =>
+      request<StaffSlipViewToken>('POST', `/v1/finance/contributions/${encodeURIComponent(id)}/slip-view`),
+    financeSlipUrl: (token: string) => `${root}/v1/finance/slips/${encodeURIComponent(token)}`,
+    reconcileFinanceContribution: (id: string, body: StaffReconcileInput) =>
+      request<void>('POST', `/v1/finance/contributions/${encodeURIComponent(id)}/reconcile`, body),
+    approveFinanceContribution: (id: string, body: StaffApproveInput) =>
+      request<ContributionReceipt | null>('POST', `/v1/finance/contributions/${encodeURIComponent(id)}/approve`, body),
+    exportFinanceLedgerCsv: async (month: string): Promise<string> => {
+      const q = new URLSearchParams({ month });
+      const response = await send('GET', `/v1/finance/ledger.csv?${q.toString()}`, await getToken?.(), undefined, undefined, {
+        Accept: 'text/csv',
+      });
+      if (!response.ok) throw await toApiError(response);
+      return response.text();
+    },
   };
 }
 

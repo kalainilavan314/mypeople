@@ -62,6 +62,8 @@ Current scope:
 | `GET /v1/identity/appeals`, `GET /v1/identity/appeals/{id}`, `POST .../claim`, `.../release`, `.../decision` | the appeals queue (D05); need `idv.appeal.decide` over the member's area |
 | `POST /v1/identity/duplicates` | a reviewer reports a suspected duplicate account (needs `members.verify`) |
 | `GET /v1/identity/duplicates`, `GET /v1/identity/duplicates/{id}`, `POST .../claim`, `.../release`, `.../decision` | duplicate investigations (D04); need `idv.duplicate.investigate` over both accounts' areas |
+| `GET /v1/fund/config`, `POST /v1/fund/contributions`, `PUT .../{id}/slip`, `POST .../{id}/submit`, `GET .../mine`, `GET .../mine/{id}`, `.../receipt` | community finance member intake: bank details, draft creation, encrypted slip upload, submission, receipts (gated by `community_finance`) |
+| `GET /v1/finance/contributions`, `GET .../{id}`, `POST .../{id}/claim`, `POST .../slip-view-token`, `GET /v1/finance/slips/{token}`, `POST .../{id}/reconcile`, `POST .../{id}/approve`, `GET /v1/finance/ledger.csv` | staff finance queue and slip ledger: separation of duties (RB-12), reconciliation, independent approval, short-lived slip streaming, CSV ledger export |
 
 ## Staff access (BRD §9)
 
@@ -619,6 +621,26 @@ cases cannot be edited.
 
 Not yet: passport numbers and device signals (registration batch), and
 keyed-hash rotation with KMS-held keys (FR-IDV-006, OD-20).
+
+## Community finance (BRD H17, H18, D10; FR-FIN-001 to 010, BR-095 to 097)
+
+Community finance provides bank-transfer slip intake for member contributions
+and an operational review queue and ledger for staff (Milestone 1.4).
+
+- **Intake & gating.** Member routes (`/v1/fund/*`) require the `community_finance`
+  feature flag and an enabled, fully configured bank account profile; otherwise they fail
+  closed (`503 finance_not_configured`).
+- **Encrypted evidence vault.** Bank transfer slips are inspected for MIME magic bytes (JPEG/PNG only),
+  size (15 MB max), image dimension / decompression bomb safety (max 40 MP), stripped of EXIF metadata,
+  scanned by ClamAV outside development, and stored encrypted at rest using AES-256-GCM authenticated encryption.
+- **Workflow & separation of duties (RB-12).**
+  - Members draft a contribution, upload slip evidence, acknowledge required declarations, and submit (`SUBMITTED`).
+  - Reviewers (`finance.review`) claim records into `PENDING_REVIEW` and reconcile against bank statement references (`APPROVAL_PENDING` or `NEEDS_CORRECTION`).
+  - Approvers (`finance.approve`) independently approve (`VERIFIED`) or reject (`REJECTED`). The approver must be
+    a different staff member from the reviewer and cannot be the contributing member.
+  - On independent approval, an immutable sequential receipt code (`CN-XXXXX`) is atomically assigned.
+- **Ledger export.** Staff with `finance.export` can export monthly reconciliation ledgers as CSV
+  with formula-injection protection (`=`, `+`, `-`, `@` escaped).
 
 ## Sessions
 

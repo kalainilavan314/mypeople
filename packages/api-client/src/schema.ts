@@ -2877,6 +2877,306 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/fund/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Fund Config
+         * @description Return approved official bank-transfer configuration and contribution rules.
+         */
+        get: operations["get_fund_config_v1_fund_config_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fund/contributions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Contribution
+         * @description Idempotently create or retrieve a contribution draft.
+         */
+        post: operations["create_contribution_v1_fund_contributions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fund/contributions/{id}/slip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Upload Slip
+         * @description Upload, scan, encrypt, and store a contribution transfer slip.
+         */
+        put: operations["upload_slip_v1_fund_contributions__id__slip_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fund/contributions/{id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Contribution
+         * @description Transition contribution from DRAFT/NEEDS_CORRECTION to SUBMITTED.
+         */
+        post: operations["submit_contribution_v1_fund_contributions__id__submit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fund/contributions/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List My Contributions
+         * @description List current member's contribution records.
+         */
+        get: operations["list_my_contributions_v1_fund_contributions_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fund/contributions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get My Contribution
+         * @description Get single contribution details and safe timeline history.
+         */
+        get: operations["get_my_contribution_v1_fund_contributions__id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fund/contributions/{id}/receipt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get My Receipt
+         * @description Get official contribution receipt (only available once verified).
+         */
+        get: operations["get_my_receipt_v1_fund_contributions__id__receipt_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/contributions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Finance Contributions
+         * @description Operational queue for staff with explicit finance review or approval grants.
+         */
+        get: operations["list_finance_contributions_v1_finance_contributions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/contributions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Finance Contribution
+         * @description Get contribution detail, status history, declarations, and review state.
+         */
+        get: operations["get_finance_contribution_v1_finance_contributions__id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/contributions/{id}/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Claim Contribution
+         * @description Reviewer claims contribution for reconciliation review.
+         */
+        post: operations["claim_contribution_v1_finance_contributions__id__claim_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/contributions/{id}/slip-view": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get Slip View Token
+         * @description Issue a short-lived (5-minute) viewer-bound token to inspect encrypted slip.
+         */
+        post: operations["get_slip_view_token_v1_finance_contributions__id__slip_view_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/slips/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stream Slip
+         * @description Unseal and stream the slip image bytes with no-store caching.
+         */
+        get: operations["stream_slip_v1_finance_slips__token__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/contributions/{id}/reconcile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reconcile Contribution
+         * @description Reviewer matches to bank statement, requests correction, rejects, or places on hold.
+         */
+        post: operations["reconcile_contribution_v1_finance_contributions__id__reconcile_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/contributions/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve Contribution
+         * @description Independent second-person approver issues official CN receipt, rejects, or places on hold.
+         */
+        post: operations["approve_contribution_v1_finance_contributions__id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/ledger.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Ledger Csv
+         * @description Monthly CSV ledger export for audited contributions.
+         */
+        get: operations["export_ledger_csv_v1_finance_ledger_csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/households/mine": {
         parameters: {
             query?: never;
@@ -4441,6 +4741,81 @@ export interface components {
             /** Purposelimitationen */
             purposeLimitationEn: string;
         };
+        /** ContributionCreateRequest */
+        ContributionCreateRequest: {
+            /** Amountminor */
+            amountMinor: number;
+            /**
+             * Currency
+             * @default LKR
+             * @constant
+             */
+            currency: "LKR";
+            /**
+             * Transferdate
+             * Format: date
+             */
+            transferDate: string;
+            /** Bankreference */
+            bankReference: string;
+            /** Idempotencykey */
+            idempotencyKey?: string | null;
+            /**
+             * Declarationversion
+             * @default v1
+             */
+            declarationVersion: string;
+            /** Noprivilegeacknowledged */
+            noPrivilegeAcknowledged: boolean;
+            /** Informationaccurateacknowledged */
+            informationAccurateAcknowledged: boolean;
+            /**
+             * Payingforself
+             * @default true
+             */
+            payingForSelf: boolean;
+        };
+        /** ContributionDetailResponse */
+        ContributionDetailResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Contributionref */
+            contributionRef: string;
+            /** Amountminor */
+            amountMinor: number;
+            /**
+             * Currency
+             * @default LKR
+             */
+            currency: string;
+            /**
+             * Transferdate
+             * Format: date
+             */
+            transferDate: string;
+            /** Bankreference */
+            bankReference: string;
+            /** Status */
+            status: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Hasslip */
+            hasSlip: boolean;
+            receipt?: components["schemas"]["ReceiptResponse"] | null;
+            /** Timeline */
+            timeline: components["schemas"]["TimelineEventResponse"][];
+        };
         /** DecisionInput */
         DecisionInput: {
             /**
@@ -5155,6 +5530,40 @@ export interface components {
             approvalRef: string | null;
             /** Gaterecordedat */
             gateRecordedAt: string | null;
+        };
+        /** FundConfigResponse */
+        FundConfigResponse: {
+            /**
+             * Currency
+             * @default LKR
+             */
+            currency: string;
+            /** Amountpresets */
+            amountPresets: number[];
+            /** Bankname */
+            bankName?: string | null;
+            /** Accountname */
+            accountName?: string | null;
+            /** Accountnumber */
+            accountNumber?: string | null;
+            /** Accountnumbermasked */
+            accountNumberMasked?: string | null;
+            /** Branchname */
+            branchName?: string | null;
+            /** Transferinstructionsen */
+            transferInstructionsEn?: string | null;
+            /** Transferinstructionsta */
+            transferInstructionsTa?: string | null;
+            /** Disclaimeren */
+            disclaimerEn: string;
+            /** Disclaimerta */
+            disclaimerTa: string;
+            /** Norewardstatementen */
+            noRewardStatementEn: string;
+            /** Norewardstatementta */
+            noRewardStatementTa: string;
+            /** Intakeavailable */
+            intakeAvailable: boolean;
         };
         /** GalleryAlbumsQueueCount */
         GalleryAlbumsQueueCount: {
@@ -6626,6 +7035,37 @@ export interface components {
              */
             escalated: boolean;
         };
+        /** ReceiptResponse */
+        ReceiptResponse: {
+            /** Receiptcode */
+            receiptCode: string;
+            /** Contributionref */
+            contributionRef: string;
+            /** Amountminor */
+            amountMinor: number;
+            /**
+             * Currency
+             * @default LKR
+             */
+            currency: string;
+            /**
+             * Transferdate
+             * Format: date
+             */
+            transferDate: string;
+            /**
+             * Issuedat
+             * Format: date-time
+             */
+            issuedAt: string;
+            /**
+             * Status
+             * @default VERIFIED
+             */
+            status: string;
+            /** Sharepayload */
+            sharePayload: string;
+        };
         /** RecoveryCodeInput */
         RecoveryCodeInput: {
             /** Nic */
@@ -7180,6 +7620,146 @@ export interface components {
             /** Waiting */
             waiting: number;
         };
+        /** StaffApprovalDetail */
+        StaffApprovalDetail: {
+            /**
+             * Approvedby
+             * Format: uuid
+             */
+            approvedBy: string;
+            /**
+             * Approvedat
+             * Format: date-time
+             */
+            approvedAt: string;
+            /** Reason */
+            reason: string;
+            /** Relatedpartyconflict */
+            relatedPartyConflict: boolean;
+        };
+        /** StaffApproveRequest */
+        StaffApproveRequest: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "approve" | "reject" | "hold";
+            /** Reason */
+            reason: string;
+            /**
+             * Relatedpartyconflict
+             * @default false
+             */
+            relatedPartyConflict: boolean;
+        };
+        /** StaffContributionDetail */
+        StaffContributionDetail: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Contributionref */
+            contributionRef: string;
+            /** Donormembercode */
+            donorMemberCode: string;
+            /**
+             * Donormemberid
+             * Format: uuid
+             */
+            donorMemberId: string;
+            /** Amountminor */
+            amountMinor: number;
+            /**
+             * Currency
+             * @default LKR
+             */
+            currency: string;
+            /**
+             * Transferdate
+             * Format: date
+             */
+            transferDate: string;
+            /** Bankreference */
+            bankReference: string;
+            /** Status */
+            status: string;
+            /** Riskflags */
+            riskFlags: string[];
+            /** Claimedby */
+            claimedBy?: string | null;
+            /** Claimedbyname */
+            claimedByName?: string | null;
+            /** Claimedat */
+            claimedAt?: string | null;
+            /** Declarationversion */
+            declarationVersion: string;
+            /** Noprivilegeacknowledged */
+            noPrivilegeAcknowledged: boolean;
+            /** Informationaccurateacknowledged */
+            informationAccurateAcknowledged: boolean;
+            /** Payingforself */
+            payingForSelf: boolean;
+            /** Hasslip */
+            hasSlip: boolean;
+            /** Slipversion */
+            slipVersion?: number | null;
+            reconciliation?: components["schemas"]["StaffReconciliationDetail"] | null;
+            approval?: components["schemas"]["StaffApprovalDetail"] | null;
+            receipt?: components["schemas"]["ReceiptResponse"] | null;
+            /** Timeline */
+            timeline: components["schemas"]["StaffTimelineEvent"][];
+        };
+        /** StaffContributionSummary */
+        StaffContributionSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Contributionref */
+            contributionRef: string;
+            /** Donormembercode */
+            donorMemberCode: string;
+            /** Amountminor */
+            amountMinor: number;
+            /**
+             * Currency
+             * @default LKR
+             */
+            currency: string;
+            /**
+             * Transferdate
+             * Format: date
+             */
+            transferDate: string;
+            /** Status */
+            status: string;
+            /** Riskflags */
+            riskFlags: string[];
+            /** Claimedby */
+            claimedBy?: string | null;
+            /** Claimedbyname */
+            claimedByName?: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Receiptcode */
+            receiptCode?: string | null;
+        };
+        /** StaffContributionsListResponse */
+        StaffContributionsListResponse: {
+            /** Items */
+            items: components["schemas"]["StaffContributionSummary"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+        };
         /** StaffHouseholdViewOut */
         StaffHouseholdViewOut: {
             /**
@@ -7202,6 +7782,63 @@ export interface components {
              * @default []
              */
             consentLogs: components["schemas"]["ConsentLogOut"][];
+        };
+        /** StaffReconcileRequest */
+        StaffReconcileRequest: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "matched" | "needs_correction" | "reject" | "hold";
+            /** Statementreference */
+            statementReference?: string | null;
+            /** Reason */
+            reason: string;
+        };
+        /** StaffReconciliationDetail */
+        StaffReconciliationDetail: {
+            /** Statementreference */
+            statementReference: string;
+            /**
+             * Reviewedby
+             * Format: uuid
+             */
+            reviewedBy: string;
+            /**
+             * Reviewedat
+             * Format: date-time
+             */
+            reviewedAt: string;
+            /** Reason */
+            reason: string;
+        };
+        /** StaffSlipViewTokenResponse */
+        StaffSlipViewTokenResponse: {
+            /** Token */
+            token: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+            /** Viewurl */
+            viewUrl: string;
+        };
+        /** StaffTimelineEvent */
+        StaffTimelineEvent: {
+            /** Id */
+            id: number;
+            /** Fromstatus */
+            fromStatus?: string | null;
+            /** Tostatus */
+            toStatus: string;
+            /**
+             * Occurredat
+             * Format: date-time
+             */
+            occurredAt: string;
+            /** Reason */
+            reason: string;
         };
         /** StepOut */
         StepOut: {
@@ -7252,6 +7889,20 @@ export interface components {
             areaLevel: "platform" | "province" | "district" | "ds" | "gn";
             /** Defaultpermissions */
             defaultPermissions: string[];
+        };
+        /** TimelineEventResponse */
+        TimelineEventResponse: {
+            /** Status */
+            status: string;
+            /**
+             * Occurredat
+             * Format: date-time
+             */
+            occurredAt: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
         };
         /** TokensOut */
         TokensOut: {
@@ -13509,6 +14160,474 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_fund_config_v1_fund_config_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FundConfigResponse"];
+                };
+            };
+        };
+    };
+    create_contribution_v1_fund_contributions_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+                "X-Idempotency-Key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContributionCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContributionDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_slip_v1_fund_contributions__id__slip_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_contribution_v1_fund_contributions__id__submit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContributionDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_my_contributions_v1_fund_contributions_mine_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContributionDetailResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_my_contribution_v1_fund_contributions__id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContributionDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_my_receipt_v1_fund_contributions__id__receipt_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReceiptResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_finance_contributions_v1_finance_contributions_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                month?: string | null;
+                riskFlag?: string | null;
+                reference?: string | null;
+                claimedByMe?: boolean;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffContributionsListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_finance_contribution_v1_finance_contributions__id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffContributionDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    claim_contribution_v1_finance_contributions__id__claim_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_slip_view_token_v1_finance_contributions__id__slip_view_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffSlipViewTokenResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stream_slip_v1_finance_slips__token__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reconcile_contribution_v1_finance_contributions__id__reconcile_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffReconcileRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_contribution_v1_finance_contributions__id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffApproveRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReceiptResponse"] | null;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_ledger_csv_v1_finance_ledger_csv_get: {
+        parameters: {
+            query: {
+                month: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
             };
             /** @description Validation Error */
             422: {

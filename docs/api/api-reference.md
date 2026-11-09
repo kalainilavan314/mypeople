@@ -182,6 +182,26 @@ Any route of a module that is off answers `404 feature_unavailable`.
 | `POST /v1/election/periods/{id}/notices` body `{source: "election_commission" \| "party", titleEn, titleTa, bodyEn, bodyTa, sourceUrl?, documentReference?, sourcePublishedAt?}` | as above | `201` the notice with its label | `403`, `404`, `409`, `422 election_invalid` (`official_source_required`) |
 | `POST /v1/election/notices/{id}/withdraw` | as above | `200` the notice | `403`, `404`, `409 already_withdrawn` |
 
+### Community Finance (`/v1/fund`, `/v1/finance`)
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /v1/fund/config` | none | `200 {currency, amountPresets, bankName, accountName, accountNumber, accountNumberMasked, branchName, transferInstructionsEn, transferInstructionsTa, disclaimerEn, disclaimerTa, noRewardStatementEn, noRewardStatementTa, intakeAvailable}`; bank fields are `null` unless intake is enabled and fully configured | `404 feature_unavailable` |
+| `POST /v1/fund/contributions` with required `Idempotency-Key` header and body `{amountMinor, currency="LKR", transferDate, bankReference, declarationVersion, noPrivilegeAcknowledged, informationAccurateAcknowledged, payingForSelf}` | a session | `200 {id, contributionRef, amountMinor, currency, transferDate, bankReference, status: "DRAFT", hasSlip: false, createdAt, updatedAt, timeline: []}` | `422 idempotency_key_required`, `idempotency_key_invalid`, validation errors; `409 idempotency_conflict`; `503 finance_not_configured` |
+| `PUT /v1/fund/contributions/{id}/slip` body: binary JPEG/PNG (max 15 MB) | a session | `204` | `400 empty_file`, `413 too_large`, `415 unsupported_type`, `422 invalid_image_dimensions`, `422 malware_detected`, `503 finance_scanner_unavailable` |
+| `POST /v1/fund/contributions/{id}/submit` | a session | `200` contribution in `SUBMITTED` status | `400 slip_required`, `mandatory_declarations_required`, `409 not_allowed_from:<status>` |
+| `GET /v1/fund/contributions/mine` | a session | `200 [contribution]` | `401` |
+| `GET /v1/fund/contributions/{id}` | a session | `200` contribution detail with sanitized timeline | `401`, `404` |
+| `GET /v1/fund/contributions/{id}/receipt` | a session | `200 {receiptCode: "CN-XXXXX", contributionRef, amountMinor, currency, transferDate, issuedAt, status: "VERIFIED"}` | `404 not_found` (only returned once independently verified) |
+| `GET /v1/finance/contributions?status&month&risk_flag&reference&mine&limit&offset` | `finance.review`, `finance.approve`, `finance.export`, or `finance.audit_read` | `200 {items: [summary], total}` | `403` |
+| `GET /v1/finance/contributions/{id}` | as above | `200` staff detail with risk flags, declarations, reconciliation, approval, receipt, and timeline | `403`, `404` |
+| `POST /v1/finance/contributions/{id}/claim` | `finance.review` | `204`; `SUBMITTED`/`ON_HOLD` moves to `PENDING_REVIEW` | `403 own_record`, `404`, `409 already_claimed`, `cannot_claim_from_status:<status>` |
+| `POST /v1/finance/contributions/{id}/slip-view` | `finance.review`, `finance.approve`, or `finance.audit_read` | `200 {token, expiresAt, viewUrl}` (5-minute single-use viewer token) | `403`, `404`, `409 no_slip_uploaded` |
+| `GET /v1/finance/slips/{token}` | the staff session that requested the single-use token | first use returns the streamed image with `Cache-Control: no-store, private` | `403 invalid_slip_view_token`, `viewer_mismatch` |
+| `POST /v1/finance/contributions/{id}/reconcile` body `{action: "matched"\|"needs_correction"\|"reject"\|"hold", statementReference?, reason}` | `finance.review` | `204` | `400 statement_reference_required`, `reason_required`, `403 own_record`, `404`, `409 not_allowed_from:<status>` |
+| `POST /v1/finance/contributions/{id}/approve` body `{action: "approve"\|"reject"\|"hold", reason, relatedPartyConflict: bool}` | `finance.approve` | `200` receipt response or `null` | `400 reason_required`, `403 own_record`, `same_person_approval_forbidden` (separation of duties), `conflict_of_interest` (related party conflict), `404`, `409 not_allowed_from:<status>` |
+| `GET /v1/finance/ledger.csv?month=YYYY-MM` | `finance.export` | `200` CSV with formula-injection sanitization (`'` prepended to `=`, `+`, `-`, `@`, `\t`, `\r`) | `400 invalid_month`, `403` |
+
 Error bodies are `{"detail": "<code>"}`, or for a refused assignment `{"detail": {"code": "assignment_refused", "problems": [...]}}`. Problem codes: `unknown_member`, `self_assignment`, `identity_not_verified`, `tier_5_by_bootstrap_only`, `area_does_not_match_tier`, `unknown_area`, `no_permissions`, `unknown_permission:<p>`, `permission_not_for_tier:<p>`, `outside_your_area`, `tier_not_below_yours`, `permission_not_held:<p>`, `separation_of_duties`, `own_assignment`.
 
 Registration problems: `invalid_name`, `invalid_id_number`, `invalid_passport_country`, `password_too_short`, `password_too_long`, `password_too_common`, `password_contains_id_number`, `dob_in_future`, `dob_too_early`, `under_minimum_age`, `area_incomplete`, `unknown_area`. Uploads answer `409 consent_required` until identity-review consent is given; a review on the wrong route gets `route_mismatch`.

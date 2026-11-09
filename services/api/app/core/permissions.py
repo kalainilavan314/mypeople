@@ -53,8 +53,11 @@ MATRIX: dict[str, dict[Tier, Grant]] = {
     "cases.approve_executive": {"5": D},  # PRM-11
     "cases.implement_and_close": {"3A": E, "3B": E, "4": E, "5": D},  # PRM-12
     "cases.view_reporter_contact": {"1": D, "2A": D, "3A": D},  # PRM-13
-    "finance.review": {"3B": E},  # PRM-14
-    "finance.publish_ledger": {"3B": E, "5": D},  # PRM-15 (3B prepares, 5 approves)
+    "finance.review": {"3B": E, "4": E, "5": E},  # PRM-14 (Explicit grant only, no Tier 5 default)
+    "finance.approve": {"4": E, "5": E},  # PRM-XX (Explicit grant only, independent approver)
+    "finance.export": {"3B": E, "4": E, "5": E},  # PRM-XX (Explicit grant only)
+    "finance.audit_read": {"4": E, "5": E},  # PRM-XX (Explicit grant only)
+    "finance.publish_ledger": {"3B": E, "5": E},  # PRM-15 (Explicit grant only, Tier 5 default removed)
     "events.manage": {"1": E, "2B": D, "3A": D, "3B": D, "4": D, "5": D},  # PRM-16
     "events.checkin_scan": {"1": E, "2B": E, "3A": E, "3B": E},  # PRM-17
     "gallery.publish": {"2B": E, "3B": E},  # PRM-18
@@ -104,7 +107,14 @@ MATRIX: dict[str, dict[Tier, Grant]] = {
 # humanitarian help can never be tied to political support. "Campaign" rights
 # are not defined in the BRD yet and are not listed.
 ASSISTANCE_DECISIONS = frozenset({"assistance.decide"})
-POLITICAL_RIGHTS = frozenset({"finance.review", "finance.publish_ledger", "election.roster.manage"})
+POLITICAL_RIGHTS = frozenset({
+    "finance.review",
+    "finance.approve",
+    "finance.export",
+    "finance.audit_read",
+    "finance.publish_ledger",
+    "election.roster.manage",
+})
 
 
 def grant_for(permission: str, tier: Tier) -> Grant | None:

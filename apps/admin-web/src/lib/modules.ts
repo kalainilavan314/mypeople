@@ -20,13 +20,18 @@ export const builtModules: readonly AdminModule[] = [
   { href: '/access-reviews', ta: 'அணுகல் மீளாய்வு', en: 'Access reviews', permission: 'audit.view' },
   { href: '/reports', ta: 'சமூகப் புகார்கள்', en: 'Community reports', permission: 'reports.view' },
   { href: '/members', ta: 'உறுப்பினர்களும் குடும்பங்களும்', en: 'Members and households', permission: 'household.view_for_case' },
+  {
+    href: '/finance',
+    ta: 'கட்சி நிதி மற்றும் வங்கிச் சீட்டுகள்',
+    en: 'Finance queue & slips',
+    permission: ['finance.review', 'finance.approve', 'finance.export', 'finance.audit_read'] as const,
+  },
 ] as const;
 
 /** Planned modules in later phases with user-facing bilingual labels. */
 export const plannedModules = [
   { name: 'Community cases', ta: 'சமூக விவகாரங்கள்', desc: 'Issue reporting and grievance resolution' },
   { name: 'Assistance case management', ta: 'உதவி விவகார மேலாண்மை', desc: 'Welfare and emergency assistance cases' },
-  { name: 'Finance and reconciliation', ta: 'நிதி மற்றும் கணக்கிணக்கம்', desc: 'Donations, payments, and financial auditing' },
   { name: 'Promise tracker and scorecards', ta: 'வாக்குறுதி கண்காணிப்பு', desc: 'Commitments and accountability scorecards' },
   { name: 'Town halls and participatory budgeting', ta: 'மக்கள் மன்றம் & வரவுசெலவுத் திட்டம்', desc: 'Deliberation and community voting' },
   { name: 'Official publishing and signing', ta: 'அதிகாரப்பூர்வ வெளியீடு', desc: 'Official gazette and signed notices' },

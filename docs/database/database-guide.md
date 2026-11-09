@@ -63,6 +63,16 @@ Rules from BRD §13.8 for every new revision: forward-only and peer-reviewed; ex
 
 The BRD separates data by purpose: schemas `core`, `community`, `assistance`, `household`, `finance`, `content`, `ai` and `ops`, with the identity vault (ID images, biometric data) in a separate database with its own credentials and keys. Assistance and household tables get row-level security. Audit logs are append-only and hash-chained. Today's `npm` tables move into those schemas gradually, through Alembic, as each module is rebuilt. No cross-purpose joins are allowed (AP-02, NFR-PRV-07).
 
+### Finance Schema (`finance.*`, M1.4, Alembic 0022, 0027 & 0028)
+
+- `finance.contribution`: Statuses `DRAFT`, `SUBMITTED`, `PENDING_REVIEW`, `RECONCILED`, `APPROVAL_PENDING`, `VERIFIED`, `NEEDS_CORRECTION`, `REJECTED`, `ON_HOLD`, `REFUNDED`. Stores `amount_minor`, `transfer_date`, `bank_reference`, declarations, the self-payment indicator, `risk_flags` JSONB, reviewer claim, and current slip reference.
+- `finance.contribution_slip`: Versioned, append-only slip records storing AES-256-GCM ciphertext, nonce, tag, and SHA-256 checksum. Protected by trigger `refuse_change()` preventing any `UPDATE` or `DELETE`.
+- `finance.reconciliation`: Records statement line reference, reviewer member ID, decision reason, and timestamp.
+- `finance.approval`: Records independent approver member ID, decision action, reason, and `related_party_conflict` boolean.
+- `finance.contribution_event`: Append-only state transition audit timeline.
+- `finance.receipt_counter`: Singleton counter table (`singleton = true`) locked with `FOR UPDATE` to allocate strictly monotonic `CN-XXXXX` receipt codes transactionally.
+- `finance.slip_view_grant`: Viewer-bound, expiring evidence grants consumed atomically on their first successful use.
+
 ## Tests and the database
 
 FastAPI tests that need PostgreSQL read `DATABASE_URL` and run inside one transaction that is rolled back, so they leave nothing behind. The few that must commit (the Express throttle comparison) use unique test identifiers and delete their rows. CI builds a fresh PostgreSQL 17 database from the Express migrations plus Alembic for every run.

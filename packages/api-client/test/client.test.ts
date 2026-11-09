@@ -623,3 +623,73 @@ test('broadcast reach sends an optional effective staff tier filter', async () =
     { area: { level: 'district', code: 'LK-11' }, audienceTiers: ['2A'] },
   ]);
 });
+
+test('community finance fund and staff endpoints call their routes with correct parameters', async () => {
+  const { fetch, sent } = fakeFetch(200, {});
+  const client = createApiClient({ baseUrl: 'https://api.example', fetch });
+
+  await client.getFundConfig();
+  await client.createContribution(
+    {
+      amountMinor: 250000,
+      transferDate: '2026-11-09',
+      bankReference: 'TXN123456789',
+      noPrivilegeAcknowledged: true,
+      informationAccurateAcknowledged: true,
+      payingForSelf: true,
+    },
+    'idem-key-1',
+  );
+  await client.uploadContributionSlip('c-1', new Uint8Array([1, 2, 3]), 'image/jpeg');
+  await client.submitContribution('c-1');
+  await client.getMyContributions(10, 0);
+  await client.getMyContribution('c-1');
+  await client.getMyContributionReceipt('c-1');
+
+  await client.listFinanceContributions({ status: 'SUBMITTED', month: '2026-11', riskFlag: 'duplicate_bank_reference', limit: 50 });
+  await client.getFinanceContribution('c-1');
+  await client.claimFinanceContribution('c-1');
+  await client.getFinanceSlipViewToken('c-1');
+  await client.reconcileFinanceContribution('c-1', {
+    action: 'matched',
+    statementReference: 'STMT-99',
+    reason: 'Matched with bank statement',
+  });
+  await client.approveFinanceContribution('c-1', {
+    action: 'approve',
+    reason: 'Second person verified',
+    relatedPartyConflict: false,
+  });
+
+  assert.deepEqual(
+    sent.map((request) => [request.method, request.url.replace('https://api.example', ''), request.body]),
+    [
+      ['GET', '/v1/fund/config', undefined],
+      [
+        'POST',
+        '/v1/fund/contributions',
+        '{"currency":"LKR","declarationVersion":"v1","amountMinor":250000,"transferDate":"2026-11-09","bankReference":"TXN123456789","noPrivilegeAcknowledged":true,"informationAccurateAcknowledged":true,"payingForSelf":true}',
+      ],
+      ['PUT', '/v1/fund/contributions/c-1/slip', new Uint8Array([1, 2, 3])],
+      ['POST', '/v1/fund/contributions/c-1/submit', undefined],
+      ['GET', '/v1/fund/contributions/mine?limit=10&offset=0', undefined],
+      ['GET', '/v1/fund/contributions/c-1', undefined],
+      ['GET', '/v1/fund/contributions/c-1/receipt', undefined],
+      ['GET', '/v1/finance/contributions?status=SUBMITTED&month=2026-11&risk_flag=duplicate_bank_reference&limit=50', undefined],
+      ['GET', '/v1/finance/contributions/c-1', undefined],
+      ['POST', '/v1/finance/contributions/c-1/claim', undefined],
+      ['POST', '/v1/finance/contributions/c-1/slip-view', undefined],
+      [
+        'POST',
+        '/v1/finance/contributions/c-1/reconcile',
+        '{"action":"matched","statementReference":"STMT-99","reason":"Matched with bank statement"}',
+      ],
+      [
+        'POST',
+        '/v1/finance/contributions/c-1/approve',
+        '{"action":"approve","reason":"Second person verified","relatedPartyConflict":false}',
+      ],
+    ],
+  );
+  assert.equal(sent[1].headers['Idempotency-Key'], 'idem-key-1');
+});

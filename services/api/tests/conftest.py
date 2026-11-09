@@ -26,6 +26,7 @@ import subprocess
 from collections.abc import Callable, Iterator
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
@@ -212,7 +213,10 @@ def auth(database_settings: Settings, db_session: Session) -> Callable[[Row], di
             {"id": member.id},
         )
         version = db_session.scalar(text("SELECT session_version FROM npm.member WHERE id = :id"), {"id": member.id})
-        return {"Authorization": f"Bearer {sign_session_token(member.id, version, secret, session_id=session_id)}"}
+        return {
+            "Authorization": f"Bearer {sign_session_token(member.id, version, secret, session_id=session_id)}",
+            "Idempotency-Key": str(uuid4()),
+        }
 
     return header
 

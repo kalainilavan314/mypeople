@@ -6,6 +6,29 @@ from uuid import uuid4
 import pytest
 
 from app.modules.finance.rules import check_independent_approval, check_submission, check_transition, receipt_code
+from app.modules.finance.scanner import ClamAVScanner, MalwareDetected, ScannerUnavailable
+
+
+class FakeClamAVConnection:
+    def __init__(self, response: bytes) -> None:
+        self.response = response
+        self.sent: list[bytes] = []
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args) -> None:
+        return None
+
+    def settimeout(self, _timeout: float) -> None:
+        return None
+
+    def sendall(self, data: bytes) -> None:
+        self.sent.append(data)
+
+    def recv(self, _size: int) -> bytes:
+        response, self.response = self.response, b""
+        return response
 
 
 def test_submission_refuses_future_or_empty_bank_evidence() -> None:
@@ -30,3 +53,31 @@ def test_receipts_follow_final_approval_only() -> None:
     assert receipt_code(1) == "CN-00001"
     with pytest.raises(ValueError, match="receipt_range_exhausted"):
         receipt_code(100000)
+
+
+def test_clamav_streams_the_upload_and_accepts_only_an_ok_response(monkeypatch) -> None:
+    connection = FakeClamAVConnection(b"stream: OK\0")
+    monkeypatch.setattr(
+        "app.modules.finance.scanner.socket.create_connection",
+        lambda *_args, **_kwargs: connection,
+    )
+    ClamAVScanner("127.0.0.1", 3310, 2).scan(b"safe-image")
+    assert connection.sent[0] == b"zINSTREAM\0"
+    assert connection.sent[-1] == b"\0\0\0\0"
+
+
+def test_clamav_rejects_malware_and_fails_closed_when_unavailable(monkeypatch) -> None:
+    infected = FakeClamAVConnection(b"stream: Win.Test.EICAR FOUND\0")
+    monkeypatch.setattr(
+        "app.modules.finance.scanner.socket.create_connection",
+        lambda *_args, **_kwargs: infected,
+    )
+    with pytest.raises(MalwareDetected):
+        ClamAVScanner("127.0.0.1", 3310, 2).scan(b"infected")
+
+    def unavailable(*_args, **_kwargs):
+        raise OSError("clamd unavailable")
+
+    monkeypatch.setattr("app.modules.finance.scanner.socket.create_connection", unavailable)
+    with pytest.raises(ScannerUnavailable):
+        ClamAVScanner("127.0.0.1", 3310, 2).scan(b"unknown")

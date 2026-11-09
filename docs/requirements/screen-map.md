@@ -52,8 +52,8 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | H14 | Take a survey | Ideas and surveys (SC-07) | 2 | To build | `apps/member-mobile/app/(member)/surveys/[id].tsx` |  |
 | H15 | Learning and courses | Learning (SC-08) | 2 | To build | `apps/member-mobile/app/(member)/learning/` |  |
 | H16 | Course lesson | Learning (SC-08) | 2 | To build | `apps/member-mobile/app/(member)/learning/[lesson].tsx` |  |
-| H17 | Party fund contribution | Party fund (SC-09) | 2 | To build | `apps/member-mobile/app/(member)/fund/` |  |
-| H18 | Contribution receipt | Party fund (SC-09) | 2 | To build | `apps/member-mobile/app/(member)/fund/receipt/[id].tsx` |  |
+| H17 | Party fund contribution | Party fund (SC-09) | 2 | Built | `apps/member-mobile/app/(member)/fund/` | M1.4 bank slip intake |
+| H18 | Contribution receipt | Party fund (SC-09) | 2 | Built | `apps/member-mobile/app/(member)/fund/receipt/[id].tsx` | M1.4 verified receipt card |
 | H19 | Invite a member | Referrals (SC-10) | 2 | To build | `apps/member-mobile/app/(member)/referrals/invite.tsx` |  |
 | H20 | My referrals | Referrals (SC-10) | 2 | To build | `apps/member-mobile/app/(member)/referrals/` |  |
 | H21 | Survey submitted | Ideas and surveys (SC-07) | 2 | To build | `apps/member-mobile/app/(member)/surveys/[id]/done.tsx` |  |
@@ -176,7 +176,7 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | D07 | Event console (GAP-03) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/events/` | Paginated list, create, edit, audited roster CSV, cancellation |
 | D08 | Gallery console and removal queue (GAP-04) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/gallery/` | Paginated album and 24h removal queues, protected display-size preview |
 | D09 | Notification and messaging composer (GAP-05) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/messages/` | Paginated bilingual broadcasts with area and effective staff-authorization-tier targeting, live reach, final reach recalculation, approval and audited dispatch. No member ranking. |
-| D10 | Finance queue and ledger (GAP-06) | Administration (SC-17, SC-20) | 1–3 | To build | `apps/admin-web/src/app/(staff)/finance/` |  |
+| D10 | Finance queue and ledger (GAP-06) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/finance/` | M1.4 two-person reconciliation queue & ledger |
 | D11 | Payment reconciliation | Payment gateway (SC-43) | 3, subject to OD-27 | Blocked: OD-27, OD-40 | `apps/admin-web/src/app/(staff)/finance/payments/` |  |
 | D12 | Moderation and fact-check queue (GAP-07) | Official content and fact-checks (SC-41) | 2 | To build | `apps/admin-web/src/app/(staff)/moderation/` |  |
 | D13 | Assistance case management | Community Support (SC-23) | 2 | To build | `apps/admin-web/src/app/(staff)/assistance/` |  |
