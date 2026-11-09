@@ -9,7 +9,7 @@ testing with people who use assistive technology.
 - [ ] The locked typography is unchanged: Inter for English UI, Noto Sans Tamil
   for Tamil, and JetBrains Mono only for identifiers.
 - [ ] The selected language is coherent across the whole screen. The admin
-  dashboard shows one selected language; mobile screens remain Tamil-first
+  dashboard is English-only; mobile screens remain Tamil-first
   where both languages are required.
 - [ ] Every action has visible text or an accessible name, a semantic role,
   and a minimum 44 by 44 px touch target. Primary fields and buttons use the
@@ -40,3 +40,18 @@ testing with people who use assistive technology.
    supported device text size on a real device or emulator.
 5. Record any exception in the PR with the affected BRD ID, user impact, and
    a follow-up owner. Do not silently waive a criterion.
+
+## Baseline audit record
+
+The 54 screens in the Phase 1 inventory still need a recorded manual audit.
+Automated source-contract and colour-token tests cover shared controls, not
+rendered screens or assistive-technology behaviour. For each screen, record:
+screen ID, app, device/browser and version, language, keyboard or screen-reader
+result, 200% scaling result, contrast and target-size result, defects, owner,
+and retest evidence. A pass requires the checklist above on the rendered screen.
+
+Admin Web also needs an automated DOM accessibility sweep in CI. The existing
+ESLint rules do not measure rendered contrast, focus order or dynamic states.
+Track this as an open M1.0 acceptance item until a browser runner is installed
+and its results are reviewed. Mobile TalkBack and VoiceOver evidence likewise
+requires real devices or emulators.

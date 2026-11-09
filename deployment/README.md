@@ -14,6 +14,12 @@ Nginx: the My People block (`/etc/nginx/sites-available/default`) now sets `prox
 
 ## How to deploy
 
+For the new FastAPI, mobile and admin stack, use the
+[Gate G1 evidence and pilot procedure](../docs/requirements/gate-g1.md).
+Pilot activation needs its own approved staging, backup and rollback plan;
+full G1 sign-off follows the pilot and precedes wider rollout. This does not
+change the live PWA release workflow.
+
 The release package includes changed app/server source and a built `app/dist`, with SHA-256 checksums. It excludes credentials, uploaded member data and node_modules.
 
 1. Run local QA, then `npm run build --prefix app`.

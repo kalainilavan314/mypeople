@@ -1,5 +1,5 @@
 import type { MemberCard } from '@my-people/api-client';
-import { router } from 'expo-router';
+import { router, type Href } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -86,6 +86,7 @@ function AvailableCard({ card }: { card: MemberCard }) {
         onPress={() => router.push('/card/code')}
       />
       <Button label={t('m.card.progressTitle')} variant="secondary" onPress={() => router.push('/card/progress')} />
+      <Button label={t('m.card.shareTitle')} variant="secondary" onPress={() => router.push('/card/share' as Href)} />
 
       {card.lastScannedAt ? (
         <AppText step="secondary" tone="muted">{`${t('m.card.lastScan')}: ${formatDateTime(card.lastScannedAt, language)}`}</AppText>

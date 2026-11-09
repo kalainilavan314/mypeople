@@ -1,5 +1,5 @@
 import type { IdentityDocumentKind } from '@my-people/api-client';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +10,7 @@ import { AppText, Button, Notice, StatusTag, SurfaceCard, useApiAction } from '@
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 
-import { pickImage } from './pickImage';
+import { pickImage, type PickedImage } from './pickImage';
 
 type Props = {
   kind: IdentityDocumentKind;
@@ -28,18 +28,25 @@ type Props = {
 export function PhotoRow({ kind, received, requested, onUploaded }: Props) {
   const { t } = useTranslation();
   const [denied, setDenied] = useState(false);
-  const [lastSource, setLastSource] = useState<'camera' | 'library' | null>(null);
+  const pendingImage = useRef<PickedImage | null>(null);
+  useEffect(() => () => { pendingImage.current = null; }, []);
   const selfie = kind === 'selfie';
-  const upload = useApiAction(async (source: 'camera' | 'library') => {
-    setLastSource(source);
-    setDenied(false);
-    const picked = await pickImage(source, selfie);
-    if ('denied' in picked) {
-      setDenied(true);
-      return;
+  const upload = useApiAction(async (source?: 'camera' | 'library') => {
+    if (source) {
+      pendingImage.current = null;
+      setDenied(false);
+      const picked = await pickImage(source, selfie);
+      if ('denied' in picked) {
+        setDenied(true);
+        return;
+      }
+      if ('cancelled' in picked) return;
+      pendingImage.current = picked.image;
     }
-    if ('cancelled' in picked) return;
-    await api().uploadIdentityDocument(kind, picked.image.body, picked.image.contentType);
+    const image = pendingImage.current;
+    if (!image) return;
+    await api().uploadIdentityDocument(kind, image.body, image.contentType);
+    pendingImage.current = null;
     onUploaded();
   });
 
@@ -83,7 +90,7 @@ export function PhotoRow({ kind, received, requested, onUploaded }: Props) {
       {upload.error ? (
         <>
           <Notice tone="error">{errorMessage(t, upload.error)}</Notice>
-          {lastSource ? <Button label={t('m.verify.retryUpload')} variant="secondary" busy={upload.busy} onPress={() => void upload.run(lastSource)} /> : null}
+          {pendingImage.current ? <Button label={t('m.verify.retryUpload')} variant="secondary" busy={upload.busy} onPress={() => void upload.run()} /> : null}
         </>
       ) : null}
     </SurfaceCard>

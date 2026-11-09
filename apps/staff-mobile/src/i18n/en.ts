@@ -77,6 +77,7 @@ export const en = {
     title: 'Check-in',
     chooseEvent: 'Choose the event',
     noEvents: 'No events coming up.',
+    noAccess: 'Your active staff role does not allow event check-in or attendance rosters.',
     cardCheck: 'Check a membership card',
     scanPass: 'Scan an event pass',
     roster: 'Attendance',

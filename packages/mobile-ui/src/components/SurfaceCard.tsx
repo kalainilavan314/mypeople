@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { colors, radius, spacing } from '@my-people/design-tokens';
+import { colors, control, radius, spacing } from '@my-people/design-tokens';
 
 type Props = {
   children: ReactNode;
@@ -31,6 +31,7 @@ export function SurfaceCard({ children, accent = false, onPress, accessibilityLa
 
 const styles = StyleSheet.create({
   card: {
+    minHeight: control.height,
     backgroundColor: colors.card,
     borderColor: colors.border,
     borderWidth: 1,

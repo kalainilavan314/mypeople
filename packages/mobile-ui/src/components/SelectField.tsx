@@ -28,6 +28,10 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
   const text = stringsFor(useLanguage());
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const close = () => {
+    setQuery('');
+    setOpen(false);
+  };
   const chosen = options.find((option) => option.value === value);
   const shown = query ? options.filter((option) => option.label.toLowerCase().includes(query.toLowerCase())) : options;
 
@@ -40,6 +44,7 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
         accessible
         accessibilityRole="button"
         accessibilityLabel={`${label}: ${chosen?.label ?? placeholder}`}
+        accessibilityHint={error ?? undefined}
         accessibilityState={{ disabled, expanded: open }}
         aria-disabled={disabled}
         style={[styles.box, disabled && styles.disabled, error ? styles.invalid : null]}>
@@ -49,18 +54,18 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
         <Ionicons name="chevron-down" size={20} color={colors.textMuted} />
       </Pressable>
       {error ? (
-        <AppText step="secondary" tone="error" accessibilityRole="alert">
+        <AppText step="secondary" tone="error" accessibilityRole="alert" accessibilityLiveRegion="polite">
           {error}
         </AppText>
       ) : null}
-      <Modal visible={open} animationType="slide" onRequestClose={() => setOpen(false)}>
+      <Modal visible={open} animationType="slide" onRequestClose={close} accessibilityViewIsModal>
         <SafeAreaView style={styles.sheet}>
           <View style={styles.sheetHeader}>
             <AppText step="section" accessibilityRole="header" style={styles.value}>
               {label}
             </AppText>
             <Pressable
-              onPress={() => setOpen(false)}
+              onPress={close}
               accessible
               accessibilityRole="button"
               accessibilityLabel={text.close}
@@ -79,8 +84,7 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
               <Pressable
                 onPress={() => {
                   onChange(item.value);
-                  setQuery('');
-                  setOpen(false);
+                  close();
                 }}
                 accessible
                 accessibilityRole="button"

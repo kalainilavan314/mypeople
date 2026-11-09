@@ -135,6 +135,7 @@ async function AlbumsContent({ searchParams }: { searchParams: PageProps<'/galle
           <span lang={locale}>{locale === 'ta' ? 'வடிகட்டுக' : 'Filter'}</span>
         </button>
       </form>
+      {albums.length === 100 ? <p className="text-sm text-warning">Showing the first 100 matching albums. Additional results require pagination.</p> : null}
 
       {albums.length === 0 ? (
         <div className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">
@@ -226,7 +227,7 @@ async function RemovalsQueueContent({ searchParams }: { searchParams: PageProps<
         <p>
           {locale === 'ta'
             ? `உங்கள் பகுதியில் ${requests.length} திறந்த நீக்கல் கோரிக்கைகள் உள்ளன`
-            : `${requests.length} open removal requests in your area`}
+            : `${requests.length} removal requests in this filter`}
         </p>
         {escalatedCount > 0 ? (
           <span className="rounded bg-error-bg px-2.5 py-1 text-xs font-semibold text-error">
@@ -234,6 +235,7 @@ async function RemovalsQueueContent({ searchParams }: { searchParams: PageProps<
           </span>
         ) : null}
       </div>
+      {requests.length === 100 ? <p className="text-sm text-warning">Showing the first 100 matching removal requests. Additional results require pagination.</p> : null}
 
       <form className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3" role="search">
         <input type="hidden" name="tab" value="removals" />
@@ -253,7 +255,7 @@ async function RemovalsQueueContent({ searchParams }: { searchParams: PageProps<
 
       {requests.length === 0 ? (
         <div className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">
-          {locale === 'ta' ? 'உங்கள் பகுதியில் நிலுவையில் உள்ள நீக்கல் கோரிக்கைகள் எதுவும் இல்லை.' : 'All caught up. No photo removal requests currently awaiting action in your area.'}
+          {locale === 'ta' ? 'இந்த வடிகட்டியில் நீக்கல் கோரிக்கைகள் இல்லை.' : 'No removal requests found for this filter.'}
         </div>
       ) : null}
 

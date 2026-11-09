@@ -58,7 +58,7 @@ async function BroadcastsContent({ searchParams }: { searchParams: PageProps<'/m
 
       <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
         <p>
-          {locale === 'ta' ? `உங்கள் பகுதியில் ${broadcasts.length} அறிவித்தல்கள் உள்ளன` : `${broadcasts.length} broadcasts in your area`}
+          {locale === 'ta' ? `வடிகட்டியில் ${broadcasts.length} அறிவித்தல்கள்` : `${broadcasts.length} broadcasts in this filter`}
         </p>
         {pendingCount > 0 ? (
           <span className="rounded bg-warning-bg px-2.5 py-1 text-xs font-semibold text-warning">
@@ -68,6 +68,7 @@ async function BroadcastsContent({ searchParams }: { searchParams: PageProps<'/m
           </span>
         ) : null}
       </div>
+      {broadcasts.length === 100 ? <p className="text-sm text-warning">Showing the first 100 matching broadcasts. Additional results require pagination.</p> : null}
 
       <form className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3" role="search">
         <label className="flex flex-col gap-1 text-sm font-semibold">
