@@ -142,6 +142,15 @@ export const en = {
     secondFactor: 'Authenticator: in use this session',
     language: 'Language',
   },
+  sessions: {
+    title: 'Devices and sessions',
+    hint: 'Phones and browsers signed in to your staff account. If a phone is lost, sign it out here: it loses access and clears its data the next time it connects.',
+    thisDevice: 'This device',
+    lastUsed: 'Last used {{time}}',
+    signOutDevice: 'Sign out this device',
+    signOutOthers: 'Sign out every other device',
+    onlyThis: 'Only this device is signed in.',
+  },
   lookup: {
     title: 'Find a member',
     body: 'Type the exact member ID. Only members in your areas are found, and every lookup is recorded.',

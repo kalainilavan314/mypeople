@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -71,6 +72,7 @@ export default function RoleScreen() {
           { key: 'en', label: 'English' },
         ]}
       />
+      <Button label={t('s.sessions.title')} variant="secondary" icon="phone-portrait-outline" onPress={() => router.push('/sessions')} />
       <Button label={t('s.common.signOut')} variant="danger" icon="log-out-outline" onPress={() => void signOut()} />
     </Screen>
   );
