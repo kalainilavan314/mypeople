@@ -206,7 +206,7 @@ The member profile never contains the NIC, its hash, the password hash or staff 
 
 | Endpoint | Signed in | Answer | Refusals |
 |---|---|---|---|
-| `GET /v1/analytics/operations?periodDays=7\|30\|90` (default 30) | staff with `analytics.view` | `200` counts for the caller's areas: `started, submitted, verified, active, completionRate`, `decided, medianHours, withinTargetRate`, `waiting, overTarget`, `events, going, attended, attendanceRate`, `periodDays, generatedAt, platformWide`. A count is `null` when it would show 1 to 9 people, directly or by subtraction (RR-02) | `401`, `403 forbidden`, `422` for another period |
+| `GET /v1/analytics/operations?periodDays=7\|30\|90` (default 30) | staff with `analytics.view` | `200` counts for the caller's areas: `started, submitted, verified, active, completionRate`, `decided, medianHours, withinTargetRate`, `waiting, overTarget`, `events, going, attended, attendanceRate`, `periodDays, generatedAt, platformWide`. A count is `null` when it would show 1 to 9 people, directly or by subtraction (RR-02) | `401`, `403 forbidden`, `422 period_days_must_be_7_30_or_90` |
 
 ## Offline check-in (MP-DEC-001 4.3 to 4.5)
 
