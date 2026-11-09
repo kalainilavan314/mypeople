@@ -100,6 +100,7 @@ export default function ProfileScreen() {
           label={`${t('m.profile.language')} · ${t('m.profile.notifications')}`}
           onPress={() => router.push('/profile/settings')}
         />
+        <MenuRow icon="text-outline" label={t('m.accessibility.title')} onPress={() => router.push('/profile/accessibility')} />
         <MenuRow icon="call-outline" label={t('m.profile.recoveryNumber')} onPress={() => router.push('/profile/recovery-number')} />
         <MenuRow icon="lock-closed-outline" label={t('m.profile.security')} onPress={() => router.push('/profile/security')} />
         <MenuRow icon="document-lock-outline" label={t('m.profile.privacy')} onPress={() => router.push('/profile/privacy')} />

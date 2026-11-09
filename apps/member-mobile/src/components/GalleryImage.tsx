@@ -12,7 +12,7 @@ type Props = {
   style?: StyleProp<ImageStyle>;
 };
 
-/** A gallery photo, served only through the API to signed-in members. */
+/** A gallery photo, served only through the API to signed-in members; with the data saver on it waits for a tap (M44). */
 export function GalleryImage({ photoId, size, alt, style }: Props) {
   const { t } = useTranslation();
   return (
@@ -20,6 +20,7 @@ export function GalleryImage({ photoId, size, alt, style }: Props) {
       uri={api().galleryPhotoUrl(photoId, size)}
       alt={alt}
       unavailableLabel={t('m.gallery.unavailable')}
+      tapToLoadLabel={t('m.gallery.tapToLoad')}
       style={style}
     />
   );

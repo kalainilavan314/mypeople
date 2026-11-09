@@ -32,6 +32,12 @@ export function fontFamilyFor(language: string, weight: Weight): string {
   return language === 'ta' ? `NotoSansTamil_${suffix}` : `Inter_${suffix}`;
 }
 
+/** textStyle with the size and line height multiplied by the member's in-app text size (M44). */
+export function scaledTextStyle(language: string, step: keyof typeof typeScale, scale: number) {
+  const base = textStyle(language, step);
+  return { ...base, fontSize: Math.round(base.fontSize * scale), lineHeight: Math.ceil(base.lineHeight * scale) };
+}
+
 /** Font, size and line height for a step of the type scale. */
 export function textStyle(language: string, step: keyof typeof typeScale) {
   const { size, lineHeight, weight } = typeScale[step];

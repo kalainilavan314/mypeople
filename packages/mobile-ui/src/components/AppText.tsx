@@ -2,7 +2,8 @@ import type { ReactNode } from 'react';
 import { Text, type StyleProp, type TextProps, type TextStyle } from 'react-native';
 
 import { colors, typeScale } from '@my-people/design-tokens';
-import { monoFontFamily, textStyle } from '../fonts';
+import { useTextScale } from '../display/DisplayPreferences';
+import { monoFontFamily, scaledTextStyle } from '../fonts';
 
 import { useLanguage } from '../hooks/useLanguage';
 
@@ -26,14 +27,20 @@ type Props = Omit<TextProps, 'style'> & {
   children: ReactNode;
 };
 
-/** Text in the locked font for the member's language, on the shared type scale. */
+/**
+ * Text in the locked font for the member's language, on the shared type scale,
+ * enlarged by the member's in-app text size (M44). The phone's own font
+ * setting still applies on top, capped so the two together stay within twice
+ * the base size and layouts remain usable.
+ */
 export function AppText({ step = 'body', tone = 'default', mono = false, style, children, ...rest }: Props) {
   const language = useLanguage();
-  const base = textStyle(language, step);
+  const scale = useTextScale();
+  const base = scaledTextStyle(language, step, scale);
   return (
     <Text
       {...rest}
-      maxFontSizeMultiplier={2}
+      maxFontSizeMultiplier={2 / scale}
       style={[base, mono && { fontFamily: monoFontFamily }, { color: TONES[tone] }, style]}>
       {children}
     </Text>

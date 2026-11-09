@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 
 import { colors, control, radius, spacing } from '@my-people/design-tokens';
-import { textStyle } from '../fonts';
+import { useTextScale } from '../display/DisplayPreferences';
+import { scaledTextStyle } from '../fonts';
 
 import { useLanguage } from '../hooks/useLanguage';
 import { stringsFor } from '../strings';
@@ -22,6 +23,7 @@ type Props = Omit<TextInputProps, 'style'> & {
 /** A labelled input; the error sits under it and is announced (spec §9). */
 export function TextField({ label, hint, error, secret = false, optional = false, multiline, ...input }: Props) {
   const language = useLanguage();
+  const body = scaledTextStyle(language, 'body', useTextScale());
   const text = stringsFor(language);
   const [hidden, setHidden] = useState(true);
   const [focused, setFocused] = useState(false);
@@ -60,7 +62,7 @@ export function TextField({ label, hint, error, secret = false, optional = false
           }}
           placeholderTextColor={colors.textMuted}
           // 16 px or more, so phones do not zoom into the field.
-          style={[textStyle(language, 'body'), styles.input, { fontSize: Math.max(16, textStyle(language, 'body').fontSize) }]}
+          style={[body, styles.input, { fontSize: Math.max(16, body.fontSize) }]}
         />
         {secret ? (
           <Pressable

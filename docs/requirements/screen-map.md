@@ -6,10 +6,10 @@ Built screens are in the Expo member and staff apps and the Next.js dashboard; n
 
 | App | Screens | Built |
 |---|---|---|
-| Member app | 112 | 52 |
+| Member app | 112 | 53 |
 | Staff app | 18 | 7 |
 | Dashboard | 44 | 15 |
-| **All** | **174** | **74** |
+| **All** | **174** | **75** |
 
 Status: **Built**; **API ready** (the endpoint exists and is tested, only the screen is missing); **To build**; **Blocked** (waits on the decision or integration named).
 
@@ -121,7 +121,7 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | M41 | Meet your representative | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/representatives/` |  |
 | M42 | Book or manage appointment | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/representatives/` |  |
 | M43 | Voice report | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Blocked: Voice is Phase 3 | `apps/member-mobile/app/(member)/issues/new (voice mode of H07)` | Decided: a voice option inside H07, not a second report screen |
-| M44 | Accessibility and data saver | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | To build | `apps/member-mobile/app/(member)/profile/accessibility.tsx` |  |
+| M44 | Accessibility and data saver | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Built (text size and data saver; voice in Phase 3) | `apps/member-mobile/app/(member)/profile/accessibility.tsx` | In-app text size (Standard, Large, Larger) and a data saver that loads gallery photos on tap; stays on the device |
 | M45 | Messages and channels | SMS and WhatsApp (SC-39) | 1 SMS, 2 WhatsApp | Built (SMS choices; texts wait on INT-01; WhatsApp in Phase 2) | `apps/member-mobile/app/(member)/profile/settings.tsx (channels, with P05)` | Decided: extends the P05 settings screen; no second preferences screen |
 | M46 | Diaspora participation | Diaspora (SC-40) | 3 | To build | `apps/member-mobile/app/(member)/diaspora.tsx` |  |
 | M47 | Official updates | Official content and fact-checks (SC-41) | 2 | Blocked: INT-24 | `apps/member-mobile/app/(member)/official/` |  |

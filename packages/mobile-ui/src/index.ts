@@ -1,7 +1,14 @@
 // Shared by the member and staff apps: the locked fonts, the screen components
 // from the design specification (design/mobile/production-design-specification.md
 // §3), the stored session, and the hooks that load data through the API client.
-export { fontFamilyFor, lockedFonts, monoFontFamily, textStyle } from './fonts';
+export { fontFamilyFor, lockedFonts, monoFontFamily, scaledTextStyle, textStyle } from './fonts';
+export {
+  DisplayPreferencesProvider,
+  TEXT_SCALE,
+  useDisplayPreferences,
+  useTextScale,
+  type TextSize,
+} from './display/DisplayPreferences';
 export { tabIcon } from './tabIcon';
 
 export { AppText } from './components/AppText';
@@ -31,13 +38,16 @@ export {
   clearSavedCard,
   clearSession,
   deviceId,
+  readDisplayPreferences,
   readLanguage,
   readRefreshToken,
   readSavedCard,
   readToken,
   saveCard,
+  saveDisplayPreferences,
   saveLanguage,
   saveTokens,
+  type StoredDisplayPreferences,
 } from './lib/storage';
 
 export { api, freshToken } from './session/api';

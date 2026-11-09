@@ -40,6 +40,7 @@ export default function MemberLayout() {
       <Stack.Screen name="profile/activity" options={{ title: t('m.profile.myActivity') }} />
       <Stack.Screen name="profile/area" options={{ title: t('m.profile.myArea') }} />
       <Stack.Screen name="profile/settings" options={{ title: t('m.profile.settings') }} />
+      <Stack.Screen name="profile/accessibility" options={{ title: t('m.accessibility.title') }} />
       <Stack.Screen name="profile/security" options={{ title: t('m.profile.security') }} />
       <Stack.Screen name="profile/privacy" options={{ title: t('m.profile.privacy') }} />
       <Stack.Screen name="profile/recovery-number" options={{ title: t('m.profile.recoveryNumber') }} />

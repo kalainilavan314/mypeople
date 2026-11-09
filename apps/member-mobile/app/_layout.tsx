@@ -7,31 +7,43 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 
 import { colors } from '@my-people/design-tokens';
-import { lockedFonts, SessionProvider, useSession } from '@my-people/mobile-ui';
+import {
+  DisplayPreferencesProvider,
+  lockedFonts,
+  readDisplayPreferences,
+  SessionProvider,
+  type StoredDisplayPreferences,
+  useSession,
+} from '@my-people/mobile-ui';
 
 import { API_URL } from '@/lib/api';
 import { restoreLanguage } from '@/lib/i18n';
 
-// Keep the splash screen up until the locked fonts, the saved language and the
-// stored session are ready, so text never flashes in a different font or
-// language and a signed-in member never sees the sign-in screen first.
+// Keep the splash screen up until the locked fonts, the saved language, the
+// display choices (M44) and the stored session are ready, so text never
+// flashes in a different font, language or size and a signed-in member never
+// sees the sign-in screen first.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts(lockedFonts);
   const [languageReady, setLanguageReady] = useState(false);
+  const [display, setDisplay] = useState<StoredDisplayPreferences | null | undefined>(undefined);
 
   useEffect(() => {
     restoreLanguage().finally(() => setLanguageReady(true));
+    readDisplayPreferences().then(setDisplay, () => setDisplay(null));
   }, []);
 
-  if (!(fontsLoaded || fontError !== null) || !languageReady) return null;
+  if (!(fontsLoaded || fontError !== null) || !languageReady || display === undefined) return null;
 
   return (
-    <SessionProvider baseUrl={API_URL}>
-      <StatusBar style="dark" />
-      <Routes />
-    </SessionProvider>
+    <DisplayPreferencesProvider initial={display}>
+      <SessionProvider baseUrl={API_URL}>
+        <StatusBar style="dark" />
+        <Routes />
+      </SessionProvider>
+    </DisplayPreferencesProvider>
   );
 }
 

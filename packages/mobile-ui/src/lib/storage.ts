@@ -11,6 +11,7 @@ const REFRESH_KEY = 'mp.refresh';
 const DEVICE_KEY = 'mp.device';
 const LANGUAGE_KEY = 'mp.language';
 const CARD_KEY = 'mp.card';
+const DISPLAY_KEY = 'mp.display';
 
 const isWeb = Platform.OS === 'web';
 let webToken: string | null = null;
@@ -101,6 +102,36 @@ export async function saveLanguage(language: string): Promise<void> {
   if (!isWeb) return SecureStore.setItemAsync(LANGUAGE_KEY, language);
   try {
     globalThis.localStorage?.setItem(LANGUAGE_KEY, language);
+  } catch {
+    // Private windows may refuse storage; the choice then lasts until reload.
+  }
+}
+
+export type StoredDisplayPreferences = { textSize: 'standard' | 'large' | 'larger'; dataSaver: boolean };
+
+/** M44 text size and data saver; not sensitive, kept like the language (localStorage on the web preview). */
+export async function readDisplayPreferences(): Promise<StoredDisplayPreferences | null> {
+  let raw: string | null = null;
+  try {
+    raw = isWeb ? (globalThis.localStorage?.getItem(DISPLAY_KEY) ?? null) : await SecureStore.getItemAsync(DISPLAY_KEY);
+  } catch {
+    return null;
+  }
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as Partial<StoredDisplayPreferences>;
+    const textSize = parsed.textSize === 'large' || parsed.textSize === 'larger' ? parsed.textSize : 'standard';
+    return { textSize, dataSaver: parsed.dataSaver === true };
+  } catch {
+    return null; // an unreadable value falls back to the defaults
+  }
+}
+
+export async function saveDisplayPreferences(prefs: StoredDisplayPreferences): Promise<void> {
+  const raw = JSON.stringify(prefs);
+  if (!isWeb) return SecureStore.setItemAsync(DISPLAY_KEY, raw);
+  try {
+    globalThis.localStorage?.setItem(DISPLAY_KEY, raw);
   } catch {
     // Private windows may refuse storage; the choice then lasts until reload.
   }

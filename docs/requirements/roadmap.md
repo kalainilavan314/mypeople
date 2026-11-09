@@ -32,7 +32,7 @@ A screen whose decision is not taken stays "Blocked" in the screen map with the 
 | Batch | Work | Done when |
 |---|---|---|
 | F1 (done) | Screen placement: the screen map; the README-only folders `assistance`, `household`, `ideas`, `issues`, `promises` moved into `apps/member-mobile/app/(member)` and `field-visits` into `apps/staff-mobile/app/(staff)`, so new screens sit behind sign-in; `identity-reviews` moved as `(staff)/assisted-verification`, narrowed to S04, because the BRD keeps the verification queue on the dashboard (W01, W02); the four overlaps below settled | Every screen has one place; no folder outside the signed-in groups |
-| F2 | Accessibility kit: the WCAG 2.2 AA checklist above as a document; lint rules for accessibility in the dashboard and both Expo apps, and automated page checks on the dashboard in CI; shared components meet the checklist; audit and fix the 54 built screens | The audit's findings are fixed or listed with a reason |
+| F2 (part done) | Accessibility kit: the WCAG 2.2 AA checklist above as a document; lint rules for accessibility in the dashboard and both Expo apps, and automated page checks on the dashboard in CI; shared components meet the checklist; audit and fix the 54 built screens. Done: the checklist (`docs/development/accessibility-checklist.md`), the dashboard's accessibility lint, contract checks for the shared components and a scan of every member and staff screen (`scripts/accessibility/`, run by `npm run test:packages` in CI), which found and fixed two unnamed logos. Left: automated page checks on the dashboard; a TalkBack and VoiceOver pass on a phone | The audit's findings are fixed or listed with a reason |
 | F3 | Go-live plan for the new stack: FastAPI beside Express on the same database (the strangler plan), its storage and keys, the notifications timer, the member app on an internal test track, the dashboard behind Nginx | The plan is approved and the decisions it needs are taken (see the table below) |
 
 Overlaps in the BRD, settled on 27 October 2026 by the project owner so no screen is built twice:
@@ -51,7 +51,7 @@ Overlaps in the BRD, settled on 27 October 2026 by the project owner so no scree
 | 1.1 (part done) | Screens whose API is already built and tested. Done: A15, A18, C02, M04, D01, D07, D08, D09, D34 (Puvi branch); A17, C03, M45 SMS part (Batch 1.1). Left: D22, D35 | A15, A17, A18, C02, C03, M04, M45 (SMS part), D01 (queue counts), D07, D08, D09, D22, D34, D35 |
 | 1.2 | Rest of account security: step-up codes for new devices (FR-AUTH-022), passkeys, lost-device wipe (FR-STF-010) | Additions to M49/M50 and D31 |
 | 1.3 | Capture quality and OCR confirmation (FR-IDV-001 to 004) | M01, M02 |
-| 1.4 (part done) | Remaining Phase 1 requirements: registration, identity, web review, administration, architecture, staff app, card sharing and progress. Done: C04 share, C05 (Puvi branch). Left: S10 | C04 (share; wallet waits on INT-03), C05, S10 |
+| 1.4 (part done) | Remaining Phase 1 requirements: registration, identity, web review, administration, architecture, staff app, card sharing and progress. Done: C04 share, C05 (Puvi branch). S10 moves to 2.2: a coordinator's offer needs the volunteer's side (H10 to H12) to be seen and answered, so building it alone would send offers nobody receives | C04 (share; wallet waits on INT-03), C05, S10 |
 | 1.5 | Assisted verification | M05, S04 |
 | Go-live | Run the F3 plan: the new API, member app and dashboard live; then the BRD's one-month pilot in selected GN divisions | — |
 
