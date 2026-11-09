@@ -29,7 +29,7 @@ export function SubmitButton({ children, formAction, tone = 'primary', name, val
       value={value}
       disabled={pending}
       aria-busy={pending}
-      className={`min-h-11 rounded-lg px-4 text-sm font-semibold disabled:opacity-60 ${TONES[tone]}`}>
+      className={`inline-flex min-h-12 items-center justify-center rounded-lg px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-60 ${TONES[tone]}`}>
       {pending ? 'Working…' : children}
     </button>
   );

@@ -1,17 +1,26 @@
 [Unit]
 Description=My People notification and escalation dispatcher
 After=network.target postgresql.service
+Wants=network.target
 
 [Service]
 Type=oneshot
 User=mypeople
+Group=mypeople
 WorkingDirectory=/srv/mypeople/services/api
 EnvironmentFile=/srv/mypeople/services/api/.env
 ExecStart=/srv/mypeople/services/api/.venv/bin/python -m app.tasks.notifications
+TimeoutStartSec=45s
 StandardOutput=journal
 StandardError=journal
+
+# Security and sandbox hardening
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectHome=true
-ProtectSystem=full
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
 UMask=0077

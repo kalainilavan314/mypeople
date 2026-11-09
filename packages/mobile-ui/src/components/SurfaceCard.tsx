@@ -10,12 +10,14 @@ type Props = {
   /** Makes the whole card one pressable; it must then hold no other buttons. */
   onPress?: () => void;
   accessibilityLabel?: string;
+  accessibilityHint?: string;
   style?: StyleProp<ViewStyle>;
 };
 
 /** White card, 1 px border, 12 px radius and padding (spec §3, SurfaceCard). */
-export function SurfaceCard({ children, accent = false, onPress, accessibilityLabel, style }: Props) {
+export function SurfaceCard({ children, accent = false, onPress, accessibilityLabel, accessibilityHint, style }: Props) {
   const cardStyle = [styles.card, accent && styles.accent, style];
+  // Non-interactive cards must NOT have accessible={true}, so child elements remain directly accessible.
   if (!onPress) return <View style={cardStyle}>{children}</View>;
   return (
     <Pressable
@@ -23,6 +25,7 @@ export function SurfaceCard({ children, accent = false, onPress, accessibilityLa
       accessible
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       style={({ pressed }) => [cardStyle, pressed && styles.pressed]}>
       {children}
     </Pressable>
