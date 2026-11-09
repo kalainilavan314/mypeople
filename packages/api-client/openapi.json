@@ -407,8 +407,18 @@
           "auth"
         ],
         "summary": "Start Totp",
-        "description": "Start adding an authenticator app: the secret to type or the URI to scan as a QR code.",
+        "description": "Re-enter the account password before issuing a secret or QR for an authenticator app.",
         "operationId": "start_totp_v1_auth_mfa_totp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TotpStartInput"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -420,8 +430,24 @@
               }
             }
           },
+          "401": {
+            "description": "wrong_password"
+          },
           "409": {
             "description": "already_enabled"
+          },
+          "429": {
+            "description": "too_many_attempts"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -3579,7 +3605,7 @@
           "recovery"
         ],
         "summary": "Confirm Phone",
-        "description": "Enter the code: the number becomes the recovery contact. A previous number is told of the change.",
+        "description": "Enter the code; replacing a confirmed number also needs the current password.",
         "operationId": "confirm_phone_v1_identity_me_phone_confirm_post",
         "requestBody": {
           "content": {
@@ -3603,10 +3629,13 @@
             }
           },
           "401": {
-            "description": "invalid_code or too_many_attempts"
+            "description": "invalid_code, too_many_attempts or wrong_password"
           },
           "409": {
             "description": "phone_unavailable"
+          },
+          "429": {
+            "description": "too_many_requests, with Retry-After"
           },
           "422": {
             "description": "Validation Error",
@@ -16903,6 +16932,19 @@
             "type": "string",
             "pattern": "^\\d{6}$",
             "title": "Code"
+          },
+          "currentPassword": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currentpassword",
+            "description": "Required when replacing an existing recovery number"
           }
         },
         "type": "object",
@@ -19509,6 +19551,20 @@
         ],
         "title": "TotpEnrolmentOut",
         "description": "Shown once, to add to an authenticator app; never shown again."
+      },
+      "TotpStartInput": {
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "maxLength": 256,
+            "title": "Currentpassword"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currentPassword"
+        ],
+        "title": "TotpStartInput"
       },
       "ValidationError": {
         "properties": {

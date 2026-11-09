@@ -305,13 +305,23 @@ def mfa_status(db: Session, member_id: uuid.UUID) -> tuple[bool, bool]:
     return factor is not None, bool(factor and factor.enabled)
 
 
-def start_totp(db: Session, member: SessionMember, jwt_secret: str) -> tuple[str, str]:
-    """A new secret to add to an authenticator app; enabled once the first code is confirmed."""
+def start_totp(db: Session, member: SessionMember, jwt_secret: str, current_password: str, ip: str) -> tuple[str, str]:
+    """Re-enter the password before issuing a new authenticator secret."""
     factor = repository.find_factor(db, member.id)
     if factor is not None and factor.enabled:
         raise MfaRefused("already_enabled")
+    identifier = f"mfa-enrol:{member.id}"
+    repository.lock_attempts(db, identifier, ip)
+    if not throttle.sign_in_gate(repository.count_recent_failures(db, identifier, ip, throttle.WINDOW)).allowed:
+        raise TooManyAttempts(throttle.LOCKOUT_SECONDS)
+    stored = repository.member_password_hash(db, member.id)
+    if not current_password or stored is None or not verify_password(current_password, stored):
+        repository.record_attempt(db, identifier, ip, succeeded=False)
+        db.commit()
+        raise MfaRefused("wrong_password")
     secret = totp.new_secret()
     repository.save_pending_factor(db, member.id, seal(_factor_key(jwt_secret), member.id.bytes, secret))
+    repository.clear_failures(db, identifier, ip)
     db.commit()
     label = repository.member_code(db, member.id)
     return totp.secret_text(secret), totp.provisioning_uri(secret, label)

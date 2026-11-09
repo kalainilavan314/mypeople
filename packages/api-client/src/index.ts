@@ -358,11 +358,12 @@ export function createApiClient({
      */
     requestPhoneConfirmation: (phone: string) => request<CodeSent>('POST', '/v1/identity/me/phone', { phone }),
     /**
-     * The number becomes the recovery contact. Throws ApiError "invalid_code" or "too_many_attempts" (401),
-     * or "phone_unavailable" (409) when another account already has the number.
+     * The number becomes the recovery contact. Replacing one also needs the current password.
+     * Throws ApiError "invalid_code", "too_many_attempts" or "wrong_password" (401),
+     * "too_many_requests" (429), or "phone_unavailable" (409).
      */
-    confirmPhone: (phone: string, code: string) =>
-      request<{ phone: string }>('POST', '/v1/identity/me/phone/confirm', { phone, code }),
+    confirmPhone: (phone: string, code: string, currentPassword?: string) =>
+      request<{ phone: string }>('POST', '/v1/identity/me/phone/confirm', { phone, code, currentPassword }),
     /** A16: the answer is the same whether or not the number is registered (BR-023); the SMS follows it. */
     requestRecovery: (account: AccountNumber) => request<CodeSent>('POST', '/v1/auth/recovery/request', account),
     /** A correct code returns a reset token valid for 10 minutes. */
@@ -411,7 +412,8 @@ export function createApiClient({
     /** Whether an authenticator is enrolled and the second factor was given in this session. */
     getMfaStatus: () => request<MfaStatus>('GET', '/v1/auth/mfa'),
     /** Starts adding an authenticator app; show the secret or the URI as a QR code once. */
-    startTotpEnrolment: () => request<TotpEnrolment>('POST', '/v1/auth/mfa/totp'),
+    startTotpEnrolment: (currentPassword: string) =>
+      request<TotpEnrolment>('POST', '/v1/auth/mfa/totp', { currentPassword }),
     /** The first code enables the authenticator. Throws ApiError "invalid_code" (401) or "mfa_locked" (429, retryAfter). */
     confirmTotp: (code: string) => request<void>('POST', '/v1/auth/mfa/totp/confirm', { code }),
     /**

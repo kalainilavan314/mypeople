@@ -70,7 +70,8 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
     setTopics(result.topics);
     setSaved(true);
   });
-  const quietInvalid = (quietStart !== '' && !TIME.test(quietStart)) || (quietEnd !== '' && !TIME.test(quietEnd));
+  const quietInvalid = (quietStart === '') !== (quietEnd === '') ||
+    (quietStart !== '' && !TIME.test(quietStart)) || (quietEnd !== '' && !TIME.test(quietEnd));
 
   const toggle = (topic: string, channel: 'push' | 'sms', value: boolean) =>
     setTopics(topics.map((item) => (item.topic === topic ? { ...item, [channel]: value } : item)));
@@ -127,7 +128,7 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
           }}
         />
       </SurfaceCard>
-      {quietInvalid ? <Notice tone="error">{t('m.profile.quietHoursHint')}</Notice> : null}
+      {quietInvalid ? <Notice tone="error">{t('m.profile.quietHoursInvalid')}</Notice> : null}
       {save.error ? <Notice tone="error">{errorMessage(t, save.error)}</Notice> : null}
       {saved ? <Notice tone="success">{t('m.profile.saved')}</Notice> : null}
       <Button label={t('m.common.save')} busy={save.busy} busyLabel={t('m.common.saving')} disabled={quietInvalid} onPress={() => void save.run()} />

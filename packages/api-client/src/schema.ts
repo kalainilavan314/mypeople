@@ -236,7 +236,7 @@ export interface paths {
         put?: never;
         /**
          * Start Totp
-         * @description Start adding an authenticator app: the secret to type or the URI to scan as a QR code.
+         * @description Re-enter the account password before issuing a secret or QR for an authenticator app.
          */
         post: operations["start_totp_v1_auth_mfa_totp_post"];
         delete?: never;
@@ -1382,7 +1382,7 @@ export interface paths {
         put?: never;
         /**
          * Confirm Phone
-         * @description Enter the code: the number becomes the recovery contact. A previous number is told of the change.
+         * @description Enter the code; replacing a confirmed number also needs the current password.
          */
         post: operations["confirm_phone_v1_identity_me_phone_confirm_post"];
         delete?: never;
@@ -6062,6 +6062,11 @@ export interface components {
             phone: string;
             /** Code */
             code: string;
+            /**
+             * Currentpassword
+             * @description Required when replacing an existing recovery number
+             */
+            currentPassword?: string | null;
         };
         /** PhoneInput */
         PhoneInput: {
@@ -7093,6 +7098,11 @@ export interface components {
             /** Otpauthuri */
             otpauthUri: string;
         };
+        /** TotpStartInput */
+        TotpStartInput: {
+            /** Currentpassword */
+            currentPassword: string;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -7469,7 +7479,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TotpStartInput"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -7480,8 +7494,31 @@ export interface operations {
                     "application/json": components["schemas"]["TotpEnrolmentOut"];
                 };
             };
+            /** @description wrong_password */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description already_enabled */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_attempts */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9726,7 +9763,7 @@ export interface operations {
                     "application/json": components["schemas"]["RecoveryContactOut"];
                 };
             };
-            /** @description invalid_code or too_many_attempts */
+            /** @description invalid_code, too_many_attempts or wrong_password */
             401: {
                 headers: {
                     [name: string]: unknown;
@@ -9748,6 +9785,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+            /** @description too_many_requests, with Retry-After */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

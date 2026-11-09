@@ -34,9 +34,13 @@ def e164(local: str) -> str:
     return "+94" + local[1:]
 
 
-def confirm(client, auth, member: Row, phone: str) -> None:
+def confirm(client, auth, member: Row, phone: str, current_password: str | None = None) -> None:
     code = client.post("/v1/identity/me/phone", json={"phone": phone}, headers=auth(member)).json()["devCode"]
-    response = client.post("/v1/identity/me/phone/confirm", json={"phone": phone, "code": code}, headers=auth(member))
+    response = client.post(
+        "/v1/identity/me/phone/confirm",
+        json={"phone": phone, "code": code, "currentPassword": current_password},
+        headers=auth(member),
+    )
     assert response.status_code == 200, response.text
 
 
@@ -77,9 +81,31 @@ def test_changing_the_number_tells_the_old_one(client, auth, create_member, outb
     first, second = new_phone(), new_phone()
     confirm(client, auth, member, first)
 
-    confirm(client, auth, member, second)
+    confirm(client, auth, member, second, "correct horse battery")
 
     assert outbox.sent[-1].phone == e164(first) and "recovery number was changed" in outbox.sent[-1].text
+
+
+def test_replacing_a_recovery_number_requires_password_and_keeps_the_code_on_failure(client, auth, create_member):
+    member = create_member()
+    first, second = new_phone(), new_phone()
+    confirm(client, auth, member, first)
+    code = client.post("/v1/identity/me/phone", json={"phone": second}, headers=auth(member)).json()["devCode"]
+    attempt = {"phone": second, "code": code}
+
+    missing = client.post("/v1/identity/me/phone/confirm", json=attempt, headers=auth(member))
+    wrong_password = client.post(
+        "/v1/identity/me/phone/confirm", json={**attempt, "currentPassword": "incorrect password"}, headers=auth(member)
+    )
+    unchanged = client.get("/v1/identity/me/phone", headers=auth(member))
+    correct = client.post(
+        "/v1/identity/me/phone/confirm", json={**attempt, "currentPassword": "correct horse battery"}, headers=auth(member)
+    )
+
+    assert (missing.status_code, missing.json()) == (401, {"detail": "wrong_password"})
+    assert (wrong_password.status_code, wrong_password.json()) == (401, {"detail": "wrong_password"})
+    assert unchanged.json() == {"phone": e164(first)}
+    assert (correct.status_code, correct.json()) == (200, {"phone": e164(second)})
 
 
 def test_a_number_on_another_account_is_refused_only_after_its_code(client, db_session, auth, create_member, outbox):

@@ -25,6 +25,7 @@ export default function RecoveryNumberScreen() {
   const current = useApiQuery(() => api().getMyRecoveryPhone());
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [devCode, setDevCode] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
@@ -36,13 +37,15 @@ export default function RecoveryNumberScreen() {
   });
   const confirm = useApiAction(async () => {
     if (!sentTo) return;
-    await api().confirmPhone(sentTo, code.trim());
+    await api().confirmPhone(sentTo, code.trim(), currentPassword || undefined);
     setConfirmed(true);
     setSentTo(null);
     setCode('');
+    setCurrentPassword('');
     current.reload();
   });
   const failed = send.error ?? confirm.error;
+  const replacing = current.data !== null && current.data !== undefined;
 
   return (
     <Screen edges={['bottom']}>
@@ -67,7 +70,7 @@ export default function RecoveryNumberScreen() {
         keyboardType="phone-pad"
         autoComplete="tel"
       />
-      <Button label={t('m.profile.sendCode')} busy={send.busy} busyLabel={t('m.common.sending')} disabled={phone.trim().length < 9} onPress={() => void send.run()} />
+      <Button label={t('m.profile.sendCode')} busy={send.busy} busyLabel={t('m.common.sending')} disabled={current.data === undefined || phone.trim().length < 9} onPress={() => void send.run()} />
       {sentTo ? (
         <>
           {devCode ? <Notice tone="info">{t('m.profile.devCode', { code: devCode })}</Notice> : null}
@@ -80,7 +83,17 @@ export default function RecoveryNumberScreen() {
             textContentType="oneTimeCode"
             maxLength={6}
           />
-          <Button label={t('m.profile.confirmNumber')} busy={confirm.busy} disabled={code.trim().length < 4} onPress={() => void confirm.run()} />
+          {replacing ? (
+            <TextField
+              label={t('m.profile.currentPassword')}
+              hint={t('m.profile.recoveryChangePasswordHint')}
+              value={currentPassword}
+              onChangeText={setCurrentPassword}
+              secret
+              autoComplete="current-password"
+            />
+          ) : null}
+          <Button label={t('m.profile.confirmNumber')} busy={confirm.busy} disabled={!/^\d{6}$/.test(code.trim()) || (replacing && !currentPassword)} onPress={() => void confirm.run()} />
         </>
       ) : null}
       {failed ? <Notice tone="error">{errorMessage(t, failed)}</Notice> : null}

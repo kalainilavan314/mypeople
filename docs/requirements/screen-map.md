@@ -64,10 +64,10 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | E05 | Your RSVP | Events (SC-11) | 1 | Built | `apps/member-mobile/app/(member)/events/[id].tsx` |  |
 | E06 | Event pass | Events (SC-11) | 1 | Built | `apps/member-mobile/app/(member)/events/[id]/pass.tsx` |  |
 | C01 | My member card | Membership card (SC-12) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/card.tsx` |  |
-| C02 | Show secure code | Membership card (SC-12) | 1 | API ready (/v1/membership/me/card/code) | `apps/member-mobile/app/(member)/card/code.tsx` |  |
-| C03 | Card while offline | Membership card (SC-12) | 1 | API ready (card code and card) | `apps/member-mobile/app/(member)/(tabs)/card.tsx (offline state)` |  |
-| C04 | Wallet and share | Membership card (SC-12) | 1 | Blocked: INT-03 for wallet passes (share can be built) | `apps/member-mobile/app/(member)/card/share.tsx` |  |
-| C05 | My progress | Membership card (SC-12) | 1 | To build | `apps/member-mobile/app/(member)/card/progress.tsx` |  |
+| C02 | Show secure code | Membership card (SC-12) | 1 | Built | `apps/member-mobile/app/(member)/card/code.tsx` | Live 60-second signed QR, circular timer, temporary brightness. |
+| C03 | Card while offline | Membership card (SC-12) | 1 | Built (display only) | `apps/member-mobile/app/(member)/(tabs)/card.tsx`, `apps/member-mobile/app/(auth)/welcome.tsx` | Encrypted saved copy with sync age; no offline QR or proof of current status. Offline scanning awaits OD-08. |
+| C04 | Wallet and share | Membership card (SC-12) | 1 | Share built; wallet blocked: INT-03 | `apps/member-mobile/app/(member)/card/share.tsx` | Public text and image export; no live QR or ID image; wallet pass pending. |
+| C05 | My progress | Membership card (SC-12) | 1 | Built (confirmed records) | `apps/member-mobile/app/(member)/card/progress.tsx` | Join, verified identity and attended events; training completion awaits a verified source. No ranking or points. |
 | C06 | Card not available | Membership card (SC-12) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/card.tsx` |  |
 | G01 | Gallery albums | Gallery (SC-13) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/gallery.tsx` |  |
 | G02 | Album detail | Gallery (SC-13) | 1 | Built | `apps/member-mobile/app/(member)/gallery/[id].tsx` |  |
@@ -122,11 +122,11 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | M42 | Book or manage appointment | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/representatives/` |  |
 | M43 | Voice report | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Blocked: Voice is Phase 3 | `apps/member-mobile/app/(member)/issues/new (voice mode of H07)` | Decided: a voice option inside H07, not a second report screen |
 | M44 | Accessibility and data saver | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | To build | `apps/member-mobile/app/(member)/profile/accessibility.tsx` |  |
-| M45 | Messages and channels | SMS and WhatsApp (SC-39) | 1 SMS, 2 WhatsApp | API ready (/v1/notifications/choices (SMS part)) | `apps/member-mobile/app/(member)/profile/settings.tsx (channels, with P05)` | Decided: extends the P05 settings screen; no second preferences screen |
+| M45 | Messages and channels | SMS and WhatsApp (SC-39) | 1 SMS, 2 WhatsApp | Preferences built; push delivery awaits INT-02 | `apps/member-mobile/app/(member)/profile/settings.tsx (channels, with P05)` | Independent push/SMS toggles per category; no second preferences screen. |
 | M46 | Diaspora participation | Diaspora (SC-40) | 3 | To build | `apps/member-mobile/app/(member)/diaspora.tsx` |  |
 | M47 | Official updates | Official content and fact-checks (SC-41) | 2 | Blocked: INT-24 | `apps/member-mobile/app/(member)/official/` |  |
 | M48 | Check or report a statement | Official content and fact-checks (SC-41) | 2 | To build | `apps/member-mobile/app/(member)/official/` |  |
-| M49 | Devices and sessions | Account and device security (SC-42) | 1 | Built | `apps/member-mobile/app/(member)/profile/security.tsx` | Built together with M50 |
+| M49 | Devices and sessions | Account and device security (SC-42) | 1 | Built (remote revocation) | `apps/member-mobile/app/(member)/profile/security.tsx` | Confirmed session termination; device file wipe and passkeys await INT-02/INT-09. |
 | M50 | Security alerts | Account and device security (SC-42) | 1 | Built | `apps/member-mobile/app/(member)/profile/security.tsx` |  |
 | M51 | Card payment handoff | Payment gateway (SC-43) | 3, subject to OD-27 | Blocked: OD-27, OD-40 (payments) | `apps/member-mobile/app/(member)/fund/payment/` |  |
 | M52 | Payment result and receipt | Payment gateway (SC-43) | 3, subject to OD-27 | Blocked: OD-27, OD-40 | `apps/member-mobile/app/(member)/fund/payment/` |  |

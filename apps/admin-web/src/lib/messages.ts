@@ -353,6 +353,7 @@ const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
 };
 
 export function bilingualMessageFor(code: string): BilingualText {
+  if (code === 'wrong_password') return { ta: 'தற்போதைய கடவுச்சொல் சரியில்லை.', en: 'The current password is not correct.' };
   if (BILINGUAL_MESSAGES[code]) return BILINGUAL_MESSAGES[code];
   const readable = code.replace(/_/g, ' ');
   return { ta: readable, en: readable };

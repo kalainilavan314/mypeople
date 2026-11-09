@@ -1,6 +1,7 @@
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
+import type { MemberCard } from '@my-people/api-client';
 
 // The session token and refresh token live in the device's keychain or keystore
 // (SecureStore). The web preview has no secure store, so there they stay in
@@ -10,6 +11,16 @@ const TOKEN_KEY = 'mp.session';
 const REFRESH_KEY = 'mp.refresh';
 const DEVICE_KEY = 'mp.device';
 const LANGUAGE_KEY = 'mp.language';
+const CARD_PREVIEW_KEY = 'mp.cardPreview';
+
+export type OfflineCardPreview = {
+  memberId: string;
+  syncedAt: string;
+  displayName: string;
+  memberCode: string;
+  districtName: string | null;
+  gnName: string | null;
+};
 
 const isWeb = Platform.OS === 'web';
 let webToken: string | null = null;
@@ -41,6 +52,43 @@ export async function clearTokens(): Promise<void> {
   }
   await SecureStore.deleteItemAsync(TOKEN_KEY);
   await SecureStore.deleteItemAsync(REFRESH_KEY);
+  await SecureStore.deleteItemAsync(CARD_PREVIEW_KEY);
+}
+
+/** A saved visual copy only. It has no QR and is never accepted as proof of current membership. */
+export async function readOfflineCard(): Promise<OfflineCardPreview | null> {
+  if (isWeb) return null;
+  try {
+    const raw = await SecureStore.getItemAsync(CARD_PREVIEW_KEY);
+    if (!raw) return null;
+    const saved: unknown = JSON.parse(raw);
+    if (typeof saved !== 'object' || saved === null) return null;
+    const preview = saved as Partial<OfflineCardPreview>;
+    if (typeof preview.memberId !== 'string' || typeof preview.syncedAt !== 'string' || !Number.isFinite(Date.parse(preview.syncedAt)) ||
+        typeof preview.displayName !== 'string' || typeof preview.memberCode !== 'string' ||
+        (preview.districtName !== null && typeof preview.districtName !== 'string') ||
+        (preview.gnName !== null && typeof preview.gnName !== 'string')) return null;
+    return preview as OfflineCardPreview;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveOfflineCard(memberId: string, card: MemberCard): Promise<void> {
+  if (isWeb || !card.available) return;
+  const preview: OfflineCardPreview = {
+    memberId,
+    syncedAt: new Date().toISOString(),
+    displayName: card.displayName ?? '',
+    memberCode: card.memberCode ?? '',
+    districtName: card.districtName,
+    gnName: card.gnName,
+  };
+  await SecureStore.setItemAsync(CARD_PREVIEW_KEY, JSON.stringify(preview));
+}
+
+export async function clearOfflineCard(): Promise<void> {
+  if (!isWeb) await SecureStore.deleteItemAsync(CARD_PREVIEW_KEY);
 }
 
 /** A random id for this install, sent as X-Device-Id so a sign-in from a new device can be noticed. */

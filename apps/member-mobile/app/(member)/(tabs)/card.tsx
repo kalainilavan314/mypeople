@@ -1,5 +1,6 @@
-import type { MemberCard } from '@my-people/api-client';
+import { ApiError, type MemberCard } from '@my-people/api-client';
 import { router, type Href } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -14,13 +15,20 @@ import {
   Screen,
   StatusTag,
   SurfaceCard,
+  clearOfflineCard,
+  readOfflineCard,
+  saveOfflineCard,
+  type OfflineCardPreview,
   useApiQuery,
   useLanguage,
+  useMember,
   useReloadOnFocus,
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
+import { OfflineCard } from '@/features/membership/OfflineCard';
 import { api } from '@/lib/api';
+import { errorMessage } from '@/lib/errors';
 
 /**
  * C01 to C06: the membership card, only while identity is Verified and
@@ -28,11 +36,41 @@ import { api } from '@/lib/api';
  * shows the NIC or passport number; the QR is a 60-second opaque code.
  */
 export default function CardScreen() {
-  const card = useApiQuery(() => api().getMyCard());
+  const { t } = useTranslation();
+  const member = useMember();
+  const [offline, setOffline] = useState<OfflineCardPreview | null>(null);
+  const card = useApiQuery(async () => {
+    const current = await api().getMyCard();
+    try {
+      if (current.available) await saveOfflineCard(member.id, current);
+      else await clearOfflineCard();
+    } catch {
+      // A storage failure must not hide a card the server just confirmed.
+    }
+    return current;
+  }, [member.id]);
   useReloadOnFocus(card.reload);
+  useEffect(() => {
+    if (!card.error || card.error instanceof ApiError) return;
+    let active = true;
+    void readOfflineCard().then((saved) => {
+      if (active) setOffline(saved?.memberId === member.id ? saved : null);
+    });
+    return () => { active = false; };
+  }, [card.error, member.id]);
   return (
     <Screen edges={[]} onRefresh={card.reload} refreshing={card.loading && card.data !== undefined}>
-      <QueryView query={card}>{(data) => (data.available ? <AvailableCard card={data} /> : <Unavailable card={data} />)}</QueryView>
+      {card.error && !(card.error instanceof ApiError) && offline ? (
+        <>
+          <OfflineCard preview={offline} />
+          <Button label={t('m.common.retry')} variant="secondary" onPress={card.reload} />
+        </>
+      ) : card.error ? (
+        <>
+          <Notice tone="error">{errorMessage(t, card.error)}</Notice>
+          <Button label={t('m.common.retry')} variant="secondary" onPress={card.reload} />
+        </>
+      ) : <QueryView query={card}>{(data) => (data.available ? <AvailableCard card={data} /> : <Unavailable card={data} />)}</QueryView>}
     </Screen>
   );
 }
@@ -77,6 +115,7 @@ function AvailableCard({ card }: { card: MemberCard }) {
         <Field label={t('m.card.since')} value={card.memberSince ? formatDate(card.memberSince, language) : null} />
         <View style={styles.verified}>
           <StatusTag tone="verified" label={t('m.card.identityVerified')} />
+          <StatusTag tone="verified" label={t('m.card.membershipActive')} />
         </View>
       </View>
 
@@ -124,5 +163,5 @@ const styles = StyleSheet.create({
   field: { gap: 2, flex: 1 },
   fieldLabel: { color: colors.inputBorder }, // #CBD5E1 on navy, the spec's metadata colour (§2)
   row: { flexDirection: 'row', gap: spacing[3] },
-  verified: { flexDirection: 'row' },
+  verified: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
 });

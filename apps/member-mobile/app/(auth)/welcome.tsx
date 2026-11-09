@@ -1,11 +1,13 @@
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { colors, control, radius, spacing } from '@my-people/design-tokens';
 
-import { AppText, Button, Notice, Screen, useLanguage, useSession } from '@my-people/mobile-ui';
+import { AppText, Button, Notice, Screen, readOfflineCard, type OfflineCardPreview, useLanguage, useSession } from '@my-people/mobile-ui';
 
+import { OfflineCard } from '@/features/membership/OfflineCard';
 import { chooseLanguage, type AppLanguage } from '@/lib/i18n';
 
 const LANGUAGES: { key: AppLanguage; label: string }[] = [
@@ -18,6 +20,13 @@ export default function WelcomeScreen() {
   const { t } = useTranslation();
   const language = useLanguage();
   const { state, retry } = useSession();
+  const [offlineCard, setOfflineCard] = useState<OfflineCardPreview | null>(null);
+  useEffect(() => {
+    if (state.status !== 'unreachable') return;
+    let active = true;
+    void readOfflineCard().then((saved) => { if (active) setOfflineCard(saved); });
+    return () => { active = false; };
+  }, [state.status]);
 
   return (
     <Screen edges={['top', 'bottom']}>
@@ -45,6 +54,7 @@ export default function WelcomeScreen() {
       {state.status === 'unreachable' ? (
         <View style={styles.gap}>
           <Notice tone="error">{t('m.welcome.unreachable')}</Notice>
+          {offlineCard ? <OfflineCard preview={offlineCard} /> : null}
           <Button label={t('m.common.retry')} variant="secondary" icon="refresh" onPress={retry} />
         </View>
       ) : null}

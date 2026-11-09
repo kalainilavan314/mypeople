@@ -2,7 +2,7 @@ import { ApiError, type MemberProfile } from '@my-people/api-client';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { api, configureApi } from './api';
-import { clearTokens, deviceId, readToken, saveTokens } from '../lib/storage';
+import { clearOfflineCard, clearTokens, deviceId, readToken, saveTokens } from '../lib/storage';
 
 export type SessionState =
   | { status: 'loading' }
@@ -66,6 +66,8 @@ export function SessionProvider({ baseUrl, children }: Props) {
   }, [baseUrl]);
 
   const start = useCallback(async ({ token, refreshToken, member }: SignedIn) => {
+    // A new sign-in must never inherit the previous account's saved card.
+    await clearOfflineCard();
     await saveTokens(token, refreshToken);
     setState({ status: 'signed_in', member });
   }, []);

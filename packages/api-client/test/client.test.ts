@@ -355,6 +355,24 @@ test('consent accepts the empty 204 response', async () => {
   assert.equal(sent[0].url, 'https://api.example/v1/identity/me/consent');
 });
 
+test('replacing a recovery number sends the current password with its six-digit code', async () => {
+  const { fetch, sent } = fakeFetch(200, { phone: '+94771234567' });
+  await createApiClient({ baseUrl: 'https://api.example', fetch }).confirmPhone('0771234567', '123456', 'current secret');
+
+  assert.equal(sent[0].url, 'https://api.example/v1/identity/me/phone/confirm');
+  assert.deepEqual(JSON.parse(sent[0].body ?? ''), {
+    phone: '0771234567', code: '123456', currentPassword: 'current secret',
+  });
+});
+
+test('authenticator enrolment sends the current password', async () => {
+  const { fetch, sent } = fakeFetch(200, { secret: 'ABC', otpauthUri: 'otpauth://totp/example' });
+  await createApiClient({ baseUrl: 'https://api.example', fetch }).startTotpEnrolment('current secret');
+
+  assert.equal(sent[0].url, 'https://api.example/v1/auth/mfa/totp');
+  assert.deepEqual(JSON.parse(sent[0].body ?? ''), { currentPassword: 'current secret' });
+});
+
 test('recovery verification sends the account number with the code', async () => {
   const { fetch, sent } = fakeFetch(200, { resetToken: 'r', expiresInSeconds: 600 });
 

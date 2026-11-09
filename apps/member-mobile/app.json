@@ -36,7 +36,8 @@
           "photosPermission": "My People lets you choose a photo of your ID or proof of residence when you cannot use the camera.",
           "microphonePermission": false
         }
-      ]
+      ],
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,

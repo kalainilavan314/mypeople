@@ -27,7 +27,7 @@ export { useRotatingCode } from './hooks/useRotatingCode';
 
 export { dateBadgeParts, formatDate, formatDateTime, formatSpan, formatTime, localHour } from './lib/format';
 export { headerOptions } from './lib/headerOptions';
-export { clearTokens, deviceId, readLanguage, readRefreshToken, readToken, saveLanguage, saveTokens } from './lib/storage';
+export { clearOfflineCard, clearTokens, deviceId, readLanguage, readOfflineCard, readRefreshToken, readToken, saveLanguage, saveOfflineCard, saveTokens, type OfflineCardPreview } from './lib/storage';
 
 export { api, freshToken } from './session/api';
 export { SessionProvider, useMember, useSession, type SessionState } from './session/SessionProvider';

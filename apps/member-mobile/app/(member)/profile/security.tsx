@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, Platform, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import type { SecurityAlert, SecurityAlertAnswer } from '@my-people/api-client';
@@ -55,6 +55,19 @@ export default function SecurityScreen() {
     sessions.reload();
   };
 
+  const confirmRevoke = (id: string, device: string) => confirmSecurityAction(
+    t('m.profile.signOutDevice'),
+    t('m.profile.revokeDeviceExplain', { device }),
+    t('m.common.cancel'),
+    () => void revoke.run(id),
+  );
+  const confirmOthers = () => confirmSecurityAction(
+    t('m.profile.signOutOthers'),
+    t('m.profile.revokeOthersExplain'),
+    t('m.common.cancel'),
+    () => void revokeOthers.run(),
+  );
+
   return (
     <Screen edges={['bottom']} onRefresh={reload} refreshing={sessions.loading && sessions.data !== undefined}>
       {secured ? <Notice tone="success">{t('m.profile.alertSecured')}</Notice> : null}
@@ -80,12 +93,12 @@ export default function SecurityScreen() {
                   {t('m.profile.lastUsed', { time: formatDateTime(session.lastSeenAt, language) })}
                 </AppText>
                 {!session.current ? (
-                  <Button label={t('m.profile.signOutDevice')} variant="secondary" busy={revoke.busy} onPress={() => void revoke.run(session.id)} />
+                  <Button label={t('m.profile.signOutDevice')} variant="secondary" busy={revoke.busy} onPress={() => confirmRevoke(session.id, session.deviceLabel)} />
                 ) : null}
               </SurfaceCard>
             ))}
             {list.some((session) => !session.current) ? (
-              <Button label={t('m.profile.signOutOthers')} variant="danger" busy={revokeOthers.busy} onPress={() => void revokeOthers.run()} />
+              <Button label={t('m.profile.signOutOthers')} variant="danger" busy={revokeOthers.busy} onPress={confirmOthers} />
             ) : null}
           </>
         )}
@@ -94,6 +107,17 @@ export default function SecurityScreen() {
       <PasswordChange />
     </Screen>
   );
+}
+
+function confirmSecurityAction(title: string, message: string, cancel: string, onConfirm: () => void) {
+  if (Platform.OS === 'web') {
+    if (globalThis.confirm(`${title}\n\n${message}`)) onConfirm();
+    return;
+  }
+  Alert.alert(title, message, [
+    { text: cancel, style: 'cancel' },
+    { text: title, style: 'destructive', onPress: onConfirm },
+  ]);
 }
 
 type AlertsProps = {

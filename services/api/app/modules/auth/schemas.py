@@ -84,5 +84,9 @@ class TotpEnrolmentOut(CamelModel):
     otpauth_uri: str
 
 
+class TotpStartInput(CamelModel):
+    current_password: str = Field(max_length=256)
+
+
 class MfaCodeInput(CamelModel):
     code: Annotated[str, StringConstraints(pattern=r"^\d{6}$")]

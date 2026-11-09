@@ -140,11 +140,24 @@ def request_phone_confirmation(
 
 
 def confirm_phone(
-    db: Session, sms: SmsSender, member_id: uuid.UUID, raw_phone: str, code: str, ip: str, jwt_secret: str
+    db: Session, sms: SmsSender, member_id: uuid.UUID, raw_phone: str, code: str, ip: str, jwt_secret: str,
+    current_password: str | None = None,
 ) -> str:
     phone = rules.normalise_phone(raw_phone)
     if phone is None:
         raise InvalidPhone()
+    previous = repository.find_contact(db, member_id)
+    if previous is not None and previous.phone != phone:
+        # The new number's code alone cannot authorise replacement of the old recovery factor.
+        identifier = f"recovery-contact:{member_id}"
+        auth_repository.lock_attempts(db, identifier, ip)
+        if not throttle.sign_in_gate(auth_repository.count_recent_failures(db, identifier, ip, throttle.WINDOW)).allowed:
+            raise TooManyRequests(throttle.LOCKOUT_SECONDS)
+        stored = repository.password_hash(db, member_id)
+        if not current_password or stored is None or not verify_password(current_password, stored):
+            auth_repository.record_attempt(db, identifier, ip, succeeded=False)
+            db.commit()
+            raise WrongPassword()
     result = repository.consume_code(
         db, phone=phone, purpose=rules.CONFIRM_PHONE, code_hash=one_time_code_hash(code, jwt_secret)
     )
@@ -154,8 +167,9 @@ def confirm_phone(
     if repository.phone_in_use(db, phone, member_id):
         raise PhoneUnavailable()
 
-    previous = repository.find_contact(db, member_id)
     repository.set_contact(db, member_id, phone, confirmed_by=None)
+    if previous is not None and previous.phone != phone:
+        auth_repository.clear_failures(db, f"recovery-contact:{member_id}", ip)
     audit.record(
         db,
         actor_id=member_id,
