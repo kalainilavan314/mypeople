@@ -35,6 +35,7 @@ from app.modules.messaging.notifications import router as notifications
 from app.modules.privacy import router as privacy
 from app.modules.profile import router as profile
 from app.modules.profile.area_changes import router as area_changes
+from app.modules.analytics import router as analytics
 from app.modules.auth import router as auth
 from app.modules.identity.appeals import router as identity_appeals
 from app.modules.identity.documents import router as identity_documents
@@ -109,6 +110,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(households.router)
     app.include_router(election.router)
     app.include_router(election.member_router)
+    app.include_router(analytics.router)
 
     # The middleware added last runs first, so the security headers are also
     # set on the 403 that the origin check returns.

@@ -8,8 +8,8 @@ Built screens are in the Expo member and staff apps and the Next.js dashboard; n
 |---|---|---|
 | Member app | 112 | 54 |
 | Staff app | 18 | 7 |
-| Dashboard | 44 | 17 |
-| **All** | **174** | **78** |
+| Dashboard | 44 | 18 |
+| **All** | **174** | **79** |
 
 Status: **Built**; **API ready** (the endpoint exists and is tested, only the screen is missing); **To build**; **Blocked** (waits on the decision or integration named).
 
@@ -198,7 +198,7 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | D29 | Representatives and appointments | Meet your representative (SC-37) | 3 | To build | `apps/admin-web/src/app/(staff)/representatives/` |  |
 | D30 | Official content publishing and signing | Official content and fact-checks (SC-41) | 2 | Blocked: INT-24 (signing keys in KMS) | `apps/admin-web/src/app/(staff)/publishing/` |  |
 | D31 | Security centre | Account and device security (SC-42) | 1 | Built | `apps/admin-web/src/app/(staff)/access-reviews/page.tsx` |  |
-| D32 | Analytics dashboards | Administration (SC-17, SC-20) | 1–3 | To build | `apps/admin-web/src/app/(staff)/analytics/` |  |
+| D32 | Analytics dashboards | Administration (SC-17, SC-20) | 1–3 | Built (Phase 1 operational figures; further dashboards and exports later) | `apps/admin-web/src/app/(staff)/analytics/` | Registration, identity reviews, review queue and event attendance for the viewer's areas; groups of 1 to 9 hidden |
 | D33 | Audit log viewer | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/audit/page.tsx` |  |
 | D34 | Geography and configuration | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/settings/` | Feature flags and read-only geography registry |
 | D35 | Policy and consent register | Administration (SC-17, SC-20) | 1–3 | Built (data-subject request register; policy approvals and consent statistics have no API yet) | `apps/admin-web/src/app/(staff)/privacy/` |  |

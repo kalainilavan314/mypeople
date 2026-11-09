@@ -9247,6 +9247,63 @@
           }
         ]
       }
+    },
+    "/v1/analytics/operations": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Read Operations",
+        "description": "D32: registration completion, verification turnaround, the review queue and event attendance in\nthe viewer's areas (needs analytics.view, PRM-24). Counts only; groups of 1 to 9 people are hidden.",
+        "operationId": "read_operations_v1_analytics_operations_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "periodDays",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                7,
+                30,
+                90
+              ],
+              "type": "integer",
+              "default": 30,
+              "title": "Perioddays"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -16429,6 +16486,207 @@
         ],
         "title": "NotificationOut",
         "description": "An inbox item. targetKind and targetId say what it opens (BR-027); actionNeeded stays true\nuntil the task is done, whether or not it was read."
+      },
+      "OperationsOut": {
+        "properties": {
+          "periodDays": {
+            "type": "integer",
+            "title": "Perioddays"
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generatedat"
+          },
+          "platformWide": {
+            "type": "boolean",
+            "title": "Platformwide",
+            "description": "True when the figures cover every area"
+          },
+          "started": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started",
+            "description": "Members who registered in the period; null when it would show a group of 1 to 9 people, directly or by subtraction"
+          },
+          "submitted": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted",
+            "description": "Of them, sent their identity for review; null when it would show a group of 1 to 9 people, directly or by subtraction"
+          },
+          "verified": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verified",
+            "description": "Of them, identity verified; null when it would show a group of 1 to 9 people, directly or by subtraction"
+          },
+          "active": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active",
+            "description": "Of them, membership Active; null when it would show a group of 1 to 9 people, directly or by subtraction"
+          },
+          "completionRate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completionrate",
+            "description": "active / started (KPI-01)"
+          },
+          "decided": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided",
+            "description": "Identity reviews decided in the period; null when it would show a group of 1 to 9 people, directly or by subtraction"
+          },
+          "medianHours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Medianhours",
+            "description": "Median wait from submission to decision, in hours"
+          },
+          "withinTargetRate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withintargetrate",
+            "description": "Share decided within 5 working days (KPI-04)"
+          },
+          "waiting": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Waiting",
+            "description": "Reviews waiting on a reviewer now; null when it would show a group of 1 to 9 people, directly or by subtraction"
+          },
+          "overTarget": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Overtarget",
+            "description": "Of them, waiting more than 5 working days; null when it would show a group of 1 to 9 people, directly or by subtraction"
+          },
+          "events": {
+            "type": "integer",
+            "title": "Events",
+            "description": "Published events held in the period"
+          },
+          "going": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Going",
+            "description": "Going answers for those events; null when it would show a group of 1 to 9 people, directly or by subtraction"
+          },
+          "attended": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attended",
+            "description": "Check-ins at those events; null when it would show a group of 1 to 9 people, directly or by subtraction"
+          },
+          "attendanceRate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attendancerate",
+            "description": "attended / going"
+          }
+        },
+        "type": "object",
+        "required": [
+          "periodDays",
+          "generatedAt",
+          "platformWide",
+          "started",
+          "submitted",
+          "verified",
+          "active",
+          "completionRate",
+          "decided",
+          "medianHours",
+          "withinTargetRate",
+          "waiting",
+          "overTarget",
+          "events",
+          "going",
+          "attended",
+          "attendanceRate"
+        ],
+        "title": "OperationsOut",
+        "description": "D32 operational figures for the viewer's areas over the last `periodDays` days."
       },
       "PassCodeOut": {
         "properties": {

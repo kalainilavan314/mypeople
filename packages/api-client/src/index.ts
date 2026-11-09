@@ -69,6 +69,8 @@ export type IdentityDataItem = Schemas['IdentityDataItemOut'];
 export type AreaChange = Schemas['AreaChangeOut'];
 export type QueuedAreaChange = Schemas['QueuedAreaChangeOut'];
 export type AreaDecisionInput = Schemas['AreaDecisionIn'];
+export type OperationsAnalytics = Schemas['OperationsOut'];
+export type AnalyticsPeriod = 7 | 30 | 90;
 export type PrivacyRequest = Schemas['PrivacyRequestOut'];
 export type PrivacyRequestInput = Schemas['PrivacyRequestIn'];
 export type PrivacyRegisterEntry = Schemas['RegisterEntryOut'];
@@ -662,6 +664,9 @@ export function createApiClient({
      */
     makePrivacyRequest: (input: PrivacyRequestInput) => request<PrivacyRequest>('POST', '/v1/privacy/requests', input),
     listMyPrivacyRequests: () => request<PrivacyRequest[]>('GET', '/v1/privacy/requests/mine'),
+    // D32 (analytics.view): counts for the caller's areas; null where a group of 1 to 9 would show.
+    getOperationsAnalytics: (periodDays: AnalyticsPeriod = 30) =>
+      request<OperationsAnalytics>('GET', `/v1/analytics/operations?periodDays=${periodDays}`),
     /** The DPO register, soonest due first. Needs privacy.requests.handle. */
     listPrivacyRegister: (filters: { states?: readonly PrivacyRequest['state'][]; limit?: number } = {}) =>
       request<PrivacyRegisterEntry[]>('GET', `/v1/privacy/requests${toQueueQuery(filters)}`),

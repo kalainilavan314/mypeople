@@ -3073,6 +3073,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/analytics/operations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Operations
+         * @description D32: registration completion, verification turnaround, the review queue and event attendance in
+         *     the viewer's areas (needs analytics.view, PRM-24). Counts only; groups of 1 to 9 people are hidden.
+         */
+        get: operations["read_operations_v1_analytics_operations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -5814,6 +5835,94 @@ export interface components {
             createdAt: string;
             /** Read */
             read: boolean;
+        };
+        /**
+         * OperationsOut
+         * @description D32 operational figures for the viewer's areas over the last `periodDays` days.
+         */
+        OperationsOut: {
+            /** Perioddays */
+            periodDays: number;
+            /**
+             * Generatedat
+             * Format: date-time
+             */
+            generatedAt: string;
+            /**
+             * Platformwide
+             * @description True when the figures cover every area
+             */
+            platformWide: boolean;
+            /**
+             * Started
+             * @description Members who registered in the period; null when it would show a group of 1 to 9 people, directly or by subtraction
+             */
+            started: number | null;
+            /**
+             * Submitted
+             * @description Of them, sent their identity for review; null when it would show a group of 1 to 9 people, directly or by subtraction
+             */
+            submitted: number | null;
+            /**
+             * Verified
+             * @description Of them, identity verified; null when it would show a group of 1 to 9 people, directly or by subtraction
+             */
+            verified: number | null;
+            /**
+             * Active
+             * @description Of them, membership Active; null when it would show a group of 1 to 9 people, directly or by subtraction
+             */
+            active: number | null;
+            /**
+             * Completionrate
+             * @description active / started (KPI-01)
+             */
+            completionRate: number | null;
+            /**
+             * Decided
+             * @description Identity reviews decided in the period; null when it would show a group of 1 to 9 people, directly or by subtraction
+             */
+            decided: number | null;
+            /**
+             * Medianhours
+             * @description Median wait from submission to decision, in hours
+             */
+            medianHours: number | null;
+            /**
+             * Withintargetrate
+             * @description Share decided within 5 working days (KPI-04)
+             */
+            withinTargetRate: number | null;
+            /**
+             * Waiting
+             * @description Reviews waiting on a reviewer now; null when it would show a group of 1 to 9 people, directly or by subtraction
+             */
+            waiting: number | null;
+            /**
+             * Overtarget
+             * @description Of them, waiting more than 5 working days; null when it would show a group of 1 to 9 people, directly or by subtraction
+             */
+            overTarget: number | null;
+            /**
+             * Events
+             * @description Published events held in the period
+             */
+            events: number;
+            /**
+             * Going
+             * @description Going answers for those events; null when it would show a group of 1 to 9 people, directly or by subtraction
+             */
+            going: number | null;
+            /**
+             * Attended
+             * @description Check-ins at those events; null when it would show a group of 1 to 9 people, directly or by subtraction
+             */
+            attended: number | null;
+            /**
+             * Attendancerate
+             * @description attended / going
+             */
+            attendanceRate: number | null;
         };
         /** PassCodeOut */
         PassCodeOut: {
@@ -13715,6 +13824,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ElectionBannerOut"][];
+                };
+            };
+        };
+    };
+    read_operations_v1_analytics_operations_get: {
+        parameters: {
+            query?: {
+                periodDays?: 7 | 30 | 90;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OperationsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

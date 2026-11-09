@@ -201,3 +201,9 @@ The member profile never contains the NIC, its hash, the password hash or staff 
 | Staff (`is_admin`) | `POST /api/members/:id/verification`, `GET /api/donations/pending`, `GET /api/donations/:id/slip`, `POST /api/donations/:id/review` | admin |
 
 `is_admin` is a single flag that only these Express routes still read. `POST /api/members/:id/verification` can still set a member's verification status without a review; it must be switched off when `/v1` identity verification goes live. FastAPI uses staff assignments instead (role, explicit permissions and area; BRD §9). When these routes move to `/v1` (identity verification and finance), `is_admin` is dropped.
+
+## Analytics (D32)
+
+| Endpoint | Signed in | Answer | Refusals |
+|---|---|---|---|
+| `GET /v1/analytics/operations?periodDays=7\|30\|90` (default 30) | staff with `analytics.view` | `200` counts for the caller's areas: `started, submitted, verified, active, completionRate`, `decided, medianHours, withinTargetRate`, `waiting, overTarget`, `events, going, attended, attendanceRate`, `periodDays, generatedAt, platformWide`. A count is `null` when it would show 1 to 9 people, directly or by subtraction (RR-02) | `401`, `403 forbidden`, `422` for another period |

@@ -21,6 +21,7 @@ export const builtModules: readonly AdminModule[] = [
   { href: '/members', ta: 'உறுப்பினர்களும் குடும்பங்களும்', en: 'Members and households', permission: 'household.view_for_case' },
   { href: '/elections', ta: 'தேர்தல் பயன்முறை', en: 'Election mode', permission: 'election.mode.manage' },
   { href: '/privacy', ta: 'தனியுரிமைக் கோரிக்கைகள்', en: 'Privacy requests', permission: 'privacy.requests.handle' },
+  { href: '/analytics', ta: 'பகுப்பாய்வு', en: 'Analytics', permission: 'analytics.view' },
 ] as const;
 
 /** Planned modules in later phases with user-facing bilingual labels. */
@@ -32,5 +33,5 @@ export const plannedModules = [
   { name: 'Town halls and participatory budgeting', ta: 'மக்கள் மன்றம் & வரவுசெலவுத் திட்டம்', desc: 'Deliberation and community voting' },
   { name: 'Official publishing and signing', ta: 'அதிகாரப்பூர்வ வெளியீடு', desc: 'Official gazette and signed notices' },
   { name: 'Committees and wings', ta: 'குழுக்களும் பிரிவுகளும்', desc: 'Youth, women, and diaspora wings' },
-  { name: 'Reports and AI monitoring', ta: 'அறிக்கைகளும் அவதானிப்பும்', desc: 'Aggregated analytics and model safety' },
+  { name: 'AI monitoring and further reports', ta: 'அறிக்கைகளும் அவதானிப்பும்', desc: 'Model safety (D21) and dashboards beyond the Phase 1 figures' },
 ] as const;
