@@ -34,7 +34,13 @@ export default function StaffSignInScreen() {
   return (
     <Screen edges={['top', 'bottom']}>
       <View style={styles.brand}>
-        <Image source={require('../../assets/images/icon.png')} style={styles.logo} accessible={false} accessibilityIgnoresInvertColors />
+        <Image
+          source={require('../../assets/images/icon.png')}
+          style={styles.logo}
+          accessibilityIgnoresInvertColors
+          accessible={false}
+          importantForAccessibility="no"
+        />
         <AppText step="page" accessibilityRole="header">
           {t('s.signIn.title')}
         </AppText>

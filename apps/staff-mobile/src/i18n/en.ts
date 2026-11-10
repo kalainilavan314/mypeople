@@ -17,6 +17,7 @@ export const en = {
     unknown: 'Something went wrong. Try again.',
     offline: 'Unable to reach the server. Check your connection and try again.',
     invalid_credentials: 'The ID number or password is not correct.',
+    wrong_password: 'The current password is not correct.',
     too_many_attempts: 'Too many attempts. Wait {{minutes}} minutes and try again.',
     invalid_code: 'The code is not correct. Use the newest code in your authenticator app.',
     mfa_locked: 'Too many wrong codes. Wait {{minutes}} minutes and try again.',
@@ -47,6 +48,7 @@ export const en = {
   },
   mfa: {
     enrolTitle: 'Set up your authenticator',
+    passwordStepUp: 'Enter your current password before setting up an authenticator.',
     enrolBody:
       'Staff sign in with a second factor every time. Scan this code with an authenticator app, or type the key, then enter the 6-digit code it shows.',
     key: 'Key',

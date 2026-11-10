@@ -35,6 +35,11 @@ export function Enrolment() {
   }
   return (
     <form action={start} className="flex flex-col gap-2">
+      <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+        <span>Current password</span>
+        <input name="currentPassword" type="password" required autoComplete="current-password"
+          className="min-h-11 rounded-lg border border-line px-3 text-base" />
+      </label>
       {state && 'error' in state ? (
         <p role="alert" className="text-sm text-error">
           ! {locale === 'ta' ? bilingualMessageFor(state.error).ta : bilingualMessageFor(state.error).en}

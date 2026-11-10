@@ -1,37 +1,35 @@
+import { useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { AppText, Button, formatDateTime, Notice, useLanguage } from '@my-people/mobile-ui';
+import { spacing } from '@my-people/design-tokens';
+import { AppText, Notice, SurfaceCard, type OfflineCardPreview } from '@my-people/mobile-ui';
 
-import { MemberCardView } from './MemberCardView';
-import type { SavedCard } from './savedCard';
-
-type Props = {
-  saved: SavedCard;
-  /** Tries the server again; left out where the screen has its own retry. */
-  onRetry?: () => void;
-  retrying?: boolean;
-};
-
-/**
- * C03: the card as last confirmed online, labelled with that time. No QR
- * code is shown, since codes are never stored on the phone and a saved copy
- * cannot prove membership (FR-CARD-008, BR-066).
- */
-export function OfflineCard({ saved, onRetry, retrying = false }: Props) {
+/** A saved visual copy without a QR. A coordinator must check current status online. */
+export function OfflineCard({ preview }: { preview: OfflineCardPreview }) {
   const { t } = useTranslation();
-  const language = useLanguage();
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+  const minutes = Math.max(0, Math.floor((now - Date.parse(preview.syncedAt)) / 60_000));
+
   return (
-    <>
-      <Notice tone="warning" title={t('m.card.offlineTitle', { time: formatDateTime(saved.savedAt, language) })}>
-        {t('m.card.offlineBody')}
+    <View style={styles.content}>
+      <Notice tone="warning" title={t('m.card.offlineTitle')}>
+        {t('m.card.offlineLimit')}
       </Notice>
-      <MemberCardView card={saved.card} offline />
-      {onRetry ? (
-        <Button label={t('m.common.retry')} icon="refresh" variant="secondary" busy={retrying} busyLabel={t('m.common.loading')} onPress={onRetry} />
-      ) : null}
-      <AppText step="caption" tone="muted">
-        {t('m.card.noIdNumbers')}
-      </AppText>
-    </>
+      <SurfaceCard>
+        <AppText step="label" tone="secondary">{t('m.card.offlineSynced', { minutes })}</AppText>
+        <AppText step="section" accessibilityRole="header">{preview.displayName}</AppText>
+        <AppText step="body" mono>{preview.memberCode}</AppText>
+        {preview.districtName ? <AppText step="secondary">{preview.districtName}</AppText> : null}
+        {preview.gnName ? <AppText step="secondary">{preview.gnName}</AppText> : null}
+      </SurfaceCard>
+      <AppText step="caption" tone="muted">{t('m.card.noIdNumbers')}</AppText>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({ content: { gap: spacing[3] } });

@@ -447,6 +447,7 @@ def work_queues(db: Session, staff: Staff) -> schemas.WorkQueuesOut:
     gallery_albums = None
     messaging = None
     configuration = None
+    reports = None
     unavailable: list[str] = []
 
     rule_assignments = staff.rule_assignments()
@@ -649,6 +650,23 @@ def work_queues(db: Session, staff: Staff) -> schemas.WorkQueuesOut:
             logger.exception("Failed to query configuration queue counts for member %s", staff.member_id)
             unavailable.append("configuration")
 
+    # 10. Community Reports (reports.view)
+    if rules.holds(rule_assignments, "reports.view"):
+        try:
+            from app.modules.community.reports import service as reports_service
+
+            counts = reports_service.queue_counts(db, staff)
+            reports = schemas.CommunityReportsQueueCount(
+                submitted=counts.submitted,
+                under_review=counts.under_review,
+                in_progress=counts.in_progress,
+                total_actionable=counts.total_actionable,
+            )
+        except Exception:
+            db.rollback()
+            logger.exception("Failed to query community reports queue counts for member %s", staff.member_id)
+            unavailable.append("reports")
+
     return schemas.WorkQueuesOut(
         verification=verification,
         appeals=appeals,
@@ -659,5 +677,6 @@ def work_queues(db: Session, staff: Staff) -> schemas.WorkQueuesOut:
         gallery_albums=gallery_albums,
         messaging=messaging,
         configuration=configuration,
+        reports=reports,
         unavailable=unavailable,
     )

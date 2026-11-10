@@ -8,4 +8,4 @@ Registry and system administration:
 - Feature flag and architecture module registry: phase gate verification, gate sign-off recording, and live module enabling/disabling
 - Audited configuration changes: all mutations require documented rationale, recording actor, time, and impact
 - Read-only system configuration & security policy indicators (MFA policy, token rotation, hash-chained audit, AES-256-GCM evidence vault)
-- Read-only official geography registry with documented backend gap regarding Phase 2 administrative boundary mutation endpoints
+- Read-only official district, DS and GN hierarchy; Phase 2 administrative boundary mutation endpoints remain out of scope

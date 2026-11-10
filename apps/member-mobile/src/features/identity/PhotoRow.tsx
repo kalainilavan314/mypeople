@@ -1,6 +1,4 @@
-import type { IdentityDocumentKind } from '@my-people/api-client';
-
-type Advice = 'blurry' | 'too_dark' | 'glare' | 'too_small';
+import { ApiError, type IdentityDocumentKind } from '@my-people/api-client';
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -19,31 +17,39 @@ type Props = {
   received: boolean;
   /** Named by the reviewer in a correction request. */
   requested: boolean;
+  /** The step the member should do next (A18), highlighted. */
+  target?: boolean;
   onUploaded: () => void;
 };
 
 type Next = { source: 'camera' | 'library' } | { image: PickedImage };
+
+type Advice = 'blurry' | 'too_dark' | 'glare' | 'too_small';
+
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // the API's limit (FR-REG-010), checked before anything is sent
 
 /**
  * One identity image: whether the server holds it, and how to send it. A
  * selfie needs the live camera (FR-REG-014); ID pages may also come from the
  * phone's photos, the manual route when the camera is refused (FR-VOI-007).
  *
- * A17: only a photo the server acknowledged counts as received (BR-020). When
- * an upload is interrupted the row says so and keeps the photo, in memory and
- * the app's private cache, so "Retry upload" sends the same photo without
- * taking it again (FR-REG-034). The cached copy is deleted once the server
- * has it, or when it is replaced or the screen is left (FR-REG-035).
+ * A17: only a photo the server acknowledged counts as received (BR-020). While
+ * it uploads a progress bar shows how much is sent. When an upload is
+ * interrupted the row says so and keeps the photo, in memory and the app's
+ * private cache, so "Retry upload" sends the same photo without taking it
+ * again (FR-REG-034). The cached copy is deleted once the server has it, or
+ * when it is replaced or the screen is left (FR-REG-035).
  *
  * M01: after an upload the server's capture advice (blur, darkness, glare,
  * size) is shown under the photo. The photo still counts as received; the
  * member decides whether to retake it (FR-IDV-001, BR-091).
  */
-export function PhotoRow({ kind, received, requested, onUploaded }: Props) {
+export function PhotoRow({ kind, received, requested, target = false, onUploaded }: Props) {
   const { t } = useTranslation();
   const [denied, setDenied] = useState(false);
   const [held, setHeld] = useState<PickedImage | null>(null);
   const [interrupted, setInterrupted] = useState(false);
+  const [progress, setProgress] = useState<{ sent: number; total: number } | null>(null);
   // M01: what the server noticed about the photo it just received; advice only, it still counts.
   const [advice, setAdvice] = useState<Advice[]>([]);
   const heldRef = useRef<PickedImage | null>(null);
@@ -80,22 +86,32 @@ export function PhotoRow({ kind, received, requested, onUploaded }: Props) {
     }
     setInterrupted(false);
     setAdvice([]);
+    if (image.body.size > MAX_IMAGE_BYTES) {
+      hold(null);
+      throw new ApiError(413, 'too_large', null);
+    }
+    setProgress({ sent: 0, total: image.body.size });
     try {
-      const received = await api().uploadIdentityDocument(kind, image.body, image.contentType);
-      setAdvice(received.quality?.problems ?? []);
+      const stored = await api().uploadIdentityDocument(kind, image.body, image.contentType, (sent, total) => {
+        setProgress({ sent, total });
+      });
+      setAdvice(stored.quality?.problems ?? []);
     } catch (error) {
       if (noAnswer(error)) setInterrupted(true);
       else hold(null); // refused (wrong type, too large): the same file cannot succeed
       throw error;
+    } finally {
+      setProgress(null);
     }
     hold(null);
     onUploaded();
   });
 
   const showInterrupted = interrupted && held !== null;
+  const percent = progress && progress.total > 0 ? Math.min(100, Math.round((progress.sent / progress.total) * 100)) : 0;
 
   return (
-    <SurfaceCard style={(requested || showInterrupted) && styles.attention}>
+    <SurfaceCard style={(requested || target || showInterrupted) && styles.attention}>
       <View style={styles.header}>
         <AppText step="card" style={styles.flex}>
           {t(`m.verify.${kind}`)}
@@ -108,10 +124,30 @@ export function PhotoRow({ kind, received, requested, onUploaded }: Props) {
           <StatusTag tone={received ? 'verified' : 'neutral'} label={received ? t('m.verify.received') : t('m.verify.needed')} />
         )}
       </View>
+      {target ? (
+        <AppText step="secondary" tone="secondary">
+          {t('m.setup.nextStep')}
+        </AppText>
+      ) : null}
       {selfie ? (
         <AppText step="secondary" tone="muted">
           {t('m.verify.selfieCameraOnly')}
         </AppText>
+      ) : null}
+
+      {progress && upload.busy ? (
+        <View style={styles.progress}>
+          <AppText step="secondary" tone="secondary" accessibilityLiveRegion="polite">
+            {t('m.verify.uploadProgress', { percent })}
+          </AppText>
+          <View
+            accessibilityRole="progressbar"
+            accessibilityLabel={t(`m.verify.${kind}`)}
+            accessibilityValue={{ min: 0, max: 100, now: percent }}
+            style={styles.progressTrack}>
+            <View style={[styles.progressFill, { width: `${percent}%` }]} />
+          </View>
+        </View>
       ) : null}
 
       {showInterrupted ? (
@@ -167,4 +203,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
   flex: { flex: 1 },
   actions: { gap: spacing[2] },
+  progress: { gap: spacing[1] },
+  progressTrack: { height: 6, borderRadius: 3, backgroundColor: colors.border, overflow: 'hidden' },
+  progressFill: { height: 6, backgroundColor: colors.primary },
 });

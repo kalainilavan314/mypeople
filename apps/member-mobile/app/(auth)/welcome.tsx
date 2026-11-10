@@ -5,10 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import { colors, control, radius, spacing } from '@my-people/design-tokens';
 
-import { AppText, Button, Notice, Screen, useLanguage, useSession } from '@my-people/mobile-ui';
+import { AppText, Button, Notice, Screen, readOfflineCard, type OfflineCardPreview, useLanguage, useSession } from '@my-people/mobile-ui';
 
 import { OfflineCard } from '@/features/membership/OfflineCard';
-import { loadSavedCard, type SavedCard } from '@/features/membership/savedCard';
 import { chooseLanguage, type AppLanguage } from '@/lib/i18n';
 
 const LANGUAGES: { key: AppLanguage; label: string }[] = [
@@ -25,23 +24,24 @@ export default function WelcomeScreen() {
   const { t } = useTranslation();
   const language = useLanguage();
   const { state, retry } = useSession();
-  const unreachable = state.status === 'unreachable';
-  const [saved, setSaved] = useState<SavedCard | null>(null);
-  const [showCard, setShowCard] = useState(false);
-
+  const [offlineCard, setOfflineCard] = useState<OfflineCardPreview | null>(null);
   useEffect(() => {
-    if (!unreachable) return;
+    if (state.status !== 'unreachable') return;
     let active = true;
-    void loadSavedCard().then((found) => active && setSaved(found));
-    return () => {
-      active = false;
-    };
-  }, [unreachable]);
+    void readOfflineCard().then((saved) => { if (active) setOfflineCard(saved); });
+    return () => { active = false; };
+  }, [state.status]);
 
   return (
     <Screen edges={['top', 'bottom']}>
       <View style={styles.brand}>
-        <Image source={require('../../assets/images/icon.png')} style={styles.logo} accessible={false} accessibilityIgnoresInvertColors />
+        <Image
+          source={require('../../assets/images/icon.png')}
+          style={styles.logo}
+          accessibilityIgnoresInvertColors
+          accessible={false}
+          importantForAccessibility="no"
+        />
         <AppText step="page" accessibilityRole="header" style={styles.center}>
           {t('m.welcome.title')}
         </AppText>
@@ -55,19 +55,11 @@ export default function WelcomeScreen() {
 
       {state.status === 'signed_out' && state.expired ? <Notice tone="warning">{t('m.welcome.expired')}</Notice> : null}
       {state.status === 'not_configured' ? <Notice tone="error">{t('m.welcome.notConfigured')}</Notice> : null}
-      {unreachable ? (
+      {state.status === 'unreachable' ? (
         <View style={styles.gap}>
           <Notice tone="error">{t('m.welcome.unreachable')}</Notice>
+          {offlineCard ? <OfflineCard preview={offlineCard} /> : null}
           <Button label={t('m.common.retry')} variant="secondary" icon="refresh" onPress={retry} />
-          {saved ? (
-            <Button
-              label={showCard ? t('m.card.hideSavedCard') : t('m.card.showSavedCard')}
-              variant="quiet"
-              icon={showCard ? 'chevron-up' : 'card-outline'}
-              onPress={() => setShowCard(!showCard)}
-            />
-          ) : null}
-          {saved && showCard ? <OfflineCard saved={saved} /> : null}
         </View>
       ) : null}
 

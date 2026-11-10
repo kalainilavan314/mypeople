@@ -1,11 +1,14 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
+import type { AreaRef, StaffTier } from '@my-people/api-client';
 
 import { Feedback } from '@/components/Feedback';
 import { PageHeader } from '@/components/PageHeader';
 import { SubmitButton } from '@/components/SubmitButton';
 import { createBroadcast } from '@/features/messages/actions';
+import { AudienceScopePicker, STAFF_TIERS } from '@/features/messages/AudienceScopePicker';
 import { getAdminLocale } from '@/lib/i18n';
+import { staffApi } from '@/lib/session';
 import { requireStaff } from '@/lib/staff';
 
 export default function NewBroadcastPage(props: PageProps<'/messages/new'>) {
@@ -35,6 +38,34 @@ async function NewBroadcastForm({ searchParams }: { searchParams: PageProps<'/me
 
   // Assignments where staff holds notifications.send
   const sendAssignments = staff.assignments.filter((a) => a.permissions.includes('notifications.send'));
+  if (sendAssignments.length === 0) {
+    return <p className="rounded-lg border border-line bg-card p-5 text-sm text-muted">Your active role does not allow broadcast messaging.</p>;
+  }
+  const api = await staffApi();
+  const uniqueAreas = new Map<string, { area: AreaRef; grants: StaffTier[] }>();
+  for (const assignment of sendAssignments) {
+    const value = `${assignment.area.level}:${assignment.area.code ?? ''}`;
+    const existing = uniqueAreas.get(value);
+    if (existing) existing.grants.push(assignment.tier);
+    else uniqueAreas.set(value, { area: assignment.area, grants: [assignment.tier] });
+  }
+  const requests = [...uniqueAreas.entries()].flatMap(([value, option]) => [
+    { value, key: 'all' as const, request: api.estimateBroadcastReach(option.area) },
+    ...STAFF_TIERS.map((tier) => ({ value, key: tier, request: api.estimateBroadcastReach(option.area, [tier]) })),
+  ]);
+  const reachResults = await Promise.allSettled(requests.map(({ request }) => request));
+  const reaches = new Map<string, Partial<Record<'all' | StaffTier, number | null>>>();
+  requests.forEach((request, index) => {
+    const areaReaches = reaches.get(request.value) ?? {};
+    const result = reachResults[index];
+    areaReaches[request.key] = result.status === 'fulfilled' ? result.value.reaches : null;
+    reaches.set(request.value, areaReaches);
+  });
+  const areaOptions = [...uniqueAreas.entries()].map(([value, option]) => ({
+    value,
+    label: `${option.area.level === 'platform' ? 'Platform wide (All Sri Lanka)' : `${option.area.level.toUpperCase()} ${option.area.code}`} · access through Tier ${[...new Set(option.grants)].join(', ')}`,
+    reaches: reaches.get(value) ?? {},
+  }));
 
   return (
     <>
@@ -59,7 +90,7 @@ async function NewBroadcastForm({ searchParams }: { searchParams: PageProps<'/me
           </h2>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1 text-sm font-semibold">
+            <label className="flex flex-col gap-1 text-sm font-semibold sm:col-span-2 sm:max-w-md">
               <span lang={locale}>{locale === 'ta' ? 'தலைப்பு வகை *' : 'Topic *'}</span>
               <select name="topic" required defaultValue="announcements" className="min-h-11 rounded-lg border border-line px-3 bg-surface">
                 <option value="announcements">
@@ -71,20 +102,7 @@ async function NewBroadcastForm({ searchParams }: { searchParams: PageProps<'/me
               </select>
             </label>
 
-            <label className="flex flex-col gap-1 text-sm font-semibold">
-              <span lang={locale}>{locale === 'ta' ? 'இலக்குப் பகுதி (உங்கள் பணியாளர் வரம்பிற்குட்பட்டது) *' : 'Audience geography (scoped to your role) *'}</span>
-              <select name="areaSelection" required className="min-h-11 rounded-lg border border-line px-3 bg-surface">
-                {sendAssignments.map((a) => {
-                  const label = a.area.level === 'platform' ? (locale === 'ta' ? 'நாடு முழுவதும் (இலங்கை முழுதும்)' : 'Platform wide (All Sri Lanka)') : `${a.area.level} ${a.area.code}`;
-                  const value = `${a.area.level}:${a.area.code ?? ''}`;
-                  return (
-                    <option key={a.id} value={value}>
-                      {label} ({locale === 'ta' ? 'நிலை' : 'Tier'} {a.tier})
-                    </option>
-                  );
-                })}
-              </select>
-            </label>
+            <AudienceScopePicker options={areaOptions} />
           </div>
         </section>
 

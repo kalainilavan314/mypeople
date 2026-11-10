@@ -1,6 +1,6 @@
 'use server';
 
-import type { AreaLevel, BroadcastCreateInput, BroadcastUpdateInput } from '@my-people/api-client';
+import type { AreaLevel, BroadcastCreateInput, BroadcastUpdateInput, StaffTier } from '@my-people/api-client';
 import { redirect } from 'next/navigation';
 
 import { parseSriLankaDateTime } from '@/lib/format';
@@ -10,6 +10,7 @@ import { staffApi } from '@/lib/session';
 const UUID = /^[0-9a-f-]{36}$/i;
 // Pattern check for Sri Lankan NIC numbers (old: 9 digits + v/x, new: 12 digits)
 const NIC_PATTERN = /\b(?:\d{9}[vVxX]|\d{12})\b/;
+const STAFF_TIERS = new Set<StaffTier>(['1', '2A', '2B', '3A', '3B', '4', '5']);
 
 function back(path: string, query: string): never {
   redirect(`${path}?${query}`);
@@ -37,6 +38,8 @@ export async function createBroadcast(formData: FormData): Promise<void> {
   const bodyTa = String(formData.get('bodyTa') ?? '').trim();
 
   const areaSelection = String(formData.get('areaSelection') ?? '');
+  const rawAudienceTier = String(formData.get('audienceTier') ?? 'all');
+  const audienceTier = STAFF_TIERS.has(rawAudienceTier as StaffTier) ? rawAudienceTier as StaffTier : null;
   let areaLevel: AreaLevel = 'district';
   let areaCode: string | null = null;
   if (areaSelection.includes(':')) {
@@ -68,6 +71,7 @@ export async function createBroadcast(formData: FormData): Promise<void> {
       level: areaLevel,
       code: areaLevel === 'platform' ? null : areaCode,
     },
+    audienceTiers: audienceTier ? [audienceTier] : null,
   };
 
   let createdId: string;

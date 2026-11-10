@@ -27,6 +27,9 @@ export function TextField({ label, hint, error, secret = false, optional = false
   const text = stringsFor(language);
   const [hidden, setHidden] = useState(true);
   const [focused, setFocused] = useState(false);
+  const isInvalid = Boolean(error);
+  const isDisabled = input.editable === false;
+
   return (
     <View style={styles.field}>
       <AppText step="label">
@@ -43,7 +46,7 @@ export function TextField({ label, hint, error, secret = false, optional = false
           styles.box,
           multiline && styles.multiline,
           focused && styles.focused,
-          error ? styles.invalid : null,
+          isInvalid ? styles.invalid : null,
         ]}>
         <TextInput
           {...input}
@@ -51,6 +54,10 @@ export function TextField({ label, hint, error, secret = false, optional = false
           accessible
           accessibilityLabel={label}
           accessibilityHint={hint}
+          accessibilityState={{ disabled: isDisabled }}
+          aria-disabled={isDisabled}
+          aria-invalid={isInvalid}
+          aria-required={!optional}
           secureTextEntry={secret && hidden}
           onFocus={(event) => {
             setFocused(true);
@@ -70,6 +77,8 @@ export function TextField({ label, hint, error, secret = false, optional = false
             accessible
             accessibilityRole="button"
             accessibilityLabel={hidden ? text.showPassword : text.hidePassword}
+            accessibilityState={{ checked: !hidden }}
+            aria-label={hidden ? text.showPassword : text.hidePassword}
             hitSlop={8}
             style={styles.reveal}>
             <Ionicons name={hidden ? 'eye-outline' : 'eye-off-outline'} size={20} color={colors.textMuted} />

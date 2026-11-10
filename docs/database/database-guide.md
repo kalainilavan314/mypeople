@@ -7,10 +7,10 @@ PostgreSQL 16 on the server (17 locally is fine). Production data lives on the e
 | Schema | Tables | Created by |
 |---|---|---|
 | `geo` | `province`, `district`, `ds_division`, `gn_division` (Northern Province reference data) | Express `0000` |
-| `npm` | `member`, `otp`, `auth_attempt`, `verification_audit`, `onboarding_answer`, `referral_event`, `event`, `event_rsvp`, `community_report`, `donation` | Express `0001`–`0011` |
+| `npm` | `member`, `otp`, `auth_attempt`, `verification_audit`, `onboarding_answer`, `referral_event`, `event`, `event_rsvp`, `community_report`, `donation`; `community_report` has an immutable submission-area hierarchy maintained for every insert | Express `0001`–`0011`; Alembic `0025`–`0026` |
 | `public` | `error_log` (Express 5xx errors), `schema_migrations` (Express ledger), `alembic_version` (Alembic) | Express, Alembic |
 | `access` | `staff_assignment`: a person's tier, area and explicit permissions, who granted it, review date, revocation | Alembic `0002` |
-| `ops` | `audit_log`: append-only and hash-chained; triggers refuse UPDATE, DELETE and TRUNCATE | Alembic `0002` |
+| `ops` | `audit_log`: append-only and hash-chained; triggers refuse UPDATE, DELETE and TRUNCATE. `policy_decision_revision` and `policy_decision_review`: versioned Phase 1 decisions and append-only signed-owner evidence | Alembic `0002`, `0029` |
 | `identity` | `identity_document`: one row per identity image version (kind, version, type, size, which key sealed it, `server_ack_at`); the images are encrypted files outside the database | Alembic `0003` |
 | `identity` | `identity_review`: one submission for team review (`VR-` reference, route, state, claim, the member's area when submitted); `review_decision`: every decision with reviewer, tier, checklist, items, reason and document versions; triggers refuse UPDATE, DELETE and TRUNCATE | Alembic `0004` |
 | `identity` | `review_appeal`: one appeal per decision (`VA-` reference, statement, state, claim, outcome, decider and tier, reason); a decided appeal cannot be changed or deleted | Alembic `0005` |
@@ -22,7 +22,7 @@ PostgreSQL 16 on the server (17 locally is fine). Production data lives on the e
 | `membership` | `card`: the opaque reference a member's QR carries (replaced on suspension or inactivation) and the last successful scan | Alembic `0011` |
 | `identity` | `mfa_factor` gains `failed_attempts`, `locked_until` and `lockouts`: wrong authenticator codes counted across sessions, and escalating lockouts | Alembic `0012` |
 | `ops` | `denial_tally`: per person, permission and reason, when the current 10-minute window began and how many refusals it held back from the audit log | Alembic `0013` |
-| `notifications` | `notification`: inbox items and the push outbox (topic, template, deep link, action needed and done, read, push state); `device`: push tokens; `preference` and `setting`: push and SMS per topic, quiet hours; `broadcast`: staff announcements (`NB-` reference, area, state, approval, recipients). Also `content.removal_request.escalated_at` | Alembic `0017` |
+| `notifications` | `notification`: inbox items and the push outbox (topic, template, deep link, action needed and done, read, push state); `device`: push tokens; `preference` and `setting`: push and SMS per topic, quiet hours; `broadcast`: staff announcements (`NB-` reference, area, optional effective staff audience tiers, state, approval, recipients). Also `content.removal_request.escalated_at` | Alembic `0017`, `0026` |
 | `profile`, `privacy` | `display_name`: the name a member is greeted by (never the legal name); `area_change`: GN moves (`AC-` reference, requested area, proof kept in the evidence vault, final once decided); `privacy.request`: copy and closure requests (`DSR-` reference, due date, outcome, final once closed) | Alembic `0016` |
 | `content` | `album`: bilingual albums (`AL-` reference, category, place, date, publisher, linked event, area, draft, submitted or published, who submitted and published); `photo`: captions, size and shown, blurred or removed (the images are WebP files in `MEDIA_STORAGE_DIR`); `removal_request`: `RR-` reference, reason, member or public contact, due 24 hours later, decision and reason (final once decided) | Alembic `0015` |
 | `ops`, `election` | `feature_flag`: each v1.1 module's gate, approval reference and on/off; `feature_flag_change`: every change with its reason (append-only); `election.period`: declared elections (`EP-` reference, type, area, period, silence window, polling day, the Election Commission source, closing reason); `election.notice`: Election Commission or Party information with its source. Also `events.attendance.method` and `manual_reason`, and `notifications.broadcast.held_at` | Alembic `0018` |
@@ -33,7 +33,7 @@ Sensitive columns: `npm.member.nic_hash` (peppered SHA-256, never the NIC itself
 
 ## Migrations
 
-Two runners, one rule: **new schema changes are Alembic revisions only.** Revisions so far: `0001` baseline, `0002` staff access and the audit log, `0003` identity documents, `0004` identity reviews and decisions, `0005` appeals, `0006` membership states, `0007` duplicate investigations, `0008` registration, `0009` recovery, `0010` sessions and MFA, `0011` member cards, `0012` authenticator lockout, `0013` refusal tally, `0014` events, `0015` gallery, `0016` profile and privacy, `0017` notifications, `0018` feature flags, election periods and manual check-in, `0019` refresh tokens, security alerts and access reviews.
+Two runners, one rule: **new schema changes are Alembic revisions only.** Revisions so far: `0001` baseline through `0028` finance evidence grants, followed by `0029` for the Phase 1 policy decision register. The files in `services/api/alembic/versions` are the authoritative ordered ledger.
 
 - `server/migrations/0000`–`0011` are frozen. They built the schema before Alembic and are still applied by `npm run migrate --prefix server` on a new database.
 - Alembic revision `0001` (`services/api/alembic/versions/0001_baseline_express_schema.py`) is a no-op baseline that stands for those twelve files. `alembic/env.py` refuses every command, `stamp` included, while any of them is missing from the Express ledger, so a database that is behind can never be marked current.
@@ -62,6 +62,16 @@ Rules from BRD §13.8 for every new revision: forward-only and peer-reviewed; ex
 ## Where the schema is going (BRD §13.5–13.8)
 
 The BRD separates data by purpose: schemas `core`, `community`, `assistance`, `household`, `finance`, `content`, `ai` and `ops`, with the identity vault (ID images, biometric data) in a separate database with its own credentials and keys. Assistance and household tables get row-level security. Audit logs are append-only and hash-chained. Today's `npm` tables move into those schemas gradually, through Alembic, as each module is rebuilt. No cross-purpose joins are allowed (AP-02, NFR-PRV-07).
+
+### Finance Schema (`finance.*`, M1.4, Alembic 0022, 0027 & 0028)
+
+- `finance.contribution`: Statuses `DRAFT`, `SUBMITTED`, `PENDING_REVIEW`, `RECONCILED`, `APPROVAL_PENDING`, `VERIFIED`, `NEEDS_CORRECTION`, `REJECTED`, `ON_HOLD`, `REFUNDED`. Stores `amount_minor`, `transfer_date`, `bank_reference`, declarations, the self-payment indicator, `risk_flags` JSONB, reviewer claim, and current slip reference.
+- `finance.contribution_slip`: Versioned, append-only slip records storing AES-256-GCM ciphertext, nonce, tag, and SHA-256 checksum. Protected by trigger `refuse_change()` preventing any `UPDATE` or `DELETE`.
+- `finance.reconciliation`: Records statement line reference, reviewer member ID, decision reason, and timestamp.
+- `finance.approval`: Records independent approver member ID, decision action, reason, and `related_party_conflict` boolean.
+- `finance.contribution_event`: Append-only state transition audit timeline.
+- `finance.receipt_counter`: Singleton counter table (`singleton = true`) locked with `FOR UPDATE` to allocate strictly monotonic `CN-XXXXX` receipt codes transactionally.
+- `finance.slip_view_grant`: Viewer-bound, expiring evidence grants consumed atomically on their first successful use.
 
 ## Tests and the database
 

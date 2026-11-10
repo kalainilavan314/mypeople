@@ -365,8 +365,8 @@ def deliver(sms: SmsSender, notice: Notice) -> None:
             return
 
 
-def managed_events(db: Session, staff: Staff, states: list[str], limit: int) -> list[StoredEvent]:
-    return repository.managed_events(db, visible_areas=access.visible_areas(staff, MANAGE), states=states, limit=limit)
+def managed_events(db: Session, staff: Staff, states: list[str], limit: int, offset: int = 0) -> list[StoredEvent]:
+    return repository.managed_events(db, visible_areas=access.visible_areas(staff, MANAGE), states=states, limit=limit, offset=offset)
 
 
 def managed_event(db: Session, staff: Staff, event_id: uuid.UUID, ip: str) -> StoredEvent:
@@ -488,3 +488,12 @@ def attendance_roster(db: Session, staff: Staff, event_id: uuid.UUID, ip: str) -
         attended=sum(1 for entry in entries if entry.attended_at is not None),
         entries=entries,
     )
+
+
+def export_attendance_roster(db: Session, staff: Staff, event_id: uuid.UUID, ip: str) -> Roster:
+    """Record the identifiable roster export after the same area check used for viewing it."""
+    roster = attendance_roster(db, staff, event_id, ip)
+    _check_scope(db, staff, MANAGE, _area_path(roster.event), ("event", str(event_id)), ip)
+    _record(db, staff, "events.roster.exported", roster.event, ip, rows=len(roster.entries))
+    db.commit()
+    return roster

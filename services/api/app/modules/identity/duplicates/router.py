@@ -80,9 +80,10 @@ def list_cases(
     state: Annotated[list[CaseState] | None, Query()] = None,
     mine: bool = False,
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    offset: Annotated[int, Query(ge=0, le=100000)] = 0,
 ) -> list[CaseSummaryOut]:
     """D04: duplicate investigations in the caller's areas, oldest first. Open cases unless states are given."""
-    cases = service.queue(db, staff, states=list(state or OPEN_STATES), mine=mine, limit=limit)
+    cases = service.queue(db, staff, states=list(state or OPEN_STATES), mine=mine, limit=limit, offset=offset)
     return [CaseSummaryOut.from_stored(case) for case in cases]
 
 

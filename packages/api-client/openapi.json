@@ -407,8 +407,18 @@
           "auth"
         ],
         "summary": "Start Totp",
-        "description": "Start adding an authenticator app: the secret to type or the URI to scan as a QR code.",
+        "description": "Re-enter the account password before issuing a secret or QR for an authenticator app.",
         "operationId": "start_totp_v1_auth_mfa_totp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TotpStartInput"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -420,8 +430,24 @@
               }
             }
           },
+          "401": {
+            "description": "wrong_password"
+          },
           "409": {
             "description": "already_enabled"
+          },
+          "429": {
+            "description": "too_many_attempts"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -2247,6 +2273,18 @@
               "default": 50,
               "title": "Limit"
             }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
           }
         ],
         "responses": {
@@ -2670,6 +2708,18 @@
               "default": 50,
               "title": "Limit"
             }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
           }
         ],
         "responses": {
@@ -3065,6 +3115,18 @@
               "minimum": 1,
               "default": 50,
               "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
             }
           }
         ],
@@ -3579,7 +3641,7 @@
           "recovery"
         ],
         "summary": "Confirm Phone",
-        "description": "Enter the code: the number becomes the recovery contact. A previous number is told of the change.",
+        "description": "Enter the code; replacing a confirmed number also needs the current password.",
         "operationId": "confirm_phone_v1_identity_me_phone_confirm_post",
         "requestBody": {
           "content": {
@@ -3603,10 +3665,13 @@
             }
           },
           "401": {
-            "description": "invalid_code or too_many_attempts"
+            "description": "invalid_code, too_many_attempts or wrong_password"
           },
           "409": {
             "description": "phone_unavailable"
+          },
+          "429": {
+            "description": "too_many_requests, with Retry-After"
           },
           "422": {
             "description": "Validation Error",
@@ -4390,6 +4455,18 @@
               "default": 50,
               "title": "Limit"
             }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
           }
         ],
         "responses": {
@@ -4455,6 +4532,62 @@
                 "schema": {
                   "$ref": "#/components/schemas/ManagedEventOut"
                 }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/manage/{event_id}/attendance.csv": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Export Managed Attendance",
+        "description": "D07: audited, area-scoped UTF-8 RSVP roster for an event manager.",
+        "operationId": "export_managed_attendance_v1_events_manage__event_id__attendance_csv_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           },
@@ -5372,6 +5505,18 @@
               "default": 50,
               "title": "Limit"
             }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
           }
         ],
         "responses": {
@@ -6268,6 +6413,18 @@
               "default": 100,
               "title": "Limit"
             }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
           }
         ],
         "responses": {
@@ -6489,6 +6646,174 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RemovalReceiptOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/community/reports/counts": {
+      "get": {
+        "tags": [
+          "community-reports"
+        ],
+        "summary": "Get Report Counts",
+        "description": "Lightweight aggregate actionable report counts for D01 operational work queues.",
+        "operationId": "get_report_counts_v1_community_reports_counts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityReportsQueueCount"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/community/reports": {
+      "get": {
+        "tags": [
+          "community-reports"
+        ],
+        "summary": "List Reports",
+        "description": "Bounded, paginated list of area-scoped community reports.",
+        "operationId": "list_reports_v1_community_reports_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityReportListOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/community/reports/{report_id}": {
+      "get": {
+        "tags": [
+          "community-reports"
+        ],
+        "summary": "Get Report",
+        "description": "One area-scoped report, audited without returning reporter identity or contact data.",
+        "operationId": "get_report_v1_community_reports__report_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Report Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityReportSummaryOut"
                 }
               }
             }
@@ -7615,6 +7940,18 @@
               "default": 50,
               "title": "Limit"
             }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
           }
         ],
         "responses": {
@@ -7690,6 +8027,62 @@
             "description": "broadcast_invalid"
           }
         }
+      }
+    },
+    "/v1/notifications/broadcasts/reach": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Estimate Reach",
+        "description": "Area-scoped estimate for the composer; submit computes recipients again.",
+        "operationId": "estimate_reach_v1_notifications_broadcasts_reach_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AudienceReachIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AudienceReachOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/v1/notifications/broadcasts/{broadcast_id}": {
@@ -8462,7 +8855,7 @@
             "description": "not_found"
           },
           "409": {
-            "description": "gate_must_be:<gate> or gate_not_recorded"
+            "description": "gate_must_be:<gate>, gate_not_recorded, or policy_decisions_required:<keys>"
           },
           "422": {
             "description": "Validation Error",
@@ -8529,7 +8922,7 @@
             "description": "not_found"
           },
           "409": {
-            "description": "gate_must_be:<gate> or gate_not_recorded"
+            "description": "gate_must_be:<gate>, gate_not_recorded, or policy_decisions_required:<keys>"
           },
           "422": {
             "description": "Validation Error",
@@ -8596,7 +8989,1251 @@
             "description": "not_found"
           },
           "409": {
-            "description": "gate_must_be:<gate> or gate_not_recorded"
+            "description": "gate_must_be:<gate>, gate_not_recorded, or policy_decisions_required:<keys>"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/policy-decisions": {
+      "get": {
+        "tags": [
+          "policy-decisions"
+        ],
+        "summary": "List Policy Decisions",
+        "description": "The fixed Phase 1 decision catalogue with current approval evidence.",
+        "operationId": "list_policy_decisions_v1_policy_decisions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PolicyDecisionOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Policy Decisions V1 Policy Decisions Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/policy-decisions/{key}": {
+      "get": {
+        "tags": [
+          "policy-decisions"
+        ],
+        "summary": "Get Policy Decision",
+        "operationId": "get_policy_decision_v1_policy_decisions__key__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyDecisionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/policy-decisions/{key}/revisions": {
+      "post": {
+        "tags": [
+          "policy-decisions"
+        ],
+        "summary": "Create Revision",
+        "operationId": "create_revision_v1_policy_decisions__key__revisions_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyDecisionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/policy-decisions/{key}/revisions/{revision_id}": {
+      "patch": {
+        "tags": [
+          "policy-decisions"
+        ],
+        "summary": "Update Revision",
+        "operationId": "update_revision_v1_policy_decisions__key__revisions__revision_id__patch",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          },
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyDecisionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/policy-decisions/{key}/revisions/{revision_id}/submit": {
+      "post": {
+        "tags": [
+          "policy-decisions"
+        ],
+        "summary": "Submit Revision",
+        "operationId": "submit_revision_v1_policy_decisions__key__revisions__revision_id__submit_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          },
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyDecisionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/policy-decisions/{key}/revisions/{revision_id}/reviews": {
+      "post": {
+        "tags": [
+          "policy-decisions"
+        ],
+        "summary": "Record Review",
+        "operationId": "record_review_v1_policy_decisions__key__revisions__revision_id__reviews_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          },
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Revision Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyDecisionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fund/config": {
+      "get": {
+        "tags": [
+          "fund"
+        ],
+        "summary": "Get Fund Config",
+        "description": "Return approved official bank-transfer configuration and contribution rules.",
+        "operationId": "get_fund_config_v1_fund_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundConfigResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fund/contributions": {
+      "post": {
+        "tags": [
+          "fund"
+        ],
+        "summary": "Create Contribution",
+        "description": "Idempotently create or retrieve a contribution draft.",
+        "operationId": "create_contribution_v1_fund_contributions_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "X-Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContributionCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContributionDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fund/contributions/{id}/slip": {
+      "put": {
+        "tags": [
+          "fund"
+        ],
+        "summary": "Upload Slip",
+        "description": "Upload, scan, encrypt, and store a contribution transfer slip.",
+        "operationId": "upload_slip_v1_fund_contributions__id__slip_put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fund/contributions/{id}/submit": {
+      "post": {
+        "tags": [
+          "fund"
+        ],
+        "summary": "Submit Contribution",
+        "description": "Transition contribution from DRAFT/NEEDS_CORRECTION to SUBMITTED.",
+        "operationId": "submit_contribution_v1_fund_contributions__id__submit_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContributionDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fund/contributions/mine": {
+      "get": {
+        "tags": [
+          "fund"
+        ],
+        "summary": "List My Contributions",
+        "description": "List current member's contribution records.",
+        "operationId": "list_my_contributions_v1_fund_contributions_mine_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 10000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContributionDetailResponse"
+                  },
+                  "title": "Response List My Contributions V1 Fund Contributions Mine Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fund/contributions/{id}": {
+      "get": {
+        "tags": [
+          "fund"
+        ],
+        "summary": "Get My Contribution",
+        "description": "Get single contribution details and safe timeline history.",
+        "operationId": "get_my_contribution_v1_fund_contributions__id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContributionDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fund/contributions/{id}/receipt": {
+      "get": {
+        "tags": [
+          "fund"
+        ],
+        "summary": "Get My Receipt",
+        "description": "Get official contribution receipt (only available once verified).",
+        "operationId": "get_my_receipt_v1_fund_contributions__id__receipt_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReceiptResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/finance/contributions": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "List Finance Contributions",
+        "description": "Operational queue for staff with explicit finance review or approval grants.",
+        "operationId": "list_finance_contributions_v1_finance_contributions_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Month"
+            }
+          },
+          {
+            "name": "riskFlag",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Riskflag"
+            }
+          },
+          {
+            "name": "reference",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Reference"
+            }
+          },
+          {
+            "name": "claimedByMe",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Claimedbyme"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 10000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffContributionsListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/finance/contributions/{id}": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Get Finance Contribution",
+        "description": "Get contribution detail, status history, declarations, and review state.",
+        "operationId": "get_finance_contribution_v1_finance_contributions__id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffContributionDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/finance/contributions/{id}/claim": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Claim Contribution",
+        "description": "Reviewer claims contribution for reconciliation review.",
+        "operationId": "claim_contribution_v1_finance_contributions__id__claim_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/finance/contributions/{id}/slip-view": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Get Slip View Token",
+        "description": "Issue a short-lived (5-minute) viewer-bound token to inspect encrypted slip.",
+        "operationId": "get_slip_view_token_v1_finance_contributions__id__slip_view_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffSlipViewTokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/finance/slips/{token}": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Stream Slip",
+        "description": "Unseal and stream the slip image bytes with no-store caching.",
+        "operationId": "stream_slip_v1_finance_slips__token__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/finance/contributions/{id}/reconcile": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Reconcile Contribution",
+        "description": "Reviewer matches to bank statement, requests correction, rejects, or places on hold.",
+        "operationId": "reconcile_contribution_v1_finance_contributions__id__reconcile_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffReconcileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/finance/contributions/{id}/approve": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Approve Contribution",
+        "description": "Independent second-person approver issues official CN receipt, rejects, or places on hold.",
+        "operationId": "approve_contribution_v1_finance_contributions__id__approve_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffApproveRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ReceiptResponse"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Approve Contribution V1 Finance Contributions  Id  Approve Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/finance/ledger.csv": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Export Ledger Csv",
+        "description": "Monthly CSV ledger export for audited contributions.",
+        "operationId": "export_ledger_csv_v1_finance_ledger_csv_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "month",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}$",
+              "title": "Month"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           },
           "422": {
             "description": "Validation Error",
@@ -11379,6 +13016,55 @@
         ],
         "title": "AssistedResolutionInput"
       },
+      "AudienceReachIn": {
+        "properties": {
+          "area": {
+            "$ref": "#/components/schemas/AreaRef"
+          },
+          "audienceTiers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2A",
+                    "2B",
+                    "3A",
+                    "3B",
+                    "4",
+                    "5"
+                  ]
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiencetiers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "area"
+        ],
+        "title": "AudienceReachIn"
+      },
+      "AudienceReachOut": {
+        "properties": {
+          "reaches": {
+            "type": "integer",
+            "title": "Reaches"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reaches"
+        ],
+        "title": "AudienceReachOut"
+      },
       "AuditEntryOut": {
         "properties": {
           "id": {
@@ -11553,6 +13239,30 @@
           },
           "area": {
             "$ref": "#/components/schemas/AreaRef"
+          },
+          "audienceTiers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2A",
+                    "2B",
+                    "3A",
+                    "3B",
+                    "4",
+                    "5"
+                  ]
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiencetiers"
           }
         },
         "type": "object",
@@ -11608,6 +13318,29 @@
           "areaKey": {
             "type": "string",
             "title": "Areakey"
+          },
+          "audienceTiers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2A",
+                    "2B",
+                    "3A",
+                    "3B",
+                    "4",
+                    "5"
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiencetiers"
           },
           "state": {
             "type": "string",
@@ -11680,6 +13413,7 @@
           "bodyTa",
           "areaLevel",
           "areaKey",
+          "audienceTiers",
           "state",
           "sendAt",
           "sentAt",
@@ -11730,6 +13464,29 @@
           "areaKey": {
             "type": "string",
             "title": "Areakey"
+          },
+          "audienceTiers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2A",
+                    "2B",
+                    "3A",
+                    "3B",
+                    "4",
+                    "5"
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiencetiers"
           },
           "state": {
             "type": "string",
@@ -11819,6 +13576,7 @@
           "bodyTa",
           "areaLevel",
           "areaKey",
+          "audienceTiers",
           "state",
           "sendAt",
           "sentAt",
@@ -11918,6 +13676,30 @@
               }
             ],
             "title": "Bodyta"
+          },
+          "audienceTiers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2A",
+                    "2B",
+                    "3A",
+                    "3B",
+                    "4",
+                    "5"
+                  ]
+                },
+                "type": "array",
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiencetiers"
           }
         },
         "type": "object",
@@ -12617,6 +14399,163 @@
         "title": "CodeSentOut",
         "description": "devCode appears only with SMS_PROVIDER=development, for local testing."
       },
+      "CommunityReportListOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CommunityReportSummaryOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "CommunityReportListOut",
+        "description": "Bounded, paginated list of area-scoped community reports."
+      },
+      "CommunityReportSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "districtCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Districtcode"
+          },
+          "dsCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dscode"
+          },
+          "gsCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gscode"
+          },
+          "areaPath": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Areapath"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "submitted",
+              "under_review",
+              "in_progress",
+              "resolved"
+            ],
+            "title": "Status"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "title",
+          "description",
+          "priority",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "CommunityReportSummaryOut",
+        "description": "Operational report summary without reporter contact data or identity disclosure."
+      },
+      "CommunityReportsQueueCount": {
+        "properties": {
+          "submitted": {
+            "type": "integer",
+            "title": "Submitted",
+            "default": 0
+          },
+          "underReview": {
+            "type": "integer",
+            "title": "Underreview",
+            "default": 0
+          },
+          "inProgress": {
+            "type": "integer",
+            "title": "Inprogress",
+            "default": 0
+          },
+          "totalActionable": {
+            "type": "integer",
+            "title": "Totalactionable",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "CommunityReportsQueueCount",
+        "description": "Aggregate actionable report counts for D01 operational work queues."
+      },
       "ConfigurationQueueCount": {
         "properties": {
           "total": {
@@ -12773,6 +14712,151 @@
           "purposeLimitationEn"
         ],
         "title": "ConsentNoticeOut"
+      },
+      "ContributionCreateRequest": {
+        "properties": {
+          "amountMinor": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Amountminor"
+          },
+          "currency": {
+            "type": "string",
+            "const": "LKR",
+            "title": "Currency",
+            "default": "LKR"
+          },
+          "transferDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Transferdate"
+          },
+          "bankReference": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Bankreference"
+          },
+          "idempotencyKey": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotencykey"
+          },
+          "declarationVersion": {
+            "type": "string",
+            "title": "Declarationversion",
+            "default": "v1"
+          },
+          "noPrivilegeAcknowledged": {
+            "type": "boolean",
+            "title": "Noprivilegeacknowledged"
+          },
+          "informationAccurateAcknowledged": {
+            "type": "boolean",
+            "title": "Informationaccurateacknowledged"
+          },
+          "payingForSelf": {
+            "type": "boolean",
+            "title": "Payingforself",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "amountMinor",
+          "transferDate",
+          "bankReference",
+          "noPrivilegeAcknowledged",
+          "informationAccurateAcknowledged"
+        ],
+        "title": "ContributionCreateRequest"
+      },
+      "ContributionDetailResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "contributionRef": {
+            "type": "string",
+            "title": "Contributionref"
+          },
+          "amountMinor": {
+            "type": "integer",
+            "title": "Amountminor"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "LKR"
+          },
+          "transferDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Transferdate"
+          },
+          "bankReference": {
+            "type": "string",
+            "title": "Bankreference"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "hasSlip": {
+            "type": "boolean",
+            "title": "Hasslip"
+          },
+          "receipt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReceiptResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/TimelineEventResponse"
+            },
+            "type": "array",
+            "title": "Timeline"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "contributionRef",
+          "amountMinor",
+          "transferDate",
+          "bankReference",
+          "status",
+          "createdAt",
+          "updatedAt",
+          "hasSlip",
+          "timeline"
+        ],
+        "title": "ContributionDetailResponse"
       },
       "DecisionInput": {
         "properties": {
@@ -13171,6 +15255,40 @@
         ],
         "title": "DocumentOut",
         "description": "An identity image the server holds (BR-020). Never the image itself."
+      },
+      "DraftIn": {
+        "properties": {
+          "decisionText": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 10,
+            "title": "Decisiontext"
+          },
+          "rationale": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 10,
+            "title": "Rationale"
+          },
+          "effectiveFrom": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effectivefrom"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decisionText",
+          "rationale"
+        ],
+        "title": "DraftIn"
       },
       "DueGrantOut": {
         "properties": {
@@ -14478,6 +16596,129 @@
           "gateRecordedAt"
         ],
         "title": "FlagOut"
+      },
+      "FundConfigResponse": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "LKR"
+          },
+          "amountPresets": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Amountpresets"
+          },
+          "bankName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bankname"
+          },
+          "accountName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accountname"
+          },
+          "accountNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accountnumber"
+          },
+          "accountNumberMasked": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accountnumbermasked"
+          },
+          "branchName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Branchname"
+          },
+          "transferInstructionsEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transferinstructionsen"
+          },
+          "transferInstructionsTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transferinstructionsta"
+          },
+          "disclaimerEn": {
+            "type": "string",
+            "title": "Disclaimeren"
+          },
+          "disclaimerTa": {
+            "type": "string",
+            "title": "Disclaimerta"
+          },
+          "noRewardStatementEn": {
+            "type": "string",
+            "title": "Norewardstatementen"
+          },
+          "noRewardStatementTa": {
+            "type": "string",
+            "title": "Norewardstatementta"
+          },
+          "intakeAvailable": {
+            "type": "boolean",
+            "title": "Intakeavailable"
+          }
+        },
+        "type": "object",
+        "required": [
+          "amountPresets",
+          "disclaimerEn",
+          "disclaimerTa",
+          "noRewardStatementEn",
+          "noRewardStatementTa",
+          "intakeAvailable"
+        ],
+        "title": "FundConfigResponse"
       },
       "GalleryAlbumsQueueCount": {
         "properties": {
@@ -17456,6 +19697,19 @@
             "type": "string",
             "pattern": "^\\d{6}$",
             "title": "Code"
+          },
+          "currentPassword": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currentpassword",
+            "description": "Required when replacing an existing recovery number"
           }
         },
         "type": "object",
@@ -17558,6 +19812,79 @@
           "nameSi"
         ],
         "title": "PlaceOut"
+      },
+      "PolicyDecisionOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "workstream": {
+            "type": "string",
+            "title": "Workstream"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "proposedDefault": {
+            "type": "string",
+            "title": "Proposeddefault"
+          },
+          "releaseEffect": {
+            "type": "string",
+            "title": "Releaseeffect"
+          },
+          "requiredRoles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Requiredroles"
+          },
+          "approvedRoles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Approvedroles"
+          },
+          "missingRoles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missingroles"
+          },
+          "current": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RevisionOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "workstream",
+          "title",
+          "question",
+          "proposedDefault",
+          "releaseEffect",
+          "requiredRoles",
+          "approvedRoles",
+          "missingRoles",
+          "current"
+        ],
+        "title": "PolicyDecisionOut"
       },
       "PreviewOut": {
         "properties": {
@@ -18474,6 +20801,56 @@
         ],
         "title": "QueuedScanIn"
       },
+      "ReceiptResponse": {
+        "properties": {
+          "receiptCode": {
+            "type": "string",
+            "title": "Receiptcode"
+          },
+          "contributionRef": {
+            "type": "string",
+            "title": "Contributionref"
+          },
+          "amountMinor": {
+            "type": "integer",
+            "title": "Amountminor"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "LKR"
+          },
+          "transferDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Transferdate"
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Issuedat"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "VERIFIED"
+          },
+          "sharePayload": {
+            "type": "string",
+            "title": "Sharepayload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "receiptCode",
+          "contributionRef",
+          "amountMinor",
+          "transferDate",
+          "issuedAt",
+          "sharePayload"
+        ],
+        "title": "ReceiptResponse"
+      },
       "RecoveryCodeInput": {
         "properties": {
           "nic": {
@@ -19198,6 +21575,64 @@
         "title": "ReviewFileOut",
         "description": "W02 without the images: they open one at a time through view links, once the review is claimed."
       },
+      "ReviewIn": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 2,
+            "title": "Role"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "reject"
+            ],
+            "title": "Outcome"
+          },
+          "reviewerName": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 2,
+            "title": "Reviewername"
+          },
+          "reviewerTitle": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 2,
+            "title": "Reviewertitle"
+          },
+          "evidenceRef": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Evidenceref"
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Comment"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "format": "date",
+            "title": "Reviewedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "outcome",
+          "reviewerName",
+          "reviewerTitle",
+          "evidenceRef",
+          "comment",
+          "reviewedAt"
+        ],
+        "title": "ReviewIn"
+      },
       "ReviewInput": {
         "properties": {
           "decision": {
@@ -19289,6 +21724,60 @@
         ],
         "title": "ReviewMemberOut",
         "description": "The profile details a reviewer compares with the documents (FR-WEB-007)."
+      },
+      "ReviewOut": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "reject"
+            ],
+            "title": "Outcome"
+          },
+          "reviewerName": {
+            "type": "string",
+            "title": "Reviewername"
+          },
+          "reviewerTitle": {
+            "type": "string",
+            "title": "Reviewertitle"
+          },
+          "evidenceRef": {
+            "type": "string",
+            "title": "Evidenceref"
+          },
+          "comment": {
+            "type": "string",
+            "title": "Comment"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "format": "date",
+            "title": "Reviewedat"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Recordedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "outcome",
+          "reviewerName",
+          "reviewerTitle",
+          "evidenceRef",
+          "comment",
+          "reviewedAt",
+          "recordedAt"
+        ],
+        "title": "ReviewOut"
       },
       "ReviewSummaryOut": {
         "properties": {
@@ -19413,6 +21902,105 @@
         ],
         "title": "ReviewSummaryOut",
         "description": "One row of the W01 queue."
+      },
+      "RevisionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "in_review",
+              "approved",
+              "rejected"
+            ],
+            "title": "Status"
+          },
+          "decisionText": {
+            "type": "string",
+            "title": "Decisiontext"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale"
+          },
+          "effectiveFrom": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effectivefrom"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "submittedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submittedat"
+          },
+          "resolvedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolvedat"
+          },
+          "reviews": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewOut"
+            },
+            "type": "array",
+            "title": "Reviews"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "revision",
+          "status",
+          "decisionText",
+          "rationale",
+          "effectiveFrom",
+          "createdAt",
+          "updatedAt",
+          "submittedAt",
+          "resolvedAt",
+          "reviews"
+        ],
+        "title": "RevisionOut"
       },
       "RevokeInput": {
         "properties": {
@@ -20017,6 +22605,363 @@
         ],
         "title": "SimpleQueueCount"
       },
+      "StaffApprovalDetail": {
+        "properties": {
+          "approvedBy": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Approvedby"
+          },
+          "approvedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Approvedat"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "relatedPartyConflict": {
+            "type": "boolean",
+            "title": "Relatedpartyconflict"
+          }
+        },
+        "type": "object",
+        "required": [
+          "approvedBy",
+          "approvedAt",
+          "reason",
+          "relatedPartyConflict"
+        ],
+        "title": "StaffApprovalDetail"
+      },
+      "StaffApproveRequest": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "reject",
+              "hold"
+            ],
+            "title": "Action"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reason"
+          },
+          "relatedPartyConflict": {
+            "type": "boolean",
+            "title": "Relatedpartyconflict",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "reason"
+        ],
+        "title": "StaffApproveRequest"
+      },
+      "StaffContributionDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "contributionRef": {
+            "type": "string",
+            "title": "Contributionref"
+          },
+          "donorMemberCode": {
+            "type": "string",
+            "title": "Donormembercode"
+          },
+          "donorMemberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Donormemberid"
+          },
+          "amountMinor": {
+            "type": "integer",
+            "title": "Amountminor"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "LKR"
+          },
+          "transferDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Transferdate"
+          },
+          "bankReference": {
+            "type": "string",
+            "title": "Bankreference"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "riskFlags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Riskflags"
+          },
+          "claimedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedby"
+          },
+          "claimedByName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedbyname"
+          },
+          "claimedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedat"
+          },
+          "declarationVersion": {
+            "type": "string",
+            "title": "Declarationversion"
+          },
+          "noPrivilegeAcknowledged": {
+            "type": "boolean",
+            "title": "Noprivilegeacknowledged"
+          },
+          "informationAccurateAcknowledged": {
+            "type": "boolean",
+            "title": "Informationaccurateacknowledged"
+          },
+          "payingForSelf": {
+            "type": "boolean",
+            "title": "Payingforself"
+          },
+          "hasSlip": {
+            "type": "boolean",
+            "title": "Hasslip"
+          },
+          "slipVersion": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slipversion"
+          },
+          "reconciliation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StaffReconciliationDetail"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "approval": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StaffApprovalDetail"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "receipt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReceiptResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/StaffTimelineEvent"
+            },
+            "type": "array",
+            "title": "Timeline"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "contributionRef",
+          "donorMemberCode",
+          "donorMemberId",
+          "amountMinor",
+          "transferDate",
+          "bankReference",
+          "status",
+          "riskFlags",
+          "declarationVersion",
+          "noPrivilegeAcknowledged",
+          "informationAccurateAcknowledged",
+          "payingForSelf",
+          "hasSlip",
+          "timeline"
+        ],
+        "title": "StaffContributionDetail"
+      },
+      "StaffContributionSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "contributionRef": {
+            "type": "string",
+            "title": "Contributionref"
+          },
+          "donorMemberCode": {
+            "type": "string",
+            "title": "Donormembercode"
+          },
+          "amountMinor": {
+            "type": "integer",
+            "title": "Amountminor"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "LKR"
+          },
+          "transferDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Transferdate"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "riskFlags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Riskflags"
+          },
+          "claimedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedby"
+          },
+          "claimedByName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedbyname"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "receiptCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receiptcode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "contributionRef",
+          "donorMemberCode",
+          "amountMinor",
+          "transferDate",
+          "status",
+          "riskFlags",
+          "createdAt"
+        ],
+        "title": "StaffContributionSummary"
+      },
+      "StaffContributionsListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/StaffContributionSummary"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "StaffContributionsListResponse"
+      },
       "StaffHouseholdViewOut": {
         "properties": {
           "permitted": {
@@ -20064,6 +23009,137 @@
         ],
         "title": "StaffHouseholdViewOut"
       },
+      "StaffReconcileRequest": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "matched",
+              "needs_correction",
+              "reject",
+              "hold"
+            ],
+            "title": "Action"
+          },
+          "statementReference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Statementreference"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "reason"
+        ],
+        "title": "StaffReconcileRequest"
+      },
+      "StaffReconciliationDetail": {
+        "properties": {
+          "statementReference": {
+            "type": "string",
+            "title": "Statementreference"
+          },
+          "reviewedBy": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Reviewedby"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Reviewedat"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "statementReference",
+          "reviewedBy",
+          "reviewedAt",
+          "reason"
+        ],
+        "title": "StaffReconciliationDetail"
+      },
+      "StaffSlipViewTokenResponse": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiresat"
+          },
+          "viewUrl": {
+            "type": "string",
+            "title": "Viewurl"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "expiresAt",
+          "viewUrl"
+        ],
+        "title": "StaffSlipViewTokenResponse"
+      },
+      "StaffTimelineEvent": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "fromStatus": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fromstatus"
+          },
+          "toStatus": {
+            "type": "string",
+            "title": "Tostatus"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurredat"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "toStatus",
+          "occurredAt",
+          "reason"
+        ],
+        "title": "StaffTimelineEvent"
+      },
       "StepOut": {
         "properties": {
           "name": {
@@ -20104,6 +23180,21 @@
           "declaration"
         ],
         "title": "SubmissionInput"
+      },
+      "SubmitIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "SubmitIn"
       },
       "SurveyAnswersIn": {
         "properties": {
@@ -20183,6 +23274,35 @@
           "defaultPermissions"
         ],
         "title": "TierInfo"
+      },
+      "TimelineEventResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurredat"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "occurredAt",
+          "descriptionEn",
+          "descriptionTa"
+        ],
+        "title": "TimelineEventResponse"
       },
       "TokensOut": {
         "properties": {
@@ -20286,6 +23406,20 @@
         ],
         "title": "TotpEnrolmentOut",
         "description": "Shown once, to add to an authenticator app; never shown again."
+      },
+      "TotpStartInput": {
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "maxLength": 256,
+            "title": "Currentpassword"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currentPassword"
+        ],
+        "title": "TotpStartInput"
       },
       "ValidationError": {
         "properties": {
@@ -20456,6 +23590,16 @@
             "anyOf": [
               {
                 "$ref": "#/components/schemas/ConfigurationQueueCount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reports": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CommunityReportsQueueCount"
               },
               {
                 "type": "null"

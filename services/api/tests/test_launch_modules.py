@@ -249,16 +249,39 @@ def test_gallery_album_submission_separation_of_duties(db_client: TestClient, db
     assert res_pub.json()["state"] == "published"
 
 
+def test_identity_console_queues_accept_pagination(db_client: TestClient, create_member, assign, auth, super_admin):
+    reviewer = create_member(verified=True)
+    assign(
+        reviewer, "5", "platform", None,
+        ["members.verify", "idv.appeal.decide", "idv.duplicate.investigate"],
+        granted_by=super_admin,
+    )
+    for path in ("/v1/identity/reviews", "/v1/identity/appeals", "/v1/identity/duplicates"):
+        response = db_client.get(path, params={"limit": 26, "offset": 25}, headers=auth(reviewer))
+        assert response.status_code == 200, (path, response.text)
+        assert isinstance(response.json(), list)
+
+
 # --- D09 Broadcast Messaging --------------------------------------------------------------------------
 
 
-def test_broadcast_wider_than_district_requires_approval(db_client: TestClient, create_member, assign, auth, area, super_admin):
+def test_broadcast_wider_than_district_requires_approval(
+    db_client: TestClient, create_member, member_in, assign, auth, area, super_admin
+):
     """D09: Broadcasts with provincial scope require second-person senior approval."""
     staff_author = create_member(verified=True)
     assign(staff_author, "4", "province", area.province, ["notifications.send"], granted_by=super_admin)
 
     staff_approver = create_member(verified=True)
     assign(staff_approver, "4", "province", area.province, ["notifications.send"], granted_by=super_admin)
+    member_in(area, verified=True, active=True)
+
+    reach = db_client.post(
+        "/v1/notifications/broadcasts/reach",
+        json={"area": {"level": "province", "code": area.province}},
+        headers=auth(staff_author),
+    )
+    assert reach.status_code == 200 and reach.json()["reaches"] >= 1
 
     # 1. Author creates provincial broadcast
     res = db_client.post(
@@ -337,6 +360,66 @@ def test_broadcast_dispatch_worker_send_due(db_client: TestClient, db_session: S
     row = db_session.execute(text("SELECT state, sent_at FROM notifications.broadcast WHERE id = :id"), {"id": broadcast_id}).one()
     assert row.state == "sent"
     assert row.sent_at is not None
+
+
+def test_broadcast_staff_tier_audience_is_persisted_and_used_for_dispatch(
+    db_client: TestClient, db_session: Session, create_member, assign, auth, area, super_admin
+):
+    """D09: selected tiers mean effective staff assignments, never deprecated member ranks."""
+    author = create_member(verified=True)
+    assign(author, "3A", "district", area.district, ["notifications.send"], granted_by=super_admin)
+    selected = create_member(verified=True)
+    assign(selected, "2A", "district", area.district, ["events.manage"], granted_by=super_admin)
+    excluded = create_member(verified=True)
+    assign(excluded, "2B", "district", area.district, ["events.manage"], granted_by=super_admin)
+
+    reach = db_client.post(
+        "/v1/notifications/broadcasts/reach",
+        json={"area": {"level": "district", "code": area.district}, "audienceTiers": ["2A"]},
+        headers=auth(author),
+    )
+    assert reach.status_code == 200
+    assert reach.json()["reaches"] == 1
+
+    invalid = db_client.post(
+        "/v1/notifications/broadcasts/reach",
+        json={"area": {"level": "district", "code": area.district}, "audienceTiers": ["gold"]},
+        headers=auth(author),
+    )
+    assert invalid.status_code == 422
+
+    created = db_client.post(
+        "/v1/notifications/broadcasts",
+        json={
+            "topic": "announcements",
+            "titleEn": "Tier scoped notice",
+            "titleTa": "நிலை வரம்பு அறிவிப்பு",
+            "bodyEn": "This message is for one effective staff tier.",
+            "bodyTa": "இந்த செய்தி ஒரு நடைமுறையிலுள்ள பணியாளர் நிலைக்கானது.",
+            "area": {"level": "district", "code": area.district},
+            "audienceTiers": ["2A"],
+        },
+        headers=auth(author),
+    )
+    assert created.status_code == 201, created.text
+    broadcast_id = created.json()["id"]
+    assert created.json()["audienceTiers"] == ["2A"]
+
+    preview = db_client.post(f"/v1/notifications/broadcasts/{broadcast_id}/preview", headers=auth(author))
+    assert preview.status_code == 200
+    assert preview.json()["reaches"] == 1
+    assert preview.json()["audienceTiers"] == ["2A"]
+    submitted = db_client.post(
+        f"/v1/notifications/broadcasts/{broadcast_id}/submit", json={}, headers=auth(author)
+    )
+    assert submitted.status_code == 200
+    assert broadcasts_service.send_due(db_session, datetime.now(UTC)) >= 1
+
+    recipients = list(db_session.scalars(
+        text("SELECT member_id FROM notifications.notification WHERE broadcast_id = :id"),
+        {"id": broadcast_id},
+    ))
+    assert recipients == [selected.id]
 
 
 # --- D34 Configuration & Feature Gates ----------------------------------------------------------------

@@ -65,3 +65,23 @@ def test_allowed_origins_are_read_comma_separated(monkeypatch):
 @pytest.mark.parametrize(("app_env", "secure"), [("development", False), ("staging", True), ("production", True)])
 def test_cookies_need_https_outside_development(app_env, secure):
     assert Settings(_env_file=None, app_env=app_env, **REQUIRED).secure_cookies is secure
+
+
+def test_enabled_production_finance_requires_clamav():
+    with pytest.raises(ValidationError, match="FINANCE_MALWARE_SCANNER=clamav"):
+        Settings(
+            _env_file=None,
+            app_env="production",
+            finance_intake_enabled=True,
+            finance_malware_scanner="none",
+            **REQUIRED,
+        )
+
+    settings = Settings(
+        _env_file=None,
+        app_env="production",
+        finance_intake_enabled=True,
+        finance_malware_scanner="clamav",
+        **REQUIRED,
+    )
+    assert settings.finance_malware_scanner == "clamav"

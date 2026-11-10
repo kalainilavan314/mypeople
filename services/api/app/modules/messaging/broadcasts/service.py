@@ -88,9 +88,21 @@ def create(db: Session, staff: Staff, details: dict[str, Any], area: Area, ip: s
         db, details=details, area_level=area.level, area_key=area.key, area_path=[a.key for a in path],
         created_by=staff.member_id,
     )
-    _record(db, staff, "messaging.broadcast.created", broadcast, ip)
+    _record(
+        db, staff, "messaging.broadcast.created", broadcast, ip,
+        audienceTiers=broadcast.audience_tiers,
+    )
     db.commit()
     return broadcast
+
+
+def audience_reach(db: Session, staff: Staff, area: Area, audience_tiers: list[str] | None, ip: str) -> int:
+    """Preview only an area this staff member may address; the final send recalculates reach."""
+    path = access_repository.area_path(db, area)
+    if path is None:
+        raise BroadcastInvalid(["unknown_area"])
+    _in_scope(db, staff, path, ("broadcast", "audience"), ip)
+    return repository.recipients(db, area.level, area.key, audience_tiers)
 
 
 def update(db: Session, staff: Staff, broadcast_id: uuid.UUID, changes: dict[str, Any], ip: str) -> StoredBroadcast:
@@ -98,6 +110,17 @@ def update(db: Session, staff: Staff, broadcast_id: uuid.UUID, changes: dict[str
     _require("edit", broadcast)
     if changes:
         repository.update(db, broadcast.id, changes)
+        updated = repository.find(db, broadcast.id)
+        assert updated is not None
+        _record(
+            db,
+            staff,
+            "messaging.broadcast.updated",
+            updated,
+            ip,
+            changedFields=sorted(changes),
+            audienceTiers=updated.audience_tiers,
+        )
     db.commit()
     updated = repository.find(db, broadcast.id)
     assert updated is not None
@@ -117,7 +140,9 @@ def preview(db: Session, staff: Staff, broadcast_id: uuid.UUID, ip: str) -> Prev
     db.commit()
     return Preview(
         broadcast=broadcast,
-        recipients=repository.recipients(db, broadcast.area_level, broadcast.area_key),
+        recipients=repository.recipients(
+            db, broadcast.area_level, broadcast.area_key, broadcast.audience_tiers
+        ),
         problems=rules.check_content(broadcast.title_en, broadcast.title_ta, broadcast.body_en, broadcast.body_ta),
         needs_approval=rules.needs_approval(broadcast.area_level),
     )
@@ -130,8 +155,14 @@ def submit(db: Session, staff: Staff, broadcast_id: uuid.UUID, send_at: datetime
     if problems:
         raise BroadcastInvalid(problems)
     state = "pending_approval" if rules.needs_approval(broadcast.area_level) else "scheduled"
+    reaches = repository.recipients(
+        db, broadcast.area_level, broadcast.area_key, broadcast.audience_tiers
+    )
     repository.set_state(db, broadcast.id, state, submitted_by=staff.member_id, send_at=send_at)
-    _record(db, staff, "messaging.broadcast.submitted", broadcast, ip, state=state)
+    _record(
+        db, staff, "messaging.broadcast.submitted", broadcast, ip, state=state,
+        audienceTiers=broadcast.audience_tiers, reaches=reaches,
+    )
     db.commit()
     return _reload(db, broadcast.id)
 
@@ -145,7 +176,13 @@ def approve(db: Session, staff: Staff, broadcast_id: uuid.UUID, ip: str) -> Stor
     if problem:
         raise BroadcastRefused(problem)
     repository.set_state(db, broadcast.id, "scheduled", approved_by=staff.member_id)
-    _record(db, staff, "messaging.broadcast.approved", broadcast, ip)
+    reaches = repository.recipients(
+        db, broadcast.area_level, broadcast.area_key, broadcast.audience_tiers
+    )
+    _record(
+        db, staff, "messaging.broadcast.approved", broadcast, ip,
+        audienceTiers=broadcast.audience_tiers, reaches=reaches,
+    )
     db.commit()
     return _reload(db, broadcast.id)
 
@@ -159,8 +196,8 @@ def cancel(db: Session, staff: Staff, broadcast_id: uuid.UUID, ip: str) -> Store
     return _reload(db, broadcast.id)
 
 
-def managed(db: Session, staff: Staff, states: list[str], limit: int) -> list[StoredBroadcast]:
-    return repository.managed(db, visible_areas=access.visible_areas(staff, SEND), states=states, limit=limit)
+def managed(db: Session, staff: Staff, states: list[str], limit: int, offset: int = 0) -> list[StoredBroadcast]:
+    return repository.managed(db, visible_areas=access.visible_areas(staff, SEND), states=states, limit=limit, offset=offset)
 
 
 def _reload(db: Session, broadcast_id: uuid.UUID) -> StoredBroadcast:
@@ -191,7 +228,12 @@ def send_due(db: Session, now: datetime | None = None) -> int:
         audit.record(
             db, actor_id=None, action="messaging.broadcast.sent", target_type="broadcast", target_id=str(broadcast.id),
             area_path=_path(broadcast),
-            details={"broadcastRef": broadcast.broadcast_ref, "recipients": count, "duringSilence": silences or None},
+            details={
+                "broadcastRef": broadcast.broadcast_ref,
+                "audienceTiers": broadcast.audience_tiers,
+                "recipients": count,
+                "duringSilence": silences or None,
+            },
         )
         sent += 1
     db.commit()

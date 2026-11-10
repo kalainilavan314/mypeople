@@ -86,11 +86,15 @@ export type NotificationChoicesInput = Schemas['ChoicesIn'];
 export type PushPlatform = Schemas['DeviceIn']['platform'];
 export type Broadcast = Schemas['BroadcastOut'];
 export type BroadcastPreview = Schemas['BroadcastPreviewOut'];
+export type AudienceReach = Schemas['AudienceReachOut'];
 export type BroadcastCreateInput = Schemas['BroadcastCreateIn'];
 export type BroadcastUpdateInput = Schemas['BroadcastUpdateIn'];
 export type EnabledFeatures = Schemas['FeaturesOut'];
 export type FeatureFlag = Schemas['FlagOut'];
 export type PhaseGate = FeatureFlag['requiredGate'];
+export type PolicyDecision = Schemas['PolicyDecisionOut'];
+export type PolicyDecisionDraftInput = Schemas['DraftIn'];
+export type PolicyDecisionReviewInput = Schemas['ReviewIn'];
 export type ElectionBanner = Schemas['ElectionBannerOut'];
 export type ElectionNotice = Schemas['ElectionNoticeOut'];
 export type ElectionNoticeInput = Schemas['NoticeIn'];
@@ -100,6 +104,10 @@ export type ElectionPeriodInput = Schemas['PeriodIn'];
 export type DeclaredElectionPeriod = Schemas['DeclaredOut'];
 export type ElectionPeriodFile = Schemas['PeriodFileOut'];
 export type WorkQueues = Schemas['WorkQueuesOut'];
+export type CommunityReportsQueueCount = Schemas['CommunityReportsQueueCount'];
+export type CommunityReportSummary = Schemas['CommunityReportSummaryOut'];
+export type CommunityReportList = Schemas['CommunityReportListOut'];
+export type CommunityReportStatus = Schemas['CommunityReportSummaryOut']['status'];
 export type Household = Schemas['HouseholdOut'];
 export type HouseholdMember = Schemas['HouseholdMemberOut'];
 export type HouseholdInvitation = Schemas['HouseholdInvitationOut'];
@@ -111,6 +119,28 @@ export type ConsentNotice = Schemas['ConsentNoticeOut'];
 export type ConsentLog = Schemas['ConsentLogOut'];
 export type InvitationsList = Schemas['InvitationsListOut'];
 export type StaffHouseholdView = Schemas['StaffHouseholdViewOut'];
+export type FundConfig = Schemas['FundConfigResponse'];
+export type ContributionCreateInput = Omit<Schemas['ContributionCreateRequest'], 'currency' | 'declarationVersion'> & {
+  currency?: 'LKR';
+  declarationVersion?: string;
+};
+export type ContributionDetail = Schemas['ContributionDetailResponse'];
+export type ContributionReceipt = Schemas['ReceiptResponse'];
+export type StaffContributionsList = Schemas['StaffContributionsListResponse'];
+export type StaffContributionSummary = Schemas['StaffContributionSummary'];
+export type StaffContributionDetail = Schemas['StaffContributionDetail'];
+export type StaffSlipViewToken = Schemas['StaffSlipViewTokenResponse'];
+export type StaffReconcileInput = Schemas['StaffReconcileRequest'];
+export type StaffApproveInput = Schemas['StaffApproveRequest'];
+export type FinanceContributionFilters = {
+  status?: string;
+  month?: string;
+  riskFlag?: string;
+  reference?: string;
+  mine?: boolean;
+  limit?: number;
+  offset?: number;
+};
 export type EventFilters = {
   /** 'mine' (the default) narrows to the member's area; 'all' widens it (BR-057). */
   scope?: 'mine' | 'all';
@@ -131,6 +161,7 @@ export type AssignmentPreviewInput = Schemas['AssignmentPreviewCreateInput'];
 export type AssignmentPreviewCreated = Schemas['AssignmentPreviewCreatedOut'];
 export type AssignmentPreviewDetails = Schemas['AssignmentPreviewOut'];
 export type Assignment = Schemas['AssignmentOut'];
+export type StaffTier = Assignment['tier'];
 export type ListedAssignment = Schemas['AssignmentListItemOut'];
 export type AssignmentPreview = Schemas['PreviewOut'];
 export type AccessCatalogue = Schemas['Catalogue'];
@@ -199,6 +230,8 @@ export interface ApiClientOptions {
   refresh?: () => Promise<string | null>;
   /** Replaces the global fetch, e.g. in tests. */
   fetch?: typeof fetch;
+  /** Native upload transport; injectable for byte-progress tests. */
+  xhrFactory?: () => XMLHttpRequest;
   /**
    * A stable id for this app install, sent as X-Device-Id, so sign-ins from a new
    * device can be noticed (FR-AUTH-019). Not personal data; browsers leave it out.
@@ -229,6 +262,7 @@ export interface ReviewFilters {
   /** A review reference, e.g. "VR-00421". */
   ref?: string;
   limit?: number;
+  offset?: number;
 }
 
 export interface AppealFilters {
@@ -237,6 +271,7 @@ export interface AppealFilters {
   /** Only appeals the caller has claimed. */
   mine?: boolean;
   limit?: number;
+  offset?: number;
 }
 
 type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -246,14 +281,22 @@ export function createApiClient({
   getToken,
   refresh,
   fetch: fetchImpl = globalThis.fetch,
+  xhrFactory,
   deviceId,
   forwardedFor,
 }: ApiClientOptions) {
   const root = baseUrl.replace(/\/+$/, '');
 
   /** Sends `body` as JSON, or as it is when `rawType` names its media type (image uploads). */
-  function send(method: Method, path: string, token: string | null | undefined, body?: unknown, rawType?: string) {
-    const headers: Record<string, string> = { Accept: 'application/json' };
+  function send(
+    method: Method,
+    path: string,
+    token: string | null | undefined,
+    body?: unknown,
+    rawType?: string,
+    extraHeaders?: Record<string, string>,
+  ) {
+    const headers: Record<string, string> = { Accept: 'application/json', ...extraHeaders };
     if (body !== undefined) headers['Content-Type'] = rawType ?? 'application/json';
     if (token) headers.Authorization = `Bearer ${token}`;
     if (deviceId) headers['X-Device-Id'] = deviceId;
@@ -268,17 +311,72 @@ export function createApiClient({
     });
   }
 
-  async function request<T>(method: Method, path: string, body?: unknown, rawType?: string): Promise<T> {
-    let response = await send(method, path, await getToken?.(), body, rawType);
+  async function request<T>(
+    method: Method,
+    path: string,
+    body?: unknown,
+    rawType?: string,
+    extraHeaders?: Record<string, string>,
+  ): Promise<T> {
+    let response = await send(method, path, await getToken?.(), body, rawType, extraHeaders);
     if (response.status === 401 && refresh) {
       const error = await toApiError(response);
       // The 15-minute token ran out: renew it once and try again.
       const renewed = error.code === 'token_expired' ? await refresh() : null;
       if (!renewed) throw error;
-      response = await send(method, path, renewed, body, rawType);
+      response = await send(method, path, renewed, body, rawType, extraHeaders);
     }
     if (!response.ok) throw await toApiError(response);
     return (response.status === 204 ? undefined : await response.json()) as T;
+  }
+
+  /** XHR supplies actual transmitted-byte progress, which fetch does not expose on React Native. */
+  async function uploadImage(
+    path: string,
+    image: Blob | ArrayBuffer,
+    contentType: IdentityImageType,
+    onProgress: (sent: number, total: number) => void,
+  ): Promise<IdentityDocument> {
+    const total = image instanceof ArrayBuffer ? image.byteLength : image.size;
+    if (!xhrFactory && typeof XMLHttpRequest === 'undefined') {
+      const result = await request<IdentityDocument>('PUT', path, image, contentType);
+      onProgress(total, total);
+      return result;
+    }
+    const sendImage = (token: string | null | undefined): Promise<Response> => new Promise((resolve, reject) => {
+      const xhr = xhrFactory ? xhrFactory() : new XMLHttpRequest();
+      xhr.open('PUT', `${root}${path}`);
+      xhr.timeout = 120_000;
+      xhr.withCredentials = true;
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.setRequestHeader('Content-Type', contentType);
+      if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      if (deviceId) xhr.setRequestHeader('X-Device-Id', deviceId);
+      xhr.upload.onprogress = (event) => onProgress(Math.min(event.loaded, total), total);
+      xhr.onload = () => {
+        const headers = new Headers({ 'content-type': xhr.getResponseHeader('Content-Type') ?? 'application/json' });
+        const retryAfter = xhr.getResponseHeader('Retry-After');
+        if (retryAfter) headers.set('Retry-After', retryAfter);
+        resolve(new Response(xhr.responseText, { status: xhr.status, headers }));
+      };
+      xhr.onerror = () => reject(new TypeError('Network request failed'));
+      xhr.ontimeout = () => reject(new TypeError('Upload timed out'));
+      xhr.onabort = () => reject(new TypeError('Upload interrupted'));
+      xhr.send(image);
+    });
+
+    let response = await sendImage(await getToken?.());
+    if (response.status === 401 && refresh) {
+      const error = await toApiError(response);
+      const renewed = error.code === 'token_expired' ? await refresh() : null;
+      if (!renewed) throw error;
+      onProgress(0, total);
+      response = await sendImage(renewed);
+    }
+    if (!response.ok) throw await toApiError(response);
+    const document = await response.json() as IdentityDocument;
+    onProgress(total, total);
+    return document;
   }
 
   return {
@@ -311,11 +409,12 @@ export function createApiClient({
      */
     requestPhoneConfirmation: (phone: string) => request<CodeSent>('POST', '/v1/identity/me/phone', { phone }),
     /**
-     * The number becomes the recovery contact. Throws ApiError "invalid_code" or "too_many_attempts" (401),
-     * or "phone_unavailable" (409) when another account already has the number.
+     * The number becomes the recovery contact. Replacing one also needs the current password.
+     * Throws ApiError "invalid_code", "too_many_attempts" or "wrong_password" (401),
+     * "too_many_requests" (429), or "phone_unavailable" (409).
      */
-    confirmPhone: (phone: string, code: string) =>
-      request<{ phone: string }>('POST', '/v1/identity/me/phone/confirm', { phone, code }),
+    confirmPhone: (phone: string, code: string, currentPassword?: string) =>
+      request<{ phone: string }>('POST', '/v1/identity/me/phone/confirm', { phone, code, currentPassword }),
     /** A16: the answer is the same whether or not the number is registered (BR-023); the SMS follows it. */
     requestRecovery: (account: AccountNumber) => request<CodeSent>('POST', '/v1/auth/recovery/request', account),
     /** A correct code returns a reset token valid for 10 minutes. */
@@ -364,7 +463,8 @@ export function createApiClient({
     /** Whether an authenticator is enrolled and the second factor was given in this session. */
     getMfaStatus: () => request<MfaStatus>('GET', '/v1/auth/mfa'),
     /** Starts adding an authenticator app; show the secret or the URI as a QR code once. */
-    startTotpEnrolment: () => request<TotpEnrolment>('POST', '/v1/auth/mfa/totp'),
+    startTotpEnrolment: (currentPassword: string) =>
+      request<TotpEnrolment>('POST', '/v1/auth/mfa/totp', { currentPassword }),
     /** The first code enables the authenticator. Throws ApiError "invalid_code" (401) or "mfa_locked" (429, retryAfter). */
     confirmTotp: (code: string) => request<void>('POST', '/v1/auth/mfa/totp/confirm', { code }),
     /**
@@ -445,8 +545,14 @@ export function createApiClient({
      * "unsupported_type" (415), "too_large" (413), "empty_file" (400) or "upload_limit" (429, retryAfter:
      * 12 images in 24 hours).
      */
-    uploadIdentityDocument: (kind: IdentityDocumentKind, image: Blob | ArrayBuffer, contentType: IdentityImageType) =>
-      request<IdentityDocument>('PUT', `/v1/identity/me/documents/${kind}`, image, contentType),
+    uploadIdentityDocument: (
+      kind: IdentityDocumentKind,
+      image: Blob | ArrayBuffer,
+      contentType: IdentityImageType,
+      onProgress?: (sent: number, total: number) => void,
+    ) => onProgress
+      ? uploadImage(`/v1/identity/me/documents/${kind}`, image, contentType, onProgress)
+      : request<IdentityDocument>('PUT', `/v1/identity/me/documents/${kind}`, image, contentType),
     /** When reviewers viewed the member's identity evidence: date and role only (FR-AUTH-024). */
     getMyEvidenceViews: () => request<EvidenceView[]>('GET', '/v1/identity/me/evidence-views'),
     /** A member's identity images, without the images. Needs members.view_identity_evidence over their area. */
@@ -511,7 +617,7 @@ export function createApiClient({
     /** Report that a member may hold another account (needs members.verify). An existing pair returns its case. */
     reportDuplicate: (input: DuplicateReportInput) => request<DuplicateCase>('POST', '/v1/identity/duplicates', input),
     /** D04: open duplicate investigations in the caller's areas. Needs idv.duplicate.investigate. */
-    listDuplicateCases: (filters: { states?: DuplicateCaseState[]; mine?: boolean; limit?: number } = {}) =>
+    listDuplicateCases: (filters: { states?: DuplicateCaseState[]; mine?: boolean; limit?: number; offset?: number } = {}) =>
       request<DuplicateCase[]>('GET', `/v1/identity/duplicates${toQueueQuery(filters)}`),
     getDuplicateCase: (caseId: string) => request<DuplicateCaseFile>('GET', `/v1/identity/duplicates/${encodeURIComponent(caseId)}`),
     claimDuplicateCase: (caseId: string) =>
@@ -539,7 +645,7 @@ export function createApiClient({
       request<EventPassCode>('GET', `/v1/events/${encodeURIComponent(eventId)}/pass/code`),
 
     /** Events in the caller's areas, drafts included. Needs events.manage. */
-    listManagedEvents: (filters: { states?: readonly ('draft' | 'published' | 'cancelled')[]; limit?: number } = {}) =>
+    listManagedEvents: (filters: { states?: readonly ('draft' | 'published' | 'cancelled')[]; limit?: number; offset?: number } = {}) =>
       request<ManagedEvent[]>('GET', `/v1/events/manage${toQueueQuery(filters)}`),
     getManagedEvent: (eventId: string) =>
       request<ManagedEvent>('GET', `/v1/events/manage/${encodeURIComponent(eventId)}`),
@@ -611,7 +717,7 @@ export function createApiClient({
       request<RemovalReceipt>('POST', '/v1/content/removal-requests/public', input),
 
     /** Albums in the caller's areas (drafts and submitted by default). Needs gallery.publish. */
-    listManagedAlbums: (filters: { states?: readonly ('draft' | 'submitted' | 'published')[]; limit?: number } = {}) =>
+    listManagedAlbums: (filters: { states?: readonly ('draft' | 'submitted' | 'published')[]; limit?: number; offset?: number } = {}) =>
       request<AlbumSummary[]>('GET', `/v1/content/albums/manage${toQueueQuery(filters)}`),
     getManagedAlbum: (albumId: string) =>
       request<ManagedAlbum>('GET', `/v1/content/albums/manage/${encodeURIComponent(albumId)}`),
@@ -633,7 +739,7 @@ export function createApiClient({
     returnAlbum: (albumId: string, note: string) =>
       request<ManagedAlbum>('POST', `/v1/content/albums/${encodeURIComponent(albumId)}/return`, { note }),
     /** The removal queue, soonest due first, with the 18-hour escalation flag. Needs gallery.takedown. */
-    listRemovalRequests: (filters: { states?: readonly ('open' | 'removed' | 'blurred' | 'kept')[]; limit?: number } = {}) =>
+    listRemovalRequests: (filters: { states?: readonly ('open' | 'removed' | 'blurred' | 'kept')[]; limit?: number; offset?: number } = {}) =>
       request<QueuedRemoval[]>('GET', `/v1/content/removal-requests${toQueueQuery(filters)}`),
     /** Remove, blur or keep, with a reason. Throws ApiError "already_decided" (409). */
     decideRemovalRequest: (requestId: string, input: RemovalDecisionInput) =>
@@ -716,8 +822,13 @@ export function createApiClient({
     unregisterPushDevice: (token: string) => request<void>('POST', '/v1/notifications/devices/unregister', { token }),
 
     /** Broadcasts in the caller's areas. Needs notifications.send. */
-    listBroadcasts: (filters: { states?: readonly Broadcast['state'][]; limit?: number } = {}) =>
+    listBroadcasts: (filters: { states?: readonly Broadcast['state'][]; limit?: number; offset?: number } = {}) =>
       request<Broadcast[]>('GET', `/v1/notifications/broadcasts${toQueueQuery(filters)}`),
+    estimateBroadcastReach: (area: AreaRef, audienceTiers?: readonly StaffTier[]) =>
+      request<AudienceReach>('POST', '/v1/notifications/broadcasts/reach', {
+        area,
+        audienceTiers: audienceTiers?.length ? audienceTiers : null,
+      }),
     /** A bilingual draft for an area in the caller's own scope; another area is "outside_your_area" (403). */
     createBroadcast: (input: BroadcastCreateInput) => request<Broadcast>('POST', '/v1/notifications/broadcasts', input),
     updateBroadcast: (broadcastId: string, input: BroadcastUpdateInput) =>
@@ -745,6 +856,31 @@ export function createApiClient({
       request<FeatureFlag>('POST', `/v1/features/${encodeURIComponent(key)}/enable`, { reason }),
     disableFeature: (key: string, reason: string) =>
       request<FeatureFlag>('POST', `/v1/features/${encodeURIComponent(key)}/disable`, { reason }),
+
+    /** Phase 1 policy decisions and their signed owner evidence. Needs system.configure. */
+    listPolicyDecisions: () => request<PolicyDecision[]>('GET', '/v1/policy-decisions'),
+    getPolicyDecision: (key: string) =>
+      request<PolicyDecision>('GET', `/v1/policy-decisions/${encodeURIComponent(key)}`),
+    createPolicyDecisionRevision: (key: string, input: PolicyDecisionDraftInput) =>
+      request<PolicyDecision>('POST', `/v1/policy-decisions/${encodeURIComponent(key)}/revisions`, input),
+    updatePolicyDecisionDraft: (key: string, revisionId: string, input: PolicyDecisionDraftInput) =>
+      request<PolicyDecision>(
+        'PATCH',
+        `/v1/policy-decisions/${encodeURIComponent(key)}/revisions/${encodeURIComponent(revisionId)}`,
+        input,
+      ),
+    submitPolicyDecisionRevision: (key: string, revisionId: string, reason: string) =>
+      request<PolicyDecision>(
+        'POST',
+        `/v1/policy-decisions/${encodeURIComponent(key)}/revisions/${encodeURIComponent(revisionId)}/submit`,
+        { reason },
+      ),
+    recordPolicyDecisionReview: (key: string, revisionId: string, input: PolicyDecisionReviewInput) =>
+      request<PolicyDecision>(
+        'POST',
+        `/v1/policy-decisions/${encodeURIComponent(key)}/revisions/${encodeURIComponent(revisionId)}/reviews`,
+        input,
+      ),
 
     /** Elections running for the member's area, with the official source and labelled notices (FR-ELX-001, 004). */
     getCurrentElections: () => request<ElectionBanner[]>('GET', '/v1/election/current'),
@@ -778,6 +914,82 @@ export function createApiClient({
     getHouseholdPrivacyNotice: () => request<ConsentNotice>('GET', '/v1/households/privacy'),
     staffViewHousehold: (targetMemberId: string) =>
       request<StaffHouseholdView>('GET', `/v1/households/staff/${encodeURIComponent(targetMemberId)}`),
+    /** Lightweight community report counts grouped by state for area-scoped queues. Needs reports.view. */
+    getCommunityReportCounts: () => request<CommunityReportsQueueCount>('GET', '/v1/community/reports/counts'),
+    /** Bounded paginated list of area-scoped community reports. Needs reports.view. */
+    listCommunityReports: (params?: { status?: CommunityReportStatus; limit?: number; offset?: number }) => {
+      const q = new URLSearchParams();
+      if (params?.status) q.set('status', params.status);
+      if (params?.limit !== undefined) q.set('limit', String(params.limit));
+      if (params?.offset !== undefined) q.set('offset', String(params.offset));
+      const qs = q.toString();
+      return request<CommunityReportList>('GET', `/v1/community/reports${qs ? `?${qs}` : ''}`);
+    },
+    /** Area-scoped operational detail without reporter identity or contact data. Needs reports.view. */
+    getCommunityReport: (reportId: string) =>
+      request<CommunityReportSummary>('GET', `/v1/community/reports/${encodeURIComponent(reportId)}`),
+    // Community Finance endpoints (Milestone 1.4)
+    getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),
+    createContribution: (body: ContributionCreateInput, idempotencyKey?: string) =>
+      request<ContributionDetail>(
+        'POST',
+        '/v1/fund/contributions',
+        { currency: 'LKR', declarationVersion: 'v1', ...body },
+        undefined,
+        idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : undefined,
+      ),
+    uploadContributionSlip: (
+      id: string,
+      image: Blob | ArrayBuffer | Uint8Array,
+      contentType: 'image/jpeg' | 'image/png' = 'image/jpeg',
+    ) =>
+      request<void>('PUT', `/v1/fund/contributions/${encodeURIComponent(id)}/slip`, image, contentType),
+    submitContribution: (id: string) =>
+      request<ContributionDetail>('POST', `/v1/fund/contributions/${encodeURIComponent(id)}/submit`),
+    getMyContributions: (limit?: number, offset?: number) => {
+      const q = new URLSearchParams();
+      if (limit !== undefined) q.set('limit', String(limit));
+      if (offset !== undefined) q.set('offset', String(offset));
+      const qs = q.toString();
+      return request<ContributionDetail[]>('GET', `/v1/fund/contributions/mine${qs ? `?${qs}` : ''}`);
+    },
+    getMyContribution: (id: string) =>
+      request<ContributionDetail>('GET', `/v1/fund/contributions/${encodeURIComponent(id)}`),
+    getMyContributionReceipt: (id: string) =>
+      request<ContributionReceipt>('GET', `/v1/fund/contributions/${encodeURIComponent(id)}/receipt`),
+
+    // Staff Finance Operations
+    listFinanceContributions: (filters: FinanceContributionFilters = {}) => {
+      const q = new URLSearchParams();
+      if (filters.status) q.set('status', filters.status);
+      if (filters.month) q.set('month', filters.month);
+      if (filters.riskFlag) q.set('risk_flag', filters.riskFlag);
+      if (filters.reference) q.set('reference', filters.reference);
+      if (filters.mine) q.set('mine', 'true');
+      if (filters.limit !== undefined) q.set('limit', String(filters.limit));
+      if (filters.offset !== undefined) q.set('offset', String(filters.offset));
+      const qs = q.toString();
+      return request<StaffContributionsList>('GET', `/v1/finance/contributions${qs ? `?${qs}` : ''}`);
+    },
+    getFinanceContribution: (id: string) =>
+      request<StaffContributionDetail>('GET', `/v1/finance/contributions/${encodeURIComponent(id)}`),
+    claimFinanceContribution: (id: string) =>
+      request<void>('POST', `/v1/finance/contributions/${encodeURIComponent(id)}/claim`),
+    getFinanceSlipViewToken: (id: string) =>
+      request<StaffSlipViewToken>('POST', `/v1/finance/contributions/${encodeURIComponent(id)}/slip-view`),
+    financeSlipUrl: (token: string) => `${root}/v1/finance/slips/${encodeURIComponent(token)}`,
+    reconcileFinanceContribution: (id: string, body: StaffReconcileInput) =>
+      request<void>('POST', `/v1/finance/contributions/${encodeURIComponent(id)}/reconcile`, body),
+    approveFinanceContribution: (id: string, body: StaffApproveInput) =>
+      request<ContributionReceipt | null>('POST', `/v1/finance/contributions/${encodeURIComponent(id)}/approve`, body),
+    exportFinanceLedgerCsv: async (month: string): Promise<string> => {
+      const q = new URLSearchParams({ month });
+      const response = await send('GET', `/v1/finance/ledger.csv?${q.toString()}`, await getToken?.(), undefined, undefined, {
+        Accept: 'text/csv',
+      });
+      if (!response.ok) throw await toApiError(response);
+      return response.text();
+    },
   };
 }
 
@@ -799,15 +1011,17 @@ function toReviewQuery(filters: ReviewFilters): string {
   if (filters.mine) params.set('mine', 'true');
   if (filters.ref) params.set('ref', filters.ref);
   if (filters.limit !== undefined) params.set('limit', String(filters.limit));
+  if (filters.offset !== undefined) params.set('offset', String(filters.offset));
   const query = params.toString();
   return query ? `?${query}` : '';
 }
 
-function toQueueQuery(filters: { states?: readonly string[]; mine?: boolean; limit?: number }): string {
+function toQueueQuery(filters: { states?: readonly string[]; mine?: boolean; limit?: number; offset?: number }): string {
   const params = new URLSearchParams();
   for (const state of filters.states ?? []) params.append('state', state);
   if (filters.mine) params.set('mine', 'true');
   if (filters.limit !== undefined) params.set('limit', String(filters.limit));
+  if (filters.offset !== undefined) params.set('offset', String(filters.offset));
   const query = params.toString();
   return query ? `?${query}` : '';
 }

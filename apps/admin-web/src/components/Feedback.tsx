@@ -4,11 +4,13 @@ import { useEffect, useRef } from 'react';
 
 import { useLocale } from '@/lib/i18n/context';
 import { bilingualConfirmation, bilingualMessageFor, bilingualProblemText, problemTargetField } from '@/lib/messages';
+import type { Locale } from '@/lib/i18n/types';
 
 type Props = {
   error?: string | string[];
   problems?: string | string[];
   done?: string | string[];
+  locale?: Locale;
 };
 
 const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
@@ -19,8 +21,9 @@ const first = (value: string | string[] | undefined) => (Array.isArray(value) ? 
  * codes travel in the address, never personal data.
  * Renders in the active language cleanly (Milestone 1).
  */
-export function Feedback({ error, problems, done }: Props) {
-  const locale = useLocale();
+export function Feedback({ error, problems, done, locale: requestedLocale }: Props) {
+  const contextLocale = useLocale();
+  const locale = requestedLocale ?? contextLocale;
   const alertRef = useRef<HTMLDivElement>(null);
   const code = first(error);
   const list = (first(problems) ?? '').split(',').filter(Boolean);

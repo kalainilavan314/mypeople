@@ -16,7 +16,10 @@ router = APIRouter(prefix="/v1/features", tags=["features"])
 Db = Annotated[Session, Depends(get_db)]
 CanConfigure = Annotated[Staff, Depends(require_permission(CONFIGURE))]
 
-REFUSED = {404: {"description": "not_found"}, 409: {"description": "gate_must_be:<gate> or gate_not_recorded"}}
+REFUSED = {
+    404: {"description": "not_found"},
+    409: {"description": "gate_must_be:<gate>, gate_not_recorded, or policy_decisions_required:<keys>"},
+}
 
 
 @router.get("")

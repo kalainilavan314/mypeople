@@ -55,6 +55,12 @@ def find_sign_in_member(db: Session, nic_hash: str) -> SignInMember | None:
     return SignInMember(id=row.id, session_version=row.session_version, password_hash=row.password_hash)
 
 
+def member_password_hash(db: Session, member_id: uuid.UUID) -> str | None:
+    return db.scalar(
+        text("SELECT password_hash FROM npm.member WHERE id = :id AND deleted_at IS NULL"), {"id": member_id}
+    )
+
+
 # Shared with server/src/throttle.js (LOGIN_LOCK_SPACE): both APIs take the same
 # lock, so their sign-in attempts for one number and address queue behind each other.
 LOGIN_LOCK_SPACE = 30_002

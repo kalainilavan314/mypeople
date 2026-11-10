@@ -8,6 +8,7 @@ from app.core.schemas import CamelModel
 from app.core.permissions import AreaLevel, Tier
 from app.modules.access.repository import StoredAssignment
 from app.modules.access.rules import Area
+from app.modules.community.reports.schemas import CommunityReportsQueueCount
 
 
 class AreaRef(CamelModel):
@@ -185,4 +186,5 @@ class WorkQueuesOut(CamelModel):
     gallery_albums: GalleryAlbumsQueueCount | None = None
     messaging: BroadcastsQueueCount | None = None
     configuration: ConfigurationQueueCount | None = None
+    reports: CommunityReportsQueueCount | None = None
     unavailable: list[str] = Field(default_factory=list)

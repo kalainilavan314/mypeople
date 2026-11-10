@@ -3,9 +3,12 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 
 import { PageHeader } from '@/components/PageHeader';
+import { ConsolePagination } from '@/components/ConsolePagination';
+import { ConsoleLoading } from '@/components/ConsoleLoading';
 import { StateTag } from '@/components/StateTag';
 import { areaText, formatDateTime } from '@/lib/format';
 import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
+import { CONSOLE_PAGE_SIZE, consolePage } from '@/lib/pagination';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
 
@@ -17,7 +20,7 @@ export default function VerificationQueuePage(props: PageProps<'/verification'>)
   return (
     <>
       <PageHeader ta="அடையாளச் சரிபார்ப்பு வரிசை" en="Verification queue" />
-      <Suspense fallback={<p className="text-muted">… Loading the queue</p>}>
+      <Suspense fallback={<ConsoleLoading rows={5} />}>
         <Queue searchParams={props.searchParams} />
       </Suspense>
     </>
@@ -31,18 +34,22 @@ async function Queue({ searchParams }: { searchParams: PageProps<'/verification'
   const state = one(params.state) as ReviewState | undefined;
   const mine = one(params.mine) === '1';
   const ref = one(params.ref)?.trim() || undefined;
+  const page = consolePage(params.page);
   const api = await staffApi();
   let reviews;
   let counts;
   try {
     [reviews, counts] = await Promise.all([
-      api.listIdentityReviews({ states: state && STATES.includes(state) ? [state] : undefined, mine, ref, limit: 100 }),
+      api.listIdentityReviews({ states: state && STATES.includes(state) ? [state] : undefined, mine, ref, limit: CONSOLE_PAGE_SIZE + 1, offset: (page - 1) * CONSOLE_PAGE_SIZE }),
       api.getIdentityReviewCounts(),
     ]);
   } catch (error) {
     if (isRefusal(error)) return <p className="text-error">! {getLocalizedMessage(error.code, locale)}</p>;
     throw error;
   }
+
+  const hasMore = reviews.length > CONSOLE_PAGE_SIZE;
+  reviews = reviews.slice(0, CONSOLE_PAGE_SIZE);
 
   return (
     <>
@@ -137,6 +144,7 @@ async function Queue({ searchParams }: { searchParams: PageProps<'/verification'
           </tbody>
         </table>
       </div>
+      <ConsolePagination pathname="/verification" page={page} hasMore={hasMore} filters={{ state: state && STATES.includes(state) ? state : undefined, mine: mine ? '1' : undefined, ref }} />
     </>
   );
 }

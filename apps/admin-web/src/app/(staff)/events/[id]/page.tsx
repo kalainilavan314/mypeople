@@ -141,6 +141,11 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
           <span lang={locale}>{locale === 'ta' ? 'மீளாய்வுக்குக் காத்திருக்கும் இணைப்பற்ற ஸ்கேன்கள்' : 'Offline scans waiting for review'}</span>
         </Link>
       ) : null}
+      {event.state !== 'draft' ? (
+        <a href={`/events/${id}/attendance.csv`} download className="inline-flex min-h-11 w-fit items-center rounded-lg border border-line px-4 text-sm font-medium text-text hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+          Export RSVP roster (CSV)
+        </a>
+      ) : null}
       {isPublished && attendance ? (
         <section aria-labelledby="attendance-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
           <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-3">

@@ -151,14 +151,16 @@ async function AlbumDetail({ params, searchParams }: Pick<PageProps<'/gallery/al
             {album.photos.map((photo) => (
               <div key={photo.id} className="flex flex-col gap-3 rounded-lg border border-line p-3">
                 <div className="flex gap-3">
-                  <Image
-                    src={`/evidence/photo/${photo.id}/thumb`}
-                    alt={`Photo #${photo.number}`}
-                    width={96}
-                    height={96}
-                    className="size-24 rounded object-cover border border-line bg-surface shrink-0"
-                    unoptimized
-                  />
+                  <a href={`/evidence/photo/${photo.id}/display`} target="_blank" rel="noopener noreferrer" className="shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label={`Open larger preview of photo ${photo.number}`}>
+                    <Image
+                      src={`/evidence/photo/${photo.id}/thumb`}
+                      alt={`Photo #${photo.number}`}
+                      width={96}
+                      height={96}
+                      className="size-24 rounded object-cover border border-line bg-surface"
+                      unoptimized
+                    />
+                  </a>
                   <div className="flex flex-col gap-1 text-xs text-muted">
                     <span className="font-mono font-bold text-foreground">
                       {locale === 'ta' ? `புகைப்படம் #${photo.number}` : `Photo #${photo.number}`}

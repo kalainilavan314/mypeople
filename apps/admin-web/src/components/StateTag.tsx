@@ -1,6 +1,7 @@
 'use client';
 
 import { useLocale } from '@/lib/i18n/context';
+import type { Locale } from '@/lib/i18n/types';
 
 type Tone = 'done' | 'waiting' | 'neutral' | 'refused';
 
@@ -10,7 +11,6 @@ const TONES: Record<Tone, { className: string }> = {
   neutral: { className: 'bg-surface text-muted' },
   refused: { className: 'bg-error-bg text-error' },
 };
-
 const STATE_TONES: Record<string, Tone> = {
   verified: 'done',
   approved: 'done',
@@ -28,8 +28,14 @@ const STATE_TONES: Record<string, Tone> = {
   open: 'waiting',
   pending: 'waiting',
   pending_approval: 'waiting',
+  pending_review: 'waiting',
+  approval_pending: 'waiting',
+  reconciled: 'waiting',
+  needs_correction: 'waiting',
+  rejected: 'refused',
   scheduled: 'waiting',
   held: 'waiting',
+  on_hold: 'waiting',
   needs_update: 'waiting',
   draft: 'neutral',
   blurred: 'neutral',
@@ -84,8 +90,9 @@ const STATE_LABELS_TA: Record<string, string> = {
 };
 
 /** A state with words, never colour alone (WCAG 1.4.1). Localized cleanly per active staff language. */
-export function StateTag({ state }: { state: string }) {
-  const locale = useLocale();
+export function StateTag({ state, locale: requestedLocale }: { state: string; locale?: Locale }) {
+  const contextLocale = useLocale();
+  const locale = requestedLocale ?? contextLocale;
   const tone = TONES[STATE_TONES[state] ?? 'neutral'];
   const label = locale === 'ta' && STATE_LABELS_TA[state] ? STATE_LABELS_TA[state] : state.replace(/_/g, ' ');
 

@@ -97,9 +97,17 @@ Writes that carry the session cookie and come from another website are refused w
 | `POST /v1/notifications/{id}/read`, `POST /v1/notifications/read-all` | a session | `204` (reading never clears Action needed) | `404` |
 | `GET`/`PUT /v1/notifications/choices` body `{topics: [{topic, push, sms}], quietStart?, quietEnd?, clearQuietHours?}` | a session | `200` choices with `locked` topics | `409 topic_locked`, `422` |
 | `POST /v1/notifications/devices` body `{token, platform}`, `POST .../devices/unregister` body `{token}` | a session | `204` | `422` |
-| `GET /v1/notifications/broadcasts?state`, `POST` body: the texts, `topic` and `{area}`, `PATCH .../{id}` | `notifications.send` over the area | `200`/`201`; `heldAt` is set when an election silence first held it back | `403 outside_your_area`, `404`, `409`, `422` |
-| `POST .../{id}/preview` | as above | `200` with `reaches`, `problems`, `needsApproval` | `403`, `404` |
+| `GET /v1/notifications/broadcasts?state`, `POST` body: the texts, `topic`, `{area}` and optional `audienceTiers`, `PATCH .../{id}` | `notifications.send` over the area | `200`/`201`; tiers are effective staff authorization tiers, never member ranks; `heldAt` is set when election silence first held it back | `403 outside_your_area`, `404`, `409`, `422` |
+| `POST /v1/notifications/broadcasts/reach` body `{area, audienceTiers?}`, `POST .../{id}/preview` | as above | `200` with `reaches`; preview also has `problems`, `needsApproval` | `403`, `404`, `422` |
 | `POST .../{id}/submit` body `{sendAt?}`, `POST .../{id}/approve`, `POST .../{id}/cancel` | as above; approval by Tier 4 or 5, not the submitter | `200` | `409 own_submission`, `approver_tier_too_low`, `not_allowed_from:<state>`; `422 {code: "broadcast_invalid", problems: ["contains_id_number"]}` |
+
+### Community reports operations (`/v1/community/reports`)
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /counts` | `reports.view` | `200` actionable counts inside the caller's areas | `403` |
+| `GET ?status&limit&offset` | `reports.view` | `200 {items,total,limit,offset}`; bounded and audited, without reporter identity/contact | `400 invalid_state`, `403`, `422` |
+| `GET /{reportId}` | `reports.view` over the immutable submission area | `200` report detail without reporter identity/contact; access is audited | `403`, `404` |
 
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 
@@ -162,6 +170,23 @@ Writes that carry the session cookie and come from another website are refused w
 
 Any route of a module that is off answers `404 feature_unavailable`.
 
+Enabling `community_finance` also fails with `409 policy_decisions_required:<keys>` until the latest revisions of FIN-01, FIN-02, FIN-03 and FIN-05 are approved.
+
+### Phase 1 policy decisions (`/v1/policy-decisions`)
+
+All endpoints require `system.configure`. Proposed defaults returned by the API are context only; they are never treated as approval.
+
+| Endpoint | Success | Errors |
+|---|---|---|
+| `GET /v1/policy-decisions` | `200` the fixed FIN/STF/GOV/CARD catalogue, current revision, owner roles and missing approvals | `403` |
+| `GET /v1/policy-decisions/{key}` | `200` one decision file and its evidence | `403`, `404` |
+| `POST /v1/policy-decisions/{key}/revisions` body `{decisionText, rationale, effectiveFrom?}` | `201` a new draft; approved/rejected history remains immutable | `404`, `409 active_revision_exists` |
+| `PATCH /v1/policy-decisions/{key}/revisions/{id}` with the same body | `200` the updated draft | `404`, `409 revision_not_draft` |
+| `POST .../{id}/submit` body `{reason}` | `200` the immutable revision in `in_review` | `404`, `409 revision_not_draft`, `decision_content_incomplete` |
+| `POST .../{id}/reviews` body `{role, outcome, reviewerName, reviewerTitle, evidenceRef, comment, reviewedAt}` | `200`; approval occurs only after every required role approves; one rejection closes the revision | `404`, `409 revision_not_in_review`, `review_role_not_required`, `review_role_already_recorded`, `review_date_in_future` |
+
+Review evidence is append-only. The external signed record remains in its controlled document store; the API records only its reference and the staff actor who entered it.
+
 ### Election (`/v1/election`)
 
 | Endpoint | Needs | Success | Errors |
@@ -173,6 +198,26 @@ Any route of a module that is off answers `404 feature_unavailable`.
 | `POST /v1/election/periods/{id}/close` body `{action: "end" \| "withdraw", reason}` | as above | `200` the period | `403`, `404`, `409 not_allowed_from:<state>` |
 | `POST /v1/election/periods/{id}/notices` body `{source: "election_commission" \| "party", titleEn, titleTa, bodyEn, bodyTa, sourceUrl?, documentReference?, sourcePublishedAt?}` | as above | `201` the notice with its label | `403`, `404`, `409`, `422 election_invalid` (`official_source_required`) |
 | `POST /v1/election/notices/{id}/withdraw` | as above | `200` the notice | `403`, `404`, `409 already_withdrawn` |
+
+### Community Finance (`/v1/fund`, `/v1/finance`)
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /v1/fund/config` | none | `200 {currency, amountPresets, bankName, accountName, accountNumber, accountNumberMasked, branchName, transferInstructionsEn, transferInstructionsTa, disclaimerEn, disclaimerTa, noRewardStatementEn, noRewardStatementTa, intakeAvailable}`; bank fields are `null` unless intake is enabled and fully configured | `404 feature_unavailable` |
+| `POST /v1/fund/contributions` with required `Idempotency-Key` header and body `{amountMinor, currency="LKR", transferDate, bankReference, declarationVersion, noPrivilegeAcknowledged, informationAccurateAcknowledged, payingForSelf}` | a session | `200 {id, contributionRef, amountMinor, currency, transferDate, bankReference, status: "DRAFT", hasSlip: false, createdAt, updatedAt, timeline: []}` | `422 idempotency_key_required`, `idempotency_key_invalid`, validation errors; `409 idempotency_conflict`; `503 finance_not_configured` |
+| `PUT /v1/fund/contributions/{id}/slip` body: binary JPEG/PNG (max 15 MB) | a session | `204` | `400 empty_file`, `413 too_large`, `415 unsupported_type`, `422 invalid_image_dimensions`, `422 malware_detected`, `503 finance_scanner_unavailable` |
+| `POST /v1/fund/contributions/{id}/submit` | a session | `200` contribution in `SUBMITTED` status | `400 slip_required`, `mandatory_declarations_required`, `409 not_allowed_from:<status>` |
+| `GET /v1/fund/contributions/mine` | a session | `200 [contribution]` | `401` |
+| `GET /v1/fund/contributions/{id}` | a session | `200` contribution detail with sanitized timeline | `401`, `404` |
+| `GET /v1/fund/contributions/{id}/receipt` | a session | `200 {receiptCode: "CN-XXXXX", contributionRef, amountMinor, currency, transferDate, issuedAt, status: "VERIFIED"}` | `404 not_found` (only returned once independently verified) |
+| `GET /v1/finance/contributions?status&month&risk_flag&reference&mine&limit&offset` | `finance.review`, `finance.approve`, `finance.export`, or `finance.audit_read` | `200 {items: [summary], total}` | `403` |
+| `GET /v1/finance/contributions/{id}` | as above | `200` staff detail with risk flags, declarations, reconciliation, approval, receipt, and timeline | `403`, `404` |
+| `POST /v1/finance/contributions/{id}/claim` | `finance.review` | `204`; `SUBMITTED`/`ON_HOLD` moves to `PENDING_REVIEW` | `403 own_record`, `404`, `409 already_claimed`, `cannot_claim_from_status:<status>` |
+| `POST /v1/finance/contributions/{id}/slip-view` | `finance.review`, `finance.approve`, or `finance.audit_read` | `200 {token, expiresAt, viewUrl}` (5-minute single-use viewer token) | `403`, `404`, `409 no_slip_uploaded` |
+| `GET /v1/finance/slips/{token}` | the staff session that requested the single-use token | first use returns the streamed image with `Cache-Control: no-store, private` | `403 invalid_slip_view_token`, `viewer_mismatch` |
+| `POST /v1/finance/contributions/{id}/reconcile` body `{action: "matched"\|"needs_correction"\|"reject"\|"hold", statementReference?, reason}` | `finance.review` | `204` | `400 statement_reference_required`, `reason_required`, `403 own_record`, `404`, `409 not_allowed_from:<status>` |
+| `POST /v1/finance/contributions/{id}/approve` body `{action: "approve"\|"reject"\|"hold", reason, relatedPartyConflict: bool}` | `finance.approve` | `200` receipt response or `null` | `400 reason_required`, `403 own_record`, `same_person_approval_forbidden` (separation of duties), `conflict_of_interest` (related party conflict), `404`, `409 not_allowed_from:<status>` |
+| `GET /v1/finance/ledger.csv?month=YYYY-MM` | `finance.export` | `200` CSV with formula-injection sanitization (`'` prepended to `=`, `+`, `-`, `@`, `\t`, `\r`) | `400 invalid_month`, `403` |
 
 Error bodies are `{"detail": "<code>"}`, or for a refused assignment `{"detail": {"code": "assignment_refused", "problems": [...]}}`. Problem codes: `unknown_member`, `self_assignment`, `identity_not_verified`, `tier_5_by_bootstrap_only`, `area_does_not_match_tier`, `unknown_area`, `no_permissions`, `unknown_permission:<p>`, `permission_not_for_tier:<p>`, `outside_your_area`, `tier_not_below_yours`, `permission_not_held:<p>`, `separation_of_duties`, `own_assignment`.
 

@@ -25,14 +25,17 @@ from app.modules.access.reviews import router as access_reviews
 from app.modules.audit import router as audit
 from app.modules.content.gallery import router as gallery
 from app.modules.content.gallery.dependencies import build_media_store
+from app.modules.community.reports.router import router as community_reports
 from app.modules.election import router as election
 from app.modules.events import router as events
 from app.modules.features import router as features
+from app.modules.finance.router import finance_router, fund_router
 from app.modules.home import router as home
 from app.modules.households import router as households
 from app.modules.messaging.broadcasts import router as broadcasts
 from app.modules.messaging.notifications import router as notifications
 from app.modules.privacy import router as privacy
+from app.modules.policy_decisions import router as policy_decisions
 from app.modules.profile import router as profile
 from app.modules.profile.area_changes import router as area_changes
 from app.modules.analytics import router as analytics
@@ -102,6 +105,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(events_offline.router)
     app.include_router(events.router)
     app.include_router(gallery.router)
+    app.include_router(community_reports)
     app.include_router(home.router)
     app.include_router(profile.router)
     app.include_router(area_changes.router)
@@ -109,6 +113,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(broadcasts.router)
     app.include_router(notifications.router)
     app.include_router(features.router)
+    app.include_router(policy_decisions.router)
+    app.include_router(fund_router)
+    app.include_router(finance_router)
     app.include_router(households.router)
     app.include_router(election.router)
     app.include_router(election.member_router)

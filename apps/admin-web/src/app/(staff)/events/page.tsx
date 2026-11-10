@@ -4,10 +4,12 @@ import { Suspense } from 'react';
 
 import { Feedback } from '@/components/Feedback';
 import { ConsoleLoading } from '@/components/ConsoleLoading';
+import { ConsolePagination } from '@/components/ConsolePagination';
 import { PageHeader } from '@/components/PageHeader';
 import { StateTag } from '@/components/StateTag';
 import { areaText, formatDateTime } from '@/lib/format';
 import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
+import { CONSOLE_PAGE_SIZE, consolePage } from '@/lib/pagination';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
 
@@ -40,17 +42,20 @@ async function EventsContent({ searchParams }: { searchParams: PageProps<'/event
   const error = one(params.error);
   const problems = one(params.problems);
   const done = one(params.done);
+  const page = consolePage(params.page);
 
   const api = await staffApi();
   let events: ManagedEvent[] = [];
   try {
     const statesToFilter = state && STATES.includes(state) ? [state] : undefined;
-    events = await api.listManagedEvents({ states: statesToFilter, limit: 100 });
+    events = await api.listManagedEvents({ states: statesToFilter, limit: CONSOLE_PAGE_SIZE + 1, offset: (page - 1) * CONSOLE_PAGE_SIZE });
   } catch (err) {
     if (isRefusal(err)) return <p className="text-error">! {getLocalizedMessage(err.code, locale)}</p>;
     throw err;
   }
 
+  const hasMore = events.length > CONSOLE_PAGE_SIZE;
+  events = events.slice(0, CONSOLE_PAGE_SIZE);
   const draftCount = events.filter((e) => e.state === 'draft').length;
   const publishedCount = events.filter((e) => e.state === 'published').length;
 
@@ -62,10 +67,9 @@ async function EventsContent({ searchParams }: { searchParams: PageProps<'/event
         <p>
           {locale === 'ta'
             ? `${publishedCount} வெளியிடப்பட்டவை · ${draftCount} வரைவில்`
-            : `${publishedCount} published · ${draftCount} in draft`}
+            : `${publishedCount} published · ${draftCount} in draft on this page`}
         </p>
       </div>
-      {events.length === 100 ? <p className="text-sm text-warning">Showing the first 100 matching events. Narrow the filter to review a specific state; additional results require pagination.</p> : null}
 
       <form className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3" role="search">
         <label className="flex flex-col gap-1 text-sm font-semibold text-text">
@@ -130,6 +134,7 @@ async function EventsContent({ searchParams }: { searchParams: PageProps<'/event
           </tbody>
         </table>
       </div>
+      <ConsolePagination pathname="/events" page={page} hasMore={hasMore} filters={{ state: state && STATES.includes(state) ? state : undefined }} />
     </>
   );
 }

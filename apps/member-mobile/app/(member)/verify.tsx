@@ -1,7 +1,7 @@
 import type { IdentityDocumentKind, IdentityReview, RegistrationProgress } from '@my-people/api-client';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
@@ -51,6 +51,7 @@ type Loaded = { progress: RegistrationProgress; review: IdentityReview | null; a
  */
 export default function VerifyScreen() {
   const { t } = useTranslation();
+  const { step } = useLocalSearchParams<{ step?: string }>();
   const query = useApiQuery<Loaded>(async () => {
     const [progress, review, features] = await Promise.all([
       api().getMyRegistrationProgress(),
@@ -65,18 +66,19 @@ export default function VerifyScreen() {
       <AppText step="secondary" tone="muted">
         {t('m.verify.subtitle')}
       </AppText>
-      <QueryView query={query}>{(data) => <VerifyBody data={data} reload={query.reload} />}</QueryView>
+      <QueryView query={query}>{(data) => <VerifyBody data={data} reload={query.reload} targetStep={step === data.progress.nextStep ? step : data.progress.nextStep} />}</QueryView>
     </Screen>
   );
 }
 
-function VerifyBody({ data, reload }: { data: Loaded; reload: () => void }) {
+function VerifyBody({ data, reload, targetStep }: { data: Loaded; reload: () => void; targetStep: string | null | undefined }) {
   const { t } = useTranslation();
   const { refresh } = useSession();
   const { progress, review } = data;
   const state: State = review?.state ?? 'not_submitted';
   const consented = progress.steps.find((step) => step.name === 'identity_consent')?.done ?? false;
-  const latest = review?.history.at(-1);
+  // The API returns decisions newest first; use the current decision.
+  const latest = review?.history[0];
   const requested = new Set(state === 'needs_update' ? (latest?.requestedItems ?? []) : []);
   const photos = progress.steps.filter((step) => DOCUMENT_KINDS.has(step.name));
   const canSend = state === 'not_submitted' || state === 'needs_update';
@@ -113,6 +115,11 @@ function VerifyBody({ data, reload }: { data: Loaded; reload: () => void }) {
 
       {canSend && consented ? (
         <>
+          {targetStep && targetStep !== 'identity_consent' ? (
+            <Notice tone="info" title={t('m.setup.nextStep')}>
+              {t(`m.setup.step_${targetStep}`)}
+            </Notice>
+          ) : null}
           <AppText step="section" accessibilityRole="header">
             {t('m.verify.photosTitle')}
           </AppText>
@@ -122,6 +129,7 @@ function VerifyBody({ data, reload }: { data: Loaded; reload: () => void }) {
               kind={step.name as IdentityDocumentKind}
               received={step.done}
               requested={requested.has(step.name)}
+              target={targetStep === step.name || requested.has(step.name)}
               onUploaded={reload}
             />
           ))}

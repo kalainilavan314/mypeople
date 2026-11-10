@@ -15,7 +15,7 @@ export default function MemberLayout() {
     // A18: progress comes from the API, so a stale device can never choose a
     // completed step or bypass consent locally.
     void api().getMyRegistrationProgress().then((progress) => {
-      if (progress.nextStep) router.replace('/setup/index');
+      if (progress.nextStep || progress.reviewState === 'needs_update') router.replace('/setup/index');
     }).catch(() => {
       // The destination remains usable when the network is temporarily down.
     });
@@ -49,6 +49,8 @@ export default function MemberLayout() {
       <Stack.Screen name="household/invite" options={{ title: t('m.household.inviteAdult') }} />
       <Stack.Screen name="household/invitations" options={{ title: t('m.household.pendingInvitations') }} />
       <Stack.Screen name="household/privacy" options={{ title: t('m.household.privacyConsent') }} />
+      <Stack.Screen name="fund/index" options={{ title: t('m.fund.title') }} />
+      <Stack.Screen name="fund/receipt/[id]" options={{ title: t('m.fund.receiptTitle') }} />
     </Stack>
   );
 }

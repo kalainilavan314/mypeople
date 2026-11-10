@@ -57,6 +57,9 @@ async function BroadcastDetail({ params, searchParams }: Pick<PageProps<'/messag
   const isScheduled = preview.state === 'scheduled';
   const isSent = preview.state === 'sent';
   const isCancelled = preview.state === 'cancelled';
+  const audienceDescription = preview.audienceTiers?.length
+    ? `members with an effective Staff Tier ${preview.audienceTiers.join(', ')} assignment in ${areaText(preview.areaKey)}`
+    : `active members in ${areaText(preview.areaKey)}`;
 
   return (
     <>
@@ -95,7 +98,7 @@ async function BroadcastDetail({ params, searchParams }: Pick<PageProps<'/messag
           <span className="text-xs text-muted">{locale === 'ta' ? 'மதிப்பிடப்பட்ட பெறுநர்கள்' : 'Audience estimate'}</span>
           <p className="mt-1 text-2xl font-bold">{preview.reaches.toLocaleString()}</p>
           <p className="text-xs text-muted">
-            {locale === 'ta' ? `${areaText(preview.areaKey)} பகுதியில் உள்ள உறுப்பினர்கள்` : `active members in ${areaText(preview.areaKey)}`}
+            {audienceDescription}
           </p>
         </div>
 
@@ -229,7 +232,7 @@ async function BroadcastDetail({ params, searchParams }: Pick<PageProps<'/messag
                 <span>
                   {locale === 'ta'
                     ? `இந்த அறிவித்தலில் தனிநபர் பெயர்கள், தேசிய அடையாள அட்டை (NIC) எண்கள் அல்லது ரகசியத் தகவல்கள் இல்லை என்பதையும், ${preview.reaches.toLocaleString()} உறுப்பினர்களுக்கு அனுப்பத் தயாராக உள்ளது என்பதையும் உறுதிப்படுத்துகிறேன்.`
-                    : `I confirm this broadcast contains no personal names, NIC numbers, or confidential case information, and is ready for transmission to ${preview.reaches.toLocaleString()} members.`}
+                    : `I confirm this broadcast contains no personal names, NIC numbers, or confidential case information, and is ready for transmission to ${preview.reaches.toLocaleString()} ${audienceDescription}.`}
                 </span>
               </label>
             </div>

@@ -152,6 +152,34 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     ta: 'கட்டக் கட்டுப்பாட்டு நிலை தேவையானதை விடக் குறைவாக உள்ளது.',
     en: 'Phase gate level does not match the feature requirement.',
   },
+  active_revision_exists: {
+    ta: 'இந்த முடிவிற்கு ஏற்கனவே செயலில் உள்ள வரைவு அல்லது மீளாய்வு உள்ளது.',
+    en: 'This decision already has an active draft or review.',
+  },
+  revision_not_draft: {
+    ta: 'சமர்ப்பிக்கப்பட்ட முடிவை மாற்ற முடியாது. புதிய பதிப்பைத் தொடங்கவும்.',
+    en: 'A submitted decision cannot be edited. Start a new revision instead.',
+  },
+  revision_not_in_review: {
+    ta: 'இந்தப் பதிப்பு இனி உரிமையாளர் மீளாய்வில் இல்லை.',
+    en: 'This revision is no longer awaiting owner review.',
+  },
+  review_role_not_required: {
+    ta: 'தேர்ந்தெடுக்கப்பட்ட உரிமையாளர் பங்கு இந்த முடிவிற்குத் தேவையில்லை.',
+    en: 'The selected owner role is not required for this decision.',
+  },
+  review_role_already_recorded: {
+    ta: 'இந்த உரிமையாளர் பங்கிற்கான முடிவு ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது.',
+    en: 'A decision is already recorded for this owner role.',
+  },
+  review_date_in_future: {
+    ta: 'கையொப்பத் தேதி எதிர்காலத்தில் இருக்க முடியாது.',
+    en: 'The signature date cannot be in the future.',
+  },
+  decision_content_incomplete: {
+    ta: 'முடிவும் அதன் காரணமும் முழுமையாக எழுதப்பட வேண்டும்.',
+    en: 'The decision and its rationale must both be complete.',
+  },
   contains_id_number: {
     ta: 'உள்ளடக்கத்தில் அடையாள அட்டை அல்லது கடவுச்சீட்டு இலக்கங்கள் இருக்கக்கூடாது.',
     en: 'Broadcast text must not contain ID numbers, passport numbers, or personal details.',
@@ -498,6 +526,26 @@ export function problemTargetField(problem: string): string | undefined {
 }
 
 const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
+  policy_draft_created: {
+    ta: 'கட்டுப்படுத்தப்பட்ட வரைவு உருவாக்கப்பட்டது.',
+    en: 'Controlled draft created.',
+  },
+  policy_draft_saved: {
+    ta: 'வரைவு பாதுகாப்பாகச் சேமிக்கப்பட்டது.',
+    en: 'Draft saved.',
+  },
+  policy_submitted: {
+    ta: 'முடிவு உரிமையாளர் மீளாய்விற்குச் சமர்ப்பிக்கப்பட்டது.',
+    en: 'Decision submitted for owner review.',
+  },
+  policy_approve_recorded: {
+    ta: 'கையொப்பமிட்ட ஒப்புதல் சான்று பதிவு செய்யப்பட்டது.',
+    en: 'Signed approval evidence recorded.',
+  },
+  policy_reject_recorded: {
+    ta: 'கையொப்பமிட்ட மறுப்பு சான்று பதிவு செய்யப்பட்டது.',
+    en: 'Signed rejection evidence recorded.',
+  },
   assigned: {
     ta: 'பணியாளர் பொறுப்பு வெற்றிகரமாக ஒதுக்கப்பட்டது.',
     en: 'Staff role assigned successfully.',
@@ -569,6 +617,14 @@ const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
 };
 
 export function bilingualMessageFor(code: string): BilingualText {
+  if (code.startsWith('policy_decisions_required:')) {
+    const keys = code.slice('policy_decisions_required:'.length).split(',').join(', ');
+    return {
+      ta: `இயக்குவதற்கு முன் தேவையான கொள்கை முடிவுகளை அங்கீகரிக்கவும்: ${keys}.`,
+      en: `Approve the required policy decisions before enabling: ${keys}.`,
+    };
+  }
+  if (code === 'wrong_password') return { ta: 'தற்போதைய கடவுச்சொல் சரியில்லை.', en: 'The current password is not correct.' };
   if (BILINGUAL_MESSAGES[code]) return BILINGUAL_MESSAGES[code];
   // The API refuses a change to a closed record as "not_allowed_from:<state>".
   const [base, state] = code.split(':', 2);

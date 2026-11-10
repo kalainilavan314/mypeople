@@ -35,18 +35,19 @@ export { useRotatingCode } from './hooks/useRotatingCode';
 export { dateBadgeParts, formatDate, formatDateTime, formatSpan, formatTime, localHour } from './lib/format';
 export { headerOptions } from './lib/headerOptions';
 export {
-  clearSavedCard,
+  clearOfflineCard,
   clearSession,
   deviceId,
   readDisplayPreferences,
   readLanguage,
+  readOfflineCard,
   readRefreshToken,
-  readSavedCard,
   readToken,
-  saveCard,
   saveDisplayPreferences,
   saveLanguage,
+  saveOfflineCard,
   saveTokens,
+  type OfflineCardPreview,
   type StoredDisplayPreferences,
 } from './lib/storage';
 

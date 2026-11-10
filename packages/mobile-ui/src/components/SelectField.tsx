@@ -34,6 +34,7 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
   };
   const chosen = options.find((option) => option.value === value);
   const shown = query ? options.filter((option) => option.label.toLowerCase().includes(query.toLowerCase())) : options;
+  const isInvalid = Boolean(error);
 
   return (
     <View style={styles.field}>
@@ -42,12 +43,14 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
         onPress={() => setOpen(true)}
         disabled={disabled}
         accessible
-        accessibilityRole="button"
+        accessibilityRole="combobox"
         accessibilityLabel={`${label}: ${chosen?.label ?? placeholder}`}
         accessibilityHint={error ?? undefined}
         accessibilityState={{ disabled, expanded: open }}
         aria-disabled={disabled}
-        style={[styles.box, disabled && styles.disabled, error ? styles.invalid : null]}>
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        style={[styles.box, disabled && styles.disabled, isInvalid ? styles.invalid : null]}>
         <AppText step="body" tone={chosen ? 'default' : 'muted'} style={styles.value}>
           {chosen?.label ?? placeholder}
         </AppText>
@@ -69,6 +72,7 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
               accessible
               accessibilityRole="button"
               accessibilityLabel={text.close}
+              hitSlop={8}
               style={styles.close}>
               <Ionicons name="close" size={24} color={colors.text} />
             </Pressable>
@@ -109,11 +113,13 @@ const styles = StyleSheet.create({
   field: { gap: spacing[1] },
   box: {
     minHeight: control.height,
+    minWidth: control.touchMin,
     borderWidth: 1,
     borderColor: colors.inputBorder,
     borderRadius: radius.control,
     backgroundColor: colors.card,
     paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[2],
@@ -131,6 +137,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
     paddingHorizontal: spacing[2],
+    paddingVertical: spacing[2],
   },
   pressed: { backgroundColor: colors.surfaceVariant },
 });

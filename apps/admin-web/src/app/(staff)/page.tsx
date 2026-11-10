@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 
 import { PageHeader } from '@/components/PageHeader';
 import { ConsoleLoading } from '@/components/ConsoleLoading';
+import { DashboardRefresh } from '@/components/DashboardRefresh';
 import { SystemStatus } from '@/components/SystemStatus';
 import { getAdminLocale } from '@/lib/i18n';
 import { builtModules, plannedModules } from '@/lib/modules';
@@ -18,6 +19,7 @@ export default function DashboardHome() {
         <p className="max-w-2xl text-sm leading-6 text-muted">
           Review assigned work, resolve time-sensitive requests, and open the administration tools you are permitted to use.
         </p>
+        <DashboardRefresh />
       </div>
 
       <Suspense fallback={null}>
@@ -275,6 +277,17 @@ async function PriorityWorkQueues() {
         locale === 'ta'
           ? 'கட்டக் கட்டுப்பாடுகள் மற்றும் கட்டமைப்பு மாற்றிகள்'
           : 'Phase gates and module switches for v1.1 architecture',
+    });
+  }
+
+  if (queues.reports) {
+    cards.push({
+      title: 'Community reports',
+      href: '/reports',
+      count: queues.reports.totalActionable,
+      countLabel: 'actionable reports',
+      subtext: `${queues.reports.submitted} submitted · ${queues.reports.underReview} under review · ${queues.reports.inProgress} in progress`,
+      urgent: queues.reports.totalActionable > 0,
     });
   }
 

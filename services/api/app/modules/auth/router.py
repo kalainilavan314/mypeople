@@ -25,6 +25,7 @@ from app.modules.auth.schemas import (
     SignInResponse,
     TokensOut,
     TotpEnrolmentOut,
+    TotpStartInput,
 )
 from app.modules.auth.device import describe
 from app.modules.auth.session_cookie import clear_session_cookie, set_refresh_cookie, set_session_cookie
@@ -201,7 +202,7 @@ def read_my_mfa(member: CurrentMember, db: Db) -> MfaStatusOut:
 
 
 def _mfa_error(error: service.MfaRefused) -> HTTPException:
-    if error.code in ("invalid_code", "too_many_attempts"):
+    if error.code in ("invalid_code", "too_many_attempts", "wrong_password"):
         return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=error.code)
     return HTTPException(status_code=status.HTTP_409_CONFLICT, detail=error.code)
 
@@ -222,13 +223,20 @@ _MFA_CODE_RESPONSES: dict[int | str, dict[str, Any]] = {
 }
 
 
-@router.post("/mfa/totp", responses={409: {"description": "already_enabled"}})
-def start_totp(member: CurrentMember, request: Request, db: Db) -> TotpEnrolmentOut:
-    """Start adding an authenticator app: the secret to type or the URI to scan as a QR code."""
+@router.post("/mfa/totp", responses={401: {"description": "wrong_password"}, 409: {"description": "already_enabled"}, 429: {"description": "too_many_attempts"}})
+def start_totp(body: TotpStartInput, member: CurrentMember, request: Request, db: Db) -> TotpEnrolmentOut:
+    """Re-enter the account password before issuing a secret or QR for an authenticator app."""
     try:
-        secret, uri = service.start_totp(db, member, request.app.state.settings.jwt_secret.get_secret_value())
+        secret, uri = service.start_totp(
+            db, member, request.app.state.settings.jwt_secret.get_secret_value(), body.current_password, client_ip(request)
+        )
     except service.MfaRefused as error:
         raise _mfa_error(error) from None
+    except service.TooManyAttempts as error:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="too_many_attempts",
+            headers={"Retry-After": str(error.retry_after)},
+        ) from None
     return TotpEnrolmentOut(secret=secret, otpauth_uri=uri)
 
 

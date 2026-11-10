@@ -1,35 +1,41 @@
 import { Suspense } from 'react';
 
 import { PageHeader } from '@/components/PageHeader';
+import { ConsolePagination } from '@/components/ConsolePagination';
+import { ConsoleLoading } from '@/components/ConsoleLoading';
 import { RecordTable } from '@/components/RecordTable';
 import { StateTag } from '@/components/StateTag';
 import { formatDateTime, words } from '@/lib/format';
 import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
+import { CONSOLE_PAGE_SIZE, consolePage } from '@/lib/pagination';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
 
 /** Open duplicate-account investigations over both accounts' areas, oldest first. */
-export default function DuplicatesPage() {
+export default function DuplicatesPage(props: PageProps<'/duplicates'>) {
   return (
     <>
       <PageHeader ta="இரட்டைக் கணக்கு விசாரணைகள்" en="Duplicate investigations" />
-      <Suspense fallback={<p className="text-muted">… Loading</p>}>
-        <Cases />
+      <Suspense fallback={<ConsoleLoading rows={5} />}>
+        <Cases searchParams={props.searchParams} />
       </Suspense>
     </>
   );
 }
 
-async function Cases() {
+async function Cases({ searchParams }: { searchParams: PageProps<'/duplicates'>['searchParams'] }) {
   const staff = await requireStaff();
   const locale = await getAdminLocale(staff.member.language);
+  const page = consolePage((await searchParams).page);
   let cases;
   try {
-    cases = await (await staffApi()).listDuplicateCases({ limit: 100 });
+    cases = await (await staffApi()).listDuplicateCases({ limit: CONSOLE_PAGE_SIZE + 1, offset: (page - 1) * CONSOLE_PAGE_SIZE });
   } catch (error) {
     if (isRefusal(error)) return <p className="text-error">! {getLocalizedMessage(error.code, locale)}</p>;
     throw error;
   }
+  const hasMore = cases.length > CONSOLE_PAGE_SIZE;
+  cases = cases.slice(0, CONSOLE_PAGE_SIZE);
   return (
     <>
       <div className="flex flex-col gap-0.5 text-sm">
@@ -72,6 +78,7 @@ async function Cases() {
         },
       ]}
     />
+    <ConsolePagination pathname="/duplicates" page={page} hasMore={hasMore} />
     </>
   );
 }

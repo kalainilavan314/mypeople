@@ -75,6 +75,21 @@ class Settings(BaseSettings):
     # only through the API. Without it the gallery's photo endpoints answer 503.
     media_storage_dir: Path | None = None
 
+    # M1.4 Community Finance (FR-FUND, FR-PAY)
+    finance_intake_enabled: bool = False
+    finance_bank_name: str | None = None
+    finance_account_name: str | None = None
+    finance_account_number: SecretStr | None = None
+    finance_branch_name: str | None = None
+    finance_transfer_instructions_en: str | None = None
+    finance_transfer_instructions_ta: str | None = None
+    finance_encryption_key: SecretStr | None = None
+    finance_malware_scanner: Literal["none", "development", "clamav", "stub"] = "none"
+    finance_clamav_host: str = "127.0.0.1"
+    finance_clamav_port: int = 3310
+    finance_clamav_timeout_seconds: float = 10.0
+    finance_internal_review_threshold_minor: int = 10_000_000  # LKR 100,000 internal review trigger
+
     @field_validator("allowed_origins", mode="before")
     @classmethod
     def split_comma_separated(cls, value: object) -> object:
@@ -94,6 +109,18 @@ class Settings(BaseSettings):
                 raise ValueError("EVIDENCE_ENCRYPTION_KEY must be 32 bytes, base64-encoded")
         return value
 
+    @field_validator("finance_encryption_key")
+    @classmethod
+    def finance_key_is_32_bytes(cls, value: SecretStr | None) -> SecretStr | None:
+        if value is not None:
+            try:
+                key = base64.b64decode(value.get_secret_value(), validate=True)
+            except binascii.Error:
+                key = b""
+            if len(key) != 32:
+                raise ValueError("FINANCE_ENCRYPTION_KEY must be 32 bytes, base64-encoded")
+        return value
+
     @model_validator(mode="after")
     def staff_mfa_off_only_in_development(self) -> Self:
         if not self.staff_mfa_required and self.app_env != "development":
@@ -110,6 +137,22 @@ class Settings(BaseSettings):
     def development_sms_only_in_development(self) -> Self:
         if self.sms_provider == "development" and self.app_env != "development":
             raise ValueError("SMS_PROVIDER=development is allowed only with APP_ENV=development")
+        return self
+
+    @model_validator(mode="after")
+    def development_scanner_only_in_development(self) -> Self:
+        if self.finance_malware_scanner in ("development", "stub") and self.app_env != "development":
+            raise ValueError("FINANCE_MALWARE_SCANNER=development/stub is allowed only with APP_ENV=development")
+        return self
+
+    @model_validator(mode="after")
+    def production_finance_requires_clamav(self) -> Self:
+        if self.finance_intake_enabled and self.app_env != "development" and self.finance_malware_scanner != "clamav":
+            raise ValueError("enabled finance intake requires FINANCE_MALWARE_SCANNER=clamav outside development")
+        if not 1 <= self.finance_clamav_port <= 65535:
+            raise ValueError("FINANCE_CLAMAV_PORT must be between 1 and 65535")
+        if not 0.1 <= self.finance_clamav_timeout_seconds <= 60:
+            raise ValueError("FINANCE_CLAMAV_TIMEOUT_SECONDS must be between 0.1 and 60")
         return self
 
     @model_validator(mode="after")
@@ -144,3 +187,33 @@ class Settings(BaseSettings):
         if self.evidence_encryption_key is None:
             return None
         return base64.b64decode(self.evidence_encryption_key.get_secret_value())
+
+    @property
+    def finance_key(self) -> bytes | None:
+        if self.finance_encryption_key is None:
+            return None
+        val = (
+            self.finance_encryption_key.get_secret_value()
+            if isinstance(self.finance_encryption_key, SecretStr)
+            else self.finance_encryption_key
+        )
+        return base64.b64decode(val)
+
+    @property
+    def is_finance_configured(self) -> bool:
+        """True if all mandatory banking details and encryption keys are present."""
+        acc_num = (
+            self.finance_account_number.get_secret_value()
+            if isinstance(self.finance_account_number, SecretStr)
+            else (self.finance_account_number or "")
+        )
+        return bool(
+            self.finance_bank_name
+            and self.finance_account_name
+            and acc_num.strip()
+            and self.finance_branch_name
+            and self.finance_transfer_instructions_en
+            and self.finance_transfer_instructions_ta
+            and self.finance_encryption_key
+            and self.finance_malware_scanner != "none"
+        )
