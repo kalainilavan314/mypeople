@@ -1,0 +1,25 @@
+[Unit]
+Description=My People admin dashboard (Next.js, apps/admin-web)
+After=network.target mypeople-api.service
+Wants=mypeople-api.service
+
+[Service]
+Type=simple
+User=app
+Group=app
+WorkingDirectory=/srv/secure/app/mypeople-admin/current/apps/admin-web
+EnvironmentFile=/srv/secure/app/mypeople-admin/shared/.env
+# One process: the dashboard shares refresh-token renewals in memory (deployment/README.md).
+ExecStart=/usr/local/bin/node /srv/secure/app/mypeople-admin/current/node_modules/next/dist/bin/next start -H 127.0.0.1 -p 3003
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

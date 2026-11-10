@@ -1,6 +1,6 @@
 # FastAPI Background Tasks & Systemd Timers (Production)
 
-This directory contains systemd unit definitions for running the My People FastAPI service and background notification scheduler.
+This directory contains the systemd units installed on the production server on 10 November 2026: the FastAPI service, the notification scheduler and the admin dashboard (`mypeople-admin.service`, Next.js on `127.0.0.1:3003`). They run as `app` from `/srv/secure/app/mypeople-api/current` and `/srv/secure/app/mypeople-admin/current`, with settings in each one's `shared/.env` (see `deployment/README.md`).
 
 ---
 
@@ -35,11 +35,11 @@ Before enabling the background timer, verify database connectivity and dry-run e
 
 ```bash
 # 1. Readiness & configuration probe
-sudo -u mypeople /srv/mypeople/services/api/.venv/bin/python -m app.tasks.notifications --check
+sudo systemd-run --pipe --wait --uid=app --gid=app -p EnvironmentFile=/srv/secure/app/mypeople-api/shared/.env -p WorkingDirectory=/srv/secure/app/mypeople-api/current /srv/secure/app/mypeople-api/current/.venv/bin/python -m app.tasks.notifications --check
 # Expected: {"status": "ready", "database": "connected", "push": "configured"}
 
 # 2. Dry-run inspection (queries counts without mutating rows or acquiring write locks)
-sudo -u mypeople /srv/mypeople/services/api/.venv/bin/python -m app.tasks.notifications --dry-run
+sudo systemd-run --pipe --wait --uid=app --gid=app -p EnvironmentFile=/srv/secure/app/mypeople-api/shared/.env -p WorkingDirectory=/srv/secure/app/mypeople-api/current /srv/secure/app/mypeople-api/current/.venv/bin/python -m app.tasks.notifications --dry-run
 # Expected: {"dryRun": true, "dueBroadcasts": 0, "overdueRemovals": 0, "pendingPushes": 0}
 ```
 
@@ -78,6 +78,6 @@ sudo journalctl -u mypeople-notifications.service -p err -n 50
 | Symptom | Probable Cause | Action |
 |---|---|---|
 | `TimeoutStartSec` exceeded (Job killed after 45s) | Database connection pool exhaustion or network lock contention. | Inspect active PostgreSQL locks (`pg_stat_activity`). Run `--dry-run` to test query speed. |
-| `task_failed` with `config_error` | Missing or unreadable `/srv/mypeople/services/api/.env`. | Verify permissions: `chmod 600 .env` and ownership `mypeople:mypeople`. |
+| `task_failed` with `config_error` | Missing or unreadable `/srv/secure/app/mypeople-api/shared/.env`. | Verify permissions: `chmod 600` and ownership `app:app`. |
 | Pushes marked `skipped` | Member has disabled push notifications for the category, or device is currently in quiet hours. | Normal behavior per specification; notices remain accessible in the member's in-app inbox. |
 | Pushes marked `waiting` | Push notification service temporarily unreachable. | Stored in outbox; will be re-attempted automatically on next 1-minute cycle. |

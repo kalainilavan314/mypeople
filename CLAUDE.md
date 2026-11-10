@@ -50,12 +50,12 @@ The requirements are the BRD v1.1 (MP-BRD-001); see `docs/requirements/README.md
 |---|---|---|
 | `app/` | Live member PWA (Vite, React 18) | Production; frozen layout |
 | `server/` | Live Express API (`/api`) and SQL migrations 0000–0011 | Production; frozen layout |
-| `services/api/` | FastAPI modular monolith (`/v1`), Alembic | Built and tested; not yet deployed |
+| `services/api/` | FastAPI modular monolith (`/v1`), Alembic | Live on the production server since 10 Nov 2026 (`/v1`, every v1.1 module off until Gate G1) |
 | `services/ai-worker/` | Private AI inference worker | Planned (BRD Phase 3); README only |
 | `packages/` | `design-tokens`, `i18n`, `api-client`, `mobile-ui` (TypeScript source; `mobile-ui` also holds the apps' shared components, session and hooks) | Built and tested |
 | `apps/member-mobile` | Expo SDK 58 member app (Expo Router) on `/v1` | Member screens built (Batch 21); not released |
 | `apps/staff-mobile` | Expo SDK 58 staff app on `/v1` | Staff core built (Batch 23); not released |
-| `apps/admin-web` | Next.js 16 admin dashboard (Tailwind, Cache Components) | Staff modules built (Batch 22); not deployed |
+| `apps/admin-web` | Next.js 16 admin dashboard (Tailwind, Cache Components) | Live at https://admin.178.128.126.35.nip.io since 10 Nov 2026 |
 | `docs/` | Architecture, setup, API, database, security, requirements | Keep in step with the code |
 | `deployment/` | Release scripts and the release record | In use for production |
 

@@ -1,13 +1,14 @@
 [Unit]
-Description=My People FastAPI service
+Description=My People FastAPI service (/v1)
 After=network.target postgresql.service
 
 [Service]
 Type=simple
-User=mypeople
-WorkingDirectory=/srv/mypeople/services/api
-EnvironmentFile=/srv/mypeople/services/api/.env
-ExecStart=/srv/mypeople/services/api/.venv/bin/uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips=127.0.0.1
+User=app
+Group=app
+WorkingDirectory=/srv/secure/app/mypeople-api/current
+EnvironmentFile=/srv/secure/app/mypeople-api/shared/.env
+ExecStart=/srv/secure/app/mypeople-api/current/.venv/bin/uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips=127.0.0.1
 Restart=on-failure
 RestartSec=5
 StandardOutput=journal
@@ -17,3 +18,6 @@ PrivateTmp=true
 ProtectHome=true
 ProtectSystem=full
 UMask=0077
+
+[Install]
+WantedBy=multi-user.target

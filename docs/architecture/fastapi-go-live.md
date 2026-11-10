@@ -2,7 +2,7 @@
 **Document Code:** MP-OPS-001
 **Milestone:** M1.0 — Foundations, Accessibility Kit & Go-Live Infrastructure (Batch F3)
 **Target:** DigitalOcean Production Host (`178.128.126.35.nip.io`)
-**Status:** Candidate configuration; staging syntax, routing and release approval pending
+**Status:** Applied to production on 10 November 2026 by the owner's decision, before Gate G1 sign-off (record: `deployment/README.md`). The API runs as `app` from `/srv/secure/app/mypeople-api`, not the `mypeople` user and `/srv/mypeople` paths below; Gate G1 sign-off is still pending
 
 ---
 

@@ -27,8 +27,8 @@ The BRD's target, and the folders that hold it:
 |---|---|---|---|
 | Member app (Android, iOS) | React Native, Expo SDK 58, Expo Router | `apps/member-mobile` | Member screens on `/v1`: sign-in, registration, verification, Home, Events, Card, Gallery, Profile (Batch 21) |
 | Staff app | Separate Expo app, same shared packages (OD-26 pending) | `apps/staff-mobile` | Staff core on `/v1`: second factor, tasks, check-in, roster, approvals, alerts, member look-up (Batch 23) |
-| Admin dashboard | Next.js 16, Tailwind CSS 4 | `apps/admin-web` | Verification, appeals, duplicates, membership, roles and audit on `/v1` (Batch 22); not deployed |
-| API | FastAPI modular monolith, SQLAlchemy 2, Alembic | `services/api` | Built and tested; not deployed |
+| Admin dashboard | Next.js 16, Tailwind CSS 4 | `apps/admin-web` | Verification, appeals, duplicates, membership, roles and audit on `/v1` (Batch 22); live at https://admin.178.128.126.35.nip.io since 10 Nov 2026 |
+| API | FastAPI modular monolith, SQLAlchemy 2, Alembic | `services/api` | Live on the production server at `/v1` since 10 Nov 2026; v1.1 modules off until Gate G1 |
 | Background jobs | systemd timer commands (no Redis/Celery) | `services/api/app/tasks` | Notification dispatcher built; install with the FastAPI go-live runbook |
 | AI inference | Private worker, no internet egress | `services/ai-worker` | Planned (Phase 3) |
 | Shared code | Design tokens, i18n, typed API client, mobile components | `packages/*` | Built and tested |

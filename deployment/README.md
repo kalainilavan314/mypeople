@@ -2,6 +2,24 @@
 
 Live URL: https://178.128.126.35.nip.io
 
+## FastAPI `/v1` and admin dashboard (live since 10 November 2026)
+
+The owner decided on 10 November 2026 to put the new stack on the production server before Gate G1 sign-off. Gate G1 is still open; every v1.1 module stays off (production always enforces feature flags) until a Tier 5 records its gate and turns it on (`/v1/features`). The member PWA and Express API are unchanged.
+
+- **API:** release `api-20261110T094119Z` from `b05b428`, at `/srv/secure/app/mypeople-api/current` (Python 3.12 virtualenv pinned to the versions the tests passed with, `constraints.txt` in the release). `mypeople-api.service` runs uvicorn as `app` on `127.0.0.1:8000`; settings in `/srv/secure/app/mypeople-api/shared/.env` (mode 600): Express's `DATABASE_URL`, `JWT_SECRET` and `NIC_PEPPER`, `APP_ENV=production`, SMS and push `none`, finance intake off, and `EVIDENCE_ENCRYPTION_KEY` generated on the server. Keep a copy of that key apart from the backups; without it the stored ID images cannot be read.
+- **Notifications:** `mypeople-notifications.timer` runs the dispatcher every minute.
+- **Private storage:** `/srv/secure/app/mypeople-data/evidence` (mode 700) and `media` (750), inside `/srv/secure/app`, which the nightly restic backup already covers.
+- **Database:** the encrypted off-server backup succeeded at 09:43 UTC; the 30 Alembic revisions were then rehearsed on a copy of the live database (PostgreSQL 16, API smoke-tested on it, copy dropped) and applied to `mypeople` in one transaction: `alembic_version` is `0030`. The Express API stayed healthy before and after. Alembic revisions cannot be downgraded; a rollback of the data means restoring that backup.
+- **Nginx:** `/etc/nginx/sites-available/default` includes `/etc/nginx/snippets/mypeople-fastapi-v1.conf` (copy of `nginx/fastapi-v1-snippet.conf.example`) in the HTTPS block: `/v1/` goes to FastAPI, `/evidence/` and `/private/` answer 403. Earlier site files are in `/etc/nginx/site-backups/`.
+- **Admin dashboard:** release `admin-20261110T094737Z` from `b05b428`, built on the server, at `/srv/secure/app/mypeople-admin/current`. `mypeople-admin.service` runs `next start` as `app` on `127.0.0.1:3003` (one process); settings in `/srv/secure/app/mypeople-admin/shared/.env` (`API_URL`, `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY`). Served at **https://admin.178.128.126.35.nip.io** by `/etc/nginx/sites-available/mypeople-admin` (copy in `nginx/mypeople-admin.conf`), certificate from Let's Encrypt (webroot `/var/www/letsencrypt`, renews automatically).
+- **Verified over HTTPS:** `/v1/health` and `/v1/health/db` 200, `/v1/features` `{"enabled":[]}`, `/evidence/` 403, `/api/health` and `/` unchanged, the dashboard's sign-in page 200 and HTTP redirected to HTTPS. No errors in the API or dashboard logs.
+- **Not yet done:** the first Super Administrator (`python -m app.modules.access.bootstrap <member-id>` in the API release, as `app` with the shared settings); nobody can sign in to the dashboard until it exists.
+- **To take the new stack offline:** remove the `include` line from the default site, `nginx -t`, reload; `sudo systemctl disable --now mypeople-admin mypeople-api mypeople-notifications.timer`; disable the `mypeople-admin` site. The database keeps its new schemas, which the Express API does not use.
+
+To build a new API release, follow the same steps: package `services/api` from `main`, unpack it under `releases/`, create its virtualenv with `-c constraints.txt`, run `alembic upgrade head` (rehearse on a copy first when there are new revisions), switch `current`, restart `mypeople-api`. For the dashboard: package `apps`, `packages`, the root `package.json`, `package-lock.json` and `tsconfig.packages.json`; `npm ci --include=dev --workspace @my-people/admin-web` (the settings file sets `NODE_ENV=production`, which otherwise drops the build tools); remove `apps/admin-web/.next` before building; switch `current`; restart `mypeople-admin`.
+
+## Member PWA and Express API
+
 Release `civic-20261106T082034Z` was deployed on 6 November 2026 and verified over public HTTPS at 09:12 UTC. Its source commit is `9f9547f` on `main`, which brings in Puviraj's launch work (admin dashboard, My Household, accessibility hardening) and the PWA component renames. For the live PWA this means the 27 October clean-up (unused hero images and the unused Outfit font file removed), a darker error red (`#B91C1C`) so error text meets WCAG AA contrast, and numbered components renamed after what they render. The member sees the same screens.
 
 Only the PWA changed: no server source, lockfile or database migration differs from the previous release. The FastAPI service, the admin dashboard and the Expo apps in the same commit are not part of this release. The service log shows no errors or warnings after the restart.

@@ -1,15 +1,15 @@
 [Unit]
 Description=My People notification and escalation dispatcher
-After=network.target postgresql.service
+After=network.target postgresql.service mypeople-api.service
 Wants=network.target
 
 [Service]
 Type=oneshot
-User=mypeople
-Group=mypeople
-WorkingDirectory=/srv/mypeople/services/api
-EnvironmentFile=/srv/mypeople/services/api/.env
-ExecStart=/srv/mypeople/services/api/.venv/bin/python -m app.tasks.notifications
+User=app
+Group=app
+WorkingDirectory=/srv/secure/app/mypeople-api/current
+EnvironmentFile=/srv/secure/app/mypeople-api/shared/.env
+ExecStart=/srv/secure/app/mypeople-api/current/.venv/bin/python -m app.tasks.notifications
 TimeoutStartSec=45s
 StandardOutput=journal
 StandardError=journal
