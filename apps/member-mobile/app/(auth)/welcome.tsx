@@ -65,7 +65,7 @@ export default function WelcomeScreen() {
 
       <View style={styles.gap}>
         <AppText step="label">{t('m.welcome.chooseLanguage')}</AppText>
-        <View style={styles.languages} accessibilityRole="radiogroup">
+        <View style={styles.languages} accessibilityRole="radiogroup" accessibilityLabel={t('m.welcome.chooseLanguage')}>
           {LANGUAGES.map((option) => {
             const active = option.key === language;
             return (
@@ -73,6 +73,7 @@ export default function WelcomeScreen() {
                 key={option.key}
                 onPress={() => void chooseLanguage(option.key)}
                 accessibilityRole="radio"
+                accessibilityLabel={option.label}
                 aria-checked={active}
                 style={[styles.language, active && styles.languageActive]}>
                 <AppText step="section" tone={active ? 'inverse' : 'primary'}>

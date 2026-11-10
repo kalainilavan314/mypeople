@@ -114,6 +114,12 @@ def account_route(db: Session, member_id: uuid.UUID) -> str:
     return route or "nic"
 
 
+def identity_confirmed(db: Session, member_id: uuid.UUID) -> bool:
+    """True once the member's identity is confirmed, by a /v1 review or earlier in the Express app."""
+    status = db.scalar(text("SELECT verification_status FROM npm.member WHERE id = :id"), {"id": member_id})
+    return status == "identity_confirmed"
+
+
 def record_initial_verification(db: Session, member_id: uuid.UUID, status: str) -> None:
     # The same first row the Express sign-up writes to its verification trail.
     db.execute(

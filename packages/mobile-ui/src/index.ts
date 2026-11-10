@@ -33,6 +33,7 @@ export { useReloadOnFocus } from './hooks/useReloadOnFocus';
 export { useRotatingCode } from './hooks/useRotatingCode';
 
 export { dateBadgeParts, formatDate, formatDateTime, formatSpan, formatTime, localHour } from './lib/format';
+export { confirmAction, showMessage, type ConfirmOptions } from './lib/confirm';
 export { headerOptions } from './lib/headerOptions';
 export {
   clearOfflineCard,

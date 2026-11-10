@@ -187,6 +187,11 @@ def progress(db: Session, member_id: uuid.UUID) -> Progress:
     route = repository.account_route(db, member_id)
     received = {d.kind for d in documents_repository.current_documents(db, member_id)}
     review = reviews_repository.latest_review(db, member_id)
+    if repository.identity_confirmed(db, member_id):
+        # Confirmed already (also by the Express app before /v1): the review refuses a new
+        # submission as already_verified, so asking for these steps would trap the member.
+        done = ["identity_consent", *REQUIRED_DOCUMENTS[route], "submit"]  # type: ignore[index]
+        return Progress(route=route, steps=[Step(name, True) for name in done], review_state=review.state if review else None)
     steps = [
         Step("identity_consent", has_identity_consent(db, member_id)),
         *(Step(kind, kind in received) for kind in REQUIRED_DOCUMENTS[route]),  # type: ignore[index]

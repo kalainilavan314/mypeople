@@ -34,12 +34,13 @@ export default function SetupScreen() {
             {data.nextStep ? (
               <Button
                 label={t('m.setup.continueWith', { step: t(`m.setup.step_${data.nextStep}`) })}
-                onPress={() => router.replace({ pathname: '/verify', params: { step: data.nextStep } })}
+                onPress={() => router.push({ pathname: '/verify', params: { step: data.nextStep } })}
               />
             ) : (
               <>
                 <AppText step="body" tone="secondary">{t('m.setup.allComplete')}</AppText>
-                <Button label={t('m.setup.viewReview')} onPress={() => router.replace('/verify')} />
+                <Button label={t('m.setup.viewReview')} onPress={() => router.push('/verify')} />
+                <Button label={t('m.setup.goHome')} variant="secondary" icon="home-outline" onPress={() => router.replace('/')} />
               </>
             )}
             <Button label={t('m.setup.surveyTitle')} variant="secondary" onPress={() => router.push('/setup/survey')} />

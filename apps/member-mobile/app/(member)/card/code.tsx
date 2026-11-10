@@ -84,8 +84,8 @@ export default function CardCodeScreen() {
           {activeCode ? <QrCode value={activeCode} size={260} label={t('m.card.showCode')} />
             : <AppText step="body">{t('m.events.passRefreshing')}</AppText>}
         </View>
-        <View accessibilityRole="timer" accessibilityLabel={t('m.card.codeSeconds', { seconds })} style={styles.timer}>
-          <Svg width={88} height={88} style={styles.ring} accessible={false}>
+        <View accessible accessibilityRole="timer" accessibilityLabel={t('m.card.codeSeconds', { seconds })} style={styles.timer}>
+          <Svg width={88} height={88} style={styles.ring}>
             <Circle cx={44} cy={44} r={RADIUS} stroke={colors.inputBorder} strokeWidth={5} fill="none" />
             <Circle cx={44} cy={44} r={RADIUS} stroke={colors.onPrimary} strokeWidth={5} fill="none"
               strokeDasharray={CIRCUMFERENCE} strokeDashoffset={CIRCUMFERENCE * (1 - remaining)}

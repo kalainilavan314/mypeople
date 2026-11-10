@@ -35,7 +35,9 @@ def cors_options(settings: Settings) -> dict[str, Any] | None:
         "allow_origin_regex": origin_regex,
         "allow_credentials": True,
         "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE"],
-        "allow_headers": ["Authorization", "Content-Type", "X-Device-Id"],
+        "allow_headers": ["Authorization", "Content-Type", "X-Device-Id", "Idempotency-Key"],
+        # The client reads Retry-After to say how long a sign-in lockout lasts.
+        "expose_headers": ["Retry-After"],
     }
 
 

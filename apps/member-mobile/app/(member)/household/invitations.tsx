@@ -30,7 +30,7 @@ export default function HouseholdInvitationsScreen() {
   const respond = useApiAction(async (invitationId: string, action: 'accept' | 'decline') => {
     await api().respondInvitation(invitationId, { action });
     if (action === 'accept') {
-      router.replace('/(member)/household/index' as any);
+      router.replace('/household');
     } else {
       void invitationsQuery.reload();
     }

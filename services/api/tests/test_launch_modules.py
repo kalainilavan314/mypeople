@@ -92,6 +92,22 @@ def test_work_queues_gallery_takedown_and_albums(db_client: TestClient, create_m
     assert isinstance(data["unavailable"], list)
 
 
+def test_work_queues_count_appeals_and_members_awaiting_activation(
+    db_client: TestClient, create_member, assign, auth, member_in, area, super_admin
+):
+    """D01: the appeals and membership counts load. They once queried a table and a column
+    that do not exist, which only showed as both queues being "unavailable"."""
+    staff = create_member(verified=True)
+    assign(staff, "4", "province", area.province, ["idv.appeal.decide", "members.activate"], granted_by=super_admin)
+    member_in(area, verified=True)  # identity confirmed, membership still pending
+
+    data = db_client.get("/v1/access/work-queues", headers=auth(staff)).json()
+
+    assert data["unavailable"] == []
+    assert isinstance(data["appeals"]["waiting"], int)
+    assert data["membership"]["awaitingActivation"] >= 1
+
+
 def test_work_queues_error_handling_marks_unavailable(db_session: Session, create_member, assign, area, super_admin):
     """D01: If a queue query fails, it records the queue in `unavailable` rather than swallowing."""
     staff_member = create_member(verified=True)

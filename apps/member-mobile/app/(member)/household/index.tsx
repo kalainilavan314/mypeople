@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
@@ -7,6 +7,7 @@ import { colors, spacing } from '@my-people/design-tokens';
 import {
   AppText,
   Button,
+  confirmAction,
   Notice,
   Screen,
   SurfaceCard,
@@ -189,35 +190,28 @@ function ActiveHouseholdView({
     onReload();
   });
 
-  const confirmLeave = () => {
+  const confirmLeave = async () => {
     const isHead = household.isHead;
-    Alert.alert(
-      isHead ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold'),
-      isHead ? t('m.household.dissolveConfirm') : t('m.household.leaveConfirm'),
-      [
-        { text: t('m.common.cancel'), style: 'cancel' },
-        {
-          text: isHead ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold'),
-          style: 'destructive',
-          onPress: () => void leave.run(),
-        },
-      ],
-    );
+    const action = isHead ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold');
+    const confirmed = await confirmAction({
+      title: action,
+      message: isHead ? t('m.household.dissolveConfirm') : t('m.household.leaveConfirm'),
+      confirmLabel: action,
+      cancelLabel: t('m.common.cancel'),
+      destructive: true,
+    });
+    if (confirmed) void leave.run();
   };
 
-  const confirmRemove = (recordId: string, displayName: string) => {
-    Alert.alert(
-      t('m.household.removeMember'),
-      t('m.household.removeConfirm', { name: displayName }),
-      [
-        { text: t('m.common.cancel'), style: 'cancel' },
-        {
-          text: t('m.household.removeMember'),
-          style: 'destructive',
-          onPress: () => void removeMember.run(recordId),
-        },
-      ],
-    );
+  const confirmRemove = async (recordId: string, displayName: string) => {
+    const confirmed = await confirmAction({
+      title: t('m.household.removeMember'),
+      message: t('m.household.removeConfirm', { name: displayName }),
+      confirmLabel: t('m.household.removeMember'),
+      cancelLabel: t('m.common.cancel'),
+      destructive: true,
+    });
+    if (confirmed) void removeMember.run(recordId);
   };
 
   return (

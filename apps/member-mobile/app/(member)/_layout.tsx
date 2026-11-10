@@ -13,9 +13,11 @@ export default function MemberLayout() {
   const language = useLanguage();
   useEffect(() => {
     // A18: progress comes from the API, so a stale device can never choose a
-    // completed step or bypass consent locally.
+    // completed step or bypass consent locally. Setup opens on top of the tabs
+    // (an index route is "/setup", never "/setup/index"), so Back always leads
+    // home instead of leaving the member on a screen with nowhere to go.
     void api().getMyRegistrationProgress().then((progress) => {
-      if (progress.nextStep || progress.reviewState === 'needs_update') router.replace('/setup/index');
+      if (progress.nextStep || progress.reviewState === 'needs_update') router.push('/setup');
     }).catch(() => {
       // The destination remains usable when the network is temporarily down.
     });

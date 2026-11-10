@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import type { SecurityAlert, SecurityAlertAnswer } from '@my-people/api-client';
@@ -8,6 +8,7 @@ import { spacing } from '@my-people/design-tokens';
 import {
   AppText,
   Button,
+  confirmAction,
   formatDateTime,
   Notice,
   Screen,
@@ -109,15 +110,8 @@ export default function SecurityScreen() {
   );
 }
 
-function confirmSecurityAction(title: string, message: string, cancel: string, onConfirm: () => void) {
-  if (Platform.OS === 'web') {
-    if (globalThis.confirm(`${title}\n\n${message}`)) onConfirm();
-    return;
-  }
-  Alert.alert(title, message, [
-    { text: cancel, style: 'cancel' },
-    { text: title, style: 'destructive', onPress: onConfirm },
-  ]);
+async function confirmSecurityAction(title: string, message: string, cancel: string, onConfirm: () => void) {
+  if (await confirmAction({ title, message, confirmLabel: title, cancelLabel: cancel, destructive: true })) onConfirm();
 }
 
 type AlertsProps = {

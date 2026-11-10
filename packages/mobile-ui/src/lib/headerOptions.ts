@@ -8,6 +8,9 @@ export function headerOptions(language: string) {
     headerTintColor: colors.primary,
     headerTitleStyle: { fontFamily: fontFamilyFor(language, 700), color: colors.text },
     headerBackButtonDisplayMode: 'minimal' as const,
+    // Without a back title the button is announced with the previous route's
+    // name, e.g. "(tabs), back". "Back" makes it "Go back".
+    headerBackTitle: language === 'ta' ? 'பின்செல்' : 'Back',
     contentStyle: { backgroundColor: colors.page },
   };
 }

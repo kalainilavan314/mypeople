@@ -97,6 +97,20 @@ def test_registering_with_a_passport_and_signing_in_with_it(client, db_session):
     assert client.post("/v1/auth/sign-in", json=both).status_code == 422
 
 
+def test_an_identity_confirmed_before_v1_has_no_setup_steps_left(client, auth, create_member):  # A18
+    """A member the Express app already verified is not sent back through identity setup: a new
+    submission would be refused as already_verified, so the app would trap them there."""
+    member = create_member(verified=True)
+
+    progress = client.get("/v1/identity/me/progress", headers=auth(member)).json()
+
+    assert progress["nextStep"] is None
+    assert all(step["done"] for step in progress["steps"])
+    refused = client.post("/v1/identity/me/review", json={"route": "nic", "declaration": True}, headers=auth(member))
+    assert refused.status_code == 409
+    assert "already_verified" in refused.json()["detail"]["problems"]
+
+
 def test_an_id_number_already_registered_is_refused(client, create_member):  # BR-007, FR-AUTH-012
     nic = new_nic()
     create_member(nic=nic)

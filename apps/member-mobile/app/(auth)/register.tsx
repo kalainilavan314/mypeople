@@ -26,6 +26,9 @@ type Gender = 'male' | 'female' | 'other' | 'skip';
 
 const STEPS = 3;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
+// The API's NIC rule after it removes spaces and upper-cases (registration/rules.py), checked
+// on step 1 so a mistyped number is caught there, not after the password step.
+const NIC = /^(\d{9}[VX]|\d{12})$/;
 
 // Where each refused field lives, so a refusal opens the step that needs fixing.
 const STEP_OF_PROBLEM: Record<string, number> = {
@@ -58,6 +61,7 @@ export default function RegisterScreen() {
   const [confirm, setConfirm] = useState('');
   const [referral, setReferral] = useState('');
   const [accepted, setAccepted] = useState(false);
+  const [idFormatError, setIdFormatError] = useState(false);
 
   const submit = useApiAction(async () => {
     const account = accountNumber(id);
@@ -112,8 +116,11 @@ export default function RegisterScreen() {
             </AppText>
             <IdRouteFields
               value={id}
-              onChange={setId}
-              error={problem('invalid_id_number', 'invalid_passport_country')}
+              onChange={(next) => {
+                setId(next);
+                setIdFormatError(false);
+              }}
+              error={idFormatError ? t('m.problems.invalid_id_number') : problem('invalid_id_number', 'invalid_passport_country')}
             />
             <TextField
               label={t('m.register.nameLabel')}
@@ -200,7 +207,17 @@ export default function RegisterScreen() {
 
         <View style={styles.actions}>
           {step < STEPS ? (
-            <Button label={t('m.common.continue')} disabled={!canLeave} onPress={() => setStep(step + 1)} />
+            <Button
+              label={t('m.common.continue')}
+              disabled={!canLeave}
+              onPress={() => {
+                if (step === 1 && id.route === 'nic' && !NIC.test(id.number.replace(/\s+/g, '').toUpperCase())) {
+                  setIdFormatError(true);
+                  return;
+                }
+                setStep(step + 1);
+              }}
+            />
           ) : (
             <Button
               label={t('m.register.submit')}

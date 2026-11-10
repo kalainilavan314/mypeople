@@ -75,7 +75,10 @@ function VerifyBody({ data, reload, targetStep }: { data: Loaded; reload: () => 
   const { t } = useTranslation();
   const { refresh } = useSession();
   const { progress, review } = data;
-  const state: State = review?.state ?? 'not_submitted';
+  // No review here but every step done: the identity was confirmed before /v1 (in the
+  // Express app), so there is nothing to send and the member is shown as verified.
+  const confirmedEarlier = review === null && progress.steps.every((step) => step.done);
+  const state: State = review?.state ?? (confirmedEarlier ? 'verified' : 'not_submitted');
   const consented = progress.steps.find((step) => step.name === 'identity_consent')?.done ?? false;
   // The API returns decisions newest first; use the current decision.
   const latest = review?.history[0];

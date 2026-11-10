@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import {
-  Alert,
   Clipboard,
   Image,
   Pressable,
@@ -18,8 +17,10 @@ import {
   Button,
   Checkbox,
   ChipRow,
+  confirmAction,
   Notice,
   Screen,
+  showMessage,
   SurfaceCard,
   TextField,
   useApiAction,
@@ -93,7 +94,7 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
     setValidationError(null);
     const result = await pickImage(source);
     if ('denied' in result) {
-      Alert.alert(t('m.common.loadFailed'), t('m.verify.cameraRefused'));
+      showMessage(t('m.common.loadFailed'), t('m.verify.cameraDenied'));
       return;
     }
     if ('cancelled' in result) return;
@@ -143,18 +144,14 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
     }
 
     // Confirmation dialog before final submission
-    const confirmed = await new Promise<boolean>((resolve) => {
-      Alert.alert(
-        t('m.fund.confirmTitle'),
-        t('m.fund.confirmBody', {
-          amount: effectiveAmountLkr.toLocaleString(),
-          reference: bankReference.trim(),
-        }),
-        [
-          { text: t('m.fund.confirmCancel'), style: 'cancel', onPress: () => resolve(false) },
-          { text: t('m.fund.confirmYes'), style: 'default', onPress: () => resolve(true) },
-        ],
-      );
+    const confirmed = await confirmAction({
+      title: t('m.fund.confirmTitle'),
+      message: t('m.fund.confirmBody', {
+        amount: effectiveAmountLkr.toLocaleString(),
+        reference: bankReference.trim(),
+      }),
+      confirmLabel: t('m.fund.confirmYes'),
+      cancelLabel: t('m.fund.confirmCancel'),
     });
 
     if (!confirmed) return;
@@ -338,10 +335,6 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
         <AppText step="card" style={styles.cardHeader}>
           {t('m.fund.declarationsHeader')}
         </AppText>
-
-        <Notice tone="info">
-          {t('m.fund.noPrivilegeLabel')}
-        </Notice>
 
         <Checkbox
           label={t('m.fund.noPrivilegeLabel')}

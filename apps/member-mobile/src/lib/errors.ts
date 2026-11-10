@@ -13,7 +13,9 @@ export function errorMessage(t: TFunction, error: unknown): string {
   if (error.code === 'too_many_attempts' && error.retryAfter) {
     return t('m.errors.too_many_attempts', { minutes: Math.max(1, Math.ceil(error.retryAfter / 60)) });
   }
-  const known = error.problems.filter((problem) => problem in en.problems);
+  // Some problems name the item after a colon ("missing:nic_front"); the words are per kind.
+  const kinds = [...new Set(error.problems.map((problem) => problem.split(':')[0]))];
+  const known = kinds.filter((problem) => problem in en.problems);
   if (known.length > 0) return known.map((problem) => t(`m.problems.${problem}`)).join('\n');
   if (error.code in en.errors) return t(`m.errors.${error.code}`);
   return t('m.errors.unknown');

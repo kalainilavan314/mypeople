@@ -477,7 +477,7 @@ def work_queues(db: Session, staff: Staff) -> schemas.WorkQueuesOut:
             if areas is not None:
                 cond += " AND a.area_path && CAST(:areas AS text[])"
                 params["areas"] = areas
-            waiting = db.scalar(text(f"SELECT count(*) FROM identity.identity_appeal a {cond}"), params) or 0
+            waiting = db.scalar(text(f"SELECT count(*) FROM identity.review_appeal a {cond}"), params) or 0
             appeals = schemas.SimpleQueueCount(waiting=int(waiting))
         except Exception:
             db.rollback()
@@ -518,9 +518,9 @@ def work_queues(db: Session, staff: Staff) -> schemas.WorkQueuesOut:
                         NULL
                     ) AS keys
                 ) areas
-                WHERE m.verified_at IS NOT NULL
-                  AND m.deleted_at IS NULL
-                  AND (ms.state = 'pending' OR (ms.state IS NULL AND m.membership_number IS NULL))
+                WHERE m.deleted_at IS NULL
+                  AND m.verification_status = 'identity_confirmed'
+                  AND COALESCE(ms.state, 'pending') = 'pending'
                   {area_cond}
             """
             awaiting = db.scalar(text(sql), params) or 0

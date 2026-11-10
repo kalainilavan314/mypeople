@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
@@ -6,6 +6,7 @@ import { colors, spacing } from '@my-people/design-tokens';
 import {
   AppText,
   Button,
+  confirmAction,
   Notice,
   Screen,
   StatusTag,
@@ -38,22 +39,18 @@ export default function HouseholdPrivacyScreen() {
     void householdQuery.reload();
   });
 
-  const handleWithdrawConfirm = (isHead: boolean) => {
-    Alert.alert(
-      isHead ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold'),
-      isHead ? t('m.household.dissolveConfirm') : t('m.household.leaveConfirm'),
-      [
-        { text: t('m.common.cancel'), style: 'cancel' },
-        {
-          text: isHead ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold'),
-          style: 'destructive',
-          onPress: async () => {
-            await withdrawConsent.run();
-            router.replace('/(member)/household/index' as any);
-          },
-        },
-      ],
-    );
+  const handleWithdrawConfirm = async (isHead: boolean) => {
+    const action = isHead ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold');
+    const confirmed = await confirmAction({
+      title: action,
+      message: isHead ? t('m.household.dissolveConfirm') : t('m.household.leaveConfirm'),
+      confirmLabel: action,
+      cancelLabel: t('m.common.cancel'),
+      destructive: true,
+    });
+    if (!confirmed) return;
+    await withdrawConsent.run();
+    router.replace('/household');
   };
 
   return (
