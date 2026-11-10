@@ -90,6 +90,26 @@ export type PhaseGate = FeatureFlag['requiredGate'];
 export type PolicyDecision = Schemas['PolicyDecisionOut'];
 export type PolicyDecisionDraftInput = Schemas['DraftIn'];
 export type PolicyDecisionReviewInput = Schemas['ReviewIn'];
+export type OperationalReadiness = Schemas['OperationalReadinessOut'];
+export type OperationalControlInput = Schemas['ControlIn'];
+export type OperationalControl = Schemas['ControlOut'];
+export type VolunteerAssignmentInput = Schemas['VolunteerAssignmentIn'];
+export type VolunteerAssignment = Schemas['VolunteerAssignmentOut'];
+export type VolunteerAssignmentEvent = Schemas['AssignmentEventOut'];
+export type AssignmentTransitionInput = Schemas['AssignmentTransitionIn'];
+export type RegisteredStaffDevice = Schemas['RegisteredDeviceOut'];
+export type RegisteredStaffDeviceSecret = Schemas['DeviceRegisteredOut'];
+export type OfflineScanSyncInput = Schemas['OfflineSyncIn'];
+export type OfflineScanSync = Schemas['OfflineSyncOut'];
+export type GovernancePolicyInput = Schemas['PolicyPublishIn'];
+export type GovernancePolicy = Schemas['PolicyVersionOut'];
+export type EffectiveGovernancePolicy = Schemas['EffectivePolicyOut'];
+export type ConsentActionInput = Schemas['ConsentActionIn'];
+export type ConsentAction = Schemas['ConsentActionOut'];
+export type Tier5Assignment = Schemas['Tier5AssignmentOut'];
+export type Tier5CertificationInput = Schemas['Tier5CertificationIn'];
+export type Tier5Certification = Schemas['Tier5CertificationOut'];
+export type VolunteerAggregate = Schemas['VolunteerAggregateOut'];
 export type ElectionBanner = Schemas['ElectionBannerOut'];
 export type ElectionNotice = Schemas['ElectionNoticeOut'];
 export type ElectionNoticeInput = Schemas['NoticeIn'];
@@ -856,6 +876,51 @@ export function createApiClient({
         `/v1/policy-decisions/${encodeURIComponent(key)}/revisions/${encodeURIComponent(revisionId)}/reviews`,
         input,
       ),
+
+    /** P2 readiness and the approved, machine-readable controls behind staff/governance flows. */
+    getOperationalReadiness: () => request<OperationalReadiness>('GET', '/v1/operations/readiness'),
+    recordOperationalControl: (input: OperationalControlInput) =>
+      request<OperationalControl>('POST', '/v1/operations/controls', input),
+    listVolunteerAssignments: (eventId?: string) =>
+      request<VolunteerAssignment[]>(
+        'GET',
+        `/v1/operations/volunteer-assignments${eventId ? `?event_id=${encodeURIComponent(eventId)}` : ''}`,
+      ),
+    listVolunteerAssignmentEvents: () =>
+      request<VolunteerAssignmentEvent[]>('GET', '/v1/operations/volunteer-assignment-events'),
+    createVolunteerAssignment: (input: VolunteerAssignmentInput) =>
+      request<VolunteerAssignment>('POST', '/v1/operations/volunteer-assignments', input),
+    listMyVolunteerAssignments: () =>
+      request<VolunteerAssignment[]>('GET', '/v1/operations/me/volunteer-assignments'),
+    respondToVolunteerAssignment: (assignmentId: string, input: AssignmentTransitionInput) =>
+      request<VolunteerAssignment>(
+        'POST', `/v1/operations/me/volunteer-assignments/${encodeURIComponent(assignmentId)}/response`, input,
+      ),
+    transitionVolunteerAssignment: (assignmentId: string, input: AssignmentTransitionInput) =>
+      request<VolunteerAssignment>(
+        'POST', `/v1/operations/volunteer-assignments/${encodeURIComponent(assignmentId)}/transition`, input,
+      ),
+    listRegisteredStaffDevices: () => request<RegisteredStaffDevice[]>('GET', '/v1/operations/devices'),
+    registerStaffDevice: (label: string) =>
+      request<RegisteredStaffDeviceSecret>('POST', '/v1/operations/devices', { label }),
+    revokeStaffDevice: (deviceId: string) =>
+      request<void>('DELETE', `/v1/operations/devices/${encodeURIComponent(deviceId)}`),
+    syncOfflineScans: (input: OfflineScanSyncInput) =>
+      request<OfflineScanSync>('POST', '/v1/operations/offline-scans/sync', input),
+    listGovernancePolicies: () => request<GovernancePolicy[]>('GET', '/v1/operations/policies'),
+    publishGovernancePolicy: (input: GovernancePolicyInput) =>
+      request<GovernancePolicy>('POST', '/v1/operations/policies', input),
+    listMyGovernancePolicies: () => request<EffectiveGovernancePolicy[]>('GET', '/v1/operations/me/policies'),
+    recordGovernanceConsent: (policyVersionId: string, input: ConsentActionInput) =>
+      request<ConsentAction>(
+        'POST', `/v1/operations/me/policies/${encodeURIComponent(policyVersionId)}/actions`, input,
+      ),
+    listTier5Assignments: () => request<Tier5Assignment[]>('GET', '/v1/operations/tier5-assignments'),
+    listTier5Certifications: () => request<Tier5Certification[]>('GET', '/v1/operations/tier5-certifications'),
+    recordTier5Certification: (input: Tier5CertificationInput) =>
+      request<Tier5Certification>('POST', '/v1/operations/tier5-certifications', input),
+    getVolunteerAggregate: (eventId: string) =>
+      request<VolunteerAggregate>('GET', `/v1/operations/aggregates/volunteers/${encodeURIComponent(eventId)}`),
 
     /** Elections running for the member's area, with the official source and labelled notices (FR-ELX-001, 004). */
     getCurrentElections: () => request<ElectionBanner[]>('GET', '/v1/election/current'),

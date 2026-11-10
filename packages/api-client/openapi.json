@@ -9111,6 +9111,892 @@
         }
       }
     },
+    "/v1/operations/readiness": {
+      "get": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "Operational Readiness",
+        "operationId": "operational_readiness_v1_operations_readiness_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationalReadinessOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/operations/controls": {
+      "post": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "Record Control",
+        "operationId": "record_control_v1_operations_controls_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ControlIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/operations/volunteer-assignments": {
+      "get": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "List Volunteer Assignments",
+        "operationId": "list_volunteer_assignments_v1_operations_volunteer_assignments_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VolunteerAssignmentOut"
+                  },
+                  "title": "Response List Volunteer Assignments V1 Operations Volunteer Assignments Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "Create Volunteer Assignment",
+        "operationId": "create_volunteer_assignment_v1_operations_volunteer_assignments_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VolunteerAssignmentIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VolunteerAssignmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/operations/volunteer-assignment-events": {
+      "get": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "List Volunteer Assignment Events",
+        "operationId": "list_volunteer_assignment_events_v1_operations_volunteer_assignment_events_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AssignmentEventOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Volunteer Assignment Events V1 Operations Volunteer Assignment Events Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/operations/me/volunteer-assignments": {
+      "get": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "My Volunteer Assignments",
+        "operationId": "my_volunteer_assignments_v1_operations_me_volunteer_assignments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VolunteerAssignmentOut"
+                  },
+                  "type": "array",
+                  "title": "Response My Volunteer Assignments V1 Operations Me Volunteer Assignments Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/operations/me/volunteer-assignments/{assignment_id}/response": {
+      "post": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "Respond To Assignment",
+        "operationId": "respond_to_assignment_v1_operations_me_volunteer_assignments__assignment_id__response_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assignment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Assignment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignmentTransitionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VolunteerAssignmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/operations/volunteer-assignments/{assignment_id}/transition": {
+      "post": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "Transition Volunteer Assignment",
+        "operationId": "transition_volunteer_assignment_v1_operations_volunteer_assignments__assignment_id__transition_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assignment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Assignment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignmentTransitionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VolunteerAssignmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/operations/devices": {
+      "get": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "List Registered Devices",
+        "operationId": "list_registered_devices_v1_operations_devices_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RegisteredDeviceOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Registered Devices V1 Operations Devices Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "Register Device",
+        "operationId": "register_device_v1_operations_devices_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceRegisterIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceRegisteredOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/operations/devices/{device_id}": {
+      "delete": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "Revoke Device",
+        "operationId": "revoke_device_v1_operations_devices__device_id__delete",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "device_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Device Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/operations/offline-scans/sync": {
+      "post": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "Sync Offline Scans",
+        "operationId": "sync_offline_scans_v1_operations_offline_scans_sync_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfflineSyncIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfflineSyncOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/operations/policies": {
+      "get": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "List Policy Versions",
+        "operationId": "list_policy_versions_v1_operations_policies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PolicyVersionOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Policy Versions V1 Operations Policies Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "Publish Policy",
+        "operationId": "publish_policy_v1_operations_policies_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyPublishIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyVersionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/operations/me/policies": {
+      "get": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "Current Member Policies",
+        "operationId": "current_member_policies_v1_operations_me_policies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EffectivePolicyOut"
+                  },
+                  "type": "array",
+                  "title": "Response Current Member Policies V1 Operations Me Policies Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/operations/me/policies/{policy_version_id}/actions": {
+      "post": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "Record Member Policy Action",
+        "operationId": "record_member_policy_action_v1_operations_me_policies__policy_version_id__actions_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "policy_version_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Policy Version Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentActionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentActionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/operations/tier5-assignments": {
+      "get": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "List Tier5 Assignments",
+        "operationId": "list_tier5_assignments_v1_operations_tier5_assignments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Tier5AssignmentOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Tier5 Assignments V1 Operations Tier5 Assignments Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/operations/tier5-certifications": {
+      "get": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "List Tier5 Certifications",
+        "operationId": "list_tier5_certifications_v1_operations_tier5_certifications_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Tier5CertificationOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Tier5 Certifications V1 Operations Tier5 Certifications Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "Record Tier5 Certification",
+        "operationId": "record_tier5_certification_v1_operations_tier5_certifications_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Tier5CertificationIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tier5CertificationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/operations/aggregates/volunteers/{event_id}": {
+      "get": {
+        "tags": [
+          "operations-governance"
+        ],
+        "summary": "Volunteer Aggregate",
+        "operationId": "volunteer_aggregate_v1_operations_aggregates_volunteers__event_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VolunteerAggregateOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/fund/config": {
       "get": {
         "tags": [
@@ -10990,6 +11876,36 @@
         ],
         "title": "ActivityItemOut"
       },
+      "AggregateCellOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Count"
+          },
+          "suppressed": {
+            "type": "boolean",
+            "title": "Suppressed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "count",
+          "suppressed"
+        ],
+        "title": "AggregateCellOut"
+      },
       "AlbumCreateIn": {
         "properties": {
           "titleEn": {
@@ -12015,6 +12931,57 @@
         "title": "AreaRef",
         "description": "An area: the whole platform, or a province, district, DS division or GN division by code."
       },
+      "AssignmentEventOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "eventRef": {
+            "type": "string",
+            "title": "Eventref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "eventRef",
+          "titleEn",
+          "titleTa",
+          "startsAt",
+          "endsAt",
+          "areaKey",
+          "state"
+        ],
+        "title": "AssignmentEventOut"
+      },
       "AssignmentInput": {
         "properties": {
           "memberId": {
@@ -12474,6 +13441,32 @@
         ],
         "title": "AssignmentPreviewOut",
         "description": "Details of a durable preview retrieved for confirmation display."
+      },
+      "AssignmentTransitionIn": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "declined",
+              "cancelled",
+              "completed"
+            ],
+            "title": "State"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "state",
+          "reason"
+        ],
+        "title": "AssignmentTransitionIn"
       },
       "AssistedRecoveryInput": {
         "properties": {
@@ -14280,6 +15273,56 @@
         ],
         "title": "ConfigurationQueueCount"
       },
+      "ConsentActionIn": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "acknowledged",
+              "granted",
+              "withdrawn"
+            ],
+            "title": "Action"
+          },
+          "legalBasis": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 2,
+            "title": "Legalbasis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "legalBasis"
+        ],
+        "title": "ConsentActionIn"
+      },
+      "ConsentActionOut": {
+        "properties": {
+          "policyVersionId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Policyversionid"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurredat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "policyVersionId",
+          "action",
+          "occurredAt"
+        ],
+        "title": "ConsentActionOut"
+      },
       "ConsentInput": {
         "properties": {
           "noticeVersion": {
@@ -14563,6 +15606,108 @@
           "timeline"
         ],
         "title": "ContributionDetailResponse"
+      },
+      "ControlIn": {
+        "properties": {
+          "controlKey": {
+            "type": "string",
+            "enum": [
+              "offline_attendance_replay_hours",
+              "aggregate_minimum_group_size"
+            ],
+            "title": "Controlkey"
+          },
+          "integerValue": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Integervalue"
+          },
+          "decisionRevisionId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Decisionrevisionid"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Reason"
+          },
+          "confirmApprovedBasis": {
+            "type": "boolean",
+            "title": "Confirmapprovedbasis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "controlKey",
+          "integerValue",
+          "decisionRevisionId",
+          "reason",
+          "confirmApprovedBasis"
+        ],
+        "title": "ControlIn"
+      },
+      "ControlOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "controlKey": {
+            "type": "string",
+            "enum": [
+              "offline_attendance_replay_hours",
+              "aggregate_minimum_group_size"
+            ],
+            "title": "Controlkey"
+          },
+          "integerValue": {
+            "type": "integer",
+            "title": "Integervalue"
+          },
+          "decisionKey": {
+            "type": "string",
+            "title": "Decisionkey"
+          },
+          "decisionRevision": {
+            "type": "integer",
+            "title": "Decisionrevision"
+          },
+          "decisionRevisionId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Decisionrevisionid"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "recordedBy": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Recordedby"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Recordedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "controlKey",
+          "integerValue",
+          "decisionKey",
+          "decisionRevision",
+          "decisionRevisionId",
+          "reason",
+          "recordedBy",
+          "recordedAt"
+        ],
+        "title": "ControlOut"
       },
       "DecisionInput": {
         "properties": {
@@ -14889,6 +16034,52 @@
         ],
         "title": "DeviceIn"
       },
+      "DeviceRegisterIn": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label"
+        ],
+        "title": "DeviceRegisterIn"
+      },
+      "DeviceRegisteredOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "deviceToken": {
+            "type": "string",
+            "title": "Devicetoken",
+            "description": "Shown once. Store only in the operating system secure store."
+          },
+          "registeredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Registeredat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "deviceToken",
+          "registeredAt"
+        ],
+        "title": "DeviceRegisteredOut"
+      },
       "DeviceTokenIn": {
         "properties": {
           "token": {
@@ -15189,6 +16380,105 @@
           "open"
         ],
         "title": "DuplicateQueueCount"
+      },
+      "EffectivePolicyOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "policyKey": {
+            "type": "string",
+            "title": "Policykey"
+          },
+          "policyType": {
+            "type": "string",
+            "title": "Policytype"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "contentSha256": {
+            "type": "string",
+            "title": "Contentsha256"
+          },
+          "approvalReference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approvalreference"
+          },
+          "approvedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Approvedat"
+          },
+          "effectiveFrom": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Effectivefrom"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "contentText": {
+            "type": "string",
+            "title": "Contenttext"
+          },
+          "myAction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Myaction"
+          },
+          "myActionAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Myactionat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "policyKey",
+          "policyType",
+          "version",
+          "locale",
+          "contentSha256",
+          "approvalReference",
+          "approvedAt",
+          "effectiveFrom",
+          "createdAt",
+          "contentText",
+          "myAction",
+          "myActionAt"
+        ],
+        "title": "EffectivePolicyOut"
       },
       "ElectionBannerOut": {
         "properties": {
@@ -18660,6 +19950,169 @@
         "title": "NotificationOut",
         "description": "An inbox item. targetKind and targetId say what it opens (BR-027); actionNeeded stays true\nuntil the task is done, whether or not it was read."
       },
+      "OfflineScanIn": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Idempotencykey"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Eventid"
+          },
+          "passCode": {
+            "type": "string",
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "Passcode"
+          },
+          "clientScanAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Clientscanat"
+          },
+          "localOutcome": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Localoutcome"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "idempotencyKey",
+          "eventId",
+          "passCode",
+          "clientScanAt",
+          "localOutcome"
+        ],
+        "title": "OfflineScanIn"
+      },
+      "OfflineScanOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Idempotencykey"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "DUPLICATE",
+              "REJECTED",
+              "NEEDS_REVIEW",
+              "EXPIRED_QUEUE"
+            ],
+            "title": "Status"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "idempotencyKey",
+          "status",
+          "reason"
+        ],
+        "title": "OfflineScanOut"
+      },
+      "OfflineSyncIn": {
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Deviceid"
+          },
+          "deviceToken": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 32,
+            "title": "Devicetoken"
+          },
+          "scans": {
+            "items": {
+              "$ref": "#/components/schemas/OfflineScanIn"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Scans"
+          }
+        },
+        "type": "object",
+        "required": [
+          "deviceId",
+          "deviceToken",
+          "scans"
+        ],
+        "title": "OfflineSyncIn"
+      },
+      "OfflineSyncOut": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/OfflineScanOut"
+            },
+            "type": "array",
+            "title": "Results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "results"
+        ],
+        "title": "OfflineSyncOut"
+      },
+      "OperationalReadinessOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReadinessItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "tier5Assignments": {
+            "type": "integer",
+            "title": "Tier5Assignments"
+          },
+          "tier5Certified": {
+            "type": "integer",
+            "title": "Tier5Certified"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "tier5Assignments",
+          "tier5Certified"
+        ],
+        "title": "OperationalReadinessOut"
+      },
       "PassCodeOut": {
         "properties": {
           "code": {
@@ -19332,6 +20785,148 @@
           "current"
         ],
         "title": "PolicyDecisionOut"
+      },
+      "PolicyPublishIn": {
+        "properties": {
+          "policyKey": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Policykey"
+          },
+          "policyType": {
+            "type": "string",
+            "enum": [
+              "privacy_notice",
+              "terms",
+              "optional_consent",
+              "election_rule"
+            ],
+            "title": "Policytype"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "en",
+              "ta"
+            ],
+            "title": "Locale"
+          },
+          "contentText": {
+            "type": "string",
+            "maxLength": 100000,
+            "minLength": 1,
+            "title": "Contenttext"
+          },
+          "approvalReference": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Approvalreference"
+          },
+          "approvedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Approvedat"
+          },
+          "effectiveFrom": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Effectivefrom"
+          },
+          "confirmImmutablePublication": {
+            "type": "boolean",
+            "title": "Confirmimmutablepublication"
+          }
+        },
+        "type": "object",
+        "required": [
+          "policyKey",
+          "policyType",
+          "version",
+          "locale",
+          "contentText",
+          "approvalReference",
+          "approvedAt",
+          "effectiveFrom",
+          "confirmImmutablePublication"
+        ],
+        "title": "PolicyPublishIn"
+      },
+      "PolicyVersionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "policyKey": {
+            "type": "string",
+            "title": "Policykey"
+          },
+          "policyType": {
+            "type": "string",
+            "title": "Policytype"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "contentSha256": {
+            "type": "string",
+            "title": "Contentsha256"
+          },
+          "approvalReference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approvalreference"
+          },
+          "approvedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Approvedat"
+          },
+          "effectiveFrom": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Effectivefrom"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "policyKey",
+          "policyType",
+          "version",
+          "locale",
+          "contentSha256",
+          "approvalReference",
+          "approvedAt",
+          "effectiveFrom",
+          "createdAt"
+        ],
+        "title": "PolicyVersionOut"
       },
       "PreviewOut": {
         "properties": {
@@ -20178,6 +21773,51 @@
         ],
         "title": "QueuedRemovalOut"
       },
+      "ReadinessItem": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "ready": {
+            "type": "boolean",
+            "title": "Ready"
+          },
+          "decisionKey": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionkey"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "ready",
+          "reason"
+        ],
+        "title": "ReadinessItem"
+      },
       "ReceiptResponse": {
         "properties": {
           "receiptCode": {
@@ -20417,6 +22057,57 @@
           "note"
         ],
         "title": "RegisterEntryOut"
+      },
+      "RegisteredDeviceOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "registeredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Registeredat"
+          },
+          "lastSeenAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lastseenat"
+          },
+          "revokedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revokedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "registeredAt",
+          "lastSeenAt",
+          "revokedAt"
+        ],
+        "title": "RegisteredDeviceOut"
       },
       "RegistrationInput": {
         "properties": {
@@ -22456,6 +24147,225 @@
         ],
         "title": "SwitchIn"
       },
+      "Tier5AssignmentOut": {
+        "properties": {
+          "assignmentId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assignmentid"
+          },
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "grantedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Grantedat"
+          },
+          "endedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "assignmentId",
+          "memberId",
+          "fullName",
+          "memberCode",
+          "state",
+          "grantedAt",
+          "endedAt"
+        ],
+        "title": "Tier5AssignmentOut"
+      },
+      "Tier5CertificationIn": {
+        "properties": {
+          "assignmentId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assignmentid"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "certified",
+              "revoked_required"
+            ],
+            "title": "Decision"
+          },
+          "periodStart": {
+            "type": "string",
+            "format": "date",
+            "title": "Periodstart"
+          },
+          "periodEnd": {
+            "type": "string",
+            "format": "date",
+            "title": "Periodend"
+          },
+          "reviewerName": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Reviewername"
+          },
+          "reviewerTitle": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Reviewertitle"
+          },
+          "evidenceRef": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Evidenceref"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Reason"
+          },
+          "certifiedAt": {
+            "type": "string",
+            "format": "date",
+            "title": "Certifiedat"
+          },
+          "confirmExternalReview": {
+            "type": "boolean",
+            "title": "Confirmexternalreview"
+          }
+        },
+        "type": "object",
+        "required": [
+          "assignmentId",
+          "decision",
+          "periodStart",
+          "periodEnd",
+          "reviewerName",
+          "reviewerTitle",
+          "evidenceRef",
+          "reason",
+          "certifiedAt",
+          "confirmExternalReview"
+        ],
+        "title": "Tier5CertificationIn"
+      },
+      "Tier5CertificationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "assignmentId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assignmentid"
+          },
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "decision": {
+            "type": "string",
+            "title": "Decision"
+          },
+          "periodStart": {
+            "type": "string",
+            "format": "date",
+            "title": "Periodstart"
+          },
+          "periodEnd": {
+            "type": "string",
+            "format": "date",
+            "title": "Periodend"
+          },
+          "reviewerName": {
+            "type": "string",
+            "title": "Reviewername"
+          },
+          "reviewerTitle": {
+            "type": "string",
+            "title": "Reviewertitle"
+          },
+          "evidenceRef": {
+            "type": "string",
+            "title": "Evidenceref"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "certifiedAt": {
+            "type": "string",
+            "format": "date",
+            "title": "Certifiedat"
+          },
+          "recordedBy": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Recordedby"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Recordedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "assignmentId",
+          "memberId",
+          "fullName",
+          "memberCode",
+          "decision",
+          "periodStart",
+          "periodEnd",
+          "reviewerName",
+          "reviewerTitle",
+          "evidenceRef",
+          "reason",
+          "certifiedAt",
+          "recordedBy",
+          "recordedAt"
+        ],
+        "title": "Tier5CertificationOut"
+      },
       "TierInfo": {
         "properties": {
           "tier": {
@@ -22726,6 +24636,223 @@
         ],
         "title": "ViewLinkOut",
         "description": "A path on this API that shows one image to the reviewer it was issued to, until expiresAt."
+      },
+      "VolunteerAggregateOut": {
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Eventid"
+          },
+          "minimumGroupSize": {
+            "type": "integer",
+            "title": "Minimumgroupsize"
+          },
+          "total": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total"
+          },
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/AggregateCellOut"
+            },
+            "type": "array",
+            "title": "Cells"
+          }
+        },
+        "type": "object",
+        "required": [
+          "eventId",
+          "minimumGroupSize",
+          "total",
+          "cells"
+        ],
+        "title": "VolunteerAggregateOut"
+      },
+      "VolunteerAssignmentIn": {
+        "properties": {
+          "memberCode": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 3,
+            "title": "Membercode"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Eventid"
+          },
+          "consentVersion": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Consentversion"
+          },
+          "dutyType": {
+            "type": "string",
+            "enum": [
+              "registration",
+              "scanning",
+              "member_assistance",
+              "accessibility_support",
+              "logistics",
+              "coordination",
+              "administration"
+            ],
+            "title": "Dutytype"
+          },
+          "shiftStart": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Shiftstart"
+          },
+          "shiftEnd": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Shiftend"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberCode",
+          "eventId",
+          "consentVersion",
+          "dutyType",
+          "shiftStart",
+          "shiftEnd"
+        ],
+        "title": "VolunteerAssignmentIn"
+      },
+      "VolunteerAssignmentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "memberName": {
+            "type": "string",
+            "title": "Membername"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Eventid"
+          },
+          "eventRef": {
+            "type": "string",
+            "title": "Eventref"
+          },
+          "eventTitleEn": {
+            "type": "string",
+            "title": "Eventtitleen"
+          },
+          "eventTitleTa": {
+            "type": "string",
+            "title": "Eventtitleta"
+          },
+          "consentVersion": {
+            "type": "string",
+            "title": "Consentversion"
+          },
+          "dutyType": {
+            "type": "string",
+            "enum": [
+              "registration",
+              "scanning",
+              "member_assistance",
+              "accessibility_support",
+              "logistics",
+              "coordination",
+              "administration"
+            ],
+            "title": "Dutytype"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "shiftStart": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Shiftstart"
+          },
+          "shiftEnd": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Shiftend"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "offered",
+              "accepted",
+              "declined",
+              "cancelled",
+              "completed"
+            ],
+            "title": "State"
+          },
+          "acknowledgedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acknowledgedat"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "memberId",
+          "memberName",
+          "memberCode",
+          "eventId",
+          "eventRef",
+          "eventTitleEn",
+          "eventTitleTa",
+          "consentVersion",
+          "dutyType",
+          "areaKey",
+          "shiftStart",
+          "shiftEnd",
+          "state",
+          "acknowledgedAt",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "VolunteerAssignmentOut"
       },
       "WorkQueuesOut": {
         "properties": {

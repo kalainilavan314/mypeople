@@ -107,6 +107,17 @@ export const en = {
     manual: 'Manual',
     scanned: 'Scanned',
     notYet: 'Not yet',
+    prepareOffline: 'Prepare this device for offline check-in',
+    offlineReady: 'This device is ready for offline check-in',
+    offlineProvisional: 'Offline scans are queued only. Attendance is final only after the server validates and synchronises each scan.',
+    syncQueued: 'Synchronise queued scans',
+    syncResult: '{{accepted}} accepted · {{review}} need review',
+  },
+  assignments: {
+    title: 'Volunteer assignments', summary: '{{count}} assignments', empty: 'No volunteer assignments.',
+    accept: 'Accept assignment', decline: 'Decline assignment',
+    state_offered: 'Awaiting your response', state_accepted: 'Accepted', state_declined: 'Declined', state_cancelled: 'Cancelled', state_completed: 'Completed',
+    duty_registration: 'Registration', duty_scanning: 'Scanning', duty_member_assistance: 'Member assistance', duty_accessibility_support: 'Accessibility support', duty_logistics: 'Logistics', duty_coordination: 'Coordination', duty_administration: 'Administration',
   },
   approvals: {
     title: 'Approvals and escalations',

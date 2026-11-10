@@ -1,4 +1,4 @@
-import type { NotificationChoices } from '@my-people/api-client';
+import type { EffectiveGovernancePolicy, NotificationChoices } from '@my-people/api-client';
 import { useState } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +30,7 @@ export default function SettingsScreen() {
   const { t } = useTranslation();
   const language = useLanguage();
   const choices = useApiQuery(() => api().getNotificationChoices());
+  const policies = useApiQuery(() => api().listMyGovernancePolicies(), [language]);
   return (
     <Screen edges={['bottom']}>
       <AppText step="section" accessibilityRole="header">
@@ -48,8 +49,49 @@ export default function SettingsScreen() {
         {t('m.profile.notifications')}
       </AppText>
       <QueryView query={choices}>{(data) => <ChoicesForm initial={data} />}</QueryView>
+      <AppText step="section" accessibilityRole="header">
+        {t('m.profile.policies')}
+      </AppText>
+      <QueryView query={policies}>{(data) => <PolicyChoices items={data} reload={policies.reload} />}</QueryView>
     </Screen>
   );
+}
+
+function PolicyChoices({ items, reload }: { items: EffectiveGovernancePolicy[]; reload: () => void }) {
+  const { t } = useTranslation();
+  const action = useApiAction(async (policy: EffectiveGovernancePolicy, next: 'acknowledged' | 'granted' | 'withdrawn') => {
+    await api().recordGovernanceConsent(policy.id, {
+      action: next,
+      legalBasis: policy.policyType === 'optional_consent' ? 'consent' : 'legal_notice_acknowledgement',
+    });
+    reload();
+  });
+  if (items.length === 0) return <AppText step="secondary" tone="muted">{t('m.profile.noPolicies')}</AppText>;
+  return <>
+    {items.map((policy) => {
+      const optional = policy.policyType === 'optional_consent';
+      const active = optional ? policy.myAction === 'granted' : policy.myAction === 'acknowledged';
+      return <SurfaceCard key={policy.id}>
+        <AppText step="section">{policy.policyKey}</AppText>
+        <AppText step="caption" tone="muted">{t('m.profile.policyVersion', { version: policy.version })}</AppText>
+        <AppText step="body" tone="secondary">{policy.contentText}</AppText>
+        <Notice tone={active ? 'success' : 'warning'}>
+          {active ? t('m.profile.policyCurrent') : t('m.profile.policyActionNeeded')}
+        </Notice>
+        {optional ? <Button
+          label={active ? t('m.profile.withdrawConsent') : t('m.profile.giveConsent')}
+          variant={active ? 'secondary' : 'primary'}
+          busy={action.busy}
+          onPress={() => void action.run(policy, active ? 'withdrawn' : 'granted')}
+        /> : !active ? <Button
+          label={t('m.profile.acknowledgePolicy')}
+          busy={action.busy}
+          onPress={() => void action.run(policy, 'acknowledged')}
+        /> : null}
+      </SurfaceCard>;
+    })}
+    {action.error ? <Notice tone="error">{t('m.errors.unknown')}</Notice> : null}
+  </>;
 }
 
 function ChoicesForm({ initial }: { initial: NotificationChoices }) {

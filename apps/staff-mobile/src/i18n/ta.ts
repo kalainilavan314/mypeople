@@ -109,6 +109,17 @@ export const ta: StaffStrings = {
     manual: 'கைமுறை',
     scanned: 'ஸ்கேன்',
     notYet: 'இன்னும் இல்லை',
+    prepareOffline: 'இணையமில்லா வருகைப் பதிவுக்கு இந்தச் சாதனத்தைத் தயார்செய்',
+    offlineReady: 'இந்தச் சாதனம் இணையமில்லா வருகைப் பதிவுக்குத் தயாராக உள்ளது',
+    offlineProvisional: 'இணையமில்லா ஸ்கேன்கள் வரிசையில் மட்டும் வைக்கப்படும். சேவையகம் ஒவ்வொரு ஸ்கேனையும் சரிபார்த்து ஒத்திசைத்த பின்னரே வருகை இறுதியானது.',
+    syncQueued: 'வரிசையிலுள்ள ஸ்கேன்களை ஒத்திசை',
+    syncResult: '{{accepted}} ஏற்கப்பட்டன · {{review}} மீளாய்வு தேவை',
+  },
+  assignments: {
+    title: 'தன்னார்வப் பணிகள்', summary: '{{count}} பணிகள்', empty: 'தன்னார்வப் பணிகள் இல்லை.',
+    accept: 'பணியை ஏற்கவும்', decline: 'பணியை மறுக்கவும்',
+    state_offered: 'உங்கள் பதிலுக்காகக் காத்திருக்கிறது', state_accepted: 'ஏற்கப்பட்டது', state_declined: 'மறுக்கப்பட்டது', state_cancelled: 'ரத்துசெய்யப்பட்டது', state_completed: 'முடிந்தது',
+    duty_registration: 'பதிவு', duty_scanning: 'ஸ்கேனிங்', duty_member_assistance: 'உறுப்பினர் உதவி', duty_accessibility_support: 'அணுகல்தன்மை உதவி', duty_logistics: 'தளவாடம்', duty_coordination: 'ஒருங்கிணைப்பு', duty_administration: 'நிர்வாகம்',
   },
   approvals: {
     title: 'அனுமதிகளும் மேல்முறையீடுகளும்',

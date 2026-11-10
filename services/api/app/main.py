@@ -36,6 +36,7 @@ from app.modules.messaging.broadcasts import router as broadcasts
 from app.modules.messaging.notifications import router as notifications
 from app.modules.privacy import router as privacy
 from app.modules.policy_decisions import router as policy_decisions
+from app.modules.operations import router as operations
 from app.modules.profile import router as profile
 from app.modules.profile.area_changes import router as area_changes
 from app.modules.auth import router as auth
@@ -111,6 +112,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(notifications.router)
     app.include_router(features.router)
     app.include_router(policy_decisions.router)
+    app.include_router(operations)
     app.include_router(fund_router)
     app.include_router(finance_router)
     app.include_router(households.router)
