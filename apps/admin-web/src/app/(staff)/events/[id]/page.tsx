@@ -388,6 +388,16 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
                   className="min-h-11 rounded-lg border border-line px-3"
                 />
               </label>
+              <label className="flex flex-col gap-1 text-sm font-semibold text-text sm:col-span-2">
+                <span lang={locale}>{locale === 'ta' ? 'நிகழ்ச்சி நிரல்' : 'Agenda'}</span>
+                <textarea
+                  name="agenda"
+                  defaultValue={event.agenda}
+                  maxLength={4000}
+                  rows={4}
+                  className="rounded-lg border border-line px-3 py-2"
+                />
+              </label>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">

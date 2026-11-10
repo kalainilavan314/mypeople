@@ -9,14 +9,17 @@ type Props = {
   /** Called once per code; the screen pauses scanning until the person asks for the next. */
   onScan: (code: string) => void;
   paused: boolean;
+  /** Shown when the camera is off: whether this screen has a manual route differs. */
+  deniedMessage: string;
 };
 
 /**
  * The camera reading QR codes (event passes, member cards). If the camera is
- * refused or broken the screen's manual route still works (FR-VOI-007).
+ * refused or broken an event's manual route still works (FR-VOI-007); a card
+ * check has none on purpose, so each screen says what to do instead.
  * Nothing is recorded by the camera itself; only the code goes to the API.
  */
-export function Scanner({ onScan, paused }: Props) {
+export function Scanner({ onScan, paused, deniedMessage }: Props) {
   const { t } = useTranslation();
   const [permission, requestPermission] = useCameraPermissions();
 
@@ -24,7 +27,7 @@ export function Scanner({ onScan, paused }: Props) {
   if (!permission.granted) {
     return (
       <View style={styles.denied}>
-        <Notice tone="warning">{t('s.checkIn.cameraDenied')}</Notice>
+        <Notice tone="warning">{deniedMessage}</Notice>
         {permission.canAskAgain ? (
           <Button label={t('s.checkIn.cameraAsk')} variant="secondary" icon="camera-outline" onPress={() => void requestPermission()} />
         ) : null}

@@ -65,7 +65,7 @@ export function AreaChangeItem({ change, onDone }: { change: QueuedAreaChange } 
       <AppText step="card">{t('s.approvals.to', { to: change.toGnName })}</AppText>
       {change.fromGn ? (
         <AppText step="secondary" tone="muted">
-          {t('s.approvals.from', { from: change.fromGn })}
+          {t('s.approvals.from', { from: change.fromGnName ?? change.fromGn })}
         </AppText>
       ) : null}
       <AppText step="caption" tone="muted" mono>

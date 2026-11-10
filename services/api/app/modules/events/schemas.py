@@ -191,6 +191,16 @@ class ManagedEventOut(EventDetailOut):
         )
 
 
+class CheckInEventOut(EventSummaryOut):
+    """S08: an event the staff member may scan at or read the roster of."""
+
+    can_scan: bool = Field(description="False when the person may only read the roster here")
+
+    @classmethod
+    def for_staff(cls, event: StoredEvent, can_scan: bool) -> "CheckInEventOut":
+        return cls.model_validate({**_summary_fields(event, None), "can_scan": can_scan})
+
+
 class PassScanIn(CamelModel):
     code: str = Field(min_length=1, max_length=200)
 

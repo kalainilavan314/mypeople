@@ -19,6 +19,7 @@ from app.modules.events.schemas import (
     ManualCheckInIn,
     ManualCheckInOut,
     CancelIn,
+    CheckInEventOut,
     EventCreateIn,
     EventDetailOut,
     EventPassOut,
@@ -210,6 +211,19 @@ def cancel_event(
     except service.EventRefused as error:
         raise _refused(error) from None
     return ManagedEventOut.managed(event, _send(background, request, notice))
+
+
+@router.get("/check-in")
+def list_check_in_events(
+    staff: CanViewRoster,
+    db: Db,
+    until: Annotated[datetime, Query(description="Only events starting before this time")],
+    limit: Annotated[int, Query(ge=1, le=200)] = 50,
+) -> list[CheckInEventOut]:
+    """S08: published events not yet over in the areas where the caller holds events.checkin_scan
+    or events.manage, soonest first; canScan says whether passes can be scanned there."""
+    starts_before = until if until.tzinfo else until.replace(tzinfo=UTC)
+    return [CheckInEventOut.for_staff(item.event, item.can_scan) for item in service.check_in_events(db, staff, starts_before, limit)]
 
 
 @router.post("/{event_id}/scan", responses=REFUSED)

@@ -15,6 +15,7 @@ class StoredChange:
     request_ref: str
     member_id: uuid.UUID
     from_gn: str | None
+    from_gn_name: str | None
     to_gn: str
     to_gn_name: str
     area_path: list[str]
@@ -29,9 +30,12 @@ class StoredChange:
 
 
 _SELECT = """
-    SELECT c.id, c.request_ref, c.member_id, c.from_gn, c.to_gn, g.name_en AS to_gn_name, c.area_path, c.proof_id,
-           c.proof_key, c.proof_type, c.state, c.decision_reason, c.created_at, c.submitted_at, c.decided_at
-    FROM profile.area_change c JOIN geo.gn_division g ON g.gn_code = c.to_gn
+    SELECT c.id, c.request_ref, c.member_id, c.from_gn, fg.name_en AS from_gn_name, c.to_gn, g.name_en AS to_gn_name,
+           c.area_path, c.proof_id, c.proof_key, c.proof_type, c.state, c.decision_reason, c.created_at, c.submitted_at,
+           c.decided_at
+    FROM profile.area_change c
+    JOIN geo.gn_division g ON g.gn_code = c.to_gn
+    LEFT JOIN geo.gn_division fg ON fg.gn_code = c.from_gn
 """
 
 
@@ -103,10 +107,16 @@ def withdraw(db: Session, change_id: uuid.UUID) -> None:
     )
 
 
-def queue(db: Session, *, visible_areas: list[str] | None, states: list[str], limit: int) -> list[StoredChange]:
-    """Oldest submitted first. visible_areas=None means every area."""
+def queue(
+    db: Session, *, visible_areas: list[str] | None, states: list[str], limit: int, reviewer_id: uuid.UUID | None = None
+) -> list[StoredChange]:
+    """Oldest submitted first. visible_areas=None means every area. A reviewer's own requests are left out:
+    nobody may open or decide their own record, so listing it would only offer refused actions."""
     conditions = ["c.state = ANY(CAST(:states AS text[]))"]
     params: dict[str, Any] = {"states": states, "limit": limit}
+    if reviewer_id is not None:
+        conditions.append("c.member_id <> :reviewer")
+        params["reviewer"] = reviewer_id
     if visible_areas is not None:
         conditions.append("c.area_path && CAST(:areas AS text[])")
         params["areas"] = visible_areas

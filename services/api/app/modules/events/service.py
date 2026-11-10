@@ -420,6 +420,23 @@ def scan(db: Session, staff: Staff, event_id: uuid.UUID, code: str, jwt_secret: 
     return _check_in_answer(db, event, result, member_id)
 
 
+@dataclass(frozen=True)
+class CheckInEvent:
+    event: StoredEvent
+    can_scan: bool
+
+
+def check_in_events(db: Session, staff: Staff, starts_before: datetime, limit: int) -> list[CheckInEvent]:
+    """S08: the events where the person may scan passes or read the roster, and which of the two.
+    Listing every published event instead offered scanners events outside their areas, where each
+    scan is refused."""
+    scan_areas = access.visible_areas(staff, SCAN)
+    manage_areas = access.visible_areas(staff, MANAGE)
+    areas = None if scan_areas is None or manage_areas is None else sorted({*scan_areas, *manage_areas})
+    events = repository.check_in_events(db, visible_areas=areas, ends_from=_now(), starts_before=starts_before, limit=limit)
+    return [CheckInEvent(event, access.has_permission_over(staff, SCAN, _area_path(event))) for event in events]
+
+
 def _check_in_answer(
     db: Session, event: StoredEvent, result: rules.ScanResult | rules.ManualResult, member_id: uuid.UUID | None
 ) -> CheckIn:

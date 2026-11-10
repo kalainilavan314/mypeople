@@ -395,6 +395,34 @@ def test_manual_check_in_needs_the_scanning_permission_in_the_area(client, db_se
     assert (response.status_code, response.json()) == (403, {"detail": "outside_your_area"})
 
 
+def test_the_check_in_list_offers_only_events_the_person_may_scan_at_or_see_the_roster_of(
+    client, db_session, auth, member, manager, scanner, make_reviewer, area, new_event
+):
+    here = new_event()
+    draft = new_event(publish=False)
+    later = new_event(startsAt=iso(datetime.now(UTC) + timedelta(days=10)), endsAt=iso(datetime.now(UTC) + timedelta(days=10, hours=2)))
+    elsewhere = make_reviewer(
+        db_session.scalar(
+            text("SELECT district_code FROM geo.district WHERE district_code <> :code LIMIT 1"), {"code": area.district}
+        ),
+        permissions=(SCAN,),
+    )
+    week = {"until": iso(datetime.now(UTC) + timedelta(days=7))}
+
+    def listed(person: Row) -> dict[str, bool]:
+        response = client.get("/v1/events/check-in", params=week, headers=auth(person))
+        assert response.status_code == 200, response.text
+        return {item["id"]: item["canScan"] for item in response.json()}
+
+    for_scanner, for_manager, for_elsewhere = listed(scanner), listed(manager), listed(elsewhere)
+
+    assert for_scanner.get(here["id"]) is True
+    assert for_manager.get(here["id"]) is False  # the roster only: managing is not scanning
+    assert here["id"] not in for_elsewhere  # every scan there would be refused
+    assert not {draft["id"], later["id"]} & (for_scanner.keys() | for_manager.keys())
+    assert client.get("/v1/events/check-in", params=week, headers=auth(member)).json() == {"detail": "forbidden"}
+
+
 # --- Changes and cancellation (FR-ADM-004) -----------------------------------------------------------------
 
 

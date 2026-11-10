@@ -32,8 +32,9 @@ const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
  * S08 entry: the events of the coming week and checking a membership card.
  * Scans saved offline at any event can be sent from here once the phone is
  * back online, without returning to that event's scanner.
- * Scanning at an event needs events.checkin_scan over its area; the API
- * checks that per event, so an event outside the person's areas refuses.
+ * The API lists only events in the person's own areas: scanning needs
+ * events.checkin_scan over the event's area (canScan), and an event manager
+ * (events.manage) still opens the roster where they cannot scan.
  */
 export default function CheckInScreen() {
   const { t } = useTranslation();
@@ -41,6 +42,7 @@ export default function CheckInScreen() {
   const localized = useLocalized();
   const { permissions } = useStaff();
   const canScan = permissions.has('events.checkin_scan');
+  const canSeeRoster = canScan || permissions.has('events.manage');
   const member = useMember();
   const [pending, setPending] = useState(0);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
@@ -64,8 +66,8 @@ export default function CheckInScreen() {
     }
   });
   const events = useApiQuery(
-    async () => canScan ? api().listEvents({ scope: 'all', until: new Date(Date.now() + WEEK_MS).toISOString() }) : [],
-    [canScan],
+    async () => canSeeRoster ? api().listCheckInEvents(new Date(Date.now() + WEEK_MS).toISOString()) : [],
+    [canSeeRoster],
   );
   const reload = useCallback(() => {
     events.reload();
@@ -76,13 +78,13 @@ export default function CheckInScreen() {
     void refreshPending();
   }, [refreshPending]);
 
-  if (!canScan) {
+  if (!canSeeRoster) {
     return <Screen edges={[]}><Notice tone="warning">{t('s.checkIn.noAccess')}</Notice></Screen>;
   }
 
   return (
     <Screen edges={[]} onRefresh={events.reload} refreshing={events.loading && events.data !== undefined}>
-      {pending > 0 ? (
+      {canScan && pending > 0 ? (
         <SurfaceCard>
           <AppText step="label">{t('s.checkIn.pending', { count: pending })}</AppText>
           <Button
@@ -97,46 +99,48 @@ export default function CheckInScreen() {
       ) : null}
       {syncMessage ? <Notice tone="info">{syncMessage}</Notice> : null}
       {sync.error ? <Notice tone="error">{errorMessage(t, sync.error)}</Notice> : null}
-      <Button label={t('s.checkIn.cardCheck')} variant="secondary" icon="card-outline" onPress={() => router.push('/card-check')} />
+      {canScan ? (
+        <Button label={t('s.checkIn.cardCheck')} variant="secondary" icon="card-outline" onPress={() => router.push('/card-check')} />
+      ) : null}
       <AppText step="section" accessibilityRole="header">
         {t('s.checkIn.chooseEvent')}
       </AppText>
       <QueryView query={events}>
         {(list) =>
-          list.filter((event) => event.state === 'published').length === 0 ? (
+          list.length === 0 ? (
             <AppText step="secondary" tone="muted">
               {t('s.checkIn.noEvents')}
             </AppText>
           ) : (
-            list
-              .filter((event) => event.state === 'published')
-              .map((event) => (
-                <SurfaceCard key={event.id}>
-                  <View style={styles.row}>
-                    <DateBadge iso={event.startsAt} />
-                    <View style={styles.text}>
-                      <AppText step="card">{localized(event.titleEn, event.titleTa)}</AppText>
-                      <AppText step="secondary" tone="muted">
-                        {`${formatSpan(event.startsAt, event.endsAt, language)} · ${event.venue}`}
-                      </AppText>
-                      <AppText step="caption" tone="muted" mono>
-                        {event.eventRef}
-                      </AppText>
-                    </View>
+            list.map((event) => (
+              <SurfaceCard key={event.id}>
+                <View style={styles.row}>
+                  <DateBadge iso={event.startsAt} />
+                  <View style={styles.text}>
+                    <AppText step="card">{localized(event.titleEn, event.titleTa)}</AppText>
+                    <AppText step="secondary" tone="muted">
+                      {`${formatSpan(event.startsAt, event.endsAt, language)} · ${event.venue}`}
+                    </AppText>
+                    <AppText step="caption" tone="muted" mono>
+                      {event.eventRef}
+                    </AppText>
                   </View>
+                </View>
+                {event.canScan ? (
                   <Button
                     label={t('s.checkIn.scanPass')}
                     icon="qr-code-outline"
                     onPress={() => router.push({ pathname: '/checkin/[id]', params: { id: event.id } })}
                   />
-                  <Button
-                    label={t('s.checkIn.roster')}
-                    variant="secondary"
-                    icon="people-outline"
-                    onPress={() => router.push({ pathname: '/roster/[id]', params: { id: event.id } })}
-                  />
-                </SurfaceCard>
-              ))
+                ) : null}
+                <Button
+                  label={t('s.checkIn.roster')}
+                  variant="secondary"
+                  icon="people-outline"
+                  onPress={() => router.push({ pathname: '/roster/[id]', params: { id: event.id } })}
+                />
+              </SurfaceCard>
+            ))
           )
         }
       </QueryView>

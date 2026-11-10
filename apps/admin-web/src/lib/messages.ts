@@ -5,6 +5,24 @@ export type BilingualText = {
   en: string;
 };
 
+/** The reviewer's checklist, in order; also names an item a refusal says was not confirmed. */
+export const CHECKLIST_LABELS: Record<string, BilingualText> = {
+  pages_present: { ta: 'அனைத்துப் பக்கங்களும் பக்கவாட்டுகளும் கிடைக்கின்றன', en: 'Every page and side is present' },
+  readable: { ta: 'அனைத்துப் படங்களும் தெளிவாக வாசிக்கக்கூடியவை', en: 'Every image is readable' },
+  details_match_profile: { ta: 'பெயரும் பிறந்த திகதியும் சுயவிவரத்துடன் பொருந்துகின்றன', en: 'Name and date of birth match the profile' },
+  selfie_reviewable: { ta: 'சுயபடம் அதே நபரைத் தெளிவாகக் காட்டுகிறது', en: 'The selfie shows the same person clearly' },
+  area_checked: { ta: 'பகுதி உறுப்பினருக்குப் பொருத்தமானது', en: 'The area is plausible for the member' },
+};
+
+/** Identity images and the profile, as the review page and its refusals name them. */
+export const EVIDENCE_LABELS: Record<string, BilingualText> = {
+  nic_front: { ta: 'தே.அ.அட்டை முன்பக்கம்', en: 'NIC front' },
+  nic_back: { ta: 'தே.அ.அட்டை பின்பக்கம்', en: 'NIC back' },
+  passport_page: { ta: 'கடவுச்சீட்டு பக்கம்', en: 'Passport page' },
+  selfie: { ta: 'சுயபடம்', en: 'Selfie' },
+  profile_details: { ta: 'சுயவிவர விவரங்கள்', en: 'Profile details' },
+};
+
 // Bilingual dictionary for operational messages and refusals.
 // Tamil first, English supporting below (CLAUDE.md / Priority 2).
 const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
@@ -643,14 +661,14 @@ export function bilingualProblemText(problem: string): BilingualText {
   const [code, detail] = problem.split(':', 2);
   if (code === 'checklist_incomplete') {
     return {
-      ta: `சரிபார்ப்புப் பட்டியல் பூர்த்தியாகவில்லை: ${detail}.`,
-      en: `Checklist item not confirmed: ${detail}.`,
+      ta: `சரிபார்ப்புப் பட்டியல் பூர்த்தியாகவில்லை: ${CHECKLIST_LABELS[detail]?.ta ?? detail}.`,
+      en: `Checklist item not confirmed: ${CHECKLIST_LABELS[detail]?.en ?? detail}.`,
     };
   }
   if (code === 'evidence_not_viewed') {
     return {
-      ta: `அங்கீகரிப்பதற்கு முன் ${detail?.replace('_', ' ')} சான்றைத் திறக்கவும்.`,
-      en: `Open the ${detail?.replace('_', ' ')} image before approving.`,
+      ta: `அங்கீகரிப்பதற்கு முன் ${EVIDENCE_LABELS[detail]?.ta ?? detail} சான்றைத் திறக்கவும்.`,
+      en: `Open the ${EVIDENCE_LABELS[detail]?.en ?? detail} image before approving.`,
     };
   }
   if (code === 'not_allowed_from') {

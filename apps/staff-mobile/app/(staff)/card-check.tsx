@@ -22,7 +22,11 @@ export default function CardCheckScreen() {
 
   return (
     <Screen edges={['bottom']}>
-      <Scanner paused={result !== null || scan.busy} onScan={(code) => void scan.run(code)} />
+      <Scanner
+        paused={result !== null || scan.busy}
+        onScan={(code) => void scan.run(code)}
+        deniedMessage={t('s.checkIn.cameraDeniedCard')}
+      />
       {result ? (
         <>
           <ResultBanner

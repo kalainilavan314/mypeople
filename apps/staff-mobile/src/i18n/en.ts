@@ -88,6 +88,7 @@ export const en = {
     roster: 'Attendance',
     cameraTitle: 'Point the camera at the code',
     cameraDenied: 'Camera access is off. Use the member ID below instead.',
+    cameraDeniedCard: 'Camera access is off. A card can only be checked with the camera.',
     cameraAsk: 'Allow the camera',
     queuedTitle: 'Saved offline — not yet a check-in',
     queuedBody: 'There is no connection. The scan is kept securely on this phone and the server confirms or refuses it when you are back online.',
