@@ -27,7 +27,7 @@ export default function RoleScreen() {
   const { t } = useTranslation();
   const language = useLanguage();
   const { signOut, state } = useSession();
-  const { assignments } = useStaff();
+  const { assignments, permissions } = useStaff();
   const member = state.status === 'signed_in' ? state.member : null;
 
   return (
@@ -73,6 +73,10 @@ export default function RoleScreen() {
         ]}
       />
       <Button label={t('s.sessions.title')} variant="secondary" icon="phone-portrait-outline" onPress={() => router.push('/sessions')} />
+      {/* The API lists registered phones only for events.checkin_scan, the permission offline check-in needs. */}
+      {permissions.has('events.checkin_scan') ? (
+        <Button label={t('s.devices.title')} variant="secondary" icon="cloud-offline-outline" onPress={() => router.push('/devices')} />
+      ) : null}
       <Button label={t('s.common.signOut')} variant="danger" icon="log-out-outline" onPress={() => void signOut()} />
     </Screen>
   );
