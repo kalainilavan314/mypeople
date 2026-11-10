@@ -157,9 +157,24 @@ def broadcast_body(level: str, code: str | None, **overrides) -> dict:
     }
 
 
+def _activate(db_session, member: Row) -> None:
+    db_session.execute(
+        text(
+            "INSERT INTO membership.membership (member_id, state, reason_code) "
+            "VALUES (:id, 'active', 'identity_verified') ON CONFLICT (member_id) DO UPDATE SET state = 'active'"
+        ),
+        {"id": member.id},
+    )
+
+
 def test_a_district_broadcast_reaches_the_district_and_nobody_else(client, db_session, auth, member_in, create_member, area, make_reviewer):
     coordinator = make_reviewer(area.district, permissions=(SEND,))
-    inside, outside = member_in(area), create_member()
+    # The default audience is the area's Active members (D09), so an active member
+    # outside the district shows the area boundary and a member in the district
+    # without an Active membership shows the membership condition.
+    inside, not_active, outside = member_in(area), member_in(area), create_member()
+    for member in (inside, outside):
+        _activate(db_session, member)
     other_district = db_session.scalar(
         text("SELECT district_code FROM geo.district WHERE district_code <> :code ORDER BY district_code LIMIT 1"),
         {"code": area.district},
@@ -175,6 +190,7 @@ def test_a_district_broadcast_reaches_the_district_and_nobody_else(client, db_se
     assert preview["reaches"] >= 1 and preview["problems"] == [] and preview["needsApproval"] is False
     assert scheduled["state"] == "scheduled" and result["broadcastsSent"] >= 1
     assert [i["titleEn"] for i in inbox(client, auth, inside, topic="announcements")["items"]] == ["Water supply notice"]
+    assert inbox(client, auth, not_active)["items"] == []
     assert inbox(client, auth, outside)["items"] == []
     sent = client.get("/v1/notifications/broadcasts", params={"state": "sent"}, headers=auth(coordinator)).json()
     assert [b["recipients"] for b in sent if b["id"] == draft["id"]] == [preview["reaches"]]
