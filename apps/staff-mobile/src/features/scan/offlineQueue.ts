@@ -90,16 +90,38 @@ async function forget(ids: string[]): Promise<void> {
  * on the same phone gets their own.
  */
 async function scannerDevice(staffMemberId: string): Promise<Device> {
-  const key = DEVICE_PREFIX + staffMemberId;
-  const raw = await read(key);
-  if (raw) {
-    const stored = JSON.parse(raw) as Partial<Device>;
-    if (typeof stored.id === 'string' && typeof stored.token === 'string') return { id: stored.id, token: stored.token };
-  }
+  const stored = await storedDevice(staffMemberId);
+  if (stored) return stored;
   const created = await api().registerStaffDevice(`Staff phone (${Platform.OS})`);
   const device: Device = { id: created.id, token: created.deviceToken };
-  await write(key, JSON.stringify(device));
+  await write(DEVICE_PREFIX + staffMemberId, JSON.stringify(device));
   return device;
+}
+
+async function storedDevice(staffMemberId: string): Promise<Device | null> {
+  const raw = await read(DEVICE_PREFIX + staffMemberId);
+  if (!raw) return null;
+  try {
+    const stored = JSON.parse(raw) as Partial<Device>;
+    if (typeof stored.id === 'string' && typeof stored.token === 'string') return { id: stored.id, token: stored.token };
+  } catch {
+    // An unreadable entry is treated as no registration; the next sync registers afresh.
+  }
+  return null;
+}
+
+/** The server's id for this phone's registration for this staff member, if it has one. The token never leaves this file. */
+export async function scannerDeviceId(staffMemberId: string): Promise<string | null> {
+  return (await storedDevice(staffMemberId))?.id ?? null;
+}
+
+/**
+ * Deletes this phone's stored registration once it has been withdrawn, so the next sync registers
+ * the phone afresh instead of sending a token the server now refuses (device_not_registered).
+ * Queued scans are kept: they are sent with the new registration.
+ */
+export async function forgetScannerDevice(staffMemberId: string): Promise<void> {
+  await remove(DEVICE_PREFIX + staffMemberId);
 }
 
 /**

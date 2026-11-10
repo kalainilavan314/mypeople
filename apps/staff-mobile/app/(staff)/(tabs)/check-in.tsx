@@ -22,6 +22,7 @@ import {
 
 import { QueryView } from '@/components/QueryView';
 import { queuedScans, syncAllScans } from '@/features/scan/offlineQueue';
+import { RegisteredPhonesLink } from '@/features/scan/RegisteredPhonesLink';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 import { useStaff } from '@/providers/StaffProvider';
@@ -97,6 +98,7 @@ export default function CheckInScreen() {
       ) : null}
       {syncMessage ? <Notice tone="info">{syncMessage}</Notice> : null}
       {sync.error ? <Notice tone="error">{errorMessage(t, sync.error)}</Notice> : null}
+      <RegisteredPhonesLink error={sync.error} />
       <Button label={t('s.checkIn.cardCheck')} variant="secondary" icon="card-outline" onPress={() => router.push('/card-check')} />
       <AppText step="section" accessibilityRole="header">
         {t('s.checkIn.chooseEvent')}

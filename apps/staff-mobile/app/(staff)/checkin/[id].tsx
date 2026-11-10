@@ -18,6 +18,7 @@ import {
 
 import { ResultBanner } from '@/features/scan/ResultBanner';
 import { enqueueScan, queuedScans, syncScans } from '@/features/scan/offlineQueue';
+import { RegisteredPhonesLink } from '@/features/scan/RegisteredPhonesLink';
 import { Scanner } from '@/features/scan/Scanner';
 import { api } from '@/lib/api';
 import { errorMessage, noAnswer } from '@/lib/errors';
@@ -123,6 +124,7 @@ export default function EventCheckInScreen() {
       ) : null}
       {summary ? <Notice tone="info">{summary}</Notice> : null}
       {sync.error ? <Notice tone="error">{errorMessage(t, sync.error)}</Notice> : null}
+      <RegisteredPhonesLink error={sync.error} />
       {result ? (
         <>
           <ResultBanner
