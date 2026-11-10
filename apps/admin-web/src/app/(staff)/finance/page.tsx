@@ -25,8 +25,9 @@ const STATUS_OPTIONS = [
 const RISK_FLAG_OPTIONS = [
   { value: '', label: 'All Cases' },
   { value: 'duplicate_bank_reference', label: 'Duplicate Bank Reference' },
-  { value: 'enhanced_review_threshold', label: 'Enhanced Review (>= 100k LKR)' },
+  { value: 'enhanced_review_threshold', label: 'Enhanced Review Threshold' },
   { value: 'third_party_payment', label: 'Third-Party Payer' },
+  { value: 'statutory_reporting_review', label: 'Statutory Reporting Review' },
 ];
 
 export default async function FinanceQueuePage(props: {
@@ -287,6 +288,8 @@ function getRiskBadgeClass(flag: string): string {
     case 'enhanced_review_threshold':
       return 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200';
     case 'third_party_payment':
+      return 'bg-surface text-text';
+    case 'statutory_reporting_review':
       return 'bg-surface text-text';
     default:
       return 'bg-surface text-muted';

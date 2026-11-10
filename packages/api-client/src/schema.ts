@@ -3258,6 +3258,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/finance-readiness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Finance Readiness
+         * @description Return fail-closed finance launch checks without exposing secrets or bank numbers.
+         */
+        get: operations["get_finance_readiness_v1_finance_readiness_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance-readiness/controls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Finance Control
+         * @description Record an immutable machine control for the exact approved decision revision.
+         */
+        post: operations["create_finance_control_v1_finance_readiness_controls_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/fund/config": {
         parameters: {
             query?: never;
@@ -6091,6 +6131,99 @@ export interface components {
         FeaturesOut: {
             /** Enabled */
             enabled: string[];
+        };
+        /** FinanceProductionControlRequest */
+        FinanceProductionControlRequest: {
+            /**
+             * Controlkey
+             * @enum {string}
+             */
+            controlKey: "enhanced_review_threshold_minor" | "statutory_reporting_mode" | "slip_retention_days" | "third_party_payment_mode" | "pilot_currency";
+            /**
+             * Decisionrevisionid
+             * Format: uuid
+             */
+            decisionRevisionId: string;
+            /** Integervalue */
+            integerValue?: number | null;
+            /** Textvalue */
+            textValue?: string | null;
+            /** Evidenceref */
+            evidenceRef: string;
+            /** Reason */
+            reason: string;
+        };
+        /** FinanceProductionControlResponse */
+        FinanceProductionControlResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Controlkey */
+            controlKey: string;
+            /** Decisionkey */
+            decisionKey: string;
+            /**
+             * Decisionrevisionid
+             * Format: uuid
+             */
+            decisionRevisionId: string;
+            /** Decisionrevision */
+            decisionRevision: number;
+            /** Integervalue */
+            integerValue?: number | null;
+            /** Textvalue */
+            textValue?: string | null;
+            /** Evidenceref */
+            evidenceRef: string;
+            /** Reason */
+            reason: string;
+            /**
+             * Recordedat
+             * Format: date-time
+             */
+            recordedAt: string;
+        };
+        /** FinanceProductionReadinessResponse */
+        FinanceProductionReadinessResponse: {
+            /** Ready */
+            ready: boolean;
+            /** Checks */
+            checks: components["schemas"]["FinanceReadinessCheck"][];
+            /** Controls */
+            controls: components["schemas"]["FinanceProductionControlResponse"][];
+            /** Reviewercount */
+            reviewerCount: number;
+            /** Approvercount */
+            approverCount: number;
+            /** Distinctfinancestaffcount */
+            distinctFinanceStaffCount: number;
+            /** Receiptlastnumber */
+            receiptLastNumber: number;
+            /** Receiptremaining */
+            receiptRemaining: number;
+            /**
+             * Cardpaymentsenabled
+             * @default false
+             */
+            cardPaymentsEnabled: boolean;
+            /**
+             * Automatedevidencedeletionenabled
+             * @default false
+             */
+            automatedEvidenceDeletionEnabled: boolean;
+        };
+        /** FinanceReadinessCheck */
+        FinanceReadinessCheck: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Ready */
+            ready: boolean;
+            /** Detail */
+            detail: string;
         };
         /** FlagOut */
         FlagOut: {
@@ -16004,6 +16137,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VolunteerAggregateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_finance_readiness_v1_finance_readiness_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceProductionReadinessResponse"];
+                };
+            };
+        };
+    };
+    create_finance_control_v1_finance_readiness_controls_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FinanceProductionControlRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceProductionControlResponse"];
                 };
             };
             /** @description Validation Error */

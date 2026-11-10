@@ -9997,6 +9997,86 @@
         }
       }
     },
+    "/v1/finance-readiness": {
+      "get": {
+        "tags": [
+          "finance-readiness"
+        ],
+        "summary": "Get Finance Readiness",
+        "description": "Return fail-closed finance launch checks without exposing secrets or bank numbers.",
+        "operationId": "get_finance_readiness_v1_finance_readiness_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceProductionReadinessResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/finance-readiness/controls": {
+      "post": {
+        "tags": [
+          "finance-readiness"
+        ],
+        "summary": "Create Finance Control",
+        "description": "Record an immutable machine control for the exact approved decision revision.",
+        "operationId": "create_finance_control_v1_finance_readiness_controls_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinanceProductionControlRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceProductionControlResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/v1/fund/config": {
       "get": {
         "tags": [
@@ -17499,6 +17579,235 @@
         ],
         "title": "FeaturesOut",
         "description": "What the apps may show; a module that is off is hidden, never shown broken."
+      },
+      "FinanceProductionControlRequest": {
+        "properties": {
+          "controlKey": {
+            "type": "string",
+            "enum": [
+              "enhanced_review_threshold_minor",
+              "statutory_reporting_mode",
+              "slip_retention_days",
+              "third_party_payment_mode",
+              "pilot_currency"
+            ],
+            "title": "Controlkey"
+          },
+          "decisionRevisionId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Decisionrevisionid"
+          },
+          "integerValue": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Integervalue"
+          },
+          "textValue": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Textvalue"
+          },
+          "evidenceRef": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Evidenceref"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "controlKey",
+          "decisionRevisionId",
+          "evidenceRef",
+          "reason"
+        ],
+        "title": "FinanceProductionControlRequest"
+      },
+      "FinanceProductionControlResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "controlKey": {
+            "type": "string",
+            "title": "Controlkey"
+          },
+          "decisionKey": {
+            "type": "string",
+            "title": "Decisionkey"
+          },
+          "decisionRevisionId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Decisionrevisionid"
+          },
+          "decisionRevision": {
+            "type": "integer",
+            "title": "Decisionrevision"
+          },
+          "integerValue": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Integervalue"
+          },
+          "textValue": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Textvalue"
+          },
+          "evidenceRef": {
+            "type": "string",
+            "title": "Evidenceref"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Recordedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "controlKey",
+          "decisionKey",
+          "decisionRevisionId",
+          "decisionRevision",
+          "evidenceRef",
+          "reason",
+          "recordedAt"
+        ],
+        "title": "FinanceProductionControlResponse"
+      },
+      "FinanceProductionReadinessResponse": {
+        "properties": {
+          "ready": {
+            "type": "boolean",
+            "title": "Ready"
+          },
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/FinanceReadinessCheck"
+            },
+            "type": "array",
+            "title": "Checks"
+          },
+          "controls": {
+            "items": {
+              "$ref": "#/components/schemas/FinanceProductionControlResponse"
+            },
+            "type": "array",
+            "title": "Controls"
+          },
+          "reviewerCount": {
+            "type": "integer",
+            "title": "Reviewercount"
+          },
+          "approverCount": {
+            "type": "integer",
+            "title": "Approvercount"
+          },
+          "distinctFinanceStaffCount": {
+            "type": "integer",
+            "title": "Distinctfinancestaffcount"
+          },
+          "receiptLastNumber": {
+            "type": "integer",
+            "title": "Receiptlastnumber"
+          },
+          "receiptRemaining": {
+            "type": "integer",
+            "title": "Receiptremaining"
+          },
+          "cardPaymentsEnabled": {
+            "type": "boolean",
+            "title": "Cardpaymentsenabled",
+            "default": false
+          },
+          "automatedEvidenceDeletionEnabled": {
+            "type": "boolean",
+            "title": "Automatedevidencedeletionenabled",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "ready",
+          "checks",
+          "controls",
+          "reviewerCount",
+          "approverCount",
+          "distinctFinanceStaffCount",
+          "receiptLastNumber",
+          "receiptRemaining"
+        ],
+        "title": "FinanceProductionReadinessResponse"
+      },
+      "FinanceReadinessCheck": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "ready": {
+            "type": "boolean",
+            "title": "Ready"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "ready",
+          "detail"
+        ],
+        "title": "FinanceReadinessCheck"
       },
       "FlagOut": {
         "properties": {

@@ -21,3 +21,10 @@ test('finance module registration and permission check (D10, M1.4)', () => {
   const inPlanned = plannedModules.some((m) => m.name.toLowerCase().includes('finance'));
   assert.equal(inPlanned, false, 'Finance and reconciliation should be removed from plannedModules once built');
 });
+
+test('P3 finance readiness is restricted to system configuration staff', () => {
+  const readiness = builtModules.find((module) => module.href === '/finance-readiness');
+  assert.ok(readiness);
+  assert.equal(readiness.permission, 'system.configure');
+  assert.equal(readiness.en, 'Finance production readiness');
+});

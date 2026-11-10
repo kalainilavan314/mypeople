@@ -147,6 +147,9 @@ export type StaffContributionDetail = Schemas['StaffContributionDetail'];
 export type StaffSlipViewToken = Schemas['StaffSlipViewTokenResponse'];
 export type StaffReconcileInput = Schemas['StaffReconcileRequest'];
 export type StaffApproveInput = Schemas['StaffApproveRequest'];
+export type FinanceProductionControlInput = Schemas['FinanceProductionControlRequest'];
+export type FinanceProductionControl = Schemas['FinanceProductionControlResponse'];
+export type FinanceProductionReadiness = Schemas['FinanceProductionReadinessResponse'];
 export type FinanceContributionFilters = {
   status?: string;
   month?: string;
@@ -997,6 +1000,12 @@ export function createApiClient({
       request<ContributionDetail>('GET', `/v1/fund/contributions/${encodeURIComponent(id)}`),
     getMyContributionReceipt: (id: string) =>
       request<ContributionReceipt>('GET', `/v1/fund/contributions/${encodeURIComponent(id)}/receipt`),
+
+    // Finance production readiness (P3)
+    getFinanceProductionReadiness: () =>
+      request<FinanceProductionReadiness>('GET', '/v1/finance-readiness'),
+    recordFinanceProductionControl: (body: FinanceProductionControlInput) =>
+      request<FinanceProductionControl>('POST', '/v1/finance-readiness/controls', body),
 
     // Staff Finance Operations
     listFinanceContributions: (filters: FinanceContributionFilters = {}) => {

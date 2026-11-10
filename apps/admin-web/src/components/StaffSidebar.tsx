@@ -228,6 +228,7 @@ function getModuleIcon(href: string) {
     case '/access-reviews':
       return AccessReviewsIcon;
     case '/finance':
+    case '/finance-readiness':
       return FinanceIcon;
     default:
       return HomeIcon;

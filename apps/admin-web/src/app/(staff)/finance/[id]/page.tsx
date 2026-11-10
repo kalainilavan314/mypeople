@@ -94,12 +94,17 @@ async function ContributionDetail({
             ) : null}
             {contribution.riskFlags.includes('enhanced_review_threshold') ? (
               <li>
-                <strong>Enhanced review threshold:</strong> Contribution amount is 100,000 LKR or greater, requiring senior audit scrutiny.
+                <strong>Enhanced review threshold:</strong> The contribution meets the currently approved internal review threshold.
               </li>
             ) : null}
             {contribution.riskFlags.includes('third_party_payment') ? (
               <li>
                 <strong>Third-party payment:</strong> Donor did not confirm payment from personal account.
+              </li>
+            ) : null}
+            {contribution.riskFlags.includes('statutory_reporting_review') ? (
+              <li>
+                <strong>Statutory reporting review:</strong> The approved FIN-02 control requires manual compliance review for this intake.
               </li>
             ) : null}
           </ul>
