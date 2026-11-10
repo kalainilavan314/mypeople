@@ -16,6 +16,7 @@ from sqlalchemy.exc import DBAPIError
 
 from app.integrations.sms import DevelopmentSms
 from app.modules.events import rules
+from app.modules.policy_decisions.rules import DECISIONS
 
 MANAGE = "events.manage"
 SCAN = "events.checkin_scan"
@@ -440,16 +441,51 @@ def test_a_new_place_or_time_is_told_but_a_new_agenda_is_not(client, db_session,
 # --- Offline check-in (MP-DEC-001 4.3 to 4.5, FR-STF-005) -------------------------------------------
 
 
-def register_device(client, auth, person: Row) -> tuple[str, str]:
-    """A phone's own id and secret, as the staff app makes them: every phone's secret is different."""
-    device_id, key = str(uuid.uuid4()), uuid.uuid4().hex + uuid.uuid4().hex
-    answer = client.post(
-        "/v1/events/scanner-devices",
-        json={"deviceId": device_id, "deviceKey": key, "label": "Staff phone"},
-        headers=auth(person),
+@pytest.fixture
+def offline_window(client, auth, super_admin) -> None:
+    """STF-01 approved by its owners and a 72-hour replay window recorded, which offline check-in needs."""
+    headers = auth(super_admin)
+    revision = client.post(
+        "/v1/policy-decisions/STF-01/revisions",
+        json={
+            "decisionText": "Offline attendance scans may be synchronised for up to seventy-two hours.",
+            "rationale": "Operations and security reviewed the replay risk and the manual review route.",
+            "effectiveFrom": datetime.now(UTC).date().isoformat(),
+        },
+        headers=headers,
+    ).json()["current"]
+    client.post(
+        f"/v1/policy-decisions/STF-01/revisions/{revision['id']}/submit",
+        json={"reason": "Ready for evidence-backed owner review."},
+        headers=headers,
     )
-    assert answer.status_code == 204, answer.text
-    return device_id, key
+    for role in DECISIONS["STF-01"].required_roles:
+        reviewed = client.post(
+            f"/v1/policy-decisions/STF-01/revisions/{revision['id']}/reviews",
+            json={
+                "role": role, "outcome": "approve", "reviewerName": f"{role} reviewer", "reviewerTitle": role,
+                "evidenceRef": f"SIGNED-STF-01-{role}", "reviewedAt": datetime.now(UTC).date().isoformat(),
+                "comment": "Controlled signed evidence was checked before recording this approval.",
+            },
+            headers=headers,
+        )
+        assert reviewed.status_code == 200, reviewed.text
+    recorded = client.post(
+        "/v1/operations/controls",
+        json={
+            "controlKey": "offline_attendance_replay_hours", "integerValue": 72, "decisionRevisionId": revision["id"],
+            "reason": "Operations approved the bounded replay window.", "confirmApprovedBasis": True,
+        },
+        headers=headers,
+    )
+    assert recorded.status_code == 201, recorded.text
+
+
+def register_device(client, auth, person: Row) -> tuple[str, str]:
+    """A staff phone registered as the staff app does it: the server issues its id and secret token."""
+    answer = client.post("/v1/operations/devices", json={"label": "Staff phone"}, headers=auth(person))
+    assert answer.status_code == 201, answer.text
+    return answer.json()["id"], answer.json()["deviceToken"]
 
 
 def queued(code: str, at: datetime, key: str | None = None) -> dict:
@@ -477,7 +513,7 @@ def code_at(database_settings, client, auth, member: Row, event: dict, moment: d
     return rules.PASS.sign(ref, database_settings.jwt_secret.get_secret_value(), int(moment.timestamp())).code
 
 
-def test_an_offline_scan_is_judged_as_at_the_moment_it_was_recorded(client, db_session, database_settings, auth, member, scanner, new_event):
+def test_an_offline_scan_is_judged_as_at_the_moment_it_was_recorded(offline_window, client, db_session, database_settings, auth, member, scanner, new_event):
     event = new_event()
     rsvp(client, auth, member, event, "going")
     device = register_device(client, auth, scanner)
@@ -499,7 +535,7 @@ def test_an_offline_scan_is_judged_as_at_the_moment_it_was_recorded(client, db_s
     assert abs((attended.at - (seen_at + timedelta(seconds=10))).total_seconds()) < 1  # the phone's time, not the sync's
 
 
-def test_offline_scans_are_rejected_held_for_a_person_or_counted_once(client, database_settings, auth, member, scanner, manager, new_event):
+def test_offline_scans_are_rejected_held_for_a_person_or_counted_once(offline_window, client, database_settings, auth, member, scanner, manager, new_event):
     event = new_event()
     rsvp(client, auth, member, event, "going")
     device = register_device(client, auth, scanner)
@@ -527,7 +563,7 @@ def test_offline_scans_are_rejected_held_for_a_person_or_counted_once(client, da
     assert all("memberCode" not in w for w in waiting)  # nobody is named before a person checks the pass
 
 
-def test_only_a_registered_phone_of_the_scanner_may_sync(client, auth, member, scanner, make_reviewer, area, new_event):
+def test_only_a_registered_phone_of_the_scanner_may_sync(offline_window, client, auth, member, scanner, make_reviewer, area, new_event):
     event = new_event()
     unknown = sync(client, auth, scanner, event, (str(uuid.uuid4()), "k" * 64), [queued("E1.x", datetime.now(UTC))])
     assert (unknown.status_code, unknown.json()["detail"]) == (403, "device_not_registered")
@@ -535,15 +571,23 @@ def test_only_a_registered_phone_of_the_scanner_may_sync(client, auth, member, s
     wrong_key = sync(client, auth, scanner, event, (device[0], "x" * 64), [queued("E1.x", datetime.now(UTC))])
     assert wrong_key.status_code == 403
     colleague = make_reviewer(area.district, permissions=(SCAN,))
-    taken = client.post(
-        "/v1/events/scanner-devices",
-        json={"deviceId": device[0], "deviceKey": device[1], "label": "Staff phone"},
-        headers=auth(colleague),
-    )
-    assert (taken.status_code, taken.json()["detail"]) == (403, "device_not_yours")
+    borrowed = sync(client, auth, colleague, event, device, [queued("E1.x", datetime.now(UTC))])
+    assert (borrowed.status_code, borrowed.json()["detail"]) == (403, "device_not_registered")
+    revoked = client.delete(f"/v1/operations/devices/{device[0]}", headers=auth(scanner))
+    assert revoked.status_code == 204
+    after = sync(client, auth, scanner, event, device, [queued("E1.x", datetime.now(UTC))])
+    assert (after.status_code, after.json()["detail"]) == (403, "device_not_registered")
 
 
-def test_a_waiting_scan_is_settled_by_another_person_with_a_reason(client, db_session, database_settings, auth, member, scanner, manager, make_reviewer, area, new_event):
+def test_offline_check_in_stays_off_until_the_replay_window_is_approved(client, auth, member, scanner, new_event):
+    """STF-01: without an approved window the server judges nothing and the phone keeps its scans."""
+    event = new_event()
+    device = register_device(client, auth, scanner)
+    refused = sync(client, auth, scanner, event, device, [queued("E1.x", datetime.now(UTC))])
+    assert (refused.status_code, refused.json()["detail"]) == (409, "offline_attendance_not_approved")
+
+
+def test_a_waiting_scan_is_settled_by_another_person_with_a_reason(offline_window, client, db_session, database_settings, auth, member, scanner, manager, make_reviewer, area, new_event):
     event = new_event()
     rsvp(client, auth, member, event, "going")
     device = register_device(client, auth, scanner)

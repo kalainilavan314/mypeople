@@ -51,6 +51,7 @@ function StaffStack() {
       <Stack.Screen name="card-check" options={{ title: t('s.checkIn.cardCheck') }} />
       <Stack.Screen name="lookup" options={{ title: t('s.lookup.title') }} />
       <Stack.Screen name="sessions" options={{ title: t('s.sessions.title') }} />
+      <Stack.Screen name="assignments" options={{ title: t('s.assignments.title') }} />
     </Stack>
   );
 }

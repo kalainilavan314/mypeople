@@ -5,14 +5,18 @@ Each scan is checked as at the moment the phone recorded it: the pass code's own
 expiry, the member's Going answer, this event and its check-in window. The 60-second HMAC codes
 stay verifiable only here, since the signing secret never reaches a device (MP-DEC-001 4.4).
 A scan the server cannot judge safely (the phone's clock ahead of the server's, or older than the
-72-hour replay window, STF-01) waits for a person, and nothing is ever dropped.
+replay window) waits for a person, and nothing is ever dropped.
+
+Offline check-in is off until the replay window is approved under STF-01 and recorded as an
+operational control; a newer STF-01 revision under review switches it off again. Phones are
+registered, listed and revoked through /v1/operations/devices.
 """
 
 import hashlib
 import hmac
 import uuid
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from typing import Literal
 
 from sqlalchemy.orm import Session
@@ -21,17 +25,22 @@ from app.core.rotating_codes import CodeExpired, CodeInvalid
 from app.modules.access.rules import AreaPath, area_from_key
 from app.modules.access.service import Staff
 from app.modules.audit import service as audit
-from app.modules.engagement.staff_operations_rules import provisional_scan_state
 from app.modules.events import repository as events_repository
 from app.modules.events import rules
 from app.modules.events import service as events
 from app.modules.events.offline import repository
 from app.modules.events.repository import StoredEvent
 from app.modules.events.rules import MANAGE, SCAN
+from app.modules.operations import repository as operations
+from app.modules.operations.rules import queued_scan_problem
 
 Status = Literal["ACCEPTED", "DUPLICATE", "REJECTED", "NEEDS_REVIEW", "EXPIRED_QUEUE"]
-CLOCK_TOLERANCE = timedelta(minutes=5)
 MAX_BATCH = 200
+REPLAY_CONTROL = "offline_attendance_replay_hours"
+
+
+class OfflineNotApproved(Exception):
+    """No current, approved STF-01 replay window: queued scans stay on the phone."""
 
 
 class DeviceRefused(Exception):
@@ -79,21 +88,6 @@ def _now() -> datetime:
     return datetime.now(UTC)
 
 
-def register_device(db: Session, staff: Staff, device_id: uuid.UUID, device_key: str, label: str, ip: str) -> None:
-    """Binds this phone to the staff member: only a hash of its secret is kept. Registering the same
-    phone again is harmless; another person's phone id is refused."""
-    repository.insert_device(db, device_id=device_id, staff_member_id=staff.member_id, key_hash=_key_hash(device_key), label=label)
-    stored = repository.device(db, device_id)
-    if stored is None or stored.staff_member_id != staff.member_id or not hmac.compare_digest(stored.device_key_hash, _key_hash(device_key)):
-        db.rollback()
-        raise DeviceRefused("device_not_yours")
-    audit.record(
-        db, actor_id=staff.member_id, action="events.scanner_device.registered",
-        target_type="registered_device", target_id=str(device_id), area_path=None, details={}, ip=ip,
-    )
-    db.commit()
-
-
 def _check_device(db: Session, staff: Staff, device_id: uuid.UUID, device_key: str) -> None:
     stored = repository.device(db, device_id)
     if (
@@ -136,7 +130,11 @@ def sync(
 ) -> list[Outcome]:
     """Judges a batch of queued scans for one event. A scan sent again returns its first outcome."""
     event = events.event_for_staff(db, staff, event_id, ip, permission=SCAN)
+    window = operations.current_control(db, REPLAY_CONTROL)
+    if window is None:
+        raise OfflineNotApproved()
     _check_device(db, staff, device_id, device_key)
+    operations.touch_device(db, device_id)
     received = _now()
     outcomes: list[Outcome] = []
     counts: dict[str, int] = {}
@@ -147,9 +145,10 @@ def sync(
             continue
         at = scan.client_scan_at.astimezone(UTC)
         member_id = None
-        if at > received + CLOCK_TOLERANCE:
+        problem = queued_scan_problem(at, received, window.integer_value)
+        if problem == "client_clock_ahead":
             status, reason = "NEEDS_REVIEW", "clock_ahead"  # a phone's clock is not proof of a future check-in
-        elif provisional_scan_state(at, received, True, True) == "EXPIRED_QUEUE":
+        elif problem == "replay_window_expired":
             status, reason = "EXPIRED_QUEUE", "too_old"
         else:
             status, reason, member_id = _judge(db, staff.member_id, event, scan.code, at, secret)

@@ -15,7 +15,6 @@ from app.modules.events.offline.schemas import (
     OfflineSyncOut,
     ScanDecisionIn,
     ScanExceptionOut,
-    ScannerDeviceIn,
     ScanOutcomeOut,
 )
 from app.modules.events.rules import MANAGE, SCAN
@@ -41,19 +40,14 @@ def _not_found() -> HTTPException:
     return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not_found")
 
 
-@router.post("/scanner-devices", status_code=status.HTTP_204_NO_CONTENT, responses={403: {"description": "device_not_yours"}})
-def register_scanner_device(body: ScannerDeviceIn, staff: CanScan, request: Request, db: Db) -> None:
-    """Bind this staff phone for offline check-in (MP-DEC-001 4.4); needs events.checkin_scan."""
-    try:
-        service.register_device(db, staff, body.device_id, body.device_key, body.label, client_ip(request))
-    except service.DeviceRefused as error:
-        raise _forbidden(error.code) from None
-
-
-@router.post("/{event_id}/checkin/offline", responses=REFUSED)
+@router.post(
+    "/{event_id}/checkin/offline",
+    responses={**REFUSED, 409: {"description": "offline_attendance_not_approved"}},
+)
 def sync_offline_scans(event_id: uuid.UUID, body: OfflineSyncIn, staff: CanScan, request: Request, db: Db) -> OfflineSyncOut:
-    """Judge scans this phone queued without a connection, each as at the time it was recorded.
-    Sending a scan again returns its first outcome; nothing the phone decided is final."""
+    """Judge scans a registered phone (/v1/operations/devices) queued without a connection, each as
+    at the time it was recorded. Sending a scan again returns its first outcome; nothing the phone
+    decided is final. Refused while no STF-01 replay window is approved; the phone keeps its scans."""
     try:
         outcomes = service.sync(
             db, staff, event_id, body.device_id, body.device_key, [scan.queued() for scan in body.scans], _secret(request), client_ip(request)
@@ -64,6 +58,8 @@ def sync_offline_scans(event_id: uuid.UUID, body: OfflineSyncIn, staff: CanScan,
         raise _forbidden(error.code) from None
     except service.DeviceRefused as error:
         raise _forbidden(error.code) from None
+    except service.OfflineNotApproved:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="offline_attendance_not_approved") from None
     return OfflineSyncOut(outcomes=[ScanOutcomeOut.build(outcome) for outcome in outcomes])
 
 

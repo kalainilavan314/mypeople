@@ -24,6 +24,9 @@ export const en = {
     already_enabled: 'An authenticator is already set up for this account.',
     forbidden: 'Your role does not allow this.',
     outside_your_area: 'This is outside your area.',
+    offline_attendance_not_approved: 'Offline check-in is not approved yet. Your saved scans stay on this phone and are sent once it is approved.',
+    device_not_registered: 'This phone is not registered for offline check-in, or its registration was withdrawn. Ask your coordinator.',
+    active_device_limit_reached: 'This account already has 5 phones registered for offline check-in. Ask your coordinator for help.',
     own_record: 'You cannot act on your own record.',
     own_submission: 'Someone other than the person who submitted it must approve it.',
     approver_tier_too_low: 'Approval needs a regional coordinator or above.',
@@ -113,6 +116,13 @@ export const en = {
     manual: 'Manual',
     scanned: 'Scanned',
     notYet: 'Not yet',
+    syncQueued: 'Synchronise queued scans',
+  },
+  assignments: {
+    title: 'Volunteer assignments', summary: '{{count}} assignments', empty: 'No volunteer assignments.',
+    accept: 'Accept assignment', decline: 'Decline assignment',
+    state_offered: 'Awaiting your response', state_accepted: 'Accepted', state_declined: 'Declined', state_cancelled: 'Cancelled', state_completed: 'Completed',
+    duty_registration: 'Registration', duty_scanning: 'Scanning', duty_member_assistance: 'Member assistance', duty_accessibility_support: 'Accessibility support', duty_logistics: 'Logistics', duty_coordination: 'Coordination', duty_administration: 'Administration',
   },
   approvals: {
     title: 'Approvals and escalations',

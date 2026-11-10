@@ -11,14 +11,6 @@ from app.modules.events.offline.service import MAX_BATCH, Outcome, QueuedScan
 Status = Literal["ACCEPTED", "DUPLICATE", "REJECTED", "NEEDS_REVIEW", "EXPIRED_QUEUE"]
 
 
-class ScannerDeviceIn(CamelModel):
-    """A staff phone's own id and a random secret it keeps; the server stores only the secret's hash."""
-
-    device_id: uuid.UUID
-    device_key: str = Field(min_length=32, max_length=200)
-    label: str = Field(min_length=1, max_length=80)
-
-
 class QueuedScanIn(CamelModel):
     scan_event_id: uuid.UUID
     idempotency_key: uuid.UUID
@@ -32,7 +24,9 @@ class QueuedScanIn(CamelModel):
 
 class OfflineSyncIn(CamelModel):
     device_id: uuid.UUID
-    device_key: str = Field(min_length=32, max_length=200)
+    device_key: str = Field(
+        min_length=32, max_length=200, description="The device token /v1/operations/devices issued to this phone"
+    )
     scans: list[QueuedScanIn] = Field(min_length=1, max_length=MAX_BATCH)
 
 

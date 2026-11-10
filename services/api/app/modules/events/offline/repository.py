@@ -40,19 +40,6 @@ def _scan(row) -> StoredScan:  # type: ignore[no-untyped-def]
     return StoredScan(**row._mapping)
 
 
-def insert_device(db: Session, *, device_id: uuid.UUID, staff_member_id: uuid.UUID, key_hash: str, label: str) -> None:
-    db.execute(
-        text(
-            """
-            INSERT INTO staff_ops.registered_device (id, staff_member_id, device_key_hash, label)
-            VALUES (:id, :staff, :hash, :label)
-            ON CONFLICT DO NOTHING
-            """
-        ),
-        {"id": device_id, "staff": staff_member_id, "hash": key_hash, "label": label},
-    )
-
-
 def device(db: Session, device_id: uuid.UUID) -> Device | None:
     row = db.execute(
         text(

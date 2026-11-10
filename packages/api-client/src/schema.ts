@@ -1587,26 +1587,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/events/scanner-devices": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Register Scanner Device
-         * @description Bind this staff phone for offline check-in (MP-DEC-001 4.4); needs events.checkin_scan.
-         */
-        post: operations["register_scanner_device_v1_events_scanner_devices_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/events/{event_id}/checkin/offline": {
         parameters: {
             query?: never;
@@ -1618,8 +1598,9 @@ export interface paths {
         put?: never;
         /**
          * Sync Offline Scans
-         * @description Judge scans this phone queued without a connection, each as at the time it was recorded.
-         *     Sending a scan again returns its first outcome; nothing the phone decided is final.
+         * @description Judge scans a registered phone (/v1/operations/devices) queued without a connection, each as
+         *     at the time it was recorded. Sending a scan again returns its first outcome; nothing the phone
+         *     decided is final. Refused while no STF-01 replay window is approved; the phone keeps its scans.
          */
         post: operations["sync_offline_scans_v1_events__event_id__checkin_offline_post"];
         delete?: never;
@@ -3064,6 +3045,265 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/operations/readiness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Operational Readiness */
+        get: operations["operational_readiness_v1_operations_readiness_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/controls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Control */
+        post: operations["record_control_v1_operations_controls_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/volunteer-assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Volunteer Assignments */
+        get: operations["list_volunteer_assignments_v1_operations_volunteer_assignments_get"];
+        put?: never;
+        /** Create Volunteer Assignment */
+        post: operations["create_volunteer_assignment_v1_operations_volunteer_assignments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/volunteer-assignment-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Volunteer Assignment Events */
+        get: operations["list_volunteer_assignment_events_v1_operations_volunteer_assignment_events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/me/volunteer-assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Volunteer Assignments */
+        get: operations["my_volunteer_assignments_v1_operations_me_volunteer_assignments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/me/volunteer-assignments/{assignment_id}/response": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Respond To Assignment */
+        post: operations["respond_to_assignment_v1_operations_me_volunteer_assignments__assignment_id__response_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/volunteer-assignments/{assignment_id}/transition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Transition Volunteer Assignment */
+        post: operations["transition_volunteer_assignment_v1_operations_volunteer_assignments__assignment_id__transition_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/devices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Registered Devices */
+        get: operations["list_registered_devices_v1_operations_devices_get"];
+        put?: never;
+        /** Register Device */
+        post: operations["register_device_v1_operations_devices_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/devices/{device_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Revoke Device */
+        delete: operations["revoke_device_v1_operations_devices__device_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/policies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Policy Versions */
+        get: operations["list_policy_versions_v1_operations_policies_get"];
+        put?: never;
+        /** Publish Policy */
+        post: operations["publish_policy_v1_operations_policies_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/me/policies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Current Member Policies */
+        get: operations["current_member_policies_v1_operations_me_policies_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/me/policies/{policy_version_id}/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Member Policy Action */
+        post: operations["record_member_policy_action_v1_operations_me_policies__policy_version_id__actions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/tier5-assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Tier5 Assignments */
+        get: operations["list_tier5_assignments_v1_operations_tier5_assignments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/tier5-certifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Tier5 Certifications */
+        get: operations["list_tier5_certifications_v1_operations_tier5_certifications_get"];
+        put?: never;
+        /** Record Tier5 Certification */
+        post: operations["record_tier5_certification_v1_operations_tier5_certifications_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/aggregates/volunteers/{event_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Volunteer Aggregate */
+        get: operations["volunteer_aggregate_v1_operations_aggregates_volunteers__event_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/fund/config": {
         parameters: {
             query?: never;
@@ -3722,6 +3962,15 @@ export interface components {
              */
             targetId: string;
         };
+        /** AggregateCellOut */
+        AggregateCellOut: {
+            /** Key */
+            key: string;
+            /** Count */
+            count: number | null;
+            /** Suppressed */
+            suppressed: boolean;
+        };
         /** AlbumCreateIn */
         AlbumCreateIn: {
             /** Titleen */
@@ -4103,6 +4352,34 @@ export interface components {
             /** Code */
             code?: string | null;
         };
+        /** AssignmentEventOut */
+        AssignmentEventOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Eventref */
+            eventRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Areakey */
+            areaKey: string;
+            /** State */
+            state: string;
+        };
         /** AssignmentInput */
         AssignmentInput: {
             /**
@@ -4284,6 +4561,16 @@ export interface components {
              * @enum {string}
              */
             status: "active" | "consumed" | "cancelled";
+        };
+        /** AssignmentTransitionIn */
+        AssignmentTransitionIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "accepted" | "declined" | "cancelled" | "completed";
+            /** Reason */
+            reason: string;
         };
         /** AssistedRecoveryInput */
         AssistedRecoveryInput: {
@@ -4887,6 +5174,31 @@ export interface components {
             /** Enabled */
             enabled: number;
         };
+        /** ConsentActionIn */
+        ConsentActionIn: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "acknowledged" | "granted" | "withdrawn";
+            /** Legalbasis */
+            legalBasis: string;
+        };
+        /** ConsentActionOut */
+        ConsentActionOut: {
+            /**
+             * Policyversionid
+             * Format: uuid
+             */
+            policyVersionId: string;
+            /** Action */
+            action: string;
+            /**
+             * Occurredat
+             * Format: date-time
+             */
+            occurredAt: string;
+        };
         /** ConsentInput */
         ConsentInput: {
             /** Noticeversion */
@@ -5023,6 +5335,61 @@ export interface components {
             receipt?: components["schemas"]["ReceiptResponse"] | null;
             /** Timeline */
             timeline: components["schemas"]["TimelineEventResponse"][];
+        };
+        /** ControlIn */
+        ControlIn: {
+            /**
+             * Controlkey
+             * @enum {string}
+             */
+            controlKey: "offline_attendance_replay_hours" | "aggregate_minimum_group_size";
+            /** Integervalue */
+            integerValue: number;
+            /**
+             * Decisionrevisionid
+             * Format: uuid
+             */
+            decisionRevisionId: string;
+            /** Reason */
+            reason: string;
+            /** Confirmapprovedbasis */
+            confirmApprovedBasis: boolean;
+        };
+        /** ControlOut */
+        ControlOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Controlkey
+             * @enum {string}
+             */
+            controlKey: "offline_attendance_replay_hours" | "aggregate_minimum_group_size";
+            /** Integervalue */
+            integerValue: number;
+            /** Decisionkey */
+            decisionKey: string;
+            /** Decisionrevision */
+            decisionRevision: number;
+            /**
+             * Decisionrevisionid
+             * Format: uuid
+             */
+            decisionRevisionId: string;
+            /** Reason */
+            reason: string;
+            /**
+             * Recordedby
+             * Format: uuid
+             */
+            recordedBy: string;
+            /**
+             * Recordedat
+             * Format: date-time
+             */
+            recordedAt: string;
         };
         /** DecisionInput */
         DecisionInput: {
@@ -5172,6 +5539,31 @@ export interface components {
              */
             platform: "android" | "ios" | "web";
         };
+        /** DeviceRegisterIn */
+        DeviceRegisterIn: {
+            /** Label */
+            label: string;
+        };
+        /** DeviceRegisteredOut */
+        DeviceRegisteredOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Label */
+            label: string;
+            /**
+             * Devicetoken
+             * @description Shown once. Store only in the operating system secure store.
+             */
+            deviceToken: string;
+            /**
+             * Registeredat
+             * Format: date-time
+             */
+            registeredAt: string;
+        };
         /** DeviceTokenIn */
         DeviceTokenIn: {
             /** Token */
@@ -5301,6 +5693,47 @@ export interface components {
         DuplicateQueueCount: {
             /** Open */
             open: number;
+        };
+        /** EffectivePolicyOut */
+        EffectivePolicyOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Policykey */
+            policyKey: string;
+            /** Policytype */
+            policyType: string;
+            /** Version */
+            version: string;
+            /** Locale */
+            locale: string;
+            /** Contentsha256 */
+            contentSha256: string;
+            /** Approvalreference */
+            approvalReference: string | null;
+            /**
+             * Approvedat
+             * Format: date-time
+             */
+            approvedAt: string;
+            /**
+             * Effectivefrom
+             * Format: date-time
+             */
+            effectiveFrom: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Contenttext */
+            contentText: string;
+            /** Myaction */
+            myAction: string | null;
+            /** Myactionat */
+            myActionAt: string | null;
         };
         /**
          * ElectionBannerOut
@@ -6649,7 +7082,10 @@ export interface components {
              * Format: uuid
              */
             deviceId: string;
-            /** Devicekey */
+            /**
+             * Devicekey
+             * @description The device token /v1/operations/devices issued to this phone
+             */
             deviceKey: string;
             /** Scans */
             scans: components["schemas"]["QueuedScanIn"][];
@@ -6658,6 +7094,15 @@ export interface components {
         OfflineSyncOut: {
             /** Outcomes */
             outcomes: components["schemas"]["ScanOutcomeOut"][];
+        };
+        /** OperationalReadinessOut */
+        OperationalReadinessOut: {
+            /** Items */
+            items: components["schemas"]["ReadinessItem"][];
+            /** Tier5Assignments */
+            tier5Assignments: number;
+            /** Tier5Certified */
+            tier5Certified: number;
         };
         /**
          * OperationsOut
@@ -7050,6 +7495,74 @@ export interface components {
             missingRoles: string[];
             current: components["schemas"]["RevisionOut"] | null;
         };
+        /** PolicyPublishIn */
+        PolicyPublishIn: {
+            /** Policykey */
+            policyKey: string;
+            /**
+             * Policytype
+             * @enum {string}
+             */
+            policyType: "privacy_notice" | "terms" | "optional_consent" | "election_rule";
+            /** Version */
+            version: string;
+            /**
+             * Locale
+             * @enum {string}
+             */
+            locale: "en" | "ta";
+            /** Contenttext */
+            contentText: string;
+            /** Approvalreference */
+            approvalReference: string;
+            /**
+             * Approvedat
+             * Format: date-time
+             */
+            approvedAt: string;
+            /**
+             * Effectivefrom
+             * Format: date-time
+             */
+            effectiveFrom: string;
+            /** Confirmimmutablepublication */
+            confirmImmutablePublication: boolean;
+        };
+        /** PolicyVersionOut */
+        PolicyVersionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Policykey */
+            policyKey: string;
+            /** Policytype */
+            policyType: string;
+            /** Version */
+            version: string;
+            /** Locale */
+            locale: string;
+            /** Contentsha256 */
+            contentSha256: string;
+            /** Approvalreference */
+            approvalReference: string | null;
+            /**
+             * Approvedat
+             * Format: date-time
+             */
+            approvedAt: string;
+            /**
+             * Effectivefrom
+             * Format: date-time
+             */
+            effectiveFrom: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /**
          * PreviewOut
          * @description What W09 shows before saving (RB-06). Each problem is a code the dashboard explains.
@@ -7417,6 +7930,19 @@ export interface components {
             /** Localoutcome */
             localOutcome: string;
         };
+        /** ReadinessItem */
+        ReadinessItem: {
+            /** Key */
+            key: string;
+            /** Ready */
+            ready: boolean;
+            /** Decisionkey */
+            decisionKey?: string | null;
+            /** Value */
+            value?: number | null;
+            /** Reason */
+            reason: string;
+        };
         /** ReceiptResponse */
         ReceiptResponse: {
             /** Receiptcode */
@@ -7522,6 +8048,25 @@ export interface components {
             memberCode: string;
             /** Note */
             note: string;
+        };
+        /** RegisteredDeviceOut */
+        RegisteredDeviceOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Label */
+            label: string;
+            /**
+             * Registeredat
+             * Format: date-time
+             */
+            registeredAt: string;
+            /** Lastseenat */
+            lastSeenAt: string | null;
+            /** Revokedat */
+            revokedAt: string | null;
         };
         /**
          * RegistrationInput
@@ -8058,21 +8603,6 @@ export interface components {
             memberCode?: string | null;
         };
         /**
-         * ScannerDeviceIn
-         * @description A staff phone's own id and a random secret it keeps; the server stores only the secret's hash.
-         */
-        ScannerDeviceIn: {
-            /**
-             * Deviceid
-             * Format: uuid
-             */
-            deviceId: string;
-            /** Devicekey */
-            deviceKey: string;
-            /** Label */
-            label: string;
-        };
-        /**
          * SecurityAlertOut
          * @description M50: a flagged sign-in or a reused refresh token. A coarse device label; never an address or a place.
          */
@@ -8425,6 +8955,127 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** Tier5AssignmentOut */
+        Tier5AssignmentOut: {
+            /**
+             * Assignmentid
+             * Format: uuid
+             */
+            assignmentId: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Fullname */
+            fullName: string;
+            /** Membercode */
+            memberCode: string;
+            /** State */
+            state: string;
+            /**
+             * Grantedat
+             * Format: date-time
+             */
+            grantedAt: string;
+            /** Endedat */
+            endedAt: string | null;
+        };
+        /** Tier5CertificationIn */
+        Tier5CertificationIn: {
+            /**
+             * Assignmentid
+             * Format: uuid
+             */
+            assignmentId: string;
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "certified" | "revoked_required";
+            /**
+             * Periodstart
+             * Format: date
+             */
+            periodStart: string;
+            /**
+             * Periodend
+             * Format: date
+             */
+            periodEnd: string;
+            /** Reviewername */
+            reviewerName: string;
+            /** Reviewertitle */
+            reviewerTitle: string;
+            /** Evidenceref */
+            evidenceRef: string;
+            /** Reason */
+            reason: string;
+            /**
+             * Certifiedat
+             * Format: date
+             */
+            certifiedAt: string;
+            /** Confirmexternalreview */
+            confirmExternalReview: boolean;
+        };
+        /** Tier5CertificationOut */
+        Tier5CertificationOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Assignmentid
+             * Format: uuid
+             */
+            assignmentId: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Fullname */
+            fullName: string;
+            /** Membercode */
+            memberCode: string;
+            /** Decision */
+            decision: string;
+            /**
+             * Periodstart
+             * Format: date
+             */
+            periodStart: string;
+            /**
+             * Periodend
+             * Format: date
+             */
+            periodEnd: string;
+            /** Reviewername */
+            reviewerName: string;
+            /** Reviewertitle */
+            reviewerTitle: string;
+            /** Evidenceref */
+            evidenceRef: string;
+            /** Reason */
+            reason: string;
+            /**
+             * Certifiedat
+             * Format: date
+             */
+            certifiedAt: string;
+            /**
+             * Recordedby
+             * Format: uuid
+             */
+            recordedBy: string;
+            /**
+             * Recordedat
+             * Format: date-time
+             */
+            recordedAt: string;
+        };
         /** TierInfo */
         TierInfo: {
             /**
@@ -8539,6 +9190,111 @@ export interface components {
              * Format: date-time
              */
             expiresAt: string;
+        };
+        /** VolunteerAggregateOut */
+        VolunteerAggregateOut: {
+            /**
+             * Eventid
+             * Format: uuid
+             */
+            eventId: string;
+            /** Minimumgroupsize */
+            minimumGroupSize: number;
+            /** Total */
+            total: number | null;
+            /** Cells */
+            cells: components["schemas"]["AggregateCellOut"][];
+        };
+        /** VolunteerAssignmentIn */
+        VolunteerAssignmentIn: {
+            /** Membercode */
+            memberCode: string;
+            /**
+             * Eventid
+             * Format: uuid
+             */
+            eventId: string;
+            /** Consentversion */
+            consentVersion: string;
+            /**
+             * Dutytype
+             * @enum {string}
+             */
+            dutyType: "registration" | "scanning" | "member_assistance" | "accessibility_support" | "logistics" | "coordination" | "administration";
+            /**
+             * Shiftstart
+             * Format: date-time
+             */
+            shiftStart: string;
+            /**
+             * Shiftend
+             * Format: date-time
+             */
+            shiftEnd: string;
+        };
+        /** VolunteerAssignmentOut */
+        VolunteerAssignmentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Membername */
+            memberName: string;
+            /** Membercode */
+            memberCode: string;
+            /**
+             * Eventid
+             * Format: uuid
+             */
+            eventId: string;
+            /** Eventref */
+            eventRef: string;
+            /** Eventtitleen */
+            eventTitleEn: string;
+            /** Eventtitleta */
+            eventTitleTa: string;
+            /** Consentversion */
+            consentVersion: string;
+            /**
+             * Dutytype
+             * @enum {string}
+             */
+            dutyType: "registration" | "scanning" | "member_assistance" | "accessibility_support" | "logistics" | "coordination" | "administration";
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Shiftstart
+             * Format: date-time
+             */
+            shiftStart: string;
+            /**
+             * Shiftend
+             * Format: date-time
+             */
+            shiftEnd: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "offered" | "accepted" | "declined" | "cancelled" | "completed";
+            /** Acknowledgedat */
+            acknowledgedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
         };
         /**
          * WorkQueuesOut
@@ -11583,44 +12339,6 @@ export interface operations {
             };
         };
     };
-    register_scanner_device_v1_events_scanner_devices_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ScannerDeviceIn"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description device_not_yours */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     sync_offline_scans_v1_events__event_id__checkin_offline_post: {
         parameters: {
             query?: never;
@@ -11654,6 +12372,13 @@ export interface operations {
             };
             /** @description not_found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description offline_attendance_not_approved */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -15091,6 +15816,527 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PolicyDecisionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    operational_readiness_v1_operations_readiness_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OperationalReadinessOut"];
+                };
+            };
+        };
+    };
+    record_control_v1_operations_controls_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ControlIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ControlOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_volunteer_assignments_v1_operations_volunteer_assignments_get: {
+        parameters: {
+            query?: {
+                event_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerAssignmentOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_volunteer_assignment_v1_operations_volunteer_assignments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VolunteerAssignmentIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerAssignmentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_volunteer_assignment_events_v1_operations_volunteer_assignment_events_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentEventOut"][];
+                };
+            };
+        };
+    };
+    my_volunteer_assignments_v1_operations_me_volunteer_assignments_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerAssignmentOut"][];
+                };
+            };
+        };
+    };
+    respond_to_assignment_v1_operations_me_volunteer_assignments__assignment_id__response_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assignment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentTransitionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerAssignmentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    transition_volunteer_assignment_v1_operations_volunteer_assignments__assignment_id__transition_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assignment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentTransitionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerAssignmentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_registered_devices_v1_operations_devices_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisteredDeviceOut"][];
+                };
+            };
+        };
+    };
+    register_device_v1_operations_devices_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeviceRegisterIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceRegisteredOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_device_v1_operations_devices__device_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                device_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_policy_versions_v1_operations_policies_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyVersionOut"][];
+                };
+            };
+        };
+    };
+    publish_policy_v1_operations_policies_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PolicyPublishIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyVersionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    current_member_policies_v1_operations_me_policies_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EffectivePolicyOut"][];
+                };
+            };
+        };
+    };
+    record_member_policy_action_v1_operations_me_policies__policy_version_id__actions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                policy_version_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsentActionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentActionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_tier5_assignments_v1_operations_tier5_assignments_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tier5AssignmentOut"][];
+                };
+            };
+        };
+    };
+    list_tier5_certifications_v1_operations_tier5_certifications_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tier5CertificationOut"][];
+                };
+            };
+        };
+    };
+    record_tier5_certification_v1_operations_tier5_certifications_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Tier5CertificationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tier5CertificationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    volunteer_aggregate_v1_operations_aggregates_volunteers__event_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerAggregateOut"];
                 };
             };
             /** @description Validation Error */

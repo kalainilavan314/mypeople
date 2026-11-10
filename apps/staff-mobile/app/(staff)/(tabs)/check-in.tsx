@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -15,16 +16,22 @@ import {
   useLanguage,
   useLocalized,
   useReloadOnFocus,
+  useApiAction,
+  useMember,
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
+import { queuedScans, syncAllScans } from '@/features/scan/offlineQueue';
 import { api } from '@/lib/api';
+import { errorMessage } from '@/lib/errors';
 import { useStaff } from '@/providers/StaffProvider';
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 /**
  * S08 entry: the events of the coming week and checking a membership card.
+ * Scans saved offline at any event can be sent from here once the phone is
+ * back online, without returning to that event's scanner.
  * Scanning at an event needs events.checkin_scan over its area; the API
  * checks that per event, so an event outside the person's areas refuses.
  */
@@ -34,11 +41,40 @@ export default function CheckInScreen() {
   const localized = useLocalized();
   const { permissions } = useStaff();
   const canScan = permissions.has('events.checkin_scan');
+  const member = useMember();
+  const [pending, setPending] = useState(0);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
+  const refreshPending = useCallback(async () => {
+    setPending((await queuedScans(null, member.id)).length);
+  }, [member.id]);
+  const sync = useApiAction(async () => {
+    try {
+      const outcomes = await syncAllScans(member.id);
+      const count = (status: string) => outcomes.filter((outcome) => outcome.status === status).length;
+      setSyncMessage(
+        t('s.checkIn.syncResult', {
+          accepted: count('ACCEPTED'),
+          duplicate: count('DUPLICATE'),
+          rejected: count('REJECTED'),
+          waiting: count('NEEDS_REVIEW') + count('EXPIRED_QUEUE'),
+        }),
+      );
+    } finally {
+      await refreshPending();
+    }
+  });
   const events = useApiQuery(
     async () => canScan ? api().listEvents({ scope: 'all', until: new Date(Date.now() + WEEK_MS).toISOString() }) : [],
     [canScan],
   );
-  useReloadOnFocus(events.reload);
+  const reload = useCallback(() => {
+    events.reload();
+    void refreshPending();
+  }, [events.reload, refreshPending]);
+  useReloadOnFocus(reload);
+  useEffect(() => {
+    void refreshPending();
+  }, [refreshPending]);
 
   if (!canScan) {
     return <Screen edges={[]}><Notice tone="warning">{t('s.checkIn.noAccess')}</Notice></Screen>;
@@ -46,6 +82,21 @@ export default function CheckInScreen() {
 
   return (
     <Screen edges={[]} onRefresh={events.reload} refreshing={events.loading && events.data !== undefined}>
+      {pending > 0 ? (
+        <SurfaceCard>
+          <AppText step="label">{t('s.checkIn.pending', { count: pending })}</AppText>
+          <Button
+            label={t('s.checkIn.syncQueued')}
+            variant="secondary"
+            icon="cloud-upload-outline"
+            busy={sync.busy}
+            busyLabel={t('s.checkIn.syncing')}
+            onPress={() => void sync.run()}
+          />
+        </SurfaceCard>
+      ) : null}
+      {syncMessage ? <Notice tone="info">{syncMessage}</Notice> : null}
+      {sync.error ? <Notice tone="error">{errorMessage(t, sync.error)}</Notice> : null}
       <Button label={t('s.checkIn.cardCheck')} variant="secondary" icon="card-outline" onPress={() => router.push('/card-check')} />
       <AppText step="section" accessibilityRole="header">
         {t('s.checkIn.chooseEvent')}
