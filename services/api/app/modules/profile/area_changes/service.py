@@ -111,7 +111,9 @@ def my_changes(db: Session, member_id: uuid.UUID) -> list[StoredChange]:
 
 
 def queue(db: Session, staff: Staff, states: list[str], limit: int) -> list[StoredChange]:
-    return repository.queue(db, visible_areas=access.visible_areas(staff, REVIEW), states=states, limit=limit)
+    return repository.queue(
+        db, visible_areas=access.visible_areas(staff, REVIEW), states=states, limit=limit, reviewer_id=staff.member_id
+    )
 
 
 def _for_reviewer(db: Session, staff: Staff, change_id: uuid.UUID, ip: str, *, lock: bool = False) -> StoredChange:

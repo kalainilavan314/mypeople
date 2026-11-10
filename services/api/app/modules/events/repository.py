@@ -233,6 +233,22 @@ def managed_events(
     return [_event(row) for row in rows]
 
 
+def check_in_events(
+    db: Session, *, visible_areas: list[str] | None, ends_from: datetime, starts_before: datetime, limit: int
+) -> list[StoredEvent]:
+    """Published events not yet over that start before starts_before, in the given areas, soonest
+    first. visible_areas=None means every area."""
+    conditions = ["e.state = 'published'", "e.ends_at >= :ends_from", "e.starts_at < :starts_before"]
+    params: dict[str, Any] = {"ends_from": ends_from, "starts_before": starts_before, "limit": limit}
+    if visible_areas is not None:
+        conditions.append("e.area_path && CAST(:areas AS text[])")
+        params["areas"] = visible_areas
+    rows = db.execute(
+        text(f"{_SELECT} WHERE {' AND '.join(conditions)} ORDER BY e.starts_at, e.event_ref LIMIT :limit"), params
+    ).mappings()
+    return [_event(row) for row in rows]
+
+
 # --- RSVPs (E05) --------------------------------------------------------------------------------------
 
 

@@ -1795,6 +1795,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/events/check-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Check In Events
+         * @description S08: published events not yet over in the areas where the caller holds events.checkin_scan
+         *     or events.manage, soonest first; canScan says whether passes can be scanned there.
+         */
+        get: operations["list_check_in_events_v1_events_check_in_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/events/{event_id}/scan": {
         parameters: {
             query?: never;
@@ -5035,6 +5056,58 @@ export interface components {
             /** Firstbrokenid */
             firstBrokenId: number | null;
         };
+        /**
+         * CheckInEventOut
+         * @description S08: an event the staff member may scan at or read the roster of.
+         */
+        CheckInEventOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Eventref */
+            eventRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Eventtype */
+            eventType: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Venue */
+            venue: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "published" | "cancelled";
+            /** Myresponse */
+            myResponse: ("going" | "maybe" | "declined" | "waitlisted") | null;
+            /** Capacity */
+            capacity: number | null;
+            /**
+             * Placesleft
+             * @description Null when the event has no capacity limit
+             */
+            placesLeft: number | null;
+            /**
+             * Canscan
+             * @description False when the person may only read the roster here
+             */
+            canScan: boolean;
+        };
         /** ChoicesIn */
         ChoicesIn: {
             /**
@@ -7838,6 +7911,8 @@ export interface components {
             memberId: string;
             /** Fromgn */
             fromGn: string | null;
+            /** Fromgnname */
+            fromGnName: string | null;
             /** Hasproof */
             hasProof: boolean;
         };
@@ -12893,6 +12968,39 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_check_in_events_v1_events_check_in_get: {
+        parameters: {
+            query: {
+                /** @description Only events starting before this time */
+                until: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckInEventOut"][];
+                };
             };
             /** @description Validation Error */
             422: {

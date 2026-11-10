@@ -179,6 +179,24 @@ def test_nobody_reviews_their_own_area_change(client, auth, member_in, area, oth
     )
 
     assert (response.status_code, response.json()) == (403, {"detail": "own_record"})
+    # Nor is it listed for them: the queue offers only requests they may decide.
+    queue = client.get("/v1/profile/area-changes", headers=auth(reviewer)).json()
+    assert receipt["id"] not in {c["id"] for c in queue}
+
+
+def test_the_reviewers_queue_names_the_area_the_member_moves_from(client, auth, member_in, area, other_gn, make_reviewer):
+    member = member_in(area)
+    reviewer = make_reviewer(area.district)
+    receipt = client.post("/v1/profile/area-changes", json={"gnCode": other_gn.gn}, headers=auth(member)).json()
+    client.put(
+        f"/v1/profile/area-changes/{receipt['id']}/proof", content=SAMPLE_JPEG,
+        headers={**auth(member), "Content-Type": "image/jpeg"},
+    )
+
+    [queued] = [c for c in client.get("/v1/profile/area-changes", headers=auth(reviewer)).json() if c["id"] == receipt["id"]]
+
+    assert (queued["fromGn"], queued["toGn"]) == (area.gn, other_gn.gn)
+    assert queued["fromGnName"] and queued["fromGnName"] != area.gn
 
 
 # --- Password (FR-PROF-014) ------------------------------------------------------------------------------

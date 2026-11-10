@@ -43,6 +43,7 @@ class AreaChangeOut(CamelModel):
 class QueuedAreaChangeOut(AreaChangeOut):
     member_id: uuid.UUID
     from_gn: str | None
+    from_gn_name: str | None
     has_proof: bool
 
     @classmethod
@@ -51,6 +52,7 @@ class QueuedAreaChangeOut(AreaChangeOut):
             **AreaChangeOut.build(change).model_dump(),
             member_id=change.member_id,
             from_gn=change.from_gn,
+            from_gn_name=change.from_gn_name,
             has_proof=change.proof_id is not None,
         )
 

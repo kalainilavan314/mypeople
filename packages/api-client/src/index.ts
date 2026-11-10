@@ -39,6 +39,7 @@ export type RsvpState = Schemas['RsvpOut']['response'];
 export type EventPass = Schemas['EventPassOut'];
 export type EventPassCode = Schemas['PassCodeOut'];
 export type ManagedEvent = Schemas['ManagedEventOut'];
+export type CheckInEvent = Schemas['CheckInEventOut'];
 export type EventCreateInput = Schemas['EventCreateIn'];
 export type EventUpdateInput = Schemas['EventUpdateIn'];
 export type EventType = Schemas['EventCreateIn']['eventType'];
@@ -698,6 +699,12 @@ export function createApiClient({
         decision,
         reason,
       }),
+    /**
+     * S08: published events starting before `until` where the caller may scan (canScan) or read the
+     * roster; needs events.checkin_scan or events.manage.
+     */
+    listCheckInEvents: (until: string) =>
+      request<CheckInEvent[]>('GET', `/v1/events/check-in?until=${encodeURIComponent(until)}`),
     /**
      * FR-VOI-007: checks a member in by the member ID on their card when the pass cannot be scanned.
      * Same rules as a scan; the reason is kept on the attendance record.

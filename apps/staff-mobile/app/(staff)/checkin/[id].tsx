@@ -106,7 +106,11 @@ export default function EventCheckInScreen() {
           {localized(event.data.titleEn, event.data.titleTa)}
         </AppText>
       ) : null}
-      <Scanner paused={result !== null || queued || scan.busy} onScan={(code) => void scan.run(code)} />
+      <Scanner
+        paused={result !== null || queued || scan.busy}
+        onScan={(code) => void scan.run(code)}
+        deniedMessage={t('s.checkIn.cameraDenied')}
+      />
       {queued ? (
         <>
           <Notice tone="warning" title={t('s.checkIn.queuedTitle')}>

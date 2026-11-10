@@ -5032,6 +5032,76 @@
         }
       }
     },
+    "/v1/events/check-in": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "List Check In Events",
+        "description": "S08: published events not yet over in the areas where the caller holds events.checkin_scan\nor events.manage, soonest first; canScan says whether passes can be scanned there.",
+        "operationId": "list_check_in_events_v1_events_check_in_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "until",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Only events starting before this time",
+              "title": "Until"
+            },
+            "description": "Only events starting before this time"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CheckInEventOut"
+                  },
+                  "title": "Response List Check In Events V1 Events Check In Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/events/{event_id}/scan": {
       "post": {
         "tags": [
@@ -15163,6 +15233,121 @@
         ],
         "title": "ChainCheckOut"
       },
+      "CheckInEventOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "eventRef": {
+            "type": "string",
+            "title": "Eventref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "eventType": {
+            "type": "string",
+            "title": "Eventtype"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "venue": {
+            "type": "string",
+            "title": "Venue"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "published",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "myResponse": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "going",
+                  "maybe",
+                  "declined",
+                  "waitlisted"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Myresponse"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "placesLeft": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placesleft",
+            "description": "Null when the event has no capacity limit"
+          },
+          "canScan": {
+            "type": "boolean",
+            "title": "Canscan",
+            "description": "False when the person may only read the roster here"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "eventRef",
+          "titleEn",
+          "titleTa",
+          "eventType",
+          "startsAt",
+          "endsAt",
+          "venue",
+          "areaKey",
+          "state",
+          "myResponse",
+          "capacity",
+          "placesLeft",
+          "canScan"
+        ],
+        "title": "CheckInEventOut",
+        "description": "S08: an event the staff member may scan at or read the roster of."
+      },
       "ChoicesIn": {
         "properties": {
           "topics": {
@@ -21975,6 +22160,17 @@
             ],
             "title": "Fromgn"
           },
+          "fromGnName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fromgnname"
+          },
           "hasProof": {
             "type": "boolean",
             "title": "Hasproof"
@@ -21993,6 +22189,7 @@
           "decisionReason",
           "memberId",
           "fromGn",
+          "fromGnName",
           "hasProof"
         ],
         "title": "QueuedAreaChangeOut"

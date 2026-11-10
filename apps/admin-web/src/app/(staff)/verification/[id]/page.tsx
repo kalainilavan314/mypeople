@@ -9,18 +9,13 @@ import { SubmitButton } from '@/components/SubmitButton';
 import { claimOrRelease, decide, reportDuplicate } from '@/features/verification/actions';
 import { areaText, formatDate, formatDateTime, words } from '@/lib/format';
 import { getAdminLocale, getLocalizedMessage, getLocalizedProblem, type Locale } from '@/lib/i18n';
+import { CHECKLIST_LABELS, EVIDENCE_LABELS } from '@/lib/messages';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
 
 const one = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
 
-const CHECKLIST = [
-  ['pages_present', { ta: 'அனைத்துப் பக்கங்களும் பக்கவாட்டுகளும் கிடைக்கின்றன', en: 'Every page and side is present' }],
-  ['readable', { ta: 'அனைத்துப் படங்களும் தெளிவாக வாசிக்கக்கூடியவை', en: 'Every image is readable' }],
-  ['details_match_profile', { ta: 'பெயரும் பிறந்த திகதியும் சுயவிவரத்துடன் பொருந்துகின்றன', en: 'Name and date of birth match the profile' }],
-  ['selfie_reviewable', { ta: 'சுயபடம் அதே நபரைத் தெளிவாகக் காட்டுகிறது', en: 'The selfie shows the same person clearly' }],
-  ['area_checked', { ta: 'பகுதி உறுப்பினருக்குப் பொருத்தமானது', en: 'The area is plausible for the member' }],
-] as const;
+const CHECKLIST = Object.entries(CHECKLIST_LABELS);
 
 const REASONS = {
   request_update: ['image_unreadable', 'image_incomplete', 'wrong_document', 'details_do_not_match', 'selfie_unclear', 'other'],
@@ -38,13 +33,6 @@ const REASON_LABELS: Record<string, { ta: string; en: string }> = {
   other: { ta: 'மற்றவை', en: 'Other' },
 };
 
-const ITEM_LABELS: Record<string, { ta: string; en: string }> = {
-  nic_front: { ta: 'தே.அ.அட்டை முன்பக்கம்', en: 'NIC front' },
-  nic_back: { ta: 'தே.அ.அட்டை பின்பக்கம்', en: 'NIC back' },
-  passport_page: { ta: 'கடவுச்சீட்டு பக்கம்', en: 'Passport page' },
-  selfie: { ta: 'சுயபடம்', en: 'Selfie' },
-  profile_details: { ta: 'சுயவிவர விவரங்கள்', en: 'Profile details' },
-};
 
 const ROUTE_ITEMS = { nic: ['nic_front', 'nic_back', 'selfie'], passport: ['passport_page', 'selfie'] } as const;
 const OPEN = new Set(['submitted', 'in_review']);
@@ -131,7 +119,7 @@ async function Review({ params, searchParams }: Pick<PageProps<'/verification/[i
           {review.documents.map((document) => (
             <li key={document.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
               <span>
-                <span className="font-semibold text-text">{words(document.kind)}</span>
+                <span lang={locale} className="font-semibold text-text">{EVIDENCE_LABELS[document.kind]?.[locale] ?? words(document.kind)}</span>
                 <span className="block text-xs text-muted">
                   Version {document.version} · {Math.round(document.byteSize / 1024)} KB · {locale === 'ta' ? 'பெறப்பட்டது' : 'received'} {formatDateTime(document.serverAckAt)}
                 </span>
@@ -294,7 +282,7 @@ function DecisionForm({
               <label key={item} className="flex min-h-11 items-center gap-2 text-sm">
                 <input type="checkbox" name="items" value={item} />
                 <span lang={locale} className="font-medium text-text">
-                  {ITEM_LABELS[item]?.[locale] ?? words(item)}
+                  {EVIDENCE_LABELS[item]?.[locale] ?? words(item)}
                 </span>
               </label>
             ))}

@@ -11,6 +11,7 @@ import {
   publishAlbum,
   returnAlbum,
   submitAlbum,
+  updateAlbum,
   updatePhotoCaptions,
   uploadPhoto,
 } from '@/features/gallery/actions';
@@ -114,6 +115,64 @@ async function AlbumDetail({ params, searchParams }: Pick<PageProps<'/gallery/al
           </details>
         ) : null}
       </div>
+
+      {/* Album details stay editable while the album is a draft, including after it was returned for changes. */}
+      {isDraft ? (
+        <details className="rounded-xl border border-line bg-card p-6">
+          <summary className="cursor-pointer text-base font-bold text-text">
+            <span lang={locale}>{locale === 'ta' ? 'தொகுப்பு விவரங்களைத் திருத்துக' : 'Edit album details'}</span>
+          </summary>
+          <form action={updateAlbum} className="mt-4 flex flex-col gap-4">
+            <input type="hidden" name="albumId" value={album.id} />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="flex flex-col gap-1 text-sm font-semibold">
+                <span lang={locale}>{locale === 'ta' ? 'தொகுப்புத் தலைப்பு (தமிழ்) *' : 'Title (Tamil) *'}</span>
+                <input name="titleTa" required maxLength={160} defaultValue={album.titleTa} lang="ta" className="min-h-11 rounded-lg border border-line px-3" />
+              </label>
+              <label className="flex flex-col gap-1 text-sm font-semibold">
+                <span lang={locale}>{locale === 'ta' ? 'தொகுப்புத் தலைப்பு (ஆங்கிலம்) *' : 'Title (English) *'}</span>
+                <input name="titleEn" required maxLength={160} defaultValue={album.titleEn} className="min-h-11 rounded-lg border border-line px-3" />
+              </label>
+              <label className="flex flex-col gap-1 text-sm font-semibold">
+                <span lang={locale}>{locale === 'ta' ? 'பிரிவு *' : 'Category *'}</span>
+                <select name="category" required defaultValue={album.category} className="min-h-11 rounded-lg border border-line bg-surface px-3">
+                  <option value="community">{locale === 'ta' ? 'சமூகம் (Community)' : 'Community'}</option>
+                  <option value="events">{locale === 'ta' ? 'நிகழ்வுகள் (Events)' : 'Events'}</option>
+                </select>
+              </label>
+              <label className="flex flex-col gap-1 text-sm font-semibold">
+                <span lang={locale}>{locale === 'ta' ? 'திகதி *' : 'Album date *'}</span>
+                <input name="albumDate" type="date" required defaultValue={album.albumDate} className="min-h-11 rounded-lg border border-line px-3" />
+              </label>
+              <label className="flex flex-col gap-1 text-sm font-semibold">
+                <span lang={locale}>{locale === 'ta' ? 'சுருக்கம் (தமிழ்)' : 'Summary (Tamil)'}</span>
+                <textarea name="summaryTa" rows={3} maxLength={2000} defaultValue={album.summaryTa} lang="ta" className="rounded-lg border border-line p-3" />
+              </label>
+              <label className="flex flex-col gap-1 text-sm font-semibold">
+                <span lang={locale}>{locale === 'ta' ? 'சுருக்கம் (ஆங்கிலம்)' : 'Summary (English)'}</span>
+                <textarea name="summaryEn" rows={3} maxLength={2000} defaultValue={album.summaryEn} className="rounded-lg border border-line p-3" />
+              </label>
+              <label className="flex flex-col gap-1 text-sm font-semibold">
+                <span lang={locale}>{locale === 'ta' ? 'நடைபெறும் இடம் / மண்டபம்' : 'Place / Venue name'}</span>
+                <input name="place" maxLength={200} defaultValue={album.place} className="min-h-11 rounded-lg border border-line px-3" />
+              </label>
+              <label className="flex flex-col gap-1 text-sm font-semibold">
+                <span lang={locale}>{locale === 'ta' ? 'வெளியீட்டாளர் பெயர் *' : 'Publisher credit *'}</span>
+                <input name="publisher" required maxLength={160} defaultValue={album.publisher} className="min-h-11 rounded-lg border border-line px-3" />
+              </label>
+              <label className="flex flex-col gap-1 text-sm font-semibold sm:col-span-2">
+                <span lang={locale}>{locale === 'ta' ? 'தொடர்புடைய நிகழ்வு இலக்கம் (விருப்பத்தேர்வு)' : 'Linked event ID (optional, for Events category)'}</span>
+                <input name="eventId" defaultValue={album.eventId ?? ''} className="min-h-11 rounded-lg border border-line px-3 font-mono text-xs" />
+              </label>
+            </div>
+            <div className="flex justify-end">
+              <SubmitButton tone="primary">
+                <span lang={locale}>{locale === 'ta' ? 'மாற்றங்களைச் சேமிக்க' : 'Save changes'}</span>
+              </SubmitButton>
+            </div>
+          </form>
+        </details>
+      ) : null}
 
       {/* Photos Management */}
       <section aria-labelledby="photos-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">

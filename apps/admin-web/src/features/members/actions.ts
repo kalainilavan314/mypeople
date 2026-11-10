@@ -27,7 +27,7 @@ export async function changeMembership(formData: FormData): Promise<void> {
 
   const [action, reasonCode] = String(formData.get('change') ?? '').split(':') as [MembershipChangeInput['action'], string];
   const note = String(formData.get('note') ?? '').trim();
-  const confirmed = formData.get('confirmChange') === '1';
+  const confirmed = formData.get('confirmMembershipChange') === '1';
 
   if (!confirmed) {
     redirect(`/membership/${memberId}?error=confirmation_required`);

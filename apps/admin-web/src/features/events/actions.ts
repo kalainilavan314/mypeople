@@ -128,7 +128,8 @@ export async function updateEvent(formData: FormData): Promise<void> {
     eventType: eventType || undefined,
     venue: venue || undefined,
     meetingPoint,
-    agenda,
+    // Left unchanged when the form has no agenda field, so an edit never wipes it.
+    agenda: formData.has('agenda') ? agenda : undefined,
     accessibility,
     contactRoute,
     startsAt: startsAt || undefined,

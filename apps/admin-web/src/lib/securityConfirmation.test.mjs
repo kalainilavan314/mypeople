@@ -45,6 +45,10 @@ test('security messages - problemText provides Tamil-first and English text', ()
   const checklistInc = bilingualProblemText('checklist_incomplete:id_photo');
   assert.match(checklistInc.ta, /சரிபார்ப்புப் பட்டியல்/);
   assert.match(checklistInc.en, /Checklist/i);
+
+  // Refusals name the checklist item and image as the review page shows them, not the code.
+  assert.equal(bilingualProblemText('checklist_incomplete:readable').en, 'Checklist item not confirmed: Every image is readable.');
+  assert.equal(bilingualProblemText('evidence_not_viewed:nic_front').en, 'Open the NIC front image before approving.');
 });
 
 test('security confirmations - provides bilingual status for completed actions', () => {
