@@ -2877,6 +2877,111 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/policy-decisions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Policy Decisions
+         * @description The fixed Phase 1 decision catalogue with current approval evidence.
+         */
+        get: operations["list_policy_decisions_v1_policy_decisions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/policy-decisions/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Policy Decision */
+        get: operations["get_policy_decision_v1_policy_decisions__key__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/policy-decisions/{key}/revisions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Revision */
+        post: operations["create_revision_v1_policy_decisions__key__revisions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/policy-decisions/{key}/revisions/{revision_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Revision */
+        patch: operations["update_revision_v1_policy_decisions__key__revisions__revision_id__patch"];
+        trace?: never;
+    };
+    "/v1/policy-decisions/{key}/revisions/{revision_id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit Revision */
+        post: operations["submit_revision_v1_policy_decisions__key__revisions__revision_id__submit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/policy-decisions/{key}/revisions/{revision_id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Review */
+        post: operations["record_review_v1_policy_decisions__key__revisions__revision_id__reviews_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/fund/config": {
         parameters: {
             query?: never;
@@ -4996,6 +5101,15 @@ export interface components {
              */
             serverAckAt: string;
         };
+        /** DraftIn */
+        DraftIn: {
+            /** Decisiontext */
+            decisionText: string;
+            /** Rationale */
+            rationale: string;
+            /** Effectivefrom */
+            effectiveFrom?: string | null;
+        };
         /**
          * DueGrantOut
          * @description A grant waiting for review, with whose it is.
@@ -6704,6 +6818,28 @@ export interface components {
             /** Namesi */
             nameSi: string | null;
         };
+        /** PolicyDecisionOut */
+        PolicyDecisionOut: {
+            /** Key */
+            key: string;
+            /** Workstream */
+            workstream: string;
+            /** Title */
+            title: string;
+            /** Question */
+            question: string;
+            /** Proposeddefault */
+            proposedDefault: string;
+            /** Releaseeffect */
+            releaseEffect: string;
+            /** Requiredroles */
+            requiredRoles: string[];
+            /** Approvedroles */
+            approvedRoles: string[];
+            /** Missingroles */
+            missingRoles: string[];
+            current: components["schemas"]["RevisionOut"] | null;
+        };
         /**
          * PreviewOut
          * @description What W09 shows before saving (RB-06). Each problem is a code the dashboard explains.
@@ -7358,6 +7494,29 @@ export interface components {
             /** Duplicateflags */
             duplicateFlags: components["schemas"]["DuplicateFlagOut"][];
         };
+        /** ReviewIn */
+        ReviewIn: {
+            /** Role */
+            role: string;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "approve" | "reject";
+            /** Reviewername */
+            reviewerName: string;
+            /** Reviewertitle */
+            reviewerTitle: string;
+            /** Evidenceref */
+            evidenceRef: string;
+            /** Comment */
+            comment: string;
+            /**
+             * Reviewedat
+             * Format: date
+             */
+            reviewedAt: string;
+        };
         /** ReviewInput */
         ReviewInput: {
             /**
@@ -7385,6 +7544,34 @@ export interface components {
             dsCode: string | null;
             /** Gscode */
             gsCode: string | null;
+        };
+        /** ReviewOut */
+        ReviewOut: {
+            /** Role */
+            role: string;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "approve" | "reject";
+            /** Reviewername */
+            reviewerName: string;
+            /** Reviewertitle */
+            reviewerTitle: string;
+            /** Evidenceref */
+            evidenceRef: string;
+            /** Comment */
+            comment: string;
+            /**
+             * Reviewedat
+             * Format: date
+             */
+            reviewedAt: string;
+            /**
+             * Recordedat
+             * Format: date-time
+             */
+            recordedAt: string;
         };
         /**
          * ReviewSummaryOut
@@ -7436,6 +7623,43 @@ export interface components {
             claimedAt: string | null;
             /** Decidedat */
             decidedAt: string | null;
+        };
+        /** RevisionOut */
+        RevisionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Revision */
+            revision: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "in_review" | "approved" | "rejected";
+            /** Decisiontext */
+            decisionText: string;
+            /** Rationale */
+            rationale: string;
+            /** Effectivefrom */
+            effectiveFrom: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Submittedat */
+            submittedAt: string | null;
+            /** Resolvedat */
+            resolvedAt: string | null;
+            /** Reviews */
+            reviews: components["schemas"]["ReviewOut"][];
         };
         /** RevokeInput */
         RevokeInput: {
@@ -7859,6 +8083,11 @@ export interface components {
              * @constant
              */
             declaration: true;
+        };
+        /** SubmitIn */
+        SubmitIn: {
+            /** Reason */
+            reason: string;
         };
         /** SurveyAnswersIn */
         SurveyAnswersIn: {
@@ -14056,7 +14285,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description gate_must_be:<gate> or gate_not_recorded */
+            /** @description gate_must_be:<gate>, gate_not_recorded, or policy_decisions_required:<keys> */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -14105,7 +14334,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description gate_must_be:<gate> or gate_not_recorded */
+            /** @description gate_must_be:<gate>, gate_not_recorded, or policy_decisions_required:<keys> */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -14154,12 +14383,206 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description gate_must_be:<gate> or gate_not_recorded */
+            /** @description gate_must_be:<gate>, gate_not_recorded, or policy_decisions_required:<keys> */
             409: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_policy_decisions_v1_policy_decisions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDecisionOut"][];
+                };
+            };
+        };
+    };
+    get_policy_decision_v1_policy_decisions__key__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDecisionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_revision_v1_policy_decisions__key__revisions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DraftIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDecisionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_revision_v1_policy_decisions__key__revisions__revision_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+                revision_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DraftIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDecisionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_revision_v1_policy_decisions__key__revisions__revision_id__submit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+                revision_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDecisionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_review_v1_policy_decisions__key__revisions__revision_id__reviews_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+                revision_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDecisionOut"];
+                };
             };
             /** @description Validation Error */
             422: {

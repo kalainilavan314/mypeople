@@ -87,6 +87,9 @@ export type BroadcastUpdateInput = Schemas['BroadcastUpdateIn'];
 export type EnabledFeatures = Schemas['FeaturesOut'];
 export type FeatureFlag = Schemas['FlagOut'];
 export type PhaseGate = FeatureFlag['requiredGate'];
+export type PolicyDecision = Schemas['PolicyDecisionOut'];
+export type PolicyDecisionDraftInput = Schemas['DraftIn'];
+export type PolicyDecisionReviewInput = Schemas['ReviewIn'];
 export type ElectionBanner = Schemas['ElectionBannerOut'];
 export type ElectionNotice = Schemas['ElectionNoticeOut'];
 export type ElectionNoticeInput = Schemas['NoticeIn'];
@@ -828,6 +831,31 @@ export function createApiClient({
       request<FeatureFlag>('POST', `/v1/features/${encodeURIComponent(key)}/enable`, { reason }),
     disableFeature: (key: string, reason: string) =>
       request<FeatureFlag>('POST', `/v1/features/${encodeURIComponent(key)}/disable`, { reason }),
+
+    /** Phase 1 policy decisions and their signed owner evidence. Needs system.configure. */
+    listPolicyDecisions: () => request<PolicyDecision[]>('GET', '/v1/policy-decisions'),
+    getPolicyDecision: (key: string) =>
+      request<PolicyDecision>('GET', `/v1/policy-decisions/${encodeURIComponent(key)}`),
+    createPolicyDecisionRevision: (key: string, input: PolicyDecisionDraftInput) =>
+      request<PolicyDecision>('POST', `/v1/policy-decisions/${encodeURIComponent(key)}/revisions`, input),
+    updatePolicyDecisionDraft: (key: string, revisionId: string, input: PolicyDecisionDraftInput) =>
+      request<PolicyDecision>(
+        'PATCH',
+        `/v1/policy-decisions/${encodeURIComponent(key)}/revisions/${encodeURIComponent(revisionId)}`,
+        input,
+      ),
+    submitPolicyDecisionRevision: (key: string, revisionId: string, reason: string) =>
+      request<PolicyDecision>(
+        'POST',
+        `/v1/policy-decisions/${encodeURIComponent(key)}/revisions/${encodeURIComponent(revisionId)}/submit`,
+        { reason },
+      ),
+    recordPolicyDecisionReview: (key: string, revisionId: string, input: PolicyDecisionReviewInput) =>
+      request<PolicyDecision>(
+        'POST',
+        `/v1/policy-decisions/${encodeURIComponent(key)}/revisions/${encodeURIComponent(revisionId)}/reviews`,
+        input,
+      ),
 
     /** Elections running for the member's area, with the official source and labelled notices (FR-ELX-001, 004). */
     getCurrentElections: () => request<ElectionBanner[]>('GET', '/v1/election/current'),

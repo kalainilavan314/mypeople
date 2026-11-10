@@ -170,6 +170,23 @@ Writes that carry the session cookie and come from another website are refused w
 
 Any route of a module that is off answers `404 feature_unavailable`.
 
+Enabling `community_finance` also fails with `409 policy_decisions_required:<keys>` until the latest revisions of FIN-01, FIN-02, FIN-03 and FIN-05 are approved.
+
+### Phase 1 policy decisions (`/v1/policy-decisions`)
+
+All endpoints require `system.configure`. Proposed defaults returned by the API are context only; they are never treated as approval.
+
+| Endpoint | Success | Errors |
+|---|---|---|
+| `GET /v1/policy-decisions` | `200` the fixed FIN/STF/GOV/CARD catalogue, current revision, owner roles and missing approvals | `403` |
+| `GET /v1/policy-decisions/{key}` | `200` one decision file and its evidence | `403`, `404` |
+| `POST /v1/policy-decisions/{key}/revisions` body `{decisionText, rationale, effectiveFrom?}` | `201` a new draft; approved/rejected history remains immutable | `404`, `409 active_revision_exists` |
+| `PATCH /v1/policy-decisions/{key}/revisions/{id}` with the same body | `200` the updated draft | `404`, `409 revision_not_draft` |
+| `POST .../{id}/submit` body `{reason}` | `200` the immutable revision in `in_review` | `404`, `409 revision_not_draft`, `decision_content_incomplete` |
+| `POST .../{id}/reviews` body `{role, outcome, reviewerName, reviewerTitle, evidenceRef, comment, reviewedAt}` | `200`; approval occurs only after every required role approves; one rejection closes the revision | `404`, `409 revision_not_in_review`, `review_role_not_required`, `review_role_already_recorded`, `review_date_in_future` |
+
+Review evidence is append-only. The external signed record remains in its controlled document store; the API records only its reference and the staff actor who entered it.
+
 ### Election (`/v1/election`)
 
 | Endpoint | Needs | Success | Errors |

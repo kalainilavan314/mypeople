@@ -219,6 +219,8 @@ function getModuleIcon(href: string) {
       return MessagesIcon;
     case '/settings':
       return SettingsIcon;
+    case '/policy-decisions':
+      return AuditIcon;
     case '/access':
       return AccessIcon;
     case '/audit':

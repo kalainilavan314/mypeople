@@ -10,7 +10,7 @@ PostgreSQL 16 on the server (17 locally is fine). Production data lives on the e
 | `npm` | `member`, `otp`, `auth_attempt`, `verification_audit`, `onboarding_answer`, `referral_event`, `event`, `event_rsvp`, `community_report`, `donation`; `community_report` has an immutable submission-area hierarchy maintained for every insert | Express `0001`–`0011`; Alembic `0025`–`0026` |
 | `public` | `error_log` (Express 5xx errors), `schema_migrations` (Express ledger), `alembic_version` (Alembic) | Express, Alembic |
 | `access` | `staff_assignment`: a person's tier, area and explicit permissions, who granted it, review date, revocation | Alembic `0002` |
-| `ops` | `audit_log`: append-only and hash-chained; triggers refuse UPDATE, DELETE and TRUNCATE | Alembic `0002` |
+| `ops` | `audit_log`: append-only and hash-chained; triggers refuse UPDATE, DELETE and TRUNCATE. `policy_decision_revision` and `policy_decision_review`: versioned Phase 1 decisions and append-only signed-owner evidence | Alembic `0002`, `0029` |
 | `identity` | `identity_document`: one row per identity image version (kind, version, type, size, which key sealed it, `server_ack_at`); the images are encrypted files outside the database | Alembic `0003` |
 | `identity` | `identity_review`: one submission for team review (`VR-` reference, route, state, claim, the member's area when submitted); `review_decision`: every decision with reviewer, tier, checklist, items, reason and document versions; triggers refuse UPDATE, DELETE and TRUNCATE | Alembic `0004` |
 | `identity` | `review_appeal`: one appeal per decision (`VA-` reference, statement, state, claim, outcome, decider and tier, reason); a decided appeal cannot be changed or deleted | Alembic `0005` |
@@ -33,7 +33,7 @@ Sensitive columns: `npm.member.nic_hash` (peppered SHA-256, never the NIC itself
 
 ## Migrations
 
-Two runners, one rule: **new schema changes are Alembic revisions only.** Revisions so far: `0001` baseline, `0002` staff access and the audit log, `0003` identity documents, `0004` identity reviews and decisions, `0005` appeals, `0006` membership states, `0007` duplicate investigations, `0008` registration, `0009` recovery, `0010` sessions and MFA, `0011` member cards, `0012` authenticator lockout, `0013` refusal tally, `0014` events, `0015` gallery, `0016` profile and privacy, `0017` notifications, `0018` feature flags, election periods and manual check-in, `0019` refresh tokens, security alerts and access reviews.
+Two runners, one rule: **new schema changes are Alembic revisions only.** Revisions so far: `0001` baseline through `0028` finance evidence grants, followed by `0029` for the Phase 1 policy decision register. The files in `services/api/alembic/versions` are the authoritative ordered ledger.
 
 - `server/migrations/0000`–`0011` are frozen. They built the schema before Alembic and are still applied by `npm run migrate --prefix server` on a new database.
 - Alembic revision `0001` (`services/api/alembic/versions/0001_baseline_express_schema.py`) is a no-op baseline that stands for those twelve files. `alembic/env.py` refuses every command, `stamp` included, while any of them is missing from the Express ledger, so a database that is behind can never be marked current.
