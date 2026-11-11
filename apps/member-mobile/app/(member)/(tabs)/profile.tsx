@@ -3,23 +3,26 @@ import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens';
+import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
   Button,
+  LanguageToggle,
   MenuRow,
   Screen,
   StatusTag,
   SurfaceCard,
   type Tone,
   useApiQuery,
+  useLanguage,
   useReloadOnFocus,
   useSession,
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
 import { api } from '@/lib/api';
+import { chooseLanguage } from '@/lib/i18n';
 
 const IDENTITY_TONE: Record<ProfileView['identityState'], Tone> = {
   not_submitted: 'neutral',
@@ -40,6 +43,7 @@ const MEMBERSHIP_TONE: Record<ProfileView['membershipState'], Tone> = {
 /** P01: who the member is, identity and membership shown separately, and the way to everything personal. */
 export default function ProfileScreen() {
   const { t } = useTranslation();
+  const language = useLanguage();
   const { signOut } = useSession();
   const profile = useApiQuery(() => api().getProfile());
   useReloadOnFocus(profile.reload);
@@ -47,63 +51,59 @@ export default function ProfileScreen() {
   return (
     <Screen edges={[]} onRefresh={profile.reload} refreshing={profile.loading && profile.data !== undefined}>
       <QueryView query={profile}>
-        {(data) => (
-          <SurfaceCard>
+        {(data) => {
+          const name = data.displayName ?? data.legalName;
+          return (
             <View style={styles.header}>
               <View style={styles.avatar} accessibilityElementsHidden importantForAccessibility="no">
-                <AppText step="section" tone="inverse">
-                  {(data.displayName ?? data.legalName).slice(0, 1).toUpperCase()}
+                <AppText step="display" tone="inverse">
+                  {name.slice(0, 1).toUpperCase()}
                 </AppText>
               </View>
               <View style={styles.headerText}>
                 <AppText step="section" accessibilityRole="header">
-                  {data.displayName ?? data.legalName}
+                  {name}
                 </AppText>
-                {data.displayName ? (
-                  <AppText step="secondary" tone="muted">{`${t('m.profile.legalName')}: ${data.legalName}`}</AppText>
+                <AppText step="body" tone="muted">
+                  {`${data.memberCode} · ${t('m.profile.member')}`}
+                </AppText>
+                {data.districtName ? (
+                  <AppText step="body" tone="muted">
+                    {data.districtName}
+                  </AppText>
                 ) : null}
-                <AppText step="secondary" tone="secondary" mono>
-                  {data.memberCode}
-                </AppText>
+                <View style={styles.tags}>
+                  <StatusTag tone={MEMBERSHIP_TONE[data.membershipState]} label={t(`m.home.membership_${data.membershipState}`)} />
+                  {data.identityState === 'verified' ? null : (
+                    <StatusTag
+                      tone={IDENTITY_TONE[data.identityState]}
+                      label={`${t('m.profile.identity')}: ${t(`m.verify.status_${data.identityState}`)}`}
+                    />
+                  )}
+                </View>
               </View>
             </View>
-            <View style={styles.tags}>
-              <StatusTag
-                tone={IDENTITY_TONE[data.identityState]}
-                label={`${t('m.profile.identity')}: ${t(`m.verify.status_${data.identityState}`)}`}
-              />
-              <StatusTag
-                tone={MEMBERSHIP_TONE[data.membershipState]}
-                label={`${t('m.profile.membership')}: ${t(`m.home.membership_${data.membershipState}`)}`}
-              />
-            </View>
-          </SurfaceCard>
-        )}
+          );
+        }}
       </QueryView>
 
-      <SurfaceCard>
-        <MenuRow first icon="location-outline" label={t('m.profile.myArea')} onPress={() => router.push('/profile/area')} />
+      <SurfaceCard style={styles.group}>
+        <MenuRow first icon="create-outline" label={t('m.profile.editProfile')} onPress={() => router.push('/profile/edit')} />
+        <MenuRow icon="shield-checkmark-outline" label={t('m.profile.verificationDetails')} onPress={() => router.push('/verify')} />
         <MenuRow icon="time-outline" label={t('m.profile.myActivity')} onPress={() => router.push('/profile/activity')} />
-        <MenuRow icon="create-outline" label={t('m.profile.editProfile')} onPress={() => router.push('/profile/edit')} />
-        <MenuRow icon="shield-checkmark-outline" label={t('m.profile.verification')} onPress={() => router.push('/verify')} />
-        <MenuRow icon="home-outline" label={t('m.household.title')} onPress={() => router.push('/household')} />
         <MenuRow icon="people-outline" label={t('m.profile.hub')} onPress={() => router.push('/hub')} />
+        <MenuRow icon="map-outline" label={t('m.profile.myArea')} onPress={() => router.push('/profile/area')} />
+        <MenuRow icon="home-outline" label={t('m.household.title')} onPress={() => router.push('/household')} />
       </SurfaceCard>
 
-      <AppText step="section" accessibilityRole="header">
-        {t('m.profile.settings')}
-      </AppText>
-      <SurfaceCard>
+      <SurfaceCard style={styles.group}>
         <MenuRow
           first
           icon="language-outline"
-          label={`${t('m.profile.language')} · ${t('m.profile.notifications')}`}
-          onPress={() => router.push('/profile/settings')}
+          label={t('m.profile.language')}
+          trailing={<LanguageToggle value={language} onChange={(next) => void chooseLanguage(next)} label={t('m.profile.language')} />}
         />
-        <MenuRow icon="text-outline" label={t('m.accessibility.title')} onPress={() => router.push('/profile/accessibility')} />
-        <MenuRow icon="call-outline" label={t('m.profile.recoveryNumber')} onPress={() => router.push('/profile/recovery-number')} />
-        <MenuRow icon="lock-closed-outline" label={t('m.profile.security')} onPress={() => router.push('/profile/security')} />
-        <MenuRow icon="document-lock-outline" label={t('m.profile.privacy')} onPress={() => router.push('/profile/privacy')} />
+        <MenuRow icon="settings-outline" label={t('m.profile.accountSettings')} onPress={() => router.push('/profile/settings')} />
       </SurfaceCard>
 
       <Button label={t('m.common.signOut')} variant="danger" icon="log-out-outline" onPress={() => void signOut()} />
@@ -112,15 +112,17 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', gap: spacing[3], alignItems: 'center' },
+  header: { flexDirection: 'row', gap: spacing[4], alignItems: 'center', paddingVertical: spacing[2] },
   avatar: {
-    width: 48,
-    height: 48,
+    width: 72,
+    height: 72,
     borderRadius: radius.pill,
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerText: { flex: 1, gap: 2 },
-  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
+  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2], marginTop: spacing[1] },
+  // Grouped rows sit closer to the card's edge than ordinary card content.
+  group: { paddingVertical: spacing[1] },
 });

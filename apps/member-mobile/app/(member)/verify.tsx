@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens';
+import { spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,

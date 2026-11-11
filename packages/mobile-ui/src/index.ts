@@ -1,7 +1,7 @@
-// Shared by the member and staff apps: the locked fonts, the screen components
+// Shared by the member and staff apps: the app fonts, the screen components
 // from the design specification (design/mobile/production-design-specification.md
 // §3), the stored session, and the hooks that load data through the API client.
-export { fontFamilyFor, lockedFonts, monoFontFamily, scaledTextStyle, textStyle } from './fonts';
+export { fontFamilyFor, appFonts, monoFontFamily, scaledTextStyle, textStyle } from './fonts';
 export {
   DisplayPreferencesProvider,
   TEXT_SCALE,
@@ -11,18 +11,23 @@ export {
 } from './display/DisplayPreferences';
 export { tabIcon } from './tabIcon';
 
+export { ActionTile } from './components/ActionTile';
 export { AppText } from './components/AppText';
 export { AuthorizedImage } from './components/AuthorizedImage';
 export { Button } from './components/Button';
 export { Checkbox } from './components/Checkbox';
 export { ChipRow } from './components/ChipRow';
 export { DateBadge } from './components/DateBadge';
+export { IconTile } from './components/IconTile';
+export { LanguageToggle } from './components/LanguageToggle';
 export { MenuRow } from './components/MenuRow';
 export { Notice } from './components/Notice';
 export { QrCode } from './components/QrCode';
 export { QueryView, createQueryView } from './components/QueryView';
 export { Screen } from './components/Screen';
 export { SelectField, type SelectOption } from './components/SelectField';
+export { SearchField } from './components/SearchField';
+export { SegmentedControl } from './components/SegmentedControl';
 export { StatusTag, type Tone } from './components/StatusTag';
 export { SurfaceCard } from './components/SurfaceCard';
 export { TextField } from './components/TextField';
@@ -35,6 +40,7 @@ export { useRotatingCode } from './hooks/useRotatingCode';
 export { dateBadgeParts, formatDate, formatDateTime, formatSpan, formatTime, localHour } from './lib/format';
 export { confirmAction, showMessage, type ConfirmOptions } from './lib/confirm';
 export { headerOptions } from './lib/headerOptions';
+export { tabOptions } from './lib/tabOptions';
 export {
   clearOfflineCard,
   clearSession,

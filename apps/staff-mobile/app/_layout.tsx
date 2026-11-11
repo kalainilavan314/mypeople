@@ -6,8 +6,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 
-import { colors } from '@my-people/design-tokens';
-import { lockedFonts, SessionProvider, useSession } from '@my-people/mobile-ui';
+import { colors } from '@my-people/design-tokens/mobile';
+import { appFonts, SessionProvider, useSession } from '@my-people/mobile-ui';
 
 import { API_URL } from '@/lib/api';
 import { restoreLanguage } from '@/lib/i18n';
@@ -17,7 +17,7 @@ import { restoreLanguage } from '@/lib/i18n';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [fontsLoaded, fontError] = useFonts(lockedFonts);
+  const [fontsLoaded, fontError] = useFonts(appFonts);
   const [languageReady, setLanguageReady] = useState(false);
 
   useEffect(() => {

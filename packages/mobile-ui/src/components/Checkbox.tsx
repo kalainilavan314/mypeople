@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { colors, control, spacing } from '@my-people/design-tokens';
+import { colors, control, spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText } from './AppText';
 

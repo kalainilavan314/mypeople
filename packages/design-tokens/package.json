@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Colours, spacing, radii, type scale and locked fonts shared by the My People apps",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./mobile": "./src/mobile.ts"
   },
   "scripts": {
     "test": "node --test",

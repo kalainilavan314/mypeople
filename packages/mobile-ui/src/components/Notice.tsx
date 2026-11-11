@@ -2,17 +2,17 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { colors, radius, spacing } from '@my-people/design-tokens';
+import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText } from './AppText';
 
 type Tone = 'info' | 'warning' | 'error' | 'success';
 
 const TONES = {
-  info: { icon: 'information-circle-outline', background: colors.surfaceVariant, border: colors.border, color: colors.primary, text: 'default' },
-  warning: { icon: 'time-outline', background: colors.warningBackground, border: colors.warning, color: colors.warningText, text: 'warning' },
-  error: { icon: 'alert-circle-outline', background: colors.errorBackground, border: colors.error, color: colors.error, text: 'error' },
-  success: { icon: 'checkmark-circle-outline', background: colors.successBackground, border: colors.success, color: colors.successText, text: 'success' },
+  info: { icon: 'information-circle-outline', background: colors.card, border: colors.border, color: colors.link, text: 'default' },
+  warning: { icon: 'information-circle-outline', background: colors.warningBackground, border: colors.warningBorder, color: colors.warningText, text: 'warning' },
+  error: { icon: 'alert-circle-outline', background: colors.errorBackground, border: colors.errorBorder, color: colors.error, text: 'error' },
+  success: { icon: 'checkmark-circle-outline', background: colors.successBackground, border: colors.successBackground, color: colors.successText, text: 'success' },
 } as const;
 
 type Props = { tone?: Tone; title?: string; children?: ReactNode };
@@ -28,7 +28,7 @@ export function Notice({ tone = 'info', title, children }: Props) {
       <Ionicons name={style.icon} size={20} color={style.color} />
       <View style={styles.text}>
         {title ? (
-          <AppText step="label" tone={style.text}>
+          <AppText step="card" tone="default">
             {title}
           </AppText>
         ) : null}
@@ -45,6 +45,6 @@ export function Notice({ tone = 'info', title, children }: Props) {
 }
 
 const styles = StyleSheet.create({
-  box: { flexDirection: 'row', gap: spacing[3], padding: spacing[3], borderWidth: 1, borderRadius: radius.card },
+  box: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3], padding: spacing[4], borderWidth: 1, borderRadius: radius.card },
   text: { flex: 1, gap: spacing[1] },
 });

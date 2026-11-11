@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens';
+import { spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText, Screen, useApiQuery } from '@my-people/mobile-ui';
 

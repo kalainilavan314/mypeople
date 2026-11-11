@@ -5,7 +5,7 @@ import { AppState, Platform, SafeAreaView, StyleSheet, View } from 'react-native
 import Svg, { Circle } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens';
+import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, Button, Notice, QrCode, useRotatingCode } from '@my-people/mobile-ui';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';

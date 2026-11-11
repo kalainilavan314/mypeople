@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import type { SecurityAlert, SecurityAlertAnswer } from '@my-people/api-client';
-import { spacing } from '@my-people/design-tokens';
+import { spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,

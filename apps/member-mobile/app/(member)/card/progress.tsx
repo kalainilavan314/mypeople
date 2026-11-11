@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
-import { colors, spacing } from '@my-people/design-tokens';
+import { colors, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, formatDate, Screen, SurfaceCard, useApiQuery, useLanguage, useMember } from '@my-people/mobile-ui';
 import { QueryView } from '@/components/QueryView';
 import { api } from '@/lib/api';

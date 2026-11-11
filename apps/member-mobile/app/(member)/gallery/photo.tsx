@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens';
+import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,

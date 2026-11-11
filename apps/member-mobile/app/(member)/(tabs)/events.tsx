@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens';
+import { spacing } from '@my-people/design-tokens/mobile';
 
-import { AppText, ChipRow, Screen, TextField, useApiQuery, useReloadOnFocus } from '@my-people/mobile-ui';
+import { AppText, ChipRow, Screen, SearchField, useApiQuery, useReloadOnFocus } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
 import { EventRow } from '@/features/events/EventRow';
@@ -37,10 +37,7 @@ export default function EventsScreen() {
 
   return (
     <Screen edges={[]} onRefresh={events.reload} refreshing={events.loading && events.data !== undefined}>
-      <AppText step="secondary" tone="muted">
-        {t('m.events.subtitle')}
-      </AppText>
-      <TextField
+      <SearchField
         label={t('m.events.search')}
         value={search}
         onChangeText={setSearch}

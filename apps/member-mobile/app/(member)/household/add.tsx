@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { colors, spacing } from '@my-people/design-tokens';
+import { colors, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, Button, Screen, SurfaceCard } from '@my-people/mobile-ui';
 
 /** M07: Adults join only after responding to their own invitation. */

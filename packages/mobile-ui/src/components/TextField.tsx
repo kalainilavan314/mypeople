@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens';
+import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
 import { useTextScale } from '../display/DisplayPreferences';
 import { scaledTextStyle } from '../fonts';
 
@@ -32,7 +32,7 @@ export function TextField({ label, hint, error, secret = false, optional = false
 
   return (
     <View style={styles.field}>
-      <AppText step="label">
+      <AppText step="body" tone="secondary">
         {label}
         {optional ? <AppText step="secondary" tone="muted">{`  ${text.optional}`}</AppText> : null}
       </AppText>
@@ -99,15 +99,15 @@ const styles = StyleSheet.create({
   box: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: control.height,
+    minHeight: control.input,
     borderWidth: 1,
     borderColor: colors.inputBorder,
-    borderRadius: radius.control,
+    borderRadius: radius.input,
     backgroundColor: colors.card,
   },
   multiline: { minHeight: 112, alignItems: 'flex-start' },
   focused: { borderColor: colors.focusRing, borderWidth: 2 },
   invalid: { borderColor: colors.error },
-  input: { flex: 1, paddingHorizontal: spacing[3], paddingVertical: spacing[2], color: colors.text },
-  reveal: { width: control.height, height: control.height, alignItems: 'center', justifyContent: 'center' },
+  input: { flex: 1, paddingHorizontal: spacing[4], paddingVertical: spacing[2], color: colors.text },
+  reveal: { width: control.input, height: control.input, alignItems: 'center', justifyContent: 'center' },
 });

@@ -13,10 +13,11 @@ This applies no matter what else the task is: a visual redesign, a "civic design
 | Use | Font |
 |---|---|
 | Tamil text | **Noto Sans Tamil** (weights 400/500/600/700, self-hosted via `@fontsource/noto-sans-tamil`) |
-| English / UI text | **Inter** (weights 400/500/600/700, self-hosted via `@fontsource/inter`) |
+| English / UI text in the PWA and the dashboard | **Inter** (weights 400/500/600/700, self-hosted via `@fontsource/inter`) |
+| English / UI text in the Expo member and staff apps | **Outfit** (weights 300 to 700, `@expo-google-fonts/outfit`); the owner chose it on 11 November 2026 for the redesign from their reference recording. Tamil in those apps stays Noto Sans Tamil, which Outfit has no glyphs for |
 | IDs, coordinates, monospace data | **JetBrains Mono** |
 
-These are loaded once in `app/src/main.tsx` and exposed as `--font-ta`, `--font-ui`, `--font-head`, `--font-mono` CSS variables. Every stylesheet and every new component must reference these variables (or the equivalent `font.ta` / `font.ui` / `font.mono` entries in `app/src/core/theme/tokens.ts`) — never a literal font name, and never a new `@font-face`.
+The PWA's fonts are loaded once in `app/src/main.tsx` and exposed as `--font-ta`, `--font-ui`, `--font-head`, `--font-mono` CSS variables. The Expo apps load theirs in `packages/mobile-ui/src/fonts.ts` (`appFonts`) and pick Outfit or Noto Sans Tamil by language in `fontFamilyFor`. Every stylesheet and every new component must reference these variables (or the equivalent `font.ta` / `font.ui` / `font.mono` entries in `app/src/core/theme/tokens.ts`) — never a literal font name, and never a new `@font-face`.
 
 ### Single source of truth — don't redeclare the font vars
 
@@ -38,7 +39,7 @@ Ask the developer directly: *"This task seems to want a different font for X —
 
 - Tamil label first, English sub-label under it where both are shown (per `PROJECT.md`).
 - Reuse the existing design tokens (`app/src/core/theme/tokens.ts`, `app/src/core/theme/tokens.css`) rather than hardcoding colors — but tokens for color/spacing are a separate concern from the font-family lock above, which is absolute.
-- New apps take colours, spacing and fonts from `packages/design-tokens`. Its `fontFamily` is the same lock: Inter, Noto Sans Tamil, JetBrains Mono.
+- New apps take colours, spacing and fonts from `packages/design-tokens`: the dashboard from its root entry (Inter, Noto Sans Tamil, JetBrains Mono; kept equal to the PWA by `test/matches-pwa.test.ts`), the Expo apps from `@my-people/design-tokens/mobile` (Outfit, Noto Sans Tamil, JetBrains Mono; the redesign of 11 November 2026).
 
 ---
 

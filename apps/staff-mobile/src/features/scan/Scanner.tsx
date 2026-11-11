@@ -2,7 +2,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens';
+import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, Button, Notice } from '@my-people/mobile-ui';
 
 type Props = {

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import type { ContributionDetail, ContributionReceipt } from '@my-people/api-client';
-import { colors, control, radius, spacing } from '@my-people/design-tokens';
+import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
 import {
   AppText,
   Button,

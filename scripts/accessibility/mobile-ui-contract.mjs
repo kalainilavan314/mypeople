@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 
+import { control } from '../../packages/design-tokens/src/mobile.ts';
+
 const root = new URL('../../', import.meta.url);
 const source = async (name) => readFile(new URL(`packages/mobile-ui/src/components/${name}`, root), 'utf8');
 const fontSource = async () => readFile(new URL('packages/mobile-ui/src/fonts.ts', root), 'utf8');
@@ -10,8 +12,10 @@ test('interactive shared controls expose a semantic role and a 48 px target', as
   for (const name of ['Button.tsx', 'Checkbox.tsx', 'SelectField.tsx', 'TextField.tsx']) {
     const code = await source(name);
     assert.match(code, /accessibilityRole=/, `${name} needs a semantic accessibility role`);
-    assert.match(code, /control\.height/, `${name} needs the shared 48 px control height`);
+    // Buttons use control.height (56) and fields control.input (52); both stay above the 48 px floor.
+    assert.match(code, /control\.(height|input)/, `${name} needs a shared control height of at least 48 px`);
   }
+  assert.ok(control.height >= 48 && control.input >= 48, 'shared control heights must stay at or above 48 px');
 });
 
 test('shared buttons and controls enforce minimum touch target dimensions', async () => {
