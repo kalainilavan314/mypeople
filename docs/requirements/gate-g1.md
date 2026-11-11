@@ -10,7 +10,7 @@ production feature flags off until the authorised gate decision is recorded.
 
 | Gate item | Required record | Human verification |
 | --- | --- | --- |
-| Phase 1 Must UAT | Signed inventory and result report for member mobile, staff mobile, and admin web; every Must item passed | Product owner checks coverage against MP-BRD-001 and the screen inventory |
+| Phase 1 Must UAT | Signed inventory and result report for member mobile, staff mobile, and admin web; every Must item passed. The inventory is [docs/testing/phase1-uat-checklist.md](../testing/phase1-uat-checklist.md); its spreadsheet's Summary sheet gives each app's total and passed counts | Product owner checks coverage against MP-BRD-001 and the screen inventory |
 | WCAG 2.2 AA | Screen inventory and per-app audit reports; keyboard, 200% scaling, contrast and touch targets, TalkBack and VoiceOver where relevant | Accessibility reviewer inspects defects and real-device evidence; automated tests alone are insufficient |
 | Independent penetration test | Report from an independent tester and remediation/retest records; zero open critical and high findings | Security owner checks tester independence and findings, including all deployed origins and the API |
 | Privileged access review | Certification for every active Tier 1-5 grant, with a separate Tier 5 decision reference | D31 covers grants below the reviewer; Tier 5 bootstrap grants require an approved external review procedure |
@@ -30,6 +30,8 @@ document references in the evidence record.
 1. Freeze a candidate commit and a migration head. Use a fresh staging
    database, not the operator's local database, to run Express migrations,
    Alembic to head, and the full API suite. Run all CI jobs for that commit.
+   Staging exists since 11 November 2026 ([deployment/staging](../../deployment/staging/README.md));
+   it was built from an empty database (Express 0000 to 0011, then Alembic to 0030).
 2. Complete the manual UAT, accessibility and security work above. Record
    defects, owners and retests. A failed Must item or open high finding stops
    the gate.
