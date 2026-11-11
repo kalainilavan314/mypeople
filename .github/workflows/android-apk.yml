@@ -1,0 +1,59 @@
+# Installable Android APKs of the member and staff apps, built on GitHub's runners (which have Java
+# and the Android SDK) and kept as workflow artifacts for 30 days. Each app is built against the
+# public address of its own web version, which proxies /v1 to the API.
+#
+# These are test builds signed with the debug key from `expo prebuild`: fine to install directly,
+# not for the Play Store, which needs our own upload key (and EAS or a keystore secret) first.
+name: Android APKs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['build/android-apk']
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: member-mobile
+            api: https://app.178.128.126.35.nip.io
+            file: my-people-member.apk
+          - app: staff-mobile
+            api: https://staff.178.128.126.35.nip.io
+            file: my-people-staff.apk
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: npm ci
+      - name: Generate the native Android project
+        working-directory: apps/${{ matrix.app }}
+        env:
+          EXPO_PUBLIC_API_URL: ${{ matrix.api }}
+        run: npx expo prebuild --platform android --no-install
+      - name: Build the release APK
+        working-directory: apps/${{ matrix.app }}/android
+        env:
+          EXPO_PUBLIC_API_URL: ${{ matrix.api }}
+          NODE_ENV: production
+        run: ./gradlew assembleRelease --no-daemon
+      - run: cp apps/${{ matrix.app }}/android/app/build/outputs/apk/release/app-release.apk ${{ matrix.file }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.file }}
+          path: ${{ matrix.file }}
+          retention-days: 30
+          if-no-files-found: error

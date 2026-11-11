@@ -9,10 +9,12 @@
     "userInterfaceStyle": "light",
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#0f2942",
+        "backgroundColor": "#13244b",
         "foregroundImage": "./assets/images/adaptive-icon.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "lk.mypeople.member",
+      "versionCode": 1
     },
     "web": {
       "output": "single",
