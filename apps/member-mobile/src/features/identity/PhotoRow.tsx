@@ -47,11 +47,11 @@ export function PhotoRow({ kind, received, requested, target = false, onUploaded
     }
     const image = pendingImage.current;
     if (!image) return;
-    if (image.body.size > 10 * 1024 * 1024) {
+    if (image.byteSize > 10 * 1024 * 1024) {
       pendingImage.current = null;
       throw new ApiError(413, 'too_large', null);
     }
-    setProgress({ sent: 0, total: image.body.size });
+    setProgress({ sent: 0, total: image.byteSize });
     await api().uploadIdentityDocument(kind, image.body, image.contentType, (sent, total) => {
       setProgress({ sent, total });
     });

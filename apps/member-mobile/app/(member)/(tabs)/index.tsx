@@ -36,7 +36,7 @@ function nextStepRoute(step: NextStep): Href {
     case 'event_soon':
       return step.eventId ? { pathname: '/events/[id]', params: { id: step.eventId } } : '/events';
     case 'confirm_recovery_number':
-      return '/profile/recovery-number';
+      return { pathname: '/profile/recovery-number', params: { from: 'home' } };
     case 'complete_profile':
       return '/profile/edit';
   }

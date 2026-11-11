@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -22,6 +23,7 @@ import { errorMessage } from '@/lib/errors';
  */
 export default function RecoveryNumberScreen() {
   const { t } = useTranslation();
+  const { from } = useLocalSearchParams<{ from?: string }>();
   const current = useApiQuery(() => api().getMyRecoveryPhone());
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
@@ -31,6 +33,8 @@ export default function RecoveryNumberScreen() {
   const [confirmed, setConfirmed] = useState(false);
 
   const send = useApiAction(async () => {
+    setConfirmed(false);
+    confirm.clearError();
     const result = await api().requestPhoneConfirmation(phone.trim());
     setSentTo(phone.trim());
     setDevCode(result.devCode ?? null);
@@ -40,11 +44,16 @@ export default function RecoveryNumberScreen() {
     await api().confirmPhone(sentTo, code.trim(), currentPassword || undefined);
     setConfirmed(true);
     setSentTo(null);
+    setPhone('');
     setCode('');
     setCurrentPassword('');
+    setDevCode(null);
+    send.clearError();
     current.reload();
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
+    router.replace(from === 'profile' ? '/profile' : '/');
   });
-  const failed = send.error ?? confirm.error;
+  const failed = confirm.error ?? send.error;
   const replacing = current.data !== null && current.data !== undefined;
 
   return (

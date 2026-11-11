@@ -75,7 +75,8 @@ function VerifyBody({ data, reload, targetStep }: { data: Loaded; reload: () => 
   const { t } = useTranslation();
   const { refresh } = useSession();
   const { progress, review } = data;
-  const state: State = review?.state ?? 'not_submitted';
+  const progressState = progress.reviewState;
+  const state: State = review?.state ?? (progressState && progressState in TONE ? progressState as State : 'not_submitted');
   const consented = progress.steps.find((step) => step.name === 'identity_consent')?.done ?? false;
   // The API returns decisions newest first; use the current decision.
   const latest = review?.history[0];
@@ -94,7 +95,12 @@ function VerifyBody({ data, reload, targetStep }: { data: Loaded; reload: () => 
         ) : null}
       </SurfaceCard>
 
-      {state === 'submitted' || state === 'in_review' ? <Notice tone="info">{t('m.verify.submitted')}</Notice> : null}
+      {state === 'submitted' || state === 'in_review' ? (
+        <>
+          <Notice tone="info">{t('m.verify.submitted')}</Notice>
+          <Button label={t('m.verify.goHome')} icon="home-outline" onPress={() => router.replace('/')} />
+        </>
+      ) : null}
 
       {state === 'needs_update' && latest ? (
         <Notice tone="warning" title={t('m.verify.requestedTitle')}>

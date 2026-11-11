@@ -91,21 +91,27 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
 
   const handlePickSlip = async (source: 'library' | 'camera') => {
     setValidationError(null);
-    const result = await pickImage(source);
+    let result: Awaited<ReturnType<typeof pickImage>>;
+    try {
+      result = await pickImage(source);
+    } catch (error) {
+      setValidationError(errorMessage(t, error));
+      return;
+    }
     if ('denied' in result) {
       Alert.alert(t('m.common.loadFailed'), t('m.verify.cameraRefused'));
       return;
     }
     if ('cancelled' in result) return;
 
-    if (result.image.body.size > 15 * 1024 * 1024) {
+    if (result.image.byteSize > 15 * 1024 * 1024) {
       setValidationError(t('m.errors.too_large'));
       return;
     }
 
     setSlip({
       image: result.image,
-      previewUri: URL.createObjectURL(result.image.body),
+      previewUri: result.image.previewUri,
     });
   };
 
@@ -182,8 +188,7 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
     }, submissionIntent.current.key);
 
     // Step 2: Upload encrypted slip
-    const contentType = slip.image.contentType === 'image/png' ? 'image/png' : 'image/jpeg';
-    await api().uploadContributionSlip(draft.id, slip.image.body, contentType);
+    await api().uploadContributionSlip(draft.id, slip.image.body, slip.image.contentType);
 
     // Step 3: Submit for staff review
     await api().submitContribution(draft.id);

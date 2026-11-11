@@ -49,7 +49,7 @@ export default function HouseholdPrivacyScreen() {
           style: 'destructive',
           onPress: async () => {
             await withdrawConsent.run();
-            router.replace('/(member)/household/index' as any);
+            router.replace('/household');
           },
         },
       ],

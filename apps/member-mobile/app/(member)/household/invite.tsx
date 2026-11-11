@@ -41,7 +41,7 @@ export default function InviteAdultScreen() {
     });
     setSuccess(true);
     setTimeout(() => {
-      router.replace('/(member)/household/index' as any);
+      router.replace('/household');
     }, 1500);
   });
 
