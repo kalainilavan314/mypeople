@@ -7,6 +7,8 @@ import { PageHeader } from '@/components/PageHeader';
 import { SubmitButton } from '@/components/SubmitButton';
 import { createBroadcast } from '@/features/messages/actions';
 import { AudienceScopePicker, STAFF_TIERS } from '@/features/messages/AudienceScopePicker';
+import { loadAreaNames } from '@/lib/areas';
+import { areaText } from '@/lib/format';
 import { getAdminLocale } from '@/lib/i18n';
 import { staffApi } from '@/lib/session';
 import { requireStaff } from '@/lib/staff';
@@ -61,9 +63,10 @@ async function NewBroadcastForm({ searchParams }: { searchParams: PageProps<'/me
     areaReaches[request.key] = result.status === 'fulfilled' ? result.value.reaches : null;
     reaches.set(request.value, areaReaches);
   });
+  const areaNames = await loadAreaNames([...uniqueAreas.values()].map((option) => option.area));
   const areaOptions = [...uniqueAreas.entries()].map(([value, option]) => ({
     value,
-    label: `${option.area.level === 'platform' ? 'Platform wide (All Sri Lanka)' : `${option.area.level.toUpperCase()} ${option.area.code}`} · access through Tier ${[...new Set(option.grants)].join(', ')}`,
+    label: `${areaText(option.area, areaNames, locale)} · ${locale === 'ta' ? 'நிலை' : 'access through Tier'} ${[...new Set(option.grants)].join(', ')}`,
     reaches: reaches.get(value) ?? {},
   }));
 

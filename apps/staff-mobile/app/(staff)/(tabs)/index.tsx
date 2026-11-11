@@ -8,6 +8,7 @@ import {
   StatusTag,
   SurfaceCard,
   useApiQuery,
+  useLanguage,
   useReloadOnFocus,
 } from '@my-people/mobile-ui';
 
@@ -22,7 +23,8 @@ import { useStaff } from '@/providers/StaffProvider';
  */
 export default function StaffHomeScreen() {
   const { t } = useTranslation();
-  const { assignments, permissions } = useStaff();
+  const language = useLanguage();
+  const { assignments, permissions, areaNames } = useStaff();
   const reviews = useApiQuery(
     async () => (permissions.has('members.verify') ? api().getIdentityReviewCounts() : null),
     [permissions],
@@ -46,7 +48,7 @@ export default function StaffHomeScreen() {
   return (
     <Screen edges={[]} onRefresh={reload} refreshing={reviews.loading || approvals.loading}>
       {assignments.map((assignment) => (
-        <StatusTag key={assignment.id} tone="neutral" label={t('s.home.roleIn', { tier: tierLabel(assignment), area: areaLabel(assignment) })} />
+        <StatusTag key={assignment.id} tone="neutral" label={t('s.home.roleIn', { tier: tierLabel(assignment), area: areaLabel(assignment, areaNames, language) })} />
       ))}
 
       {reviews.data ? (

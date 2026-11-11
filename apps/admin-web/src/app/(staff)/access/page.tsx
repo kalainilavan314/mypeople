@@ -1,10 +1,12 @@
 import type { AccessCatalogue, AssignmentPreviewDetails, ListedAssignment } from '@my-people/api-client';
+import { permissionName } from '@my-people/i18n/staff-terms';
 import { Suspense } from 'react';
 
 import { Feedback } from '@/components/Feedback';
 import { PageHeader } from '@/components/PageHeader';
 import { SubmitButton } from '@/components/SubmitButton';
 import { cancelAssignmentPreview, createAssignment, previewAssignment, revokeAssignment } from '@/features/organization/actions';
+import { loadAreaNames } from '@/lib/areas';
 import { areaText, formatDate } from '@/lib/format';
 import { getAdminLocale, getLocalizedMessage, getLocalizedProblem, type Locale } from '@/lib/i18n';
 import { staffApi } from '@/lib/session';
@@ -68,6 +70,8 @@ async function Access({ searchParams }: { searchParams: PageProps<'/access'>['se
 
   const problems = (one(query.problems) ?? '').split(',');
   const hasProblem = (p: string) => problems.includes(p);
+  const areaNames = await loadAreaNames([...assignments.map((assignment) => assignment.area), preview?.area]);
+  const permissionList = (codes: readonly string[]) => codes.map((code) => permissionName(code, locale)).join(', ');
 
   return (
     <>
@@ -105,8 +109,7 @@ async function Access({ searchParams }: { searchParams: PageProps<'/access'>['se
                 {locale === 'ta' ? 'பொறுப்பு நிலை மற்றும் பகுதி' : 'Tier and assigned area'}
               </span>
               <p className="mt-1 font-semibold text-text">
-                Tier {preview.tier} ({AREA_LEVEL_LABELS[preview.area.level]?.[locale] ?? preview.area.level}) ·{' '}
-                {preview.area.level === 'platform' ? (locale === 'ta' ? 'தேசிய தளம்' : 'Platform-wide') : preview.area.code || 'Whole level'}
+                Tier {preview.tier} · <span lang={locale}>{areaText(preview.area, areaNames, locale)}</span>
               </p>
             </div>
 
@@ -123,8 +126,8 @@ async function Access({ searchParams }: { searchParams: PageProps<'/access'>['se
               <span lang={locale} className="block text-xs font-semibold text-muted">
                 {locale === 'ta' ? `வழங்கப்படும் அனுமதிகள் (${preview.permissions.length})` : `Granted permissions (${preview.permissions.length})`}
               </span>
-              <p className="mt-1 font-mono text-xs text-text">
-                {preview.permissions.join(', ') || (locale === 'ta' ? 'அனுமதிகள் எதுவும் தெரிவுசெய்யப்படவில்லை' : 'None selected')}
+              <p lang={locale} className="mt-1 text-xs text-text">
+                {permissionList(preview.permissions) || (locale === 'ta' ? 'அனுமதிகள் எதுவும் தெரிவுசெய்யப்படவில்லை' : 'None selected')}
               </p>
             </div>
 
@@ -212,13 +215,13 @@ async function Access({ searchParams }: { searchParams: PageProps<'/access'>['se
                 <span lang={locale} className="font-medium text-text">
                   {locale === 'ta' ? 'பொறுப்பு நிலை' : 'Tier'} {assignment.tier}
                 </span>{' '}
-                · <span>{areaText(assignment.area)}</span> ·{' '}
+                · <span lang={locale}>{areaText(assignment.area, areaNames, locale)}</span> ·{' '}
                 <span lang={locale}>{locale === 'ta' ? 'வழங்கப்பட்டது:' : 'Granted:'}</span> {formatDate(assignment.grantedAt)}
                 {assignment.reviewDueAt ? (
                   <> · <span lang={locale}>{locale === 'ta' ? 'மீளாய்வுத் திகதி:' : 'Review due:'}</span> {formatDate(assignment.reviewDueAt)}</>
                 ) : ''}
               </p>
-              <p className="font-mono text-xs text-muted">{assignment.permissions.join(', ')}</p>
+              <p lang={locale} className="text-xs text-muted">{permissionList(assignment.permissions)}</p>
               <details>
                 <summary className="min-h-11 cursor-pointer py-2 text-error">
                   <span lang={locale} className="font-semibold">
@@ -393,8 +396,13 @@ function AssignForm({
           </legend>
           <div className="grid gap-1 sm:grid-cols-2">
             {permissions.map((permission) => (
-              <label key={permission} className="flex min-h-11 items-center gap-2 font-mono text-xs">
-                <input type="checkbox" name="permissions" value={permission} /> {permission}
+              <label key={permission} className="flex min-h-11 items-center gap-2 text-xs">
+                <input type="checkbox" name="permissions" value={permission} />
+                <span>
+                  <span lang={locale} className="block text-text">{permissionName(permission, locale)}</span>
+                  {/* The code stays visible, small, so administrators can match the BRD's permission ids. */}
+                  <span className="block font-mono text-[11px] text-muted">{permission}</span>
+                </span>
               </label>
             ))}
           </div>

@@ -1,4 +1,5 @@
 import type { DueAccessReviews, DueGrant } from '@my-people/api-client';
+import { permissionName, type AreaNames } from '@my-people/i18n/staff-terms';
 import { Suspense } from 'react';
 
 import { Feedback } from '@/components/Feedback';
@@ -7,6 +8,7 @@ import { StateTag } from '@/components/StateTag';
 import { SubmitButton } from '@/components/SubmitButton';
 import { reviewGrant } from '@/features/organization/reviewActions';
 import { areaText, formatDate } from '@/lib/format';
+import { loadAreaNames } from '@/lib/areas';
 import { getAdminLocale, getLocalizedMessage, type Locale } from '@/lib/i18n';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
@@ -42,6 +44,7 @@ async function Reviews({ searchParams }: { searchParams: PageProps<'/access-revi
   }
   // The quarter ends at midnight starting the next one; the last day to decide is the day before.
   const lastDay = new Date(Date.parse(due.quarterEndsAt) - 1).toISOString();
+  const areaNames = await loadAreaNames(due.items.map((grant) => grant.area));
   return (
     <>
       <Feedback error={query.error} problems={query.problems} done={query.done} />
@@ -73,7 +76,7 @@ async function Reviews({ searchParams }: { searchParams: PageProps<'/access-revi
         ) : null}
         <ul className="flex flex-col gap-2">
           {due.items.map((grant) => (
-            <DueRole key={grant.id} grant={grant} locale={locale} />
+            <DueRole key={grant.id} grant={grant} locale={locale} areaNames={areaNames} />
           ))}
         </ul>
       </section>
@@ -81,14 +84,14 @@ async function Reviews({ searchParams }: { searchParams: PageProps<'/access-revi
   );
 }
 
-function DueRole({ grant, locale }: { grant: DueGrant; locale: Locale }) {
+function DueRole({ grant, locale, areaNames }: { grant: DueGrant; locale: Locale; areaNames: AreaNames }) {
   return (
     <li className="flex flex-col gap-2 rounded-xl border border-line bg-card p-3 text-sm">
       <p className="font-semibold text-text">
         {grant.fullName} <span className="font-mono text-muted">{grant.memberCode}</span>
       </p>
       <p className="text-muted">
-        Tier {grant.tier} · {areaText(grant.area)} · {locale === 'ta' ? 'வழங்கப்பட்டது:' : 'granted'} {formatDate(grant.grantedAt)} · {locale === 'ta' ? 'கடைசி மீளாய்வு:' : 'last reviewed'}{' '}
+        Tier {grant.tier} · <span lang={locale}>{areaText(grant.area, areaNames, locale)}</span> · {locale === 'ta' ? 'வழங்கப்பட்டது:' : 'granted'} {formatDate(grant.grantedAt)} · {locale === 'ta' ? 'கடைசி மீளாய்வு:' : 'last reviewed'}{' '}
         {grant.lastReviewedAt ? formatDate(grant.lastReviewedAt) : (locale === 'ta' ? 'இதுவரை இல்லை' : 'never')}
       </p>
       <p className="flex flex-wrap items-center gap-2">
@@ -101,7 +104,7 @@ function DueRole({ grant, locale }: { grant: DueGrant; locale: Locale }) {
             : `${locale === 'ta' ? 'மீளாய்வுத் திகதி:' : 'Due'} ${formatDate(grant.reviewDueAt)}`}
         </span>
       </p>
-      <p className="font-mono text-xs text-muted">{grant.permissions.join(', ')}</p>
+      <p lang={locale} className="text-xs text-muted">{grant.permissions.map((code) => permissionName(code, locale)).join(', ')}</p>
       <form action={reviewGrant} className="mt-2 flex flex-col gap-3">
         <input type="hidden" name="assignmentId" value={grant.id} />
         <label htmlFor={`input-reason-${grant.id}`} className="flex flex-col gap-1 font-semibold text-text">

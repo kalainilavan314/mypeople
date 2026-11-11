@@ -5,6 +5,8 @@ import { Feedback } from '@/components/Feedback';
 import { PageHeader } from '@/components/PageHeader';
 import { SubmitButton } from '@/components/SubmitButton';
 import { createAlbum } from '@/features/gallery/actions';
+import { loadAreaNames } from '@/lib/areas';
+import { areaText } from '@/lib/format';
 import { getAdminLocale } from '@/lib/i18n';
 import { requireStaff } from '@/lib/staff';
 
@@ -35,6 +37,7 @@ async function NewAlbumForm({ searchParams }: { searchParams: PageProps<'/galler
 
   // Assignments where staff holds gallery.publish
   const publishAssignments = staff.assignments.filter((a) => a.permissions.includes('gallery.publish'));
+  const areaNames = await loadAreaNames(publishAssignments.map((a) => a.area));
 
   return (
     <>
@@ -86,7 +89,7 @@ async function NewAlbumForm({ searchParams }: { searchParams: PageProps<'/galler
               <span lang={locale}>{locale === 'ta' ? 'பகுதி *' : 'Area *'}</span>
               <select id="input-area" name="areaSelection" required className="min-h-11 rounded-lg border border-line px-3 bg-surface">
                 {publishAssignments.map((a) => {
-                  const label = a.area.level === 'platform' ? (locale === 'ta' ? 'நாடு முழுவதும்' : 'Platform wide') : `${a.area.level} ${a.area.code}`;
+                  const label = areaText(a.area, areaNames, locale);
                   const value = `${a.area.level}:${a.area.code ?? ''}`;
                   return (
                     <option key={a.id} value={value}>

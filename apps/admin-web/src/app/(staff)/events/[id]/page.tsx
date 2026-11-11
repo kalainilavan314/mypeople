@@ -7,6 +7,7 @@ import { StateTag } from '@/components/StateTag';
 import { SubmitButton } from '@/components/SubmitButton';
 import { cancelEvent, publishEvent, updateEvent } from '@/features/events/actions';
 import { areaText, formatDateTime, toSriLankaDateTimeInput } from '@/lib/format';
+import { loadAreaNames } from '@/lib/areas';
 import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
@@ -65,6 +66,7 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
   }
 
   const isDraft = event.state === 'draft';
+  const area = areaText(event.areaKey, await loadAreaNames([event.areaKey]), locale);
   const isPublished = event.state === 'published';
   const isCancelled = event.state === 'cancelled';
 
@@ -86,7 +88,7 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
             {locale === 'ta' ? event.titleTa || event.titleEn : event.titleEn || event.titleTa}
           </h1>
           <p className="text-xs text-muted">
-            {locale === 'ta' ? 'பகுதி:' : 'Area:'} {areaText(event.areaKey)} · {locale === 'ta' ? 'வகை:' : 'Type:'} {event.eventType.replace(/_/g, ' ')}
+            {locale === 'ta' ? 'பகுதி:' : 'Area:'} <span lang={locale}>{area}</span> · {locale === 'ta' ? 'வகை:' : 'Type:'} {event.eventType.replace(/_/g, ' ')}
           </p>
         </div>
       </header>
@@ -201,8 +203,8 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
             </h2>
             <p className="text-xs text-muted">
               {locale === 'ta'
-                ? `வெளியிடுவதன் மூலம் ${areaText(event.areaKey)} பகுதியிலுள்ள உறுப்பினர்கள் இந்நிகழ்வைக் காணவும் பதிவுசெய்யவும் முடியும்.`
-                : `Publishing will make this event visible to members in ${areaText(event.areaKey)} and open RSVPs.`}
+                ? `வெளியிடுவதன் மூலம் ${area} பகுதியிலுள்ள உறுப்பினர்கள் இந்நிகழ்வைக் காணவும் பதிவுசெய்யவும் முடியும்.`
+                : `Publishing will make this event visible to members in ${area} and open RSVPs.`}
             </p>
           </div>
 

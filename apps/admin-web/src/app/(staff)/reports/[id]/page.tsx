@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { PageHeader } from '@/components/PageHeader';
 import { StateTag } from '@/components/StateTag';
 import { areaText, formatDateTime, words } from '@/lib/format';
+import { loadAreaNames } from '@/lib/areas';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
 
@@ -34,13 +35,14 @@ async function CommunityReport({ params }: Pick<PageProps<'/reports/[id]'>, 'par
     throw error;
   }
 
-  const location = report.gsCode
-    ? `GN ${report.gsCode}`
+  const area = report.gsCode
+    ? `gn:${report.gsCode}`
     : report.dsCode
-      ? `DS ${report.dsCode}`
+      ? `ds:${report.dsCode}`
       : report.districtCode
-        ? `District ${report.districtCode}`
-        : areaText((report.areaPath ?? []).at(-1) ?? 'platform');
+        ? `district:${report.districtCode}`
+        : (report.areaPath ?? []).at(-1) ?? 'platform';
+  const location = areaText(area, await loadAreaNames([area]), 'en');
 
   return (
     <>

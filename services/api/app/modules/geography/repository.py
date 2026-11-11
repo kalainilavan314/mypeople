@@ -1,5 +1,6 @@
 """SQL for the geography registry (geo.*, created by the Express migration 0000)."""
 
+import re
 from dataclasses import dataclass
 
 from sqlalchemy import text
@@ -58,3 +59,34 @@ def gn_divisions(db: Session, ds_code: str) -> list[Place] | None:
         {"code": ds_code},
     ).mappings()
     return [Place(**row) for row in rows]
+
+
+# The table and code column for each area level below the platform.
+_LEVEL_TABLES = {
+    "province": ("geo.province", "province_code"),
+    "district": ("geo.district", "district_code"),
+    "ds": ("geo.ds_division", "ds_code"),
+    "gn": ("geo.gn_division", "gn_code"),
+}
+
+# Some Tamil district and province names in the registry end in the level word, cut short in the
+# source data ("யாழ்ப்பாணம் மாவட்"). Screens add the level word themselves, so it is removed here.
+_TAMIL_LEVEL_WORD = {"district": re.compile(r"\s*மாவ\S*$"), "province": re.compile(r"\s*மாகாண\S*$")}
+
+
+def area_names(db: Session, codes_by_level: dict[str, list[str]]) -> dict[tuple[str, str], Place]:
+    """Names for the given codes at each level, keyed by (level, code). Unknown codes are left out."""
+    found: dict[tuple[str, str], Place] = {}
+    for level, codes in codes_by_level.items():
+        table, column = _LEVEL_TABLES[level]
+        rows = db.execute(
+            text(f"SELECT {column} AS code, name_en, name_ta, name_si FROM {table} WHERE {column} = ANY(:codes)"),
+            {"codes": codes},
+        ).mappings()
+        for row in rows:
+            place = Place(**row)
+            pattern = _TAMIL_LEVEL_WORD.get(level)
+            if pattern and place.name_ta:
+                place = Place(place.code, place.name_en, pattern.sub("", place.name_ta) or None, place.name_si)
+            found[(level, place.code)] = place
+    return found

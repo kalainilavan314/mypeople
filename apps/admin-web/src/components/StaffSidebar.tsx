@@ -17,6 +17,8 @@ export type StaffSidebarProps = {
       id: string;
       tier: string | number;
       area: { level: string; code?: string | null };
+      /** The area's name in each language, so switching language here needs no new request. */
+      areaName: { ta: string; en: string };
     }>;
   };
   allowedModules: Array<{
@@ -406,7 +408,7 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
               <p className="font-mono text-xs text-muted">{staff.memberCode}</p>
               {staff.assignments.map((assignment) => (
                 <p key={assignment.id} className="text-xs text-muted">
-                  {locale === 'ta' ? 'நிலை' : 'Tier'} {assignment.tier} · {assignment.area.level === 'platform' ? 'platform' : `${assignment.area.level} ${assignment.area.code}`}
+                  {locale === 'ta' ? 'நிலை' : 'Tier'} {assignment.tier} · <span lang={locale}>{assignment.areaName[locale]}</span>
                 </p>
               ))}
             </div>
@@ -512,7 +514,7 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
               <p className="font-mono text-xs text-muted truncate">{staff.memberCode}</p>
               {staff.assignments.map((assignment) => (
                 <p key={assignment.id} className="text-xs text-muted truncate">
-                  {locale === 'ta' ? 'நிலை' : 'Tier'} {assignment.tier} · {assignment.area.level === 'platform' ? 'platform' : `${assignment.area.level} ${assignment.area.code}`}
+                  {locale === 'ta' ? 'நிலை' : 'Tier'} {assignment.tier} · <span lang={locale}>{assignment.areaName[locale]}</span>
                 </p>
               ))}
             </div>

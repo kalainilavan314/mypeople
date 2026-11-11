@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 
 import { PageHeader } from '@/components/PageHeader';
 import { areaText, formatDateTime } from '@/lib/format';
+import { loadAreaNames } from '@/lib/areas';
 import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
@@ -41,6 +42,7 @@ async function Audit({ searchParams }: { searchParams: PageProps<'/audit'>['sear
   const platform = staff.assignments.some((a) => a.area.level === 'platform' && a.permissions.includes('audit.view'));
   const chain = platform && one(query.verify) === '1' ? await api.verifyAuditChain() : null;
   const last = entries.at(-1);
+  const areaNames = await loadAreaNames(entries.map((entry) => (entry.areaLevel ? { level: entry.areaLevel, code: entry.areaCode } : null)));
 
   return (
     <>
@@ -106,7 +108,7 @@ async function Audit({ searchParams }: { searchParams: PageProps<'/audit'>['sear
                   <td className="px-3 py-2 whitespace-nowrap">{formatDateTime(entry.occurredAt)}</td>
                   <td className="px-3 py-2 font-mono">{entry.action}</td>
                   <td className="px-3 py-2 font-mono text-xs">{entry.targetType ? `${entry.targetType} ${entry.targetId ?? ''}` : '—'}</td>
-                  <td className="px-3 py-2">{entry.areaLevel ? areaText({ level: entry.areaLevel, code: entry.areaCode }) : '—'}</td>
+                  <td className="px-3 py-2">{entry.areaLevel ? areaText({ level: entry.areaLevel, code: entry.areaCode }, areaNames, locale) : '—'}</td>
                   <td className="px-3 py-2">
                     <AuditDetails details={entry.details as Record<string, unknown> | null | undefined} />
                   </td>

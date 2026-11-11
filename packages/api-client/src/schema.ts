@@ -1587,6 +1587,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/geography/areas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Name Areas
+         * @description Names for area keys as staff screens show them, instead of codes (public reference data like
+         *     the lists above). "platform" and unknown or malformed keys are left out; at most 100 keys.
+         */
+        get: operations["name_areas_v1_geography_areas_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/events/{event_id}/checkin/offline": {
         parameters: {
             query?: never;
@@ -4359,6 +4380,23 @@ export interface components {
             decision: "approve" | "decline";
             /** Reason */
             reason: string;
+        };
+        /**
+         * AreaNameOut
+         * @description An area key such as district:LK41 with its names. Tamil names leave out the level word
+         *     (district, province), which screens add; a name missing in Tamil is null.
+         */
+        AreaNameOut: {
+            /** Key */
+            key: string;
+            /** Level */
+            level: string;
+            /** Code */
+            code: string;
+            /** Nameen */
+            nameEn: string | null;
+            /** Nameta */
+            nameTa: string | null;
         };
         /**
          * AreaRef
@@ -12411,6 +12449,36 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+        };
+    };
+    name_areas_v1_geography_areas_get: {
+        parameters: {
+            query?: {
+                /** @description Area keys such as district:LK41 */
+                key?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AreaNameOut"][];
+                };
+            };
+            /** @description too_many_keys */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
