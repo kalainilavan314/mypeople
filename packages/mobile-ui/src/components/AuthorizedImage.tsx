@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, View, type ImageStyle, type StyleProp } from 'react-native';
 
-import { colors, spacing } from '@my-people/design-tokens';
+import { colors, spacing } from '@my-people/design-tokens/mobile';
 
 import { useDisplayPreferences } from '../display/DisplayPreferences';
 import { freshToken } from '../session/api';

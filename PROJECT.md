@@ -17,7 +17,7 @@ Tamil-first membership platform for budget Android phones.
 - Primary **deep maroon `#7B1E2B`** (pressed `#5C1520`, tint `#F6E4E0`), warm cream page `#FBF6EE`, cards `#FFFFFF` / `#F5EDDF`, hairline `#E7DBC6`, ink `#1A1A18` / `#5C5A52` / `#8F8B7E`.
 - Tier accents: முளை Sprout moss `#4A6B3A`, வேர் Root amber `#D08A2B`, பனை Palmyra locked grey.
 - Semantic: success `#4A6B3A`, warning `#8A5A12` on `#F6E6C6`, error `#B03A3A`.
-- Type: **Noto Sans Tamil** for Tamil (600 for labels), **Inter** for English/UI, **JetBrains Mono** for IDs and coordinates. Tamil label first, English sub-label under it at 9.5–12px.
+- Type: **Noto Sans Tamil** for Tamil (600 for labels), **Inter** for English/UI (**Outfit** in the Expo member and staff apps since 11 November 2026, by the owner's choice), **JetBrains Mono** for IDs and coordinates. Tamil label first, English sub-label under it at 9.5–12px.
 - Palmyra frond mark: emblem in the header, membership card, referral card and profile — low-opacity gold `#F5D9A8` on maroon, maroon at 9% on cream.
 - Touch targets 44–62px, pill buttons, 12/14/16/20/24px radii, soft warm shadows, 160/260/480ms `cubic-bezier(.22,.61,.36,1)`.
 

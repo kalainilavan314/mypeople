@@ -1,6 +1,6 @@
 import { Pressable, ScrollView, StyleSheet } from 'react-native';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens';
+import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText } from './AppText';
 
@@ -14,7 +14,7 @@ type Props<K extends string> = {
   label: string;
 };
 
-/** Filter chips that scroll sideways on their own; the chosen one is solid navy (spec §6). */
+/** Pill filter chips that scroll sideways on their own; the chosen one is solid navy. */
 export function ChipRow<K extends string>({ options, selected, onSelect, label }: Props<K>) {
   return (
     <ScrollView
@@ -32,7 +32,7 @@ export function ChipRow<K extends string>({ options, selected, onSelect, label }
             accessibilityRole="tab"
             aria-selected={active}
             style={[styles.chip, active ? styles.active : styles.inactive]}>
-            <AppText step="label" tone={active ? 'inverse' : 'secondary'}>
+            <AppText step="secondary" tone={active ? 'inverse' : 'secondary'}>
               {option.label}
             </AppText>
           </Pressable>
@@ -46,11 +46,11 @@ const styles = StyleSheet.create({
   row: { gap: spacing[2] },
   chip: {
     minHeight: control.touchMin,
-    paddingHorizontal: spacing[4],
+    paddingHorizontal: spacing[4] + 2,
     borderRadius: radius.pill,
     borderWidth: 1,
     justifyContent: 'center',
   },
   active: { backgroundColor: colors.primary, borderColor: colors.primary },
-  inactive: { backgroundColor: colors.card, borderColor: colors.inputBorder },
+  inactive: { backgroundColor: colors.card, borderColor: colors.border },
 });

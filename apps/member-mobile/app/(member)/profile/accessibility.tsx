@@ -1,7 +1,7 @@
 import { StyleSheet, Switch, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, spacing } from '@my-people/design-tokens';
+import { colors, spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText, ChipRow, Screen, SurfaceCard, type TextSize, useDisplayPreferences } from '@my-people/mobile-ui';
 

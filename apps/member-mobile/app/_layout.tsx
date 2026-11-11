@@ -6,10 +6,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 
-import { colors } from '@my-people/design-tokens';
+import { colors } from '@my-people/design-tokens/mobile';
 import {
   DisplayPreferencesProvider,
-  lockedFonts,
+  appFonts,
   readDisplayPreferences,
   SessionProvider,
   type StoredDisplayPreferences,
@@ -26,7 +26,7 @@ import { restoreLanguage } from '@/lib/i18n';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [fontsLoaded, fontError] = useFonts(lockedFonts);
+  const [fontsLoaded, fontError] = useFonts(appFonts);
   const [languageReady, setLanguageReady] = useState(false);
   const [display, setDisplay] = useState<StoredDisplayPreferences | null | undefined>(undefined);
 

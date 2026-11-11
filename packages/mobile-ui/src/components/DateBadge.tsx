@@ -1,23 +1,23 @@
 import { StyleSheet, View } from 'react-native';
 
-import { colors, radius } from '@my-people/design-tokens';
+import { colors, radius } from '@my-people/design-tokens/mobile';
 
 import { useLanguage } from '../hooks/useLanguage';
 import { dateBadgeParts } from '../lib/format';
 
 import { AppText } from './AppText';
 
-/** A 44 × 50 date well; the full date is its accessible name (spec §3). */
+/** A navy 48 × 56 date tile; the full date is its accessible name. */
 export function DateBadge({ iso }: { iso: string }) {
   const language = useLanguage();
   const parts = dateBadgeParts(iso, language);
   return (
     <View style={styles.badge} accessible accessibilityLabel={parts.full}>
-      <AppText step="caption" tone="primary" style={styles.month}>
-        {parts.month}
-      </AppText>
-      <AppText step="section" tone="primary">
+      <AppText step="section" tone="inverse" weight={500}>
         {parts.day}
+      </AppText>
+      <AppText step="caption" tone="inverse" style={styles.month}>
+        {parts.month}
       </AppText>
     </View>
   );
@@ -25,12 +25,12 @@ export function DateBadge({ iso }: { iso: string }) {
 
 const styles = StyleSheet.create({
   badge: {
-    width: 44,
-    minHeight: 50,
-    borderRadius: radius.control,
-    backgroundColor: colors.primaryContainer,
+    width: 48,
+    minHeight: 56,
+    borderRadius: radius.input,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  month: { textTransform: 'uppercase' },
+  month: { textTransform: 'capitalize' },
 });

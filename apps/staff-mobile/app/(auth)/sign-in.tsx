@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { radius, spacing } from '@my-people/design-tokens';
+import { radius, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, Button, ChipRow, Notice, Screen, TextField, useApiAction, useSession } from '@my-people/mobile-ui';
 
 import { api } from '@/lib/api';

@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ComponentProps } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens';
+import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText } from './AppText';
 
@@ -17,22 +17,27 @@ type Props = {
   busyLabel?: string;
   disabled?: boolean;
   icon?: ComponentProps<typeof Ionicons>['name'];
+  /** The icon after the label, as on "Join the Community →". */
+  iconAfter?: boolean;
   accessibilityHint?: string;
 };
 
-const FILL: Record<Variant, { background: string; pressed: string; text: 'inverse' | 'primary' | 'error'; border: string }> = {
+const FILL: Record<Variant, { background: string; pressed: string; text: 'inverse' | 'default' | 'primary' | 'error'; border: string }> = {
   primary: { background: colors.primary, pressed: colors.primaryDark, text: 'inverse', border: colors.primary },
-  secondary: { background: colors.card, pressed: colors.surfaceVariant, text: 'primary', border: colors.inputBorder },
+  secondary: { background: colors.card, pressed: colors.surfaceVariant, text: 'default', border: colors.border },
   quiet: { background: 'transparent', pressed: colors.surfaceVariant, text: 'primary', border: 'transparent' },
-  danger: { background: colors.card, pressed: colors.errorBackground, text: 'error', border: colors.error },
+  danger: { background: colors.card, pressed: colors.errorBackground, text: 'error', border: colors.errorBorder },
 };
 
-/** A real button with a 48 px target (PrimaryAction in the spec). */
-export function Button({ label, onPress, variant = 'primary', busy = false, busyLabel, disabled = false, icon, accessibilityHint }: Props) {
+const ICON_COLOR = { inverse: colors.onPrimary, default: colors.text, primary: colors.primary, error: colors.error } as const;
+
+/** A full-width button with a 56 px target and 14 px corners. */
+export function Button({ label, onPress, variant = 'primary', busy = false, busyLabel, disabled = false, icon, iconAfter = false, accessibilityHint }: Props) {
   const fill = FILL[variant];
   const inactive = disabled || busy;
-  const textColor = fill.text === 'inverse' ? colors.onPrimary : fill.text === 'error' ? colors.error : colors.primary;
+  const iconColor = ICON_COLOR[fill.text];
   const accessibleName = busy && busyLabel ? busyLabel : label;
+  const glyph = busy ? <ActivityIndicator size="small" color={iconColor} /> : icon ? <Ionicons name={icon} size={20} color={iconColor} /> : null;
 
   return (
     <Pressable
@@ -52,10 +57,11 @@ export function Button({ label, onPress, variant = 'primary', busy = false, busy
         disabled && styles.disabled,
       ]}>
       <View accessible={false} style={styles.inner}>
-        {busy ? <ActivityIndicator size="small" color={textColor} /> : icon ? <Ionicons name={icon} size={20} color={textColor} /> : null}
-        <AppText step="label" tone={fill.text} style={styles.label}>
+        {iconAfter ? null : glyph}
+        <AppText step="card" tone={fill.text} weight={fill.text === 'inverse' ? 500 : 400} style={styles.label}>
           {accessibleName}
         </AppText>
+        {iconAfter ? glyph : null}
       </View>
     </Pressable>
   );
@@ -67,12 +73,12 @@ const styles = StyleSheet.create({
     minWidth: control.touchMin,
     borderRadius: radius.control,
     borderWidth: 1,
-    paddingHorizontal: spacing[4],
+    paddingHorizontal: spacing[5],
     paddingVertical: spacing[2],
     justifyContent: 'center',
     alignItems: 'center',
   },
-  inner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing[2] },
+  inner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing[3] },
   label: { textAlign: 'center', flexShrink: 1 },
-  disabled: { opacity: 0.5 },
+  disabled: { opacity: 0.45 },
 });

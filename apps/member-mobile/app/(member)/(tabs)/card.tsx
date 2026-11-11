@@ -1,10 +1,11 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import type { MemberCard } from '@my-people/api-client';
 import { router, type Href } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens';
+import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
@@ -149,28 +150,72 @@ function AvailableCard({ card }: { card: MemberCard }) {
   );
 }
 
+/** C06: why the card is not shown yet, as three steps with their own state, and where to look. */
 function Unavailable({ card }: { card: MemberCard }) {
   const { t } = useTranslation();
-  const reason = !card.identityVerified ? 'unavailable_identity' : `unavailable_membership_${card.membershipState}`;
+  const membershipPending = card.membershipState === 'pending';
+  const reason = !card.identityVerified ? 'notActiveBody' : `unavailable_membership_${card.membershipState}`;
+  const steps = [
+    {
+      label: t('m.card.stepIdentity'),
+      state: card.identityVerified ? t('m.card.identityVerified') : t('m.verify.status_in_review'),
+      done: card.identityVerified,
+    },
+    {
+      label: t('m.card.stepMembership'),
+      state: membershipPending ? t('m.card.membershipAwaiting') : t(`m.home.membership_${card.membershipState}`),
+      done: card.membershipState === 'active',
+    },
+    { label: t('m.card.stepCard'), state: t('m.card.cardWhenActive'), done: false },
+  ];
   return (
-    <>
-      <Notice tone="warning" title={t('m.card.unavailableTitle')}>
+    <View style={styles.unavailable}>
+      <View style={styles.badge} accessibilityElementsHidden importantForAccessibility="no">
+        <Ionicons name="card-outline" size={40} color={colors.warningText} />
+      </View>
+      <AppText step="title" style={styles.center} accessibilityRole="header">
+        {t('m.card.notActiveTitle')}
+      </AppText>
+      <AppText step="body" tone="muted" style={styles.center}>
         {t(`m.card.${reason}`, { defaultValue: t('m.errors.card_not_available') })}
-      </Notice>
-      {!card.identityVerified ? (
-        <Button label={t('m.home.viewVerification')} onPress={() => router.push('/verify')} />
-      ) : null}
-    </>
+      </AppText>
+      <SurfaceCard style={styles.steps}>
+        {steps.map((step) => (
+          <View key={step.label} style={styles.step} accessible accessibilityLabel={`${step.label}: ${step.state}`}>
+            <Ionicons name={step.done ? 'checkmark-circle' : 'ellipse-outline'} size={24} color={step.done ? colors.success : colors.inputBorder} />
+            <View style={styles.flex}>
+              <AppText step="card" weight={400}>{step.label}</AppText>
+              <AppText step="secondary" tone="muted">{step.state}</AppText>
+            </View>
+          </View>
+        ))}
+      </SurfaceCard>
+      <Button label={t('m.card.viewStatus')} onPress={() => router.push('/verify')} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.primary,
-    borderRadius: radius.card,
-    padding: spacing[4],
+    borderRadius: radius.sheet,
+    padding: spacing[5],
     gap: spacing[3],
   },
+  unavailable: { gap: spacing[4], paddingTop: spacing[6] },
+  badge: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.warningBackground,
+  },
+  center: { textAlign: 'center' },
+  steps: { gap: spacing[4], paddingVertical: spacing[5] },
+  step: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3] },
+  flex: { flex: 1 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing[2] },
   field: { gap: 2, flex: 1 },
   fieldLabel: { color: colors.inputBorder }, // #CBD5E1 on navy, the spec's metadata colour (§2)

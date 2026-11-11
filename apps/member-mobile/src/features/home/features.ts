@@ -2,6 +2,8 @@ import type { Href } from 'expo-router';
 import type Ionicons from '@expo/vector-icons/Ionicons';
 import type { ComponentProps } from 'react';
 
+import type { Tint } from '@my-people/design-tokens/mobile';
+
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
 /**
@@ -22,7 +24,7 @@ export const FEATURE_ROUTES: Partial<Record<string, Href>> = {
 export const FEATURE_ICONS: Record<string, IconName> = {
   report_issue: 'megaphone-outline',
   volunteer: 'hand-left-outline',
-  my_area: 'location-outline',
+  my_area: 'map-outline',
   community: 'people-outline',
   ideas: 'bulb-outline',
   surveys: 'clipboard-outline',
@@ -36,4 +38,26 @@ export const FEATURE_ICONS: Record<string, IconName> = {
   card: 'card-outline',
   gallery: 'images-outline',
   profile: 'person-outline',
+  help: 'help-buoy-outline',
+};
+
+/** The tile colour of each feature, as in the reference recording. */
+export const FEATURE_TINTS: Partial<Record<string, Tint>> = {
+  my_area: 'green',
+  community: 'sand',
+  events: 'teal',
+  help: 'purple',
+  report_issue: 'blue',
+  volunteer: 'rose',
+  volunteering: 'rose',
+  ideas: 'amber',
+  surveys: 'purple',
+  learning: 'green',
+  party_fund: 'blue',
+  invite: 'green',
+  local_reports: 'blue',
+  area_projects: 'teal',
+  card: 'navy',
+  gallery: 'blue',
+  profile: 'navy',
 };

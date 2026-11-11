@@ -13,7 +13,7 @@ import {
   useApiQuery,
   useLanguage,
 } from '@my-people/mobile-ui';
-import { spacing } from '@my-people/design-tokens';
+import { spacing } from '@my-people/design-tokens/mobile';
 
 import { QueryView } from '@/components/QueryView';
 import { api } from '@/lib/api';

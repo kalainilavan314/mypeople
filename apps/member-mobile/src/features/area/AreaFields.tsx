@@ -2,7 +2,7 @@ import type { Place } from '@my-people/api-client';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens';
+import { spacing } from '@my-people/design-tokens/mobile';
 
 import { SelectField, type SelectOption, useApiQuery, useLanguage } from '@my-people/mobile-ui';
 

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens';
+import { spacing } from '@my-people/design-tokens/mobile';
 import { AppText, Button, Notice, Screen, SurfaceCard, TextField, useApiAction, useApiQuery } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';

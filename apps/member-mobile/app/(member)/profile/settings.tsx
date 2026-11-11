@@ -1,15 +1,17 @@
 import type { EffectiveGovernancePolicy, NotificationChoices } from '@my-people/api-client';
 import { router } from 'expo-router';
 import { useState } from 'react';
+import Constants from 'expo-constants';
 import { StyleSheet, Switch, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, spacing } from '@my-people/design-tokens';
+import { colors, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
   Button,
-  ChipRow,
+  LanguageToggle,
+  MenuRow,
   Notice,
   Screen,
   SurfaceCard,
@@ -17,12 +19,13 @@ import {
   useApiAction,
   useApiQuery,
   useLanguage,
+  useSession,
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
-import { chooseLanguage, type AppLanguage } from '@/lib/i18n';
+import { chooseLanguage } from '@/lib/i18n';
 
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 
@@ -36,23 +39,20 @@ const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const language = useLanguage();
+  const { signOut } = useSession();
   const choices = useApiQuery(() => api().getNotificationChoices());
   const policies = useApiQuery(() => api().listMyGovernancePolicies(), [language]);
   return (
     <Screen edges={['bottom']}>
-      <AppText step="section" accessibilityRole="header">
-        {t('m.profile.language')}
-      </AppText>
-      <ChipRow<AppLanguage>
-        label={t('m.profile.language')}
-        selected={language}
-        onSelect={(next) => void chooseLanguage(next)}
-        options={[
-          { key: 'ta', label: 'தமிழ்' },
-          { key: 'en', label: 'English' },
-        ]}
-      />
-      <AppText step="section" accessibilityRole="header">
+      <SurfaceCard style={styles.group}>
+        <MenuRow
+          first
+          icon="language-outline"
+          label={t('m.profile.language')}
+          trailing={<LanguageToggle value={language} onChange={(next) => void chooseLanguage(next)} label={t('m.profile.language')} />}
+        />
+      </SurfaceCard>
+      <AppText step="body" tone="muted" accessibilityRole="header">
         {t('m.profile.channelsTitle')}
       </AppText>
       <AppText step="secondary" tone="muted">
@@ -64,6 +64,15 @@ export default function SettingsScreen() {
         {t('m.profile.policies')}
       </AppText>
       <QueryView query={policies}>{(data) => <PolicyChoices items={data} reload={policies.reload} />}</QueryView>
+      <SurfaceCard style={styles.group}>
+        <MenuRow first icon="lock-closed-outline" label={t('m.profile.privacyConsent')} onPress={() => router.push('/profile/privacy')} />
+        <MenuRow icon="key-outline" label={t('m.profile.passwordRecovery')} onPress={() => router.push('/profile/security')} />
+        <MenuRow icon="text-outline" label={t('m.accessibility.title')} onPress={() => router.push('/profile/accessibility')} />
+      </SurfaceCard>
+      <Button label={t('m.common.signOut')} variant="danger" icon="log-out-outline" onPress={() => void signOut()} />
+      <AppText step="caption" tone="muted" style={styles.version}>
+        {t('m.profile.versionLine', { version: Constants.expoConfig?.version ?? '' })}
+      </AppText>
     </Screen>
   );
 }
@@ -159,11 +168,11 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
 
   return (
     <>
-      <SurfaceCard>
-        {topics.map((item) => (
-          <View key={item.topic} style={styles.topic}>
+      <SurfaceCard style={styles.group}>
+        {topics.map((item, index) => (
+          <View key={item.topic} style={[styles.topic, index > 0 && styles.topicRule]}>
             <View style={styles.topicLabel}>
-              <AppText step="label">{t(`m.profile.topic_${item.topic}`)}</AppText>
+              <AppText step="card" weight={400}>{t(`m.profile.topic_${item.topic}`)}</AppText>
               {item.locked ? (
                 <AppText step="caption" tone="muted">
                   {t('m.profile.lockedTopic')}
@@ -180,7 +189,8 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
                   disabled={item.locked}
                   onValueChange={(value) => toggle(item.topic, channel, value)}
                   accessibilityLabel={`${t(`m.profile.topic_${item.topic}`)}: ${channel === 'push' ? t('m.profile.pushLabel') : t('m.profile.smsLabel')}`}
-                  trackColor={{ true: colors.primary, false: colors.inputBorder }}
+                  trackColor={{ true: colors.switchOn, false: colors.inputBorder }}
+                  thumbColor={colors.card}
                 />
               </View>
             ))}
@@ -218,7 +228,10 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
 }
 
 const styles = StyleSheet.create({
-  topic: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], minHeight: 56, borderBottomWidth: 1, borderBottomColor: colors.divider },
+  group: { paddingVertical: spacing[1] },
+  version: { textAlign: 'center' },
+  topic: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], minHeight: 56, paddingVertical: spacing[2] },
+  topicRule: { borderTopWidth: 1, borderTopColor: colors.divider },
   topicLabel: { flex: 1 },
   channel: { alignItems: 'center', gap: 2 },
   quiet: { flexDirection: 'row', gap: spacing[3] },

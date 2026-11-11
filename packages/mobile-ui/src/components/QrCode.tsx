@@ -2,7 +2,7 @@ import QRCode from 'qrcode';
 import { useMemo } from 'react';
 import Svg, { Path, Rect } from 'react-native-svg';
 
-import { colors } from '@my-people/design-tokens';
+import { colors } from '@my-people/design-tokens/mobile';
 
 const QUIET_ZONE = 4; // modules of white around the code, as scanners expect
 

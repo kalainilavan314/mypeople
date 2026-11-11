@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens';
+import { spacing } from '@my-people/design-tokens/mobile';
 import { AppText, Notice, SurfaceCard, type OfflineCardPreview } from '@my-people/mobile-ui';
 
 /** A saved visual copy without a QR. A coordinator must check current status online. */

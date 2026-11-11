@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 
-import { colors, spacing } from '@my-people/design-tokens';
+import { colors, spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText } from './AppText';
 
@@ -20,7 +20,7 @@ type Props = {
   edges?: Edge[];
 };
 
-/** One vertical scroll container with the 16 px gutter and safe-area insets (spec §3). */
+/** One vertical scroll container with the 20 px gutter and safe-area insets; the title is the large page title. */
 export function Screen({ title, subtitle, action, children, onRefresh, refreshing = false, edges = ['top'] }: Props) {
   return (
     <SafeAreaView style={styles.page} edges={edges}>
@@ -52,6 +52,6 @@ export function Screen({ title, subtitle, action, children, onRefresh, refreshin
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.page },
   content: { padding: spacing.gutter, paddingBottom: spacing[10], gap: spacing[4] },
-  titleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3] },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[3], paddingTop: spacing[2], paddingBottom: spacing[2] },
   titleText: { flex: 1, gap: spacing[1] },
 });

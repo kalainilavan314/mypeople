@@ -4,14 +4,18 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, spacing } from '@my-people/design-tokens';
+import type Ionicons from '@expo/vector-icons/Ionicons';
+import type { ComponentProps } from 'react';
+
+import { colors, spacing, type Tint } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
   Button,
-  ChipRow,
   formatDateTime,
+  IconTile,
   Screen,
+  SegmentedControl,
   StatusTag,
   SurfaceCard,
   useApiAction,
@@ -24,6 +28,19 @@ import { QueryView } from '@/components/QueryView';
 import { api } from '@/lib/api';
 
 type View_ = 'all' | 'action_needed';
+
+/** The icon and tile colour of each kind of notice, as in the reference recording. */
+const KIND: Record<string, { icon: ComponentProps<typeof Ionicons>['name']; tint: Tint }> = {
+  identity_review: { icon: 'shield-checkmark-outline', tint: 'blue' },
+  appeal: { icon: 'shield-checkmark-outline', tint: 'blue' },
+  event: { icon: 'calendar-outline', tint: 'teal' },
+  membership: { icon: 'card-outline', tint: 'navy' },
+  area_change: { icon: 'map-outline', tint: 'green' },
+  privacy_request: { icon: 'document-lock-outline', tint: 'purple' },
+  security_alert: { icon: 'lock-closed-outline', tint: 'rose' },
+  removal_request: { icon: 'images-outline', tint: 'sand' },
+};
+const DEFAULT_KIND = { icon: 'notifications-outline', tint: 'blue' } as const;
 
 /** Where a notice opens (BR-027); a notice about something with no screen yet opens nothing. */
 function targetRoute(item: NotificationItem): Href | null {
@@ -71,7 +88,7 @@ export default function NotificationsScreen() {
 
   return (
     <Screen edges={['bottom']} onRefresh={inbox.reload} refreshing={inbox.loading && inbox.data !== undefined}>
-      <ChipRow
+      <SegmentedControl
         label={t('m.inbox.title')}
         selected={view}
         onSelect={setView}
@@ -91,29 +108,36 @@ export default function NotificationsScreen() {
                 {view === 'all' ? t('m.inbox.empty') : t('m.inbox.emptyAction')}
               </AppText>
             ) : null}
-            {data.items.map((item) => (
-              <SurfaceCard
-                key={item.id}
-                onPress={() => void open(item)}
-                accessibilityLabel={localized(item.titleEn, item.titleTa)}
-                style={!item.read && styles.unread}>
-                <View style={styles.titleRow}>
-                  {!item.read ? <View style={styles.dot} accessibilityElementsHidden /> : null}
-                  <AppText step="card" style={styles.flex}>
-                    {localized(item.titleEn, item.titleTa)}
-                  </AppText>
-                </View>
-                <AppText step="secondary" tone="secondary">
-                  {localized(item.bodyEn, item.bodyTa)}
-                </AppText>
-                <View style={styles.meta}>
-                  <AppText step="caption" tone="muted" style={styles.flex}>
-                    {formatDateTime(item.createdAt, language)}
-                  </AppText>
-                  {item.actionNeeded ? <StatusTag tone="pending" label={t('m.inbox.actionTag')} /> : null}
-                </View>
-              </SurfaceCard>
-            ))}
+            {data.items.map((item) => {
+              const kind = KIND[item.targetKind ?? ''] ?? DEFAULT_KIND;
+              return (
+                <SurfaceCard
+                  key={item.id}
+                  onPress={() => void open(item)}
+                  accessibilityLabel={localized(item.titleEn, item.titleTa)}
+                  style={[styles.item, !item.read && styles.unread]}>
+                  <IconTile icon={kind.icon} tint={kind.tint} size={40} />
+                  <View style={styles.flex}>
+                    <View style={styles.titleRow}>
+                      <AppText step="card" weight={400} style={styles.flex}>
+                        {localized(item.titleEn, item.titleTa)}
+                      </AppText>
+                      {!item.read ? <View style={styles.dot} accessibilityElementsHidden /> : null}
+                    </View>
+                    <AppText step="secondary" tone="muted">
+                      {localized(item.bodyEn, item.bodyTa)}
+                    </AppText>
+                    <View style={styles.meta}>
+                      <AppText step="caption" tone="muted" style={styles.flex}>
+                        {formatDateTime(item.createdAt, language)}
+                      </AppText>
+                      {item.actionNeeded ? <StatusTag tone="pending" label={t('m.inbox.actionTag')} /> : null}
+                    </View>
+                  </View>
+                </SurfaceCard>
+              );
+            })}
+            <Button label={t('m.inbox.settings')} variant="quiet" onPress={() => router.push('/profile/settings')} />
           </View>
         )}
       </QueryView>
@@ -123,6 +147,7 @@ export default function NotificationsScreen() {
 
 const styles = StyleSheet.create({
   list: { gap: spacing[3] },
+  item: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3] },
   unread: { borderColor: colors.primaryLight },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary },

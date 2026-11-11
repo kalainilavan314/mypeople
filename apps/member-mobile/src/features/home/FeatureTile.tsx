@@ -4,17 +4,17 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens';
+import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
 
-import { AppText } from '@my-people/mobile-ui';
+import { AppText, IconTile } from '@my-people/mobile-ui';
 
-import { FEATURE_ICONS, FEATURE_ROUTES } from './features';
+import { FEATURE_ICONS, FEATURE_ROUTES, FEATURE_TINTS } from './features';
 
 type Feature = HomeView['quickActions'][number];
 
 /**
- * A quick action or hub service. Locked ones show the padlock and the reason
- * (FR-HOME-008); ones not built yet say so; only working ones open.
+ * A quick action or hub service: a tinted icon above its name. Locked ones show the padlock and the
+ * reason (FR-HOME-008); ones not built yet say so; only working ones open.
  */
 export function FeatureTile({ feature }: { feature: Feature }) {
   const { t } = useTranslation();
@@ -35,44 +35,38 @@ export function FeatureTile({ feature }: { feature: Feature }) {
       accessibilityLabel={caption ? `${label}. ${caption}` : label}
       aria-disabled={!opens}
       style={({ pressed }) => [styles.tile, pressed && styles.pressed]}>
-      <View style={styles.well}>
-        <Ionicons
-          name={feature.available ? (FEATURE_ICONS[feature.key] ?? 'ellipse-outline') : 'lock-closed-outline'}
-          size={20}
-          color={feature.available ? colors.primary : colors.textMuted}
-        />
+      <View style={styles.top}>
+        <IconTile icon={FEATURE_ICONS[feature.key] ?? 'ellipse-outline'} tint={opens ? FEATURE_TINTS[feature.key] ?? 'blue' : 'navy'} />
+        {feature.available ? null : <Ionicons name="lock-closed-outline" size={16} color={colors.textMuted} />}
       </View>
-      <AppText step="label" tone={opens ? 'default' : 'muted'}>
-        {label}
-      </AppText>
-      {caption ? (
-        <AppText step="caption" tone="muted">
-          {caption}
+      <View style={styles.text}>
+        <AppText step="card" weight={400} tone={opens ? 'default' : 'muted'}>
+          {label}
         </AppText>
-      ) : null}
+        {caption ? (
+          <AppText step="caption" tone="muted">
+            {caption}
+          </AppText>
+        ) : null}
+      </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   tile: {
-    flexBasis: '47%',
+    flexBasis: '46%',
     flexGrow: 1,
-    minHeight: 96,
+    minHeight: 124,
+    justifyContent: 'space-between',
+    gap: spacing[4],
     backgroundColor: colors.card,
     borderColor: colors.border,
     borderWidth: 1,
     borderRadius: radius.card,
-    padding: spacing[3],
-    gap: spacing[1],
+    padding: spacing[4],
   },
   pressed: { backgroundColor: colors.surfaceVariant },
-  well: {
-    width: 36,
-    height: 36,
-    borderRadius: radius.control,
-    backgroundColor: colors.surfaceVariant,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  top: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
+  text: { gap: 2 },
 });
