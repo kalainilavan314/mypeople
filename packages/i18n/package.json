@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Tamil, English and Sinhala UI text shared by the My People apps (i18next resources)",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./staff-terms": "./src/staffTerms.ts"
   },
   "scripts": {
     "test": "node --test",

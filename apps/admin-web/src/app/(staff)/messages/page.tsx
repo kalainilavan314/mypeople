@@ -8,6 +8,7 @@ import { ConsoleLoading } from '@/components/ConsoleLoading';
 import { PageHeader } from '@/components/PageHeader';
 import { StateTag } from '@/components/StateTag';
 import { areaText, formatDateTime } from '@/lib/format';
+import { loadAreaNames } from '@/lib/areas';
 import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
 import { CONSOLE_PAGE_SIZE, consolePage } from '@/lib/pagination';
 import { staffApi } from '@/lib/session';
@@ -57,6 +58,7 @@ async function BroadcastsContent({ searchParams }: { searchParams: PageProps<'/m
 
   const hasMore = broadcasts.length > CONSOLE_PAGE_SIZE;
   broadcasts = broadcasts.slice(0, CONSOLE_PAGE_SIZE);
+  const areaNames = await loadAreaNames(broadcasts.map((broadcast) => broadcast.areaKey));
   const pendingCount = broadcasts.filter((b) => b.state === 'pending_approval').length;
 
   return (
@@ -135,7 +137,7 @@ async function BroadcastsContent({ searchParams }: { searchParams: PageProps<'/m
                 <td className="px-3 py-2">
                   <p className="font-medium">{locale === 'ta' ? b.titleTa || b.titleEn : b.titleEn || b.titleTa}</p>
                 </td>
-                <td className="px-3 py-2">{areaText(b.areaKey)}</td>
+                <td className="px-3 py-2"><span lang={locale}>{areaText(b.areaKey, areaNames, locale)}</span></td>
                 <td className="px-3 py-2 text-muted text-xs">
                   {b.sentAt
                     ? (locale === 'ta' ? `அனுப்பப்பட்டது: ${formatDateTime(b.sentAt)}` : `Sent ${formatDateTime(b.sentAt)}`)

@@ -4156,6 +4156,52 @@
         }
       }
     },
+    "/v1/geography/areas": {
+      "get": {
+        "tags": [
+          "geography"
+        ],
+        "summary": "Name Areas",
+        "description": "Names for area keys as staff screens show them, instead of codes (public reference data like\nthe lists above). \"platform\" and unknown or malformed keys are left out; at most 100 keys.",
+        "operationId": "name_areas_v1_geography_areas_get",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Area keys such as district:LK41",
+              "default": [],
+              "title": "Key"
+            },
+            "description": "Area keys such as district:LK41"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AreaNameOut"
+                  },
+                  "title": "Response Name Areas V1 Geography Areas Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "too_many_keys"
+          }
+        }
+      }
+    },
     "/v1/events/{event_id}/checkin/offline": {
       "post": {
         "tags": [
@@ -13169,6 +13215,54 @@
           "reason"
         ],
         "title": "AreaDecisionIn"
+      },
+      "AreaNameOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "nameEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nameta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "level",
+          "code",
+          "nameEn",
+          "nameTa"
+        ],
+        "title": "AreaNameOut",
+        "description": "An area key such as district:LK41 with its names. Tamil names leave out the level word\n(district, province), which screens add; a name missing in Tamil is null."
       },
       "AreaRef": {
         "properties": {

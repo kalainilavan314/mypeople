@@ -1,3 +1,7 @@
+import { areaName, type AreaLike, type AreaNames } from '@my-people/i18n/staff-terms';
+
+import type { Locale } from './i18n/types';
+
 // Dates and times in Sri Lankan time (Asia/Colombo), whatever the server's zone.
 const OPTIONS: Intl.DateTimeFormatOptions = {
   timeZone: 'Asia/Colombo',
@@ -16,11 +20,12 @@ export function formatDate(iso: string | null | undefined): string {
   return iso ? new Date(iso).toLocaleDateString('en-GB', { timeZone: 'Asia/Colombo', day: 'numeric', month: 'short', year: 'numeric' }) : '—';
 }
 
-/** "district LK41" or "platform", as the API names areas. */
-export function areaText(area: { level: string; code?: string | null } | string | null | undefined): string {
-  if (!area) return '—';
-  if (typeof area === 'string') return area.replace(':', ' ');
-  return area.level === 'platform' ? 'platform' : `${area.level} ${area.code}`;
+/**
+ * "Jaffna district" / "யாழ்ப்பாணம் மாவட்டம்" with the names the page loaded (loadAreaNames in
+ * lib/areas.ts); "district LK41" when it has none for that area.
+ */
+export function areaText(area: AreaLike | null | undefined, names?: AreaNames, locale: Locale = 'en'): string {
+  return area ? areaName(area, names, locale) : '—';
 }
 
 /** "request_update" → "request update". */

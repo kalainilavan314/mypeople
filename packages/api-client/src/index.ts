@@ -27,6 +27,7 @@ export type Registration = Schemas['RegistrationOut'];
 export type Notices = Schemas['NoticesOut'];
 export type RegistrationProgress = Schemas['ProgressOut'];
 export type Place = Schemas['PlaceOut'];
+export type AreaName = Schemas['AreaNameOut'];
 export type AccountNumber = Schemas['AccountNumber'];
 export type SignedInSession = Schemas['SessionOut'];
 export type MfaStatus = Schemas['MfaStatusOut'];
@@ -455,6 +456,12 @@ export function createApiClient({
       request<Place[]>('GET', `/v1/geography/districts/${encodeURIComponent(districtCode)}/ds-divisions`),
     listGnDivisions: (dsCode: string) =>
       request<Place[]>('GET', `/v1/geography/ds-divisions/${encodeURIComponent(dsCode)}/gn-divisions`),
+    /**
+     * Names for area keys such as "district:LK41", for showing names instead of codes. "platform" and
+     * unknown keys are left out; at most 100 keys (ApiError "too_many_keys", 422).
+     */
+    listAreaNames: (keys: readonly string[]) =>
+      request<AreaName[]>('GET', `/v1/geography/areas${keys.length ? `?${keys.map((key) => `key=${encodeURIComponent(key)}`).join('&')}` : ''}`),
     /** Ends every session of the signed-in member; an old or ended token only clears the cookie. */
     signOut: () => request<void>('POST', '/v1/auth/sign-out'),
     /**

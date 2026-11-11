@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
+import { permissionName } from '@my-people/i18n/staff-terms';
 import {
   AppText,
   Button,
@@ -21,13 +22,13 @@ import { useStaff } from '@/providers/StaffProvider';
 
 /**
  * S01 role context: every staff role that counts now, its area, its
- * permissions and when its yearly review is due (RB-05).
+ * permissions and when its yearly review is due (RB-05), by name rather than code.
  */
 export default function RoleScreen() {
   const { t } = useTranslation();
   const language = useLanguage();
   const { signOut, state } = useSession();
-  const { assignments } = useStaff();
+  const { assignments, areaNames } = useStaff();
   const member = state.status === 'signed_in' ? state.member : null;
 
   return (
@@ -46,7 +47,7 @@ export default function RoleScreen() {
       </AppText>
       {assignments.map((assignment) => (
         <SurfaceCard key={assignment.id}>
-          <AppText step="card">{`${tierLabel(assignment)} · ${areaLabel(assignment)}`}</AppText>
+          <AppText step="card">{`${tierLabel(assignment)} · ${areaLabel(assignment, areaNames, language)}`}</AppText>
           {assignment.reviewDueAt ? (
             <AppText step="secondary" tone="muted">
               {t('s.profile.reviewDue', { date: formatDate(assignment.reviewDueAt, language) })}
@@ -55,8 +56,8 @@ export default function RoleScreen() {
           <AppText step="label">{t('s.profile.permissions')}</AppText>
           <View style={styles.permissions}>
             {assignment.permissions.map((permission) => (
-              <AppText key={permission} step="caption" tone="secondary" mono>
-                {permission}
+              <AppText key={permission} step="caption" tone="secondary">
+                {permissionName(permission, language)}
               </AppText>
             ))}
           </View>

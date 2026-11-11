@@ -219,3 +219,18 @@ def test_areas_are_listed_from_the_top_down(client, area):
     assert area.ds in {d["code"] for d in ds_divisions}
     assert area.gn in {g["code"] for g in gn_divisions}
     assert client.get("/v1/geography/districts/LK99/ds-divisions").status_code == 404
+
+
+def test_area_keys_are_named_for_staff_screens(client, db_session, area):
+    keys = [f"district:{area.district}", f"ds:{area.ds}", f"gn:{area.gn}", f"province:{area.province}"]
+    response = client.get("/v1/geography/areas", params={"key": [*keys, "platform", "gn:LK0000000", "district;drop", keys[0]]})
+
+    named = {item["key"]: item for item in response.json()}
+    district_ta = db_session.scalar(text("SELECT name_ta FROM geo.district WHERE district_code = :c"), {"c": area.district})
+    assert response.status_code == 200
+    assert set(named) == set(keys)  # platform, unknown and malformed keys are left out, repeats once
+    assert named[f"gn:{area.gn}"]["nameEn"] and named[f"gn:{area.gn}"]["level"] == "gn"
+    if district_ta:  # the level word, sometimes cut short in the registry, is left to the screen
+        assert "மாவ" not in named[f"district:{area.district}"]["nameTa"]
+    too_many = client.get("/v1/geography/areas", params={"key": [f"gn:{area.gn}"] * 101})
+    assert (too_many.status_code, too_many.json()) == (422, {"detail": "too_many_keys"})

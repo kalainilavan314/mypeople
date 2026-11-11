@@ -12,6 +12,7 @@ import {
   updateBroadcast,
 } from '@/features/messages/actions';
 import { areaText, formatDateTime } from '@/lib/format';
+import { loadAreaNames } from '@/lib/areas';
 import { getAdminLocale, getLocalizedMessage, getLocalizedProblem } from '@/lib/i18n';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
@@ -53,13 +54,14 @@ async function BroadcastDetail({ params, searchParams }: Pick<PageProps<'/messag
   }
 
   const isDraft = preview.state === 'draft';
+  const areaNames = await loadAreaNames([preview.areaKey]);
   const isPending = preview.state === 'pending_approval';
   const isScheduled = preview.state === 'scheduled';
   const isSent = preview.state === 'sent';
   const isCancelled = preview.state === 'cancelled';
   const audienceDescription = preview.audienceTiers?.length
-    ? `members with an effective Staff Tier ${preview.audienceTiers.join(', ')} assignment in ${areaText(preview.areaKey)}`
-    : `active members in ${areaText(preview.areaKey)}`;
+    ? `members with an effective Staff Tier ${preview.audienceTiers.join(', ')} assignment in ${areaText(preview.areaKey, areaNames, 'en')}`
+    : `active members in ${areaText(preview.areaKey, areaNames, 'en')}`;
 
   return (
     <>
@@ -85,7 +87,7 @@ async function BroadcastDetail({ params, searchParams }: Pick<PageProps<'/messag
             {locale === 'ta' ? preview.titleTa || preview.titleEn : preview.titleEn || preview.titleTa}
           </h1>
           <p className="text-xs text-muted">
-            {locale === 'ta' ? 'இலக்குப் பகுதி:' : 'Target audience:'} {areaText(preview.areaKey)}
+            {locale === 'ta' ? 'இலக்குப் பகுதி:' : 'Target audience:'} <span lang={locale}>{areaText(preview.areaKey, areaNames, locale)}</span>
           </p>
         </div>
       </header>

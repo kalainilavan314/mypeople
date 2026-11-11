@@ -7,6 +7,7 @@ import { ConsolePagination } from '@/components/ConsolePagination';
 import { ConsoleLoading } from '@/components/ConsoleLoading';
 import { StateTag } from '@/components/StateTag';
 import { areaText, formatDateTime } from '@/lib/format';
+import { loadAreaNames } from '@/lib/areas';
 import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
 import { CONSOLE_PAGE_SIZE, consolePage } from '@/lib/pagination';
 import { staffApi } from '@/lib/session';
@@ -50,6 +51,7 @@ async function Queue({ searchParams }: { searchParams: PageProps<'/verification'
 
   const hasMore = reviews.length > CONSOLE_PAGE_SIZE;
   reviews = reviews.slice(0, CONSOLE_PAGE_SIZE);
+  const areaNames = await loadAreaNames(reviews.map((review) => review.area));
 
   return (
     <>
@@ -136,7 +138,7 @@ async function Queue({ searchParams }: { searchParams: PageProps<'/verification'
                   <StateTag state={review.state} />
                 </td>
                 <td className="px-3 py-2">{review.route.toUpperCase()}</td>
-                <td className="px-3 py-2">{areaText(review.area)}</td>
+                <td className="px-3 py-2"><span lang={locale}>{areaText(review.area, areaNames, locale)}</span></td>
                 <td className="px-3 py-2">{formatDateTime(review.resubmittedAt ?? review.submittedAt)}</td>
                 <td className="px-3 py-2">{review.claimedByName ?? '—'}</td>
               </tr>

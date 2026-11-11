@@ -6,6 +6,7 @@ import { ConsoleLoading } from '@/components/ConsoleLoading';
 import { RecordTable } from '@/components/RecordTable';
 import { StateTag } from '@/components/StateTag';
 import { areaText, formatDateTime, words } from '@/lib/format';
+import { loadAreaNames } from '@/lib/areas';
 import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
 import { CONSOLE_PAGE_SIZE, consolePage } from '@/lib/pagination';
 import { staffApi } from '@/lib/session';
@@ -36,6 +37,7 @@ async function Appeals({ searchParams }: { searchParams: PageProps<'/appeals'>['
   }
   const hasMore = appeals.length > CONSOLE_PAGE_SIZE;
   appeals = appeals.slice(0, CONSOLE_PAGE_SIZE);
+  const areaNames = await loadAreaNames(appeals.map((appeal) => appeal.area));
   return (
     <>
       <div className="flex flex-col gap-0.5 text-sm">
@@ -74,7 +76,7 @@ async function Appeals({ searchParams }: { searchParams: PageProps<'/appeals'>['
         },
         {
           header: <span lang={locale}>{locale === 'ta' ? 'பகுதி' : 'Area'}</span>,
-          cell: (appeal) => areaText(appeal.area),
+          cell: (appeal) => <span lang={locale}>{areaText(appeal.area, areaNames, locale)}</span>,
         },
         {
           header: <span lang={locale}>{locale === 'ta' ? 'சமர்ப்பிக்கப்பட்டது' : 'Submitted'}</span>,

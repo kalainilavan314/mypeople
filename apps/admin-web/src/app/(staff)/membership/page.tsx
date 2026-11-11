@@ -6,6 +6,7 @@ import { RecordTable } from '@/components/RecordTable';
 import { SubmitButton } from '@/components/SubmitButton';
 import { findMember } from '@/features/members/actions';
 import { areaText, formatDateTime } from '@/lib/format';
+import { loadAreaNames } from '@/lib/areas';
 import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
@@ -62,6 +63,7 @@ async function Awaiting({ searchParams }: { searchParams: PageProps<'/membership
     if (isRefusal(error)) return <p className="text-error">! {getLocalizedMessage(error.code, locale)}</p>;
     throw error;
   }
+  const areaNames = await loadAreaNames(members.map((member) => member.area));
   return (
     <>
       <Feedback error={query.error} />
@@ -91,7 +93,7 @@ async function Awaiting({ searchParams }: { searchParams: PageProps<'/membership
           },
           {
             header: <span lang={locale}>{locale === 'ta' ? 'பகுதி' : 'Area'}</span>,
-            cell: (member) => areaText(member.area),
+            cell: (member) => <span lang={locale}>{areaText(member.area, areaNames, locale)}</span>,
           },
           {
             header: <span lang={locale}>{locale === 'ta' ? 'அடையாளம் சரிபார்க்கப்பட்டது' : 'Identity verified'}</span>,

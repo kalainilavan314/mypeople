@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { parseSriLankaDateTime, toSriLankaDateTimeInput, formatDateTime, formatDate } from './format.ts';
+import { areaText, parseSriLankaDateTime, toSriLankaDateTimeInput, formatDateTime, formatDate } from './format.ts';
 
 test('parseSriLankaDateTime interprets datetime-local in Asia/Colombo time (+05:30)', () => {
   // 9:00 AM in Sri Lanka (+05:30) is 3:30 AM UTC
@@ -63,4 +63,13 @@ test('formatDateTime and formatDate render in Asia/Colombo', () => {
 
   const formattedDate = formatDate(iso);
   assert.match(formattedDate, /5 Nov 2026/);
+});
+
+test('areaText names an area in the page language and keeps the code when it has no name', () => {
+  const names = new Map([['district:LK41', { nameEn: 'Jaffna', nameTa: 'யாழ்ப்பாணம்' }]]);
+  assert.equal(areaText({ level: 'district', code: 'LK41' }, names, 'ta'), 'யாழ்ப்பாணம் மாவட்டம்');
+  assert.equal(areaText('district:LK41', names, 'en'), 'Jaffna district');
+  assert.equal(areaText('gn:LK4136085', names, 'en'), 'GN division LK4136085');
+  assert.equal(areaText({ level: 'district', code: 'LK41' }), 'district LK41');
+  assert.equal(areaText(null), '—');
 });

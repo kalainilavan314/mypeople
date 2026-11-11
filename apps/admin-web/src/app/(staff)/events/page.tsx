@@ -8,6 +8,7 @@ import { ConsolePagination } from '@/components/ConsolePagination';
 import { PageHeader } from '@/components/PageHeader';
 import { StateTag } from '@/components/StateTag';
 import { areaText, formatDateTime } from '@/lib/format';
+import { loadAreaNames } from '@/lib/areas';
 import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
 import { CONSOLE_PAGE_SIZE, consolePage } from '@/lib/pagination';
 import { staffApi } from '@/lib/session';
@@ -56,6 +57,7 @@ async function EventsContent({ searchParams }: { searchParams: PageProps<'/event
 
   const hasMore = events.length > CONSOLE_PAGE_SIZE;
   events = events.slice(0, CONSOLE_PAGE_SIZE);
+  const areaNames = await loadAreaNames(events.map((event) => event.areaKey));
   const draftCount = events.filter((e) => e.state === 'draft').length;
   const publishedCount = events.filter((e) => e.state === 'published').length;
 
@@ -123,7 +125,7 @@ async function EventsContent({ searchParams }: { searchParams: PageProps<'/event
                   <p className="font-medium text-text">{locale === 'ta' ? event.titleTa || event.titleEn : event.titleEn || event.titleTa}</p>
                 </td>
                 <td className="px-3 py-2 capitalize">{event.eventType.replace(/_/g, ' ')}</td>
-                <td className="px-3 py-2">{areaText(event.areaKey)}</td>
+                <td className="px-3 py-2"><span lang={locale}>{areaText(event.areaKey, areaNames, locale)}</span></td>
                 <td className="px-3 py-2">{formatDateTime(event.startsAt)}</td>
                 <td className="px-3 py-2 text-muted">
                   {event.going} {event.capacity ? `/ ${event.capacity}` : (locale === 'ta' ? 'பதிவானவர்கள்' : 'going')}

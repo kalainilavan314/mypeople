@@ -8,6 +8,7 @@ import { StateTag } from '@/components/StateTag';
 import { SubmitButton } from '@/components/SubmitButton';
 import { claimOrRelease, decide, reportDuplicate } from '@/features/verification/actions';
 import { areaText, formatDate, formatDateTime, words } from '@/lib/format';
+import { loadAreaNames } from '@/lib/areas';
 import { getAdminLocale, getLocalizedMessage, getLocalizedProblem, type Locale } from '@/lib/i18n';
 import { CHECKLIST_LABELS, EVIDENCE_LABELS } from '@/lib/messages';
 import { staffApi } from '@/lib/session';
@@ -59,6 +60,7 @@ async function Review({ params, searchParams }: Pick<PageProps<'/verification/[i
     throw error;
   }
   const claimedByMe = review.claimedBy === staff.member.id;
+  const areaNames = await loadAreaNames([review.area]);
   const open = OPEN.has(review.state);
 
   return (
@@ -79,7 +81,7 @@ async function Review({ params, searchParams }: Pick<PageProps<'/verification/[i
         </Fact>
         <Fact label={locale === 'ta' ? 'பிறந்த திகதி' : 'Date of birth'} locale={locale}>{formatDate(review.member.dob)}</Fact>
         <Fact label={locale === 'ta' ? 'சரிபார்ப்பு வழி' : 'Route'} locale={locale}>{review.route.toUpperCase()}</Fact>
-        <Fact label={locale === 'ta' ? 'பகுதி' : 'Area'} locale={locale}>{areaText(review.area)}</Fact>
+        <Fact label={locale === 'ta' ? 'பகுதி' : 'Area'} locale={locale}>{areaText(review.area, areaNames, locale)}</Fact>
         <Fact label={locale === 'ta' ? 'நிலை' : 'State'} locale={locale}>
           <StateTag state={review.state} />
         </Fact>

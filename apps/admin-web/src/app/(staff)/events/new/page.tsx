@@ -5,6 +5,8 @@ import { Feedback } from '@/components/Feedback';
 import { PageHeader } from '@/components/PageHeader';
 import { SubmitButton } from '@/components/SubmitButton';
 import { createEvent } from '@/features/events/actions';
+import { loadAreaNames } from '@/lib/areas';
+import { areaText } from '@/lib/format';
 import { getAdminLocale } from '@/lib/i18n';
 import { requireStaff } from '@/lib/staff';
 
@@ -44,6 +46,7 @@ async function NewEventForm({ searchParams }: { searchParams: PageProps<'/events
 
   // Find areas where staff has events.manage permission
   const managedAssignments = staff.assignments.filter((a) => a.permissions.includes('events.manage'));
+  const areaNames = await loadAreaNames(managedAssignments.map((a) => a.area));
 
   return (
     <>
@@ -96,7 +99,7 @@ async function NewEventForm({ searchParams }: { searchParams: PageProps<'/events
               <span lang={locale}>{locale === 'ta' ? 'ஒதுக்கப்பட்ட பகுதி *' : 'Assigned area *'}</span>
               <select name="areaSelection" required className="min-h-11 rounded-lg border border-line px-3 bg-surface">
                 {managedAssignments.map((a) => {
-                  const label = a.area.level === 'platform' ? (locale === 'ta' ? 'தேசிய தளம்' : 'Platform wide') : `${a.area.level} ${a.area.code}`;
+                  const label = areaText(a.area, areaNames, locale);
                   const value = `${a.area.level}:${a.area.code ?? ''}`;
                   return (
                     <option key={a.id} value={value}>

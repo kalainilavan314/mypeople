@@ -1,6 +1,8 @@
 import { Suspense } from 'react';
 
 import { StaffSidebar } from '@/components/StaffSidebar';
+import { loadAreaNames } from '@/lib/areas';
+import { areaText } from '@/lib/format';
 import { getAdminLocale } from '@/lib/i18n';
 import { builtModules } from '@/lib/modules';
 import { requireStaff } from '@/lib/staff';
@@ -22,6 +24,7 @@ export default function StaffLayout({ children }: LayoutProps<'/'>) {
 async function StaffSidebarSection() {
   const staff = await requireStaff();
   const locale = await getAdminLocale(staff.member.language);
+  const areaNames = await loadAreaNames(staff.assignments.map((a) => a.area));
 
   const allowed = builtModules.filter((module) =>
     Array.isArray(module.permission)
@@ -38,6 +41,7 @@ async function StaffSidebarSection() {
           id: a.id,
           tier: a.tier,
           area: { level: a.area.level, code: a.area.code },
+          areaName: { ta: areaText(a.area, areaNames, 'ta'), en: areaText(a.area, areaNames, 'en') },
         })),
       }}
       allowedModules={allowed.map((m) => ({

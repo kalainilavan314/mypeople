@@ -15,6 +15,7 @@
     "@fontsource/noto-sans-tamil": "^5.3.0",
     "@my-people/api-client": "*",
     "@my-people/design-tokens": "*",
+    "@my-people/i18n": "*",
     "next": "16.4.3",
     "qrcode": "^1.5.4",
     "react": "19.3.0",
