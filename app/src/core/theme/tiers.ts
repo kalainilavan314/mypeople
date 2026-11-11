@@ -22,7 +22,7 @@ export const TIERS: Record<MemberTier, TierDef> = {
     seatLimit: null,
     requirementEn: 'Join the movement',
     color: '#8E98B7',
-    grad: '#0F2942',
+    grad: 'var(--primary)',
   },
   diamond: {
     key: 'diamond',
@@ -33,7 +33,7 @@ export const TIERS: Record<MemberTier, TierDef> = {
     seatLimit: 2,
     requirementEn: 'Recruit 20% of your GN division',
     color: '#6EC6FF',
-    grad: '#0F2942',
+    grad: 'var(--primary)',
   },
   gold: {
     key: 'gold',
@@ -43,8 +43,8 @@ export const TIERS: Record<MemberTier, TierDef> = {
     adminLevel: 'ds',
     seatLimit: 3,
     requirementEn: 'Recruit 500 volunteers',
-    color: '#FFCB6B',
-    grad: '#0F2942',
+    color: '#D29A16',
+    grad: 'var(--primary)',
   },
   platinum: {
     key: 'platinum',
@@ -55,7 +55,7 @@ export const TIERS: Record<MemberTier, TierDef> = {
     seatLimit: 5,
     requirementEn: 'Recruit 1,000 people',
     color: '#D9E1F2',
-    grad: '#0F2942',
+    grad: 'var(--primary)',
   },
 };
 

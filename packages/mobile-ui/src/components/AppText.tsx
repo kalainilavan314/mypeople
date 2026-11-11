@@ -11,6 +11,7 @@ const TONES = {
   secondary: colors.textSecondary,
   muted: colors.textMuted,
   primary: colors.primary,
+  brandAccent: colors.onBrandAccent,
   inverse: colors.onPrimary,
   error: colors.error,
   success: colors.successText,

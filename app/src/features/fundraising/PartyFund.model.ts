@@ -31,7 +31,7 @@ export const formatCardNumber = (s: string) =>
   digitsOnly(s)
     .slice(0, 16)
     .replace(/(\d{4})(?=\d)/g, '$1 ');
-export const GOLD = '#14263D';
+export const GOLD = 'var(--brand-gold)';
 export const luhnOk = (s: string) => {
   const d = digitsOnly(s);
   if (d.length !== 16) return false;

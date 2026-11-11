@@ -71,7 +71,7 @@ export default function WelcomeScreen() {
                 accessibilityRole="radio"
                 aria-checked={active}
                 style={[styles.language, active && styles.languageActive]}>
-                <AppText step="section" tone={active ? 'inverse' : 'primary'}>
+                <AppText step="section" tone={active ? 'brandAccent' : 'primary'}>
                   {option.label}
                 </AppText>
               </Pressable>
@@ -115,5 +115,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  languageActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+  languageActive: { backgroundColor: colors.brandYellow, borderColor: colors.brandGold },
 });
