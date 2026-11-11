@@ -4,12 +4,12 @@
 #
 # These are test builds signed with the debug key from `expo prebuild`: fine to install directly,
 # not for the Play Store, which needs our own upload key (and EAS or a keystore secret) first.
+# Run it from the Actions tab or `gh workflow run android-apk.yml`; the release record in
+# deployment/README.md says where the downloaded APKs are published.
 name: Android APKs
 
 on:
   workflow_dispatch:
-  push:
-    branches: ['build/android-apk']
 
 permissions:
   contents: read
