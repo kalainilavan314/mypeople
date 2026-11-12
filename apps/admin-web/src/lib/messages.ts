@@ -262,6 +262,27 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     ta: 'இக்கோரிக்கை ஏற்கனவே மூடப்பட்டுவிட்டது.',
     en: 'This request has already been closed.',
   },
+  // Community cases (W03 to W08).
+  case_refused: {
+    ta: 'இந்த நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The action was not recorded. Fix the points below and try again.',
+  },
+  unsupported_type: {
+    ta: 'JPEG, PNG அல்லது WebP புகைப்படத்தை மட்டும் பயன்படுத்தவும்.',
+    en: 'Use a JPEG, PNG or WebP photo.',
+  },
+  too_large: {
+    ta: 'புகைப்படம் மிகப் பெரியது.',
+    en: 'The photo is too large.',
+  },
+  empty_file: {
+    ta: 'தெரிவுசெய்த கோப்பு வெறுமையாக உள்ளது.',
+    en: 'The chosen file is empty.',
+  },
+  evidence_unreadable: {
+    ta: 'இப்புகைப்படத்தைத் திறக்க முடியவில்லை.',
+    en: 'The photo could not be read.',
+  },
 };
 
 const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
@@ -483,6 +504,151 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'உறுப்பினருக்கான குறிப்பை எழுதவும் (3 முதல் 2,000 எழுத்துகள்).',
     en: 'Write a note for the member (3 to 2,000 characters).',
   },
+  // Community cases (W03 to W08): the API's case_refused problems, then the dashboard's own checks.
+  wrong_stage: {
+    ta: 'இந்த விவகாரம் இப்போது வேறு கட்டத்தில் உள்ளது. பக்கத்தைப் புதுப்பித்துப் பார்க்கவும்.',
+    en: 'The case is at a different stage now. Reload the page to see it.',
+  },
+  facts_required: {
+    ta: 'முன்னனுப்புவதற்கு முன் குறைந்தது ஒரு அவதானிக்கப்பட்ட உண்மையைப் பதிவுசெய்யவும்.',
+    en: 'Record at least one observed fact before forwarding.',
+  },
+  completeness_check_incomplete: {
+    ta: 'முழுமைச் சரிபார்ப்பின் மூன்று பெட்டிகளையும் தெரிவுசெய்யவும்.',
+    en: 'Tick all three completeness checks.',
+  },
+  owner_not_eligible: {
+    ta: 'தெரிவுசெய்த நபர் இந்தப் பகுதியில் இந்தப் படிக்குப் பொறுப்பேற்க முடியாது.',
+    en: 'The person chosen cannot own this step in this area.',
+  },
+  owner_required: {
+    ta: 'அடுத்த படிக்குப் பொறுப்பானவரைத் தெரிவுசெய்யவும்.',
+    en: 'Choose who owns the next step.',
+  },
+  district_owner_required: {
+    ta: 'மாவட்டப் பொறுப்பாளரைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the district owner.',
+  },
+  regional_owner_required: {
+    ta: 'பிராந்தியப் பொறுப்பாளரைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the regional owner.',
+  },
+  recommendation_required: {
+    ta: 'பரிந்துரையை எழுதவும்.',
+    en: 'Write the recommendation.',
+  },
+  authority_required: {
+    ta: 'பயன்படுத்தப்படும் ஒப்படைக்கப்பட்ட அதிகாரத்தைக் குறிப்பிடவும்.',
+    en: 'Name the delegated authority used.',
+  },
+  resources_required: {
+    ta: 'தேவையான வளங்களைக் குறிப்பிடவும்.',
+    en: 'Name the resources.',
+  },
+  office_required: {
+    ta: 'பொறுப்பான அலுவலகத்தைக் குறிப்பிடவும்.',
+    en: 'Name the responsible office.',
+  },
+  due_date_required: {
+    ta: 'நிறைவு திகதியை உள்ளிடவும்.',
+    en: 'Enter the due date.',
+  },
+  due_date_in_past: {
+    ta: 'நிறைவு திகதி இன்றோ அதற்குப் பின்னரோ இருக்க வேண்டும்.',
+    en: 'The due date must be today or later.',
+  },
+  reason_and_decision_required: {
+    ta: 'மேலனுப்புவதற்கான காரணத்தையும் தேவையான முடிவையும் எழுதவும்.',
+    en: 'Write the reason for escalating and the decision required.',
+  },
+  conditions_and_implementer_required: {
+    ta: 'நிபந்தனைகளை எழுதி, நடைமுறைப்படுத்துபவரைத் தெரிவுசெய்யவும்.',
+    en: 'Write the conditions and choose the implementer.',
+  },
+  scope_and_due_date_required: {
+    ta: 'அனுமதிக்கப்பட்ட வரம்பையும் நிறைவு திகதியையும் உள்ளிடவும்.',
+    en: 'Enter the approved scope and the due date.',
+  },
+  reporting_duty_required: {
+    ta: 'அறிக்கையிடல் கடமையை எழுதவும்.',
+    en: 'Write the reporting duty.',
+  },
+  question_required: {
+    ta: 'கேள்வியை எழுதவும்.',
+    en: 'Write the question.',
+  },
+  evidence_required: {
+    ta: 'குறைந்தது ஒரு சான்றுக் குறிப்பையோ புகைப்படத்தையோ சேர்க்கவும்.',
+    en: 'Add at least one evidence reference or photo.',
+  },
+  bilingual_summary_required: {
+    ta: 'சுருக்கத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the summary in both Tamil and English.',
+  },
+  already_owner: {
+    ta: 'இவர் ஏற்கனவே இந்த விவகாரத்தின் பொறுப்பாளர்.',
+    en: 'This person already owns the case.',
+  },
+  stage_required: {
+    ta: 'விவகாரம் மீண்டும் திறக்கப்பட வேண்டிய கட்டத்தைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the stage to reopen the case at.',
+  },
+  parent_not_found: {
+    ta: 'அந்த விவகார இலக்கம் உங்கள் பகுதிகளில் காணப்படவில்லை.',
+    en: 'No case with that ID was found in your areas.',
+  },
+  parent_not_open: {
+    ta: 'அந்த விவகாரம் திறந்த நிலையில் இல்லை, அல்லது அதுவே இன்னொன்றுடன் இணைக்கப்பட்டுள்ளது.',
+    en: 'That case is not open, or is itself linked to another case.',
+  },
+  cannot_link_to_itself: {
+    ta: 'ஒரு விவகாரத்தை அதனுடனேயே இணைக்க முடியாது.',
+    en: 'A case cannot be linked to itself.',
+  },
+  already_moderated: {
+    ta: 'இத்தகவல் ஏற்கனவே மதிப்பாய்வு செய்யப்பட்டுவிட்டது.',
+    en: 'This information has already been moderated.',
+  },
+  photo_not_found: {
+    ta: 'சேர்த்த புகைப்படங்களில் ஒன்று காணப்படவில்லை. மீண்டும் தெரிவுசெய்யவும்.',
+    en: 'One of the photos was not found. Choose it again.',
+  },
+  no_open_challenge: {
+    ta: 'இந்த விவகாரத்தில் திறந்த மறுப்பு எதுவும் இல்லை.',
+    en: 'There is no open challenge on this case.',
+  },
+  source_required: {
+    ta: 'சரிபார்க்கப்பட்ட உண்மைக்கு அதன் மூலத்தைக் குறிப்பிடவும்.',
+    en: 'A verified fact needs its source.',
+  },
+  finding_kind_required: {
+    ta: 'கண்டறிதலின் வகையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the kind of finding.',
+  },
+  responsible_tier_required: {
+    ta: 'பொறுப்பான நிலையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the responsible tier.',
+  },
+  too_many_photos: {
+    ta: 'அதிகபட்சம் 6 புகைப்படங்களைச் சேர்க்கவும்.',
+    en: 'Attach at most 6 photos.',
+  },
+  unsupported_type: {
+    ta: 'JPEG, PNG அல்லது WebP புகைப்படத்தை மட்டும் பயன்படுத்தவும்.',
+    en: 'Use a JPEG, PNG or WebP photo.',
+  },
+  too_many_pixels: {
+    ta: 'புகைப்படத்தின் பிக்சல் அளவு மிக அதிகம்.',
+    en: 'The photo has too many pixels.',
+  },
+  evidence_unreadable: {
+    ta: 'இப்புகைப்படத்தைத் திறக்க முடியவில்லை.',
+    en: 'The photo could not be read.',
+  },
+  unknown_permission: {
+    ta: 'அறியப்படாத அனுமதி.',
+    en: 'Unknown permission.',
+  },
 };
 
 export const PROBLEM_FIELD_MAP: Record<string, string> = {
@@ -631,6 +797,99 @@ const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
   request_refused: {
     ta: 'கோரிக்கை நிராகரிக்கப்பட்டது. உறுப்பினருக்குக் காரணத்துடன் அறிவிக்கப்படும்.',
     en: 'Request refused. The member is notified with your note.',
+  },
+  // Community cases (W03 to W08).
+  fact_added: {
+    ta: 'உண்மை பதிவுசெய்யப்பட்டது.',
+    en: 'Fact recorded.',
+  },
+  finding_added: {
+    ta: 'கண்டறிதல் பதிவுசெய்யப்பட்டது.',
+    en: 'Finding recorded.',
+  },
+  note_added: {
+    ta: 'குறிப்பு சேர்க்கப்பட்டது.',
+    en: 'Note added.',
+  },
+  case_returned: {
+    ta: 'விவரங்களுக்காக அறிவித்தவருக்குத் திருப்பியனுப்பப்பட்டது.',
+    en: 'Returned to the reporter for details.',
+  },
+  case_linked: {
+    ta: 'திறந்த விவகாரத்துடன் இணைக்கப்பட்டது.',
+    en: 'Linked to the open case.',
+  },
+  case_forwarded: {
+    ta: 'பிரதேச ஆய்வுக்கு முன்னனுப்பப்பட்டது.',
+    en: 'Forwarded to divisional research.',
+  },
+  ds_report_sent: {
+    ta: 'பிரதேச அறிக்கை மாவட்டத்துக்கு அனுப்பப்பட்டது.',
+    en: 'Divisional report sent to the district.',
+  },
+  district_acted: {
+    ta: 'மாவட்ட நடவடிக்கை பதிவுசெய்யப்பட்டது; விவகாரம் நடைமுறைப்படுத்தலுக்குச் சென்றது.',
+    en: 'District action recorded; the case moved to implementation.',
+  },
+  case_escalated: {
+    ta: 'பிராந்தியத் திட்டத்துக்கு மேலனுப்பப்பட்டது.',
+    en: 'Escalated to a regional plan.',
+  },
+  regional_plan_sent: {
+    ta: 'பிராந்தியத் திட்டம் நிறைவேற்று அனுமதிக்கு அனுப்பப்பட்டது.',
+    en: 'Regional plan sent for executive approval.',
+  },
+  executive_approved: {
+    ta: 'நிபந்தனைகளுடன் அனுமதிக்கப்பட்டது; விவகாரம் நடைமுறைப்படுத்தலுக்குச் சென்றது.',
+    en: 'Approved with conditions; the case moved to implementation.',
+  },
+  executive_returned: {
+    ta: 'தெளிவுபடுத்தலுக்காகத் திருப்பியனுப்பப்பட்டது.',
+    en: 'Returned for clarification.',
+  },
+  executive_declined: {
+    ta: 'விவகாரம் நிராகரிக்கப்பட்டது.',
+    en: 'Case declined.',
+  },
+  progress_recorded: {
+    ta: 'முன்னேற்றம் பதிவுசெய்யப்பட்டது.',
+    en: 'Progress recorded.',
+  },
+  case_closed: {
+    ta: 'நிறைவு அறிக்கை சமர்ப்பிக்கப்பட்டது; விவகாரம் தீர்க்கப்பட்டது.',
+    en: 'Closing report submitted; the case is resolved.',
+  },
+  case_assigned: {
+    ta: 'விவகாரம் ஒப்படைக்கப்பட்டது.',
+    en: 'Case handed over.',
+  },
+  case_taken: {
+    ta: 'இந்த விவகாரம் இப்போது உங்கள் பொறுப்பில் உள்ளது.',
+    en: 'You now own this case.',
+  },
+  challenge_accepted: {
+    ta: 'மறுப்பு ஏற்கப்பட்டது; விவகாரம் மீண்டும் திறக்கப்பட்டது.',
+    en: 'Challenge accepted; the case is reopened.',
+  },
+  challenge_rejected: {
+    ta: 'மறுப்பு நிராகரிக்கப்பட்டது; அறிவித்தவருக்கு அறிவிக்கப்படும்.',
+    en: 'Challenge rejected; the reporter is notified.',
+  },
+  summary_published: {
+    ta: 'பொதுச் சுருக்கம் வெளியிடப்பட்டது.',
+    en: 'Public summary published.',
+  },
+  summary_withheld: {
+    ta: 'பொதுச் சுருக்கம் நிறுத்திவைக்கப்பட்டது.',
+    en: 'Public summary withheld.',
+  },
+  addition_approved: {
+    ta: 'சேர்க்கப்பட்ட தகவல் அங்கீகரிக்கப்பட்டது.',
+    en: 'Added information approved.',
+  },
+  addition_rejected: {
+    ta: 'சேர்க்கப்பட்ட தகவல் நிராகரிக்கப்பட்டது.',
+    en: 'Added information rejected.',
   },
 };
 

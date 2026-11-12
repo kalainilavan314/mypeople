@@ -1,4 +1,5 @@
 import type { CommunityReportSummary } from '@my-people/api-client';
+import Link from 'next/link';
 import { Suspense } from 'react';
 
 import { ConsoleLoading } from '@/components/ConsoleLoading';
@@ -65,6 +66,14 @@ async function ReportsContent({ searchParams }: { searchParams: SearchParams }) 
       <div className="flex flex-col gap-1 text-sm text-muted">
         <p>
           Citizen-submitted local issues and community concerns across your assigned areas.
+        </p>
+        <p>
+          These are reports from the older member web app. Reports sent from the member app are cases, worked from GN
+          collection to closing in{' '}
+          <Link href="/cases" className="font-semibold text-primary underline">
+            Community cases
+          </Link>
+          .
         </p>
         <span className="text-xs">
           {total} total reports in scope

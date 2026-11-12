@@ -56,6 +56,11 @@ export default function MemberLayout() {
       <Stack.Screen name="household/privacy" options={{ title: t('m.household.privacyConsent') }} />
       <Stack.Screen name="fund/index" options={{ title: t('m.fund.title') }} />
       <Stack.Screen name="fund/receipt/[id]" options={{ title: t('m.fund.receiptTitle') }} />
+      <Stack.Screen name="issues/index" options={{ title: t('m.issues.title') }} />
+      <Stack.Screen name="issues/report" options={{ title: t('m.issues.reportTitle') }} />
+      <Stack.Screen name="issues/review" options={{ title: t('m.issues.reviewTitle') }} />
+      <Stack.Screen name="issues/mine" options={{ title: t('m.issues.mineTitle') }} />
+      <Stack.Screen name="issues/[id]" options={{ title: t('m.issues.detailTitle') }} />
       <Stack.Screen name="staff" options={{ headerShown: false }} />
     </Stack>
   );

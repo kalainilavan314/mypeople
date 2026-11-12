@@ -44,6 +44,8 @@ function targetRoute(item: NotificationItem): Href | null {
       return '/profile/security';
     case 'removal_request':
       return '/gallery';
+    case 'issue':
+      return item.targetId ? { pathname: '/issues/[id]', params: { id: item.targetId } } : '/issues';
     default:
       return null;
   }

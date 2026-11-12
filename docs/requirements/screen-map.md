@@ -40,23 +40,23 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | H02 | Home — awaiting review | Home and inbox (SC-03) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/index.tsx` |  |
 | H03 | Notifications | Home and inbox (SC-03) | 1 | Built | `apps/member-mobile/app/(member)/notifications.tsx` |  |
 | H04 | Community Hub | Community hub (SC-04) | 1 shell, 2 services | Built | `apps/member-mobile/app/(member)/hub.tsx` |  |
-| H05 | My area | Community issues (SC-05) | 2 | To build | `apps/member-mobile/app/(member)/issues/` |  |
-| H06 | Local issue detail | Community issues (SC-05) | 2 | To build | `apps/member-mobile/app/(member)/issues/` |  |
-| H07 | Report a concern | Community issues (SC-05) | 2 | To build | `apps/member-mobile/app/(member)/issues/` |  |
-| H08 | Review report | Community issues (SC-05) | 2 | To build | `apps/member-mobile/app/(member)/issues/` |  |
-| H09 | Report receipt and progress | Community issues (SC-05) | 2 | To build | `apps/member-mobile/app/(member)/issues/` |  |
-| H10 | Volunteer skills | Volunteering (SC-06) | 2 | To build | `apps/member-mobile/app/(member)/volunteer/` |  |
-| H11 | Volunteer opportunity | Volunteering (SC-06) | 2 | To build | `apps/member-mobile/app/(member)/volunteer/` |  |
-| H12 | My assignment | Volunteering (SC-06) | 2 | To build | `apps/member-mobile/app/(member)/volunteer/` | Also lists M30 election duties |
-| H13 | Community ideas | Ideas and surveys (SC-07) | 2 | To build | `apps/member-mobile/app/(member)/ideas/` | Decided: one Ideas area with M15–M17 |
-| H14 | Take a survey | Ideas and surveys (SC-07) | 2 | To build | `apps/member-mobile/app/(member)/surveys/[id].tsx` |  |
-| H15 | Learning and courses | Learning (SC-08) | 2 | To build | `apps/member-mobile/app/(member)/learning/` |  |
-| H16 | Course lesson | Learning (SC-08) | 2 | To build | `apps/member-mobile/app/(member)/learning/[lesson].tsx` |  |
+| H05 | My area | Community issues (SC-05) | 2 | Built | `apps/member-mobile/app/(member)/issues/` | Behind `community_issues`; list view (no GN boundary data for a map); scorecard joins with M20 |
+| H06 | Local issue detail | Community issues (SC-05) | 2 | Built | `apps/member-mobile/app/(member)/issues/` |  |
+| H07 | Report a concern | Community issues (SC-05) | 2 | Built | `apps/member-mobile/app/(member)/issues/` |  |
+| H08 | Review report | Community issues (SC-05) | 2 | Built | `apps/member-mobile/app/(member)/issues/` |  |
+| H09 | Report receipt and progress | Community issues (SC-05) | 2 | Built | `apps/member-mobile/app/(member)/issues/` | Same screen as H06 (`issues/[id].tsx`); receipt with `receipt=1` |
+| H10 | Volunteer skills | Volunteering (SC-06) | 2 | API built | `apps/member-mobile/app/(member)/volunteer/` |  |
+| H11 | Volunteer opportunity | Volunteering (SC-06) | 2 | API built | `apps/member-mobile/app/(member)/volunteer/` |  |
+| H12 | My assignment | Volunteering (SC-06) | 2 | API built | `apps/member-mobile/app/(member)/volunteer/` | Also lists M30 election duties |
+| H13 | Community ideas | Ideas and surveys (SC-07) | 2 | API built | `apps/member-mobile/app/(member)/ideas/` | Decided: one Ideas area with M15–M17 |
+| H14 | Take a survey | Ideas and surveys (SC-07) | 2 | API built | `apps/member-mobile/app/(member)/surveys/[id].tsx` |  |
+| H15 | Learning and courses | Learning (SC-08) | 2 | API built | `apps/member-mobile/app/(member)/learning/` |  |
+| H16 | Course lesson | Learning (SC-08) | 2 | API built | `apps/member-mobile/app/(member)/learning/[lesson].tsx` |  |
 | H17 | Party fund contribution | Party fund (SC-09) | 2 | Built | `apps/member-mobile/app/(member)/fund/` | M1.4 bank slip intake |
 | H18 | Contribution receipt | Party fund (SC-09) | 2 | Built | `apps/member-mobile/app/(member)/fund/receipt/[id].tsx` | M1.4 verified receipt card |
-| H19 | Invite a member | Referrals (SC-10) | 2 | To build | `apps/member-mobile/app/(member)/referrals/invite.tsx` |  |
-| H20 | My referrals | Referrals (SC-10) | 2 | To build | `apps/member-mobile/app/(member)/referrals/` |  |
-| H21 | Survey submitted | Ideas and surveys (SC-07) | 2 | To build | `apps/member-mobile/app/(member)/surveys/[id]/done.tsx` |  |
+| H19 | Invite a member | Referrals (SC-10) | 2 | API built | `apps/member-mobile/app/(member)/referrals/invite.tsx` |  |
+| H20 | My referrals | Referrals (SC-10) | 2 | API built | `apps/member-mobile/app/(member)/referrals/` |  |
+| H21 | Survey submitted | Ideas and surveys (SC-07) | 2 | API built | `apps/member-mobile/app/(member)/surveys/[id]/done.tsx` |  |
 | E01 | Events list | Events (SC-11) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/events.tsx` |  |
 | E02 | Events map | Events (SC-11) | 1 | Built | `apps/member-mobile/app/(member)/events/[id].tsx` |  |
 | E03 | Event filters | Events (SC-11) | 1 | Built | `apps/member-mobile/app/(member)/events/[id].tsx` |  |
@@ -92,9 +92,9 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | M12 | Request support | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/assistance/` |  |
 | M13 | Support case status | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/assistance/` |  |
 | M14 | Support complaint or appeal | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/assistance/` |  |
-| M15 | Our Development Ideas / எமது அபிவிருத்தி யோசனைகள் | Development ideas (SC-24) | 2 | To build | `apps/member-mobile/app/(member)/ideas/proposals/` | Decided: shares the Ideas area with H13 |
-| M16 | Submit development proposal | Development ideas (SC-24) | 2 | To build | `apps/member-mobile/app/(member)/ideas/proposals/` | Decided: shares the Ideas area with H13 |
-| M17 | Proposal detail and stage | Development ideas (SC-24) | 2 | To build | `apps/member-mobile/app/(member)/ideas/proposals/` | Decided: shares the Ideas area with H13 |
+| M15 | Our Development Ideas / எமது அபிவிருத்தி யோசனைகள் | Development ideas (SC-24) | 2 | API built | `apps/member-mobile/app/(member)/ideas/proposals/` | Decided: shares the Ideas area with H13 |
+| M16 | Submit development proposal | Development ideas (SC-24) | 2 | API built | `apps/member-mobile/app/(member)/ideas/proposals/` | Decided: shares the Ideas area with H13 |
+| M17 | Proposal detail and stage | Development ideas (SC-24) | 2 | API built | `apps/member-mobile/app/(member)/ideas/proposals/` | Decided: shares the Ideas area with H13 |
 | M18 | Promise Tracker / வாக்குறுதி முன்னேற்றக் கண்காணிப்பு | Promise Tracker (SC-25) | 2 | To build | `apps/member-mobile/app/(member)/promises/` |  |
 | M19 | Promise detail | Promise Tracker (SC-25) | 2 | To build | `apps/member-mobile/app/(member)/promises/` |  |
 | M20 | Area accountability scorecard | Accountability scorecard (SC-26) | 2 | To build | `apps/member-mobile/app/(member)/promises/scorecard.tsx` |  |
@@ -160,12 +160,12 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 |---|---|---|---|---|---|---|
 | W01 | Verification queue | Verification and roles (SC-15) | 1 | Built | `apps/admin-web/src/app/(staff)/verification/page.tsx` | Scoped, filtered and paginated review queue |
 | W02 | Identity decision | Verification and roles (SC-15) | 1 | Built | `apps/admin-web/src/app/(staff)/verification/[id]/page.tsx` |  |
-| W03 | GN case file | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
-| W04 | DS research | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
-| W05 | District decision | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
-| W06 | Regional plan | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
-| W07 | Final approval | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
-| W08 | Implementation and closure | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
+| W03 | GN case file | Case workspaces (SC-16) | 2 | Built | `apps/admin-web/src/app/(staff)/cases/` | One case file page for W03 to W08 (`cases/[id]`), forms by stage and permission |
+| W04 | DS research | Case workspaces (SC-16) | 2 | Built | `apps/admin-web/src/app/(staff)/cases/` |  |
+| W05 | District decision | Case workspaces (SC-16) | 2 | Built | `apps/admin-web/src/app/(staff)/cases/` |  |
+| W06 | Regional plan | Case workspaces (SC-16) | 2 | Built | `apps/admin-web/src/app/(staff)/cases/` |  |
+| W07 | Final approval | Case workspaces (SC-16) | 2 | Built | `apps/admin-web/src/app/(staff)/cases/` |  |
+| W08 | Implementation and closure | Case workspaces (SC-16) | 2 | Built | `apps/admin-web/src/app/(staff)/cases/` |  |
 | W09 | Role, area and permission assignment | Verification and roles (SC-15) | 1 | Built | `apps/admin-web/src/app/(staff)/access/page.tsx` |  |
 | D01 | Admin home and work queues | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/page.tsx` | Area-scoped queues refresh each minute; community reports have filtered pagination, record detail, audited access and an immutable submission-area snapshot. |
 | D02 | Member and household administration | My Household (SC-22) | 2 | Built | `apps/admin-web/src/app/(staff)/members/` |  |
@@ -181,7 +181,7 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | D12 | Moderation and fact-check queue (GAP-07) | Official content and fact-checks (SC-41) | 2 | To build | `apps/admin-web/src/app/(staff)/moderation/` |  |
 | D13 | Assistance case management | Community Support (SC-23) | 2 | To build | `apps/admin-web/src/app/(staff)/assistance/` |  |
 | D14 | Assistance programmes and criteria | Community Support (SC-23) | 2 | To build | `apps/admin-web/src/app/(staff)/assistance/programmes/` |  |
-| D15 | Development proposal review | Development ideas (SC-24) | 2 | To build | `apps/admin-web/src/app/(staff)/development/` |  |
+| D15 | Development proposal review | Development ideas (SC-24) | 2 | API built | `apps/admin-web/src/app/(staff)/development/` |  |
 | D16 | Promise Tracker administration | Promise Tracker (SC-25) | 2 | To build | `apps/admin-web/src/app/(staff)/promises/` |  |
 | D17 | Scorecard publication | Accountability scorecard (SC-26) | 2 | To build | `apps/admin-web/src/app/(staff)/scorecards/` |  |
 | D18 | Town hall production and moderation | Town hall (SC-27) | 2 | To build | `apps/admin-web/src/app/(staff)/town-hall/` |  |

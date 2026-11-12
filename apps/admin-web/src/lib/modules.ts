@@ -23,6 +23,20 @@ export const builtModules: readonly AdminModule[] = [
   { href: '/audit', ta: 'தணிக்கைப் பதிவு', en: 'Audit log', permission: 'audit.view' },
   { href: '/access-reviews', ta: 'அணுகல் மீளாய்வு', en: 'Access reviews', permission: 'audit.view' },
   { href: '/reports', ta: 'சமூகப் புகார்கள்', en: 'Community reports', permission: 'reports.view' },
+  {
+    href: '/cases',
+    ta: 'சமூக விவகாரங்கள்',
+    en: 'Community cases',
+    permission: [
+      'cases.collect',
+      'cases.research',
+      'cases.decide_district',
+      'cases.plan_regional',
+      'cases.approve_executive',
+      'cases.implement_and_close',
+      'content.moderate',
+    ] as const,
+  },
   { href: '/members', ta: 'உறுப்பினர்களும் குடும்பங்களும்', en: 'Members and households', permission: 'household.view_for_case' },
   { href: '/elections', ta: 'தேர்தல் பயன்முறை', en: 'Election mode', permission: 'election.mode.manage' },
   { href: '/privacy', ta: 'தனியுரிமைக் கோரிக்கைகள்', en: 'Privacy requests', permission: 'privacy.requests.handle' },
@@ -37,7 +51,6 @@ export const builtModules: readonly AdminModule[] = [
 
 /** Planned modules in later phases with user-facing bilingual labels. */
 export const plannedModules = [
-  { name: 'Community cases', ta: 'சமூக விவகாரங்கள்', desc: 'Issue reporting and grievance resolution' },
   { name: 'Assistance case management', ta: 'உதவி விவகார மேலாண்மை', desc: 'Welfare and emergency assistance cases' },
   { name: 'Promise tracker and scorecards', ta: 'வாக்குறுதி கண்காணிப்பு', desc: 'Commitments and accountability scorecards' },
   { name: 'Town halls and participatory budgeting', ta: 'மக்கள் மன்றம் & வரவுசெலவுத் திட்டம்', desc: 'Deliberation and community voting' },
