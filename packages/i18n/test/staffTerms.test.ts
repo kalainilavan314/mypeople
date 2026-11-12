@@ -33,7 +33,7 @@ test('areas show their names, Tamil first when there is one, and their code when
   ]);
   assert.equal(areaName({ level: 'district', code: 'LK41' }, names, 'ta'), 'யாழ்ப்பாணம் மாவட்டம்');
   assert.equal(areaName('district:LK41', names, 'en'), 'Jaffna district');
-  assert.equal(areaName('gn:LK4136085', names, 'ta'), 'Maruthady கிராம அலுவலர் பிரிவு');
+  assert.equal(areaName('gn:LK4136085', names, 'ta'), 'Maruthady கிராம சேவகர் பிரிவு');
   assert.equal(areaName({ level: 'platform', code: null }, names, 'en'), 'Platform-wide');
   assert.equal(areaName('ds:LK4103', names, 'en'), 'DS division LK4103');
   assert.equal(areaName('district:LK41', undefined, 'en'), 'district LK41');

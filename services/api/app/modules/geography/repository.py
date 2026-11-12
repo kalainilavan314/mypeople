@@ -69,8 +69,9 @@ _LEVEL_TABLES = {
     "gn": ("geo.gn_division", "gn_code"),
 }
 
-# Some Tamil district and province names in the registry end in the level word, cut short in the
-# source data ("யாழ்ப்பாணம் மாவட்"). Screens add the level word themselves, so it is removed here.
+# The Tamil district and province names in the registry end in the level word ("யாழ்ப்பாணம்
+# மாவட்டம்"; Alembic 0031 completed the ones the import cut short). Screens add the level word
+# themselves, so it is removed here.
 _TAMIL_LEVEL_WORD = {"district": re.compile(r"\s*மாவ\S*$"), "province": re.compile(r"\s*மாகாண\S*$")}
 
 
