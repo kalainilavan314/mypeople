@@ -116,9 +116,11 @@ def test_a_service_behind_an_off_module_switch_shows_as_not_open(database_settin
     member = create_member(verified=True, active=True)
     db_session.execute(text("UPDATE ops.feature_flag SET enabled = false WHERE key = 'community_finance'"))
 
-    hub = {item["key"]: item for item in enforced.get("/v1/home", headers=auth(member)).json()["hub"]["services"]}
+    home = enforced.get("/v1/home", headers=auth(member)).json()
+    hub = {item["key"]: item for item in home["hub"]["services"]}
     assert (hub["party_fund"]["available"], hub["party_fund"]["reason"]) == (False, "not_open")
-    assert hub["learning"]["available"] is True  # services without a switch are unchanged
+    # Features without a switch are unchanged (every hub service now has one).
+    assert {a["key"]: a["available"] for a in home["quickActions"]}["community"] is True
 
     db_session.execute(
         # A switch can only be on once its phase gate is recorded (feature_flag_enabled_needs_gate).
