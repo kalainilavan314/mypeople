@@ -192,7 +192,8 @@ def insert_assignment(
     return stored
 
 
-def revoke_assignment(db: Session, assignment_id: uuid.UUID, ended_by: uuid.UUID, reason: str) -> StoredAssignment:
+def revoke_assignment(db: Session, assignment_id: uuid.UUID, ended_by: uuid.UUID | None, reason: str) -> StoredAssignment:
+    # ended_by is None only for a server command, which has no member behind it.
     db.execute(
         text(
             """
@@ -265,6 +266,12 @@ def tally_denial(db: Session, actor_id: uuid.UUID, permission: str, reason: str,
         key,
     )
     return None
+
+
+def active_super_administrator_assignments(db: Session) -> list[StoredAssignment]:
+    """Every active Tier 5 assignment (the BRD has one Super Administrator position)."""
+    rows = db.execute(text(f"{_SELECT} WHERE tier = '5' AND state = 'active' ORDER BY granted_at")).all()
+    return [to_assignment(row) for row in rows]
 
 
 def has_active_super_administrator(db: Session) -> bool:

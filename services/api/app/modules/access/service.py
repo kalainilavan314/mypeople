@@ -14,7 +14,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.modules.access import repository, rules, schemas
-from app.core.permissions import Tier, default_permissions, grant_for
+from app.core.permissions import MATRIX, Tier, default_permissions, grant_for
 from app.modules.access.repository import StoredAssignment
 from app.modules.access.rules import Area, AreaPath, AssignmentRequest, Grantee
 from app.modules.audit import service as audit
@@ -302,6 +302,63 @@ def bootstrap_super_administrator(db: Session, member_id: uuid.UUID, extra_permi
         target_id=str(assignment.id),
         area_path=(rules.PLATFORM,),
         details={"memberId": str(member_id), "permissions": sorted(permissions)},
+    )
+    db.commit()
+    return assignment
+
+
+
+def grant_every_tier5_permission(db: Session, member_id: uuid.UUID) -> StoredAssignment:
+    """Give the Super Administrator every permission Tier 5 may hold (the owner's decision, 12 November 2026).
+
+    Like the bootstrap, this is a server command: Tier 5 has nobody above it to grant it. If nobody
+    holds Tier 5 yet, it is the bootstrap with every explicit Tier 5 permission. If this member is the
+    Super Administrator, their Tier 5 assignment ends and a new one with all of them takes its place, so
+    the history keeps both. Refused if someone else holds the position (the BRD has one), the identity
+    is not verified, or the membership is suspended or inactive. Permissions the BRD gives only to other
+    tiers are not included; per-record rules (nobody decides their own appeal) still apply.
+    """
+    tier: Tier = "5"
+    every = frozenset(code for code, tiers in MATRIX.items() if tier in tiers)
+    holders = repository.active_super_administrator_assignments(db)
+    if not holders:
+        explicit = sorted(code for code in every if grant_for(code, tier) == "explicit")
+        return bootstrap_super_administrator(db, member_id, explicit)
+    if any(held.member_id != member_id for held in holders):
+        raise AssignmentRefused(["super_administrator_exists"])
+    status = repository.find_member_status(db, member_id)
+    if status is None or not status.identity_verified:
+        raise AssignmentRefused(["identity_not_verified"])
+    if status.membership_state in ("suspended", "inactive"):
+        raise AssignmentRefused(["membership_not_active"])
+
+    reason = "Replaced by the server command that grants every Tier 5 permission"
+    for held in holders:
+        repository.revoke_assignment(db, held.id, None, reason)
+    now = datetime.now(UTC)
+    assignment = repository.insert_assignment(
+        db,
+        member_id=member_id,
+        tier=tier,
+        area=rules.PLATFORM,
+        permissions=every,
+        granted_by=None,
+        granted_at=now,
+        review_due_at=rules.review_due(tier, now),
+        note="Every Tier 5 permission, granted by server command (owner's decision, 12 November 2026)",
+    )
+    audit.record(
+        db,
+        actor_id=None,
+        action="access.assignment.widened",
+        target_type="staff_assignment",
+        target_id=str(assignment.id),
+        area_path=(rules.PLATFORM,),
+        details={
+            "memberId": str(member_id),
+            "replaced": [str(held.id) for held in holders],
+            "permissions": sorted(every),
+        },
     )
     db.commit()
     return assignment
