@@ -188,7 +188,7 @@ export async function lintDirectory(dir) {
 // CLI runner
 if (process.argv[1] && resolve(process.argv[1]) === resolve(new URL(import.meta.url).pathname.replace(/^\/([A-Z]:)/, '$1'))) {
   const dirs = process.argv.slice(2);
-  const targetDirs = dirs.length > 0 ? dirs : ['apps/member-mobile', 'apps/staff-mobile'];
+  const targetDirs = dirs.length > 0 ? dirs : ['apps/member-mobile'];
 
   let totalViolations = 0;
   for (const dir of targetDirs) {

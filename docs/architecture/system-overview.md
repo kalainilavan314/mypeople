@@ -26,7 +26,7 @@ The BRD's target, and the folders that hold it:
 | Part | Technology | Folder | Status |
 |---|---|---|---|
 | Member app (Android, iOS) | React Native, Expo SDK 58, Expo Router | `apps/member-mobile` | Member screens on `/v1`: sign-in, registration, verification, Home, Events, Card, Gallery, Profile (Batch 21) |
-| Staff app | Separate Expo app, same shared packages (OD-26 pending) | `apps/staff-mobile` | Staff core on `/v1`: second factor, tasks, check-in, roster, approvals, alerts, member look-up (Batch 23) |
+| Staff section | Part of the member app (OD-26: one app, the owner's decision of 12 November 2026); shown only to people with a staff role, behind the authenticator code | `apps/member-mobile/app/(member)/staff` | Staff core on `/v1`: second factor, tasks, check-in, roster, approvals, alerts, member look-up (Batch 23) |
 | Admin dashboard | Next.js 16, Tailwind CSS 4 | `apps/admin-web` | Verification, appeals, duplicates, membership, roles and audit on `/v1` (Batch 22); live at https://admin.tmk.lk since 12 Nov 2026 |
 | API | FastAPI modular monolith, SQLAlchemy 2, Alembic | `services/api` | Live on the production server at `/v1` since 10 Nov 2026; v1.1 modules off until Gate G1 |
 | Background jobs | systemd timer commands (no Redis/Celery) | `services/api/app/tasks` | Notification dispatcher built; install with the FastAPI go-live runbook |
@@ -61,7 +61,7 @@ Each module in `services/api/app/modules/` has a thin `router.py` (HTTP, permiss
 
 ## Decisions still open
 
-These BRD open decisions affect the next batches: OD-26 (one app or two), OD-01 and OD-02 (who verifies identity and activates membership), OD-03 (document retention), OD-28 (biometric processing), OD-42 (AI provider and hosting) and OD-20 (hosting location). See BRD §22.
+These BRD open decisions affect the next batches: OD-01 and OD-02 (who verifies identity and activates membership), OD-03 (document retention), OD-28 (biometric processing), OD-42 (AI provider and hosting) and OD-20 (hosting location). See BRD §22.
 
 ## Related documents
 

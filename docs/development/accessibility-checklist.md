@@ -2,7 +2,7 @@
 
 **Document ID:** MP-A11Y-001
 **Standard:** W3C Web Content Accessibility Guidelines (WCAG) 2.2 Level AA
-**Scope:** My People Platform — Member Mobile (`apps/member-mobile`), Staff Mobile (`apps/staff-mobile`), Admin Web (`apps/admin-web`), and Shared Mobile UI (`packages/mobile-ui`).
+**Scope:** My People Platform — the app (`apps/member-mobile`, with its Staff section in `app/(member)/staff`), Admin Web (`apps/admin-web`), and Shared Mobile UI (`packages/mobile-ui`).
 **Status:** Canonical Acceptance Gate for Milestone 1.0 (Batch F2) and Gate G1.
 
 ---
@@ -19,7 +19,7 @@ Every screen, dialog, and shared component across all three client applications 
 
 ### 1.2 Language Presentation Invariants
 * **Admin Web (`apps/admin-web`):** English-only interface per developer specification. All accessible names, button labels, validation messages, and ARIA attributes must be rendered in English.
-* **Member & Staff Mobile (`apps/member-mobile`, `apps/staff-mobile`):** Strict Tamil-first presentation where bilingual labels appear:
+* **The app, member screens and Staff section (`apps/member-mobile`):** Strict Tamil-first presentation where bilingual labels appear:
   * Primary Tamil text on top (`lang="ta"`).
   * Supporting English label directly beneath in secondary tone (`lang="en"`).
   * When single-language mode is selected, all accessible labels and status cues must match the active locale.

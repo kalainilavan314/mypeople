@@ -63,7 +63,7 @@ python -m pip install -e ".[dev]"
 | Express API | `npm run dev:api` | http://localhost:8787/api/health |
 | FastAPI | `uvicorn app.main:create_app --factory --reload --port 8000` (in `services/api`) | http://localhost:8000/v1/health, docs at `/docs` |
 | Member app (Expo web) | `npm run web --workspace @my-people/member-mobile -- --port 8081` | http://localhost:8081 |
-| Staff app (Expo web) | `npm run web --workspace @my-people/staff-mobile -- --port 8082` | http://localhost:8082 |
+| Staff section (same app) | Sign in with an account that holds a staff role, then Home or Profile, Staff section | http://localhost:8081/staff |
 | Admin dashboard (Next.js) | `npm run dev --workspace @my-people/admin-web` | http://localhost:3000 (reads `API_URL` from `apps/admin-web/.env.local`) |
 
 The Expo apps read `EXPO_PUBLIC_API_URL` from `apps/<app>/.env.local` (copy `.env.example`). On a phone, use `npm run android` or `ios` with Expo Go and the computer's LAN address as the API URL. In development the API accepts calls from any `http://localhost` port (CORS); production allows only `ALLOWED_ORIGINS`.

@@ -18,8 +18,7 @@ packages/
   api-client/         typed /v1 client generated from OpenAPI
   mobile-ui/          shared React Native components and the locked fonts
 apps/
-  member-mobile/      Expo member app (shell: five tabs, API connection check)
-  staff-mobile/       Expo staff app (shell)
+  member-mobile/      Expo app for members, with the Staff section for people with a staff role
   admin-web/          Next.js admin dashboard (shell: live API status; not for deployment)
 docs/                 requirements, architecture, api, database, ai-ml, security, policies, development
 deployment/           release scripts (production), nginx/, docker-compose.dev.yml, environments/, monitoring/

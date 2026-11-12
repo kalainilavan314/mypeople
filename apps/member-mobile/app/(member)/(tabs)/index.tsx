@@ -26,6 +26,7 @@ import { EventRow } from '@/features/events/EventRow';
 import { FeatureTile } from '@/features/home/FeatureTile';
 import { MemberCardPreview } from '@/features/home/MemberCardPreview';
 import { StatusNotice } from '@/features/home/StatusNotice';
+import { useHasStaffRole } from '@/features/staff/useHasStaffRole';
 import { api } from '@/lib/api';
 import { chooseLanguage } from '@/lib/i18n';
 
@@ -86,6 +87,7 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
   const active = data.layout === 'active';
   const next = data.nextStep;
   const notice = pendingNotice(data);
+  const staff = useHasStaffRole();
 
   return (
     <>
@@ -143,6 +145,16 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
             </AppText>
           ) : null}
           <Button label={t('m.home.openStep')} onPress={() => router.push(nextStepRoute(next))} />
+        </SurfaceCard>
+      ) : null}
+
+      {/* Only for people with a staff role; the section asks for the authenticator code (OD-26). */}
+      {staff ? (
+        <SurfaceCard onPress={() => router.push('/staff')} accessibilityLabel={t('m.home.staffSection')}>
+          <AppText step="card">{t('m.home.staffSection')}</AppText>
+          <AppText step="secondary" tone="secondary">
+            {t('m.home.staffSectionBody')}
+          </AppText>
         </SurfaceCard>
       ) : null}
 

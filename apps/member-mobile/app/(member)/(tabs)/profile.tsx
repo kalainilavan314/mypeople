@@ -21,6 +21,7 @@ import {
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
+import { useHasStaffRole } from '@/features/staff/useHasStaffRole';
 import { api } from '@/lib/api';
 import { chooseLanguage } from '@/lib/i18n';
 
@@ -47,6 +48,7 @@ export default function ProfileScreen() {
   const { signOut } = useSession();
   const profile = useApiQuery(() => api().getProfile());
   useReloadOnFocus(profile.reload);
+  const staff = useHasStaffRole();
 
   return (
     <Screen edges={[]} onRefresh={profile.reload} refreshing={profile.loading && profile.data !== undefined}>
@@ -94,6 +96,9 @@ export default function ProfileScreen() {
         <MenuRow icon="people-outline" label={t('m.profile.hub')} onPress={() => router.push('/hub')} />
         <MenuRow icon="map-outline" label={t('m.profile.myArea')} onPress={() => router.push('/profile/area')} />
         <MenuRow icon="home-outline" label={t('m.household.title')} onPress={() => router.push('/household')} />
+        {staff ? (
+          <MenuRow icon="briefcase-outline" label={t('m.profile.staffSection')} onPress={() => router.push('/staff')} />
+        ) : null}
       </SurfaceCard>
 
       <SurfaceCard style={styles.group}>

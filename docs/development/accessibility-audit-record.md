@@ -12,7 +12,7 @@ The Phase 1 plan records 54 implemented screens: 38 member, 7 staff and 9 admin.
 | Surface | Plan's implemented baseline | Candidate audit entries | Screen-level result |
 |---|---|---|---|
 | **Member Mobile App** (`apps/member-mobile`) | 38 | 50 | Pending |
-| **Staff Mobile App** (`apps/staff-mobile`) | 7 | 8 | Pending |
+| **Staff section** (`apps/member-mobile/app/(member)/staff`, the staff app until 12 November 2026) | 7 | 8 | Pending |
 | **Admin Web Dashboard** (`apps/admin-web`) | 9 | 16 (includes shell) | Pending |
 | **Total** | **54** | **74 entries** | **No screen-level pass claimed** |
 

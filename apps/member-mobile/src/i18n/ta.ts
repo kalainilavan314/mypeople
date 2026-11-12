@@ -298,6 +298,8 @@ export const ta: AppStrings = {
     goHome: 'முகப்புக்குச் செல்',
   },
   home: {
+    staffSection: 'பணியாளர் பகுதி',
+    staffSectionBody: 'உங்கள் பொறுப்புக்கான பணிகள், வருகைப் பதிவு, அனுமதிகள், உறுப்பினர் தேடல்.',
     greetingMorning: 'காலை வணக்கம்',
     greetingAfternoon: 'மதிய வணக்கம்',
     greetingEvening: 'மாலை வணக்கம்',
@@ -475,6 +477,7 @@ export const ta: AppStrings = {
     state_kept: 'வைத்திருக்கப்பட்டது',
   },
   profile: {
+    staffSection: 'பணியாளர் பகுதி',
     policies: 'கொள்கைகளும் ஒப்புதலும்',
     noPolicies: 'உங்கள் நடவடிக்கை தேவைப்படும் தற்போதைய கொள்கை இல்லை.',
     policyVersion: 'பதிப்பு {{version}}',

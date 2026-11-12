@@ -10,7 +10,7 @@ server/               live Express API (/api) and migrations 0000-0011 - product
 services/api/         FastAPI modular monolith (/v1), Alembic, pytest, Dockerfile
 services/ai-worker/   private AI worker: one folder per task, not built yet (README in each)
 packages/             design-tokens, i18n, api-client, mobile-ui (npm workspaces)
-apps/                 member-mobile and staff-mobile (Expo shells); admin-web (Next.js shell)
+apps/                 member-mobile (Expo: members, and the Staff section under app/(member)/staff); admin-web (Next.js shell)
 docs/                 requirements, architecture, api, database, ai-ml, security, policies, development
 deployment/           release scripts (production), nginx/, docker-compose.dev.yml, environments/, monitoring/
 design/               wireframes/, mobile/ (PWA design system and QA), admin-dashboard/
@@ -677,19 +677,6 @@ apps/
       components/  hooks/  providers/
                            README only in each
     assets/images/
-  staff-mobile/
-    package.json  app.json  tsconfig.json  .env.example  README.md
-    app/
-      _layout.tsx          signed-out and staff groups; staff screens need the second factor
-      (auth)/              sign-in
-      (staff)/             everything here needs a staff session with MFA
-        (tabs)/            index (tasks)  check-in  approvals  alerts  profile
-        card-check  lookup  checkin/  roster/
-        field-visits/  assisted-verification/
-                           README only in each: not built yet
-    src/
-      lib/
-        api.ts
         i18n.ts            includes staff tab labels (Tamil pending review)
       features/  components/
                            README only in each
