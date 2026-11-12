@@ -23,10 +23,10 @@ jobs:
       matrix:
         include:
           - app: member-mobile
-            api: https://app.178.128.126.35.nip.io
+            api: https://app.tmk.lk
             file: my-people-member.apk
           - app: staff-mobile
-            api: https://staff.178.128.126.35.nip.io
+            api: https://staff.tmk.lk
             file: my-people-staff.apk
     steps:
       - uses: actions/checkout@v4
