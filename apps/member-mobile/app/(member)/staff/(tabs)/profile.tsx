@@ -48,7 +48,7 @@ export default function RoleScreen() {
       </AppText>
       {assignments.map((assignment) => (
         <SurfaceCard key={assignment.id}>
-          <AppText step="card">{`${tierLabel(assignment)} · ${areaLabel(assignment, areaNames, language)}`}</AppText>
+          <AppText step="card">{`${tierLabel(assignment, language)} · ${areaLabel(assignment, areaNames, language)}`}</AppText>
           {assignment.reviewDueAt ? (
             <AppText step="secondary" tone="muted">
               {t('s.profile.reviewDue', { date: formatDate(assignment.reviewDueAt, language) })}

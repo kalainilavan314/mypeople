@@ -2,7 +2,7 @@
 
 The coordinators' and caseworkers' screens (BRD §11.30, screens S01–S18) inside the My People app. The owner decided on 12 November 2026 to publish one role-aware app instead of a separate staff app (OD-26), so a staff member installs the same app as every member and signs in with the same account.
 
-- **Who sees it:** Home and Profile show a "Staff section" entry only when `GET /v1/access/me` returns a role that counts now (`useHasStaffRole`). Reading one's own roles needs no authenticator code.
+- **Who sees it:** a member registers as usual; once the team assigns a tier on the dashboard (Roles and access), Home and Profile show the tier ("Tier 3A · Jaffna district") and a "Staff section" entry, from `GET /v1/access/me` (`useMyStaffRoles`, `StaffRoleTags`). Reading one's own roles needs no authenticator code. Ending the role removes both.
 - **What it asks:** opening the section (`app/(member)/staff/_layout.tsx`) asks for the authenticator code in every session, setting the authenticator up the first time (`auth/MfaGate`). Without a role that counts now it explains why (`auth/NoRole`).
 - **What the API does:** checks the code and the role again on every staff request, so staff screens in a member's copy of the app grant nothing.
 - **Leaving:** every staff tab has a back button in its header, and the Role tab has a button, that returns to the member screens (`LeaveStaffButton`). Signing out stays on the member Profile, since it ends the whole app's session.
@@ -39,7 +39,8 @@ src/features/staff/
   areaLabel.ts         role and area names
   errors.ts            staff error messages ("s.errors.…")
   LeaveStaffButton.tsx back to the member screens
-  useHasStaffRole.ts   whether to show the entry on Home and Profile
+  useMyStaffRoles.ts   the person's roles, for the tier tags and the entry on Home and Profile
+  StaffRoleTags.tsx    "Tier 3A · Jaffna district" on Home and Profile
 src/providers/StaffProvider.tsx   roles and permissions inside the section
 src/i18n/staff/                   the section's Tamil and English text ("s.…")
 ```

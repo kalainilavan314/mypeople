@@ -48,7 +48,7 @@ export default function StaffHomeScreen() {
   return (
     <Screen edges={[]} onRefresh={reload} refreshing={reviews.loading || approvals.loading}>
       {assignments.map((assignment) => (
-        <StatusTag key={assignment.id} tone="neutral" label={t('s.home.roleIn', { tier: tierLabel(assignment), area: areaLabel(assignment, areaNames, language) })} />
+        <StatusTag key={assignment.id} tone="neutral" label={t('s.home.roleIn', { tier: tierLabel(assignment, language), area: areaLabel(assignment, areaNames, language) })} />
       ))}
 
       {reviews.data ? (

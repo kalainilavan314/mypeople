@@ -26,7 +26,8 @@ import { EventRow } from '@/features/events/EventRow';
 import { FeatureTile } from '@/features/home/FeatureTile';
 import { MemberCardPreview } from '@/features/home/MemberCardPreview';
 import { StatusNotice } from '@/features/home/StatusNotice';
-import { useHasStaffRole } from '@/features/staff/useHasStaffRole';
+import { StaffRoleTags } from '@/features/staff/StaffRoleTags';
+import { useMyStaffRoles } from '@/features/staff/useMyStaffRoles';
 import { api } from '@/lib/api';
 import { chooseLanguage } from '@/lib/i18n';
 
@@ -87,7 +88,8 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
   const active = data.layout === 'active';
   const next = data.nextStep;
   const notice = pendingNotice(data);
-  const staff = useHasStaffRole();
+  const roles = useMyStaffRoles();
+  const staff = roles.assignments.length > 0;
 
   return (
     <>
@@ -152,6 +154,9 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
       {staff ? (
         <SurfaceCard onPress={() => router.push('/staff')} accessibilityLabel={t('m.home.staffSection')}>
           <AppText step="card">{t('m.home.staffSection')}</AppText>
+          <View style={styles.tags}>
+            <StaffRoleTags roles={roles} />
+          </View>
           <AppText step="secondary" tone="secondary">
             {t('m.home.staffSectionBody')}
           </AppText>
@@ -231,6 +236,7 @@ const styles = StyleSheet.create({
   dot: { position: 'absolute', top: 9, right: 10, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.error },
   sectionTitle: { marginTop: spacing[2] },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
+  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
   sectionRow: { flexDirection: 'row', alignItems: 'center', marginTop: spacing[2] },
   flex: { flex: 1 },
   locked: {

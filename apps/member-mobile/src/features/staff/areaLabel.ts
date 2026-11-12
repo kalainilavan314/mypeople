@@ -6,7 +6,7 @@ export function areaLabel(assignment: Assignment, names: AreaNames | undefined, 
   return areaName(assignment.area, names, language);
 }
 
-/** "Tier 3A": the BRD's names for the tiers are on the dashboard; the app shows the tier. */
-export function tierLabel(assignment: Assignment): string {
-  return `Tier ${assignment.tier}`;
+/** "Tier 3A" / "நிலை 3A": the BRD's names for the tiers are on the dashboard; the app shows the tier. */
+export function tierLabel(assignment: Assignment, language?: StaffLanguage): string {
+  return language === 'ta' ? `நிலை ${assignment.tier}` : `Tier ${assignment.tier}`;
 }

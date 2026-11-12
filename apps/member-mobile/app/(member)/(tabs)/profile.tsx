@@ -21,7 +21,8 @@ import {
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
-import { useHasStaffRole } from '@/features/staff/useHasStaffRole';
+import { StaffRoleTags } from '@/features/staff/StaffRoleTags';
+import { useMyStaffRoles } from '@/features/staff/useMyStaffRoles';
 import { api } from '@/lib/api';
 import { chooseLanguage } from '@/lib/i18n';
 
@@ -48,7 +49,8 @@ export default function ProfileScreen() {
   const { signOut } = useSession();
   const profile = useApiQuery(() => api().getProfile());
   useReloadOnFocus(profile.reload);
-  const staff = useHasStaffRole();
+  const roles = useMyStaffRoles();
+  const staff = roles.assignments.length > 0;
 
   return (
     <Screen edges={[]} onRefresh={profile.reload} refreshing={profile.loading && profile.data !== undefined}>
@@ -76,6 +78,8 @@ export default function ProfileScreen() {
                 ) : null}
                 <View style={styles.tags}>
                   <StatusTag tone={MEMBERSHIP_TONE[data.membershipState]} label={t(`m.home.membership_${data.membershipState}`)} />
+                  {/* The tier the team assigned, as soon as it counts (OD-26: one app for members and staff). */}
+                  <StaffRoleTags roles={roles} />
                   {data.identityState === 'verified' ? null : (
                     <StatusTag
                       tone={IDENTITY_TONE[data.identityState]}
