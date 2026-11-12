@@ -16,6 +16,7 @@ export const builtModules: readonly AdminModule[] = [
   { href: '/gallery', ta: 'புகைப்படங்கள் & நீக்கங்கள்', en: 'Gallery console', permission: ['gallery.publish', 'gallery.takedown'] as const },
   { href: '/messages', ta: 'அறிவித்தல்கள் & செய்திகள்', en: 'Messaging composer', permission: 'notifications.send' },
   { href: '/policy-decisions', ta: 'கொள்கை முடிவுகள்', en: 'Policy decisions', permission: 'system.configure' },
+  { href: '/finance-readiness', ta: 'நிதி தயார்நிலை', en: 'Finance production readiness', permission: 'system.configure' },
   { href: '/operations-governance', ta: 'செயல்பாடுகளும் நிர்வாகமும்', en: 'Operations and governance', permission: 'system.configure' },
   { href: '/settings', ta: 'கணினி அமைப்புகள்', en: 'Settings & registry', permission: 'system.configure' },
   { href: '/access', ta: 'பொறுப்புகளும் அனுமதிகளும்', en: 'Roles and access', permission: 'roles.assign' },

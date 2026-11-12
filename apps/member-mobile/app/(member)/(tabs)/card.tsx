@@ -1,11 +1,11 @@
+import { ApiError, type MemberCard } from '@my-people/api-client';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import type { MemberCard } from '@my-people/api-client';
 import { router, type Href } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
@@ -14,7 +14,6 @@ import {
   formatDateTime,
   Notice,
   Screen,
-  StatusTag,
   SurfaceCard,
   clearOfflineCard,
   readOfflineCard,
@@ -72,7 +71,7 @@ export default function CardScreen() {
     return () => { active = false; };
   }, [unanswered, member.id]);
   return (
-    <Screen edges={[]} onRefresh={card.reload} refreshing={card.loading && card.data !== undefined}>
+    <Screen edges={[]} maxContentWidth={640} onRefresh={card.reload} refreshing={card.loading && card.data !== undefined}>
       {unanswered && offline ? (
         <>
           <OfflineCard preview={offline} />
@@ -92,13 +91,32 @@ function Field({ label, value, mono = false }: { label: string; value: string | 
   if (!value) return null;
   return (
     <View style={styles.field}>
-      <AppText step="caption" tone="inverse" style={styles.fieldLabel}>
+      <AppText step="caption" tone="inverse">
         {label}
       </AppText>
       <AppText step="body" tone="inverse" mono={mono}>
         {value}
       </AppText>
     </View>
+  );
+}
+
+function CardAction({ label, icon, divided = false, onPress }: {
+  label: string;
+  icon: 'share-outline' | 'time-outline';
+  divided?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={({ pressed }) => [styles.action, divided && styles.actionDivider, pressed && styles.actionPressed]}>
+      <Ionicons name={icon} size={20} color={colors.textSecondary} />
+      <AppText step="label" style={styles.actionLabel}>{label}</AppText>
+      <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+    </Pressable>
   );
 }
 
@@ -113,7 +131,7 @@ function AvailableCard({ card }: { card: MemberCard }) {
           <AppText step="label" tone="inverse">
             என் மக்கள் · My People
           </AppText>
-          <AppText step="caption" tone="inverse" style={styles.fieldLabel}>
+          <AppText step="caption" tone="inverse">
             {card.designation ? t('m.card.tier', { tier: card.designation }) : t('m.card.member')}
           </AppText>
         </View>
@@ -127,8 +145,14 @@ function AvailableCard({ card }: { card: MemberCard }) {
         </View>
         <Field label={t('m.card.since')} value={card.memberSince ? formatDate(card.memberSince, language) : null} />
         <View style={styles.verified}>
-          <StatusTag tone="verified" label={t('m.card.identityVerified')} />
-          <StatusTag tone="verified" label={t('m.card.membershipActive')} />
+          <View style={styles.verifiedItem}>
+            <Ionicons name="checkmark-circle" size={18} color={colors.onPrimary} />
+            <AppText step="caption" tone="inverse">{t('m.card.identityVerified')}</AppText>
+          </View>
+          <View style={styles.verifiedItem}>
+            <Ionicons name="checkmark-circle" size={18} color={colors.onPrimary} />
+            <AppText step="caption" tone="inverse">{t('m.card.membershipActive')}</AppText>
+          </View>
         </View>
       </View>
 
@@ -137,8 +161,11 @@ function AvailableCard({ card }: { card: MemberCard }) {
         icon="qr-code-outline"
         onPress={() => router.push('/card/code')}
       />
-      <Button label={t('m.card.progressTitle')} variant="secondary" onPress={() => router.push('/card/progress')} />
-      <Button label={t('m.card.shareTitle')} variant="secondary" onPress={() => router.push('/card/share' as Href)} />
+      <AppText step="section" accessibilityRole="header">{t('m.card.optionsTitle')}</AppText>
+      <SurfaceCard style={styles.actionList}>
+        <CardAction label={t('m.card.progressTitle')} icon="time-outline" onPress={() => router.push('/card/progress')} />
+        <CardAction label={t('m.card.shareTitle')} icon="share-outline" divided onPress={() => router.push('/card/share' as Href)} />
+      </SurfaceCard>
 
       {card.lastScannedAt ? (
         <AppText step="secondary" tone="muted">{`${t('m.card.lastScan')}: ${formatDateTime(card.lastScannedAt, language)}`}</AppText>
@@ -218,7 +245,12 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing[2] },
   field: { gap: 2, flex: 1 },
-  fieldLabel: { color: colors.inputBorder }, // #CBD5E1 on navy, the spec's metadata colour (§2)
   row: { flexDirection: 'row', gap: spacing[3] },
   verified: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
+  verifiedItem: { flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
+  actionList: { padding: 0, gap: 0, overflow: 'hidden' },
+  action: { minHeight: control.touchMin + spacing[3], flexDirection: 'row', alignItems: 'center', gap: spacing[3], padding: spacing[3] },
+  actionDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
+  actionPressed: { backgroundColor: colors.surfaceVariant },
+  actionLabel: { flex: 1 },
 });

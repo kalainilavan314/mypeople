@@ -1,7 +1,7 @@
 import type { EffectiveGovernancePolicy, NotificationChoices } from '@my-people/api-client';
+import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import Constants from 'expo-constants';
 import { StyleSheet, Switch, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +10,7 @@ import { colors, spacing } from '@my-people/design-tokens/mobile';
 import {
   AppText,
   Button,
-  LanguageToggle,
+  ChipRow,
   MenuRow,
   Notice,
   Screen,
@@ -19,44 +19,37 @@ import {
   useApiAction,
   useApiQuery,
   useLanguage,
-  useSession,
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
-import { chooseLanguage } from '@/lib/i18n';
+import { chooseLanguage, type AppLanguage } from '@/lib/i18n';
 
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 
-/**
- * P04 and P05 with M45 (SMS part): the app's language, and how each kind of
- * message reaches the member — push and SMS per topic, quiet hours, and the
- * confirmed number texts go to (FR-PROF-012, FR-STF-009, FR-MSG-002, 004).
- * The API saves the SMS choices, but nothing is texted until an SMS vendor
- * is contracted (INT-01), so the screen says so rather than imply delivery.
- */
+/** P04 and P05: the app's language, and push and SMS per topic with quiet hours (FR-PROF-012, FR-STF-009). */
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const language = useLanguage();
-  const { signOut } = useSession();
   const choices = useApiQuery(() => api().getNotificationChoices());
   const policies = useApiQuery(() => api().listMyGovernancePolicies(), [language]);
   return (
-    <Screen edges={['bottom']}>
-      <SurfaceCard style={styles.group}>
-        <MenuRow
-          first
-          icon="language-outline"
-          label={t('m.profile.language')}
-          trailing={<LanguageToggle value={language} onChange={(next) => void chooseLanguage(next)} label={t('m.profile.language')} />}
-        />
-      </SurfaceCard>
-      <AppText step="body" tone="muted" accessibilityRole="header">
-        {t('m.profile.channelsTitle')}
+    <Screen edges={['bottom']} maxContentWidth={720}>
+      <AppText step="section" accessibilityRole="header">
+        {t('m.profile.language')}
       </AppText>
-      <AppText step="secondary" tone="muted">
-        {t('m.profile.channelsHint')}
+      <ChipRow<AppLanguage>
+        label={t('m.profile.language')}
+        selected={language}
+        onSelect={(next) => void chooseLanguage(next)}
+        options={[
+          { key: 'ta', label: 'தமிழ்' },
+          { key: 'en', label: 'English' },
+        ]}
+      />
+      <AppText step="section" accessibilityRole="header">
+        {t('m.profile.notifications')}
       </AppText>
       <QueryView query={choices}>{(data) => <ChoicesForm initial={data} />}</QueryView>
       <ChannelsCard />
@@ -64,12 +57,10 @@ export default function SettingsScreen() {
         {t('m.profile.policies')}
       </AppText>
       <QueryView query={policies}>{(data) => <PolicyChoices items={data} reload={policies.reload} />}</QueryView>
-      <SurfaceCard style={styles.group}>
-        <MenuRow first icon="lock-closed-outline" label={t('m.profile.privacyConsent')} onPress={() => router.push('/profile/privacy')} />
-        <MenuRow icon="key-outline" label={t('m.profile.passwordRecovery')} onPress={() => router.push('/profile/security')} />
-        <MenuRow icon="text-outline" label={t('m.accessibility.title')} onPress={() => router.push('/profile/accessibility')} />
+      {/* M44: text size and data saver. Privacy, security and signing out are on Profile. */}
+      <SurfaceCard>
+        <MenuRow first icon="text-outline" label={t('m.accessibility.title')} onPress={() => router.push('/profile/accessibility')} />
       </SurfaceCard>
-      <Button label={t('m.common.signOut')} variant="danger" icon="log-out-outline" onPress={() => void signOut()} />
       <AppText step="caption" tone="muted" style={styles.version}>
         {t('m.profile.versionLine', { version: Constants.expoConfig?.version ?? '' })}
       </AppText>
@@ -138,7 +129,7 @@ function PolicyChoices({ items, reload }: { items: EffectiveGovernancePolicy[]; 
         /> : null}
       </SurfaceCard>;
     })}
-    {action.error ? <Notice tone="error">{errorMessage(t, action.error)}</Notice> : null}
+    {action.error ? <Notice tone="error">{t('m.errors.unknown')}</Notice> : null}
   </>;
 }
 
@@ -168,11 +159,11 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
 
   return (
     <>
-      <SurfaceCard style={styles.group}>
+      <SurfaceCard style={styles.topicList}>
         {topics.map((item, index) => (
-          <View key={item.topic} style={[styles.topic, index > 0 && styles.topicRule]}>
+          <View key={item.topic} style={[styles.topic, index > 0 && styles.topicDivider]}>
             <View style={styles.topicLabel}>
-              <AppText step="card" weight={400}>{t(`m.profile.topic_${item.topic}`)}</AppText>
+              <AppText step="label">{t(`m.profile.topic_${item.topic}`)}</AppText>
               {item.locked ? (
                 <AppText step="caption" tone="muted">
                   {t('m.profile.lockedTopic')}
@@ -189,8 +180,7 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
                   disabled={item.locked}
                   onValueChange={(value) => toggle(item.topic, channel, value)}
                   accessibilityLabel={`${t(`m.profile.topic_${item.topic}`)}: ${channel === 'push' ? t('m.profile.pushLabel') : t('m.profile.smsLabel')}`}
-                  trackColor={{ true: colors.switchOn, false: colors.inputBorder }}
-                  thumbColor={colors.card}
+                  trackColor={{ true: colors.success, false: colors.inputBorder }}
                 />
               </View>
             ))}
@@ -228,10 +218,10 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
 }
 
 const styles = StyleSheet.create({
-  group: { paddingVertical: spacing[1] },
+  topicList: { padding: 0, gap: 0, overflow: 'hidden' },
   version: { textAlign: 'center' },
-  topic: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], minHeight: 56, paddingVertical: spacing[2] },
-  topicRule: { borderTopWidth: 1, borderTopColor: colors.divider },
+  topic: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], minHeight: 64, padding: spacing[3] },
+  topicDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
   topicLabel: { flex: 1 },
   channel: { alignItems: 'center', gap: 2 },
   quiet: { flexDirection: 'row', gap: spacing[3] },

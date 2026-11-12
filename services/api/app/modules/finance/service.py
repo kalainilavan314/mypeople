@@ -10,17 +10,23 @@ from uuid import UUID, uuid4
 
 import jwt
 from pydantic import SecretStr
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
 from app.modules.access.service import Staff
 from app.modules.audit import service as audit
+from app.modules.features import repository as feature_repository
 from app.modules.finance import images, repository, rules, vault
 from app.modules.finance.scanner import MalwareScanner
 from app.modules.finance.schemas import (
     ContributionCreateRequest,
     ContributionDetailResponse,
     FundConfigResponse,
+    FinanceProductionControlRequest,
+    FinanceProductionControlResponse,
+    FinanceProductionReadinessResponse,
+    FinanceReadinessCheck,
     ReceiptResponse,
     StaffApproveRequest,
     StaffContributionDetail,
@@ -34,6 +40,7 @@ from app.modules.finance.schemas import (
     TimelineEventResponse,
 )
 from app.modules.messaging.notifications import service as notifications
+from app.modules.policy_decisions import repository as decision_repository
 
 VIEW_TOKEN_ALGORITHM = "HS256"
 VIEW_TOKEN_TTL_SECONDS = 300  # 5 minutes
@@ -93,9 +100,230 @@ class ReceiptNotIssued(FinanceError):
     pass
 
 
-def get_config(settings: Settings) -> FundConfigResponse:
+class FinanceControlRefused(FinanceError):
+    pass
+
+
+def _control_response(row: Any) -> FinanceProductionControlResponse:
+    return FinanceProductionControlResponse(
+        id=row["id"],
+        controlKey=row["control_key"],
+        decisionKey=row["decision_key"],
+        decisionRevisionId=row["decision_revision_id"],
+        decisionRevision=row["decision_revision"],
+        integerValue=row["integer_value"],
+        textValue=row["text_value"],
+        evidenceRef=row["evidence_ref"],
+        reason=row["reason"],
+        recordedAt=row["recorded_at"],
+    )
+
+
+def record_production_control(
+    db: Session,
+    staff: Staff,
+    req: FinanceProductionControlRequest,
+    *,
+    ip: str | None = None,
+) -> FinanceProductionControlResponse:
+    problem = rules.production_control_problem(req.control_key, req.integer_value, req.text_value)
+    if problem:
+        raise FinanceControlRefused(problem)
+
+    expected_decision = rules.PRODUCTION_CONTROLS[req.control_key]
+    latest = decision_repository.latest_revisions(db).get(expected_decision)
+    if latest is None or latest.id != req.decision_revision_id or latest.status != "approved":
+        raise FinanceControlRefused("approved_current_decision_required")
+
+    try:
+        row = repository.insert_production_control(
+            db,
+            control_key=req.control_key,
+            decision_revision_id=req.decision_revision_id,
+            integer_value=req.integer_value,
+            text_value=req.text_value,
+            evidence_ref=req.evidence_ref.strip(),
+            reason=req.reason.strip(),
+            recorded_by=staff.member_id,
+        )
+    except IntegrityError:
+        db.rollback()
+        raise FinanceControlRefused("control_already_recorded_for_decision") from None
+
+    audit.record(
+        db,
+        actor_id=staff.member_id,
+        action="finance.production_control_recorded",
+        target_type="finance_control",
+        target_id=req.control_key,
+        details={"controlKey": req.control_key, "decisionKey": expected_decision},
+        ip=ip,
+    )
+    db.commit()
+    return _control_response(row)
+
+
+def production_readiness(db: Session, settings: Settings) -> FinanceProductionReadinessResponse:
+    latest_decisions = decision_repository.latest_revisions(db)
+    stored_controls = repository.latest_production_controls(db)
+    reviewer_count, approver_count, distinct_count = repository.finance_staff_coverage(db)
+    receipt_last = repository.receipt_counter_value(db)
+
+    checks: list[FinanceReadinessCheck] = []
+
+    required_decisions = sorted(set(rules.PRODUCTION_CONTROLS.values()))
+    approved = [
+        key for key in required_decisions
+        if key in latest_decisions and latest_decisions[key].status == "approved"
+    ]
+    missing_decisions = [key for key in required_decisions if key not in approved]
+    checks.append(
+        FinanceReadinessCheck(
+            key="approved_policy_decisions",
+            label="Approved finance decisions",
+            ready=not missing_decisions,
+            detail=(
+                "FIN-01, FIN-02, FIN-03 and FIN-05 are approved."
+                if not missing_decisions
+                else f"Missing current approval: {', '.join(missing_decisions)}."
+            ),
+        )
+    )
+
+    current_controls: list[FinanceProductionControlResponse] = []
+    stale_or_missing: list[str] = []
+    for control_key, decision_key in rules.PRODUCTION_CONTROLS.items():
+        row = stored_controls.get(control_key)
+        decision = latest_decisions.get(decision_key)
+        if (
+            row is None
+            or decision is None
+            or decision.status != "approved"
+            or row["decision_revision_id"] != decision.id
+        ):
+            stale_or_missing.append(control_key)
+        else:
+            current_controls.append(_control_response(row))
+    checks.append(
+        FinanceReadinessCheck(
+            key="current_production_controls",
+            label="Current production controls",
+            ready=not stale_or_missing,
+            detail=(
+                "All machine-enforced controls match the current approved decisions."
+                if not stale_or_missing
+                else f"Missing or stale controls: {', '.join(stale_or_missing)}."
+            ),
+        )
+    )
+
+    feature_enabled = not settings.feature_flags_enforced or feature_repository.is_enabled(db, "community_finance")
+    checks.append(
+        FinanceReadinessCheck(
+            key="feature_gate",
+            label="Community-finance release gate",
+            ready=feature_enabled,
+            detail=(
+                "Community finance is enabled."
+                if feature_enabled
+                else "Record Gate G1 and enable community_finance before live intake."
+            ),
+        )
+    )
+    checks.append(
+        FinanceReadinessCheck(
+            key="runtime_configuration",
+            label="Banking and evidence configuration",
+            ready=settings.finance_intake_enabled and settings.is_finance_configured,
+            detail=(
+                "Bank details, bilingual instructions, encryption and intake are configured."
+                if settings.finance_intake_enabled and settings.is_finance_configured
+                else "Complete the finance environment configuration and explicitly enable intake."
+            ),
+        )
+    )
+    scanner_ready = (
+        settings.finance_malware_scanner != "none"
+        if settings.app_env == "development"
+        else settings.finance_malware_scanner == "clamav"
+    )
+    checks.append(
+        FinanceReadinessCheck(
+            key="malware_scanner",
+            label="Fail-closed malware scanning",
+            ready=scanner_ready,
+            detail=(
+                "The configured scanner is permitted for this environment."
+                if scanner_ready
+                else "ClamAV is required outside development."
+            ),
+        )
+    )
+    staffing_ready = reviewer_count > 0 and approver_count > 0 and distinct_count > 1
+    checks.append(
+        FinanceReadinessCheck(
+            key="dual_control_staffing",
+            label="Independent finance staffing",
+            ready=staffing_ready,
+            detail=(
+                f"{reviewer_count} reviewer(s), {approver_count} approver(s), "
+                f"{distinct_count} distinct finance staff member(s)."
+            ),
+        )
+    )
+    receipt_remaining = 99_999 - receipt_last
+    checks.append(
+        FinanceReadinessCheck(
+            key="receipt_capacity",
+            label="Official receipt capacity",
+            ready=receipt_remaining > 0,
+            detail=f"CN-{receipt_last:05d} is the last allocated number; {receipt_remaining:,} remain.",
+        )
+    )
+    checks.append(
+        FinanceReadinessCheck(
+            key="deferred_capabilities",
+            label="Unapproved capabilities remain disabled",
+            ready=True,
+            detail="Card payments and automated evidence deletion are not implemented or enabled.",
+        )
+    )
+
+    return FinanceProductionReadinessResponse(
+        ready=all(item.ready for item in checks),
+        checks=checks,
+        controls=sorted(current_controls, key=lambda item: item.control_key),
+        reviewerCount=reviewer_count,
+        approverCount=approver_count,
+        distinctFinanceStaffCount=distinct_count,
+        receiptLastNumber=receipt_last,
+        receiptRemaining=receipt_remaining,
+        cardPaymentsEnabled=False,
+        automatedEvidenceDeletionEnabled=False,
+    )
+
+
+def _active_production_values(db: Session, settings: Settings) -> tuple[int, str, str]:
+    if not settings.feature_flags_enforced:
+        return settings.finance_internal_review_threshold_minor, "not_applicable", "manual_review"
+
+    readiness = production_readiness(db, settings)
+    if not readiness.ready:
+        failed = [check.key for check in readiness.checks if not check.ready]
+        raise FinanceIntakeDisabled(f"finance_not_production_ready:{','.join(failed)}")
+    controls = {control.control_key: control for control in readiness.controls}
+    threshold = controls["enhanced_review_threshold_minor"].integer_value
+    reporting_mode = controls["statutory_reporting_mode"].text_value
+    third_party_mode = controls["third_party_payment_mode"].text_value
+    assert threshold is not None and reporting_mode is not None and third_party_mode is not None
+    return threshold, reporting_mode, third_party_mode
+
+
+def get_config(db: Session, settings: Settings) -> FundConfigResponse:
     """Return member-facing bank transfer configuration."""
     available = settings.finance_intake_enabled and settings.is_finance_configured
+    if settings.feature_flags_enforced:
+        available = available and production_readiness(db, settings).ready
     acc_num = (
         settings.finance_account_number.get_secret_value()
         if isinstance(settings.finance_account_number, SecretStr)
@@ -132,6 +360,9 @@ def create_or_get_draft(
         raise FinanceIntakeDisabled("finance_intake_disabled")
     if not settings.is_finance_configured:
         raise FinanceNotConfigured("finance_not_configured")
+    threshold_minor, reporting_mode, third_party_mode = _active_production_values(db, settings)
+    if not req.paying_for_self and third_party_mode == "blocked":
+        raise InvalidSubmission("third_party_payment_not_allowed")
 
     # 1. Validate submission rules and declarations
     today = datetime.now(UTC).date()
@@ -167,9 +398,10 @@ def create_or_get_draft(
     has_dup = repository.count_existing_bank_reference(db, req.bank_reference) > 0
     risk_flags = rules.evaluate_risk_flags(
         req.amount_minor,
-        settings.finance_internal_review_threshold_minor,
+        threshold_minor,
         has_dup,
         req.paying_for_self,
+        reporting_mode,
     )
 
     draft = repository.insert_draft(
@@ -213,6 +445,7 @@ def upload_slip(
         raise FinanceIntakeDisabled("finance_intake_disabled")
     if not settings.is_finance_configured:
         raise FinanceNotConfigured("finance_not_configured")
+    _active_production_values(db, settings)
 
     row = repository.find_by_id(db, contribution_id, for_update=True)
     if not row or row.member_id != member_id:
@@ -269,6 +502,7 @@ def submit_contribution(
         raise FinanceIntakeDisabled("finance_intake_disabled")
     if not settings.is_finance_configured:
         raise FinanceNotConfigured("finance_not_configured")
+    threshold_minor, reporting_mode, third_party_mode = _active_production_values(db, settings)
 
     row = repository.find_by_id(db, contribution_id, for_update=True)
     if not row or row.member_id != member_id:
@@ -279,13 +513,16 @@ def submit_contribution(
     slip = repository.get_current_slip(db, contribution_id)
     if not slip:
         raise SlipRequired("slip_required")
+    if not row.paying_for_self and third_party_mode == "blocked":
+        raise InvalidSubmission("third_party_payment_not_allowed")
 
     has_dup = repository.count_existing_bank_reference(db, row.bank_reference, exclude_id=contribution_id) > 0
     risk_flags = rules.evaluate_risk_flags(
         row.amount_minor,
-        settings.finance_internal_review_threshold_minor,
+        threshold_minor,
         has_dup,
         row.paying_for_self,
+        reporting_mode,
     )
 
     prev_status = row.status

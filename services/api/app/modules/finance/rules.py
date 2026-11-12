@@ -30,7 +30,52 @@ TRANSITIONS: dict[Status, frozenset[Status]] = {
     "REFUNDED": frozenset(),
 }
 
-RiskFlag = Literal["duplicate_bank_reference", "enhanced_review_threshold", "third_party_payment"]
+RiskFlag = Literal[
+    "duplicate_bank_reference",
+    "enhanced_review_threshold",
+    "third_party_payment",
+    "statutory_reporting_review",
+]
+
+PRODUCTION_CONTROLS: dict[str, str] = {
+    "enhanced_review_threshold_minor": "FIN-01",
+    "statutory_reporting_mode": "FIN-02",
+    "slip_retention_days": "FIN-03",
+    "third_party_payment_mode": "FIN-05",
+    "pilot_currency": "FIN-05",
+}
+
+TEXT_CONTROL_VALUES: dict[str, frozenset[str]] = {
+    "statutory_reporting_mode": frozenset({"not_applicable", "manual_review_required"}),
+    "third_party_payment_mode": frozenset({"blocked", "manual_review"}),
+    "pilot_currency": frozenset({"LKR"}),
+}
+
+INTEGER_CONTROL_LIMITS: dict[str, tuple[int, int]] = {
+    "enhanced_review_threshold_minor": (1, 1_000_000_000_000),
+    "slip_retention_days": (1, 3_650),
+}
+
+
+def production_control_problem(
+    control_key: str,
+    integer_value: int | None,
+    text_value: str | None,
+) -> str | None:
+    if control_key not in PRODUCTION_CONTROLS:
+        return "unknown_finance_control"
+    if control_key in INTEGER_CONTROL_LIMITS:
+        if integer_value is None or text_value is not None:
+            return "integer_control_value_required"
+        minimum, maximum = INTEGER_CONTROL_LIMITS[control_key]
+        if not minimum <= integer_value <= maximum:
+            return "control_value_out_of_range"
+        return None
+    if text_value is None or integer_value is not None:
+        return "text_control_value_required"
+    if text_value not in TEXT_CONTROL_VALUES[control_key]:
+        return "control_value_not_allowed"
+    return None
 
 
 def check_submission(amount_minor: int, transfer_date: date, today: date, bank_reference: str) -> list[str]:
@@ -82,6 +127,7 @@ def evaluate_risk_flags(
     threshold_minor: int,
     has_duplicate_reference: bool,
     paying_for_self: bool,
+    statutory_reporting_mode: str = "not_applicable",
 ) -> list[str]:
     flags: list[str] = []
     if has_duplicate_reference:
@@ -90,6 +136,8 @@ def evaluate_risk_flags(
         flags.append("enhanced_review_threshold")
     if not paying_for_self:
         flags.append("third_party_payment")
+    if statutory_reporting_mode == "manual_review_required":
+        flags.append("statutory_reporting_review")
     return flags
 
 

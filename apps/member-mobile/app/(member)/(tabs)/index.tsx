@@ -5,31 +5,28 @@ import { useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
   Button,
   formatDateTime,
-  LanguageToggle,
+  Notice,
   Screen,
+  StatusTag,
   SurfaceCard,
   useApiQuery,
   useLanguage,
   useLocalized,
-  useMember,
   useReloadOnFocus,
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
 import { EventRow } from '@/features/events/EventRow';
 import { FeatureTile } from '@/features/home/FeatureTile';
-import { MemberCardPreview } from '@/features/home/MemberCardPreview';
-import { StatusNotice } from '@/features/home/StatusNotice';
 import { StaffRoleTags } from '@/features/staff/StaffRoleTags';
 import { useMyStaffRoles } from '@/features/staff/useMyStaffRoles';
 import { api } from '@/lib/api';
-import { chooseLanguage } from '@/lib/i18n';
 
 type NextStep = NonNullable<HomeView['nextStep']>;
 
@@ -41,7 +38,7 @@ function nextStepRoute(step: NextStep): Href {
     case 'event_soon':
       return step.eventId ? { pathname: '/events/[id]', params: { id: step.eventId } } : '/events';
     case 'confirm_recovery_number':
-      return '/profile/recovery-number';
+      return { pathname: '/profile/recovery-number', params: { from: 'home' } };
     case 'complete_profile':
       return '/profile/edit';
   }
@@ -59,35 +56,20 @@ export default function HomeScreen() {
   useReloadOnFocus(reload);
 
   return (
-    <Screen onRefresh={reload} refreshing={home.loading && home.data !== undefined}>
+    <Screen maxContentWidth={720} onRefresh={reload} refreshing={home.loading && home.data !== undefined}>
       <QueryView query={home}>{(data) => <HomeBody data={data} unread={inbox.data?.unread ?? 0} />}</QueryView>
     </Screen>
   );
-}
-
-/** The amber card while identity or membership is pending: what is happening and where to look. */
-function pendingNotice(data: HomeView): { title: string; body: string } {
-  switch (data.identityState) {
-    case 'not_submitted':
-      return { title: 'm.home.startTitle', body: 'm.home.startBody' };
-    case 'needs_update':
-      return { title: 'm.home.updateTitle', body: 'm.home.updateBody' };
-    case 'verified':
-      return { title: 'm.home.membership_pending', body: 'm.home.awaitingBody' };
-    default:
-      return { title: 'm.home.reviewTitle', body: 'm.home.reviewBody' };
-  }
 }
 
 function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
   const { t } = useTranslation();
   const language = useLanguage();
   const localized = useLocalized();
-  const member = useMember();
   const place = [data.districtName, data.gnName].filter(Boolean).join(' / ');
-  const active = data.layout === 'active';
   const next = data.nextStep;
-  const notice = pendingNotice(data);
+  const showComingUp = next?.kind !== 'event_soon';
+  const membershipTone = data.membershipState === 'active' ? 'verified' : data.membershipState === 'pending' ? 'pending' : 'error';
   const roles = useMyStaffRoles();
   const staff = roles.assignments.length > 0;
 
@@ -95,46 +77,52 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
     <>
       <View style={styles.header}>
         <View style={styles.headerText}>
-          <AppText step="title" tone="muted">
-            {t('m.home.welcome')}
+          <AppText step="label" tone="primary">
+            {t('m.welcome.title')}
           </AppText>
-          <AppText step="display" accessibilityRole="header" numberOfLines={2}>
-            {data.displayName}
+          <AppText step="page" accessibilityRole="header">
+            {t('nav.home')}
           </AppText>
-          <AppText step="body" tone="muted">
-            {active ? t('m.home.memberActive') : t('m.home.accountReady')}
-          </AppText>
+          <AppText step="body">{data.displayName}</AppText>
+          {place ? (
+            <View style={styles.place}>
+              <Ionicons name="location-outline" size={16} color={colors.textMuted} />
+              <AppText step="secondary" tone="muted">
+                {place}
+              </AppText>
+            </View>
+          ) : null}
         </View>
-        <View style={styles.headerActions}>
-          <LanguageToggle value={language} onChange={(next) => void chooseLanguage(next)} label={t('m.welcome.language')} />
-          <Pressable
-            onPress={() => router.push('/notifications')}
-            accessibilityRole="button"
-            accessibilityLabel={unread > 0 ? `${t('m.home.notifications')}, ${t('m.home.unread', { count: unread })}` : t('m.home.notifications')}
-            style={styles.bell}>
-            <Ionicons name="notifications-outline" size={22} color={colors.primary} />
-            {unread > 0 ? <View style={styles.dot} /> : null}
-          </Pressable>
-        </View>
+        <Pressable
+          onPress={() => router.push('/notifications')}
+          accessibilityRole="button"
+          accessibilityLabel={unread > 0 ? `${t('m.home.notifications')}, ${t('m.home.unread', { count: unread })}` : t('m.home.notifications')}
+          style={styles.bell}>
+          <Ionicons name="notifications-outline" size={22} color={colors.primary} />
+          {unread > 0 ? <View style={styles.dot} /> : null}
+        </Pressable>
       </View>
 
-      <MemberCardPreview name={data.displayName} memberCode={member.memberCode} place={place} active={active} />
+      <StatusTag
+        tone={membershipTone}
+        label={`${t('m.profile.membership')}: ${t(`m.home.membership_${data.membershipState}`)}`}
+      />
 
-      {active ? null : (
-        <StatusNotice
-          title={t(notice.title)}
-          body={t(notice.body)}
-          link={t('m.home.viewVerification')}
-          onPress={() => router.push('/verify')}
-        />
-      )}
+      {data.layout === 'awaiting_review' && !next ? (
+        <Notice tone="warning" title={t('m.home.awaitingTitle')}>
+          <AppText step="secondary" tone="warning">
+            {t('m.home.awaitingBody')}
+          </AppText>
+          <Button label={t('m.home.viewVerification')} variant="secondary" onPress={() => router.push('/verify')} />
+        </Notice>
+      ) : null}
 
-      {active && next ? (
-        <SurfaceCard accent>
-          <AppText step="caption" tone="muted">
+      {next ? (
+        <SurfaceCard accent style={styles.nextAction}>
+          <AppText step="caption" tone="primary">
             {t('m.home.nextStep')}
           </AppText>
-          <AppText step="card">{t(`m.home.next_${next.kind}`)}</AppText>
+          <AppText step="section">{t(`m.home.next_${next.kind}`)}</AppText>
           {next.kind === 'event_soon' && next.eventTitleEn ? (
             <AppText step="secondary" tone="secondary">
               {localized(next.eventTitleEn, next.eventTitleTa ?? '')}
@@ -150,10 +138,11 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
         </SurfaceCard>
       ) : null}
 
-      {/* Only for people with a staff role; the section asks for the authenticator code (OD-26). */}
+      {/* Only for people with a staff role: their tier, and the way into the Staff section, which
+          asks for the authenticator code (OD-26, one app for members and staff). */}
       {staff ? (
         <SurfaceCard onPress={() => router.push('/staff')} accessibilityLabel={t('m.home.staffSection')}>
-          <AppText step="card">{t('m.home.staffSection')}</AppText>
+          <AppText step="section">{t('m.home.staffSection')}</AppText>
           <View style={styles.tags}>
             <StaffRoleTags roles={roles} />
           </View>
@@ -163,26 +152,22 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
         </SurfaceCard>
       ) : null}
 
-      <AppText step="section" accessibilityRole="header" style={styles.sectionTitle}>
+      <AppText step="section" accessibilityRole="header">
         {t('m.home.quickActions')}
       </AppText>
-      <View style={styles.grid}>
-        {data.quickActions.map((feature) => (
-          <FeatureTile key={feature.key} feature={feature} />
+      <SurfaceCard style={styles.actionList}>
+        {data.quickActions.map((feature, index) => (
+          <FeatureTile key={feature.key} feature={feature} divided={index > 0} />
         ))}
-      </View>
+      </SurfaceCard>
 
-      {active ? (
+      {showComingUp ? (
         <>
           <View style={styles.sectionRow}>
             <AppText step="section" accessibilityRole="header" style={styles.flex}>
               {t('m.home.comingUp')}
             </AppText>
-            <Pressable onPress={() => router.push('/events')} accessibilityRole="link" hitSlop={10}>
-              <AppText step="body" tone="link">
-                {t('m.common.seeAll')}
-              </AppText>
-            </Pressable>
+            <Button label={t('m.common.seeAll')} variant="quiet" onPress={() => router.push('/events')} />
           </View>
           {data.comingUp ? (
             <EventRow event={data.comingUp} />
@@ -195,58 +180,25 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
             </SurfaceCard>
           )}
         </>
-      ) : (
-        <Pressable
-          onPress={() => router.push('/verify')}
-          accessibilityRole="link"
-          accessibilityLabel={`${t('m.home.memberFeatures')}. ${t('m.home.memberFeaturesBody')} ${t('m.home.seeNextSteps')}`}
-          style={styles.locked}>
-          <Ionicons name="lock-closed-outline" size={22} color={colors.textMuted} />
-          <View style={styles.flex}>
-            <AppText step="card" weight={400} tone="secondary">
-              {t('m.home.memberFeatures')}
-            </AppText>
-            <AppText step="secondary" tone="muted">
-              {t('m.home.memberFeaturesBody')}
-            </AppText>
-            <AppText step="secondary" tone="link">
-              {t('m.home.seeNextSteps')}
-            </AppText>
-          </View>
-        </Pressable>
-      )}
+      ) : null}
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3], paddingTop: spacing[2] },
-  headerText: { flex: 1, minWidth: 0 },
-  headerActions: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], paddingTop: 34 },
+  header: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3] },
+  headerText: { flex: 1, gap: spacing[1] },
+  place: { flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
   bell: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.pill,
+    width: control.touchMin,
+    height: control.touchMin,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
   },
-  dot: { position: 'absolute', top: 9, right: 10, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.error },
-  sectionTitle: { marginTop: spacing[2] },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
+  dot: { position: 'absolute', top: 10, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.error },
+  nextAction: { backgroundColor: colors.primaryContainer, borderColor: colors.primaryContainer },
+  actionList: { padding: 0, gap: 0, overflow: 'hidden' },
+  sectionRow: { flexDirection: 'row', alignItems: 'center' },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
-  sectionRow: { flexDirection: 'row', alignItems: 'center', marginTop: spacing[2] },
   flex: { flex: 1 },
-  locked: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing[3],
-    padding: spacing[4],
-    borderRadius: radius.card,
-    borderWidth: 1.5,
-    borderStyle: 'dashed',
-    borderColor: colors.inputBorder,
-  },
 });

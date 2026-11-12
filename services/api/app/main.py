@@ -29,7 +29,7 @@ from app.modules.community.reports.router import router as community_reports
 from app.modules.election import router as election
 from app.modules.events import router as events
 from app.modules.features import router as features
-from app.modules.finance.router import finance_router, fund_router
+from app.modules.finance.router import finance_router, fund_router, readiness_router as finance_readiness_router
 from app.modules.home import router as home
 from app.modules.households import router as households
 from app.modules.messaging.broadcasts import router as broadcasts
@@ -116,6 +116,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(features.router)
     app.include_router(policy_decisions.router)
     app.include_router(operations)
+    app.include_router(finance_readiness_router)
     app.include_router(fund_router)
     app.include_router(finance_router)
     app.include_router(households.router)

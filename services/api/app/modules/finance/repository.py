@@ -515,3 +515,107 @@ def export_ledger_rows(db: Session, month: str) -> list[Row]:
             {"month": month},
         ).all()
     )
+
+
+def latest_production_controls(db: Session) -> dict[str, Row]:
+    rows = db.execute(
+        text(
+            """
+            SELECT DISTINCT ON (c.control_key)
+                   c.id, c.control_key, c.decision_revision_id, c.integer_value, c.text_value,
+                   c.evidence_ref, c.reason, c.recorded_by, c.recorded_at,
+                   d.decision_key, d.revision AS decision_revision, d.status AS decision_status
+              FROM finance.production_control_version c
+              JOIN ops.policy_decision_revision d ON d.id = c.decision_revision_id
+             ORDER BY c.control_key, c.recorded_at DESC, c.id DESC
+            """
+        )
+    ).mappings()
+    return {row["control_key"]: row for row in rows}
+
+
+def insert_production_control(
+    db: Session,
+    *,
+    control_key: str,
+    decision_revision_id: UUID,
+    integer_value: int | None,
+    text_value: str | None,
+    evidence_ref: str,
+    reason: str,
+    recorded_by: UUID,
+) -> Row:
+    control_id = db.execute(
+        text(
+            """
+            INSERT INTO finance.production_control_version
+                (control_key, decision_revision_id, integer_value, text_value,
+                 evidence_ref, reason, recorded_by)
+            VALUES
+                (:control_key, :decision_revision_id, :integer_value, :text_value,
+                 :evidence_ref, :reason, :recorded_by)
+            RETURNING id
+            """
+        ),
+        {
+            "control_key": control_key,
+            "decision_revision_id": decision_revision_id,
+            "integer_value": integer_value,
+            "text_value": text_value,
+            "evidence_ref": evidence_ref,
+            "reason": reason,
+            "recorded_by": recorded_by,
+        },
+    ).scalar_one()
+    row = db.execute(
+        text(
+            """
+            SELECT c.id, c.control_key, c.decision_revision_id, c.integer_value, c.text_value,
+                   c.evidence_ref, c.reason, c.recorded_by, c.recorded_at,
+                   d.decision_key, d.revision AS decision_revision, d.status AS decision_status
+              FROM finance.production_control_version c
+              JOIN ops.policy_decision_revision d ON d.id = c.decision_revision_id
+             WHERE c.id = :id
+            """
+        ),
+        {"id": control_id},
+    ).mappings().one()
+    return row
+
+
+def finance_staff_coverage(db: Session) -> tuple[int, int, int]:
+    row = db.execute(
+        text(
+            """
+            WITH effective AS (
+                SELECT DISTINCT a.member_id, a.permissions
+                  FROM access.staff_assignment a
+                 WHERE a.state = 'active'
+                   AND (a.review_due_at IS NULL OR a.review_due_at > clock_timestamp())
+                   AND EXISTS (
+                       SELECT 1 FROM membership.membership ms
+                        WHERE ms.member_id = a.member_id AND ms.state = 'active'
+                   )
+            ), staff AS (
+                SELECT member_id,
+                       bool_or('finance.review' = ANY(permissions)) AS can_review,
+                       bool_or('finance.approve' = ANY(permissions)) AS can_approve
+                  FROM effective
+                 GROUP BY member_id
+            )
+            SELECT count(*) FILTER (WHERE can_review)::int AS reviewer_count,
+                   count(*) FILTER (WHERE can_approve)::int AS approver_count,
+                   count(*) FILTER (WHERE can_review OR can_approve)::int AS distinct_count
+              FROM staff
+            """
+        )
+    ).one()
+    return int(row.reviewer_count or 0), int(row.approver_count or 0), int(row.distinct_count or 0)
+
+
+def receipt_counter_value(db: Session) -> int:
+    return int(
+        db.execute(
+            text("SELECT last_number FROM finance.receipt_counter WHERE singleton = true")
+        ).scalar_one()
+    )

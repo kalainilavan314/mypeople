@@ -1,10 +1,6 @@
 import { type ServerMember } from '@/core/api/authApi';
 import { font } from '@/core/theme/tokens';
-import { CYAN } from '@/features/profile/EditProfile.model';
-import { HEADER_BOT } from '@/features/profile/EditProfile.model';
-import { HEADER_MID } from '@/features/profile/EditProfile.model';
 import { HEADER_TOP } from '@/features/profile/EditProfile.model';
-import { VIOLET } from '@/features/profile/EditProfile.model';
 import { EditFormDiv } from '@/features/profile/components/EditFormSections/EditFormDiv';
 import { Icon } from '@/shared/components/Icon';
 import type { TFunction } from 'i18next';
@@ -35,7 +31,7 @@ export function EditFormHeader({
         overflow: 'hidden',
         color: '#fff',
         padding: '14px 20px 24px',
-        background: `linear-gradient(135deg, ${HEADER_TOP} 0%, ${HEADER_MID} 50%, ${HEADER_BOT} 100%)`,
+        background: HEADER_TOP,
         borderRadius: '0 0 32px 32px',
       }}
     >
@@ -81,7 +77,7 @@ export function EditFormHeader({
             width: 4,
             height: 20,
             borderRadius: 2,
-            background: `linear-gradient(180deg, ${CYAN}, ${VIOLET})`,
+            background: 'var(--brand-yellow)',
           }}
         />
         <span style={{ font: `800 20px/1 ${font.head}`, letterSpacing: '-0.3px' }}>

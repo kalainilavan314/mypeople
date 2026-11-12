@@ -15,7 +15,7 @@ import { useParams } from 'react-router-dom';
 
 const pin = L.divIcon({
   className: '',
-  html: `<div style="width:24px;height:24px;border-radius:50% 50% 50% 0;background:#14263D;transform:rotate(-45deg);border:2px solid #FFFFFF;box-shadow:0 2px 8px rgba(4,48,116,.5)"></div>`,
+  html: `<div style="width:24px;height:24px;border-radius:50% 50% 50% 0;background:var(--primary);transform:rotate(-45deg);border:2px solid #FFFFFF;box-shadow:0 2px 8px rgba(141,10,18,.35)"></div>`,
   iconSize: [24, 24],
   iconAnchor: [12, 24],
 });

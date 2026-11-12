@@ -14,7 +14,7 @@ export default function CardProgressScreen() {
   const activity = useApiQuery(() => api().listMyActivity({ limit: 50 }));
 
   return (
-    <Screen edges={['bottom']} title={t('m.card.progressTitle')} subtitle={t('m.card.progressHint')} onRefresh={activity.reload}>
+    <Screen edges={['bottom']} maxContentWidth={640} title={t('m.card.progressTitle')} subtitle={t('m.card.progressHint')} onRefresh={activity.reload}>
       <QueryView query={activity}>{(items) => {
         const milestones = [
           { key: 'joined', at: member.joinedAt, title: t('m.card.milestoneJoined'), detail: member.memberCode },

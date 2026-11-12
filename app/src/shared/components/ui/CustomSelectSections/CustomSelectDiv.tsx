@@ -48,7 +48,7 @@ export function CustomSelectDiv({
           width: '100%',
           boxSizing: 'border-box',
           padding: '13px 14px',
-          border: open ? '1.5px solid #14263D' : `1px solid ${c.hairline2}`,
+          border: open ? `1.5px solid ${c.primary}` : `1px solid ${c.hairline2}`,
           borderRadius: radius.md,
           background: c.card,
           color: selectedOpt ? c.ink : c.ink3,
@@ -76,7 +76,7 @@ export function CustomSelectDiv({
         <Icon
           name="chevron"
           size={16}
-          color={open ? '#14263D' : c.ink3}
+          color={open ? c.primary : c.ink3}
           style={{
             transform: open ? 'rotate(270deg)' : 'rotate(90deg)',
             transition: 'transform 180ms ease',
@@ -120,7 +120,7 @@ export function CustomSelectDiv({
                   borderRadius: radius.sm,
                   border: 'none',
                   background: isSelected ? 'rgba(20, 38, 61, 0.08)' : 'transparent',
-                  color: isSelected ? '#14263D' : c.ink,
+                  color: isSelected ? c.primary : c.ink,
                   font: `${isSelected ? '700' : '500'} 13.5px/1.4 ${font.ta}`,
                   display: 'flex',
                   alignItems: 'center',
@@ -137,7 +137,7 @@ export function CustomSelectDiv({
                 }}
               >
                 <span>{opt.label}</span>
-                {isSelected && <Icon name="check" size={14} color="#14263D" strokeWidth={2.6} />}
+                {isSelected && <Icon name="check" size={14} color={c.primary} strokeWidth={2.6} />}
               </button>
             );
           })}

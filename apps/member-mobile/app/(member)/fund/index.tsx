@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import {
   Clipboard,
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   View,
@@ -33,20 +34,12 @@ import { pickImage, type PickedImage } from '@/features/identity/pickImage';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 
-const AMOUNT_PRESETS = [
-  { key: '500', label: '500 LKR' },
-  { key: '1000', label: '1,000 LKR' },
-  { key: '2500', label: '2,500 LKR' },
-  { key: '5000', label: '5,000 LKR' },
-  { key: 'custom', label: 'Custom' },
-] as const;
-
 export default function FundScreen() {
   const { t } = useTranslation();
   const configQuery = useApiQuery(() => api().getFundConfig());
 
   return (
-    <Screen title={t('m.fund.title')} subtitle={t('m.fund.subtitle')}>
+    <Screen title={t('m.fund.title')} subtitle={t('m.fund.subtitle')} maxContentWidth={720}>
       <QueryView query={configQuery}>
         {(config) =>
           config.intakeAvailable ? (
@@ -83,6 +76,13 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
 
   const effectiveAmountLkr =
     selectedPreset === 'custom' ? parseInt(customAmountText.trim(), 10) : parseInt(selectedPreset, 10);
+  const amountPresets = [
+    { key: '500', label: t('m.fund.amountPreset', { amount: '500' }) },
+    { key: '1000', label: t('m.fund.amountPreset', { amount: '1,000' }) },
+    { key: '2500', label: t('m.fund.amountPreset', { amount: '2,500' }) },
+    { key: '5000', label: t('m.fund.amountPreset', { amount: '5,000' }) },
+    { key: 'custom', label: t('m.fund.customAmount') },
+  ];
 
   const copyToClipboard = (label: string, value: string) => {
     Clipboard.setString(value);
@@ -92,21 +92,27 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
 
   const handlePickSlip = async (source: 'library' | 'camera') => {
     setValidationError(null);
-    const result = await pickImage(source);
+    let result: Awaited<ReturnType<typeof pickImage>>;
+    try {
+      result = await pickImage(source);
+    } catch (error) {
+      setValidationError(errorMessage(t, error));
+      return;
+    }
     if ('denied' in result) {
       showMessage(t('m.common.loadFailed'), t('m.verify.cameraDenied'));
       return;
     }
     if ('cancelled' in result) return;
 
-    if (result.image.body.size > 15 * 1024 * 1024) {
+    if (result.image.byteSize > 15 * 1024 * 1024) {
       setValidationError(t('m.errors.too_large'));
       return;
     }
 
     setSlip({
       image: result.image,
-      previewUri: URL.createObjectURL(result.image.body),
+      previewUri: result.image.previewUri,
     });
   };
 
@@ -118,13 +124,23 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
       return;
     }
 
-    if (!transferDate || transferDate.length !== 10) {
+    const parsedTransferDate = /^\d{4}-\d{2}-\d{2}$/.test(transferDate)
+      ? new Date(`${transferDate}T00:00:00Z`)
+      : null;
+    if (!parsedTransferDate || Number.isNaN(parsedTransferDate.getTime()) || parsedTransferDate.toISOString().slice(0, 10) !== transferDate) {
       setValidationError(t('m.fund.errors.dateRequired'));
       return;
     }
 
     if (transferDate > today) {
       setValidationError(t('m.fund.errors.futureDateNotAllowed'));
+      return;
+    }
+
+    const earliest = new Date();
+    earliest.setUTCDate(earliest.getUTCDate() - 90);
+    if (transferDate < earliest.toISOString().slice(0, 10)) {
+      setValidationError(t('m.fund.errors.dateTooOld'));
       return;
     }
 
@@ -179,8 +195,7 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
     }, submissionIntent.current.key);
 
     // Step 2: Upload encrypted slip
-    const contentType = slip.image.contentType === 'image/png' ? 'image/png' : 'image/jpeg';
-    await api().uploadContributionSlip(draft.id, slip.image.body, contentType);
+    await api().uploadContributionSlip(draft.id, slip.image.body, slip.image.contentType);
 
     // Step 3: Submit for staff review
     await api().submitContribution(draft.id);
@@ -243,7 +258,7 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
         </AppText>
         <ChipRow
           label={t('m.fund.amountLabel')}
-          options={AMOUNT_PRESETS}
+          options={amountPresets}
           selected={selectedPreset}
           onSelect={(key) => {
             setSelectedPreset(key);
@@ -261,7 +276,7 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
                 setCustomAmountText(text);
                 setValidationError(null);
               }}
-              placeholder="e.g. 1500"
+              placeholder={t('m.fund.customAmountPlaceholder')}
             />
           </View>
         ) : null}
@@ -273,7 +288,7 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
             setTransferDate(text);
             setValidationError(null);
           }}
-          placeholder="YYYY-MM-DD"
+          placeholder={t('m.fund.transferDatePlaceholder')}
         />
 
         <TextField
@@ -284,7 +299,7 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
             setBankReference(text);
             setValidationError(null);
           }}
-          placeholder="e.g. TXN98765432"
+          placeholder={t('m.fund.bankReferencePlaceholder')}
           autoCapitalize="characters"
         />
       </SurfaceCard>
@@ -310,9 +325,15 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
             ) : (
               <View style={styles.slipPlaceholder}>
                 <Ionicons name="document-attach" size={40} color={colors.primary} />
-                <AppText step="body">Attached</AppText>
+                <AppText step="body">{t('m.fund.slipAttached')}</AppText>
               </View>
             )}
+            <Button
+              variant="secondary"
+              onPress={() => handlePickSlip('camera')}
+              label={t('m.fund.takeSlipPhoto')}
+              icon="camera-outline"
+            />
             <Button
               variant="secondary"
               onPress={() => handlePickSlip('library')}
@@ -323,8 +344,15 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
           <View style={styles.slipActions}>
             <Button
               variant="primary"
+              onPress={() => handlePickSlip('camera')}
+              label={t('m.fund.takeSlipPhoto')}
+              icon="camera-outline"
+            />
+            <Button
+              variant="secondary"
               onPress={() => handlePickSlip('library')}
               label={t('m.fund.chooseSlip')}
+              icon="images-outline"
             />
           </View>
         )}
@@ -335,6 +363,8 @@ function FundIntakeForm({ config }: { config: Awaited<ReturnType<ReturnType<type
         <AppText step="card" style={styles.cardHeader}>
           {t('m.fund.declarationsHeader')}
         </AppText>
+
+        <Notice tone="info">{t('m.fund.declarationsNotice')}</Notice>
 
         <Checkbox
           label={t('m.fund.noPrivilegeLabel')}

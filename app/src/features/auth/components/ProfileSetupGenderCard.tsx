@@ -15,7 +15,7 @@ export function ProfileSetupGenderCard({ t, gender, setGender, nicGender }: Prop
   return (
     <div className="profile-section-card">
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <Icon name="user" size={16} color="#14263D" />
+        <Icon name="user" size={16} color="var(--primary)" />
         <span
           style={{
             font: `700 15px/1.3 ${font.ui}`,

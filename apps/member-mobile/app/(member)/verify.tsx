@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens/mobile';
+import { colors, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
@@ -62,7 +62,11 @@ export default function VerifyScreen() {
   });
 
   return (
-    <Screen edges={['bottom']} onRefresh={query.reload} refreshing={query.loading && query.data !== undefined}>
+    <Screen
+      edges={['bottom']}
+      maxContentWidth={720}
+      onRefresh={query.reload}
+      refreshing={query.loading && query.data !== undefined}>
       <AppText step="secondary" tone="muted">
         {t('m.verify.subtitle')}
       </AppText>
@@ -75,10 +79,10 @@ function VerifyBody({ data, reload, targetStep }: { data: Loaded; reload: () => 
   const { t } = useTranslation();
   const { refresh } = useSession();
   const { progress, review } = data;
-  // No review here but every step done: the identity was confirmed before /v1 (in the
-  // Express app), so there is nothing to send and the member is shown as verified.
-  const confirmedEarlier = review === null && progress.steps.every((step) => step.done);
-  const state: State = review?.state ?? (confirmedEarlier ? 'verified' : 'not_submitted');
+  // No review here but the identity was confirmed before /v1 (in the Express app): the API now
+  // reports that as "verified", so there is nothing to send and the member is shown as verified.
+  const progressState = progress.reviewState;
+  const state: State = review?.state ?? (progressState && progressState in TONE ? progressState as State : 'not_submitted');
   const consented = progress.steps.find((step) => step.name === 'identity_consent')?.done ?? false;
   // The API returns decisions newest first; use the current decision.
   const latest = review?.history[0];
@@ -97,7 +101,12 @@ function VerifyBody({ data, reload, targetStep }: { data: Loaded; reload: () => 
         ) : null}
       </SurfaceCard>
 
-      {state === 'submitted' || state === 'in_review' ? <Notice tone="info">{t('m.verify.submitted')}</Notice> : null}
+      {state === 'submitted' || state === 'in_review' ? (
+        <>
+          <Notice tone="info">{t('m.verify.submitted')}</Notice>
+          <Button label={t('m.verify.goHome')} icon="home-outline" onPress={() => router.replace('/')} />
+        </>
+      ) : null}
 
       {state === 'needs_update' && latest ? (
         <Notice tone="warning" title={t('m.verify.requestedTitle')}>
@@ -185,9 +194,10 @@ function ConsentCard({ onConsented }: { onConsented: () => void }) {
         {t('m.verify.consentBody')}
       </AppText>
       <Button label={t('m.verify.whatWeKeep')} variant="quiet" icon={showData ? 'chevron-up' : 'chevron-down'} onPress={() => setShowData(!showData)} />
-      {showData
-        ? notice.data?.map((item) => (
-            <View key={item.dataEn} style={styles.dataItem}>
+      {showData ? (
+        <QueryView query={notice}>
+          {(items) => items.map((item, index) => (
+            <View key={item.dataEn} style={[styles.dataItem, index > 0 && styles.dataDivider]}>
               <AppText step="label">{localized(item.dataEn, item.dataTa)}</AppText>
               <AppText step="secondary" tone="secondary">
                 {localized(item.purposeEn, item.purposeTa)}
@@ -196,8 +206,9 @@ function ConsentCard({ onConsented }: { onConsented: () => void }) {
                 {localized(item.retentionEn, item.retentionTa)}
               </AppText>
             </View>
-          ))
-        : null}
+          ))}
+        </QueryView>
+      ) : null}
       {consent.error ? <Notice tone="error">{errorMessage(t, consent.error)}</Notice> : null}
       <Button label={t('m.verify.consentAction')} busy={consent.busy} onPress={() => void consent.run()} />
     </SurfaceCard>
@@ -226,4 +237,7 @@ function SubmitCard({ route, resubmit, ready, onSent }: { route: 'nic' | 'passpo
   );
 }
 
-const styles = StyleSheet.create({ dataItem: { gap: 2, paddingVertical: spacing[1] } });
+const styles = StyleSheet.create({
+  dataItem: { gap: 2, paddingVertical: spacing[2] },
+  dataDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
+});

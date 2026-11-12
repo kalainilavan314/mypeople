@@ -88,8 +88,8 @@ export function Welcome() {
               borderRadius: radius.pill,
               cursor: 'pointer',
               border: 'none',
-              background: activeLang === 'ta' ? '#14263D' : 'transparent',
-              color: activeLang === 'ta' ? '#FFFFFF' : '#1D4ED8',
+              background: activeLang === 'ta' ? 'var(--primary)' : 'transparent',
+              color: activeLang === 'ta' ? '#FFFFFF' : 'var(--primary)',
               font: `600 13px/1 ${font.ta}`,
               transition: 'all 160ms ease',
             }}
@@ -105,8 +105,8 @@ export function Welcome() {
               borderRadius: radius.pill,
               cursor: 'pointer',
               border: 'none',
-              background: activeLang === 'en' ? '#14263D' : 'transparent',
-              color: activeLang === 'en' ? '#FFFFFF' : '#1D4ED8',
+              background: activeLang === 'en' ? 'var(--primary)' : 'transparent',
+              color: activeLang === 'en' ? '#FFFFFF' : 'var(--primary)',
               font: `600 13px/1 ${font.ui}`,
               transition: 'all 160ms ease',
             }}

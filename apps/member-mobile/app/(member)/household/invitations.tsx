@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { Alert, Platform, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
@@ -41,8 +41,26 @@ export default function HouseholdInvitationsScreen() {
     void invitationsQuery.reload();
   });
 
+  const confirmRevoke = (invitationId: string) => {
+    const title = t('m.household.revoke');
+    const message = t('m.household.revokeConfirm');
+    const run = () => void revoke.run(invitationId);
+    if (Platform.OS === 'web') {
+      if (globalThis.confirm(`${title}\n\n${message}`)) run();
+      return;
+    }
+    Alert.alert(title, message, [
+      { text: t('m.common.cancel'), style: 'cancel' },
+      { text: title, style: 'destructive', onPress: run },
+    ]);
+  };
+
   return (
-    <Screen edges={['bottom']}>
+    <Screen
+      edges={['bottom']}
+      maxContentWidth={720}
+      onRefresh={invitationsQuery.reload}
+      refreshing={invitationsQuery.loading && invitationsQuery.data !== undefined}>
       <QueryView query={invitationsQuery}>
         {(data) => {
           const hasReceived = data.received.length > 0;
@@ -145,9 +163,9 @@ export default function HouseholdInvitationsScreen() {
                       <View style={styles.topMargin}>
                         <Button
                           label={t('m.household.revoke')}
-                          variant="secondary"
+                          variant="danger"
                           busy={revoke.busy}
-                          onPress={() => void revoke.run(inv.id)}
+                          onPress={() => confirmRevoke(inv.id)}
                         />
                       </View>
                     </SurfaceCard>

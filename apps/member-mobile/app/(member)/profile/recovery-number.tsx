@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -22,6 +23,7 @@ import { errorMessage } from '@/lib/errors';
  */
 export default function RecoveryNumberScreen() {
   const { t } = useTranslation();
+  const { from } = useLocalSearchParams<{ from?: string }>();
   const current = useApiQuery(() => api().getMyRecoveryPhone());
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
@@ -31,6 +33,8 @@ export default function RecoveryNumberScreen() {
   const [confirmed, setConfirmed] = useState(false);
 
   const send = useApiAction(async () => {
+    setConfirmed(false);
+    confirm.clearError();
     const result = await api().requestPhoneConfirmation(phone.trim());
     setSentTo(phone.trim());
     setDevCode(result.devCode ?? null);
@@ -40,15 +44,29 @@ export default function RecoveryNumberScreen() {
     await api().confirmPhone(sentTo, code.trim(), currentPassword || undefined);
     setConfirmed(true);
     setSentTo(null);
+    setPhone('');
     setCode('');
     setCurrentPassword('');
+    setDevCode(null);
+    send.clearError();
     current.reload();
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
+    router.replace(from === 'profile' ? '/profile' : '/');
   });
-  const failed = send.error ?? confirm.error;
+  const failed = confirm.error ?? send.error;
   const replacing = current.data !== null && current.data !== undefined;
+  const chooseAnotherNumber = () => {
+    setSentTo(null);
+    setCode('');
+    setCurrentPassword('');
+    setDevCode(null);
+    setConfirmed(false);
+    send.clearError();
+    confirm.clearError();
+  };
 
   return (
-    <Screen edges={['bottom']}>
+    <Screen edges={['bottom']} maxContentWidth={640}>
       <QueryView query={current}>
         {(data) =>
           data ? (
@@ -62,17 +80,9 @@ export default function RecoveryNumberScreen() {
         }
       </QueryView>
       {confirmed ? <Notice tone="success">{t('m.profile.numberConfirmed')}</Notice> : null}
-      <TextField
-        label={t('m.profile.phoneLabel')}
-        hint={t('m.errors.invalid_phone')}
-        value={phone}
-        onChangeText={setPhone}
-        keyboardType="phone-pad"
-        autoComplete="tel"
-      />
-      <Button label={t('m.profile.sendCode')} busy={send.busy} busyLabel={t('m.common.sending')} disabled={current.data === undefined || phone.trim().length < 9} onPress={() => void send.run()} />
       {sentTo ? (
         <>
+          <Notice tone="info">{t('m.profile.codeSentTo', { phone: sentTo })}</Notice>
           {devCode ? <Notice tone="info">{t('m.profile.devCode', { code: devCode })}</Notice> : null}
           <TextField
             label={t('m.recover.codeLabel')}
@@ -94,8 +104,27 @@ export default function RecoveryNumberScreen() {
             />
           ) : null}
           <Button label={t('m.profile.confirmNumber')} busy={confirm.busy} disabled={!/^\d{6}$/.test(code.trim()) || (replacing && !currentPassword)} onPress={() => void confirm.run()} />
+          <Button label={t('m.profile.useAnotherNumber')} variant="quiet" onPress={chooseAnotherNumber} />
         </>
-      ) : null}
+      ) : (
+        <>
+          <TextField
+            label={t('m.profile.phoneLabel')}
+            hint={t('m.errors.invalid_phone')}
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+            autoComplete="tel"
+          />
+          <Button
+            label={t('m.profile.sendCode')}
+            busy={send.busy}
+            busyLabel={t('m.common.sending')}
+            disabled={current.data === undefined || phone.trim().length < 9}
+            onPress={() => void send.run()}
+          />
+        </>
+      )}
       {failed ? <Notice tone="error">{errorMessage(t, failed)}</Notice> : null}
     </Screen>
   );

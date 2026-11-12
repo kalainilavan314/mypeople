@@ -1,7 +1,7 @@
 import { colors, typeScale } from '@my-people/design-tokens/mobile';
 import { fontFamilyFor } from '../fonts';
 
-/** Header styling for the stacks: the page colour with no rule, a navy back arrow and a centred title. */
+/** Header styling for the stacks: quiet page chrome with one brand-coloured affordance. */
 export function headerOptions(language: string) {
   return {
     headerStyle: { backgroundColor: colors.page },

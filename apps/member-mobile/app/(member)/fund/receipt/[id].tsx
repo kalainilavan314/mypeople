@@ -55,7 +55,11 @@ export default function ContributionReceiptScreen() {
   }, [id]);
 
   return (
-    <Screen title={t('m.fund.receiptTitle')}>
+    <Screen
+      title={t('m.fund.receiptTitle')}
+      maxContentWidth={720}
+      onRefresh={query.reload}
+      refreshing={query.loading && query.data !== undefined}>
       <QueryView query={query}>
         {({ contribution, receipt }) => (
           <ContributionDetailView
@@ -92,7 +96,12 @@ function ContributionDetailView({
     if (!receipt) return;
     try {
       await Share.share({
-        message: `My People Contribution Receipt\nOfficial Receipt: ${receipt.receiptCode}\nAmount: ${amountFormatted}\nTransfer Date: ${receipt.transferDate}\nStatus: Verified\nIssued: ${receipt.issuedAt}`,
+        message: t('m.fund.receiptShareText', {
+          code: receipt.receiptCode,
+          amount: amountFormatted,
+          date: receipt.transferDate,
+          issued: formatDateTime(receipt.issuedAt, language),
+        }),
       });
     } catch {
       // user cancelled or share failed
@@ -216,7 +225,10 @@ function ContributionDetailView({
                 </View>
                 <View style={styles.timelineContent}>
                   <View style={styles.timelineHeaderRow}>
-                    <StatusTag tone={entryTone} label={entry.status} />
+                    <StatusTag
+                      tone={entryTone}
+                      label={t(`m.fund.status${toPascalCase(entry.status)}` as any, entry.status)}
+                    />
                     <AppText step="caption" tone="muted">
                       {formatDateTime(entry.occurredAt, language)}
                     </AppText>

@@ -57,7 +57,7 @@ export const FEATURE_TINTS: Partial<Record<string, Tint>> = {
   invite: 'green',
   local_reports: 'blue',
   area_projects: 'teal',
-  card: 'navy',
+  card: 'brand',
   gallery: 'blue',
-  profile: 'navy',
+  profile: 'brand',
 };

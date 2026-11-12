@@ -16,11 +16,11 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{ ...tabOptions(language), headerLeft: () => <LeaveStaffButton /> }}>
-      <Tabs.Screen name="index" options={{ title: t('s.tabs.home'), tabBarIcon: tabIcon('checkbox') }} />
-      <Tabs.Screen name="check-in" options={{ title: t('s.tabs.checkIn'), tabBarIcon: tabIcon('qr-code') }} />
-      <Tabs.Screen name="approvals" options={{ title: t('s.tabs.approvals'), tabBarIcon: tabIcon('git-pull-request') }} />
-      <Tabs.Screen name="alerts" options={{ title: t('s.tabs.alerts'), tabBarIcon: tabIcon('notifications') }} />
-      <Tabs.Screen name="profile" options={{ title: t('s.tabs.profile'), tabBarIcon: tabIcon('id-card') }} />
+      <Tabs.Screen name="index" options={{ title: t('s.tabs.home'), tabBarIcon: tabIcon('checkbox-outline') }} />
+      <Tabs.Screen name="check-in" options={{ title: t('s.tabs.checkIn'), tabBarIcon: tabIcon('qr-code-outline') }} />
+      <Tabs.Screen name="approvals" options={{ title: t('s.tabs.approvals'), tabBarIcon: tabIcon('git-pull-request-outline') }} />
+      <Tabs.Screen name="alerts" options={{ title: t('s.tabs.alerts'), tabBarIcon: tabIcon('notifications-outline') }} />
+      <Tabs.Screen name="profile" options={{ title: t('s.tabs.profile'), tabBarIcon: tabIcon('id-card-outline') }} />
     </Tabs>
   );
 }

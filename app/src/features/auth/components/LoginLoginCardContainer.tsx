@@ -77,11 +77,11 @@ export function LoginLoginCardContainer({
               display: 'grid',
               placeItems: 'center',
               cursor: 'pointer',
-              color: '#14263D',
+              color: 'var(--primary)',
               boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)',
             }}
           >
-            <Icon name="chevronLeft" size={18} color="#14263D" strokeWidth={2.6} />
+            <Icon name="chevronLeft" size={18} color="var(--primary)" strokeWidth={2.6} />
           </button>
           <LangToggle />
         </div>
@@ -95,7 +95,7 @@ export function LoginLoginCardContainer({
             <div
               style={{
                 font: `900 21px/1.1 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
-                color: '#14263D',
+                color: 'var(--primary)',
                 letterSpacing: '-0.01em',
               }}
             >
@@ -104,7 +104,7 @@ export function LoginLoginCardContainer({
             <div
               style={{
                 font: `700 12px/1 var(--font-ui, 'Inter', sans-serif)`,
-                color: '#14263D',
+                color: 'var(--primary)',
                 marginTop: 3,
               }}
             >
@@ -176,7 +176,7 @@ export function LoginLoginCardContainer({
               border: 'none',
               cursor: 'pointer',
               font: `700 13px/1.4 var(--font-ui, 'Inter', sans-serif)`,
-              color: '#2563EB',
+              color: 'var(--primary)',
               textDecoration: 'underline',
               padding: 0,
             }}

@@ -13,7 +13,7 @@ export default function SurveyScreen() {
   const answers = useApiQuery(() => api().getSurveyAnswers());
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.select({ ios: 'padding', android: 'height' })}>
-      <Screen edges={['bottom']}>
+      <Screen edges={['bottom']} maxContentWidth={640}>
         <QueryView query={answers}>{(saved) => <SurveyForm saved={saved} />}</QueryView>
         <Button label={t('m.setup.skip')} variant="quiet" onPress={() => router.back()} />
       </Screen>
@@ -39,7 +39,9 @@ function SurveyForm({ saved }: { saved: Record<string, string> }) {
       <AppText step="section" accessibilityRole="header">{t('m.setup.surveyTitle')}</AppText>
       <AppText step="body" tone="secondary">{t('m.setup.surveyHint')}</AppText>
       <TextField label={t('m.setup.occupation')} optional value={occupation} onChangeText={setOccupation} maxLength={200} />
+      <AppText step="caption" tone="muted">{t('m.setup.characters', { count: occupation.length, max: 200 })}</AppText>
       <TextField label={t('m.setup.interests')} optional value={interests} onChangeText={setInterests} multiline maxLength={200} />
+      <AppText step="caption" tone="muted">{t('m.setup.characters', { count: interests.length, max: 200 })}</AppText>
       {save.error ? <Notice tone="error">{errorMessage(t, save.error)}</Notice> : null}
       <Button label={t('m.setup.saveSurvey')} busy={save.busy} onPress={() => void save.run()} />
     </SurfaceCard>

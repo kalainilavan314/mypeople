@@ -34,7 +34,7 @@ Sensitive columns: `npm.member.nic_hash` (peppered SHA-256, never the NIC itself
 
 ## Migrations
 
-Two runners, one rule: **new schema changes are Alembic revisions only.** Revisions so far: `0001` baseline through `0028` finance evidence grants, followed by `0029` for the Phase 1 policy decision register. The files in `services/api/alembic/versions` are the authoritative ordered ledger.
+Two runners, one rule: **new schema changes are Alembic revisions only.** Revisions so far: `0001` baseline through `0028` finance evidence grants, `0029` for the Phase 1 policy decision register, `0030` for staff/governance closure, `0031` completing the Tamil area names the GIS import cut short, and `0032` for finance production controls. The files in `services/api/alembic/versions` are the authoritative ordered ledger.
 
 - `server/migrations/0000`–`0011` are frozen. They built the schema before Alembic and are still applied by `npm run migrate --prefix server` on a new database.
 - Alembic revision `0001` (`services/api/alembic/versions/0001_baseline_express_schema.py`) is a no-op baseline that stands for those twelve files. `alembic/env.py` refuses every command, `stamp` included, while any of them is missing from the Express ledger, so a database that is behind can never be marked current.
@@ -73,6 +73,7 @@ The BRD separates data by purpose: schemas `core`, `community`, `assistance`, `h
 - `finance.contribution_event`: Append-only state transition audit timeline.
 - `finance.receipt_counter`: Singleton counter table (`singleton = true`) locked with `FOR UPDATE` to allocate strictly monotonic `CN-XXXXX` receipt codes transactionally.
 - `finance.slip_view_grant`: Viewer-bound, expiring evidence grants consumed atomically on their first successful use.
+- `finance.production_control_version`: Append-only P3 machine controls. Each value cites the exact approved FIN decision revision; current readiness rejects missing or stale versions rather than interpreting free-form policy text.
 
 ## Tests and the database
 

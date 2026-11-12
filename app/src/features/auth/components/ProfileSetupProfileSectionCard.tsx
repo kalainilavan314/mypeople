@@ -27,7 +27,7 @@ export function ProfileSetupProfileSectionCard({
   return (
     <div className="profile-section-card">
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <Icon name="mapPin" size={16} color="#14263D" />
+        <Icon name="mapPin" size={16} color="var(--primary)" />
         <span
           style={{
             font: `700 13.5px/1.2 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
@@ -63,7 +63,7 @@ export function ProfileSetupProfileSectionCard({
             flexShrink: 0,
           }}
         >
-          <Icon name="landmark" size={18} color="#14263D" />
+          <Icon name="landmark" size={18} color="var(--primary)" />
         </span>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div
@@ -77,7 +77,7 @@ export function ProfileSetupProfileSectionCard({
           <div
             style={{
               font: `500 12.5px/1.3 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
-              color: currentDs ? '#14263D' : '#64748B',
+              color: currentDs ? 'var(--primary)' : '#64748B',
               marginTop: 3,
             }}
           >
@@ -104,7 +104,7 @@ export function ProfileSetupProfileSectionCard({
             flexShrink: 0,
           }}
         >
-          <Icon name="mapPin" size={18} color="#14263D" />
+          <Icon name="mapPin" size={18} color="var(--primary)" />
         </span>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div
@@ -118,7 +118,7 @@ export function ProfileSetupProfileSectionCard({
           <div
             style={{
               font: `500 12.5px/1.3 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
-              color: gsLabel ? '#14263D' : '#64748B',
+              color: gsLabel ? 'var(--primary)' : '#64748B',
               marginTop: 3,
             }}
           >

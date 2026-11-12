@@ -106,7 +106,7 @@ export function ProfileSetup() {
 
           <div className="profile-section-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Icon name="user" size={16} color="#14263D" />
+              <Icon name="user" size={16} color="var(--primary)" />
               <span
                 style={{
                   font: `700 13.5px/1.2 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
@@ -143,7 +143,7 @@ export function ProfileSetup() {
 
           <div className="profile-section-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Icon name="users" size={16} color="#14263D" />
+              <Icon name="users" size={16} color="var(--primary)" />
               <span
                 style={{
                   font: `700 13.5px/1.2 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,

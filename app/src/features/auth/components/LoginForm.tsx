@@ -101,7 +101,7 @@ export function LoginForm({
             border: 'none',
             cursor: 'pointer',
             font: `700 12.5px/1 var(--font-ui, 'Inter', sans-serif)`,
-            color: '#2563EB',
+            color: 'var(--primary)',
             padding: '4px 0',
           }}
         >
