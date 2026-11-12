@@ -10,6 +10,7 @@ import {
   confirmAction,
   Notice,
   Screen,
+  StatusTag,
   SurfaceCard,
   TextField,
   useApiAction,
@@ -32,9 +33,19 @@ export default function HouseholdScreen() {
   const invitationsQuery = useApiQuery(() => api().getMyInvitations());
 
   return (
-    <Screen edges={['bottom']}>
+    <Screen
+      edges={['bottom']}
+      maxContentWidth={720}
+      onRefresh={() => {
+        void householdQuery.reload();
+        void invitationsQuery.reload();
+      }}
+      refreshing={
+        (householdQuery.loading && householdQuery.data !== undefined) ||
+        (invitationsQuery.loading && invitationsQuery.data !== undefined)
+      }>
       {/* Voluntary banner (BR-098) */}
-      <SurfaceCard style={styles.voluntaryBanner}>
+      <SurfaceCard accent style={styles.voluntaryBanner}>
         <AppText step="caption" style={styles.voluntaryTag}>
           {t('m.household.voluntaryNotice')}
         </AppText>
@@ -147,21 +158,17 @@ function NoHouseholdView({
                 </Notice>
               </View>
             ) : null}
-            <View style={styles.rowButtons}>
-              <View style={styles.flexOne}>
-                <Button
-                  label={t('m.common.cancel')}
-                  variant="secondary"
-                  onPress={() => setShowForm(false)}
-                />
-              </View>
-              <View style={styles.flexOne}>
-                <Button
-                  label={t('m.household.createButton')}
-                  busy={create.busy}
-                  onPress={() => void create.run()}
-                />
-              </View>
+            <View style={styles.formActions}>
+              <Button
+                label={t('m.household.createButton')}
+                busy={create.busy}
+                onPress={() => void create.run()}
+              />
+              <Button
+                label={t('m.common.cancel')}
+                variant="quiet"
+                onPress={() => setShowForm(false)}
+              />
             </View>
           </View>
         )}
@@ -232,18 +239,17 @@ function ActiveHouseholdView({
           {t('m.household.membersSection')} ({household.members.length})
         </AppText>
 
-        {household.members.map((member) => (
-          <View key={member.id} style={styles.memberRow}>
+        {household.members.map((member, index) => (
+          <View key={member.id} style={[styles.memberRow, index > 0 && styles.memberDivider]}>
             <View style={styles.flexOne}>
               <View style={styles.memberNameLine}>
                 <AppText step="body" style={styles.memberName}>
                   {member.displayName}
                 </AppText>
-                <AppText step="caption" style={styles.memberRoleBadge}>
-                  {member.role === 'head'
-                    ? t('m.household.headBadge')
-                    : t('m.household.adultBadge')}
-                </AppText>
+                <StatusTag
+                  tone="neutral"
+                  label={member.role === 'head' ? t('m.household.headBadge') : t('m.household.adultBadge')}
+                />
               </View>
               <AppText step="caption" style={styles.memberSub}>
                 {t(`m.household.relationships.${member.relationship}` as const, member.relationship)}
@@ -254,8 +260,9 @@ function ActiveHouseholdView({
             {household.isHead && member.role !== 'head' && (
               <View>
                 <Button
-                  label={t('m.common.cancel')}
-                  variant="secondary"
+                  label={t('m.household.removeMember')}
+                  variant="danger"
+                  busy={removeMember.busy}
                   onPress={() => confirmRemove(member.id, member.displayName)}
                 />
               </View>
@@ -273,9 +280,13 @@ function ActiveHouseholdView({
         )}
       </SurfaceCard>
 
+      {leave.error || removeMember.error ? (
+        <Notice tone="error">{errorMessage(t, leave.error ?? removeMember.error)}</Notice>
+      ) : null}
+
       {/* Pending invitations for head */}
-      {household.isHead && (
-        <SurfaceCard style={styles.topMargin}>
+      {household.isHead && household.pendingInvitations.length > 0 ? (
+        <SurfaceCard>
           <View style={styles.rowBetween}>
             <AppText step="section">
               {t('m.household.pendingInvitations')} ({household.pendingInvitations.length})
@@ -283,19 +294,19 @@ function ActiveHouseholdView({
             <View>
               <Button
                 label={t('m.common.seeAll')}
-                variant="secondary"
+                variant="quiet"
                 onPress={() => router.push('/(member)/household/invitations' as any)}
               />
             </View>
           </View>
         </SurfaceCard>
-      )}
+      ) : null}
 
       {/* Voluntary Exit / Dissolve button */}
       <View style={styles.topMargin}>
         <Button
           label={household.isHead ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold')}
-          variant="secondary"
+          variant="danger"
           onPress={confirmLeave}
           busy={leave.busy}
         />
@@ -310,9 +321,6 @@ const styles = StyleSheet.create({
   },
   voluntaryBanner: {
     backgroundColor: colors.surfaceVariant,
-    borderLeftWidth: 4,
-    borderLeftColor: colors.primary,
-    marginBottom: spacing[2],
   },
   voluntaryTag: {
     fontWeight: '700',
@@ -340,8 +348,7 @@ const styles = StyleSheet.create({
   inviteNoticeDesc: {
     color: colors.textSecondary,
   },
-  rowButtons: {
-    flexDirection: 'row',
+  formActions: {
     gap: spacing[2],
     marginTop: spacing[4],
   },
@@ -371,24 +378,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: spacing[2],
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
   },
+  memberDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
   memberNameLine: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
     gap: spacing[1],
   },
   memberName: {
     fontWeight: '600',
-  },
-  memberRoleBadge: {
-    backgroundColor: colors.surfaceVariant,
-    paddingHorizontal: spacing[1],
-    paddingVertical: 2,
-    borderRadius: 4,
-    fontSize: 11,
-    color: colors.textSecondary,
   },
   memberSub: {
     color: colors.textSecondary,

@@ -78,7 +78,7 @@ export function WelcomeDiv({ activeLang, go }: Props) {
         >
           <path
             d="M12 2C12 2 8.5 7.5 8.5 12C8.5 14.5 10 16.5 12 16.5C14 16.5 15.5 14.5 15.5 12C15.5 7.5 12 2 12 2Z"
-            fill="#2563EB"
+            fill="var(--brand-gold)"
           />
           <path
             d="M9.5 13C8 13 3.5 12 2 8C2 8 5.5 7 8 9.5C9.2 10.7 9.5 12 9.5 13Z"

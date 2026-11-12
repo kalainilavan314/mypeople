@@ -12,6 +12,8 @@ from app.core.config import Settings
 from app.core.request_info import client_ip
 from app.db.session import get_db
 from app.modules.auth.dependencies import CurrentMember
+from app.modules.access.dependencies import require_permission
+from app.modules.access.service import Staff
 from app.modules.features.dependencies import require_feature
 from app.modules.finance import service
 from app.modules.finance.dependencies import (
@@ -29,6 +31,9 @@ from app.modules.finance.schemas import (
     ContributionCreateRequest,
     ContributionDetailResponse,
     FundConfigResponse,
+    FinanceProductionControlRequest,
+    FinanceProductionControlResponse,
+    FinanceProductionReadinessResponse,
     ReceiptResponse,
     StaffApproveRequest,
     StaffContributionDetail,
@@ -51,8 +56,11 @@ finance_router = APIRouter(
     dependencies=[Depends(require_feature("community_finance"))],
 )
 
+readiness_router = APIRouter(prefix="/v1/finance-readiness", tags=["finance-readiness"])
+
 Db = Annotated[Session, Depends(get_db)]
 Scanner = Annotated[MalwareScanner, Depends(get_malware_scanner)]
+CanConfigureFinance = Annotated[Staff, Depends(require_permission("system.configure"))]
 
 
 def _settings(request: Request) -> Settings:
@@ -64,6 +72,8 @@ def _handle_service_error(err: Exception) -> None:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=err.code)
     if isinstance(err, service.FinanceIntakeDisabled):
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=err.code)
+    if isinstance(err, service.FinanceControlRefused):
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=err.code)
     if isinstance(err, service.ContributionNotFound):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err.code)
     if isinstance(err, service.IdempotencyConflict):
@@ -90,14 +100,47 @@ def _handle_service_error(err: Exception) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Production readiness (/v1/finance-readiness)
+# ---------------------------------------------------------------------------
+
+
+@readiness_router.get("", response_model=FinanceProductionReadinessResponse)
+def get_finance_readiness(
+    _staff: CanConfigureFinance,
+    db: Db,
+    request: Request,
+) -> FinanceProductionReadinessResponse:
+    """Return fail-closed finance launch checks without exposing secrets or bank numbers."""
+    return service.production_readiness(db, _settings(request))
+
+
+@readiness_router.post(
+    "/controls",
+    response_model=FinanceProductionControlResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_finance_control(
+    req: FinanceProductionControlRequest,
+    staff: CanConfigureFinance,
+    db: Db,
+    request: Request,
+) -> FinanceProductionControlResponse:
+    """Record an immutable machine control for the exact approved decision revision."""
+    try:
+        return service.record_production_control(db, staff, req, ip=client_ip(request))
+    except Exception as err:
+        _handle_service_error(err)
+
+
+# ---------------------------------------------------------------------------
 # Member Fund Endpoints (/v1/fund)
 # ---------------------------------------------------------------------------
 
 
 @fund_router.get("/config", response_model=FundConfigResponse)
-def get_fund_config(request: Request) -> FundConfigResponse:
+def get_fund_config(request: Request, db: Db) -> FundConfigResponse:
     """Return approved official bank-transfer configuration and contribution rules."""
-    return service.get_config(_settings(request))
+    return service.get_config(db, _settings(request))
 
 
 @fund_router.post("/contributions", response_model=ContributionDetailResponse)

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens/mobile';
 
-import { AppText, ChipRow, Screen, SearchField, useApiQuery, useReloadOnFocus } from '@my-people/mobile-ui';
+import { AppText, Button, ChipRow, Screen, SurfaceCard, TextField, useApiQuery, useReloadOnFocus } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
 import { EventRow } from '@/features/events/EventRow';
@@ -36,8 +36,11 @@ export default function EventsScreen() {
   useReloadOnFocus(events.reload);
 
   return (
-    <Screen edges={[]} onRefresh={events.reload} refreshing={events.loading && events.data !== undefined}>
-      <SearchField
+    <Screen edges={[]} maxContentWidth={720} onRefresh={events.reload} refreshing={events.loading && events.data !== undefined}>
+      <AppText step="secondary" tone="muted">
+        {t('m.events.subtitle')}
+      </AppText>
+      <TextField
         label={t('m.events.search')}
         value={search}
         onChangeText={setSearch}
@@ -61,10 +64,19 @@ export default function EventsScreen() {
         {(list) => (
           <View style={styles.list} accessibilityLiveRegion="polite">
             {list.length === 0 ? (
+              <SurfaceCard>
+                <AppText step="secondary" tone="muted">
+                  {filter === 'mine' ? t('m.events.emptyMine') : t('m.events.empty')}
+                </AppText>
+                {filter === 'mine' ? (
+                  <Button label={t('m.events.showAll')} variant="secondary" onPress={() => setFilter('all')} />
+                ) : null}
+              </SurfaceCard>
+            ) : (
               <AppText step="secondary" tone="muted">
-                {filter === 'mine' ? t('m.events.emptyMine') : t('m.events.empty')}
+                {t('m.events.results', { count: list.length })}
               </AppText>
-            ) : null}
+            )}
             {list.map((event) => (
               <EventRow key={event.id} event={event} />
             ))}

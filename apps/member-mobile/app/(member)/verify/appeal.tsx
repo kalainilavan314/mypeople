@@ -21,7 +21,7 @@ export default function AppealScreen() {
 
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.select({ ios: 'padding', android: 'height' })}>
-      <Screen edges={['bottom']} title={t('m.verify.appealTitle')} onRefresh={eligibility.reload}>
+      <Screen edges={['bottom']} maxContentWidth={640} title={t('m.verify.appealTitle')} onRefresh={eligibility.reload}>
         <QueryView query={eligibility}>{({ review, enabled }) => (
           <AppealContent key={review?.reviewRef ?? 'none'} review={review} enabled={enabled} />
         )}</QueryView>
@@ -77,7 +77,12 @@ function AppealContent({ review, enabled }: { review: IdentityReview | null; ena
           multiline
           maxLength={1000}
         />
-        <AppText step="secondary" tone="muted">{t('m.setup.characters', { count: statement.length, max: 1000 })}</AppText>
+        <AppText
+          step="secondary"
+          tone={statement.length >= 900 ? 'warning' : 'muted'}
+          accessibilityLiveRegion="polite">
+          {t('m.setup.characters', { count: statement.length, max: 1000 })}
+        </AppText>
         {appeal.error ? <Notice tone="error">{errorMessage(t, appeal.error)}</Notice> : null}
         <Button
           label={t('m.verify.appealSubmit')}

@@ -206,6 +206,22 @@ def test_identity_consent_comes_before_any_upload(client, db_session):
     assert count == 1
 
 
+def test_an_already_verified_account_has_no_identity_onboarding_steps_left(client, create_member, auth):
+    member = create_member(verified=True)
+
+    progress = client.get("/v1/identity/me/progress", headers=auth(member)).json()
+
+    assert progress["nextStep"] is None
+    assert progress["reviewState"] == "verified"
+    assert [(step["name"], step["done"]) for step in progress["steps"]] == [
+        ("identity_consent", True),
+        ("nic_front", True),
+        ("nic_back", True),
+        ("selfie", True),
+        ("submit", True),
+    ]
+
+
 # --- Geography (FR-REG-029, BR-017) ----------------------------------------------------------------
 
 

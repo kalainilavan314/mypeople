@@ -86,11 +86,11 @@ export function PhotoRow({ kind, received, requested, target = false, onUploaded
     }
     setInterrupted(false);
     setAdvice([]);
-    if (image.body.size > MAX_IMAGE_BYTES) {
+    if (image.byteSize > MAX_IMAGE_BYTES) {
       hold(null);
       throw new ApiError(413, 'too_large', null);
     }
-    setProgress({ sent: 0, total: image.body.size });
+    setProgress({ sent: 0, total: image.byteSize });
     try {
       const stored = await api().uploadIdentityDocument(kind, image.body, image.contentType, (sent, total) => {
         setProgress({ sent, total });

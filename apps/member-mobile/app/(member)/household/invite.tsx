@@ -46,7 +46,7 @@ export default function InviteAdultScreen() {
   });
 
   return (
-    <Screen edges={['bottom']}>
+    <Screen edges={['bottom']} maxContentWidth={640}>
       <SurfaceCard style={styles.card}>
         <AppText step="section" accessibilityRole="header">
           {t('m.household.inviteAdult')}

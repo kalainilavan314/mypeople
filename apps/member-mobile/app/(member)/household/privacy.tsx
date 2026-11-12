@@ -37,6 +37,7 @@ export default function HouseholdPrivacyScreen() {
   const withdrawConsent = useApiAction(async () => {
     await api().leaveHousehold();
     void householdQuery.reload();
+    return true;
   });
 
   const handleWithdrawConfirm = async (isHead: boolean) => {
@@ -49,18 +50,23 @@ export default function HouseholdPrivacyScreen() {
       destructive: true,
     });
     if (!confirmed) return;
-    await withdrawConsent.run();
-    router.replace('/household');
+    // Leave only when the withdrawal went through (Puvi); a refusal stays here with its message.
+    const completed = await withdrawConsent.run();
+    if (completed) router.replace('/household');
   };
 
   return (
     <Screen
       edges={['bottom']}
+      maxContentWidth={720}
       onRefresh={() => {
         void noticeQuery.reload();
         void householdQuery.reload();
       }}
-      refreshing={noticeQuery.loading || householdQuery.loading}
+      refreshing={
+        (noticeQuery.loading && noticeQuery.data !== undefined) ||
+        (householdQuery.loading && householdQuery.data !== undefined)
+      }
     >
       <AppText step="section" accessibilityRole="header">
         {t('m.household.privacyConsent')}
@@ -192,7 +198,7 @@ export default function HouseholdPrivacyScreen() {
                 <View style={styles.topMargin}>
                   <Button
                     label={household.isHead ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold')}
-                    variant="secondary"
+                    variant="danger"
                     busy={withdrawConsent.busy}
                     onPress={() => handleWithdrawConfirm(household.isHead)}
                   />
@@ -215,7 +221,7 @@ export default function HouseholdPrivacyScreen() {
 
 const styles = StyleSheet.create({
   card: {
-    marginTop: spacing[4],
+    gap: spacing[2],
   },
   cardTitle: {
     marginBottom: spacing[1],

@@ -2,7 +2,7 @@ import type { IdentityReview } from '@my-people/api-client';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens/mobile';
+import { colors, spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText, formatDate, StatusTag, SurfaceCard, useLanguage } from '@my-people/mobile-ui';
 
@@ -16,8 +16,9 @@ export function DecisionHistory({ review }: { review: IdentityReview }) {
       <AppText step="section" accessibilityRole="header">
         {t('m.verify.history')}
       </AppText>
-      {review.history.map((decision) => (
-        <SurfaceCard key={decision.decidedAt}>
+      <SurfaceCard style={styles.historyCard}>
+      {review.history.map((decision, index) => (
+        <View key={decision.decidedAt} style={[styles.decision, index > 0 && styles.divider]}>
           <AppText step="card">{t(`m.verify.decision_${decision.decision}`)}</AppText>
           <AppText step="secondary" tone="muted">
             {`${formatDate(decision.decidedAt, language)} · ${t('m.verify.byTier', { tier: decision.reviewerTier })}`}
@@ -40,13 +41,17 @@ export function DecisionHistory({ review }: { review: IdentityReview }) {
               ) : null}
             </View>
           ) : null}
-        </SurfaceCard>
+        </View>
       ))}
+      </SurfaceCard>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   list: { gap: spacing[3] },
+  historyCard: { padding: 0, gap: 0, overflow: 'hidden' },
+  decision: { gap: spacing[2], padding: spacing[3] },
+  divider: { borderTopWidth: 1, borderTopColor: colors.divider },
   appeal: { gap: spacing[1] },
 });

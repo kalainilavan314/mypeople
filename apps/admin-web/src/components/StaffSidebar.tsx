@@ -260,6 +260,7 @@ function getModuleIcon(href: string) {
     case '/analytics':
       return AnalyticsIcon;
     case '/finance':
+    case '/finance-readiness':
       return FinanceIcon;
     default:
       return HomeIcon;

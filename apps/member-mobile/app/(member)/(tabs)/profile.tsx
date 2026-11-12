@@ -8,14 +8,13 @@ import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
 import {
   AppText,
   Button,
-  LanguageToggle,
+  confirmAction,
   MenuRow,
   Screen,
   StatusTag,
   SurfaceCard,
   type Tone,
   useApiQuery,
-  useLanguage,
   useReloadOnFocus,
   useSession,
 } from '@my-people/mobile-ui';
@@ -24,7 +23,6 @@ import { QueryView } from '@/components/QueryView';
 import { StaffRoleTags } from '@/features/staff/StaffRoleTags';
 import { useMyStaffRoles } from '@/features/staff/useMyStaffRoles';
 import { api } from '@/lib/api';
-import { chooseLanguage } from '@/lib/i18n';
 
 const IDENTITY_TONE: Record<ProfileView['identityState'], Tone> = {
   not_submitted: 'neutral',
@@ -45,93 +43,122 @@ const MEMBERSHIP_TONE: Record<ProfileView['membershipState'], Tone> = {
 /** P01: who the member is, identity and membership shown separately, and the way to everything personal. */
 export default function ProfileScreen() {
   const { t } = useTranslation();
-  const language = useLanguage();
   const { signOut } = useSession();
   const profile = useApiQuery(() => api().getProfile());
   useReloadOnFocus(profile.reload);
   const roles = useMyStaffRoles();
   const staff = roles.assignments.length > 0;
 
+  // The web build has no Alert.alert; confirmAction uses the browser's own dialog there.
+  const confirmSignOut = async () => {
+    const confirmed = await confirmAction({
+      title: t('m.common.signOut'),
+      message: t('m.common.signOutConfirm'),
+      confirmLabel: t('m.common.signOut'),
+      cancelLabel: t('m.common.cancel'),
+      destructive: true,
+    });
+    if (confirmed) await signOut();
+  };
+
   return (
-    <Screen edges={[]} onRefresh={profile.reload} refreshing={profile.loading && profile.data !== undefined}>
+    <Screen
+      edges={[]}
+      maxContentWidth={720}
+      onRefresh={profile.reload}
+      refreshing={profile.loading && profile.data !== undefined}>
       <QueryView query={profile}>
-        {(data) => {
-          const name = data.displayName ?? data.legalName;
-          return (
+        {(data) => (
+          <SurfaceCard>
             <View style={styles.header}>
               <View style={styles.avatar} accessibilityElementsHidden importantForAccessibility="no">
-                <AppText step="display" tone="inverse">
-                  {name.slice(0, 1).toUpperCase()}
+                <AppText step="section" tone="inverse">
+                  {(data.displayName ?? data.legalName).slice(0, 1).toUpperCase()}
                 </AppText>
               </View>
               <View style={styles.headerText}>
                 <AppText step="section" accessibilityRole="header">
-                  {name}
+                  {data.displayName ?? data.legalName}
                 </AppText>
-                <AppText step="body" tone="muted">
-                  {`${data.memberCode} · ${t('m.profile.member')}`}
-                </AppText>
-                {data.districtName ? (
-                  <AppText step="body" tone="muted">
-                    {data.districtName}
-                  </AppText>
+                {data.displayName ? (
+                  <AppText step="secondary" tone="muted">{`${t('m.profile.legalName')}: ${data.legalName}`}</AppText>
                 ) : null}
-                <View style={styles.tags}>
-                  <StatusTag tone={MEMBERSHIP_TONE[data.membershipState]} label={t(`m.home.membership_${data.membershipState}`)} />
-                  {/* The tier the team assigned, as soon as it counts (OD-26: one app for members and staff). */}
-                  <StaffRoleTags roles={roles} />
-                  {data.identityState === 'verified' ? null : (
-                    <StatusTag
-                      tone={IDENTITY_TONE[data.identityState]}
-                      label={`${t('m.profile.identity')}: ${t(`m.verify.status_${data.identityState}`)}`}
-                    />
-                  )}
-                </View>
+                <AppText step="secondary" tone="secondary" mono>
+                  {data.memberCode}
+                </AppText>
               </View>
             </View>
-          );
-        }}
+            <View style={styles.tags}>
+              <StatusTag
+                tone={IDENTITY_TONE[data.identityState]}
+                label={`${t('m.profile.identity')}: ${t(`m.verify.status_${data.identityState}`)}`}
+              />
+              <StatusTag
+                tone={MEMBERSHIP_TONE[data.membershipState]}
+                label={`${t('m.profile.membership')}: ${t(`m.home.membership_${data.membershipState}`)}`}
+              />
+              {/* The tier the team assigned, as soon as it counts (OD-26: one app for members and staff). */}
+              <StaffRoleTags roles={roles} />
+            </View>
+          </SurfaceCard>
+        )}
       </QueryView>
 
-      <SurfaceCard style={styles.group}>
-        <MenuRow first icon="create-outline" label={t('m.profile.editProfile')} onPress={() => router.push('/profile/edit')} />
-        <MenuRow icon="shield-checkmark-outline" label={t('m.profile.verificationDetails')} onPress={() => router.push('/verify')} />
+      <AppText step="section" accessibilityRole="header">
+        {t('m.profile.account')}
+      </AppText>
+      <SurfaceCard>
+        <MenuRow first icon="location-outline" label={t('m.profile.myArea')} onPress={() => router.push('/profile/area')} />
         <MenuRow icon="time-outline" label={t('m.profile.myActivity')} onPress={() => router.push('/profile/activity')} />
+        <MenuRow icon="create-outline" label={t('m.profile.editProfile')} onPress={() => router.push('/profile/edit')} />
+        <MenuRow icon="shield-checkmark-outline" label={t('m.profile.verification')} onPress={() => router.push('/verify')} />
+      </SurfaceCard>
+
+      <AppText step="section" accessibilityRole="header">
+        {t('m.profile.community')}
+      </AppText>
+      <SurfaceCard>
+        <MenuRow first icon="home-outline" label={t('m.household.title')} onPress={() => router.push('/household')} />
         <MenuRow icon="people-outline" label={t('m.profile.hub')} onPress={() => router.push('/hub')} />
-        <MenuRow icon="map-outline" label={t('m.profile.myArea')} onPress={() => router.push('/profile/area')} />
-        <MenuRow icon="home-outline" label={t('m.household.title')} onPress={() => router.push('/household')} />
         {staff ? (
           <MenuRow icon="briefcase-outline" label={t('m.profile.staffSection')} onPress={() => router.push('/staff')} />
         ) : null}
       </SurfaceCard>
 
-      <SurfaceCard style={styles.group}>
+      <AppText step="section" accessibilityRole="header">
+        {t('m.profile.settings')}
+      </AppText>
+      <SurfaceCard>
         <MenuRow
           first
           icon="language-outline"
-          label={t('m.profile.language')}
-          trailing={<LanguageToggle value={language} onChange={(next) => void chooseLanguage(next)} label={t('m.profile.language')} />}
+          label={t('m.profile.preferences')}
+          onPress={() => router.push('/profile/settings')}
         />
-        <MenuRow icon="settings-outline" label={t('m.profile.accountSettings')} onPress={() => router.push('/profile/settings')} />
+        <MenuRow
+          icon="call-outline"
+          label={t('m.profile.recoveryNumber')}
+          onPress={() => router.push({ pathname: '/profile/recovery-number', params: { from: 'profile' } })}
+        />
+        <MenuRow icon="lock-closed-outline" label={t('m.profile.security')} onPress={() => router.push('/profile/security')} />
+        <MenuRow icon="document-lock-outline" label={t('m.profile.privacy')} onPress={() => router.push('/profile/privacy')} />
       </SurfaceCard>
 
-      <Button label={t('m.common.signOut')} variant="danger" icon="log-out-outline" onPress={() => void signOut()} />
+      <Button label={t('m.common.signOut')} variant="danger" icon="log-out-outline" onPress={() => void confirmSignOut()} />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', gap: spacing[4], alignItems: 'center', paddingVertical: spacing[2] },
+  header: { flexDirection: 'row', gap: spacing[3], alignItems: 'center' },
   avatar: {
-    width: 72,
-    height: 72,
+    width: 48,
+    height: 48,
     borderRadius: radius.pill,
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerText: { flex: 1, gap: 2 },
-  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2], marginTop: spacing[1] },
-  // Grouped rows sit closer to the card's edge than ordinary card content.
-  group: { paddingVertical: spacing[1] },
+  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
 });

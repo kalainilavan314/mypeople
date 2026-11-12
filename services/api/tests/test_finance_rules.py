@@ -5,7 +5,14 @@ from uuid import uuid4
 
 import pytest
 
-from app.modules.finance.rules import check_independent_approval, check_submission, check_transition, receipt_code
+from app.modules.finance.rules import (
+    check_independent_approval,
+    check_submission,
+    check_transition,
+    evaluate_risk_flags,
+    production_control_problem,
+    receipt_code,
+)
 from app.modules.finance.scanner import ClamAVScanner, MalwareDetected, ScannerUnavailable
 
 
@@ -53,6 +60,20 @@ def test_receipts_follow_final_approval_only() -> None:
     assert receipt_code(1) == "CN-00001"
     with pytest.raises(ValueError, match="receipt_range_exhausted"):
         receipt_code(100000)
+
+
+def test_production_controls_accept_only_bounded_machine_values() -> None:
+    assert production_control_problem("enhanced_review_threshold_minor", 10_000_000, None) is None
+    assert production_control_problem("slip_retention_days", 0, None) == "control_value_out_of_range"
+    assert production_control_problem("pilot_currency", None, "USD") == "control_value_not_allowed"
+    assert production_control_problem("third_party_payment_mode", None, "manual_review") is None
+    assert production_control_problem("statutory_reporting_mode", 1, None) == "text_control_value_required"
+
+
+def test_manual_reporting_control_creates_an_explicit_review_warning() -> None:
+    assert evaluate_risk_flags(500, 1_000, False, True, "manual_review_required") == [
+        "statutory_reporting_review"
+    ]
 
 
 def test_clamav_streams_the_upload_and_accepts_only_an_ok_response(monkeypatch) -> None:

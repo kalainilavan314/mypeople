@@ -1,26 +1,21 @@
-import { colors, typeScale } from '@my-people/design-tokens/mobile';
+import { colors } from '@my-people/design-tokens/mobile';
 import { fontFamilyFor } from '../fonts';
 
 /**
- * The tab layout of both apps: a white bar whose chosen tab is navy on a soft highlight (see
- * tabIcon), and tab pages titled in large regular type on the page colour, aligned left.
+ * The tab layout of the app's member tabs and the Staff section's tabs (Puvi's production UI,
+ * 12 November 2026): a white bar whose chosen tab shows in the brand colour, quiet page-coloured
+ * headers with no rule, and the tab bar hidden while the keyboard is open.
  */
 export function tabOptions(language: string) {
-  const tamil = language === 'ta';
   return {
     tabBarActiveTintColor: colors.primary,
     tabBarInactiveTintColor: colors.textMuted,
-    tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.divider },
-    tabBarItemStyle: { paddingTop: 4 },
-    tabBarLabelStyle: { fontFamily: fontFamilyFor(language, 400), fontSize: tamil ? 10 : typeScale.nav.size },
+    tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.border },
+    tabBarLabelStyle: { fontFamily: fontFamilyFor(language, 600) },
+    tabBarHideOnKeyboard: true,
     headerStyle: { backgroundColor: colors.page },
+    headerTitleStyle: { fontFamily: fontFamilyFor(language, 700), color: colors.text },
     headerShadowVisible: false,
-    headerTitleAlign: 'left' as const,
-    headerTitleStyle: {
-      fontFamily: fontFamilyFor(language, typeScale.page.weight),
-      fontSize: tamil ? 22 : typeScale.page.size,
-      color: colors.text,
-    },
     sceneStyle: { backgroundColor: colors.page },
   };
 }

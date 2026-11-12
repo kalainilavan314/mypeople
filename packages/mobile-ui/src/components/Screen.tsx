@@ -18,14 +18,28 @@ type Props = {
   refreshing?: boolean;
   /** Tab screens already sit under a header that handles the top inset. */
   edges?: Edge[];
+  /** Keeps phone-first flows readable when the Expo app is opened in a wide browser. */
+  maxContentWidth?: number;
 };
 
 /** One vertical scroll container with the 20 px gutter and safe-area insets; the title is the large page title. */
-export function Screen({ title, subtitle, action, children, onRefresh, refreshing = false, edges = ['top'] }: Props) {
+export function Screen({
+  title,
+  subtitle,
+  action,
+  children,
+  onRefresh,
+  refreshing = false,
+  edges = ['top'],
+  maxContentWidth,
+}: Props) {
   return (
     <SafeAreaView style={styles.page} edges={edges}>
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[
+          styles.content,
+          maxContentWidth ? { width: '100%', maxWidth: maxContentWidth, alignSelf: 'center' } : null,
+        ]}
         keyboardShouldPersistTaps="handled"
         refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> : undefined}>
         {title ? (

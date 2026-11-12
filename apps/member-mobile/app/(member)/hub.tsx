@@ -1,9 +1,7 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens/mobile';
-
-import { AppText, Screen, useApiQuery } from '@my-people/mobile-ui';
+import { AppText, Screen, SurfaceCard, useApiQuery } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
 import { FeatureTile } from '@/features/home/FeatureTile';
@@ -14,23 +12,27 @@ export default function HubScreen() {
   const { t } = useTranslation();
   const home = useApiQuery(() => api().getHome());
   return (
-    <Screen edges={['bottom']} onRefresh={home.reload} refreshing={home.loading && home.data !== undefined}>
+    <Screen
+      edges={['bottom']}
+      maxContentWidth={720}
+      onRefresh={home.reload}
+      refreshing={home.loading && home.data !== undefined}>
       <QueryView query={home}>
         {(data) => (
           <>
             {data.hub.gnLabel ? (
-              <AppText step="secondary" tone="muted">
+              <AppText step="body" tone="secondary">
                 {data.hub.gnLabel}
               </AppText>
             ) : null}
-            <View style={styles.grid}>
-              {data.hub.services.map((feature) => (
-                <FeatureTile key={feature.key} feature={feature} />
-              ))}
-            </View>
-            <AppText step="caption" tone="muted">
-              {t('m.common.notBuiltDetail')}
+            <AppText step="section" accessibilityRole="header">
+              {t('m.home.hubServices')}
             </AppText>
+            <SurfaceCard style={styles.serviceList}>
+              {data.hub.services.map((feature, index) => (
+                <FeatureTile key={feature.key} feature={feature} divided={index > 0} />
+              ))}
+            </SurfaceCard>
           </>
         )}
       </QueryView>
@@ -38,4 +40,4 @@ export default function HubScreen() {
   );
 }
 
-const styles = StyleSheet.create({ grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] } });
+const styles = StyleSheet.create({ serviceList: { padding: 0, gap: 0, overflow: 'hidden' } });

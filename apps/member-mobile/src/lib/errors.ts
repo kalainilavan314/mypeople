@@ -3,12 +3,20 @@ import type { TFunction } from 'i18next';
 
 import { en } from '@/i18n/en';
 
+export class ImagePreparationError extends Error {
+  constructor() {
+    super('The selected image could not be prepared for upload');
+    this.name = 'ImagePreparationError';
+  }
+}
+
 /**
  * The member-facing message for a failed request: the API's error code when
  * we have words for it, "unable to reach the server" when there was no
  * answer, and a plain fallback otherwise. Never the raw code.
  */
 export function errorMessage(t: TFunction, error: unknown): string {
+  if (error instanceof ImagePreparationError) return t('m.errors.unsupported_type');
   if (!(error instanceof ApiError)) return t('m.common.offline');
   if (error.code === 'too_many_attempts' && error.retryAfter) {
     return t('m.errors.too_many_attempts', { minutes: Math.max(1, Math.ceil(error.retryAfter / 60)) });

@@ -41,6 +41,7 @@ services:
       DATABASE_URL: postgresql://my_people:${POSTGRES_PASSWORD}@db:5432/my_people
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
       NIC_PEPPER: ${NIC_PEPPER:?set NIC_PEPPER in .env}
+      SMS_PROVIDER: ${SMS_PROVIDER:-development}
       EVIDENCE_STORAGE_DIR: /var/lib/my-people/evidence
       EVIDENCE_ENCRYPTION_KEY: ${EVIDENCE_ENCRYPTION_KEY:?set EVIDENCE_ENCRYPTION_KEY in .env}
     ports:

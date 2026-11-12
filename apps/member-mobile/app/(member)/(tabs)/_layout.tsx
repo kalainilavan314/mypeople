@@ -12,12 +12,12 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={tabOptions(language)}>
-      {/* Home has its own greeting header. */}
-      <Tabs.Screen name="index" options={{ title: t('nav.home'), headerShown: false, tabBarIcon: tabIcon('home') }} />
-      <Tabs.Screen name="events" options={{ title: t('nav.events'), tabBarIcon: tabIcon('calendar') }} />
-      <Tabs.Screen name="card" options={{ title: t('nav.card'), tabBarIcon: tabIcon('card') }} />
-      <Tabs.Screen name="gallery" options={{ title: t('nav.gallery'), tabBarIcon: tabIcon('images') }} />
-      <Tabs.Screen name="profile" options={{ title: t('nav.profile'), tabBarIcon: tabIcon('person') }} />
+      {/* Home owns its product and member context header. */}
+      <Tabs.Screen name="index" options={{ title: t('nav.home'), headerShown: false, tabBarIcon: tabIcon('home-outline') }} />
+      <Tabs.Screen name="events" options={{ title: t('nav.events'), tabBarIcon: tabIcon('calendar-outline') }} />
+      <Tabs.Screen name="card" options={{ title: t('nav.card'), tabBarIcon: tabIcon('card-outline') }} />
+      <Tabs.Screen name="gallery" options={{ title: t('nav.gallery'), tabBarIcon: tabIcon('images-outline') }} />
+      <Tabs.Screen name="profile" options={{ title: t('nav.profile'), tabBarIcon: tabIcon('person-outline') }} />
     </Tabs>
   );
 }

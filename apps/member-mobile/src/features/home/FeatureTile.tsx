@@ -4,19 +4,19 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, spacing } from '@my-people/design-tokens/mobile';
 
-import { AppText, IconTile } from '@my-people/mobile-ui';
+import { AppText } from '@my-people/mobile-ui';
 
-import { FEATURE_ICONS, FEATURE_ROUTES, FEATURE_TINTS } from './features';
+import { FEATURE_ICONS, FEATURE_ROUTES } from './features';
 
 type Feature = HomeView['quickActions'][number];
 
 /**
- * A quick action or hub service: a tinted icon above its name. Locked ones show the padlock and the
- * reason (FR-HOME-008); ones not built yet say so; only working ones open.
+ * A quick action or hub service. Locked ones show the padlock and the reason
+ * (FR-HOME-008); ones not built yet say so; only working ones open.
  */
-export function FeatureTile({ feature }: { feature: Feature }) {
+export function FeatureTile({ feature, divided = false }: { feature: Feature; divided?: boolean }) {
   const { t } = useTranslation();
   const route = FEATURE_ROUTES[feature.key];
   const label = t(`m.home.feature_${feature.key}`, { defaultValue: feature.key });
@@ -34,13 +34,14 @@ export function FeatureTile({ feature }: { feature: Feature }) {
       accessibilityRole={opens ? 'link' : 'text'}
       accessibilityLabel={caption ? `${label}. ${caption}` : label}
       aria-disabled={!opens}
-      style={({ pressed }) => [styles.tile, pressed && styles.pressed]}>
-      <View style={styles.top}>
-        <IconTile icon={FEATURE_ICONS[feature.key] ?? 'ellipse-outline'} tint={opens ? FEATURE_TINTS[feature.key] ?? 'blue' : 'navy'} />
-        {feature.available ? null : <Ionicons name="lock-closed-outline" size={16} color={colors.textMuted} />}
-      </View>
-      <View style={styles.text}>
-        <AppText step="card" weight={400} tone={opens ? 'default' : 'muted'}>
+      style={({ pressed }) => [styles.row, divided && styles.divided, pressed && styles.pressed]}>
+      <Ionicons
+        name={feature.available ? (FEATURE_ICONS[feature.key] ?? 'ellipse-outline') : 'lock-closed-outline'}
+        size={20}
+        color={opens ? colors.textSecondary : colors.textMuted}
+      />
+      <View style={styles.copy}>
+        <AppText step="label" tone={opens ? 'default' : 'muted'}>
           {label}
         </AppText>
         {caption ? (
@@ -49,24 +50,14 @@ export function FeatureTile({ feature }: { feature: Feature }) {
           </AppText>
         ) : null}
       </View>
+      {opens ? <Ionicons name="chevron-forward" size={18} color={colors.textMuted} /> : null}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  tile: {
-    flexBasis: '46%',
-    flexGrow: 1,
-    minHeight: 124,
-    justifyContent: 'space-between',
-    gap: spacing[4],
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderWidth: 1,
-    borderRadius: radius.card,
-    padding: spacing[4],
-  },
+  row: { minHeight: control.touchMin + spacing[3], flexDirection: 'row', alignItems: 'center', gap: spacing[3], padding: spacing[3] },
+  divided: { borderTopWidth: 1, borderTopColor: colors.divider },
   pressed: { backgroundColor: colors.surfaceVariant },
-  top: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
-  text: { gap: 2 },
+  copy: { flex: 1, gap: 2 },
 });

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens/mobile';
+import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
@@ -101,19 +101,36 @@ export default function RegisterScreen() {
     2: !dobInvalid,
     3: password.length >= 10 && password === confirm && accepted,
   }[step as 1 | 2 | 3];
+  const stepTitle = {
+    1: t('m.register.stepIdentity'),
+    2: t('m.register.stepDetails'),
+    3: t('m.register.stepSecurity'),
+  }[step as 1 | 2 | 3];
 
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.select({ ios: 'padding', android: 'height' })}>
-      <Screen edges={['bottom']}>
-        <AppText step="label" tone="muted" accessibilityLiveRegion="polite">
-          {t('m.register.step', { step, total: STEPS })}
-        </AppText>
+      <Screen title={t('m.register.title')} edges={['bottom']} maxContentWidth={560}>
+        <View style={styles.progressHeader}>
+          <View style={styles.progressCopy}>
+            <AppText step="secondary" tone="muted" accessibilityLiveRegion="polite">
+              {t('m.register.step', { step, total: STEPS })}
+            </AppText>
+            <AppText step="section" accessibilityRole="header">
+              {stepTitle}
+            </AppText>
+          </View>
+          <View style={styles.progressTrack} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+            {Array.from({ length: STEPS }, (_, index) => (
+              <View
+                key={index}
+                style={[styles.progressSegment, index < step && styles.progressSegmentActive]}
+              />
+            ))}
+          </View>
+        </View>
 
         {step === 1 ? (
           <View style={styles.group}>
-            <AppText step="section" accessibilityRole="header">
-              {t('m.register.routeTitle')}
-            </AppText>
             <IdRouteFields
               value={id}
               onChange={(next) => {
@@ -169,9 +186,6 @@ export default function RegisterScreen() {
 
         {step === 3 ? (
           <View style={styles.group}>
-            <AppText step="section" accessibilityRole="header">
-              {t('m.register.passwordTitle')}
-            </AppText>
             <TextField
               label={t('m.signIn.passwordLabel')}
               hint={t('m.register.passwordHint')}
@@ -236,6 +250,16 @@ export default function RegisterScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  group: { gap: spacing[3] },
+  progressHeader: { gap: spacing[3] },
+  progressCopy: { gap: spacing[1] },
+  progressTrack: { flexDirection: 'row', gap: spacing[2] },
+  progressSegment: {
+    flex: 1,
+    height: 4,
+    borderRadius: radius.pill,
+    backgroundColor: colors.border,
+  },
+  progressSegmentActive: { backgroundColor: colors.primary },
+  group: { gap: spacing[4] },
   actions: { gap: spacing[3] },
 });

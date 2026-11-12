@@ -39,7 +39,7 @@ Ask the developer directly: *"This task seems to want a different font for X —
 
 - Tamil label first, English sub-label under it where both are shown (per `PROJECT.md`).
 - Reuse the existing design tokens (`app/src/core/theme/tokens.ts`, `app/src/core/theme/tokens.css`) rather than hardcoding colors — but tokens for color/spacing are a separate concern from the font-family lock above, which is absolute.
-- New apps take colours, spacing and fonts from `packages/design-tokens`: the dashboard from its root entry (Inter, Noto Sans Tamil, JetBrains Mono; kept equal to the PWA by `test/matches-pwa.test.ts`), the Expo apps from `@my-people/design-tokens/mobile` (Outfit, Noto Sans Tamil, JetBrains Mono; the redesign of 11 November 2026).
+- New apps take colours, spacing and fonts from `packages/design-tokens`: the dashboard from its root entry (Inter, Noto Sans Tamil, JetBrains Mono; kept equal to the PWA by `test/matches-pwa.test.ts`), the Expo app from `@my-people/design-tokens/mobile`, which takes its colours and sizes from the root entry (Puvi's brand theme: red, yellow and gold on a cream page, chosen by the owner on 12 November 2026 over the reference-recording look) and keeps its own fonts (Outfit, Noto Sans Tamil, JetBrains Mono).
 
 ---
 

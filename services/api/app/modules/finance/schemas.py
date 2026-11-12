@@ -193,3 +193,60 @@ class StaffSlipViewTokenResponse(BaseModel):
     token: str
     expires_at: datetime = Field(..., alias="expiresAt")
     view_url: str = Field(..., alias="viewUrl")
+
+
+FinanceControlKey = Literal[
+    "enhanced_review_threshold_minor",
+    "statutory_reporting_mode",
+    "slip_retention_days",
+    "third_party_payment_mode",
+    "pilot_currency",
+]
+
+
+class FinanceProductionControlRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    control_key: FinanceControlKey = Field(..., alias="controlKey")
+    decision_revision_id: UUID = Field(..., alias="decisionRevisionId")
+    integer_value: int | None = Field(None, alias="integerValue")
+    text_value: str | None = Field(None, min_length=1, max_length=120, alias="textValue")
+    evidence_ref: str = Field(..., min_length=3, max_length=300, alias="evidenceRef")
+    reason: str = Field(..., min_length=10, max_length=1000)
+
+
+class FinanceProductionControlResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    id: UUID
+    control_key: str = Field(..., alias="controlKey")
+    decision_key: str = Field(..., alias="decisionKey")
+    decision_revision_id: UUID = Field(..., alias="decisionRevisionId")
+    decision_revision: int = Field(..., alias="decisionRevision")
+    integer_value: int | None = Field(None, alias="integerValue")
+    text_value: str | None = Field(None, alias="textValue")
+    evidence_ref: str = Field(..., alias="evidenceRef")
+    reason: str
+    recorded_at: datetime = Field(..., alias="recordedAt")
+
+
+class FinanceReadinessCheck(BaseModel):
+    key: str
+    label: str
+    ready: bool
+    detail: str
+
+
+class FinanceProductionReadinessResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    ready: bool
+    checks: list[FinanceReadinessCheck]
+    controls: list[FinanceProductionControlResponse]
+    reviewer_count: int = Field(..., alias="reviewerCount")
+    approver_count: int = Field(..., alias="approverCount")
+    distinct_finance_staff_count: int = Field(..., alias="distinctFinanceStaffCount")
+    receipt_last_number: int = Field(..., alias="receiptLastNumber")
+    receipt_remaining: int = Field(..., alias="receiptRemaining")
+    card_payments_enabled: bool = Field(False, alias="cardPaymentsEnabled")
+    automated_evidence_deletion_enabled: bool = Field(False, alias="automatedEvidenceDeletionEnabled")

@@ -28,7 +28,7 @@ export function EditFormGsSelectButton({ dsCode, setGsSheetOpen, t, gs }: Props)
           flexShrink: 0,
         }}
       >
-        <Icon name="mapPin" size={18} color="#14263D" />
+        <Icon name="mapPin" size={18} color="var(--primary)" />
       </span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ font: `700 13px/1.2 ${font.ta}`, color: '#1E293B' }}>
@@ -37,7 +37,7 @@ export function EditFormGsSelectButton({ dsCode, setGsSheetOpen, t, gs }: Props)
         <div
           style={{
             font: `500 13px/1.3 ${font.ta}`,
-            color: gs ? '#14263D' : '#64748B',
+            color: gs ? 'var(--primary)' : '#64748B',
             marginTop: 3,
             overflow: 'hidden',
             textOverflow: 'ellipsis',

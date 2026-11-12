@@ -96,7 +96,7 @@ export function DonateTab({ onDone }: { onDone: () => void }) {
       >
         {cardEnabled && (
           <MethodCard
-            emoji="💳"
+            icon="card"
             title={t('fund.methodCard')}
             sub={t('fund.methodCardSub')}
             active={method === 'card'}
@@ -104,7 +104,7 @@ export function DonateTab({ onDone }: { onDone: () => void }) {
           />
         )}
         <MethodCard
-          emoji="🧾"
+          icon="fileText"
           title={t('fund.methodSlip')}
           sub={t('fund.methodSlipSub')}
           active={method === 'slip'}

@@ -88,7 +88,9 @@ class Settings(BaseSettings):
     finance_clamav_host: str = "127.0.0.1"
     finance_clamav_port: int = 3310
     finance_clamav_timeout_seconds: float = 10.0
-    finance_internal_review_threshold_minor: int = 10_000_000  # LKR 100,000 internal review trigger
+    # Development fallback only. Enforced environments read the current value
+    # from the immutable FIN-01 production control recorded through P3.
+    finance_internal_review_threshold_minor: int = 10_000_000
 
     @field_validator("allowed_origins", mode="before")
     @classmethod

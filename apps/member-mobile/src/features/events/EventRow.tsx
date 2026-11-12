@@ -22,6 +22,12 @@ export function EventRow({ event }: { event: EventSummary }) {
   const language = useLanguage();
   const localized = useLocalized();
   const title = localized(event.titleEn, event.titleTa);
+  let status: { tone: 'error' | 'pending' | 'verified' | 'neutral'; label: string } | null = null;
+  if (event.state === 'cancelled') status = { tone: 'error', label: t('m.events.cancelled') };
+  else if (event.myResponse === 'waitlisted') status = { tone: 'pending', label: t('m.events.waitlisted') };
+  else if (event.myResponse === 'going') status = { tone: 'verified', label: t('m.events.going') };
+  else if (event.myResponse === 'maybe') status = { tone: 'neutral', label: t('m.events.maybe') };
+  else if (event.placesLeft === 0) status = { tone: 'neutral', label: t('m.events.full') };
   return (
     <SurfaceCard
       onPress={() => router.push({ pathname: '/events/[id]', params: { id: event.id } })}
@@ -29,28 +35,16 @@ export function EventRow({ event }: { event: EventSummary }) {
       <View style={styles.row}>
         <DateBadge iso={event.startsAt} />
         <View style={styles.text}>
-          <AppText step="card" weight={400}>{title}</AppText>
-          <View style={styles.meta}>
-            <Ionicons name="time-outline" size={14} color={colors.textMuted} />
-            <AppText step="secondary" tone="muted" style={styles.flex}>
-              {formatSpan(event.startsAt, event.endsAt, language)}
-            </AppText>
-          </View>
-          <View style={styles.meta}>
-            <Ionicons name="location-outline" size={14} color={colors.textMuted} />
-            <AppText step="secondary" tone="muted" numberOfLines={1} style={styles.flex}>
-              {event.venue}
-            </AppText>
-          </View>
-          <View style={styles.tags}>
-            {event.state === 'cancelled' ? <StatusTag tone="error" label={t('m.events.cancelled')} /> : null}
-            {event.myResponse === 'going' ? <StatusTag tone="verified" label={t('m.events.going')} /> : null}
-            {event.myResponse === 'waitlisted' ? <StatusTag tone="pending" label={t('m.events.waitlisted')} /> : null}
-            {event.myResponse === 'maybe' ? <StatusTag tone="neutral" label={t('m.events.maybe')} /> : null}
-            {event.placesLeft === 0 && event.state !== 'cancelled' ? <StatusTag tone="neutral" label={t('m.events.full')} /> : null}
-          </View>
+          <AppText step="card">{title}</AppText>
+          <AppText step="secondary" tone="muted">
+            {formatSpan(event.startsAt, event.endsAt, language)}
+          </AppText>
+          <AppText step="secondary" tone="muted" numberOfLines={1}>
+            {event.venue}
+          </AppText>
+          {status ? <StatusTag tone={status.tone} label={status.label} /> : null}
         </View>
-        <Ionicons name="chevron-forward" size={18} color={colors.controlBorder} style={styles.chevron} />
+        <Ionicons name="chevron-forward" size={18} color={colors.textMuted} style={styles.chevron} />
       </View>
     </SurfaceCard>
   );
@@ -59,8 +53,5 @@ export function EventRow({ event }: { event: EventSummary }) {
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: spacing[3] },
   text: { flex: 1, gap: 2 },
-  meta: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  flex: { flex: 1 },
   chevron: { alignSelf: 'center' },
-  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2], marginTop: spacing[1] },
 });

@@ -56,15 +56,13 @@ export function scaledTextStyle(language: string, step: keyof typeof typeScale, 
   return { ...base, fontSize: Math.round(base.fontSize * scale), lineHeight: Math.ceil(base.lineHeight * scale) };
 }
 
-// Noto Sans Tamil sets much wider than Outfit; the largest steps come down a little so Tamil headings
-// keep to the same lines the English ones do.
-const TAMIL_SIZE: Partial<Record<keyof typeof typeScale, number>> = { display: 26, page: 24, section: 18, card: 16 };
-
 /** Font, size and line height for a step of the type scale. */
 export function textStyle(language: string, step: keyof typeof typeScale) {
   const { size: latinSize, lineHeight, weight } = typeScale[step];
   const tamil = language === 'ta';
-  const size = tamil ? TAMIL_SIZE[step] ?? latinSize : latinSize;
+  // Puvi's type scale is the PWA's, small enough that Tamil keeps the English sizes; it only
+  // gets more line height (lineHeightRatio.tamil).
+  const size = latinSize;
   // Text must remain readable when system font scaling expands Tamil glyphs: every step keeps
   // above the 1.4 accessibility baseline, and Tamil gets its larger script-specific leading.
   const accessibleLineHeight = Math.ceil(size * 1.4);
