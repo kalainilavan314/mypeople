@@ -109,6 +109,71 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET ?status&limit&offset` | `reports.view` | `200 {items,total,limit,offset}`; bounded and audited, without reporter identity/contact | `400 invalid_state`, `403`, `422` |
 | `GET /{reportId}` | `reports.view` over the immutable submission area | `200` report detail without reporter identity/contact; access is audited | `403`, `404` |
 
+### Community issues for members (`/v1/issues`)
+
+Behind the `community_issues` switch (phase 2): while it is off in production every route answers `404 feature_unavailable`.
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /area` | a session | `200 {hasArea, gnNameEn, gnNameTa, updates, issues, projects}`: published issues of the member's GN division only, with the moderator's public title (H05) | `401` |
+| `GET /reporting` | a session | `200 {allowed, reason, hasArea, gnNameEn, gnNameTa, categories, descriptionMin, maxPhotos}` | `401` |
+| `POST /photos`, `POST /addition-photos` body = the image (`image/jpeg`, `png`, `webp`) | a session | `201 {id, width, height}`: re-encoded without metadata and sealed in the evidence store, never the gallery | `413`, `415`, `422 {code: "issue_refused", problems: ["too_many_photos_today"]}`, `503 evidence_storage_not_configured` |
+| `POST /` body `{clientReference, category, title, description, locationKind: "my_gn" \| "landmark" \| "text", locationText?, visibility: "team" \| "public", photoIds}` | Verified and Active (FR-RPT-017) | `201` the receipt (`CI-` case number, stage 1, next step); the same `clientReference` returns the first receipt | `422 {code: "issue_refused", problems}`: `identity_not_verified`, `membership_not_active`, `location_required`, `no_area_on_profile`, `too_many_reports_today`, `photo_not_found` |
+| `GET /mine` | a session | `200 {items}` the member's reports, newest first | `401` |
+| `GET /{id}` | the reporter, or a published issue in the member's GN (or one they follow) | `200` the four-stage stepper with dates, status, responsible tier; `report` only for the reporter (question asked, next step, linked case, closure response) | `404 not_found` |
+| `PUT /{id}/follow` body `{follow}` | as above | `200` | `404`, `422 not_public` |
+| `POST /{id}/information` body `{body, photoIds}` | Verified and Active; the reporter or a published issue | `201 {id, state: "pending", isReply}`; the reporter's answer to a request for details returns the case to the GN stage | `404`, `422 cannot_add_information`, `photo_not_found` |
+| `POST /{id}/closure-response` body `{resolved, rating?, note?}` | the reporter, within 30 days of closure | `200`; `resolved: false` challenges the closure (a note is required) and alerts the closing tier | `404`, `422 not_closed`, `already_responded`, `challenge_window_closed`, `note_required` |
+
+### Case workflow for staff (`/v1/cases`)
+
+Same switch. Each endpoint needs a case permission (`cases.collect`, `cases.research`, `cases.decide_district`, `cases.plan_regional`, `cases.approve_executive`, `cases.implement_and_close`) or `content.moderate`; the service then checks the case's area, its stage and the caller's tier (Tiers 2B and 3B never send a decision). Cases outside the caller's areas answer `404`. Every action answers `200` with the updated case file; refusals are `403 forbidden` or `own_record` (audited) and `409 {code: "case_refused", problems}`, for example `wrong_stage`, `facts_required`, `completeness_check_incomplete`, `owner_not_eligible`, `evidence_required`, `bilingual_summary_required`.
+
+| Endpoint | Stage and permission | Effect |
+|---|---|---|
+| `GET ?stage&mine&overdue&districtClosures&search&limit&offset` | any | `200 {items, total, counts}`; overdue first |
+| `GET /{id}` | any (read audited) | the case file with history, evidence, additions, linked reports, open challenge and `allowedActions` |
+| `GET /{id}/owners?permission` | any | deciding holders of the permission over the case's area |
+| `GET /{id}/reporter-contact` | the owner, with `cases.view_reporter_contact` | name, phone and member code; audited |
+| `GET /{id}/photos/{photoId}`, `POST /{id}/photos` | any | the WebP image (`no-store`, audited); a case photo for progress or closure |
+| `POST /{id}/facts` `{statement, source}` | GN, `cases.collect` | W03 fact with its source |
+| `POST /{id}/findings` `{kind, statement, source?}` | DS, `cases.research` | W04 finding (`verified_fact` needs a source) |
+| `POST /{id}/notes` `{text}` | any open stage | a note |
+| `POST /{id}/return` `{question}` | GN, deciding | Returned; the reporter is asked |
+| `POST /{id}/link` `{parentCaseNumber, note?}` | GN, deciding | Linked to the parent; the reporter hears the parent's progress |
+| `POST /{id}/forward` `{locationConfirmed, descriptionClear, evidenceReviewed, ownerId, note}` | GN, deciding | to DS with a named owner |
+| `POST /{id}/ds-report` `{summary, evidenceRefs, recommendation, districtOwnerId}` | DS, deciding | to the district |
+| `POST /{id}/district-decision` `{decision: "act" \| "escalate", ...}` | district, `cases.decide_district` | act within authority (implementation) or escalate (regional) |
+| `POST /{id}/regional-plan` `{solution, responsibleTier, resources, expectedOutcome, reportingPlan}` | regional, `cases.plan_regional` | to Tier 5 |
+| `POST /{id}/executive-decision` `{decision: "approve" \| "return" \| "decline", ...}` | executive, `cases.approve_executive` | approve with conditions, return, or decline |
+| `POST /{id}/progress` `{step, evidenceRefs, photoIds}` | implementation, the owner | progress evidence |
+| `POST /{id}/close` `{outcome, evidenceRefs, photoIds, limitations?, summaryEn, summaryTa}` | implementation, the owner | Resolved; district closures are reported to Tiers 4 and 5 |
+| `POST /{id}/assign` `{ownerId, note}` | the stage's tier or the tier above | a handoff in the stage, or taking an unassigned case |
+| `POST /{id}/challenge-decision` `{accept, reason, stage?, ownerId?, dueDate?}` | resolved with an open challenge, district or executive | reopen at a stage with a new owner, or reject |
+| `POST /{id}/public-summary` `{publish, titleEn, titleTa, summaryEn, summaryTa, reason?}` | a public report, `content.moderate` | publish or withhold the public summary |
+| `POST /{id}/additions/{additionId}/moderation` `{approve, reason?}` | `content.moderate` | approve or reject added information |
+
+### Volunteering (`/v1/volunteering`)
+
+Behind the `volunteering` switch (phase 2). Refusals are `422 {code: "volunteer_refused", problems}`; coordinator endpoints need `volunteers.manage` over the opportunity's area (`403 outside_your_area`, `own_record`). A volunteer's phone number is never returned and no list ranks volunteers.
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /skills` | a session | `200 {skills, availability, profile}` (H10) | `401` |
+| `PUT /profile` body `{skills, availability, travelArea: "my_gn" \| "my_ds", consent}` | a session | `200` the profile; saved only with consent | `422 consent_required`, `skills_required`, `unknown_skill` |
+| `DELETE /profile` | a session | `204`; consent withdrawn, profile deleted | none |
+| `GET /opportunities`, `GET /opportunities/{id}` | a session | open opportunities in the member's area with the five briefing elements, `saved` and `myOffer` (H11) | `404` |
+| `POST /opportunities/{id}/offer`, `DELETE .../offer` | Verified and Active | `201` the offer (`VF-` receipt, also in My Activity); withdraw before a decision | `422 identity_not_verified`, `membership_not_active`, `opportunity_not_open`, `already_offered`, `request_a_change_instead` |
+| `PUT /opportunities/{id}/saved` body `{saved}` | a session | `200` | `404` |
+| `GET /assignments` | a session | `200` offers and confirmed assignments with role, meeting point, history and messages (H12) | `401` |
+| `POST /offers/{id}/contact` body `{kind: "message" \| "change_request", body, confirmed: true}` | the volunteer | `201`; the coordinators are told; a change request keeps the assignment | `422 confirmation_required`, `not_confirmed`, `offer_closed` |
+| `GET /manage/opportunities?state`, `POST /manage/opportunities`, `PATCH .../{id}` | `volunteers.manage` | drafts and opportunities in the coordinator's areas, with places, confirmed and waiting counts | `403`, `422 starts_in_past`, `ends_before_start`, `unknown_skill`, `unknown_area` |
+| `POST /manage/opportunities/{id}/state` body `{state: "open" \| "closed" \| "cancelled", reason?}` | as above | `200`; cancelling tells everyone who offered | `422 not_allowed_from:<state>`, `reason_required` |
+| `GET /manage/opportunities/{id}/offers` | as above | offers by time, with skills only where the volunteer consented | `403`, `404` |
+| `POST /manage/offers/{id}/decision` body `{confirm, roleEn?, roleTa?, meetingPointEn?, meetingPointTa?, reason?}` | as above | `200`; the volunteer is told | `403 own_record`, `422 meeting_point_required`, `places_filled`, `reason_required`, `not_awaiting_decision` |
+| `GET /manage/inbox`, `POST /manage/inbox/{id}/answer` body `{answer}` | as above | open messages and change requests; the answer reaches the volunteer | `422 already_answered` |
+| `GET /manage/volunteers?skill` | as above | consented skills profiles in the coordinator's areas, by name | `403` |
+
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 
 | Endpoint | Needs | Success | Errors |

@@ -23,7 +23,10 @@ VERIFICATION_VALID_FOR = timedelta(days=365)
 AREA_REVIEW = "members.verify"
 
 AreaDecision = Literal["approve", "decline"]
-ActivityKind = Literal["identity_review", "appeal", "event", "removal_request", "area_change", "privacy_request"]
+ActivityKind = Literal[
+    "identity_review", "appeal", "event", "removal_request", "area_change", "privacy_request", "issue_report",
+    "volunteer_offer",
+]
 ACTIVITY_KINDS: tuple[ActivityKind, ...] = (
     "identity_review",
     "appeal",
@@ -31,6 +34,8 @@ ACTIVITY_KINDS: tuple[ActivityKind, ...] = (
     "removal_request",
     "area_change",
     "privacy_request",
+    "issue_report",  # FR-RPT-014: a report's case appears in My Activity
+    "volunteer_offer",  # FR-VOL-005: "Offered, awaiting coordinator"
 )
 
 

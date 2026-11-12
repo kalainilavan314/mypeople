@@ -8982,6 +8982,972 @@
         }
       }
     },
+    "/v1/volunteering/skills": {
+      "get": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "Read Skills",
+        "description": "H10: the skills list, the availability choices and the member's own profile.",
+        "operationId": "read_skills_v1_volunteering_skills_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VolunteerSkillsOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/volunteering/profile": {
+      "put": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "Save Profile",
+        "description": "FR-VOL-001 to 003: saved only with consent to share with authorised coordinators.",
+        "operationId": "save_profile_v1_volunteering_profile_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VolunteerProfileIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VolunteerProfileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area, own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "volunteer_refused with problems"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "Withdraw Profile",
+        "description": "Withdraw consent: the profile is deleted and coordinators no longer see it.",
+        "operationId": "withdraw_profile_v1_volunteering_profile_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/volunteering/opportunities": {
+      "get": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "List Opportunities",
+        "description": "Open opportunities in the member's area, soonest first.",
+        "operationId": "list_opportunities_v1_volunteering_opportunities_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MemberOpportunityOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Opportunities V1 Volunteering Opportunities Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/volunteering/opportunities/{opportunity_id}": {
+      "get": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "Read Opportunity",
+        "description": "H11: the briefing with time, place, role, what to bring and the coordinating team.",
+        "operationId": "read_opportunity_v1_volunteering_opportunities__opportunity_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "opportunity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Opportunity Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberOpportunityOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area, own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "volunteer_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/volunteering/opportunities/{opportunity_id}/offer": {
+      "post": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "Offer To Help",
+        "description": "FR-VOL-005: \"Offer to help\"; a receipt, awaiting the coordinator.",
+        "operationId": "offer_to_help_v1_volunteering_opportunities__opportunity_id__offer_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "opportunity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Opportunity Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyOfferOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area, own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "volunteer_refused with problems"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "Withdraw Offer",
+        "operationId": "withdraw_offer_v1_volunteering_opportunities__opportunity_id__offer_delete",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "opportunity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Opportunity Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "forbidden, outside_your_area, own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "volunteer_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/volunteering/opportunities/{opportunity_id}/saved": {
+      "put": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "Set Saved",
+        "description": "\"Save for later\".",
+        "operationId": "set_saved_v1_volunteering_opportunities__opportunity_id__saved_put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "opportunity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Opportunity Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavedIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberOpportunityOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area, own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "volunteer_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/volunteering/assignments": {
+      "get": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "List My Assignments",
+        "description": "H12: offers and confirmed assignments with their history and messages.",
+        "operationId": "list_my_assignments_v1_volunteering_assignments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VolunteerOfferItemOut"
+                  },
+                  "type": "array",
+                  "title": "Response List My Assignments V1 Volunteering Assignments Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/volunteering/offers/{offer_id}/contact": {
+      "post": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "Contact Coordinator",
+        "description": "FR-VOL-007, 008: a message or change request to the coordinators, through the app.",
+        "operationId": "contact_coordinator_v1_volunteering_offers__offer_id__contact_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "offer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Offer Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContactIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area, own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "volunteer_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/volunteering/manage/opportunities": {
+      "get": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "List Managed",
+        "operationId": "list_managed_v1_volunteering_manage_opportunities_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "draft",
+                      "open",
+                      "closed",
+                      "cancelled"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ManagedOpportunityOut"
+                  },
+                  "title": "Response List Managed V1 Volunteering Manage Opportunities Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "Create Opportunity",
+        "description": "A draft; it reaches members once opened.",
+        "operationId": "create_opportunity_v1_volunteering_manage_opportunities_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpportunityIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedOpportunityOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area, own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "volunteer_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/volunteering/manage/opportunities/{opportunity_id}": {
+      "patch": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "Update Opportunity",
+        "operationId": "update_opportunity_v1_volunteering_manage_opportunities__opportunity_id__patch",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "opportunity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Opportunity Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpportunityUpdateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedOpportunityOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area, own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "volunteer_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/volunteering/manage/opportunities/{opportunity_id}/state": {
+      "post": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "Move Opportunity",
+        "description": "Open, close or cancel; cancelling tells everyone who offered, with the reason.",
+        "operationId": "move_opportunity_v1_volunteering_manage_opportunities__opportunity_id__state_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "opportunity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Opportunity Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpportunityStateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedOpportunityOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area, own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "volunteer_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/volunteering/manage/opportunities/{opportunity_id}/offers": {
+      "get": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "List Offers",
+        "operationId": "list_offers_v1_volunteering_manage_opportunities__opportunity_id__offers_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "opportunity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Opportunity Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OfferCardOut"
+                  },
+                  "title": "Response List Offers V1 Volunteering Manage Opportunities  Opportunity Id  Offers Get"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area, own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "volunteer_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/volunteering/manage/offers/{offer_id}/decision": {
+      "post": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "Decide Offer",
+        "description": "S10: confirm with a role and meeting point, or decline with a reason.",
+        "operationId": "decide_offer_v1_volunteering_manage_offers__offer_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "offer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Offer Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfferDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyOfferOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area, own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "volunteer_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/volunteering/manage/inbox": {
+      "get": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "List Inbox",
+        "description": "Open messages and change requests from volunteers in the coordinator's areas, oldest first.",
+        "operationId": "list_inbox_v1_volunteering_manage_inbox_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/InboxItemOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Inbox V1 Volunteering Manage Inbox Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/volunteering/manage/inbox/{contact_id}/answer": {
+      "post": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "Answer Contact",
+        "operationId": "answer_contact_v1_volunteering_manage_inbox__contact_id__answer_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "contact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Contact Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area, own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "volunteer_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/volunteering/manage/volunteers": {
+      "get": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "List Volunteers",
+        "description": "Consented skills profiles in the coordinator's areas, by name; no phone numbers, no ranking.",
+        "operationId": "list_volunteers_v1_volunteering_manage_volunteers_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "skill",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Skill"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 200,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VolunteerCardOut"
+                  },
+                  "title": "Response List Volunteers V1 Volunteering Manage Volunteers Get"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area, own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "volunteer_refused with problems"
+          }
+        }
+      }
+    },
     "/v1/home": {
       "get": {
         "tags": [
@@ -9120,7 +10086,9 @@
                     "event",
                     "removal_request",
                     "area_change",
-                    "privacy_request"
+                    "privacy_request",
+                    "issue_report",
+                    "volunteer_offer"
                   ],
                   "type": "string"
                 },
@@ -14306,7 +15274,9 @@
               "event",
               "removal_request",
               "area_change",
-              "privacy_request"
+              "privacy_request",
+              "issue_report",
+              "volunteer_offer"
             ],
             "title": "Kind"
           },
@@ -14894,6 +15864,21 @@
         ],
         "title": "AlertAnswerIn"
       },
+      "AnswerIn": {
+        "properties": {
+          "answer": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answer"
+        ],
+        "title": "AnswerIn"
+      },
       "AppealDecisionInput": {
         "properties": {
           "outcome": {
@@ -15452,6 +16437,32 @@
           "reason"
         ],
         "title": "AreaDecisionIn"
+      },
+      "AreaIn": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "province",
+              "district",
+              "ds",
+              "gn"
+            ],
+            "title": "Level"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 2,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "code"
+        ],
+        "title": "AreaIn"
       },
       "AreaNameOut": {
         "properties": {
@@ -18738,6 +19749,105 @@
           "purposeLimitationEn"
         ],
         "title": "ConsentNoticeOut"
+      },
+      "ContactIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "message",
+              "change_request"
+            ],
+            "title": "Kind"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 5,
+            "title": "Body",
+            "description": "For a change request, the reason (FR-VOL-008)"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed",
+            "description": "The member confirmed sending; an accidental tap sends nothing"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "body",
+          "confirmed"
+        ],
+        "title": "ContactIn"
+      },
+      "ContactOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "message",
+              "change_request"
+            ],
+            "title": "Kind"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "answered"
+            ],
+            "title": "State"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer"
+          },
+          "answeredAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answeredat"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "body",
+          "state",
+          "answer",
+          "answeredAt",
+          "createdAt"
+        ],
+        "title": "ContactOut"
       },
       "ContributionCreateRequest": {
         "properties": {
@@ -22388,6 +23498,61 @@
         ],
         "title": "IdentityDataItemOut"
       },
+      "InboxItemOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "message",
+              "change_request"
+            ],
+            "title": "Kind"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "volunteerName": {
+            "type": "string",
+            "title": "Volunteername"
+          },
+          "offerRef": {
+            "type": "string",
+            "title": "Offerref"
+          },
+          "opportunityId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Opportunityid"
+          },
+          "opportunityTitleEn": {
+            "type": "string",
+            "title": "Opportunitytitleen"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "body",
+          "volunteerName",
+          "offerRef",
+          "opportunityId",
+          "opportunityTitleEn",
+          "createdAt"
+        ],
+        "title": "InboxItemOut"
+      },
       "InboxOut": {
         "properties": {
           "items": {
@@ -23949,6 +25114,167 @@
         ],
         "title": "ManagedEventOut"
       },
+      "ManagedOpportunityOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "opportunityRef": {
+            "type": "string",
+            "title": "Opportunityref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "roleEn": {
+            "type": "string",
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "type": "string",
+            "title": "Roleta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          },
+          "placeEn": {
+            "type": "string",
+            "title": "Placeen"
+          },
+          "placeTa": {
+            "type": "string",
+            "title": "Placeta"
+          },
+          "bringEn": {
+            "type": "string",
+            "title": "Bringen"
+          },
+          "bringTa": {
+            "type": "string",
+            "title": "Bringta"
+          },
+          "teamEn": {
+            "type": "string",
+            "title": "Teamen"
+          },
+          "teamTa": {
+            "type": "string",
+            "title": "Teamta"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventid"
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "open",
+              "closed",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "places": {
+            "type": "integer",
+            "title": "Places"
+          },
+          "confirmed": {
+            "type": "integer",
+            "title": "Confirmed"
+          },
+          "waiting": {
+            "type": "integer",
+            "title": "Waiting"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "cancelReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelreason"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "opportunityRef",
+          "titleEn",
+          "titleTa",
+          "roleEn",
+          "roleTa",
+          "descriptionEn",
+          "descriptionTa",
+          "placeEn",
+          "placeTa",
+          "bringEn",
+          "bringTa",
+          "teamEn",
+          "teamTa",
+          "startsAt",
+          "endsAt",
+          "eventId",
+          "skills",
+          "state",
+          "places",
+          "confirmed",
+          "waiting",
+          "areaKey",
+          "cancelReason",
+          "createdAt"
+        ],
+        "title": "ManagedOpportunityOut"
+      },
       "ManualCheckInIn": {
         "properties": {
           "memberCode": {
@@ -24174,6 +25500,145 @@
         ],
         "title": "MemberLookupOut",
         "description": "S03: the minimal fields support staff need; no contact details, no ID number."
+      },
+      "MemberOpportunityOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "opportunityRef": {
+            "type": "string",
+            "title": "Opportunityref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "roleEn": {
+            "type": "string",
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "type": "string",
+            "title": "Roleta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          },
+          "placeEn": {
+            "type": "string",
+            "title": "Placeen"
+          },
+          "placeTa": {
+            "type": "string",
+            "title": "Placeta"
+          },
+          "bringEn": {
+            "type": "string",
+            "title": "Bringen"
+          },
+          "bringTa": {
+            "type": "string",
+            "title": "Bringta"
+          },
+          "teamEn": {
+            "type": "string",
+            "title": "Teamen"
+          },
+          "teamTa": {
+            "type": "string",
+            "title": "Teamta"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventid"
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "open",
+              "closed",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "saved": {
+            "type": "boolean",
+            "title": "Saved"
+          },
+          "myOffer": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MyOfferOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "opportunityRef",
+          "titleEn",
+          "titleTa",
+          "roleEn",
+          "roleTa",
+          "descriptionEn",
+          "descriptionTa",
+          "placeEn",
+          "placeTa",
+          "bringEn",
+          "bringTa",
+          "teamEn",
+          "teamTa",
+          "startsAt",
+          "endsAt",
+          "eventId",
+          "skills",
+          "state",
+          "saved",
+          "myOffer"
+        ],
+        "title": "MemberOpportunityOut"
       },
       "MemberProfile": {
         "properties": {
@@ -24682,6 +26147,109 @@
         "title": "MyMembershipOut",
         "description": "The member's own membership state (A12, C06). The reason code is shown; staff notes are not."
       },
+      "MyOfferOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "offerRef": {
+            "type": "string",
+            "title": "Offerref"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "offered",
+              "confirmed",
+              "declined",
+              "withdrawn",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "roleEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roleta"
+          },
+          "meetingPointEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meetingpointen"
+          },
+          "meetingPointTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meetingpointta"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "offerRef",
+          "state",
+          "roleEn",
+          "roleTa",
+          "meetingPointEn",
+          "meetingPointTa",
+          "decisionReason",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "MyOfferOut"
+      },
       "MyReportOut": {
         "properties": {
           "title": {
@@ -25096,6 +26664,252 @@
         "title": "NotificationOut",
         "description": "An inbox item. targetKind and targetId say what it opens (BR-027); actionNeeded stays true\nuntil the task is done, whether or not it was read."
       },
+      "OfferCardOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "offerRef": {
+            "type": "string",
+            "title": "Offerref"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "offered",
+              "confirmed",
+              "declined",
+              "withdrawn",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "volunteerName": {
+            "type": "string",
+            "title": "Volunteername"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "skills": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skills"
+          },
+          "availability": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Availability"
+          },
+          "travelArea": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Travelarea"
+          },
+          "roleEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roleen"
+          },
+          "meetingPointEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meetingpointen"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "offerRef",
+          "state",
+          "volunteerName",
+          "memberCode",
+          "skills",
+          "availability",
+          "travelArea",
+          "roleEn",
+          "meetingPointEn",
+          "decisionReason",
+          "createdAt"
+        ],
+        "title": "OfferCardOut",
+        "description": "A volunteer as a coordinator sees them: no phone number, skills only with consent."
+      },
+      "OfferDecisionIn": {
+        "properties": {
+          "confirm": {
+            "type": "boolean",
+            "title": "Confirm"
+          },
+          "roleEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roleta"
+          },
+          "meetingPointEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meetingpointen"
+          },
+          "meetingPointTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meetingpointta"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "confirm"
+        ],
+        "title": "OfferDecisionIn"
+      },
+      "OfferHistoryOut": {
+        "properties": {
+          "fromState": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fromstate"
+          },
+          "toState": {
+            "type": "string",
+            "title": "Tostate"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurredat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fromState",
+          "toState",
+          "reason",
+          "occurredAt"
+        ],
+        "title": "OfferHistoryOut"
+      },
       "OfflineSyncIn": {
         "properties": {
           "deviceId": {
@@ -25370,6 +27184,493 @@
         ],
         "title": "OperationsOut",
         "description": "D32 operational figures for the viewer's areas over the last `periodDays` days."
+      },
+      "OpportunityIn": {
+        "properties": {
+          "titleEn": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 5,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 5,
+            "title": "Titleta"
+          },
+          "roleEn": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Roleta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Descriptionta"
+          },
+          "placeEn": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Placeen"
+          },
+          "placeTa": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Placeta"
+          },
+          "bringEn": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 2,
+            "title": "Bringen"
+          },
+          "bringTa": {
+            "type": "string",
+            "maxLength": 800,
+            "minLength": 2,
+            "title": "Bringta"
+          },
+          "teamEn": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Teamen"
+          },
+          "teamTa": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Teamta"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventid"
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "title": "Skills"
+          },
+          "places": {
+            "type": "integer",
+            "maximum": 500.0,
+            "minimum": 1.0,
+            "title": "Places"
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaIn"
+          }
+        },
+        "type": "object",
+        "required": [
+          "titleEn",
+          "titleTa",
+          "roleEn",
+          "roleTa",
+          "descriptionEn",
+          "descriptionTa",
+          "placeEn",
+          "placeTa",
+          "bringEn",
+          "bringTa",
+          "teamEn",
+          "teamTa",
+          "startsAt",
+          "endsAt",
+          "places",
+          "area"
+        ],
+        "title": "OpportunityIn"
+      },
+      "OpportunityOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "opportunityRef": {
+            "type": "string",
+            "title": "Opportunityref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "roleEn": {
+            "type": "string",
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "type": "string",
+            "title": "Roleta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          },
+          "placeEn": {
+            "type": "string",
+            "title": "Placeen"
+          },
+          "placeTa": {
+            "type": "string",
+            "title": "Placeta"
+          },
+          "bringEn": {
+            "type": "string",
+            "title": "Bringen"
+          },
+          "bringTa": {
+            "type": "string",
+            "title": "Bringta"
+          },
+          "teamEn": {
+            "type": "string",
+            "title": "Teamen"
+          },
+          "teamTa": {
+            "type": "string",
+            "title": "Teamta"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventid"
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "open",
+              "closed",
+              "cancelled"
+            ],
+            "title": "State"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "opportunityRef",
+          "titleEn",
+          "titleTa",
+          "roleEn",
+          "roleTa",
+          "descriptionEn",
+          "descriptionTa",
+          "placeEn",
+          "placeTa",
+          "bringEn",
+          "bringTa",
+          "teamEn",
+          "teamTa",
+          "startsAt",
+          "endsAt",
+          "eventId",
+          "skills",
+          "state"
+        ],
+        "title": "OpportunityOut"
+      },
+      "OpportunityStateIn": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "state"
+        ],
+        "title": "OpportunityStateIn"
+      },
+      "OpportunityUpdateIn": {
+        "properties": {
+          "titleEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 5
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 5
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleta"
+          },
+          "roleEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roleta"
+          },
+          "descriptionEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000,
+                "minLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 3000,
+                "minLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Descriptionta"
+          },
+          "placeEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placeen"
+          },
+          "placeTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placeta"
+          },
+          "bringEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bringen"
+          },
+          "bringTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 800,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bringta"
+          },
+          "teamEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Teamen"
+          },
+          "teamTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Teamta"
+          },
+          "startsAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endsat"
+          },
+          "places": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 500.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Places"
+          }
+        },
+        "type": "object",
+        "title": "OpportunityUpdateIn"
       },
       "OwnerOptionOut": {
         "properties": {
@@ -28925,6 +31226,19 @@
         ],
         "title": "RsvpOut"
       },
+      "SavedIn": {
+        "properties": {
+          "saved": {
+            "type": "boolean",
+            "title": "Saved"
+          }
+        },
+        "type": "object",
+        "required": [
+          "saved"
+        ],
+        "title": "SavedIn"
+      },
       "ScanDecisionIn": {
         "properties": {
           "decision": {
@@ -29310,6 +31624,29 @@
           "waiting"
         ],
         "title": "SimpleQueueCount"
+      },
+      "SkillOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "nameEn": {
+            "type": "string",
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "title": "Nameta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "nameEn",
+          "nameTa"
+        ],
+        "title": "SkillOut"
       },
       "StaffApprovalDetail": {
         "properties": {
@@ -30645,6 +32982,229 @@
           "updatedAt"
         ],
         "title": "VolunteerAssignmentOut"
+      },
+      "VolunteerCardOut": {
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills"
+          },
+          "availability": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Availability"
+          },
+          "travelArea": {
+            "type": "string",
+            "title": "Travelarea"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberId",
+          "name",
+          "memberCode",
+          "skills",
+          "availability",
+          "travelArea"
+        ],
+        "title": "VolunteerCardOut"
+      },
+      "VolunteerOfferItemOut": {
+        "properties": {
+          "offer": {
+            "$ref": "#/components/schemas/MyOfferOut"
+          },
+          "opportunity": {
+            "$ref": "#/components/schemas/OpportunityOut"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/OfferHistoryOut"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "contacts": {
+            "items": {
+              "$ref": "#/components/schemas/ContactOut"
+            },
+            "type": "array",
+            "title": "Contacts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "offer",
+          "opportunity",
+          "history",
+          "contacts"
+        ],
+        "title": "VolunteerOfferItemOut",
+        "description": "H12: an offer or confirmed assignment with its opportunity, history and messages."
+      },
+      "VolunteerProfileIn": {
+        "properties": {
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Skills"
+          },
+          "availability": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "weekday_mornings",
+                "weekday_afternoons",
+                "weekday_evenings",
+                "weekends",
+                "public_holidays"
+              ]
+            },
+            "type": "array",
+            "maxItems": 5,
+            "minItems": 1,
+            "title": "Availability"
+          },
+          "travelArea": {
+            "type": "string",
+            "enum": [
+              "my_gn",
+              "my_ds"
+            ],
+            "title": "Travelarea"
+          },
+          "consent": {
+            "type": "boolean",
+            "title": "Consent",
+            "description": "Agreement to share these with authorised volunteer coordinators (FR-VOL-003)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "skills",
+          "availability",
+          "travelArea",
+          "consent"
+        ],
+        "title": "VolunteerProfileIn"
+      },
+      "VolunteerProfileOut": {
+        "properties": {
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills"
+          },
+          "availability": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "weekday_mornings",
+                "weekday_afternoons",
+                "weekday_evenings",
+                "weekends",
+                "public_holidays"
+              ]
+            },
+            "type": "array",
+            "title": "Availability"
+          },
+          "travelArea": {
+            "type": "string",
+            "enum": [
+              "my_gn",
+              "my_ds"
+            ],
+            "title": "Travelarea"
+          },
+          "consentedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Consentedat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "skills",
+          "availability",
+          "travelArea",
+          "consentedAt",
+          "updatedAt"
+        ],
+        "title": "VolunteerProfileOut"
+      },
+      "VolunteerSkillsOut": {
+        "properties": {
+          "skills": {
+            "items": {
+              "$ref": "#/components/schemas/SkillOut"
+            },
+            "type": "array",
+            "title": "Skills"
+          },
+          "availability": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "weekday_mornings",
+                "weekday_afternoons",
+                "weekday_evenings",
+                "weekends",
+                "public_holidays"
+              ]
+            },
+            "type": "array",
+            "title": "Availability"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VolunteerProfileOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "skills",
+          "availability",
+          "profile"
+        ],
+        "title": "VolunteerSkillsOut",
+        "description": "H10: the configurable skills list, the availability choices, and the member's profile if any."
       },
       "WorkQueuesOut": {
         "properties": {

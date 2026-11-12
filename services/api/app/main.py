@@ -30,6 +30,7 @@ from app.modules.community.issues import router as community_issues
 from app.modules.community.issues.evidence import build_issue_vault
 from app.modules.community.reports.router import router as community_reports
 from app.modules.election import router as election
+from app.modules.engagement.volunteering import router as volunteering
 from app.modules.events import router as events
 from app.modules.features import router as features
 from app.modules.finance.router import finance_router, fund_router, readiness_router as finance_readiness_router
@@ -113,6 +114,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(community_reports)
     app.include_router(community_issues.router)
     app.include_router(community_cases.router)
+    app.include_router(volunteering.router)
     app.include_router(home.router)
     app.include_router(profile.router)
     app.include_router(area_changes.router)

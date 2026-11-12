@@ -168,6 +168,27 @@ export type CaseCloseInput = Schemas['CaseCloseIn'];
 export type CaseAssignInput = Schemas['AssignIn'];
 export type CaseChallengeDecisionInput = Schemas['ChallengeDecisionIn'];
 export type CasePublicSummaryInput = Schemas['PublicSummaryIn'];
+// Volunteering (H10 to H12, S10).
+export type VolunteerSkills = Schemas['VolunteerSkillsOut'];
+export type VolunteerSkill = Schemas['SkillOut'];
+export type VolunteerProfile = Schemas['VolunteerProfileOut'];
+export type VolunteerProfileInput = Schemas['VolunteerProfileIn'];
+export type VolunteerAvailability = Schemas['VolunteerProfileIn']['availability'][number];
+export type VolunteerTravelArea = Schemas['VolunteerProfileIn']['travelArea'];
+export type VolunteerOpportunity = Schemas['MemberOpportunityOut'];
+export type VolunteerOffer = Schemas['MyOfferOut'];
+export type VolunteerOfferState = Schemas['MyOfferOut']['state'];
+export type VolunteerOfferItem = Schemas['VolunteerOfferItemOut'];
+export type VolunteerContact = Schemas['ContactOut'];
+export type VolunteerContactInput = Schemas['ContactIn'];
+export type ManagedVolunteerOpportunity = Schemas['ManagedOpportunityOut'];
+export type VolunteerOpportunityInput = Schemas['OpportunityIn'];
+export type VolunteerOpportunityUpdate = Schemas['OpportunityUpdateIn'];
+export type VolunteerOpportunityState = Schemas['ManagedOpportunityOut']['state'];
+export type VolunteerOfferCard = Schemas['OfferCardOut'];
+export type VolunteerOfferDecision = Schemas['OfferDecisionIn'];
+export type VolunteerInboxItem = Schemas['InboxItemOut'];
+export type VolunteerCard = Schemas['VolunteerCardOut'];
 export type CaseListFilters = {
   stage?: CaseStage[];
   mine?: boolean;
@@ -1143,6 +1164,67 @@ export function createApiClient({
         'POST',
         `/v1/cases/${encodeURIComponent(caseId)}/additions/${encodeURIComponent(additionId)}/moderation`,
         { approve, reason },
+      ),
+    // Volunteering (H10 to H12, S10). Every route answers 404 "feature_unavailable" while the
+    // volunteering module is switched off. Refusals: "volunteer_refused" (422) with `problems`.
+    /** H10: the skills list, availability choices and the member's own profile (or null). */
+    getVolunteerSkills: () => request<VolunteerSkills>('GET', '/v1/volunteering/skills'),
+    /** Saved only with consent: `problems` "consent_required" otherwise (FR-VOL-003). */
+    saveVolunteerProfile: (input: VolunteerProfileInput) =>
+      request<VolunteerProfile>('PUT', '/v1/volunteering/profile', input),
+    withdrawVolunteerProfile: () => request<void>('DELETE', '/v1/volunteering/profile'),
+    listVolunteerOpportunities: () => request<VolunteerOpportunity[]>('GET', '/v1/volunteering/opportunities'),
+    getVolunteerOpportunity: (opportunityId: string) =>
+      request<VolunteerOpportunity>('GET', `/v1/volunteering/opportunities/${encodeURIComponent(opportunityId)}`),
+    /** FR-VOL-005: "Offer to help". Problems: identity_not_verified, membership_not_active, opportunity_not_open, already_offered. */
+    offerToVolunteer: (opportunityId: string) =>
+      request<VolunteerOffer>('POST', `/v1/volunteering/opportunities/${encodeURIComponent(opportunityId)}/offer`),
+    withdrawVolunteerOffer: (opportunityId: string) =>
+      request<void>('DELETE', `/v1/volunteering/opportunities/${encodeURIComponent(opportunityId)}/offer`),
+    setVolunteerOpportunitySaved: (opportunityId: string, saved: boolean) =>
+      request<VolunteerOpportunity>('PUT', `/v1/volunteering/opportunities/${encodeURIComponent(opportunityId)}/saved`, { saved }),
+    /** H12: offers and confirmed assignments with history and messages. */
+    listMyVolunteerOffers: () => request<VolunteerOfferItem[]>('GET', '/v1/volunteering/assignments'),
+    /** FR-VOL-007, 008: a message, or a change request (confirmed assignments only) with its reason. */
+    contactVolunteerCoordinator: (offerId: string, input: VolunteerContactInput) =>
+      request<VolunteerContact>('POST', `/v1/volunteering/offers/${encodeURIComponent(offerId)}/contact`, input),
+    listManagedVolunteerOpportunities: (states: VolunteerOpportunityState[] = []) => {
+      const q = new URLSearchParams();
+      for (const state of states) q.append('state', state);
+      const qs = q.toString();
+      return request<ManagedVolunteerOpportunity[]>('GET', `/v1/volunteering/manage/opportunities${qs ? `?${qs}` : ''}`);
+    },
+    createVolunteerOpportunity: (input: VolunteerOpportunityInput) =>
+      request<ManagedVolunteerOpportunity>('POST', '/v1/volunteering/manage/opportunities', input),
+    updateVolunteerOpportunity: (opportunityId: string, input: VolunteerOpportunityUpdate) =>
+      request<ManagedVolunteerOpportunity>(
+        'PATCH',
+        `/v1/volunteering/manage/opportunities/${encodeURIComponent(opportunityId)}`,
+        input,
+      ),
+    /** Open, close, or cancel (with a reason; everyone who offered is told). */
+    moveVolunteerOpportunity: (opportunityId: string, state: 'open' | 'closed' | 'cancelled', reason?: string) =>
+      request<ManagedVolunteerOpportunity>(
+        'POST',
+        `/v1/volunteering/manage/opportunities/${encodeURIComponent(opportunityId)}/state`,
+        { state, reason },
+      ),
+    listVolunteerOffers: (opportunityId: string) =>
+      request<VolunteerOfferCard[]>(
+        'GET',
+        `/v1/volunteering/manage/opportunities/${encodeURIComponent(opportunityId)}/offers`,
+      ),
+    /** S10: confirm with a meeting point (and optional role), or decline with a reason. Problems include places_filled. */
+    decideVolunteerOffer: (offerId: string, input: VolunteerOfferDecision) =>
+      request<VolunteerOffer>('POST', `/v1/volunteering/manage/offers/${encodeURIComponent(offerId)}/decision`, input),
+    listVolunteerInbox: () => request<VolunteerInboxItem[]>('GET', '/v1/volunteering/manage/inbox'),
+    answerVolunteerContact: (contactId: string, answer: string) =>
+      request<VolunteerContact>('POST', `/v1/volunteering/manage/inbox/${encodeURIComponent(contactId)}/answer`, { answer }),
+    /** Consented skills profiles in the coordinator's areas; no phone numbers, no ranking. */
+    listVolunteers: (skill?: string) =>
+      request<VolunteerCard[]>(
+        'GET',
+        `/v1/volunteering/manage/volunteers${skill ? `?skill=${encodeURIComponent(skill)}` : ''}`,
       ),
     // Community Finance endpoints (Milestone 1.4)
     getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),

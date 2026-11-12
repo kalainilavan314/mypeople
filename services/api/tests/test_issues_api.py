@@ -455,3 +455,14 @@ def test_the_case_history_cannot_be_rewritten(client, auth, member_in, area, tea
     with pytest.raises(Exception, match="append-only"):
         with db_session.begin_nested():
             db_session.execute(text("DELETE FROM community.case_action WHERE issue_id = :id"), {"id": case_id})
+
+
+def test_a_report_appears_in_my_activity(client, auth, member_in, area, team):
+    member = member_in(area, verified=True, active=True)
+    receipt = report(client, auth, member).json()
+
+    activity = client.get("/v1/profile/activity?kind=issue_report", headers=auth(member)).json()
+
+    assert [(a["kind"], a["reference"], a["state"], a["targetId"]) for a in activity] == [
+        ("issue_report", receipt["caseNumber"], "gn", receipt["id"])
+    ]

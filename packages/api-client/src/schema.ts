@@ -2946,6 +2946,323 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/volunteering/skills": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Skills
+         * @description H10: the skills list, the availability choices and the member's own profile.
+         */
+        get: operations["read_skills_v1_volunteering_skills_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save Profile
+         * @description FR-VOL-001 to 003: saved only with consent to share with authorised coordinators.
+         */
+        put: operations["save_profile_v1_volunteering_profile_put"];
+        post?: never;
+        /**
+         * Withdraw Profile
+         * @description Withdraw consent: the profile is deleted and coordinators no longer see it.
+         */
+        delete: operations["withdraw_profile_v1_volunteering_profile_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/opportunities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Opportunities
+         * @description Open opportunities in the member's area, soonest first.
+         */
+        get: operations["list_opportunities_v1_volunteering_opportunities_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/opportunities/{opportunity_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Opportunity
+         * @description H11: the briefing with time, place, role, what to bring and the coordinating team.
+         */
+        get: operations["read_opportunity_v1_volunteering_opportunities__opportunity_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/opportunities/{opportunity_id}/offer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Offer To Help
+         * @description FR-VOL-005: "Offer to help"; a receipt, awaiting the coordinator.
+         */
+        post: operations["offer_to_help_v1_volunteering_opportunities__opportunity_id__offer_post"];
+        /** Withdraw Offer */
+        delete: operations["withdraw_offer_v1_volunteering_opportunities__opportunity_id__offer_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/opportunities/{opportunity_id}/saved": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Saved
+         * @description "Save for later".
+         */
+        put: operations["set_saved_v1_volunteering_opportunities__opportunity_id__saved_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List My Assignments
+         * @description H12: offers and confirmed assignments with their history and messages.
+         */
+        get: operations["list_my_assignments_v1_volunteering_assignments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/offers/{offer_id}/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Contact Coordinator
+         * @description FR-VOL-007, 008: a message or change request to the coordinators, through the app.
+         */
+        post: operations["contact_coordinator_v1_volunteering_offers__offer_id__contact_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/manage/opportunities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Managed */
+        get: operations["list_managed_v1_volunteering_manage_opportunities_get"];
+        put?: never;
+        /**
+         * Create Opportunity
+         * @description A draft; it reaches members once opened.
+         */
+        post: operations["create_opportunity_v1_volunteering_manage_opportunities_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/manage/opportunities/{opportunity_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Opportunity */
+        patch: operations["update_opportunity_v1_volunteering_manage_opportunities__opportunity_id__patch"];
+        trace?: never;
+    };
+    "/v1/volunteering/manage/opportunities/{opportunity_id}/state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Move Opportunity
+         * @description Open, close or cancel; cancelling tells everyone who offered, with the reason.
+         */
+        post: operations["move_opportunity_v1_volunteering_manage_opportunities__opportunity_id__state_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/manage/opportunities/{opportunity_id}/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Offers */
+        get: operations["list_offers_v1_volunteering_manage_opportunities__opportunity_id__offers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/manage/offers/{offer_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Offer
+         * @description S10: confirm with a role and meeting point, or decline with a reason.
+         */
+        post: operations["decide_offer_v1_volunteering_manage_offers__offer_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/manage/inbox": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Inbox
+         * @description Open messages and change requests from volunteers in the coordinator's areas, oldest first.
+         */
+        get: operations["list_inbox_v1_volunteering_manage_inbox_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/manage/inbox/{contact_id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Answer Contact */
+        post: operations["answer_contact_v1_volunteering_manage_inbox__contact_id__answer_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/manage/volunteers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Volunteers
+         * @description Consented skills profiles in the coordinator's areas, by name; no phone numbers, no ranking.
+         */
+        get: operations["list_volunteers_v1_volunteering_manage_volunteers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -4645,7 +4962,7 @@ export interface components {
              * Kind
              * @enum {string}
              */
-            kind: "identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request";
+            kind: "identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer";
             /** Reference */
             reference: string;
             /** Title */
@@ -4863,6 +5180,11 @@ export interface components {
              */
             answer: "it_was_me" | "not_me";
         };
+        /** AnswerIn */
+        AnswerIn: {
+            /** Answer */
+            answer: string;
+        };
         /** AppealDecisionInput */
         AppealDecisionInput: {
             /**
@@ -5071,6 +5393,16 @@ export interface components {
             decision: "approve" | "decline";
             /** Reason */
             reason: string;
+        };
+        /** AreaIn */
+        AreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "province" | "district" | "ds" | "gn";
+            /** Code */
+            code: string;
         };
         /**
          * AreaNameOut
@@ -6266,6 +6598,53 @@ export interface components {
             purposeLimitationTa: string;
             /** Purposelimitationen */
             purposeLimitationEn: string;
+        };
+        /** ContactIn */
+        ContactIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "message" | "change_request";
+            /**
+             * Body
+             * @description For a change request, the reason (FR-VOL-008)
+             */
+            body: string;
+            /**
+             * Confirmed
+             * @description The member confirmed sending; an accidental tap sends nothing
+             */
+            confirmed: boolean;
+        };
+        /** ContactOut */
+        ContactOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "message" | "change_request";
+            /** Body */
+            body: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "answered";
+            /** Answer */
+            answer: string | null;
+            /** Answeredat */
+            answeredAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** ContributionCreateRequest */
         ContributionCreateRequest: {
@@ -7744,6 +8123,37 @@ export interface components {
             /** Retentionta */
             retentionTa: string;
         };
+        /** InboxItemOut */
+        InboxItemOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "message" | "change_request";
+            /** Body */
+            body: string;
+            /** Volunteername */
+            volunteerName: string;
+            /** Offerref */
+            offerRef: string;
+            /**
+             * Opportunityid
+             * Format: uuid
+             */
+            opportunityId: string;
+            /** Opportunitytitleen */
+            opportunityTitleEn: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** InboxOut */
         InboxOut: {
             /** Items */
@@ -8277,6 +8687,74 @@ export interface components {
              */
             notified: number;
         };
+        /** ManagedOpportunityOut */
+        ManagedOpportunityOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Opportunityref */
+            opportunityRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Placeen */
+            placeEn: string;
+            /** Placeta */
+            placeTa: string;
+            /** Bringen */
+            bringEn: string;
+            /** Bringta */
+            bringTa: string;
+            /** Teamen */
+            teamEn: string;
+            /** Teamta */
+            teamTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Eventid */
+            eventId: string | null;
+            /** Skills */
+            skills: string[];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "open" | "closed" | "cancelled";
+            /** Places */
+            places: number;
+            /** Confirmed */
+            confirmed: number;
+            /** Waiting */
+            waiting: number;
+            /** Areakey */
+            areaKey: string;
+            /** Cancelreason */
+            cancelReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** ManualCheckInIn */
         ManualCheckInIn: {
             /**
@@ -8361,6 +8839,62 @@ export interface components {
              * @enum {string}
              */
             membershipState: "pending" | "active" | "suspended" | "inactive";
+        };
+        /** MemberOpportunityOut */
+        MemberOpportunityOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Opportunityref */
+            opportunityRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Placeen */
+            placeEn: string;
+            /** Placeta */
+            placeTa: string;
+            /** Bringen */
+            bringEn: string;
+            /** Bringta */
+            bringTa: string;
+            /** Teamen */
+            teamEn: string;
+            /** Teamta */
+            teamTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Eventid */
+            eventId: string | null;
+            /** Skills */
+            skills: string[];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "open" | "closed" | "cancelled";
+            /** Saved */
+            saved: boolean;
+            myOffer: components["schemas"]["MyOfferOut"] | null;
         };
         /**
          * MemberProfile
@@ -8527,6 +9061,41 @@ export interface components {
             /** Changedat */
             changedAt: string | null;
         };
+        /** MyOfferOut */
+        MyOfferOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Offerref */
+            offerRef: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "offered" | "confirmed" | "declined" | "withdrawn" | "cancelled";
+            /** Roleen */
+            roleEn: string | null;
+            /** Roleta */
+            roleTa: string | null;
+            /** Meetingpointen */
+            meetingPointEn: string | null;
+            /** Meetingpointta */
+            meetingPointTa: string | null;
+            /** Decisionreason */
+            decisionReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
         /**
          * MyReportOut
          * @description Only for the reporter: what they sent and where it stands (H09).
@@ -8682,6 +9251,74 @@ export interface components {
             /** Read */
             read: boolean;
         };
+        /**
+         * OfferCardOut
+         * @description A volunteer as a coordinator sees them: no phone number, skills only with consent.
+         */
+        OfferCardOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Offerref */
+            offerRef: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "offered" | "confirmed" | "declined" | "withdrawn" | "cancelled";
+            /** Volunteername */
+            volunteerName: string;
+            /** Membercode */
+            memberCode: string;
+            /** Skills */
+            skills: string[] | null;
+            /** Availability */
+            availability: string[] | null;
+            /** Travelarea */
+            travelArea: string | null;
+            /** Roleen */
+            roleEn: string | null;
+            /** Meetingpointen */
+            meetingPointEn: string | null;
+            /** Decisionreason */
+            decisionReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** OfferDecisionIn */
+        OfferDecisionIn: {
+            /** Confirm */
+            confirm: boolean;
+            /** Roleen */
+            roleEn?: string | null;
+            /** Roleta */
+            roleTa?: string | null;
+            /** Meetingpointen */
+            meetingPointEn?: string | null;
+            /** Meetingpointta */
+            meetingPointTa?: string | null;
+            /** Reason */
+            reason?: string | null;
+        };
+        /** OfferHistoryOut */
+        OfferHistoryOut: {
+            /** Fromstate */
+            fromState: string | null;
+            /** Tostate */
+            toState: string;
+            /** Reason */
+            reason: string | null;
+            /**
+             * Occurredat
+             * Format: date-time
+             */
+            occurredAt: string;
+        };
         /** OfflineSyncIn */
         OfflineSyncIn: {
             /**
@@ -8798,6 +9435,146 @@ export interface components {
              * @description attended / going
              */
             attendanceRate: number | null;
+        };
+        /** OpportunityIn */
+        OpportunityIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Placeen */
+            placeEn: string;
+            /** Placeta */
+            placeTa: string;
+            /** Bringen */
+            bringEn: string;
+            /** Bringta */
+            bringTa: string;
+            /** Teamen */
+            teamEn: string;
+            /** Teamta */
+            teamTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Eventid */
+            eventId?: string | null;
+            /** Skills */
+            skills?: string[];
+            /** Places */
+            places: number;
+            area: components["schemas"]["AreaIn"];
+        };
+        /** OpportunityOut */
+        OpportunityOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Opportunityref */
+            opportunityRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Placeen */
+            placeEn: string;
+            /** Placeta */
+            placeTa: string;
+            /** Bringen */
+            bringEn: string;
+            /** Bringta */
+            bringTa: string;
+            /** Teamen */
+            teamEn: string;
+            /** Teamta */
+            teamTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Eventid */
+            eventId: string | null;
+            /** Skills */
+            skills: string[];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "open" | "closed" | "cancelled";
+        };
+        /** OpportunityStateIn */
+        OpportunityStateIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "closed" | "cancelled";
+            /** Reason */
+            reason?: string | null;
+        };
+        /** OpportunityUpdateIn */
+        OpportunityUpdateIn: {
+            /** Titleen */
+            titleEn?: string | null;
+            /** Titleta */
+            titleTa?: string | null;
+            /** Roleen */
+            roleEn?: string | null;
+            /** Roleta */
+            roleTa?: string | null;
+            /** Descriptionen */
+            descriptionEn?: string | null;
+            /** Descriptionta */
+            descriptionTa?: string | null;
+            /** Placeen */
+            placeEn?: string | null;
+            /** Placeta */
+            placeTa?: string | null;
+            /** Bringen */
+            bringEn?: string | null;
+            /** Bringta */
+            bringTa?: string | null;
+            /** Teamen */
+            teamEn?: string | null;
+            /** Teamta */
+            teamTa?: string | null;
+            /** Startsat */
+            startsAt?: string | null;
+            /** Endsat */
+            endsAt?: string | null;
+            /** Places */
+            places?: number | null;
         };
         /** OwnerOptionOut */
         OwnerOptionOut: {
@@ -10236,6 +11013,11 @@ export interface components {
              */
             response: "going" | "maybe" | "declined" | "waitlisted";
         };
+        /** SavedIn */
+        SavedIn: {
+            /** Saved */
+            saved: boolean;
+        };
         /** ScanDecisionIn */
         ScanDecisionIn: {
             /**
@@ -10405,6 +11187,15 @@ export interface components {
         SimpleQueueCount: {
             /** Waiting */
             waiting: number;
+        };
+        /** SkillOut */
+        SkillOut: {
+            /** Key */
+            key: string;
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
         };
         /** StaffApprovalDetail */
         StaffApprovalDetail: {
@@ -11006,6 +11797,86 @@ export interface components {
              * Format: date-time
              */
             updatedAt: string;
+        };
+        /** VolunteerCardOut */
+        VolunteerCardOut: {
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Name */
+            name: string;
+            /** Membercode */
+            memberCode: string;
+            /** Skills */
+            skills: string[];
+            /** Availability */
+            availability: string[];
+            /** Travelarea */
+            travelArea: string;
+        };
+        /**
+         * VolunteerOfferItemOut
+         * @description H12: an offer or confirmed assignment with its opportunity, history and messages.
+         */
+        VolunteerOfferItemOut: {
+            offer: components["schemas"]["MyOfferOut"];
+            opportunity: components["schemas"]["OpportunityOut"];
+            /** History */
+            history: components["schemas"]["OfferHistoryOut"][];
+            /** Contacts */
+            contacts: components["schemas"]["ContactOut"][];
+        };
+        /** VolunteerProfileIn */
+        VolunteerProfileIn: {
+            /** Skills */
+            skills: string[];
+            /** Availability */
+            availability: ("weekday_mornings" | "weekday_afternoons" | "weekday_evenings" | "weekends" | "public_holidays")[];
+            /**
+             * Travelarea
+             * @enum {string}
+             */
+            travelArea: "my_gn" | "my_ds";
+            /**
+             * Consent
+             * @description Agreement to share these with authorised volunteer coordinators (FR-VOL-003)
+             */
+            consent: boolean;
+        };
+        /** VolunteerProfileOut */
+        VolunteerProfileOut: {
+            /** Skills */
+            skills: string[];
+            /** Availability */
+            availability: ("weekday_mornings" | "weekday_afternoons" | "weekday_evenings" | "weekends" | "public_holidays")[];
+            /**
+             * Travelarea
+             * @enum {string}
+             */
+            travelArea: "my_gn" | "my_ds";
+            /**
+             * Consentedat
+             * Format: date-time
+             */
+            consentedAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /**
+         * VolunteerSkillsOut
+         * @description H10: the configurable skills list, the availability choices, and the member's profile if any.
+         */
+        VolunteerSkillsOut: {
+            /** Skills */
+            skills: components["schemas"]["SkillOut"][];
+            /** Availability */
+            availability: ("weekday_mornings" | "weekday_afternoons" | "weekday_evenings" | "weekends" | "public_holidays")[];
+            profile: components["schemas"]["VolunteerProfileOut"] | null;
         };
         /**
          * WorkQueuesOut
@@ -17454,6 +18325,722 @@ export interface operations {
             };
         };
     };
+    read_skills_v1_volunteering_skills_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerSkillsOut"];
+                };
+            };
+        };
+    };
+    save_profile_v1_volunteering_profile_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VolunteerProfileIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerProfileOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    withdraw_profile_v1_volunteering_profile_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_opportunities_v1_volunteering_opportunities_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberOpportunityOut"][];
+                };
+            };
+        };
+    };
+    read_opportunity_v1_volunteering_opportunities__opportunity_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberOpportunityOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    offer_to_help_v1_volunteering_opportunities__opportunity_id__offer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyOfferOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    withdraw_offer_v1_volunteering_opportunities__opportunity_id__offer_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    set_saved_v1_volunteering_opportunities__opportunity_id__saved_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavedIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberOpportunityOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_my_assignments_v1_volunteering_assignments_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerOfferItemOut"][];
+                };
+            };
+        };
+    };
+    contact_coordinator_v1_volunteering_offers__offer_id__contact_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContactIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_managed_v1_volunteering_manage_opportunities_get: {
+        parameters: {
+            query?: {
+                state?: ("draft" | "open" | "closed" | "cancelled")[] | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedOpportunityOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_opportunity_v1_volunteering_manage_opportunities_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OpportunityIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedOpportunityOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_opportunity_v1_volunteering_manage_opportunities__opportunity_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OpportunityUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedOpportunityOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    move_opportunity_v1_volunteering_manage_opportunities__opportunity_id__state_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OpportunityStateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedOpportunityOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_offers_v1_volunteering_manage_opportunities__opportunity_id__offers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferCardOut"][];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    decide_offer_v1_volunteering_manage_offers__offer_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyOfferOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_inbox_v1_volunteering_manage_inbox_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InboxItemOut"][];
+                };
+            };
+        };
+    };
+    answer_contact_v1_volunteering_manage_inbox__contact_id__answer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                contact_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnswerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_volunteers_v1_volunteering_manage_volunteers_get: {
+        parameters: {
+            query?: {
+                skill?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerCardOut"][];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     read_home_v1_home_get: {
         parameters: {
             query?: never;
@@ -17530,7 +19117,7 @@ export interface operations {
     list_activity_v1_profile_activity_get: {
         parameters: {
             query?: {
-                kind?: ("identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request") | null;
+                kind?: ("identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer") | null;
                 limit?: number;
             };
             header?: never;

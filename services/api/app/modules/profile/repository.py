@@ -95,6 +95,15 @@ _ACTIVITY = {
         SELECT 'privacy_request' AS kind, p.request_ref AS reference, p.kind AS title, p.state,
                COALESCE(p.closed_at, p.created_at) AS at, p.id AS target_id
         FROM privacy.request p WHERE p.member_id = :member""",
+    "issue_report": """
+        SELECT 'issue_report' AS kind, i.case_number AS reference, i.title AS title, i.stage AS state,
+               i.updated_at AS at, i.id AS target_id
+        FROM community.issue i WHERE i.reporter_id = :member""",
+    "volunteer_offer": """
+        SELECT 'volunteer_offer' AS kind, f.offer_ref AS reference, o.title_en AS title, f.state,
+               f.updated_at AS at, f.id AS target_id
+        FROM engagement.volunteer_offer f JOIN engagement.volunteer_opportunity o ON o.id = f.opportunity_id
+        WHERE f.member_id = :member""",
 }
 
 
