@@ -35,6 +35,7 @@ FEATURES: dict[str, Feature] = {
         Feature("election_mode", "Election information mode (FR-ELX, subject to legal approval)", 2),
         Feature("households", "My Household (FR-HH-001, voluntary household module)", 2),
         Feature("community_finance", "Community Finance via Bank Transfer Slips (M1.4, FR-FUND)", 1),
+        Feature("community_issues", "My Area, issue reporting and case escalation (FR-RPT, FR-WEB-014 to 029)", 2),
     )
 }
 

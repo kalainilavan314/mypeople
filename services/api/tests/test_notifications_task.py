@@ -12,7 +12,7 @@ from app.modules.messaging.notifications.service import Dispatched
 from app.tasks.notifications import check, dry_run, main, run_once
 
 
-def test_run_once_coordinates_all_three_subsystems():
+def test_run_once_coordinates_all_four_subsystems():
     db = MagicMock(spec=Session)
     push = NoPush()
     now = datetime(2026, 10, 26, 12, 0, tzinfo=UTC)
@@ -20,6 +20,7 @@ def test_run_once_coordinates_all_three_subsystems():
     with (
         patch("app.modules.messaging.broadcasts.service.send_due", return_value=3) as mock_send,
         patch("app.modules.content.gallery.service.escalate_overdue", return_value=1) as mock_escalate,
+        patch("app.modules.community.issues.breaches.alert_breaches", return_value=2) as mock_breaches,
         patch(
             "app.modules.messaging.notifications.service.dispatch",
             return_value=Dispatched(sent=5, skipped=2, waiting=0),
@@ -29,10 +30,12 @@ def test_run_once_coordinates_all_three_subsystems():
 
         assert mock_send.called
         assert mock_escalate.called
+        mock_breaches.assert_called_once_with(db, now)
         assert mock_dispatch.called
         assert result == {
             "broadcastsSent": 3,
             "removalsEscalated": 1,
+            "caseBreachesAlerted": 2,
             "sent": 5,
             "skipped": 2,
             "waiting": 0,

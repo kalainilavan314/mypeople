@@ -2326,6 +2326,626 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/issues/area": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Area
+         * @description H05: Updates, Issues and Projects published for the member's GN division.
+         */
+        get: operations["read_my_area_v1_issues_area_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/reporting": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Reporting Options
+         * @description H07: whether the member may report, and the controlled lists for the form.
+         */
+        get: operations["read_reporting_options_v1_issues_reporting_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Report Photo
+         * @description A photo for a report being written; location data is removed and it goes to the restricted
+         *     evidence store, never the gallery (FR-RPT-009). Attach it by id when the report is sent.
+         */
+        post: operations["upload_report_photo_v1_issues_photos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/addition-photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Addition Photo */
+        post: operations["upload_addition_photo_v1_issues_addition_photos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Report
+         * @description H08: send the report. The receipt exists only once the server has the case (FR-RPT-013).
+         */
+        post: operations["submit_report_v1_issues_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List My Reports */
+        get: operations["list_my_reports_v1_issues_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/{issue_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Issue
+         * @description H06 for anyone in the area; H09 with the reporter's own details for the reporter.
+         */
+        get: operations["read_issue_v1_issues__issue_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/{issue_id}/follow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Following
+         * @description FR-RPT-005: follow an issue to be told of each stage change.
+         */
+        put: operations["set_following_v1_issues__issue_id__follow_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/{issue_id}/information": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Information
+         * @description FR-RPT-006: held for moderation; the reporter's answer to a request for details reopens the GN stage.
+         */
+        post: operations["add_information_v1_issues__issue_id__information_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/{issue_id}/closure-response": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Respond To Closure
+         * @description FR-RPT-016: rate a closure, or challenge it with a note within 30 days.
+         */
+        post: operations["respond_to_closure_v1_issues__issue_id__closure_response_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Cases
+         * @description Cases in the viewer's areas; overdue ones first (FR-WEB-022, 028).
+         */
+        get: operations["list_cases_v1_cases_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Case */
+        get: operations["read_case_v1_cases__case_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/owners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Owner Options
+         * @description People who may be named owner for the next step: deciding holders of that permission over the area.
+         */
+        get: operations["list_owner_options_v1_cases__case_id__owners_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/reporter-contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Reporter Contact
+         * @description PRM-13: only the assigned owner; every look is audited.
+         */
+        get: operations["read_reporter_contact_v1_cases__case_id__reporter_contact_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/photos/{photo_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Case Photo */
+        get: operations["read_case_photo_v1_cases__case_id__photos__photo_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Case Photo */
+        post: operations["upload_case_photo_v1_cases__case_id__photos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/facts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Fact
+         * @description W03: an observed fact and its source (FR-WEB-015).
+         */
+        post: operations["add_fact_v1_cases__case_id__facts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/findings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Finding
+         * @description W04: divisional findings by kind (FR-WEB-019); Tier 2B may add them too (FR-WEB-020).
+         */
+        post: operations["add_finding_v1_cases__case_id__findings_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Note */
+        post: operations["add_note_v1_cases__case_id__notes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Return For Details
+         * @description FR-WEB-016: ask the reporter for details instead of deleting the report.
+         */
+        post: operations["return_for_details_v1_cases__case_id__return_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Link To Parent
+         * @description FR-WEB-018: link a duplicate report to its parent case.
+         */
+        post: operations["link_to_parent_v1_cases__case_id__link_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/forward": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Forward To Ds
+         * @description FR-WEB-017: forward to the divisional owner after the completeness check.
+         */
+        post: operations["forward_to_ds_v1_cases__case_id__forward_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/ds-report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send Ds Report
+         * @description W04: the formal divisional report to the district (FR-WEB-019).
+         */
+        post: operations["send_ds_report_v1_cases__case_id__ds_report_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/district-decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide At District
+         * @description W05: act within delegated authority, or escalate (FR-WEB-021).
+         */
+        post: operations["decide_at_district_v1_cases__case_id__district_decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/regional-plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Regional Plan
+         * @description W06: the regional solution plan for Tier 5 (FR-WEB-023).
+         */
+        post: operations["submit_regional_plan_v1_cases__case_id__regional_plan_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/executive-decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Executive
+         * @description W07: approve with conditions, return for clarification, or decline (FR-WEB-024).
+         */
+        post: operations["decide_executive_v1_cases__case_id__executive_decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record Progress
+         * @description W08: a step and its progress evidence (FR-WEB-025).
+         */
+        post: operations["record_progress_v1_cases__case_id__progress_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Close Case
+         * @description W08: the closing report; Resolved only with evidence and a Tamil and English summary (FR-WEB-026).
+         */
+        post: operations["close_case_v1_cases__case_id__close_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign
+         * @description A handoff within the stage, or taking an unassigned case (FR-WEB-029).
+         */
+        post: operations["assign_v1_cases__case_id__assign_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/challenge-decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Challenge
+         * @description FR-WEB-027: reopen on an accepted challenge, or reject it with a reason.
+         */
+        post: operations["decide_challenge_v1_cases__case_id__challenge_decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/public-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set Public Summary
+         * @description BR-032: publish a moderated public summary, or withhold it with a reason.
+         */
+        post: operations["set_public_summary_v1_cases__case_id__public_summary_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/additions/{addition_id}/moderation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Moderate Addition */
+        post: operations["moderate_addition_v1_cases__case_id__additions__addition_id__moderation_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -4044,6 +4664,37 @@ export interface components {
              */
             targetId: string;
         };
+        /** AdditionIn */
+        AdditionIn: {
+            /** Body */
+            body: string;
+            /** Photoids */
+            photoIds?: string[];
+        };
+        /** AdditionModerationIn */
+        AdditionModerationIn: {
+            /** Approve */
+            approve: boolean;
+            /** Reason */
+            reason?: string | null;
+        };
+        /** AdditionOut */
+        AdditionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** State */
+            state: string;
+            /** Isreply */
+            isReply: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** AggregateCellOut */
         AggregateCellOut: {
             /** Key */
@@ -4450,6 +5101,42 @@ export interface components {
             level: "platform" | "province" | "district" | "ds" | "gn";
             /** Code */
             code?: string | null;
+        };
+        /** AreaUpdateOut */
+        AreaUpdateOut: {
+            /**
+             * Issueid
+             * Format: uuid
+             */
+            issueId: string;
+            /** Casenumber */
+            caseNumber: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Stage */
+            stage: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "received" | "needs_details" | "under_review" | "in_progress" | "resolved" | "declined";
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+        };
+        /** AssignIn */
+        AssignIn: {
+            /**
+             * Ownerid
+             * Format: uuid
+             */
+            ownerId: string;
+            /** Note */
+            note: string;
         };
         /** AssignmentEventOut */
         AssignmentEventOut: {
@@ -5004,6 +5691,83 @@ export interface components {
             lastScannedAt: string | null;
             publicCard: components["schemas"]["PublicCardOut"] | null;
         };
+        /** CaseActionOut */
+        CaseActionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Kind */
+            kind: string;
+            /** Actorname */
+            actorName: string | null;
+            /** Fromstage */
+            fromStage: string | null;
+            /** Tostage */
+            toStage: string | null;
+            /** Previousownername */
+            previousOwnerName: string | null;
+            /** Newownername */
+            newOwnerName: string | null;
+            /** Note */
+            note: string | null;
+            /** Details */
+            details: {
+                [key: string]: unknown;
+            };
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /**
+         * CaseAdditionOut
+         * @description Added information; the person is named only as the reporter or "a member" (data minimisation).
+         */
+        CaseAdditionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Body */
+            body: string;
+            /** Fromreporter */
+            fromReporter: boolean;
+            /** Isreply */
+            isReply: boolean;
+            /** State */
+            state: string;
+            /** Moderationreason */
+            moderationReason: string | null;
+            /** Photos */
+            photos: number;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** CaseCloseIn */
+        CaseCloseIn: {
+            /** Outcome */
+            outcome: string;
+            /** Evidencerefs */
+            evidenceRefs?: string[];
+            /** Photoids */
+            photoIds?: string[];
+            /** Limitations */
+            limitations?: string | null;
+            /**
+             * Summaryen
+             * @description Shown to the reporter and followers
+             */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+        };
         /** CaseDecisionInput */
         CaseDecisionInput: {
             /**
@@ -5013,6 +5777,29 @@ export interface components {
             outcome: "not_duplicate" | "duplicate_confirmed";
             /** Reason */
             reason: string;
+        };
+        /** CaseEvidenceOut */
+        CaseEvidenceOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Purpose */
+            purpose: string;
+            /** Fromreporter */
+            fromReporter: boolean;
+            /** Actionid */
+            actionId: string | null;
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /**
          * CaseFileOut
@@ -5075,6 +5862,18 @@ export interface components {
             /** Documents */
             documents: components["schemas"]["DocumentOut"][];
         };
+        /** CasePhotoOut */
+        CasePhotoOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
+        };
         /**
          * CaseSummaryOut
          * @description One row of the D04 queue.
@@ -5133,6 +5932,29 @@ export interface components {
             checked: number;
             /** Firstbrokenid */
             firstBrokenId: number | null;
+        };
+        /** ChallengeDecisionIn */
+        ChallengeDecisionIn: {
+            /** Accept */
+            accept: boolean;
+            /** Reason */
+            reason: string;
+            /** Stage */
+            stage?: ("gn" | "ds" | "district" | "implementation") | null;
+            /** Ownerid */
+            ownerId?: string | null;
+            /** Duedate */
+            dueDate?: string | null;
+        };
+        /** ChallengeOut */
+        ChallengeOut: {
+            /** Note */
+            note: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /**
          * CheckInEventOut
@@ -5226,6 +6048,29 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** ClosureResponseIn */
+        ClosureResponseIn: {
+            /**
+             * Resolved
+             * @description False challenges the closure (FR-RPT-016) and needs a note
+             */
+            resolved: boolean;
+            /** Rating */
+            rating?: number | null;
+            /** Note */
+            note?: string | null;
+        };
+        /** ClosureResponseOut */
+        ClosureResponseOut: {
+            /** Resolved */
+            resolved: boolean;
+            /** Rating */
+            rating: number | null;
+            /** State */
+            state: string;
+            /** Decisionreason */
+            decisionReason: string | null;
+        };
         /**
          * CodeSentOut
          * @description devCode appears only with SMS_PROVIDER=development, for local testing.
@@ -5317,6 +6162,16 @@ export interface components {
              * @default 0
              */
             totalActionable: number;
+        };
+        /** CommunityUpdateOut */
+        CommunityUpdateOut: {
+            /** Body */
+            body: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** ConfigurationQueueCount */
         ConfigurationQueueCount: {
@@ -5720,6 +6575,30 @@ export interface components {
             /** Token */
             token: string;
         };
+        /** DistrictDecisionIn */
+        DistrictDecisionIn: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "act" | "escalate";
+            /** Authority */
+            authority?: string | null;
+            /** Resources */
+            resources?: string | null;
+            /** Office */
+            office?: string | null;
+            /** Ownerid */
+            ownerId?: string | null;
+            /** Duedate */
+            dueDate?: string | null;
+            /** Reason */
+            reason?: string | null;
+            /** Decisionrequired */
+            decisionRequired?: string | null;
+            /** Regionalownerid */
+            regionalOwnerId?: string | null;
+        };
         /**
          * DocumentOut
          * @description An identity image the server holds (BR-020). Never the image itself.
@@ -5757,6 +6636,20 @@ export interface components {
             rationale: string;
             /** Effectivefrom */
             effectiveFrom?: string | null;
+        };
+        /** DsReportIn */
+        DsReportIn: {
+            /** Summary */
+            summary: string;
+            /** Evidencerefs */
+            evidenceRefs?: string[];
+            /** Recommendation */
+            recommendation: string;
+            /**
+             * Districtownerid
+             * Format: uuid
+             */
+            districtOwnerId: string;
         };
         /**
          * DueGrantOut
@@ -6304,6 +7197,38 @@ export interface components {
              */
             role: "identity_reviewer";
         };
+        /** ExecutiveDecisionIn */
+        ExecutiveDecisionIn: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approve" | "return" | "decline";
+            /** Conditions */
+            conditions?: string | null;
+            /** Implementerid */
+            implementerId?: string | null;
+            /** Scope */
+            scope?: string | null;
+            /** Reportingduty */
+            reportingDuty?: string | null;
+            /** Duedate */
+            dueDate?: string | null;
+            /** Question */
+            question?: string | null;
+            /** Reason */
+            reason?: string | null;
+        };
+        /** FactIn */
+        FactIn: {
+            /** Statement */
+            statement: string;
+            /**
+             * Source
+             * @description Who or what the fact comes from (FR-WEB-015)
+             */
+            source: string;
+        };
         /**
          * FeaturesOut
          * @description What the apps may show; a module that is off is hidden, never shown broken.
@@ -6405,6 +7330,18 @@ export interface components {
             /** Detail */
             detail: string;
         };
+        /** FindingIn */
+        FindingIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "verified_fact" | "assumption" | "option" | "stakeholder" | "resource_need" | "open_question";
+            /** Statement */
+            statement: string;
+            /** Source */
+            source?: string | null;
+        };
         /** FlagOut */
         FlagOut: {
             /** Key */
@@ -6426,6 +7363,28 @@ export interface components {
             approvalRef: string | null;
             /** Gaterecordedat */
             gateRecordedAt: string | null;
+        };
+        /** FollowIn */
+        FollowIn: {
+            /** Follow */
+            follow: boolean;
+        };
+        /** ForwardIn */
+        ForwardIn: {
+            /** Locationconfirmed */
+            locationConfirmed: boolean;
+            /** Descriptionclear */
+            descriptionClear: boolean;
+            /** Evidencereviewed */
+            evidenceReviewed: boolean;
+            /**
+             * Ownerid
+             * Format: uuid
+             * @description The named DS owner (FR-WEB-017)
+             */
+            ownerId: string;
+            /** Note */
+            note: string;
         };
         /** FundConfigResponse */
         FundConfigResponse: {
@@ -6825,6 +7784,340 @@ export interface components {
              */
             relationship: "spouse" | "parent" | "sibling" | "other";
         };
+        /** IssueCaseFileOut */
+        IssueCaseFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Casenumber */
+            caseNumber: string;
+            /** Category */
+            category: string;
+            /** Title */
+            title: string;
+            /** Stage */
+            stage: string;
+            /** Ownerid */
+            ownerId: string | null;
+            /** Ownername */
+            ownerName: string | null;
+            /** Areapath */
+            areaPath: string[];
+            /** Gncode */
+            gnCode: string | null;
+            /** Dscode */
+            dsCode: string | null;
+            /** Districtcode */
+            districtCode: string | null;
+            /**
+             * Stageenteredat
+             * Format: date-time
+             */
+            stageEnteredAt: string;
+            /** Stagedueat */
+            stageDueAt: string | null;
+            /** Overdue */
+            overdue: boolean;
+            /** Visibility */
+            visibility: string;
+            /** Publicstate */
+            publicState: string;
+            /** Parentcasenumber */
+            parentCaseNumber: string | null;
+            /** Closedlevel */
+            closedLevel: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Description */
+            description: string;
+            /** Locationkind */
+            locationKind: string;
+            /** Locationtext */
+            locationText: string | null;
+            /** Publictitleen */
+            publicTitleEn: string | null;
+            /** Publictitleta */
+            publicTitleTa: string | null;
+            /** Publicsummaryen */
+            publicSummaryEn: string | null;
+            /** Publicsummaryta */
+            publicSummaryTa: string | null;
+            /** Implementationdueat */
+            implementationDueAt: string | null;
+            /** Closedat */
+            closedAt: string | null;
+            /** Closingsummaryen */
+            closingSummaryEn: string | null;
+            /** Closingsummaryta */
+            closingSummaryTa: string | null;
+            /** History */
+            history: components["schemas"]["CaseActionOut"][];
+            /** Evidence */
+            evidence: components["schemas"]["CaseEvidenceOut"][];
+            /** Additions */
+            additions: components["schemas"]["CaseAdditionOut"][];
+            /** Linkedreports */
+            linkedReports: components["schemas"]["LinkedReportOut"][];
+            openChallenge: components["schemas"]["ChallengeOut"] | null;
+            /**
+             * Allowedactions
+             * @description What the viewer may do now; the API checks again on every action
+             */
+            allowedActions: string[];
+        };
+        /** IssueCaseListOut */
+        IssueCaseListOut: {
+            /** Items */
+            items: components["schemas"]["IssueCaseOut"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /**
+             * Counts
+             * @description Cases in the viewer's areas by stage, plus 'overdue'
+             */
+            counts: {
+                [key: string]: number;
+            };
+        };
+        /** IssueCaseOut */
+        IssueCaseOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Casenumber */
+            caseNumber: string;
+            /** Category */
+            category: string;
+            /** Title */
+            title: string;
+            /** Stage */
+            stage: string;
+            /** Ownerid */
+            ownerId: string | null;
+            /** Ownername */
+            ownerName: string | null;
+            /** Areapath */
+            areaPath: string[];
+            /** Gncode */
+            gnCode: string | null;
+            /** Dscode */
+            dsCode: string | null;
+            /** Districtcode */
+            districtCode: string | null;
+            /**
+             * Stageenteredat
+             * Format: date-time
+             */
+            stageEnteredAt: string;
+            /** Stagedueat */
+            stageDueAt: string | null;
+            /** Overdue */
+            overdue: boolean;
+            /** Visibility */
+            visibility: string;
+            /** Publicstate */
+            publicState: string;
+            /** Parentcasenumber */
+            parentCaseNumber: string | null;
+            /** Closedlevel */
+            closedLevel: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /** IssueDetailOut */
+        IssueDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Casenumber */
+            caseNumber: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "road" | "water" | "waste" | "electricity" | "agriculture" | "environment" | "public_facility" | "other";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "received" | "needs_details" | "under_review" | "in_progress" | "resolved" | "declined";
+            /** Stage */
+            stage: number;
+            /** Responsibletier */
+            responsibleTier: ("gn_coordinator" | "divisional_coordinator" | "district_coordinator" | "regional_administrator" | "executive" | "execution_owner") | null;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Mine */
+            mine: boolean;
+            /** Following */
+            following: boolean;
+            /** Summaryen */
+            summaryEn: string | null;
+            /** Summaryta */
+            summaryTa: string | null;
+            /** Steps */
+            steps: components["schemas"]["IssueStepOut"][];
+            /** Canfollow */
+            canFollow: boolean;
+            /** Canaddinformation */
+            canAddInformation: boolean;
+            /** Communityupdates */
+            communityUpdates: components["schemas"]["CommunityUpdateOut"][];
+            /** Closingsummaryen */
+            closingSummaryEn: string | null;
+            /** Closingsummaryta */
+            closingSummaryTa: string | null;
+            /** Closedat */
+            closedAt: string | null;
+            report: components["schemas"]["MyReportOut"] | null;
+        };
+        /** IssuePhotoOut */
+        IssuePhotoOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
+        };
+        /** IssueReportIn */
+        IssueReportIn: {
+            /**
+             * Clientreference
+             * Format: uuid
+             * @description Made once per draft by the app; a repeated submit returns the first receipt
+             */
+            clientReference: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "road" | "water" | "waste" | "electricity" | "agriculture" | "environment" | "public_facility" | "other";
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+            /**
+             * Locationkind
+             * @enum {string}
+             */
+            locationKind: "my_gn" | "landmark" | "text";
+            /** Locationtext */
+            locationText?: string | null;
+            /**
+             * Visibility
+             * @default team
+             * @enum {string}
+             */
+            visibility: "team" | "public";
+            /** Photoids */
+            photoIds?: string[];
+        };
+        /** IssueStepOut */
+        IssueStepOut: {
+            /**
+             * Stage
+             * @description 1 Reported, 2 Verified, 3 Decision, 4 Action and closure
+             */
+            stage: number;
+            /** Reachedat */
+            reachedAt: string | null;
+        };
+        /** IssueSummaryOut */
+        IssueSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Casenumber */
+            caseNumber: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "road" | "water" | "waste" | "electricity" | "agriculture" | "environment" | "public_facility" | "other";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "received" | "needs_details" | "under_review" | "in_progress" | "resolved" | "declined";
+            /** Stage */
+            stage: number;
+            /** Responsibletier */
+            responsibleTier: ("gn_coordinator" | "divisional_coordinator" | "district_coordinator" | "regional_administrator" | "executive" | "execution_owner") | null;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Mine */
+            mine: boolean;
+            /** Following */
+            following: boolean;
+        };
+        /** LinkIn */
+        LinkIn: {
+            /** Parentcasenumber */
+            parentCaseNumber: string;
+            /** Note */
+            note?: string | null;
+        };
+        /** LinkedReportOut */
+        LinkedReportOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Casenumber */
+            caseNumber: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** LockedFieldOut */
         LockedFieldOut: {
             /**
@@ -7204,6 +8497,21 @@ export interface components {
             /** Sessionverified */
             sessionVerified: boolean;
         };
+        /** MyAreaOut */
+        MyAreaOut: {
+            /** Hasarea */
+            hasArea: boolean;
+            /** Gnnameen */
+            gnNameEn: string | null;
+            /** Gnnameta */
+            gnNameTa: string | null;
+            /** Updates */
+            updates: components["schemas"]["AreaUpdateOut"][];
+            /** Issues */
+            issues: components["schemas"]["IssueSummaryOut"][];
+            /** Projects */
+            projects: components["schemas"]["IssueSummaryOut"][];
+        };
         /**
          * MyMembershipOut
          * @description The member's own membership state (A12, C06). The reason code is shown; staff notes are not.
@@ -7218,6 +8526,56 @@ export interface components {
             reasonCode: string | null;
             /** Changedat */
             changedAt: string | null;
+        };
+        /**
+         * MyReportOut
+         * @description Only for the reporter: what they sent and where it stands (H09).
+         */
+        MyReportOut: {
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+            /**
+             * Locationkind
+             * @enum {string}
+             */
+            locationKind: "my_gn" | "landmark" | "text";
+            /** Locationtext */
+            locationText: string | null;
+            /**
+             * Visibility
+             * @enum {string}
+             */
+            visibility: "team" | "public";
+            /** Publicstate */
+            publicState: string;
+            /** Photos */
+            photos: number;
+            /** Nextstep */
+            nextStep: string | null;
+            /** Returnedquestion */
+            returnedQuestion: string | null;
+            /**
+             * Linkedto
+             * @description The parent case number when the report was linked as a duplicate
+             */
+            linkedTo: string | null;
+            /** Canrespond */
+            canRespond: boolean;
+            /** Challengeuntil */
+            challengeUntil: string | null;
+            response: components["schemas"]["ClosureResponseOut"] | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** MyReportsOut */
+        MyReportsOut: {
+            /** Items */
+            items: components["schemas"]["IssueSummaryOut"][];
         };
         /**
          * MyReviewOut
@@ -7245,6 +8603,11 @@ export interface components {
             decidedAt: string | null;
             /** History */
             history: components["schemas"]["MemberDecisionOut"][];
+        };
+        /** NoteIn */
+        NoteIn: {
+            /** Text */
+            text: string;
         };
         /** NoticeIn */
         NoticeIn: {
@@ -7435,6 +8798,23 @@ export interface components {
              * @description attended / going
              */
             attendanceRate: number | null;
+        };
+        /** OwnerOptionOut */
+        OwnerOptionOut: {
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Fullname */
+            fullName: string;
+            /** Tier */
+            tier: string;
+        };
+        /** OwnerOptionsOut */
+        OwnerOptionsOut: {
+            /** Items */
+            items: components["schemas"]["OwnerOptionOut"][];
         };
         /** PassCodeOut */
         PassCodeOut: {
@@ -7971,6 +9351,15 @@ export interface components {
             /** Language */
             language?: ("ta" | "en") | null;
         };
+        /** ProgressIn */
+        ProgressIn: {
+            /** Step */
+            step: string;
+            /** Evidencerefs */
+            evidenceRefs?: string[];
+            /** Photoids */
+            photoIds?: string[];
+        };
         /** ProgressOut */
         ProgressOut: {
             /**
@@ -8023,6 +9412,21 @@ export interface components {
              * @description A phone number or address to send the outcome to
              */
             contact: string;
+        };
+        /** PublicSummaryIn */
+        PublicSummaryIn: {
+            /** Publish */
+            publish: boolean;
+            /** Titleen */
+            titleEn?: string | null;
+            /** Titleta */
+            titleTa?: string | null;
+            /** Summaryen */
+            summaryEn?: string | null;
+            /** Summaryta */
+            summaryTa?: string | null;
+            /** Reason */
+            reason?: string | null;
         };
         /**
          * QualityOut
@@ -8244,6 +9648,22 @@ export interface components {
             /** Refreshtoken */
             refreshToken?: string | null;
         };
+        /** RegionalPlanIn */
+        RegionalPlanIn: {
+            /** Solution */
+            solution: string;
+            /**
+             * Responsibletier
+             * @enum {string}
+             */
+            responsibleTier: "3A" | "3B" | "4" | "5";
+            /** Resources */
+            resources: string;
+            /** Expectedoutcome */
+            expectedOutcome: string;
+            /** Reportingplan */
+            reportingPlan: string;
+        };
         /** RegisterEntryOut */
         RegisterEntryOut: {
             /**
@@ -8455,6 +9875,43 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** ReporterContactOut */
+        ReporterContactOut: {
+            /** Fullname */
+            fullName: string;
+            /** Phone */
+            phone: string | null;
+            /** Membercode */
+            memberCode: string;
+        };
+        /** ReportingOptionsOut */
+        ReportingOptionsOut: {
+            /**
+             * Allowed
+             * @description Only Verified and Active members report (FR-RPT-017)
+             */
+            allowed: boolean;
+            /**
+             * Reason
+             * @description identity_not_verified or membership_not_active when not allowed
+             */
+            reason: string | null;
+            /**
+             * Hasarea
+             * @description The member's profile names an area, which every report needs
+             */
+            hasArea: boolean;
+            /** Gnnameen */
+            gnNameEn: string | null;
+            /** Gnnameta */
+            gnNameTa: string | null;
+            /** Categories */
+            categories: ("road" | "water" | "waste" | "electricity" | "agriculture" | "environment" | "public_facility" | "other")[];
+            /** Descriptionmin */
+            descriptionMin: number;
+            /** Maxphotos */
+            maxPhotos: number;
+        };
         /** ResetTokenOut */
         ResetTokenOut: {
             /** Resettoken */
@@ -8472,6 +9929,14 @@ export interface components {
             keptEn: string;
             /** Keptta */
             keptTa: string;
+        };
+        /** ReturnIn */
+        ReturnIn: {
+            /**
+             * Question
+             * @description What the reporter is asked to add
+             */
+            question: string;
         };
         /**
          * ReviewFileOut
@@ -14444,6 +15909,1535 @@ export interface operations {
             };
             /** @description not_found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_my_area_v1_issues_area_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyAreaOut"];
+                };
+            };
+        };
+    };
+    read_reporting_options_v1_issues_reporting_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportingOptionsOut"];
+                };
+            };
+        };
+    };
+    upload_report_photo_v1_issues_photos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssuePhotoOut"];
+                };
+            };
+            /** @description too_large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description unsupported_type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    upload_addition_photo_v1_issues_addition_photos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssuePhotoOut"];
+                };
+            };
+        };
+    };
+    submit_report_v1_issues_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IssueReportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_my_reports_v1_issues_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReportsOut"];
+                };
+            };
+        };
+    };
+    read_issue_v1_issues__issue_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                issue_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueDetailOut"];
+                };
+            };
+            /** @description not_found: no such issue, or not visible to this member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_following_v1_issues__issue_id__follow_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                issue_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FollowIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueDetailOut"];
+                };
+            };
+            /** @description not_found: no such issue, or not visible to this member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_information_v1_issues__issue_id__information_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                issue_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdditionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdditionOut"];
+                };
+            };
+            /** @description not_found: no such issue, or not visible to this member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    respond_to_closure_v1_issues__issue_id__closure_response_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                issue_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClosureResponseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueDetailOut"];
+                };
+            };
+            /** @description not_found: no such issue, or not visible to this member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_cases_v1_cases_get: {
+        parameters: {
+            query?: {
+                stage?: ("gn" | "returned" | "ds" | "district" | "regional" | "executive" | "implementation" | "resolved" | "declined" | "linked")[] | null;
+                mine?: boolean;
+                overdue?: boolean;
+                districtClosures?: boolean;
+                search?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseListOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_case_v1_cases__case_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_owner_options_v1_cases__case_id__owners_get: {
+        parameters: {
+            query: {
+                permission: string;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnerOptionsOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_reporter_contact_v1_cases__case_id__reporter_contact_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReporterContactOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_case_photo_v1_cases__case_id__photos__photo_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+                photo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The photo, without metadata */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/webp": unknown;
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_case_photo_v1_cases__case_id__photos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CasePhotoOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_fact_v1_cases__case_id__facts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FactIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_finding_v1_cases__case_id__findings_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FindingIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_note_v1_cases__case_id__notes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NoteIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    return_for_details_v1_cases__case_id__return_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReturnIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    link_to_parent_v1_cases__case_id__link_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LinkIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    forward_to_ds_v1_cases__case_id__forward_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ForwardIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    send_ds_report_v1_cases__case_id__ds_report_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DsReportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_at_district_v1_cases__case_id__district_decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DistrictDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_regional_plan_v1_cases__case_id__regional_plan_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegionalPlanIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_executive_v1_cases__case_id__executive_decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExecutiveDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_progress_v1_cases__case_id__progress_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProgressIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    close_case_v1_cases__case_id__close_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CaseCloseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    assign_v1_cases__case_id__assign_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_challenge_v1_cases__case_id__challenge_decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChallengeDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_public_summary_v1_cases__case_id__public_summary_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublicSummaryIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    moderate_addition_v1_cases__case_id__additions__addition_id__moderation_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+                addition_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdditionModerationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

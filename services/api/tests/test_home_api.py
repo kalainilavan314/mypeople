@@ -55,7 +55,8 @@ def test_a_new_member_sees_the_awaiting_review_home_with_locks_explained(client,
     assert home["nextStep"]["kind"] == "submit_identity"
     actions = {a["key"]: a for a in home["quickActions"]}
     assert list(actions) == ["report_issue", "volunteer", "my_area", "community"]
-    assert actions["report_issue"]["available"] is True
+    assert (actions["report_issue"]["available"], actions["report_issue"]["reason"]) == (False, "identity_not_verified")
+    assert actions["my_area"]["available"] is True
     assert (actions["volunteer"]["reason"], actions["volunteer"]["nextStep"]) == ("identity_not_verified", "view_verification")
     services = [s["key"] for s in home["hub"]["services"]]
     assert services.index("party_fund") == 3 and home["hub"]["gnLabel"] == home["gnName"]
@@ -126,3 +127,21 @@ def test_a_service_behind_an_off_module_switch_shows_as_not_open(database_settin
     )
     hub = {item["key"]: item for item in enforced.get("/v1/home", headers=auth(member)).json()["hub"]["services"]}
     assert hub["party_fund"]["available"] is True
+
+
+def test_issue_reporting_tiles_are_not_open_while_their_module_is_off(database_settings, db_session, auth, create_member):
+    from app.db.session import get_db
+    from app.main import create_app
+
+    app = create_app(database_settings.model_copy(update={"enforce_feature_flags": True}))
+    app.dependency_overrides[get_db] = lambda: db_session
+    enforced = TestClient(app)
+    member = create_member(verified=True, active=True)
+    db_session.execute(text("UPDATE ops.feature_flag SET enabled = false WHERE key = 'community_issues'"))
+
+    home = enforced.get("/v1/home", headers=auth(member)).json()
+    actions = {item["key"]: item for item in home["quickActions"]}
+    hub = {item["key"]: item for item in home["hub"]["services"]}
+    for tile in (actions["report_issue"], actions["my_area"], hub["local_reports"], hub["area_projects"]):
+        assert (tile["available"], tile["reason"]) == (False, "not_open")
+    assert enforced.get("/v1/issues/area", headers=auth(member)).status_code == 404

@@ -6,7 +6,8 @@ Run once every minute from a systemd timer (mypeople-notifications.timer):
 Jobs performed per cycle:
 1. Send due staff broadcasts (with election silence holds and audit trails).
 2. Escalate overdue photo removal requests (> 18h) to Tier 5 reviewers.
-3. Dispatch pending push notifications respecting quiet hours and preferences.
+3. Alert the next tier once about each case stage past its time limit (FR-WEB-028).
+4. Dispatch pending push notifications respecting quiet hours and preferences.
 
 Concurrency & Safety:
 - Database queries use row locking with SKIP LOCKED. Multiple simultaneous
@@ -30,6 +31,7 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings
 from app.db.session import create_database_engine
 from app.integrations.push import NoPush, PushSender, build_push
+from app.modules.community.issues import breaches as case_breaches
 from app.modules.content.gallery import service as gallery
 from app.modules.messaging.broadcasts import service as broadcasts
 from app.modules.messaging.notifications import service as notifications
@@ -51,8 +53,14 @@ def run_once(db: Session, push: PushSender, now: datetime | None = None) -> dict
     moment = now or datetime.now(UTC)
     sent_broadcasts = broadcasts.send_due(db, moment)
     escalated = gallery.escalate_overdue(db)
+    cases_alerted = case_breaches.alert_breaches(db, moment)
     pushed = notifications.dispatch(db, push, moment)
-    return {"broadcastsSent": sent_broadcasts, "removalsEscalated": escalated, **asdict(pushed)}
+    return {
+        "broadcastsSent": sent_broadcasts,
+        "removalsEscalated": escalated,
+        "caseBreachesAlerted": cases_alerted,
+        **asdict(pushed),
+    }
 
 
 def dry_run(db: Session, now: datetime | None = None) -> dict[str, Any]:

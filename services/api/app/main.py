@@ -25,6 +25,9 @@ from app.modules.access.reviews import router as access_reviews
 from app.modules.audit import router as audit
 from app.modules.content.gallery import router as gallery
 from app.modules.content.gallery.dependencies import build_media_store
+from app.modules.community.cases import router as community_cases
+from app.modules.community.issues import router as community_issues
+from app.modules.community.issues.evidence import build_issue_vault
 from app.modules.community.reports.router import router as community_reports
 from app.modules.election import router as election
 from app.modules.events import router as events
@@ -85,6 +88,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = settings
     app.state.session_factory = sessionmaker(bind=engine, expire_on_commit=False)
     app.state.evidence_vault = build_vault(settings)
+    app.state.issue_vault = build_issue_vault(settings)
     app.state.media_store = build_media_store(settings)
     app.state.sms = build_sms(settings)
     app.state.push = build_push(settings)
@@ -107,6 +111,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(events.router)
     app.include_router(gallery.router)
     app.include_router(community_reports)
+    app.include_router(community_issues.router)
+    app.include_router(community_cases.router)
     app.include_router(home.router)
     app.include_router(profile.router)
     app.include_router(area_changes.router)

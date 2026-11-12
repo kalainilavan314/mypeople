@@ -128,6 +128,55 @@ export type CommunityReportsQueueCount = Schemas['CommunityReportsQueueCount'];
 export type CommunityReportSummary = Schemas['CommunityReportSummaryOut'];
 export type CommunityReportList = Schemas['CommunityReportListOut'];
 export type CommunityReportStatus = Schemas['CommunityReportSummaryOut']['status'];
+// Community issues (H05 to H09) and the case workflow (W03 to W08).
+export type MyArea = Schemas['MyAreaOut'];
+export type AreaUpdate = Schemas['AreaUpdateOut'];
+export type IssueSummary = Schemas['IssueSummaryOut'];
+export type IssueDetail = Schemas['IssueDetailOut'];
+export type IssueStep = Schemas['IssueStepOut'];
+export type MyIssueReport = Schemas['MyReportOut'];
+export type IssueReportingOptions = Schemas['ReportingOptionsOut'];
+export type IssueReportInput = Schemas['IssueReportIn'];
+export type IssueCategory = Schemas['IssueReportIn']['category'];
+export type IssueLocationKind = Schemas['IssueReportIn']['locationKind'];
+export type IssueVisibility = NonNullable<Schemas['IssueReportIn']['visibility']>;
+export type IssueStatus = Schemas['IssueSummaryOut']['status'];
+export type IssueResponsibleTier = NonNullable<Schemas['IssueSummaryOut']['responsibleTier']>;
+export type IssuePhoto = Schemas['IssuePhotoOut'];
+export type IssueAddition = Schemas['AdditionOut'];
+export type ClosureResponseInput = Schemas['ClosureResponseIn'];
+export type CaseSummary = Schemas['IssueCaseOut'];
+export type CaseList = Schemas['IssueCaseListOut'];
+export type CaseFile = Schemas['IssueCaseFileOut'];
+export type CaseAction = Schemas['CaseActionOut'];
+export type CaseEvidence = Schemas['CaseEvidenceOut'];
+export type CaseAddition = Schemas['CaseAdditionOut'];
+export type CaseOwnerOption = Schemas['OwnerOptionOut'];
+export type CaseReporterContact = Schemas['ReporterContactOut'];
+export type CasePhoto = Schemas['CasePhotoOut'];
+export type CaseStage = Schemas['IssueCaseOut']['stage'];
+export type CaseFactInput = Schemas['FactIn'];
+export type CaseFindingInput = Schemas['FindingIn'];
+export type CaseFindingKind = Schemas['FindingIn']['kind'];
+export type CaseForwardInput = Schemas['ForwardIn'];
+export type CaseDsReportInput = Schemas['DsReportIn'];
+export type CaseDistrictDecisionInput = Schemas['DistrictDecisionIn'];
+export type CaseRegionalPlanInput = Schemas['RegionalPlanIn'];
+export type CaseExecutiveDecisionInput = Schemas['ExecutiveDecisionIn'];
+export type CaseProgressInput = Schemas['ProgressIn'];
+export type CaseCloseInput = Schemas['CaseCloseIn'];
+export type CaseAssignInput = Schemas['AssignIn'];
+export type CaseChallengeDecisionInput = Schemas['ChallengeDecisionIn'];
+export type CasePublicSummaryInput = Schemas['PublicSummaryIn'];
+export type CaseListFilters = {
+  stage?: CaseStage[];
+  mine?: boolean;
+  overdue?: boolean;
+  districtClosures?: boolean;
+  search?: string;
+  limit?: number;
+  offset?: number;
+};
 export type Household = Schemas['HouseholdOut'];
 export type HouseholdMember = Schemas['HouseholdMemberOut'];
 export type HouseholdInvitation = Schemas['HouseholdInvitationOut'];
@@ -1005,6 +1054,96 @@ export function createApiClient({
     /** Area-scoped operational detail without reporter identity or contact data. Needs reports.view. */
     getCommunityReport: (reportId: string) =>
       request<CommunityReportSummary>('GET', `/v1/community/reports/${encodeURIComponent(reportId)}`),
+    // Community issues for members (H05 to H09). Every route answers 404 "feature_unavailable"
+    // while the community_issues module is switched off.
+    /** H05: Updates, Issues and Projects published for the member's GN division. */
+    getMyArea: () => request<MyArea>('GET', '/v1/issues/area'),
+    /** H07: whether the member may report (FR-RPT-017) and the controlled lists. */
+    getIssueReportingOptions: () => request<IssueReportingOptions>('GET', '/v1/issues/reporting'),
+    /** A report photo, re-encoded without location data into the restricted evidence store. */
+    uploadIssuePhoto: (image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
+      request<IssuePhoto>('POST', '/v1/issues/photos', image, contentType),
+    uploadIssueAdditionPhoto: (image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
+      request<IssuePhoto>('POST', '/v1/issues/addition-photos', image, contentType),
+    /**
+     * H08: sends the report. The same clientReference always returns the first receipt (FR-RPT-013).
+     * Throws ApiError "issue_refused" (422) with `problems`, e.g. "identity_not_verified", "location_required".
+     */
+    submitIssueReport: (input: IssueReportInput) => request<IssueDetail>('POST', '/v1/issues', input),
+    listMyIssueReports: () => request<{ items: IssueSummary[] }>('GET', '/v1/issues/mine'),
+    /** H06 for issues in the member's area; H09 with `report` filled in for the reporter. Throws "not_found" (404). */
+    getIssue: (issueId: string) => request<IssueDetail>('GET', `/v1/issues/${encodeURIComponent(issueId)}`),
+    setIssueFollowing: (issueId: string, follow: boolean) =>
+      request<IssueDetail>('PUT', `/v1/issues/${encodeURIComponent(issueId)}/follow`, { follow }),
+    /** FR-RPT-006: held for moderation; the reporter's answer to a request for details reopens the GN stage. */
+    addIssueInformation: (issueId: string, body: string, photoIds: string[] = []) =>
+      request<IssueAddition>('POST', `/v1/issues/${encodeURIComponent(issueId)}/information`, { body, photoIds }),
+    /** FR-RPT-016: rate the closure, or challenge it (resolved: false) with a note within 30 days. */
+    respondToIssueClosure: (issueId: string, input: ClosureResponseInput) =>
+      request<IssueDetail>('POST', `/v1/issues/${encodeURIComponent(issueId)}/closure-response`, input),
+    // The staff case workflow (W03 to W08). Refusals: "forbidden" or "own_record" (403), "not_found"
+    // (404, also outside the viewer's areas), "case_refused" (409) with `problems` such as "wrong_stage".
+    listCases: (filters: CaseListFilters = {}) => {
+      const q = new URLSearchParams();
+      for (const stage of filters.stage ?? []) q.append('stage', stage);
+      if (filters.mine) q.set('mine', 'true');
+      if (filters.overdue) q.set('overdue', 'true');
+      if (filters.districtClosures) q.set('districtClosures', 'true');
+      if (filters.search) q.set('search', filters.search);
+      if (filters.limit !== undefined) q.set('limit', String(filters.limit));
+      if (filters.offset !== undefined) q.set('offset', String(filters.offset));
+      const qs = q.toString();
+      return request<CaseList>('GET', `/v1/cases${qs ? `?${qs}` : ''}`);
+    },
+    /** The whole case file with the actions the viewer may take now; the read is audited. */
+    getCase: (caseId: string) => request<CaseFile>('GET', `/v1/cases/${encodeURIComponent(caseId)}`),
+    /** People who may be named owner for a step: deciding holders of `permission` over the case's area. */
+    listCaseOwnerOptions: (caseId: string, permission: string) =>
+      request<{ items: CaseOwnerOption[] }>(
+        'GET',
+        `/v1/cases/${encodeURIComponent(caseId)}/owners?permission=${encodeURIComponent(permission)}`,
+      ),
+    /** PRM-13: the assigned owner only; every look is audited. */
+    getCaseReporterContact: (caseId: string) =>
+      request<CaseReporterContact>('GET', `/v1/cases/${encodeURIComponent(caseId)}/reporter-contact`),
+    uploadCasePhoto: (caseId: string, image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
+      request<CasePhoto>('POST', `/v1/cases/${encodeURIComponent(caseId)}/photos`, image, contentType),
+    addCaseFact: (caseId: string, input: CaseFactInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/facts`, input),
+    addCaseFinding: (caseId: string, input: CaseFindingInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/findings`, input),
+    addCaseNote: (caseId: string, text: string) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/notes`, { text }),
+    returnCaseForDetails: (caseId: string, question: string) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/return`, { question }),
+    linkCaseToParent: (caseId: string, parentCaseNumber: string, note?: string) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/link`, { parentCaseNumber, note }),
+    forwardCase: (caseId: string, input: CaseForwardInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/forward`, input),
+    sendCaseDsReport: (caseId: string, input: CaseDsReportInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/ds-report`, input),
+    decideCaseAtDistrict: (caseId: string, input: CaseDistrictDecisionInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/district-decision`, input),
+    submitCaseRegionalPlan: (caseId: string, input: CaseRegionalPlanInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/regional-plan`, input),
+    decideCaseExecutive: (caseId: string, input: CaseExecutiveDecisionInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/executive-decision`, input),
+    recordCaseProgress: (caseId: string, input: CaseProgressInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/progress`, input),
+    closeCase: (caseId: string, input: CaseCloseInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/close`, input),
+    assignCase: (caseId: string, input: CaseAssignInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/assign`, input),
+    decideCaseChallenge: (caseId: string, input: CaseChallengeDecisionInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/challenge-decision`, input),
+    setCasePublicSummary: (caseId: string, input: CasePublicSummaryInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/public-summary`, input),
+    moderateCaseAddition: (caseId: string, additionId: string, approve: boolean, reason?: string) =>
+      request<CaseFile>(
+        'POST',
+        `/v1/cases/${encodeURIComponent(caseId)}/additions/${encodeURIComponent(additionId)}/moderation`,
+        { approve, reason },
+      ),
     // Community Finance endpoints (Milestone 1.4)
     getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),
     createContribution: (body: ContributionCreateInput, idempotencyKey?: string) =>

@@ -6913,6 +6913,2075 @@
         }
       }
     },
+    "/v1/issues/area": {
+      "get": {
+        "tags": [
+          "issues"
+        ],
+        "summary": "Read My Area",
+        "description": "H05: Updates, Issues and Projects published for the member's GN division.",
+        "operationId": "read_my_area_v1_issues_area_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyAreaOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/issues/reporting": {
+      "get": {
+        "tags": [
+          "issues"
+        ],
+        "summary": "Read Reporting Options",
+        "description": "H07: whether the member may report, and the controlled lists for the form.",
+        "operationId": "read_reporting_options_v1_issues_reporting_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportingOptionsOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/issues/photos": {
+      "post": {
+        "tags": [
+          "issues"
+        ],
+        "summary": "Upload Report Photo",
+        "description": "A photo for a report being written; location data is removed and it goes to the restricted\nevidence store, never the gallery (FR-RPT-009). Attach it by id when the report is sent.",
+        "operationId": "upload_report_photo_v1_issues_photos_post",
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssuePhotoOut"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "unsupported_type"
+          },
+          "413": {
+            "description": "too_large"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/issues/addition-photos": {
+      "post": {
+        "tags": [
+          "issues"
+        ],
+        "summary": "Upload Addition Photo",
+        "operationId": "upload_addition_photo_v1_issues_addition_photos_post",
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssuePhotoOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/issues": {
+      "post": {
+        "tags": [
+          "issues"
+        ],
+        "summary": "Submit Report",
+        "description": "H08: send the report. The receipt exists only once the server has the case (FR-RPT-013).",
+        "operationId": "submit_report_v1_issues_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IssueReportIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/issues/mine": {
+      "get": {
+        "tags": [
+          "issues"
+        ],
+        "summary": "List My Reports",
+        "operationId": "list_my_reports_v1_issues_mine_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyReportsOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/issues/{issue_id}": {
+      "get": {
+        "tags": [
+          "issues"
+        ],
+        "summary": "Read Issue",
+        "description": "H06 for anyone in the area; H09 with the reporter's own details for the reporter.",
+        "operationId": "read_issue_v1_issues__issue_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "issue_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Issue Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueDetailOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found: no such issue, or not visible to this member"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/issues/{issue_id}/follow": {
+      "put": {
+        "tags": [
+          "issues"
+        ],
+        "summary": "Set Following",
+        "description": "FR-RPT-005: follow an issue to be told of each stage change.",
+        "operationId": "set_following_v1_issues__issue_id__follow_put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "issue_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Issue Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FollowIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueDetailOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found: no such issue, or not visible to this member"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/issues/{issue_id}/information": {
+      "post": {
+        "tags": [
+          "issues"
+        ],
+        "summary": "Add Information",
+        "description": "FR-RPT-006: held for moderation; the reporter's answer to a request for details reopens the GN stage.",
+        "operationId": "add_information_v1_issues__issue_id__information_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "issue_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Issue Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdditionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdditionOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found: no such issue, or not visible to this member"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/issues/{issue_id}/closure-response": {
+      "post": {
+        "tags": [
+          "issues"
+        ],
+        "summary": "Respond To Closure",
+        "description": "FR-RPT-016: rate a closure, or challenge it with a note within 30 days.",
+        "operationId": "respond_to_closure_v1_issues__issue_id__closure_response_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "issue_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Issue Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClosureResponseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueDetailOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found: no such issue, or not visible to this member"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases": {
+      "get": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "List Cases",
+        "description": "Cases in the viewer's areas; overdue ones first (FR-WEB-022, 028).",
+        "operationId": "list_cases_v1_cases_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "stage",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "gn",
+                      "returned",
+                      "ds",
+                      "district",
+                      "regional",
+                      "executive",
+                      "implementation",
+                      "resolved",
+                      "declined",
+                      "linked"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Stage"
+            }
+          },
+          {
+            "name": "mine",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Mine"
+            }
+          },
+          {
+            "name": "overdue",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Overdue"
+            }
+          },
+          {
+            "name": "districtClosures",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Districtclosures"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 60
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseListOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}": {
+      "get": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Read Case",
+        "operationId": "read_case_v1_cases__case_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/owners": {
+      "get": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "List Owner Options",
+        "description": "People who may be named owner for the next step: deciding holders of that permission over the area.",
+        "operationId": "list_owner_options_v1_cases__case_id__owners_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "permission",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 60,
+              "title": "Permission"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerOptionsOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/reporter-contact": {
+      "get": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Read Reporter Contact",
+        "description": "PRM-13: only the assigned owner; every look is audited.",
+        "operationId": "read_reporter_contact_v1_cases__case_id__reporter_contact_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReporterContactOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/photos/{photo_id}": {
+      "get": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Read Case Photo",
+        "operationId": "read_case_photo_v1_cases__case_id__photos__photo_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "photo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Photo Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The photo, without metadata",
+            "content": {
+              "image/webp": {}
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/photos": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Upload Case Photo",
+        "operationId": "upload_case_photo_v1_cases__case_id__photos_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CasePhotoOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/facts": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Add Fact",
+        "description": "W03: an observed fact and its source (FR-WEB-015).",
+        "operationId": "add_fact_v1_cases__case_id__facts_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FactIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/findings": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Add Finding",
+        "description": "W04: divisional findings by kind (FR-WEB-019); Tier 2B may add them too (FR-WEB-020).",
+        "operationId": "add_finding_v1_cases__case_id__findings_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FindingIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/notes": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Add Note",
+        "operationId": "add_note_v1_cases__case_id__notes_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoteIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/return": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Return For Details",
+        "description": "FR-WEB-016: ask the reporter for details instead of deleting the report.",
+        "operationId": "return_for_details_v1_cases__case_id__return_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReturnIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/link": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Link To Parent",
+        "description": "FR-WEB-018: link a duplicate report to its parent case.",
+        "operationId": "link_to_parent_v1_cases__case_id__link_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/forward": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Forward To Ds",
+        "description": "FR-WEB-017: forward to the divisional owner after the completeness check.",
+        "operationId": "forward_to_ds_v1_cases__case_id__forward_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForwardIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/ds-report": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Send Ds Report",
+        "description": "W04: the formal divisional report to the district (FR-WEB-019).",
+        "operationId": "send_ds_report_v1_cases__case_id__ds_report_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DsReportIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/district-decision": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Decide At District",
+        "description": "W05: act within delegated authority, or escalate (FR-WEB-021).",
+        "operationId": "decide_at_district_v1_cases__case_id__district_decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DistrictDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/regional-plan": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Submit Regional Plan",
+        "description": "W06: the regional solution plan for Tier 5 (FR-WEB-023).",
+        "operationId": "submit_regional_plan_v1_cases__case_id__regional_plan_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegionalPlanIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/executive-decision": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Decide Executive",
+        "description": "W07: approve with conditions, return for clarification, or decline (FR-WEB-024).",
+        "operationId": "decide_executive_v1_cases__case_id__executive_decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecutiveDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/progress": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Record Progress",
+        "description": "W08: a step and its progress evidence (FR-WEB-025).",
+        "operationId": "record_progress_v1_cases__case_id__progress_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgressIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/close": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Close Case",
+        "description": "W08: the closing report; Resolved only with evidence and a Tamil and English summary (FR-WEB-026).",
+        "operationId": "close_case_v1_cases__case_id__close_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaseCloseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/assign": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Assign",
+        "description": "A handoff within the stage, or taking an unassigned case (FR-WEB-029).",
+        "operationId": "assign_v1_cases__case_id__assign_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/challenge-decision": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Decide Challenge",
+        "description": "FR-WEB-027: reopen on an accepted challenge, or reject it with a reason.",
+        "operationId": "decide_challenge_v1_cases__case_id__challenge_decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChallengeDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/public-summary": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Set Public Summary",
+        "description": "BR-032: publish a moderated public summary, or withhold it with a reason.",
+        "operationId": "set_public_summary_v1_cases__case_id__public_summary_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicSummaryIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/additions/{addition_id}/moderation": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Moderate Addition",
+        "operationId": "moderate_addition_v1_cases__case_id__additions__addition_id__moderation_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "addition_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Addition Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdditionModerationIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueCaseFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/home": {
       "get": {
         "tags": [
@@ -12283,6 +14352,85 @@
         ],
         "title": "ActivityItemOut"
       },
+      "AdditionIn": {
+        "properties": {
+          "body": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 5,
+            "title": "Body"
+          },
+          "photoIds": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 2,
+            "title": "Photoids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "title": "AdditionIn"
+      },
+      "AdditionModerationIn": {
+        "properties": {
+          "approve": {
+            "type": "boolean",
+            "title": "Approve"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "approve"
+        ],
+        "title": "AdditionModerationIn"
+      },
+      "AdditionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "isReply": {
+            "type": "boolean",
+            "title": "Isreply"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "state",
+          "isReply",
+          "createdAt"
+        ],
+        "title": "AdditionOut"
+      },
       "AggregateCellOut": {
         "properties": {
           "key": {
@@ -13385,6 +15533,80 @@
         ],
         "title": "AreaRef",
         "description": "An area: the whole platform, or a province, district, DS division or GN division by code."
+      },
+      "AreaUpdateOut": {
+        "properties": {
+          "issueId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Issueid"
+          },
+          "caseNumber": {
+            "type": "string",
+            "title": "Casenumber"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "stage": {
+            "type": "integer",
+            "title": "Stage"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "received",
+              "needs_details",
+              "under_review",
+              "in_progress",
+              "resolved",
+              "declined"
+            ],
+            "title": "Status"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "issueId",
+          "caseNumber",
+          "titleEn",
+          "titleTa",
+          "stage",
+          "status",
+          "at"
+        ],
+        "title": "AreaUpdateOut"
+      },
+      "AssignIn": {
+        "properties": {
+          "ownerId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Ownerid"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ownerId",
+          "note"
+        ],
+        "title": "AssignIn"
       },
       "AssignmentEventOut": {
         "properties": {
@@ -15050,6 +17272,226 @@
         ],
         "title": "CardOut"
       },
+      "CaseActionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "actorName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actorname"
+          },
+          "fromStage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fromstage"
+          },
+          "toStage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tostage"
+          },
+          "previousOwnerName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previousownername"
+          },
+          "newOwnerName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Newownername"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Details"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "actorName",
+          "fromStage",
+          "toStage",
+          "previousOwnerName",
+          "newOwnerName",
+          "note",
+          "details",
+          "createdAt"
+        ],
+        "title": "CaseActionOut"
+      },
+      "CaseAdditionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "fromReporter": {
+            "type": "boolean",
+            "title": "Fromreporter"
+          },
+          "isReply": {
+            "type": "boolean",
+            "title": "Isreply"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "moderationReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moderationreason"
+          },
+          "photos": {
+            "type": "integer",
+            "title": "Photos"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "body",
+          "fromReporter",
+          "isReply",
+          "state",
+          "moderationReason",
+          "photos",
+          "createdAt"
+        ],
+        "title": "CaseAdditionOut",
+        "description": "Added information; the person is named only as the reporter or \"a member\" (data minimisation)."
+      },
+      "CaseCloseIn": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 10,
+            "title": "Outcome"
+          },
+          "evidenceRefs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Evidencerefs"
+          },
+          "photoIds": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "Photoids"
+          },
+          "limitations": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limitations"
+          },
+          "summaryEn": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Summaryen",
+            "description": "Shown to the reporter and followers"
+          },
+          "summaryTa": {
+            "type": "string",
+            "maxLength": 1500,
+            "minLength": 10,
+            "title": "Summaryta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcome",
+          "summaryEn",
+          "summaryTa"
+        ],
+        "title": "CaseCloseIn"
+      },
       "CaseDecisionInput": {
         "properties": {
           "outcome": {
@@ -15073,6 +17515,59 @@
           "reason"
         ],
         "title": "CaseDecisionInput"
+      },
+      "CaseEvidenceOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "fromReporter": {
+            "type": "boolean",
+            "title": "Fromreporter"
+          },
+          "actionId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actionid"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "purpose",
+          "fromReporter",
+          "actionId",
+          "width",
+          "height",
+          "createdAt"
+        ],
+        "title": "CaseEvidenceOut"
       },
       "CaseFileOut": {
         "properties": {
@@ -15261,6 +17756,30 @@
         ],
         "title": "CaseMemberOut"
       },
+      "CasePhotoOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "width",
+          "height"
+        ],
+        "title": "CasePhotoOut"
+      },
       "CaseSummaryOut": {
         "properties": {
           "id": {
@@ -15415,6 +17934,93 @@
           "firstBrokenId"
         ],
         "title": "ChainCheckOut"
+      },
+      "ChallengeDecisionIn": {
+        "properties": {
+          "accept": {
+            "type": "boolean",
+            "title": "Accept"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 5,
+            "title": "Reason"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "gn",
+                  "ds",
+                  "district",
+                  "implementation"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage"
+          },
+          "ownerId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ownerid"
+          },
+          "dueDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duedate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accept",
+          "reason"
+        ],
+        "title": "ChallengeDecisionIn"
+      },
+      "ChallengeOut": {
+        "properties": {
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "note",
+          "createdAt"
+        ],
+        "title": "ChallengeOut"
       },
       "CheckInEventOut": {
         "properties": {
@@ -15643,6 +18249,88 @@
         ],
         "title": "CloseIn"
       },
+      "ClosureResponseIn": {
+        "properties": {
+          "resolved": {
+            "type": "boolean",
+            "title": "Resolved",
+            "description": "False challenges the closure (FR-RPT-016) and needs a note"
+          },
+          "rating": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 5.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rating"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000,
+                "minLength": 5
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "resolved"
+        ],
+        "title": "ClosureResponseIn"
+      },
+      "ClosureResponseOut": {
+        "properties": {
+          "resolved": {
+            "type": "boolean",
+            "title": "Resolved"
+          },
+          "rating": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rating"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "resolved",
+          "rating",
+          "state",
+          "decisionReason"
+        ],
+        "title": "ClosureResponseOut"
+      },
       "CodeSentOut": {
         "properties": {
           "sent": {
@@ -15824,6 +18512,25 @@
         "type": "object",
         "title": "CommunityReportsQueueCount",
         "description": "Aggregate actionable report counts for D01 operational work queues."
+      },
+      "CommunityUpdateOut": {
+        "properties": {
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "body",
+          "createdAt"
+        ],
+        "title": "CommunityUpdateOut"
       },
       "ConfigurationQueueCount": {
         "properties": {
@@ -16665,6 +19372,119 @@
         ],
         "title": "DeviceTokenIn"
       },
+      "DistrictDecisionIn": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "act",
+              "escalate"
+            ],
+            "title": "Decision"
+          },
+          "authority": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authority"
+          },
+          "resources": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resources"
+          },
+          "office": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Office"
+          },
+          "ownerId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ownerid"
+          },
+          "dueDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duedate"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "decisionRequired": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionrequired"
+          },
+          "regionalOwnerId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regionalownerid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "DistrictDecisionIn"
+      },
       "DocumentOut": {
         "properties": {
           "id": {
@@ -16756,6 +19576,42 @@
           "rationale"
         ],
         "title": "DraftIn"
+      },
+      "DsReportIn": {
+        "properties": {
+          "summary": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 10,
+            "title": "Summary"
+          },
+          "evidenceRefs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Evidencerefs"
+          },
+          "recommendation": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Recommendation"
+          },
+          "districtOwnerId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Districtownerid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "summary",
+          "recommendation",
+          "districtOwnerId"
+        ],
+        "title": "DsReportIn"
       },
       "DueGrantOut": {
         "properties": {
@@ -18064,6 +20920,131 @@
         "title": "EvidenceViewOut",
         "description": "FR-AUTH-024: the date and the role, never the person."
       },
+      "ExecutiveDecisionIn": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "return",
+              "decline"
+            ],
+            "title": "Decision"
+          },
+          "conditions": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conditions"
+          },
+          "implementerId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Implementerid"
+          },
+          "scope": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scope"
+          },
+          "reportingDuty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reportingduty"
+          },
+          "dueDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duedate"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "ExecutiveDecisionIn"
+      },
+      "FactIn": {
+        "properties": {
+          "statement": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Statement"
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 2,
+            "title": "Source",
+            "description": "Who or what the fact comes from (FR-WEB-015)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "statement",
+          "source"
+        ],
+        "title": "FactIn"
+      },
       "FeaturesOut": {
         "properties": {
           "enabled": {
@@ -18310,6 +21291,46 @@
         ],
         "title": "FinanceReadinessCheck"
       },
+      "FindingIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "verified_fact",
+              "assumption",
+              "option",
+              "stakeholder",
+              "resource_need",
+              "open_question"
+            ],
+            "title": "Kind"
+          },
+          "statement": {
+            "type": "string",
+            "maxLength": 1500,
+            "minLength": 3,
+            "title": "Statement"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "statement"
+        ],
+        "title": "FindingIn"
+      },
       "FlagOut": {
         "properties": {
           "key": {
@@ -18391,6 +21412,56 @@
           "gateRecordedAt"
         ],
         "title": "FlagOut"
+      },
+      "FollowIn": {
+        "properties": {
+          "follow": {
+            "type": "boolean",
+            "title": "Follow"
+          }
+        },
+        "type": "object",
+        "required": [
+          "follow"
+        ],
+        "title": "FollowIn"
+      },
+      "ForwardIn": {
+        "properties": {
+          "locationConfirmed": {
+            "type": "boolean",
+            "title": "Locationconfirmed"
+          },
+          "descriptionClear": {
+            "type": "boolean",
+            "title": "Descriptionclear"
+          },
+          "evidenceReviewed": {
+            "type": "boolean",
+            "title": "Evidencereviewed"
+          },
+          "ownerId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Ownerid",
+            "description": "The named DS owner (FR-WEB-017)"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 3,
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "locationConfirmed",
+          "descriptionClear",
+          "evidenceReviewed",
+          "ownerId",
+          "note"
+        ],
+        "title": "ForwardIn"
       },
       "FundConfigResponse": {
         "properties": {
@@ -19407,6 +22478,1046 @@
           "relationship"
         ],
         "title": "InviteAdultIn"
+      },
+      "IssueCaseFileOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "caseNumber": {
+            "type": "string",
+            "title": "Casenumber"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "ownerId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ownerid"
+          },
+          "ownerName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ownername"
+          },
+          "areaPath": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Areapath"
+          },
+          "gnCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gncode"
+          },
+          "dsCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dscode"
+          },
+          "districtCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Districtcode"
+          },
+          "stageEnteredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Stageenteredat"
+          },
+          "stageDueAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stagedueat"
+          },
+          "overdue": {
+            "type": "boolean",
+            "title": "Overdue"
+          },
+          "visibility": {
+            "type": "string",
+            "title": "Visibility"
+          },
+          "publicState": {
+            "type": "string",
+            "title": "Publicstate"
+          },
+          "parentCaseNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parentcasenumber"
+          },
+          "closedLevel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedlevel"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "locationKind": {
+            "type": "string",
+            "title": "Locationkind"
+          },
+          "locationText": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locationtext"
+          },
+          "publicTitleEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publictitleen"
+          },
+          "publicTitleTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publictitleta"
+          },
+          "publicSummaryEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicsummaryen"
+          },
+          "publicSummaryTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicsummaryta"
+          },
+          "implementationDueAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Implementationdueat"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedat"
+          },
+          "closingSummaryEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closingsummaryen"
+          },
+          "closingSummaryTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closingsummaryta"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/CaseActionOut"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/CaseEvidenceOut"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "additions": {
+            "items": {
+              "$ref": "#/components/schemas/CaseAdditionOut"
+            },
+            "type": "array",
+            "title": "Additions"
+          },
+          "linkedReports": {
+            "items": {
+              "$ref": "#/components/schemas/LinkedReportOut"
+            },
+            "type": "array",
+            "title": "Linkedreports"
+          },
+          "openChallenge": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChallengeOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "allowedActions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowedactions",
+            "description": "What the viewer may do now; the API checks again on every action"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caseNumber",
+          "category",
+          "title",
+          "stage",
+          "ownerId",
+          "ownerName",
+          "areaPath",
+          "gnCode",
+          "dsCode",
+          "districtCode",
+          "stageEnteredAt",
+          "stageDueAt",
+          "overdue",
+          "visibility",
+          "publicState",
+          "parentCaseNumber",
+          "closedLevel",
+          "createdAt",
+          "updatedAt",
+          "description",
+          "locationKind",
+          "locationText",
+          "publicTitleEn",
+          "publicTitleTa",
+          "publicSummaryEn",
+          "publicSummaryTa",
+          "implementationDueAt",
+          "closedAt",
+          "closingSummaryEn",
+          "closingSummaryTa",
+          "history",
+          "evidence",
+          "additions",
+          "linkedReports",
+          "openChallenge",
+          "allowedActions"
+        ],
+        "title": "IssueCaseFileOut"
+      },
+      "IssueCaseListOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/IssueCaseOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Counts",
+            "description": "Cases in the viewer's areas by stage, plus 'overdue'"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset",
+          "counts"
+        ],
+        "title": "IssueCaseListOut"
+      },
+      "IssueCaseOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "caseNumber": {
+            "type": "string",
+            "title": "Casenumber"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "ownerId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ownerid"
+          },
+          "ownerName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ownername"
+          },
+          "areaPath": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Areapath"
+          },
+          "gnCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gncode"
+          },
+          "dsCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dscode"
+          },
+          "districtCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Districtcode"
+          },
+          "stageEnteredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Stageenteredat"
+          },
+          "stageDueAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stagedueat"
+          },
+          "overdue": {
+            "type": "boolean",
+            "title": "Overdue"
+          },
+          "visibility": {
+            "type": "string",
+            "title": "Visibility"
+          },
+          "publicState": {
+            "type": "string",
+            "title": "Publicstate"
+          },
+          "parentCaseNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parentcasenumber"
+          },
+          "closedLevel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedlevel"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caseNumber",
+          "category",
+          "title",
+          "stage",
+          "ownerId",
+          "ownerName",
+          "areaPath",
+          "gnCode",
+          "dsCode",
+          "districtCode",
+          "stageEnteredAt",
+          "stageDueAt",
+          "overdue",
+          "visibility",
+          "publicState",
+          "parentCaseNumber",
+          "closedLevel",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "IssueCaseOut"
+      },
+      "IssueDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "caseNumber": {
+            "type": "string",
+            "title": "Casenumber"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "road",
+              "water",
+              "waste",
+              "electricity",
+              "agriculture",
+              "environment",
+              "public_facility",
+              "other"
+            ],
+            "title": "Category"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "received",
+              "needs_details",
+              "under_review",
+              "in_progress",
+              "resolved",
+              "declined"
+            ],
+            "title": "Status"
+          },
+          "stage": {
+            "type": "integer",
+            "title": "Stage"
+          },
+          "responsibleTier": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "gn_coordinator",
+                  "divisional_coordinator",
+                  "district_coordinator",
+                  "regional_administrator",
+                  "executive",
+                  "execution_owner"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Responsibletier"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine"
+          },
+          "following": {
+            "type": "boolean",
+            "title": "Following"
+          },
+          "summaryEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summaryta"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/IssueStepOut"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "canFollow": {
+            "type": "boolean",
+            "title": "Canfollow"
+          },
+          "canAddInformation": {
+            "type": "boolean",
+            "title": "Canaddinformation"
+          },
+          "communityUpdates": {
+            "items": {
+              "$ref": "#/components/schemas/CommunityUpdateOut"
+            },
+            "type": "array",
+            "title": "Communityupdates"
+          },
+          "closingSummaryEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closingsummaryen"
+          },
+          "closingSummaryTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closingsummaryta"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedat"
+          },
+          "report": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MyReportOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caseNumber",
+          "category",
+          "titleEn",
+          "titleTa",
+          "status",
+          "stage",
+          "responsibleTier",
+          "updatedAt",
+          "mine",
+          "following",
+          "summaryEn",
+          "summaryTa",
+          "steps",
+          "canFollow",
+          "canAddInformation",
+          "communityUpdates",
+          "closingSummaryEn",
+          "closingSummaryTa",
+          "closedAt",
+          "report"
+        ],
+        "title": "IssueDetailOut"
+      },
+      "IssuePhotoOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "width",
+          "height"
+        ],
+        "title": "IssuePhotoOut"
+      },
+      "IssueReportIn": {
+        "properties": {
+          "clientReference": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Clientreference",
+            "description": "Made once per draft by the app; a repeated submit returns the first receipt"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "road",
+              "water",
+              "waste",
+              "electricity",
+              "agriculture",
+              "environment",
+              "public_facility",
+              "other"
+            ],
+            "title": "Category"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 5,
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 20,
+            "title": "Description"
+          },
+          "locationKind": {
+            "type": "string",
+            "enum": [
+              "my_gn",
+              "landmark",
+              "text"
+            ],
+            "title": "Locationkind"
+          },
+          "locationText": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locationtext"
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "team",
+              "public"
+            ],
+            "title": "Visibility",
+            "default": "team"
+          },
+          "photoIds": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "title": "Photoids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "clientReference",
+          "category",
+          "title",
+          "description",
+          "locationKind"
+        ],
+        "title": "IssueReportIn"
+      },
+      "IssueStepOut": {
+        "properties": {
+          "stage": {
+            "type": "integer",
+            "title": "Stage",
+            "description": "1 Reported, 2 Verified, 3 Decision, 4 Action and closure"
+          },
+          "reachedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reachedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stage",
+          "reachedAt"
+        ],
+        "title": "IssueStepOut"
+      },
+      "IssueSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "caseNumber": {
+            "type": "string",
+            "title": "Casenumber"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "road",
+              "water",
+              "waste",
+              "electricity",
+              "agriculture",
+              "environment",
+              "public_facility",
+              "other"
+            ],
+            "title": "Category"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "received",
+              "needs_details",
+              "under_review",
+              "in_progress",
+              "resolved",
+              "declined"
+            ],
+            "title": "Status"
+          },
+          "stage": {
+            "type": "integer",
+            "title": "Stage"
+          },
+          "responsibleTier": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "gn_coordinator",
+                  "divisional_coordinator",
+                  "district_coordinator",
+                  "regional_administrator",
+                  "executive",
+                  "execution_owner"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Responsibletier"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine"
+          },
+          "following": {
+            "type": "boolean",
+            "title": "Following"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caseNumber",
+          "category",
+          "titleEn",
+          "titleTa",
+          "status",
+          "stage",
+          "responsibleTier",
+          "updatedAt",
+          "mine",
+          "following"
+        ],
+        "title": "IssueSummaryOut"
+      },
+      "LinkIn": {
+        "properties": {
+          "parentCaseNumber": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 4,
+            "title": "Parentcasenumber"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "parentCaseNumber"
+        ],
+        "title": "LinkIn"
+      },
+      "LinkedReportOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "caseNumber": {
+            "type": "string",
+            "title": "Casenumber"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caseNumber",
+          "createdAt"
+        ],
+        "title": "LinkedReportOut"
       },
       "LockedFieldOut": {
         "properties": {
@@ -20465,6 +24576,67 @@
         ],
         "title": "MfaStatusOut"
       },
+      "MyAreaOut": {
+        "properties": {
+          "hasArea": {
+            "type": "boolean",
+            "title": "Hasarea"
+          },
+          "gnNameEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gnnameen"
+          },
+          "gnNameTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gnnameta"
+          },
+          "updates": {
+            "items": {
+              "$ref": "#/components/schemas/AreaUpdateOut"
+            },
+            "type": "array",
+            "title": "Updates"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/IssueSummaryOut"
+            },
+            "type": "array",
+            "title": "Issues"
+          },
+          "projects": {
+            "items": {
+              "$ref": "#/components/schemas/IssueSummaryOut"
+            },
+            "type": "array",
+            "title": "Projects"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hasArea",
+          "gnNameEn",
+          "gnNameTa",
+          "updates",
+          "issues",
+          "projects"
+        ],
+        "title": "MyAreaOut"
+      },
       "MyMembershipOut": {
         "properties": {
           "state": {
@@ -20509,6 +24681,154 @@
         ],
         "title": "MyMembershipOut",
         "description": "The member's own membership state (A12, C06). The reason code is shown; staff notes are not."
+      },
+      "MyReportOut": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "locationKind": {
+            "type": "string",
+            "enum": [
+              "my_gn",
+              "landmark",
+              "text"
+            ],
+            "title": "Locationkind"
+          },
+          "locationText": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locationtext"
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "team",
+              "public"
+            ],
+            "title": "Visibility"
+          },
+          "publicState": {
+            "type": "string",
+            "title": "Publicstate"
+          },
+          "photos": {
+            "type": "integer",
+            "title": "Photos"
+          },
+          "nextStep": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nextstep"
+          },
+          "returnedQuestion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Returnedquestion"
+          },
+          "linkedTo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linkedto",
+            "description": "The parent case number when the report was linked as a duplicate"
+          },
+          "canRespond": {
+            "type": "boolean",
+            "title": "Canrespond"
+          },
+          "challengeUntil": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Challengeuntil"
+          },
+          "response": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ClosureResponseOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "description",
+          "locationKind",
+          "locationText",
+          "visibility",
+          "publicState",
+          "photos",
+          "nextStep",
+          "returnedQuestion",
+          "linkedTo",
+          "canRespond",
+          "challengeUntil",
+          "response",
+          "createdAt"
+        ],
+        "title": "MyReportOut",
+        "description": "Only for the reporter: what they sent and where it stands (H09)."
+      },
+      "MyReportsOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/IssueSummaryOut"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "MyReportsOut"
       },
       "MyReviewOut": {
         "properties": {
@@ -20571,6 +24891,21 @@
         ],
         "title": "MyReviewOut",
         "description": "A10, A11, C06: the review reference and state, and what to correct when a correction is asked for."
+      },
+      "NoteIn": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 3,
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "NoteIn"
       },
       "NoticeIn": {
         "properties": {
@@ -21035,6 +25370,46 @@
         ],
         "title": "OperationsOut",
         "description": "D32 operational figures for the viewer's areas over the last `periodDays` days."
+      },
+      "OwnerOptionOut": {
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "tier": {
+            "type": "string",
+            "title": "Tier"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberId",
+          "fullName",
+          "tier"
+        ],
+        "title": "OwnerOptionOut"
+      },
+      "OwnerOptionsOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OwnerOptionOut"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "OwnerOptionsOut"
       },
       "PassCodeOut": {
         "properties": {
@@ -22295,6 +26670,38 @@
         "title": "ProfileUpdateIn",
         "description": "Only these; anything else is refused by the schema. An empty display name greets by the legal name."
       },
+      "ProgressIn": {
+        "properties": {
+          "step": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 3,
+            "title": "Step"
+          },
+          "evidenceRefs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Evidencerefs"
+          },
+          "photoIds": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "Photoids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "step"
+        ],
+        "title": "ProgressIn"
+      },
       "ProgressOut": {
         "properties": {
           "route": {
@@ -22434,6 +26841,83 @@
         ],
         "title": "PublicRemovalRequestIn",
         "description": "FR-GAL-007, for someone who is not a member: the album reference (AL-…) and the photo's number."
+      },
+      "PublicSummaryIn": {
+        "properties": {
+          "publish": {
+            "type": "boolean",
+            "title": "Publish"
+          },
+          "titleEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 5
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 5
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000,
+                "minLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1500,
+                "minLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summaryta"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "publish"
+        ],
+        "title": "PublicSummaryIn"
       },
       "QualityOut": {
         "properties": {
@@ -22958,6 +27442,53 @@
         "title": "RefreshIn",
         "description": "Mobile apps send the refresh token here; browsers send the mp_refresh cookie instead."
       },
+      "RegionalPlanIn": {
+        "properties": {
+          "solution": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 10,
+            "title": "Solution"
+          },
+          "responsibleTier": {
+            "type": "string",
+            "enum": [
+              "3A",
+              "3B",
+              "4",
+              "5"
+            ],
+            "title": "Responsibletier"
+          },
+          "resources": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 3,
+            "title": "Resources"
+          },
+          "expectedOutcome": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Expectedoutcome"
+          },
+          "reportingPlan": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Reportingplan"
+          }
+        },
+        "type": "object",
+        "required": [
+          "solution",
+          "responsibleTier",
+          "resources",
+          "expectedOutcome",
+          "reportingPlan"
+        ],
+        "title": "RegionalPlanIn"
+      },
       "RegisterEntryOut": {
         "properties": {
           "id": {
@@ -23450,6 +27981,121 @@
         ],
         "title": "ReportInput"
       },
+      "ReporterContactOut": {
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fullName",
+          "phone",
+          "memberCode"
+        ],
+        "title": "ReporterContactOut"
+      },
+      "ReportingOptionsOut": {
+        "properties": {
+          "allowed": {
+            "type": "boolean",
+            "title": "Allowed",
+            "description": "Only Verified and Active members report (FR-RPT-017)"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "identity_not_verified or membership_not_active when not allowed"
+          },
+          "hasArea": {
+            "type": "boolean",
+            "title": "Hasarea",
+            "description": "The member's profile names an area, which every report needs"
+          },
+          "gnNameEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gnnameen"
+          },
+          "gnNameTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gnnameta"
+          },
+          "categories": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "road",
+                "water",
+                "waste",
+                "electricity",
+                "agriculture",
+                "environment",
+                "public_facility",
+                "other"
+              ]
+            },
+            "type": "array",
+            "title": "Categories"
+          },
+          "descriptionMin": {
+            "type": "integer",
+            "title": "Descriptionmin"
+          },
+          "maxPhotos": {
+            "type": "integer",
+            "title": "Maxphotos"
+          }
+        },
+        "type": "object",
+        "required": [
+          "allowed",
+          "reason",
+          "hasArea",
+          "gnNameEn",
+          "gnNameTa",
+          "categories",
+          "descriptionMin",
+          "maxPhotos"
+        ],
+        "title": "ReportingOptionsOut"
+      },
       "ResetTokenOut": {
         "properties": {
           "resetToken": {
@@ -23495,6 +28141,22 @@
           "keptTa"
         ],
         "title": "RetentionItemOut"
+      },
+      "ReturnIn": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Question",
+            "description": "What the reporter is asked to add"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "ReturnIn"
       },
       "ReviewFileOut": {
         "properties": {

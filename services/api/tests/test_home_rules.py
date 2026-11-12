@@ -26,7 +26,10 @@ def test_the_party_fund_never_comes_before_civic_participation():
 @pytest.mark.parametrize(
     ("feature", "verified", "active", "expected"),
     [
-        ("report_issue", False, False, None),
+        # FR-RPT-017, BR-026: reporting a local issue needs a Verified identity and an Active membership.
+        ("report_issue", False, False, ("identity_not_verified", "view_verification")),
+        ("report_issue", True, False, ("membership_not_active", "view_membership")),
+        ("my_area", False, False, None),
         ("events", False, False, None),
         ("card", False, False, None),  # open: it explains why it is not official yet
         ("volunteer", False, False, ("identity_not_verified", "view_verification")),

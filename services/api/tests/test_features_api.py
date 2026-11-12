@@ -97,6 +97,7 @@ def test_the_registry_lists_every_module_with_the_gate_it_needs(enforced, auth, 
         "identity_appeals": "G1",
         "duplicate_investigations": "G1",
         "community_finance": "G1",
+        "community_issues": "G2",
         "election_mode": "G2",
         "households": "G2",
     }

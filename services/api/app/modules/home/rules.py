@@ -42,15 +42,20 @@ HUB_SERVICES = (
 # Services whose routes sit behind a v1.1 module switch (FR-ARCH-011). While the switch is off the
 # routes answer 404, so Home must show the service as not open yet instead of opening a page that
 # cannot load (the party fund's page was empty on production on 12 November 2026).
-GATED_BY_MODULE = {"party_fund": "community_finance"}
+GATED_BY_MODULE = {
+    "party_fund": "community_finance",
+    "report_issue": "community_issues",
+    "my_area": "community_issues",
+    "local_reports": "community_issues",
+    "area_projects": "community_issues",
+}
 
 # FR-HOME-007 [ASSUMPTION, policy for sponsor confirmation]: what a member who is not yet
-# Verified and Active may use. Reading, reporting a local issue and events stay open to
-# everyone; taking part in decisions, volunteering, inviting and contributing wait for an
-# Active membership. The card itself is open: it explains why it is not official yet.
-OPEN_TO_EVERYONE = frozenset(
-    {"report_issue", "my_area", "events", "card", "gallery", "learning", "local_reports", "area_projects"}
-)
+# Verified and Active may use. Reading and events stay open to everyone; reporting a local
+# issue (FR-RPT-017, BR-026), taking part in decisions, volunteering, inviting and contributing
+# wait for a Verified identity and an Active membership. The card itself is open: it explains
+# why it is not official yet.
+OPEN_TO_EVERYONE = frozenset({"my_area", "events", "card", "gallery", "learning", "local_reports", "area_projects"})
 
 
 def next_step(candidates: set[str]) -> str | None:
