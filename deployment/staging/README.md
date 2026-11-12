@@ -9,7 +9,7 @@ A copy of the new stack for user acceptance testing and the Gate G1 candidate ch
 | Dashboard | https://staging-admin.178.128.126.35.nip.io | https://admin.178.128.126.35.nip.io |
 | API | `mypeople-staging-api.service`, 127.0.0.1:8001, `/srv/secure/app/mypeople-staging-api` | `mypeople-api.service`, 127.0.0.1:8000 |
 | Dashboard service | `mypeople-staging-admin.service`, 127.0.0.1:3005, `/srv/secure/app/mypeople-staging-admin` | `mypeople-admin.service`, 127.0.0.1:3003 |
-| Web files | `/var/www/mypeople-staging/current/{app,staff}` | `/var/www/mypeople-mobile/current/{app,staff}` |
+| Web files | `/var/www/mypeople-staging/current/app` (one app since 12 November 2026; `staging-staff` redirects to its `/staff`) | `/var/www/mypeople-mobile/current/{app,staff}` |
 | Database | `mypeople_staging`, role `mypeople_staging` | `mypeople`, role `mypeople_app` |
 | Identity images and gallery files | `/srv/secure/app/mypeople-staging-data/{evidence,media}` | `/srv/secure/app/mypeople-data` |
 | Web server | site `mypeople-staging`, snippet `mypeople-staging-v1.conf`, certificate `staging-app.178.128.126.35.nip.io` (all three names) | sites `mypeople-mobile`, `mypeople-admin`, `default` |
