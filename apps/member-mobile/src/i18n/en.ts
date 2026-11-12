@@ -41,6 +41,7 @@ export const en = {
     evidence_storage_not_configured: 'Identity photos cannot be received yet. Please try again later.',
     media_storage_not_configured: 'Photos cannot be shown yet.',
     sms_not_configured: 'Text messages cannot be sent yet. Ask your GN coordinator for help.',
+    sms_failed: 'The text message could not be sent. Check the number and try again in a few minutes.',
     invalid_code: 'The code is not correct or has expired.',
     invalid_reset_token: 'This reset has expired. Start again.',
     invalid_phone: 'Enter a Sri Lankan mobile number, for example 0771234567.',

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.request_info import client_ip
 from app.db.session import get_db
-from app.integrations.sms import DevelopmentSms, NoSms, SmsSender, SmsUnavailable
+from app.integrations.sms import DevelopmentSms, NoSms, SmsDeliveryFailed, SmsSender, SmsUnavailable
 from app.modules.access.dependencies import require_permission
 from app.modules.access.service import AccessRefused, Staff
 from app.modules.auth.dependencies import CurrentMember
@@ -42,6 +42,7 @@ def _notify(sms: SmsSender, phone: str, text: str) -> None:
     responses={
         409: {"description": "no_recovery_number"},
         429: {"description": "too_many_requests, with Retry-After"},
+        502: {"description": "sms_failed"},
         503: {"description": "sms_not_configured"},
     },
 )
@@ -59,6 +60,8 @@ def send_closure_code(member: CurrentMember, request: Request, db: Db) -> CodeSe
             detail="too_many_requests",
             headers={"Retry-After": str(error.retry_after)},
         ) from None
+    except SmsDeliveryFailed:
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="sms_failed") from None
     except SmsUnavailable:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="sms_not_configured") from None
     return CodeSentOut(sent=True, dev_code=code if isinstance(_sms(request), DevelopmentSms) else None)

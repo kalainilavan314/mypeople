@@ -8,7 +8,7 @@ from app.core.config import Settings
 from app.core.request_info import client_ip
 from app.core.security import nic_hash, passport_hash
 from app.db.session import get_db
-from app.integrations.sms import DevelopmentSms, NoSms, SmsSender, SmsUnavailable
+from app.integrations.sms import DevelopmentSms, NoSms, SmsDeliveryFailed, SmsSender, SmsUnavailable
 from app.modules.access.dependencies import require_permission
 from app.modules.access.service import AccessRefused, Staff
 from app.modules.auth.dependencies import CurrentMember
@@ -35,7 +35,10 @@ router = APIRouter(tags=["recovery"])
 Db = Annotated[Session, Depends(get_db)]
 CanHandle = Annotated[Staff, Depends(require_permission(rules.HANDLE_ASSISTED))]
 
-NOT_CONFIGURED = {503: {"description": "sms_not_configured: no SMS provider is set up yet (INT-01)"}}
+NOT_CONFIGURED = {
+    502: {"description": "sms_failed: the SMS provider did not accept the message"},
+    503: {"description": "sms_not_configured: no SMS provider is set up yet (INT-01)"},
+}
 LIMITED = {429: {"description": "too_many_requests, with Retry-After"}}
 
 
@@ -65,6 +68,11 @@ def _sent(request: Request, code: str | None) -> CodeSentOut:
 
 def _unavailable() -> HTTPException:
     return HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="sms_not_configured")
+
+
+def _not_delivered() -> HTTPException:
+    # The provider was asked and did not take the message; trying again later can work.
+    return HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="sms_failed")
 
 
 def _too_many(error: service.TooManyRequests) -> HTTPException:
@@ -99,6 +107,8 @@ def request_phone_confirmation(body: PhoneInput, member: CurrentMember, request:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="invalid_phone") from None
     except service.TooManyRequests as error:
         raise _too_many(error) from None
+    except SmsDeliveryFailed:
+        raise _not_delivered() from None
     except SmsUnavailable:
         raise _unavailable() from None
     return _sent(request, code)
