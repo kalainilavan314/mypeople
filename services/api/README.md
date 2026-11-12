@@ -85,7 +85,19 @@ confirmed:
 python -m app.modules.access.bootstrap <member-id> --permission members.verify
 ```
 
-It is refused when a Super Administrator already exists. Everyone else is
+It is refused when a Super Administrator already exists. The owner decided on
+12 November 2026 that the Super Administrator holds all 40 permissions the BRD
+allows at Tier 5 (§9.8). A second server command does that, reading the NIC
+from standard input so it is never in the shell history:
+
+```bash
+.venv/bin/python -m app.modules.access.every_tier5_permission < nic.txt
+```
+
+With nobody in the position it is the bootstrap with every explicit Tier 5
+permission; for the current Super Administrator it ends their Tier 5
+assignment and grants a new one with all 40 (`access.assignment.widened` in the
+audit log); it is refused if someone else holds the position. Everyone else is
 assigned through a durable `/v1/access/assignment-previews` record, followed by its one-time `/confirm` route. The Express API still reads its
 old `is_admin` flag for its own four staff routes until they move here.
 
