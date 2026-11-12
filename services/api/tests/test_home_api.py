@@ -101,3 +101,28 @@ def test_a_correction_request_outranks_everything_else(client, db_session, auth,
 
     assert (home["nextStep"]["kind"], home["nextStep"]["reviewRef"]) == ("correct_identity", review_ref)
     assert (home["identityState"], home["reviewRef"]) == ("needs_update", review_ref)
+
+
+def test_a_service_behind_an_off_module_switch_shows_as_not_open(database_settings, db_session, auth, create_member):
+    # Production enforces module switches; the party fund's routes answer 404 while community_finance
+    # is off, so Home must not offer a page that cannot load (seen on production, 12 November 2026).
+    from app.db.session import get_db
+    from app.main import create_app
+
+    app = create_app(database_settings.model_copy(update={"enforce_feature_flags": True}))
+    app.dependency_overrides[get_db] = lambda: db_session
+    enforced = TestClient(app)
+    member = create_member(verified=True, active=True)
+    db_session.execute(text("UPDATE ops.feature_flag SET enabled = false WHERE key = 'community_finance'"))
+
+    hub = {item["key"]: item for item in enforced.get("/v1/home", headers=auth(member)).json()["hub"]["services"]}
+    assert (hub["party_fund"]["available"], hub["party_fund"]["reason"]) == (False, "not_open")
+    assert hub["learning"]["available"] is True  # services without a switch are unchanged
+
+    db_session.execute(
+        # A switch can only be on once its phase gate is recorded (feature_flag_enabled_needs_gate).
+        text("INSERT INTO ops.feature_flag (key, enabled, gate, gate_recorded_at) VALUES ('community_finance', true, 'G1', now()) "
+             "ON CONFLICT (key) DO UPDATE SET enabled = true, gate = 'G1', gate_recorded_at = now()")
+    )
+    hub = {item["key"]: item for item in enforced.get("/v1/home", headers=auth(member)).json()["hub"]["services"]}
+    assert hub["party_fund"]["available"] is True

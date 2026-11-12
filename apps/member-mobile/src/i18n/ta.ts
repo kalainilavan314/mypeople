@@ -340,6 +340,7 @@ export const ta: AppStrings = {
     locked: 'பூட்டப்பட்டது',
     reason_identity_not_verified: 'அடையாளம் சரிபார்க்கப்பட்ட பின் திறக்கும்.',
     reason_membership_not_active: 'உறுப்புரிமை செயலுக்கு வந்ததும் திறக்கும்.',
+    reason_not_open: 'இன்னும் திறக்கப்படவில்லை.',
     feature_report_issue: 'பிரச்சினையை அறிவி',
     feature_volunteer: 'தன்னார்வம்',
     feature_my_area: 'என் பகுதி',

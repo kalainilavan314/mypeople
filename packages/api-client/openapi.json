@@ -18668,7 +18668,8 @@
                 "type": "string",
                 "enum": [
                   "identity_not_verified",
-                  "membership_not_active"
+                  "membership_not_active",
+                  "not_open"
                 ]
               },
               {

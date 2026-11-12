@@ -39,6 +39,11 @@ HUB_SERVICES = (
     "area_projects",
 )
 
+# Services whose routes sit behind a v1.1 module switch (FR-ARCH-011). While the switch is off the
+# routes answer 404, so Home must show the service as not open yet instead of opening a page that
+# cannot load (the party fund's page was empty on production on 12 November 2026).
+GATED_BY_MODULE = {"party_fund": "community_finance"}
+
 # FR-HOME-007 [ASSUMPTION, policy for sponsor confirmation]: what a member who is not yet
 # Verified and Active may use. Reading, reporting a local issue and events stay open to
 # everyone; taking part in decisions, volunteering, inviting and contributing wait for an

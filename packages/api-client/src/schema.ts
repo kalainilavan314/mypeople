@@ -6540,7 +6540,7 @@ export interface components {
             /** Available */
             available: boolean;
             /** Reason */
-            reason: ("identity_not_verified" | "membership_not_active") | null;
+            reason: ("identity_not_verified" | "membership_not_active" | "not_open") | null;
             /** Nextstep */
             nextStep: ("view_verification" | "view_membership") | null;
         };
