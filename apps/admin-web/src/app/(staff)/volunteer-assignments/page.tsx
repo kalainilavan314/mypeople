@@ -1,13 +1,14 @@
-import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
 import { ConsoleLoading } from '@/components/ConsoleLoading';
 import { Feedback } from '@/components/Feedback';
 import { PageHeader } from '@/components/PageHeader';
+import { LoadFailure, PageProblem } from '@/components/PageProblem';
 import { StateTag } from '@/components/StateTag';
 import { SubmitButton } from '@/components/SubmitButton';
 import { closeVolunteerAssignment, offerVolunteerAssignment } from '@/features/operations/volunteerActions';
 import { formatDateTime } from '@/lib/format';
+import { getAdminLocale, getDictionary } from '@/lib/i18n';
 import { staffApi } from '@/lib/session';
 import { requireStaff } from '@/lib/staff';
 
@@ -24,11 +25,18 @@ export default function VolunteerAssignmentsPage(props: PageProps<'/volunteer-as
 
 async function AssignmentsConsole({ searchParams }: { searchParams: PageProps<'/volunteer-assignments'>['searchParams'] }) {
   const staff = await requireStaff();
-  if (!staff.permissions.has('volunteers.manage')) notFound();
+  const locale = await getAdminLocale(staff.member.language);
+  const words = getDictionary(locale).volunteers;
+  // The menu hides this page without the permission; someone who opens its address directly is told
+  // why, instead of getting a blank page (notFound() inside a streamed Suspense boundary showed nothing).
+  if (!staff.permissions.has('volunteers.manage')) return <PageProblem locale={locale} message={words.refused} />;
   const api = await staffApi();
-  const [events, assignments, query] = await Promise.all([
-    api.listVolunteerAssignmentEvents(), api.listVolunteerAssignments(), searchParams,
-  ]);
+  const loaded = await Promise.all([api.listVolunteerAssignmentEvents(), api.listVolunteerAssignments()]).catch(
+    (error: unknown) => ({ error }),
+  );
+  if ('error' in loaded) return <LoadFailure error={loaded.error} locale={locale} refused={words.refused} notFound={words.notFound} />;
+  const [events, assignments] = loaded;
+  const query = await searchParams;
   const open = assignments.filter((item) => item.state === 'offered' || item.state === 'accepted');
   const accepted = assignments.filter((item) => item.state === 'accepted').length;
 

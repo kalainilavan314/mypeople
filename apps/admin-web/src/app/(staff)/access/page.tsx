@@ -17,12 +17,35 @@ const input = 'min-h-11 rounded-lg border border-line px-3 font-normal';
 const one = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
 
 const AREA_LEVEL_LABELS: Record<string, { ta: string; en: string }> = {
-  gn: { ta: 'கிராம அலுவலர் பிரிவு', en: 'GN division' },
+  gn: { ta: 'கிராம சேவகர் பிரிவு', en: 'GN division' },
   ds: { ta: 'பிரதேச செயலகப் பிரிவு', en: 'DS division' },
   district: { ta: 'மாவட்டம்', en: 'District' },
   province: { ta: 'மாகாணம்', en: 'Province' },
   platform: { ta: 'தேசிய தளம் (அனைத்துப் பகுதிகள்)', en: 'Platform-wide' },
 };
+
+/**
+ * What confirming the preview lets the member do. An assignment grants only its listed permissions,
+ * only in its area, so the text says exactly that: a scanner must not read as an administrator.
+ * The preview exists only because the assignment rules passed when it was made.
+ */
+function assignmentEffect(count: number, area: string, locale: Locale): string {
+  if (count === 0) {
+    return locale === 'ta'
+      ? `இந்த உறுப்பினருக்கு ${area} எல்லைக்குள் எந்த அனுமதியும் வழங்கப்படாது; அனுமதிகள் சேர்க்கப்படும் வரை எந்தப் பணியாளர் நடவடிக்கையையும் மேற்கொள்ள முடியாது.`
+      : `This member gets no permissions in ${area}, so they cannot take any staff action until permissions are added.`;
+  }
+  const rulesChecked =
+    locale === 'ta'
+      ? 'பிற பொறுப்புகளுடன் முரண்பாடு இல்லை என்பது இந்த முன்மாதிரி உருவாக்கப்பட்டபோது சரிபார்க்கப்பட்டது.'
+      : 'The assignment rules, including separation of duties, were checked when this preview was made.';
+  if (locale === 'ta') {
+    const granted = count === 1 ? 'மேலே உள்ள அனுமதியை' : `மேலே பட்டியலிடப்பட்ட ${count} அனுமதிகளை`;
+    return `இந்த உறுப்பினர் ${area} எல்லைக்குள் மட்டும், ${granted} மட்டுமே பயன்படுத்த முடியும். ${rulesChecked}`;
+  }
+  const granted = count === 1 ? 'the permission listed above' : `the ${count} permissions listed above`;
+  return `This member will be able to use only ${granted}, and only in ${area}. ${rulesChecked}`;
+}
 
 /**
  * Roles and access management: who holds which tier, area, and permissions
@@ -137,9 +160,7 @@ async function Access({ searchParams }: { searchParams: PageProps<'/access'>['se
               </span>
               <div className="mt-1 rounded-lg border border-line bg-surface p-3 text-xs">
                 <span lang={locale} className="block font-medium text-text">
-                  {locale === 'ta'
-                    ? 'இந்த உறுப்பினர் தனது பகுதியில் தொடர்புடைய நிர்வாக மற்றும் சரிபார்ப்பு நடவடிக்கைகளை மேற்கொள்வார். பிற பொறுப்புகளுடன் முரண்பாடுகள் இல்லை என்பது உறுதிசெய்யப்பட்டுள்ளது.'
-                    : 'This member will be authorized to carry out administrative and verification actions within their assigned area. Separation-of-duties rules have been validated.'}
+                  {assignmentEffect(preview.permissions.length, areaText(preview.area, areaNames, locale), locale)}
                 </span>
               </div>
             </div>

@@ -398,4 +398,8 @@ export type TranslationDictionary = {
     refused: string;
     notFound: string;
   };
+  volunteers: {
+    refused: string;
+    notFound: string;
+  };
 };

@@ -230,7 +230,20 @@ def test_area_keys_are_named_for_staff_screens(client, db_session, area):
     assert response.status_code == 200
     assert set(named) == set(keys)  # platform, unknown and malformed keys are left out, repeats once
     assert named[f"gn:{area.gn}"]["nameEn"] and named[f"gn:{area.gn}"]["level"] == "gn"
-    if district_ta:  # the level word, sometimes cut short in the registry, is left to the screen
+    if district_ta:  # the level word is left to the screen
         assert "மாவ" not in named[f"district:{area.district}"]["nameTa"]
     too_many = client.get("/v1/geography/areas", params={"key": [f"gn:{area.gn}"] * 101})
     assert (too_many.status_code, too_many.json()) == (422, {"detail": "too_many_keys"})
+
+
+def test_tamil_names_cut_by_the_geography_import_are_complete(client):
+    # Alembic 0031 restores the letters the 50-byte GIS fields cut off.
+    response = client.get("/v1/geography/areas", params={"key": ["ds:LK4409", "ds:LK4312", "district:LK45"]})
+
+    named = {item["key"]: item["nameTa"] for item in response.json()}
+    assert response.status_code == 200
+    assert named == {
+        "ds:LK4409": "புதுக்குடியிருப்பு",
+        "ds:LK4312": "வெங்கலச்செட்டிக்குளம்",
+        "district:LK45": "கிளிநொச்சி",
+    }

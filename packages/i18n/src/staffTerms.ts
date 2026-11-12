@@ -76,7 +76,7 @@ export const areaLevelNames: Readonly<Record<AreaLevel, StaffTerm>> = {
   province: { ta: 'மாகாணம்', en: 'province' },
   district: { ta: 'மாவட்டம்', en: 'district' },
   ds: { ta: 'பிரதேச செயலகப் பிரிவு', en: 'DS division' },
-  gn: { ta: 'கிராம அலுவலர் பிரிவு', en: 'GN division' },
+  gn: { ta: 'கிராம சேவகர் பிரிவு', en: 'GN division' },
 };
 
 /** An area as the API gives it: an object with a level and code, or a key such as "district:LK41". */

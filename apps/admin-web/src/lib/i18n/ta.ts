@@ -227,7 +227,7 @@ export const taMessages: TranslationDictionary = {
     levelProvince: 'மாகாணம்',
     levelDistrict: 'மாவட்டம்',
     levelDs: 'பிரதேச செயலகப் பிரிவு',
-    levelGn: 'கிராம அலுவலர் பிரிவு',
+    levelGn: 'கிராம சேவகர் பிரிவு',
     sectionElection: '1. தேர்தல்',
     sectionArea: '2. பகுதி',
     sectionDates: '3. காலப்பகுதியும் அமைதிக்காலமும்',
@@ -387,6 +387,10 @@ export const taMessages: TranslationDictionary = {
     generatedAt: '{time} நிலவரப்படி',
     refused: 'இப்பக்கத்தைப் பார்க்க பகுப்பாய்வு அனுமதி தேவை.',
     notFound: 'இந்த எண்ணிக்கைகள் கிடைக்கவில்லை.',
+  },
+  volunteers: {
+    refused: 'தன்னார்வலர் பணி ஒதுக்கீடுகளைப் பார்க்க "தன்னார்வலர்களை நிர்வகித்தல்" அனுமதி தேவை.',
+    notFound: 'தன்னார்வலர் பணி ஒதுக்கீடுகள் கிடைக்கவில்லை.',
   },
 };
 

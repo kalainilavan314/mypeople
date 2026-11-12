@@ -388,6 +388,10 @@ export const enMessages: TranslationDictionary = {
     refused: 'You need the analytics permission to see this page.',
     notFound: 'These figures are not available.',
   },
+  volunteers: {
+    refused: 'You need the "Manage volunteers" permission to see volunteer assignments.',
+    notFound: 'Volunteer assignments are not available.',
+  },
 };
 
 export const en = enMessages;
