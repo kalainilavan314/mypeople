@@ -29,8 +29,19 @@ export default function WelcomeScreen() {
   }, [state.status]);
 
   return (
-    <Screen edges={['top', 'bottom']}>
-      <View style={styles.brand}>
+    <Screen edges={['top', 'bottom']} maxContentWidth={560}>
+      <View style={styles.hero}>
+        <View style={styles.heroCopy}>
+          <AppText step="page" accessibilityRole="header">
+            {t('m.welcome.title')}
+          </AppText>
+          <AppText step="section" tone="secondary">
+            {t('m.welcome.titleOther')}
+          </AppText>
+          <AppText step="secondary" tone="muted">
+            {t('m.welcome.subtitle')}
+          </AppText>
+        </View>
         <Image
           source={require('../../assets/images/icon.png')}
           style={styles.logo}
@@ -38,16 +49,11 @@ export default function WelcomeScreen() {
           accessible={false}
           importantForAccessibility="no"
         />
-        <AppText step="page" accessibilityRole="header" style={styles.center}>
-          {t('m.welcome.title')}
-        </AppText>
-        <AppText step="section" tone="secondary" style={styles.center}>
-          {t('m.welcome.titleOther')}
-        </AppText>
-        <AppText step="secondary" tone="muted" style={styles.center}>
-          {t('m.welcome.subtitle')}
-        </AppText>
       </View>
+
+      <AppText step="body" style={styles.introduction}>
+        {t('m.welcome.body')}
+      </AppText>
 
       {state.status === 'signed_out' && state.expired ? <Notice tone="warning">{t('m.welcome.expired')}</Notice> : null}
       {state.status === 'not_configured' ? <Notice tone="error">{t('m.welcome.notConfigured')}</Notice> : null}
@@ -59,7 +65,7 @@ export default function WelcomeScreen() {
         </View>
       ) : null}
 
-      <View style={styles.gap}>
+      <View style={styles.languageGroup}>
         <AppText step="label">{t('m.welcome.chooseLanguage')}</AppText>
         <View style={styles.languages} accessibilityRole="radiogroup">
           {LANGUAGES.map((option) => {
@@ -80,17 +86,15 @@ export default function WelcomeScreen() {
         </View>
       </View>
 
-      <View style={styles.gap}>
+      <View style={styles.actions}>
         <Button
           label={t('m.welcome.signIn')}
-          icon="log-in-outline"
           disabled={state.status === 'not_configured'}
           onPress={() => router.push('/sign-in')}
         />
         <Button
           label={t('m.welcome.createAccount')}
           variant="secondary"
-          icon="person-add-outline"
           disabled={state.status === 'not_configured'}
           onPress={() => router.push('/register')}
         />
@@ -100,10 +104,22 @@ export default function WelcomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  brand: { alignItems: 'center', gap: spacing[2], paddingTop: spacing[8], paddingBottom: spacing[4] },
-  logo: { width: 96, height: 96, borderRadius: radius.card },
-  center: { textAlign: 'center' },
+  hero: {
+    minHeight: 152,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[4],
+    padding: spacing[4],
+    marginTop: spacing[2],
+    borderRadius: radius.card,
+    backgroundColor: colors.primaryContainer,
+  },
+  heroCopy: { flex: 1, gap: spacing[1] },
+  logo: { width: 80, height: 80, borderRadius: radius.card, backgroundColor: colors.card },
+  introduction: { maxWidth: 480 },
   gap: { gap: spacing[3] },
+  languageGroup: { gap: spacing[2], marginTop: spacing[2] },
+  actions: { gap: spacing[3], marginTop: spacing[2] },
   languages: { flexDirection: 'row', gap: spacing[3] },
   language: {
     flex: 1,

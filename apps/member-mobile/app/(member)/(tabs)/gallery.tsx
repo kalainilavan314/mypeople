@@ -20,7 +20,11 @@ export default function GalleryScreen() {
   const [category, setCategory] = useState<Category>('all');
   const albums = useApiQuery(() => api().listAlbums({ category: category === 'all' ? undefined : category }), [category]);
   return (
-    <Screen edges={[]} onRefresh={albums.reload} refreshing={albums.loading && albums.data !== undefined}>
+    <Screen
+      edges={[]}
+      maxContentWidth={720}
+      onRefresh={albums.reload}
+      refreshing={albums.loading && albums.data !== undefined}>
       <AppText step="secondary" tone="muted">
         {t('m.gallery.subtitle')}
       </AppText>
@@ -41,7 +45,7 @@ export default function GalleryScreen() {
               {t('m.gallery.empty')}
             </AppText>
           ) : (
-            <View style={styles.grid}>
+            <View style={styles.grid} accessibilityRole="list">
               {list.map((album) => (
                 <AlbumCard key={album.id} album={album} />
               ))}
@@ -62,6 +66,7 @@ function AlbumCard({ album }: { album: AlbumSummary }) {
     <Pressable
       onPress={() => router.push({ pathname: '/gallery/[id]', params: { id: album.id } })}
       accessibilityRole="button"
+      accessibilityHint={t('m.gallery.openAlbum')}
       accessibilityLabel={`${title}, ${t('m.gallery.photos', { count: album.photoCount })}`}
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
       <View style={styles.cover}>
@@ -90,6 +95,7 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
   card: {
     flexBasis: '47%',
+    minWidth: 150,
     flexGrow: 1,
     backgroundColor: colors.card,
     borderColor: colors.border,

@@ -37,7 +37,7 @@ export default function ShareCardScreen() {
   };
 
   return (
-    <Screen edges={['bottom']} title={t('m.card.shareTitle')} onRefresh={card.reload}>
+    <Screen edges={['bottom']} maxContentWidth={640} title={t('m.card.shareTitle')} onRefresh={card.reload}>
       {card.error ? (
         <>
           <Notice tone="error">{errorMessage(t, card.error)}</Notice>

@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, Platform, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
@@ -36,34 +36,38 @@ export default function HouseholdPrivacyScreen() {
   const withdrawConsent = useApiAction(async () => {
     await api().leaveHousehold();
     void householdQuery.reload();
+    return true;
   });
 
   const handleWithdrawConfirm = (isHead: boolean) => {
-    Alert.alert(
-      isHead ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold'),
-      isHead ? t('m.household.dissolveConfirm') : t('m.household.leaveConfirm'),
-      [
-        { text: t('m.common.cancel'), style: 'cancel' },
-        {
-          text: isHead ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold'),
-          style: 'destructive',
-          onPress: async () => {
-            await withdrawConsent.run();
-            router.replace('/household');
-          },
-        },
-      ],
-    );
+    const title = isHead ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold');
+    const message = isHead ? t('m.household.dissolveConfirm') : t('m.household.leaveConfirm');
+    const run = async () => {
+      const completed = await withdrawConsent.run();
+      if (completed) router.replace('/household');
+    };
+    if (Platform.OS === 'web') {
+      if (globalThis.confirm(`${title}\n\n${message}`)) void run();
+      return;
+    }
+    Alert.alert(title, message, [
+      { text: t('m.common.cancel'), style: 'cancel' },
+      { text: title, style: 'destructive', onPress: () => void run() },
+    ]);
   };
 
   return (
     <Screen
       edges={['bottom']}
+      maxContentWidth={720}
       onRefresh={() => {
         void noticeQuery.reload();
         void householdQuery.reload();
       }}
-      refreshing={noticeQuery.loading || householdQuery.loading}
+      refreshing={
+        (noticeQuery.loading && noticeQuery.data !== undefined) ||
+        (householdQuery.loading && householdQuery.data !== undefined)
+      }
     >
       <AppText step="section" accessibilityRole="header">
         {t('m.household.privacyConsent')}
@@ -195,7 +199,7 @@ export default function HouseholdPrivacyScreen() {
                 <View style={styles.topMargin}>
                   <Button
                     label={household.isHead ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold')}
-                    variant="secondary"
+                    variant="danger"
                     busy={withdrawConsent.busy}
                     onPress={() => handleWithdrawConfirm(household.isHead)}
                   />
@@ -218,7 +222,7 @@ export default function HouseholdPrivacyScreen() {
 
 const styles = StyleSheet.create({
   card: {
-    marginTop: spacing[4],
+    gap: spacing[2],
   },
   cardTitle: {
     marginBottom: spacing[1],

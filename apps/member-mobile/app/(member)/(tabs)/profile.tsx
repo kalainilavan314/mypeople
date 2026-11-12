@@ -52,7 +52,11 @@ export default function ProfileScreen() {
   };
 
   return (
-    <Screen edges={[]} onRefresh={profile.reload} refreshing={profile.loading && profile.data !== undefined}>
+    <Screen
+      edges={[]}
+      maxContentWidth={720}
+      onRefresh={profile.reload}
+      refreshing={profile.loading && profile.data !== undefined}>
       <QueryView query={profile}>
         {(data) => (
           <SurfaceCard>
@@ -88,12 +92,21 @@ export default function ProfileScreen() {
         )}
       </QueryView>
 
+      <AppText step="section" accessibilityRole="header">
+        {t('m.profile.account')}
+      </AppText>
       <SurfaceCard>
         <MenuRow first icon="location-outline" label={t('m.profile.myArea')} onPress={() => router.push('/profile/area')} />
         <MenuRow icon="time-outline" label={t('m.profile.myActivity')} onPress={() => router.push('/profile/activity')} />
         <MenuRow icon="create-outline" label={t('m.profile.editProfile')} onPress={() => router.push('/profile/edit')} />
         <MenuRow icon="shield-checkmark-outline" label={t('m.profile.verification')} onPress={() => router.push('/verify')} />
-        <MenuRow icon="home-outline" label={t('m.household.title')} onPress={() => router.push('/household')} />
+      </SurfaceCard>
+
+      <AppText step="section" accessibilityRole="header">
+        {t('m.profile.community')}
+      </AppText>
+      <SurfaceCard>
+        <MenuRow first icon="home-outline" label={t('m.household.title')} onPress={() => router.push('/household')} />
         <MenuRow icon="people-outline" label={t('m.profile.hub')} onPress={() => router.push('/hub')} />
       </SurfaceCard>
 
@@ -104,7 +117,7 @@ export default function ProfileScreen() {
         <MenuRow
           first
           icon="language-outline"
-          label={`${t('m.profile.language')} · ${t('m.profile.notifications')}`}
+          label={t('m.profile.preferences')}
           onPress={() => router.push('/profile/settings')}
         />
         <MenuRow

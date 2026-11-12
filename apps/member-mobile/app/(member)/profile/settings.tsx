@@ -32,7 +32,7 @@ export default function SettingsScreen() {
   const choices = useApiQuery(() => api().getNotificationChoices());
   const policies = useApiQuery(() => api().listMyGovernancePolicies(), [language]);
   return (
-    <Screen edges={['bottom']}>
+    <Screen edges={['bottom']} maxContentWidth={720}>
       <AppText step="section" accessibilityRole="header">
         {t('m.profile.language')}
       </AppText>
@@ -120,9 +120,9 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
 
   return (
     <>
-      <SurfaceCard>
-        {topics.map((item) => (
-          <View key={item.topic} style={styles.topic}>
+      <SurfaceCard style={styles.topicList}>
+        {topics.map((item, index) => (
+          <View key={item.topic} style={[styles.topic, index > 0 && styles.topicDivider]}>
             <View style={styles.topicLabel}>
               <AppText step="label">{t(`m.profile.topic_${item.topic}`)}</AppText>
               {item.locked ? (
@@ -141,7 +141,7 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
                   disabled={item.locked}
                   onValueChange={(value) => toggle(item.topic, channel, value)}
                   accessibilityLabel={`${t(`m.profile.topic_${item.topic}`)}: ${channel === 'push' ? t('m.profile.pushLabel') : t('m.profile.smsLabel')}`}
-                  trackColor={{ true: colors.primary, false: colors.inputBorder }}
+                  trackColor={{ true: colors.success, false: colors.inputBorder }}
                 />
               </View>
             ))}
@@ -179,7 +179,9 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
 }
 
 const styles = StyleSheet.create({
-  topic: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], minHeight: 56, borderBottomWidth: 1, borderBottomColor: colors.divider },
+  topicList: { padding: 0, gap: 0, overflow: 'hidden' },
+  topic: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], minHeight: 64, padding: spacing[3] },
+  topicDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
   topicLabel: { flex: 1 },
   channel: { alignItems: 'center', gap: 2 },
   quiet: { flexDirection: 'row', gap: spacing[3] },

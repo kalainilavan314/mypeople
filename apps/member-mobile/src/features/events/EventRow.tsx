@@ -1,9 +1,10 @@
 import type { EventSummary } from '@my-people/api-client';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens';
+import { colors, spacing } from '@my-people/design-tokens';
 
 import {
   AppText,
@@ -21,6 +22,12 @@ export function EventRow({ event }: { event: EventSummary }) {
   const language = useLanguage();
   const localized = useLocalized();
   const title = localized(event.titleEn, event.titleTa);
+  let status: { tone: 'error' | 'pending' | 'verified' | 'neutral'; label: string } | null = null;
+  if (event.state === 'cancelled') status = { tone: 'error', label: t('m.events.cancelled') };
+  else if (event.myResponse === 'waitlisted') status = { tone: 'pending', label: t('m.events.waitlisted') };
+  else if (event.myResponse === 'going') status = { tone: 'verified', label: t('m.events.going') };
+  else if (event.myResponse === 'maybe') status = { tone: 'neutral', label: t('m.events.maybe') };
+  else if (event.placesLeft === 0) status = { tone: 'neutral', label: t('m.events.full') };
   return (
     <SurfaceCard
       onPress={() => router.push({ pathname: '/events/[id]', params: { id: event.id } })}
@@ -35,14 +42,9 @@ export function EventRow({ event }: { event: EventSummary }) {
           <AppText step="secondary" tone="muted" numberOfLines={1}>
             {event.venue}
           </AppText>
-          <View style={styles.tags}>
-            {event.state === 'cancelled' ? <StatusTag tone="error" label={t('m.events.cancelled')} /> : null}
-            {event.myResponse === 'going' ? <StatusTag tone="verified" label={t('m.events.going')} /> : null}
-            {event.myResponse === 'waitlisted' ? <StatusTag tone="pending" label={t('m.events.waitlisted')} /> : null}
-            {event.myResponse === 'maybe' ? <StatusTag tone="neutral" label={t('m.events.maybe')} /> : null}
-            {event.placesLeft === 0 && event.state !== 'cancelled' ? <StatusTag tone="neutral" label={t('m.events.full')} /> : null}
-          </View>
+          {status ? <StatusTag tone={status.tone} label={status.label} /> : null}
         </View>
+        <Ionicons name="chevron-forward" size={18} color={colors.textMuted} style={styles.chevron} />
       </View>
     </SurfaceCard>
   );
@@ -51,5 +53,5 @@ export function EventRow({ event }: { event: EventSummary }) {
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: spacing[3] },
   text: { flex: 1, gap: 2 },
-  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2], marginTop: spacing[1] },
+  chevron: { alignSelf: 'center' },
 });

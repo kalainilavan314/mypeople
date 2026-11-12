@@ -30,7 +30,7 @@ type Gender = NonNullable<ProfileView['gender']> | 'skip';
 export default function EditProfileScreen() {
   const profile = useApiQuery(() => api().getProfile());
   return (
-    <Screen edges={['bottom']}>
+    <Screen edges={['bottom']} maxContentWidth={640}>
       <QueryView query={profile}>{(data) => <EditForm profile={data} />}</QueryView>
     </Screen>
   );
@@ -52,29 +52,31 @@ function EditForm({ profile }: { profile: ProfileView }) {
 
   return (
     <>
-      <TextField
-        label={t('m.profile.displayName')}
-        hint={t('m.profile.displayNameHint')}
-        value={displayName}
-        onChangeText={setDisplayName}
-        maxLength={60}
-        autoCapitalize="words"
-      />
-      <AppText step="label">{t('m.profile.gender')}</AppText>
-      <ChipRow
-        label={t('m.profile.gender')}
-        selected={gender}
-        onSelect={setGender}
-        options={[
-          { key: 'skip', label: t('m.register.genderSkip') },
-          { key: 'female', label: t('m.register.genderFemale') },
-          { key: 'male', label: t('m.register.genderMale') },
-          { key: 'other', label: t('m.register.genderOther') },
-        ]}
-      />
-      {save.error ? <Notice tone="error">{errorMessage(t, save.error)}</Notice> : null}
-      {saved ? <Notice tone="success">{t('m.profile.saved')}</Notice> : null}
-      <Button label={t('m.common.save')} busy={save.busy} busyLabel={t('m.common.saving')} onPress={() => void save.run()} />
+      <SurfaceCard>
+        <TextField
+          label={t('m.profile.displayName')}
+          hint={t('m.profile.displayNameHint')}
+          value={displayName}
+          onChangeText={setDisplayName}
+          maxLength={60}
+          autoCapitalize="words"
+        />
+        <AppText step="label">{t('m.profile.gender')}</AppText>
+        <ChipRow
+          label={t('m.profile.gender')}
+          selected={gender}
+          onSelect={setGender}
+          options={[
+            { key: 'skip', label: t('m.register.genderSkip') },
+            { key: 'female', label: t('m.register.genderFemale') },
+            { key: 'male', label: t('m.register.genderMale') },
+            { key: 'other', label: t('m.register.genderOther') },
+          ]}
+        />
+        {save.error ? <Notice tone="error">{errorMessage(t, save.error)}</Notice> : null}
+        {saved ? <Notice tone="success">{t('m.profile.saved')}</Notice> : null}
+        <Button label={t('m.common.save')} busy={save.busy} busyLabel={t('m.common.saving')} onPress={() => void save.run()} />
+      </SurfaceCard>
 
       <SurfaceCard>
         <AppText step="section" accessibilityRole="header">

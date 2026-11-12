@@ -1,4 +1,7 @@
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+
+import { colors, spacing } from '@my-people/design-tokens';
 
 import { AppText, formatDateTime, Screen, SurfaceCard, useApiQuery, useLanguage } from '@my-people/mobile-ui';
 
@@ -21,7 +24,11 @@ export default function ActivityScreen() {
   const language = useLanguage();
   const activity = useApiQuery(() => api().listMyActivity({ limit: 100 }));
   return (
-    <Screen edges={['bottom']} onRefresh={activity.reload} refreshing={activity.loading && activity.data !== undefined}>
+    <Screen
+      edges={['bottom']}
+      maxContentWidth={720}
+      onRefresh={activity.reload}
+      refreshing={activity.loading && activity.data !== undefined}>
       <QueryView query={activity}>
         {(items) =>
           items.length === 0 ? (
@@ -29,23 +36,36 @@ export default function ActivityScreen() {
               {t('m.profile.activityEmpty')}
             </AppText>
           ) : (
-            items.map((item) => (
-              <SurfaceCard key={`${item.kind}-${item.reference}-${item.at}`}>
-                <AppText step="caption" tone="muted">
-                  {t(`m.profile.activity_${item.kind}`)}
-                </AppText>
-                <AppText step="card">{item.title ?? item.reference}</AppText>
-                <AppText step="secondary" tone="muted" mono>
-                  {item.reference}
-                </AppText>
-                <AppText step="secondary" tone="secondary">
-                  {`${t(`${STATE_KEYS[item.kind] ?? ''}${item.state}`, { defaultValue: item.state.replace(/_/g, ' ') })} · ${formatDateTime(item.at, language)}`}
-                </AppText>
-              </SurfaceCard>
-            ))
+            <SurfaceCard style={styles.list}>
+              {items.map((item, index) => (
+                <View
+                  key={`${item.kind}-${item.reference}-${item.at}`}
+                  style={[styles.item, index > 0 && styles.itemDivider]}>
+                  <AppText step="caption" tone="primary">
+                    {t(`m.profile.activity_${item.kind}`)}
+                  </AppText>
+                  {item.title ? <AppText step="card">{item.title}</AppText> : null}
+                  <AppText step="secondary" tone="muted" mono>
+                    {item.reference}
+                  </AppText>
+                  <AppText step="secondary" tone="secondary">
+                    {t(`${STATE_KEYS[item.kind] ?? ''}${item.state}`, { defaultValue: item.state.replace(/_/g, ' ') })}
+                  </AppText>
+                  <AppText step="caption" tone="muted">
+                    {formatDateTime(item.at, language)}
+                  </AppText>
+                </View>
+              ))}
+            </SurfaceCard>
           )
         }
       </QueryView>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  list: { padding: 0, gap: 0, overflow: 'hidden' },
+  item: { gap: spacing[1], padding: spacing[3] },
+  itemDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
+});

@@ -17,6 +17,8 @@ export default function AssistedRecoveryScreen() {
   const [contact, setContact] = useState('');
   const [message, setMessage] = useState('');
   const [reference, setReference] = useState<string | null>(null);
+  const contactValid = method === 'in_person'
+    || (method === 'email' ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.trim()) : contact.replace(/\D/g, '').length >= 9);
   const send = useApiAction(async () => {
     const result = await api().requestAssistedRecovery({
       ...accountNumber(id),
@@ -29,14 +31,18 @@ export default function AssistedRecoveryScreen() {
 
   if (reference) {
     return (
-      <Screen edges={['bottom']}>
-        <Notice tone="success">{t('m.recover.requested', { reference })}</Notice>
+      <Screen edges={['bottom']} maxContentWidth={560}>
+        <Notice tone="success">{t('m.recover.requested')}</Notice>
+        <AppText step="label">{t('m.recover.requestReference')}</AppText>
+        <AppText step="section" mono>{reference}</AppText>
+        <AppText step="secondary" tone="muted">{t('m.recover.keepReference')}</AppText>
+        <Button label={t('m.signIn.submit')} onPress={() => router.replace('/sign-in')} />
       </Screen>
     );
   }
 
   return (
-    <Screen edges={['bottom']}>
+    <Screen edges={['bottom']} maxContentWidth={560}>
       <AppText step="secondary" tone="muted">
         {t('m.recover.assistedSubtitle')}
       </AppText>
@@ -74,9 +80,10 @@ export default function AssistedRecoveryScreen() {
         label={t('m.recover.sendRequest')}
         busy={send.busy}
         busyLabel={t('m.common.sending')}
-        disabled={id.number.trim() === '' || (method !== 'in_person' && contact.trim() === '')}
+        disabled={id.number.trim() === '' || !contactValid}
         onPress={() => void send.run()}
       />
     </Screen>
   );
 }
+import { router } from 'expo-router';

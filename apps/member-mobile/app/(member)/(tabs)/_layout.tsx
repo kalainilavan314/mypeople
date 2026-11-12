@@ -17,11 +17,13 @@ export default function TabLayout() {
         tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.border },
         tabBarLabelStyle: { fontFamily: fontFamilyFor(language, 600) },
-        headerStyle: { backgroundColor: colors.card },
+        tabBarHideOnKeyboard: true,
+        headerStyle: { backgroundColor: colors.page },
         headerTitleStyle: { fontFamily: fontFamilyFor(language, 700), color: colors.text },
+        headerShadowVisible: false,
         sceneStyle: { backgroundColor: colors.page },
       }}>
-      {/* Home has its own greeting header. */}
+      {/* Home owns its product and member context header. */}
       <Tabs.Screen name="index" options={{ title: t('nav.home'), headerShown: false, tabBarIcon: tabIcon('home-outline') }} />
       <Tabs.Screen name="events" options={{ title: t('nav.events'), tabBarIcon: tabIcon('calendar-outline') }} />
       <Tabs.Screen name="card" options={{ title: t('nav.card'), tabBarIcon: tabIcon('card-outline') }} />

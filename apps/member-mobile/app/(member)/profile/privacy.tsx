@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens';
+import { colors, spacing } from '@my-people/design-tokens';
 
 import {
   AppText,
@@ -36,15 +36,19 @@ export default function PrivacyScreen() {
   const requests = useApiQuery(() => api().listMyPrivacyRequests());
 
   return (
-    <Screen edges={['bottom']} onRefresh={requests.reload} refreshing={requests.loading && requests.data !== undefined}>
+    <Screen
+      edges={['bottom']}
+      maxContentWidth={720}
+      onRefresh={requests.reload}
+      refreshing={requests.loading && requests.data !== undefined}>
       <AppText step="section" accessibilityRole="header">
         {t('m.profile.identityData')}
       </AppText>
       <QueryView query={notice}>
         {(items) => (
           <SurfaceCard>
-            {items.map((item) => (
-              <View key={item.dataEn} style={styles.item}>
+            {items.map((item, index) => (
+              <View key={item.dataEn} style={[styles.item, index > 0 && styles.itemDivider]}>
                 <AppText step="label">{localized(item.dataEn, item.dataTa)}</AppText>
                 <AppText step="secondary" tone="secondary">
                   {localized(item.purposeEn, item.purposeTa)}
@@ -58,8 +62,13 @@ export default function PrivacyScreen() {
         )}
       </QueryView>
 
-      <CopyRequest onSent={requests.reload} />
-      <ClosureRequest onSent={requests.reload} />
+      <AppText step="section" accessibilityRole="header">
+        {t('m.profile.privacyActions')}
+      </AppText>
+      <View style={styles.actions}>
+        <CopyRequest onSent={requests.reload} />
+        <ClosureRequest onSent={requests.reload} />
+      </View>
 
       <AppText step="section" accessibilityRole="header">
         {t('m.profile.requests')}
@@ -171,4 +180,8 @@ function ClosureRequest({ onSent }: { onSent: () => void }) {
   );
 }
 
-const styles = StyleSheet.create({ item: { gap: 2, paddingVertical: spacing[1] } });
+const styles = StyleSheet.create({
+  item: { gap: 2, paddingVertical: spacing[2] },
+  itemDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
+  actions: { gap: spacing[3] },
+});

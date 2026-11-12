@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens';
+import { colors, control, spacing } from '@my-people/design-tokens';
 
 import { AppText } from '@my-people/mobile-ui';
 
@@ -16,7 +16,7 @@ type Feature = HomeView['quickActions'][number];
  * A quick action or hub service. Locked ones show the padlock and the reason
  * (FR-HOME-008); ones not built yet say so; only working ones open.
  */
-export function FeatureTile({ feature }: { feature: Feature }) {
+export function FeatureTile({ feature, divided = false }: { feature: Feature; divided?: boolean }) {
   const { t } = useTranslation();
   const route = FEATURE_ROUTES[feature.key];
   const label = t(`m.home.feature_${feature.key}`, { defaultValue: feature.key });
@@ -34,45 +34,30 @@ export function FeatureTile({ feature }: { feature: Feature }) {
       accessibilityRole={opens ? 'link' : 'text'}
       accessibilityLabel={caption ? `${label}. ${caption}` : label}
       aria-disabled={!opens}
-      style={({ pressed }) => [styles.tile, pressed && styles.pressed]}>
-      <View style={styles.well}>
-        <Ionicons
-          name={feature.available ? (FEATURE_ICONS[feature.key] ?? 'ellipse-outline') : 'lock-closed-outline'}
-          size={20}
-          color={feature.available ? colors.primary : colors.textMuted}
-        />
-      </View>
-      <AppText step="label" tone={opens ? 'default' : 'muted'}>
-        {label}
-      </AppText>
-      {caption ? (
-        <AppText step="caption" tone="muted">
-          {caption}
+      style={({ pressed }) => [styles.row, divided && styles.divided, pressed && styles.pressed]}>
+      <Ionicons
+        name={feature.available ? (FEATURE_ICONS[feature.key] ?? 'ellipse-outline') : 'lock-closed-outline'}
+        size={20}
+        color={opens ? colors.textSecondary : colors.textMuted}
+      />
+      <View style={styles.copy}>
+        <AppText step="label" tone={opens ? 'default' : 'muted'}>
+          {label}
         </AppText>
-      ) : null}
+        {caption ? (
+          <AppText step="caption" tone="muted">
+            {caption}
+          </AppText>
+        ) : null}
+      </View>
+      {opens ? <Ionicons name="chevron-forward" size={18} color={colors.textMuted} /> : null}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  tile: {
-    flexBasis: '47%',
-    flexGrow: 1,
-    minHeight: 96,
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderWidth: 1,
-    borderRadius: radius.card,
-    padding: spacing[3],
-    gap: spacing[1],
-  },
+  row: { minHeight: control.touchMin + spacing[3], flexDirection: 'row', alignItems: 'center', gap: spacing[3], padding: spacing[3] },
+  divided: { borderTopWidth: 1, borderTopColor: colors.divider },
   pressed: { backgroundColor: colors.surfaceVariant },
-  well: {
-    width: 36,
-    height: 36,
-    borderRadius: radius.control,
-    backgroundColor: colors.surfaceVariant,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  copy: { flex: 1, gap: 2 },
 });

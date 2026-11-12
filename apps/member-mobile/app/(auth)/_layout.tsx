@@ -12,8 +12,14 @@ export default function AuthLayout() {
   return (
     <Stack screenOptions={headerOptions(language)}>
       <Stack.Screen name="welcome" options={{ headerShown: false }} />
-      <Stack.Screen name="sign-in" options={{ title: t('m.signIn.title') }} />
-      <Stack.Screen name="register" options={{ title: t('m.register.title') }} />
+      <Stack.Screen
+        name="sign-in"
+        options={{ title: t('m.signIn.title'), headerTitle: '' }}
+      />
+      <Stack.Screen
+        name="register"
+        options={{ title: t('m.register.title'), headerTitle: '' }}
+      />
       <Stack.Screen name="recover" options={{ title: t('m.recover.title') }} />
       <Stack.Screen name="assisted-recovery" options={{ title: t('m.recover.assistedTitle') }} />
     </Stack>

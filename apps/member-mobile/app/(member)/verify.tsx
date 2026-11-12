@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens';
+import { colors, spacing } from '@my-people/design-tokens';
 
 import {
   AppText,
@@ -62,7 +62,11 @@ export default function VerifyScreen() {
   });
 
   return (
-    <Screen edges={['bottom']} onRefresh={query.reload} refreshing={query.loading && query.data !== undefined}>
+    <Screen
+      edges={['bottom']}
+      maxContentWidth={720}
+      onRefresh={query.reload}
+      refreshing={query.loading && query.data !== undefined}>
       <AppText step="secondary" tone="muted">
         {t('m.verify.subtitle')}
       </AppText>
@@ -188,9 +192,10 @@ function ConsentCard({ onConsented }: { onConsented: () => void }) {
         {t('m.verify.consentBody')}
       </AppText>
       <Button label={t('m.verify.whatWeKeep')} variant="quiet" icon={showData ? 'chevron-up' : 'chevron-down'} onPress={() => setShowData(!showData)} />
-      {showData
-        ? notice.data?.map((item) => (
-            <View key={item.dataEn} style={styles.dataItem}>
+      {showData ? (
+        <QueryView query={notice}>
+          {(items) => items.map((item, index) => (
+            <View key={item.dataEn} style={[styles.dataItem, index > 0 && styles.dataDivider]}>
               <AppText step="label">{localized(item.dataEn, item.dataTa)}</AppText>
               <AppText step="secondary" tone="secondary">
                 {localized(item.purposeEn, item.purposeTa)}
@@ -199,8 +204,9 @@ function ConsentCard({ onConsented }: { onConsented: () => void }) {
                 {localized(item.retentionEn, item.retentionTa)}
               </AppText>
             </View>
-          ))
-        : null}
+          ))}
+        </QueryView>
+      ) : null}
       {consent.error ? <Notice tone="error">{errorMessage(t, consent.error)}</Notice> : null}
       <Button label={t('m.verify.consentAction')} busy={consent.busy} onPress={() => void consent.run()} />
     </SurfaceCard>
@@ -229,4 +235,7 @@ function SubmitCard({ route, resubmit, ready, onSent }: { route: 'nic' | 'passpo
   );
 }
 
-const styles = StyleSheet.create({ dataItem: { gap: 2, paddingVertical: spacing[1] } });
+const styles = StyleSheet.create({
+  dataItem: { gap: 2, paddingVertical: spacing[2] },
+  dataDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
+});

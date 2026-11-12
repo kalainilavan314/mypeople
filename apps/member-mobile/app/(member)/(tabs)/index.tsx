@@ -5,15 +5,15 @@ import { useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens';
+import { colors, control, spacing } from '@my-people/design-tokens';
 
 import {
   AppText,
   Button,
   formatDateTime,
-  localHour,
   Notice,
   Screen,
+  StatusTag,
   SurfaceCard,
   useApiQuery,
   useLanguage,
@@ -42,11 +42,6 @@ function nextStepRoute(step: NextStep): Href {
   }
 }
 
-function greetingKey(): string {
-  const hour = localHour();
-  return hour < 12 ? 'm.home.greetingMorning' : hour < 17 ? 'm.home.greetingAfternoon' : 'm.home.greetingEvening';
-}
-
 /** H01 for Verified and Active members, H02 while identity or membership is pending; the server decides which. */
 export default function HomeScreen() {
   const home = useApiQuery(() => api().getHome());
@@ -59,7 +54,7 @@ export default function HomeScreen() {
   useReloadOnFocus(reload);
 
   return (
-    <Screen onRefresh={reload} refreshing={home.loading && home.data !== undefined}>
+    <Screen maxContentWidth={720} onRefresh={reload} refreshing={home.loading && home.data !== undefined}>
       <QueryView query={home}>{(data) => <HomeBody data={data} unread={inbox.data?.unread ?? 0} />}</QueryView>
     </Screen>
   );
@@ -71,14 +66,20 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
   const localized = useLocalized();
   const place = [data.districtName, data.gnName].filter(Boolean).join(' / ');
   const next = data.nextStep;
+  const showComingUp = next?.kind !== 'event_soon';
+  const membershipTone = data.membershipState === 'active' ? 'verified' : data.membershipState === 'pending' ? 'pending' : 'error';
 
   return (
     <>
       <View style={styles.header}>
         <View style={styles.headerText}>
-          <AppText step="page" accessibilityRole="header">
-            {`${t(greetingKey())}, ${data.displayName}`}
+          <AppText step="label" tone="primary">
+            {t('m.welcome.title')}
           </AppText>
+          <AppText step="page" accessibilityRole="header">
+            {t('nav.home')}
+          </AppText>
+          <AppText step="body">{data.displayName}</AppText>
           {place ? (
             <View style={styles.place}>
               <Ionicons name="location-outline" size={16} color={colors.textMuted} />
@@ -98,7 +99,12 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
         </Pressable>
       </View>
 
-      {data.layout === 'awaiting_review' ? (
+      <StatusTag
+        tone={membershipTone}
+        label={`${t('m.profile.membership')}: ${t(`m.home.membership_${data.membershipState}`)}`}
+      />
+
+      {data.layout === 'awaiting_review' && !next ? (
         <Notice tone="warning" title={t('m.home.awaitingTitle')}>
           <AppText step="secondary" tone="warning">
             {t('m.home.awaitingBody')}
@@ -108,8 +114,8 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
       ) : null}
 
       {next ? (
-        <SurfaceCard accent>
-          <AppText step="caption" tone="muted">
+        <SurfaceCard accent style={styles.nextAction}>
+          <AppText step="caption" tone="primary">
             {t('m.home.nextStep')}
           </AppText>
           <AppText step="section">{t(`m.home.next_${next.kind}`)}</AppText>
@@ -131,48 +137,49 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
       <AppText step="section" accessibilityRole="header">
         {t('m.home.quickActions')}
       </AppText>
-      <View style={styles.grid}>
-        {data.quickActions.map((feature) => (
-          <FeatureTile key={feature.key} feature={feature} />
+      <SurfaceCard style={styles.actionList}>
+        {data.quickActions.map((feature, index) => (
+          <FeatureTile key={feature.key} feature={feature} divided={index > 0} />
         ))}
-      </View>
+      </SurfaceCard>
 
-      <View style={styles.sectionRow}>
-        <AppText step="section" accessibilityRole="header" style={styles.flex}>
-          {t('m.home.comingUp')}
-        </AppText>
-        <Button label={t('m.common.seeAll')} variant="quiet" onPress={() => router.push('/events')} />
-      </View>
-      {data.comingUp ? (
-        <EventRow event={data.comingUp} />
-      ) : (
-        <SurfaceCard>
-          <AppText step="secondary" tone="muted">
-            {t('m.home.noEvents')}
-          </AppText>
-          <Button label={t('m.home.browseEvents')} variant="secondary" onPress={() => router.push('/events')} />
-        </SurfaceCard>
-      )}
-
-      <Button label={t('m.home.hub')} variant="secondary" icon="people-outline" onPress={() => router.push('/hub')} />
+      {showComingUp ? (
+        <>
+          <View style={styles.sectionRow}>
+            <AppText step="section" accessibilityRole="header" style={styles.flex}>
+              {t('m.home.comingUp')}
+            </AppText>
+            <Button label={t('m.common.seeAll')} variant="quiet" onPress={() => router.push('/events')} />
+          </View>
+          {data.comingUp ? (
+            <EventRow event={data.comingUp} />
+          ) : (
+            <SurfaceCard>
+              <AppText step="secondary" tone="muted">
+                {t('m.home.noEvents')}
+              </AppText>
+              <Button label={t('m.home.browseEvents')} variant="secondary" onPress={() => router.push('/events')} />
+            </SurfaceCard>
+          )}
+        </>
+      ) : null}
     </>
   );
 }
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3] },
-  headerText: { flex: 1, gap: spacing[2] },
+  headerText: { flex: 1, gap: spacing[1] },
   place: { flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
   bell: {
     width: control.touchMin,
     height: control.touchMin,
-    borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.surfaceVariant,
   },
   dot: { position: 'absolute', top: 10, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.error },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
+  nextAction: { backgroundColor: colors.primaryContainer, borderColor: colors.primaryContainer },
+  actionList: { padding: 0, gap: 0, overflow: 'hidden' },
   sectionRow: { flexDirection: 'row', alignItems: 'center' },
   flex: { flex: 1 },
 });
