@@ -28,7 +28,9 @@ from app.modules.content.gallery.dependencies import build_media_store
 from app.modules.community.cases import router as community_cases
 from app.modules.community.ideas import router as community_ideas
 from app.modules.community.learning import router as community_learning
+from app.modules.community.promises import router as community_promises
 from app.modules.community.proposals import router as community_proposals
+from app.modules.community.scorecards import router as community_scorecards
 from app.modules.community.surveys import router as community_surveys
 from app.modules.community.issues import router as community_issues
 from app.modules.community.issues.evidence import build_issue_vault
@@ -125,6 +127,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(community_proposals.router)
     app.include_router(community_learning.router)
     app.include_router(member_invitations.router)
+    app.include_router(community_promises.router)
+    app.include_router(community_scorecards.router)
     app.include_router(home.router)
     app.include_router(profile.router)
     app.include_router(area_changes.router)

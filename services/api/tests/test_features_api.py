@@ -103,6 +103,8 @@ def test_the_registry_lists_every_module_with_the_gate_it_needs(enforced, auth, 
         "development_proposals": "G2",
         "learning": "G2",
         "invitations": "G2",
+        "promises": "G2",
+        "scorecards": "G2",
         "election_mode": "G2",
         "households": "G2",
     }

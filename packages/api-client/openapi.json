@@ -11734,6 +11734,1366 @@
         ]
       }
     },
+    "/v1/promises": {
+      "get": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "List Promises",
+        "description": "M18: every published promise, filterable by status, theme and area (FR-PRM-007).",
+        "operationId": "list_promises_v1_promises_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "not_started",
+                    "in_progress",
+                    "completed",
+                    "delayed",
+                    "blocked",
+                    "withdrawn"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "theme",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "roads_transport",
+                    "drinking_water",
+                    "health",
+                    "education",
+                    "employment",
+                    "agriculture",
+                    "fisheries",
+                    "housing",
+                    "environment",
+                    "governance",
+                    "other"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Theme"
+            }
+          },
+          {
+            "name": "area",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "An area key such as district:LK41",
+              "title": "Area"
+            },
+            "description": "An area key such as district:LK41"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PromiseSummaryOut"
+                  },
+                  "title": "Response List Promises V1 Promises Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/promises/manage": {
+      "get": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "List Managed",
+        "operationId": "list_managed_v1_promises_manage_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "not_started",
+                    "in_progress",
+                    "completed",
+                    "delayed",
+                    "blocked",
+                    "withdrawn"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "theme",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "roads_transport",
+                    "drinking_water",
+                    "health",
+                    "education",
+                    "employment",
+                    "agriculture",
+                    "fisheries",
+                    "housing",
+                    "environment",
+                    "governance",
+                    "other"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Theme"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PromiseSummaryOut"
+                  },
+                  "title": "Response List Managed V1 Promises Manage Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "Draft Promise",
+        "operationId": "draft_promise_v1_promises_manage_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromiseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromiseDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/promises/manage/pending": {
+      "get": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "Pending Work",
+        "description": "Updates waiting for a second person's approval, and feedback waiting for moderation.",
+        "operationId": "pending_work_v1_promises_manage_pending_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingWorkOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/promises/manage/report": {
+      "get": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "Progress Report",
+        "description": "FR-PRM-010: published promises by status, theme, office and area.",
+        "operationId": "progress_report_v1_promises_manage_report_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReportRowOut"
+                  },
+                  "type": "array",
+                  "title": "Response Progress Report V1 Promises Manage Report Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/promises/manage/{promise_id}": {
+      "get": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "Read Managed",
+        "operationId": "read_managed_v1_promises_manage__promise_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "promise_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Promise Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromiseDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "Update Draft",
+        "description": "Drafts only; a published promise changes through dated updates.",
+        "operationId": "update_draft_v1_promises_manage__promise_id__put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "promise_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Promise Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromiseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromiseDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/promises/manage/{promise_id}/request-publication": {
+      "post": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "Request Publication",
+        "operationId": "request_publication_v1_promises_manage__promise_id__request_publication_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "promise_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Promise Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromiseDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/promises/manage/{promise_id}/publication-decision": {
+      "post": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "Decide Publication",
+        "description": "FR-PRM-003: a second authorised person approves; the person who asked cannot (403 own_draft).",
+        "operationId": "decide_publication_v1_promises_manage__promise_id__publication_decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "promise_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Promise Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicationDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromiseDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/promises/manage/{promise_id}/updates": {
+      "post": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "Draft Update",
+        "description": "A dated update with evidence, or a correction of an earlier one; applied once approved.",
+        "operationId": "draft_update_v1_promises_manage__promise_id__updates_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "promise_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Promise Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromiseUpdateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromiseUpdateOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/promises/manage/updates/{update_id}/decision": {
+      "post": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "Decide Update",
+        "operationId": "decide_update_v1_promises_manage_updates__update_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "update_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Update Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicationDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromiseUpdateOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/promises/manage/feedback/{feedback_id}/moderation": {
+      "post": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "Moderate Feedback",
+        "operationId": "moderate_feedback_v1_promises_manage_feedback__feedback_id__moderation_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "feedback_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Feedback Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModerationIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromiseFeedbackOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/promises/manage/feedback/{feedback_id}/reply": {
+      "post": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "Reply",
+        "description": "The responsible office's reply, shown under the feedback (FR-PRM-006).",
+        "operationId": "reply_v1_promises_manage_feedback__feedback_id__reply_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "feedback_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Feedback Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplyIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromiseFeedbackOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/promises/{promise_id}": {
+      "get": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "Read Promise",
+        "description": "M19: the promise with its milestones, approved updates (corrections beside the originals) and\nmoderated feedback with the office's replies.",
+        "operationId": "read_promise_v1_promises__promise_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "promise_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Promise Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromiseDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/promises/{promise_id}/feedback": {
+      "post": {
+        "tags": [
+          "promises"
+        ],
+        "summary": "Give Feedback",
+        "description": "Shown to others only after moderation.",
+        "operationId": "give_feedback_v1_promises__promise_id__feedback_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "promise_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Promise Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromiseFeedbackIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromiseFeedbackOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/scorecards/area": {
+      "get": {
+        "tags": [
+          "scorecards"
+        ],
+        "summary": "My Area",
+        "description": "M20: the member's GN, DS division and district for the last four published periods.",
+        "operationId": "my_area_v1_scorecards_area_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyScorecardsOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/scorecards/manage": {
+      "get": {
+        "tags": [
+          "scorecards"
+        ],
+        "summary": "List Versions",
+        "operationId": "list_versions_v1_scorecards_manage_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ScorecardOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Versions V1 Scorecards Manage Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "scorecards"
+        ],
+        "summary": "Draft",
+        "description": "Compute a draft for a finished quarter from the cases.",
+        "operationId": "draft_v1_scorecards_manage_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScorecardDraftIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScorecardOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/scorecards/manage/{scorecard_id}": {
+      "get": {
+        "tags": [
+          "scorecards"
+        ],
+        "summary": "Read",
+        "operationId": "read_v1_scorecards_manage__scorecard_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scorecard_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scorecard Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScorecardFileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/scorecards/manage/{scorecard_id}/share": {
+      "post": {
+        "tags": [
+          "scorecards"
+        ],
+        "summary": "Share",
+        "operationId": "share_v1_scorecards_manage__scorecard_id__share_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scorecard_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scorecard Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScorecardOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/scorecards/manage/{scorecard_id}/notes": {
+      "put": {
+        "tags": [
+          "scorecards"
+        ],
+        "summary": "Set Note",
+        "operationId": "set_note_v1_scorecards_manage__scorecard_id__notes_put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scorecard_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scorecard Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScorecardNoteIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScorecardOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/scorecards/manage/{scorecard_id}/corrections": {
+      "post": {
+        "tags": [
+          "scorecards"
+        ],
+        "summary": "Request Correction",
+        "description": "The responsible tiers ask for a correction, with the reason.",
+        "operationId": "request_correction_v1_scorecards_manage__scorecard_id__corrections_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scorecard_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scorecard Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorrectionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrectionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/scorecards/manage/corrections/{correction_id}/decision": {
+      "post": {
+        "tags": [
+          "scorecards"
+        ],
+        "summary": "Decide Correction",
+        "operationId": "decide_correction_v1_scorecards_manage_corrections__correction_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "correction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Correction Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorrectionDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScorecardOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/scorecards/manage/{scorecard_id}/publish": {
+      "post": {
+        "tags": [
+          "scorecards"
+        ],
+        "summary": "Publish",
+        "description": "FR-ACS-006: only with scorecard.publish, after the 10 working days.",
+        "operationId": "publish_v1_scorecards_manage__scorecard_id__publish_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scorecard_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scorecard Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScorecardOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/home": {
       "get": {
         "tags": [
@@ -18306,6 +19666,68 @@
         "title": "AreaNameOut",
         "description": "An area key such as district:LK41 with its names. Tamil names leave out the level word\n(district, province), which screens add; a name missing in Tamil is null."
       },
+      "AreaPeriodOut": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedat"
+          },
+          "figures": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Figures",
+            "description": "{insufficient: true} under 10 accepted cases, else metrics with numerator and denominator"
+          },
+          "noteEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Noteen"
+          },
+          "noteTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Noteta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "version",
+          "publishedAt",
+          "figures",
+          "noteEn",
+          "noteTa"
+        ],
+        "title": "AreaPeriodOut"
+      },
       "AreaRef": {
         "properties": {
           "level": {
@@ -18338,6 +19760,51 @@
         ],
         "title": "AreaRef",
         "description": "An area: the whole platform, or a province, district, DS division or GN division by code."
+      },
+      "AreaScorecardOut": {
+        "properties": {
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "nameEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nameta"
+          },
+          "periods": {
+            "items": {
+              "$ref": "#/components/schemas/AreaPeriodOut"
+            },
+            "type": "array",
+            "title": "Periods"
+          }
+        },
+        "type": "object",
+        "required": [
+          "areaKey",
+          "nameEn",
+          "nameTa",
+          "periods"
+        ],
+        "title": "AreaScorecardOut"
       },
       "AreaUpdateOut": {
         "properties": {
@@ -21921,6 +23388,123 @@
           "recordedAt"
         ],
         "title": "ControlOut"
+      },
+      "CorrectionDecisionIn": {
+        "properties": {
+          "accept": {
+            "type": "boolean",
+            "title": "Accept"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accept",
+          "note"
+        ],
+        "title": "CorrectionDecisionIn"
+      },
+      "CorrectionIn": {
+        "properties": {
+          "areaKey": {
+            "type": "string",
+            "maxLength": 40,
+            "title": "Areakey"
+          },
+          "metric": {
+            "type": "string",
+            "maxLength": 40,
+            "title": "Metric"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 5,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "areaKey",
+          "metric",
+          "reason"
+        ],
+        "title": "CorrectionIn"
+      },
+      "CorrectionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "metric": {
+            "type": "string",
+            "title": "Metric"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "accepted",
+              "rejected"
+            ],
+            "title": "State"
+          },
+          "decisionNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionnote"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "areaKey",
+          "metric",
+          "reason",
+          "state",
+          "decisionNote",
+          "createdAt",
+          "decidedAt"
+        ],
+        "title": "CorrectionOut"
       },
       "CourseCardOut": {
         "properties": {
@@ -28663,6 +30247,65 @@
         ],
         "title": "MfaStatusOut"
       },
+      "MilestoneModel": {
+        "properties": {
+          "titleEn": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Titleta"
+          },
+          "dueDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duedate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "titleEn",
+          "titleTa"
+        ],
+        "title": "MilestoneModel"
+      },
+      "ModerationIn": {
+        "properties": {
+          "publish": {
+            "type": "boolean",
+            "title": "Publish"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "publish"
+        ],
+        "title": "ModerationIn"
+      },
       "MyAreaOut": {
         "properties": {
           "hasArea": {
@@ -29103,6 +30746,27 @@
         ],
         "title": "MyReviewOut",
         "description": "A10, A11, C06: the review reference and state, and what to correct when a correction is asked for."
+      },
+      "MyScorecardsOut": {
+        "properties": {
+          "slaVersion": {
+            "type": "string",
+            "title": "Slaversion"
+          },
+          "areas": {
+            "items": {
+              "$ref": "#/components/schemas/AreaScorecardOut"
+            },
+            "type": "array",
+            "title": "Areas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "slaVersion",
+          "areas"
+        ],
+        "title": "MyScorecardsOut"
       },
       "NeedsCellOut": {
         "properties": {
@@ -30614,6 +32278,30 @@
         ],
         "title": "PendingIdeaOut"
       },
+      "PendingWorkOut": {
+        "properties": {
+          "updates": {
+            "items": {
+              "$ref": "#/components/schemas/PromiseUpdateOut"
+            },
+            "type": "array",
+            "title": "Updates"
+          },
+          "feedback": {
+            "items": {
+              "$ref": "#/components/schemas/PromiseFeedbackOut"
+            },
+            "type": "array",
+            "title": "Feedback"
+          }
+        },
+        "type": "object",
+        "required": [
+          "updates",
+          "feedback"
+        ],
+        "title": "PendingWorkOut"
+      },
       "PeriodFileOut": {
         "properties": {
           "id": {
@@ -31823,6 +33511,796 @@
         ],
         "title": "ProgressOut"
       },
+      "PromiseAreaIn": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "platform",
+              "province",
+              "district",
+              "ds",
+              "gn"
+            ],
+            "title": "Level"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level"
+        ],
+        "title": "PromiseAreaIn"
+      },
+      "PromiseDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "promiseRef": {
+            "type": "string",
+            "title": "Promiseref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "party_commitment",
+              "government_responsibility"
+            ],
+            "title": "Kind",
+            "description": "Party commitment or government responsibility (FR-PRM-004)"
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "roads_transport",
+              "drinking_water",
+              "health",
+              "education",
+              "employment",
+              "agriculture",
+              "fisheries",
+              "housing",
+              "environment",
+              "governance",
+              "other"
+            ],
+            "title": "Theme"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "officeEn": {
+            "type": "string",
+            "title": "Officeen"
+          },
+          "officeTa": {
+            "type": "string",
+            "title": "Officeta"
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Duedate"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "not_started",
+              "in_progress",
+              "completed",
+              "delayed",
+              "blocked",
+              "withdrawn"
+            ],
+            "title": "Status"
+          },
+          "lastVerifiedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lastverifiedat"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          },
+          "sourceReference": {
+            "type": "string",
+            "title": "Sourcereference"
+          },
+          "sourcePublishedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Sourcepublishedon"
+          },
+          "plannedStart": {
+            "type": "string",
+            "format": "date",
+            "title": "Plannedstart"
+          },
+          "targetEn": {
+            "type": "string",
+            "title": "Targeten"
+          },
+          "targetTa": {
+            "type": "string",
+            "title": "Targetta"
+          },
+          "blockersEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blockersen"
+          },
+          "blockersTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blockersta"
+          },
+          "statusReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Statusreason"
+          },
+          "publication": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "awaiting_approval",
+              "published"
+            ],
+            "title": "Publication"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedat"
+          },
+          "updateDueAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedueat"
+          },
+          "milestones": {
+            "items": {
+              "$ref": "#/components/schemas/MilestoneModel"
+            },
+            "type": "array",
+            "title": "Milestones"
+          },
+          "updates": {
+            "items": {
+              "$ref": "#/components/schemas/PromiseUpdateOut"
+            },
+            "type": "array",
+            "title": "Updates"
+          },
+          "feedback": {
+            "items": {
+              "$ref": "#/components/schemas/PromiseFeedbackOut"
+            },
+            "type": "array",
+            "title": "Feedback"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "promiseRef",
+          "titleEn",
+          "titleTa",
+          "kind",
+          "theme",
+          "areaKey",
+          "officeEn",
+          "officeTa",
+          "dueDate",
+          "status",
+          "lastVerifiedAt",
+          "descriptionEn",
+          "descriptionTa",
+          "sourceReference",
+          "sourcePublishedOn",
+          "plannedStart",
+          "targetEn",
+          "targetTa",
+          "blockersEn",
+          "blockersTa",
+          "statusReason",
+          "publication",
+          "publishedAt",
+          "updateDueAt",
+          "milestones",
+          "updates",
+          "feedback"
+        ],
+        "title": "PromiseDetailOut"
+      },
+      "PromiseFeedbackIn": {
+        "properties": {
+          "body": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 5,
+            "title": "Body"
+          }
+        },
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "title": "PromiseFeedbackIn"
+      },
+      "PromiseFeedbackOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "published",
+              "rejected"
+            ],
+            "title": "State"
+          },
+          "replyEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replyen"
+          },
+          "replyTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replyta"
+          },
+          "repliedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repliedat"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "body",
+          "state",
+          "replyEn",
+          "replyTa",
+          "repliedAt",
+          "createdAt"
+        ],
+        "title": "PromiseFeedbackOut"
+      },
+      "PromiseIn": {
+        "properties": {
+          "titleEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 5,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 220,
+            "minLength": 5,
+            "title": "Titleta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "maxLength": 4500,
+            "minLength": 10,
+            "title": "Descriptionta"
+          },
+          "sourceReference": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Sourcereference",
+            "description": "Where the promise was first published"
+          },
+          "sourcePublishedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Sourcepublishedon"
+          },
+          "officeEn": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Officeen"
+          },
+          "officeTa": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Officeta"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "party_commitment",
+              "government_responsibility"
+            ],
+            "title": "Kind"
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "roads_transport",
+              "drinking_water",
+              "health",
+              "education",
+              "employment",
+              "agriculture",
+              "fisheries",
+              "housing",
+              "environment",
+              "governance",
+              "other"
+            ],
+            "title": "Theme"
+          },
+          "plannedStart": {
+            "type": "string",
+            "format": "date",
+            "title": "Plannedstart"
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Duedate"
+          },
+          "targetEn": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 5,
+            "title": "Targeten",
+            "description": "A measurable target"
+          },
+          "targetTa": {
+            "type": "string",
+            "maxLength": 1500,
+            "minLength": 5,
+            "title": "Targetta"
+          },
+          "blockersEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blockersen"
+          },
+          "blockersTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 3000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blockersta"
+          },
+          "milestones": {
+            "items": {
+              "$ref": "#/components/schemas/MilestoneModel"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "title": "Milestones"
+          },
+          "area": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PromiseAreaIn"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Required when drafting; a promise's area never changes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "titleEn",
+          "titleTa",
+          "descriptionEn",
+          "descriptionTa",
+          "sourceReference",
+          "sourcePublishedOn",
+          "officeEn",
+          "officeTa",
+          "kind",
+          "theme",
+          "plannedStart",
+          "dueDate",
+          "targetEn",
+          "targetTa",
+          "milestones"
+        ],
+        "title": "PromiseIn"
+      },
+      "PromiseSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "promiseRef": {
+            "type": "string",
+            "title": "Promiseref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "party_commitment",
+              "government_responsibility"
+            ],
+            "title": "Kind",
+            "description": "Party commitment or government responsibility (FR-PRM-004)"
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "roads_transport",
+              "drinking_water",
+              "health",
+              "education",
+              "employment",
+              "agriculture",
+              "fisheries",
+              "housing",
+              "environment",
+              "governance",
+              "other"
+            ],
+            "title": "Theme"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "officeEn": {
+            "type": "string",
+            "title": "Officeen"
+          },
+          "officeTa": {
+            "type": "string",
+            "title": "Officeta"
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Duedate"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "not_started",
+              "in_progress",
+              "completed",
+              "delayed",
+              "blocked",
+              "withdrawn"
+            ],
+            "title": "Status"
+          },
+          "lastVerifiedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lastverifiedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "promiseRef",
+          "titleEn",
+          "titleTa",
+          "kind",
+          "theme",
+          "areaKey",
+          "officeEn",
+          "officeTa",
+          "dueDate",
+          "status",
+          "lastVerifiedAt"
+        ],
+        "title": "PromiseSummaryOut"
+      },
+      "PromiseUpdateIn": {
+        "properties": {
+          "newStatus": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "not_started",
+                  "in_progress",
+                  "completed",
+                  "blocked",
+                  "withdrawn"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Newstatus"
+          },
+          "noteEn": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 5,
+            "title": "Noteen"
+          },
+          "noteTa": {
+            "type": "string",
+            "maxLength": 4500,
+            "minLength": 5,
+            "title": "Noteta"
+          },
+          "evidenceRefs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Evidencerefs"
+          },
+          "correctsId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correctsid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "noteEn",
+          "noteTa"
+        ],
+        "title": "PromiseUpdateIn"
+      },
+      "PromiseUpdateOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "newStatus": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "not_started",
+                  "in_progress",
+                  "completed",
+                  "delayed",
+                  "blocked",
+                  "withdrawn"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Newstatus"
+          },
+          "noteEn": {
+            "type": "string",
+            "title": "Noteen"
+          },
+          "noteTa": {
+            "type": "string",
+            "title": "Noteta"
+          },
+          "evidenceRefs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidencerefs"
+          },
+          "correctsId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correctsid",
+            "description": "Set on a correction; the original stays visible (FR-PRM-005)"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "approved",
+              "rejected",
+              "system"
+            ],
+            "title": "Decision"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "newStatus",
+          "noteEn",
+          "noteTa",
+          "evidenceRefs",
+          "correctsId",
+          "decision",
+          "decisionReason",
+          "createdAt",
+          "decidedAt"
+        ],
+        "title": "PromiseUpdateOut"
+      },
       "ProposalAreaIn": {
         "properties": {
           "level": {
@@ -32487,6 +34965,31 @@
           "publish"
         ],
         "title": "PublicSummaryIn"
+      },
+      "PublicationDecisionIn": {
+        "properties": {
+          "approve": {
+            "type": "boolean",
+            "title": "Approve"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "approve"
+        ],
+        "title": "PublicationDecisionIn"
       },
       "QualityOut": {
         "properties": {
@@ -33563,6 +36066,28 @@
         ],
         "title": "RemovalRequestIn"
       },
+      "ReplyIn": {
+        "properties": {
+          "replyEn": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 3,
+            "title": "Replyen"
+          },
+          "replyTa": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 3,
+            "title": "Replyta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "replyEn",
+          "replyTa"
+        ],
+        "title": "ReplyIn"
+      },
       "ReportInput": {
         "properties": {
           "memberId": {
@@ -33589,6 +36114,60 @@
           "reason"
         ],
         "title": "ReportInput"
+      },
+      "ReportRowOut": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "not_started",
+              "in_progress",
+              "completed",
+              "delayed",
+              "blocked",
+              "withdrawn"
+            ],
+            "title": "Status"
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "roads_transport",
+              "drinking_water",
+              "health",
+              "education",
+              "employment",
+              "agriculture",
+              "fisheries",
+              "housing",
+              "environment",
+              "governance",
+              "other"
+            ],
+            "title": "Theme"
+          },
+          "officeEn": {
+            "type": "string",
+            "title": "Officeen"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "theme",
+          "officeEn",
+          "areaKey",
+          "count"
+        ],
+        "title": "ReportRowOut"
       },
       "ReporterContactOut": {
         "properties": {
@@ -34739,6 +37318,176 @@
         ],
         "title": "ScanOutcomeOut",
         "description": "ACCEPTED (attendance recorded), DUPLICATE (already checked in), REJECTED with the reason\n(expired, not_valid, own_pass, wrong_event, outside_window), or waiting for a person:\nNEEDS_REVIEW (clock_ahead) and EXPIRED_QUEUE (too_old, past the 72-hour window)."
+      },
+      "ScorecardDraftIn": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-Q[1-4]$",
+            "title": "Period"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period"
+        ],
+        "title": "ScorecardDraftIn"
+      },
+      "ScorecardFileOut": {
+        "properties": {
+          "scorecard": {
+            "$ref": "#/components/schemas/ScorecardOut"
+          },
+          "corrections": {
+            "items": {
+              "$ref": "#/components/schemas/CorrectionOut"
+            },
+            "type": "array",
+            "title": "Corrections"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scorecard",
+          "corrections"
+        ],
+        "title": "ScorecardFileOut"
+      },
+      "ScorecardNoteIn": {
+        "properties": {
+          "areaKey": {
+            "type": "string",
+            "maxLength": 40,
+            "title": "Areakey"
+          },
+          "noteEn": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Noteen",
+            "default": ""
+          },
+          "noteTa": {
+            "type": "string",
+            "maxLength": 800,
+            "title": "Noteta",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "areaKey"
+        ],
+        "title": "ScorecardNoteIn"
+      },
+      "ScorecardOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "shared",
+              "published",
+              "superseded"
+            ],
+            "title": "State"
+          },
+          "slaVersion": {
+            "type": "string",
+            "title": "Slaversion"
+          },
+          "figures": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Figures"
+          },
+          "notes": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Notes"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "sharedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sharedat"
+          },
+          "publishableAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishableat",
+            "description": "Publishing is possible from here (10 working days after sharing)"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedat"
+          },
+          "correctionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correctionreason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "period",
+          "version",
+          "state",
+          "slaVersion",
+          "figures",
+          "notes",
+          "createdAt",
+          "sharedAt",
+          "publishableAt",
+          "publishedAt",
+          "correctionReason"
+        ],
+        "title": "ScorecardOut"
       },
       "SecurityAlertOut": {
         "properties": {

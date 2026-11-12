@@ -11,7 +11,9 @@ Issues and cases, ideas and proposals, promises, scorecards, surveys and learnin
 | `surveys/` | Surveys (H14, H21, FR-SRV-001 to 006): `/v1/surveys`; anonymous surveys keep no link from answers to members | Built, behind `ideas_surveys` |
 | `proposals/` | Our Development Ideas (M15 to M17, D15, FR-DEV-001 to 008 except the AI helpers): `/v1/proposals` | Built, behind `development_proposals` |
 | `learning/` | Learning and courses (H15, H16, FR-LRN-001 to 004): `/v1/learning`; progress only on "Complete lesson" | Built, behind `learning` |
+| `promises/` | Promise Tracker (M18, M19, D16, FR-PRM-001 to 010): `/v1/promises`; second-person approval, append-only updates, automatic Delayed | Built, behind `promises` |
+| `scorecards/` | Accountability scorecard (M20, D17, FR-ACS-001 to 008): `/v1/scorecards`; computed from cases, "Insufficient data" under 10, versioned | Built, behind `scorecards` |
 
-Not built yet: FR-PRM, FR-ACS (`/v1/promises`, `/v1/scorecards`); AI suggestions and semantic search for proposals wait for OD-42.
+Not built yet: AI suggestions and semantic search for proposals wait for OD-42.
 
 Stage limits are the BRD 4.3 proposals in working days, Monday to Friday, without public holidays [ASSUMPTION; OD-10].

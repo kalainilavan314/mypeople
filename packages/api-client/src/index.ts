@@ -226,6 +226,23 @@ export type MyReferrals = Schemas['MyReferralsOut'];
 export type InvitationItem = Schemas['InvitationOut'];
 export type InvitationStatus = Schemas['InvitationOut']['status'];
 export type NewInvitation = Schemas['NewInvitationOut'];
+// Promise Tracker (M18, M19, D16) and scorecards (M20, D17).
+export type PromiseSummary = Schemas['PromiseSummaryOut'];
+export type PromiseDetail = Schemas['PromiseDetailOut'];
+export type PromiseStatus = Schemas['PromiseSummaryOut']['status'];
+export type PromiseTheme = Schemas['PromiseSummaryOut']['theme'];
+export type PromiseKind = Schemas['PromiseSummaryOut']['kind'];
+export type PromiseUpdateItem = Schemas['PromiseUpdateOut'];
+export type PromiseFeedbackItem = Schemas['PromiseFeedbackOut'];
+export type PromiseInput = Schemas['PromiseIn'];
+export type PromiseUpdateInput = Schemas['PromiseUpdateIn'];
+export type PromisePendingWork = Schemas['PendingWorkOut'];
+export type PromiseReportRow = Schemas['ReportRowOut'];
+export type MyScorecards = Schemas['MyScorecardsOut'];
+export type AreaScorecard = Schemas['AreaScorecardOut'];
+export type Scorecard = Schemas['ScorecardOut'];
+export type ScorecardFile = Schemas['ScorecardFileOut'];
+export type ScorecardCorrection = Schemas['CorrectionOut'];
 export type CaseListFilters = {
   stage?: CaseStage[];
   mine?: boolean;
@@ -1346,6 +1363,89 @@ export function createApiClient({
     getMyReferrals: () => request<MyReferrals>('GET', '/v1/invitations/mine'),
     /** H19: a link with an opaque token and its preview text. Throws "membership_not_active" (422). */
     createInvitation: (language: 'ta' | 'en') => request<NewInvitation>('POST', '/v1/invitations', { language }),
+    // Promise Tracker (M18, M19, D16). Routes answer 404 "feature_unavailable" while promises is off.
+    listPromises: (filters: { status?: PromiseStatus; theme?: PromiseTheme; area?: string } = {}) => {
+      const q = new URLSearchParams();
+      if (filters.status) q.set('status', filters.status);
+      if (filters.theme) q.set('theme', filters.theme);
+      if (filters.area) q.set('area', filters.area);
+      const qs = q.toString();
+      return request<PromiseSummary[]>('GET', `/v1/promises${qs ? `?${qs}` : ''}`);
+    },
+    getPromise: (promiseId: string) => request<PromiseDetail>('GET', `/v1/promises/${encodeURIComponent(promiseId)}`),
+    /** Moderated before others see it. */
+    givePromiseFeedback: (promiseId: string, body: string) =>
+      request<PromiseFeedbackItem>('POST', `/v1/promises/${encodeURIComponent(promiseId)}/feedback`, { body }),
+    listManagedPromises: (filters: { status?: PromiseStatus; theme?: PromiseTheme } = {}) => {
+      const q = new URLSearchParams();
+      if (filters.status) q.set('status', filters.status);
+      if (filters.theme) q.set('theme', filters.theme);
+      const qs = q.toString();
+      return request<PromiseSummary[]>('GET', `/v1/promises/manage${qs ? `?${qs}` : ''}`);
+    },
+    getManagedPromise: (promiseId: string) =>
+      request<PromiseDetail>('GET', `/v1/promises/manage/${encodeURIComponent(promiseId)}`),
+    getPromisePendingWork: () => request<PromisePendingWork>('GET', '/v1/promises/manage/pending'),
+    getPromiseReport: () => request<PromiseReportRow[]>('GET', '/v1/promises/manage/report'),
+    draftPromise: (input: PromiseInput) => request<PromiseDetail>('POST', '/v1/promises/manage', input),
+    updatePromiseDraft: (promiseId: string, input: PromiseInput) =>
+      request<PromiseDetail>('PUT', `/v1/promises/manage/${encodeURIComponent(promiseId)}`, input),
+    requestPromisePublication: (promiseId: string) =>
+      request<PromiseDetail>('POST', `/v1/promises/manage/${encodeURIComponent(promiseId)}/request-publication`),
+    /** A second person approves; the requester gets 403 "own_draft". */
+    decidePromisePublication: (promiseId: string, approve: boolean, reason?: string) =>
+      request<PromiseDetail>(
+        'POST',
+        `/v1/promises/manage/${encodeURIComponent(promiseId)}/publication-decision`,
+        { approve, reason },
+      ),
+    draftPromiseUpdate: (promiseId: string, input: PromiseUpdateInput) =>
+      request<PromiseUpdateItem>('POST', `/v1/promises/manage/${encodeURIComponent(promiseId)}/updates`, input),
+    decidePromiseUpdate: (updateId: string, approve: boolean, reason?: string) =>
+      request<PromiseUpdateItem>(
+        'POST',
+        `/v1/promises/manage/updates/${encodeURIComponent(updateId)}/decision`,
+        { approve, reason },
+      ),
+    moderatePromiseFeedback: (feedbackId: string, publish: boolean, reason?: string) =>
+      request<PromiseFeedbackItem>(
+        'POST',
+        `/v1/promises/manage/feedback/${encodeURIComponent(feedbackId)}/moderation`,
+        { publish, reason },
+      ),
+    replyToPromiseFeedback: (feedbackId: string, replyEn: string, replyTa: string) =>
+      request<PromiseFeedbackItem>(
+        'POST',
+        `/v1/promises/manage/feedback/${encodeURIComponent(feedbackId)}/reply`,
+        { replyEn, replyTa },
+      ),
+    // Scorecards (M20, D17). Routes answer 404 while scorecards is off.
+    /** M20: the member's GN, DS division and district for the last four published periods. */
+    getMyScorecards: () => request<MyScorecards>('GET', '/v1/scorecards/area'),
+    listScorecards: () => request<Scorecard[]>('GET', '/v1/scorecards/manage'),
+    getScorecard: (scorecardId: string) =>
+      request<ScorecardFile>('GET', `/v1/scorecards/manage/${encodeURIComponent(scorecardId)}`),
+    /** A finished quarter only ("period_not_finished"), e.g. "2026-Q4". */
+    draftScorecard: (period: string) => request<Scorecard>('POST', '/v1/scorecards/manage', { period }),
+    shareScorecard: (scorecardId: string) =>
+      request<Scorecard>('POST', `/v1/scorecards/manage/${encodeURIComponent(scorecardId)}/share`),
+    setScorecardNote: (scorecardId: string, areaKey: string, noteEn: string, noteTa: string) =>
+      request<Scorecard>('PUT', `/v1/scorecards/manage/${encodeURIComponent(scorecardId)}/notes`, { areaKey, noteEn, noteTa }),
+    requestScorecardCorrection: (scorecardId: string, areaKey: string, metric: string, reason: string) =>
+      request<ScorecardCorrection>(
+        'POST',
+        `/v1/scorecards/manage/${encodeURIComponent(scorecardId)}/corrections`,
+        { areaKey, metric, reason },
+      ),
+    decideScorecardCorrection: (correctionId: string, accept: boolean, note: string) =>
+      request<Scorecard>(
+        'POST',
+        `/v1/scorecards/manage/corrections/${encodeURIComponent(correctionId)}/decision`,
+        { accept, note },
+      ),
+    /** After the 10 working days ("review_period_running" before). */
+    publishScorecard: (scorecardId: string) =>
+      request<Scorecard>('POST', `/v1/scorecards/manage/${encodeURIComponent(scorecardId)}/publish`),
     // Community Finance endpoints (Milestone 1.4)
     getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),
     createContribution: (body: ContributionCreateInput, idempotencyKey?: string) =>

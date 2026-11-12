@@ -3811,6 +3811,406 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/promises": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Promises
+         * @description M18: every published promise, filterable by status, theme and area (FR-PRM-007).
+         */
+        get: operations["list_promises_v1_promises_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Managed */
+        get: operations["list_managed_v1_promises_manage_get"];
+        put?: never;
+        /** Draft Promise */
+        post: operations["draft_promise_v1_promises_manage_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Pending Work
+         * @description Updates waiting for a second person's approval, and feedback waiting for moderation.
+         */
+        get: operations["pending_work_v1_promises_manage_pending_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Progress Report
+         * @description FR-PRM-010: published promises by status, theme, office and area.
+         */
+        get: operations["progress_report_v1_promises_manage_report_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/{promise_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Managed */
+        get: operations["read_managed_v1_promises_manage__promise_id__get"];
+        /**
+         * Update Draft
+         * @description Drafts only; a published promise changes through dated updates.
+         */
+        put: operations["update_draft_v1_promises_manage__promise_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/{promise_id}/request-publication": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request Publication */
+        post: operations["request_publication_v1_promises_manage__promise_id__request_publication_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/{promise_id}/publication-decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Publication
+         * @description FR-PRM-003: a second authorised person approves; the person who asked cannot (403 own_draft).
+         */
+        post: operations["decide_publication_v1_promises_manage__promise_id__publication_decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/{promise_id}/updates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Draft Update
+         * @description A dated update with evidence, or a correction of an earlier one; applied once approved.
+         */
+        post: operations["draft_update_v1_promises_manage__promise_id__updates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/updates/{update_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide Update */
+        post: operations["decide_update_v1_promises_manage_updates__update_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/feedback/{feedback_id}/moderation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Moderate Feedback */
+        post: operations["moderate_feedback_v1_promises_manage_feedback__feedback_id__moderation_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/feedback/{feedback_id}/reply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reply
+         * @description The responsible office's reply, shown under the feedback (FR-PRM-006).
+         */
+        post: operations["reply_v1_promises_manage_feedback__feedback_id__reply_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/{promise_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Promise
+         * @description M19: the promise with its milestones, approved updates (corrections beside the originals) and
+         *     moderated feedback with the office's replies.
+         */
+        get: operations["read_promise_v1_promises__promise_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/{promise_id}/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Give Feedback
+         * @description Shown to others only after moderation.
+         */
+        post: operations["give_feedback_v1_promises__promise_id__feedback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/area": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Area
+         * @description M20: the member's GN, DS division and district for the last four published periods.
+         */
+        get: operations["my_area_v1_scorecards_area_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Versions */
+        get: operations["list_versions_v1_scorecards_manage_get"];
+        put?: never;
+        /**
+         * Draft
+         * @description Compute a draft for a finished quarter from the cases.
+         */
+        post: operations["draft_v1_scorecards_manage_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/manage/{scorecard_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read */
+        get: operations["read_v1_scorecards_manage__scorecard_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/manage/{scorecard_id}/share": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Share */
+        post: operations["share_v1_scorecards_manage__scorecard_id__share_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/manage/{scorecard_id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Set Note */
+        put: operations["set_note_v1_scorecards_manage__scorecard_id__notes_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/manage/{scorecard_id}/corrections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Correction
+         * @description The responsible tiers ask for a correction, with the reason.
+         */
+        post: operations["request_correction_v1_scorecards_manage__scorecard_id__corrections_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/manage/corrections/{correction_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide Correction */
+        post: operations["decide_correction_v1_scorecards_manage_corrections__correction_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/manage/{scorecard_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish
+         * @description FR-ACS-006: only with scorecard.publish, after the 10 working days.
+         */
+        post: operations["publish_v1_scorecards_manage__scorecard_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -5969,6 +6369,26 @@ export interface components {
             /** Nameta */
             nameTa: string | null;
         };
+        /** AreaPeriodOut */
+        AreaPeriodOut: {
+            /** Period */
+            period: string;
+            /** Version */
+            version: number;
+            /** Publishedat */
+            publishedAt: string | null;
+            /**
+             * Figures
+             * @description {insufficient: true} under 10 accepted cases, else metrics with numerator and denominator
+             */
+            figures: {
+                [key: string]: unknown;
+            };
+            /** Noteen */
+            noteEn: string | null;
+            /** Noteta */
+            noteTa: string | null;
+        };
         /**
          * AreaRef
          * @description An area: the whole platform, or a province, district, DS division or GN division by code.
@@ -5981,6 +6401,17 @@ export interface components {
             level: "platform" | "province" | "district" | "ds" | "gn";
             /** Code */
             code?: string | null;
+        };
+        /** AreaScorecardOut */
+        AreaScorecardOut: {
+            /** Areakey */
+            areaKey: string;
+            /** Nameen */
+            nameEn: string | null;
+            /** Nameta */
+            nameTa: string | null;
+            /** Periods */
+            periods: components["schemas"]["AreaPeriodOut"][];
         };
         /** AreaUpdateOut */
         AreaUpdateOut: {
@@ -7332,6 +7763,50 @@ export interface components {
              * Format: date-time
              */
             recordedAt: string;
+        };
+        /** CorrectionDecisionIn */
+        CorrectionDecisionIn: {
+            /** Accept */
+            accept: boolean;
+            /** Note */
+            note: string;
+        };
+        /** CorrectionIn */
+        CorrectionIn: {
+            /** Areakey */
+            areaKey: string;
+            /** Metric */
+            metric: string;
+            /** Reason */
+            reason: string;
+        };
+        /** CorrectionOut */
+        CorrectionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Areakey */
+            areaKey: string;
+            /** Metric */
+            metric: string;
+            /** Reason */
+            reason: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "accepted" | "rejected";
+            /** Decisionnote */
+            decisionNote: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Decidedat */
+            decidedAt: string | null;
         };
         /** CourseCardOut */
         CourseCardOut: {
@@ -9906,6 +10381,22 @@ export interface components {
             /** Sessionverified */
             sessionVerified: boolean;
         };
+        /** MilestoneModel */
+        MilestoneModel: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Duedate */
+            dueDate?: string | null;
+        };
+        /** ModerationIn */
+        ModerationIn: {
+            /** Publish */
+            publish: boolean;
+            /** Reason */
+            reason?: string | null;
+        };
         /** MyAreaOut */
         MyAreaOut: {
             /** Hasarea */
@@ -10057,6 +10548,13 @@ export interface components {
             decidedAt: string | null;
             /** History */
             history: components["schemas"]["MemberDecisionOut"][];
+        };
+        /** MyScorecardsOut */
+        MyScorecardsOut: {
+            /** Slaversion */
+            slaVersion: string;
+            /** Areas */
+            areas: components["schemas"]["AreaScorecardOut"][];
         };
         /** NeedsCellOut */
         NeedsCellOut: {
@@ -10584,6 +11082,13 @@ export interface components {
              */
             createdAt: string;
         };
+        /** PendingWorkOut */
+        PendingWorkOut: {
+            /** Updates */
+            updates: components["schemas"]["PromiseUpdateOut"][];
+            /** Feedback */
+            feedback: components["schemas"]["PromiseFeedbackOut"][];
+        };
         /** PeriodFileOut */
         PeriodFileOut: {
             /**
@@ -11092,6 +11597,282 @@ export interface components {
             /** Reviewstate */
             reviewState: string | null;
         };
+        /** PromiseAreaIn */
+        PromiseAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "platform" | "province" | "district" | "ds" | "gn";
+            /** Code */
+            code?: string | null;
+        };
+        /** PromiseDetailOut */
+        PromiseDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Promiseref */
+            promiseRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Kind
+             * @description Party commitment or government responsibility (FR-PRM-004)
+             * @enum {string}
+             */
+            kind: "party_commitment" | "government_responsibility";
+            /**
+             * Theme
+             * @enum {string}
+             */
+            theme: "roads_transport" | "drinking_water" | "health" | "education" | "employment" | "agriculture" | "fisheries" | "housing" | "environment" | "governance" | "other";
+            /** Areakey */
+            areaKey: string;
+            /** Officeen */
+            officeEn: string;
+            /** Officeta */
+            officeTa: string;
+            /**
+             * Duedate
+             * Format: date
+             */
+            dueDate: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "not_started" | "in_progress" | "completed" | "delayed" | "blocked" | "withdrawn";
+            /** Lastverifiedat */
+            lastVerifiedAt: string | null;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Sourcereference */
+            sourceReference: string;
+            /**
+             * Sourcepublishedon
+             * Format: date
+             */
+            sourcePublishedOn: string;
+            /**
+             * Plannedstart
+             * Format: date
+             */
+            plannedStart: string;
+            /** Targeten */
+            targetEn: string;
+            /** Targetta */
+            targetTa: string;
+            /** Blockersen */
+            blockersEn: string | null;
+            /** Blockersta */
+            blockersTa: string | null;
+            /** Statusreason */
+            statusReason: string | null;
+            /**
+             * Publication
+             * @enum {string}
+             */
+            publication: "draft" | "awaiting_approval" | "published";
+            /** Publishedat */
+            publishedAt: string | null;
+            /** Updatedueat */
+            updateDueAt: string | null;
+            /** Milestones */
+            milestones: components["schemas"]["MilestoneModel"][];
+            /** Updates */
+            updates: components["schemas"]["PromiseUpdateOut"][];
+            /** Feedback */
+            feedback: components["schemas"]["PromiseFeedbackOut"][];
+        };
+        /** PromiseFeedbackIn */
+        PromiseFeedbackIn: {
+            /** Body */
+            body: string;
+        };
+        /** PromiseFeedbackOut */
+        PromiseFeedbackOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Body */
+            body: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "published" | "rejected";
+            /** Replyen */
+            replyEn: string | null;
+            /** Replyta */
+            replyTa: string | null;
+            /** Repliedat */
+            repliedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** PromiseIn */
+        PromiseIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /**
+             * Sourcereference
+             * @description Where the promise was first published
+             */
+            sourceReference: string;
+            /**
+             * Sourcepublishedon
+             * Format: date
+             */
+            sourcePublishedOn: string;
+            /** Officeen */
+            officeEn: string;
+            /** Officeta */
+            officeTa: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "party_commitment" | "government_responsibility";
+            /**
+             * Theme
+             * @enum {string}
+             */
+            theme: "roads_transport" | "drinking_water" | "health" | "education" | "employment" | "agriculture" | "fisheries" | "housing" | "environment" | "governance" | "other";
+            /**
+             * Plannedstart
+             * Format: date
+             */
+            plannedStart: string;
+            /**
+             * Duedate
+             * Format: date
+             */
+            dueDate: string;
+            /**
+             * Targeten
+             * @description A measurable target
+             */
+            targetEn: string;
+            /** Targetta */
+            targetTa: string;
+            /** Blockersen */
+            blockersEn?: string | null;
+            /** Blockersta */
+            blockersTa?: string | null;
+            /** Milestones */
+            milestones: components["schemas"]["MilestoneModel"][];
+            /** @description Required when drafting; a promise's area never changes */
+            area?: components["schemas"]["PromiseAreaIn"] | null;
+        };
+        /** PromiseSummaryOut */
+        PromiseSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Promiseref */
+            promiseRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Kind
+             * @description Party commitment or government responsibility (FR-PRM-004)
+             * @enum {string}
+             */
+            kind: "party_commitment" | "government_responsibility";
+            /**
+             * Theme
+             * @enum {string}
+             */
+            theme: "roads_transport" | "drinking_water" | "health" | "education" | "employment" | "agriculture" | "fisheries" | "housing" | "environment" | "governance" | "other";
+            /** Areakey */
+            areaKey: string;
+            /** Officeen */
+            officeEn: string;
+            /** Officeta */
+            officeTa: string;
+            /**
+             * Duedate
+             * Format: date
+             */
+            dueDate: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "not_started" | "in_progress" | "completed" | "delayed" | "blocked" | "withdrawn";
+            /** Lastverifiedat */
+            lastVerifiedAt: string | null;
+        };
+        /** PromiseUpdateIn */
+        PromiseUpdateIn: {
+            /** Newstatus */
+            newStatus?: ("not_started" | "in_progress" | "completed" | "blocked" | "withdrawn") | null;
+            /** Noteen */
+            noteEn: string;
+            /** Noteta */
+            noteTa: string;
+            /** Evidencerefs */
+            evidenceRefs?: string[];
+            /** Correctsid */
+            correctsId?: string | null;
+        };
+        /** PromiseUpdateOut */
+        PromiseUpdateOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Newstatus */
+            newStatus: ("not_started" | "in_progress" | "completed" | "delayed" | "blocked" | "withdrawn") | null;
+            /** Noteen */
+            noteEn: string;
+            /** Noteta */
+            noteTa: string;
+            /** Evidencerefs */
+            evidenceRefs: string[];
+            /**
+             * Correctsid
+             * @description Set on a correction; the original stays visible (FR-PRM-005)
+             */
+            correctsId: string | null;
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "pending" | "approved" | "rejected" | "system";
+            /** Decisionreason */
+            decisionReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Decidedat */
+            decidedAt: string | null;
+        };
         /** ProposalAreaIn */
         ProposalAreaIn: {
             /**
@@ -11311,6 +12092,13 @@ export interface components {
             summaryEn?: string | null;
             /** Summaryta */
             summaryTa?: string | null;
+            /** Reason */
+            reason?: string | null;
+        };
+        /** PublicationDecisionIn */
+        PublicationDecisionIn: {
+            /** Approve */
+            approve: boolean;
             /** Reason */
             reason?: string | null;
         };
@@ -11759,6 +12547,13 @@ export interface components {
              */
             note: string;
         };
+        /** ReplyIn */
+        ReplyIn: {
+            /** Replyen */
+            replyEn: string;
+            /** Replyta */
+            replyTa: string;
+        };
         /** ReportInput */
         ReportInput: {
             /**
@@ -11773,6 +12568,25 @@ export interface components {
             otherMemberId: string;
             /** Reason */
             reason: string;
+        };
+        /** ReportRowOut */
+        ReportRowOut: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "not_started" | "in_progress" | "completed" | "delayed" | "blocked" | "withdrawn";
+            /**
+             * Theme
+             * @enum {string}
+             */
+            theme: "roads_transport" | "drinking_water" | "health" | "education" | "employment" | "agriculture" | "fisheries" | "housing" | "environment" | "governance" | "other";
+            /** Officeen */
+            officeEn: string;
+            /** Areakey */
+            areaKey: string;
+            /** Count */
+            count: number;
         };
         /** ReporterContactOut */
         ReporterContactOut: {
@@ -12224,6 +13038,75 @@ export interface components {
             reason: string | null;
             /** Membercode */
             memberCode?: string | null;
+        };
+        /** ScorecardDraftIn */
+        ScorecardDraftIn: {
+            /** Period */
+            period: string;
+        };
+        /** ScorecardFileOut */
+        ScorecardFileOut: {
+            scorecard: components["schemas"]["ScorecardOut"];
+            /** Corrections */
+            corrections: components["schemas"]["CorrectionOut"][];
+        };
+        /** ScorecardNoteIn */
+        ScorecardNoteIn: {
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Noteen
+             * @default
+             */
+            noteEn: string;
+            /**
+             * Noteta
+             * @default
+             */
+            noteTa: string;
+        };
+        /** ScorecardOut */
+        ScorecardOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Period */
+            period: string;
+            /** Version */
+            version: number;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "shared" | "published" | "superseded";
+            /** Slaversion */
+            slaVersion: string;
+            /** Figures */
+            figures: {
+                [key: string]: unknown;
+            };
+            /** Notes */
+            notes: {
+                [key: string]: unknown;
+            };
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Sharedat */
+            sharedAt: string | null;
+            /**
+             * Publishableat
+             * @description Publishing is possible from here (10 working days after sharing)
+             */
+            publishableAt: string | null;
+            /** Publishedat */
+            publishedAt: string | null;
+            /** Correctionreason */
+            correctionReason: string | null;
         };
         /**
          * SecurityAlertOut
@@ -21439,6 +22322,754 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    list_promises_v1_promises_get: {
+        parameters: {
+            query?: {
+                status?: ("not_started" | "in_progress" | "completed" | "delayed" | "blocked" | "withdrawn") | null;
+                theme?: ("roads_transport" | "drinking_water" | "health" | "education" | "employment" | "agriculture" | "fisheries" | "housing" | "environment" | "governance" | "other") | null;
+                /** @description An area key such as district:LK41 */
+                area?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_managed_v1_promises_manage_get: {
+        parameters: {
+            query?: {
+                status?: ("not_started" | "in_progress" | "completed" | "delayed" | "blocked" | "withdrawn") | null;
+                theme?: ("roads_transport" | "drinking_water" | "health" | "education" | "employment" | "agriculture" | "fisheries" | "housing" | "environment" | "governance" | "other") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    draft_promise_v1_promises_manage_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PromiseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    pending_work_v1_promises_manage_pending_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingWorkOut"];
+                };
+            };
+        };
+    };
+    progress_report_v1_promises_manage_report_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportRowOut"][];
+                };
+            };
+        };
+    };
+    read_managed_v1_promises_manage__promise_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_draft_v1_promises_manage__promise_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PromiseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_publication_v1_promises_manage__promise_id__request_publication_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_publication_v1_promises_manage__promise_id__publication_decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublicationDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    draft_update_v1_promises_manage__promise_id__updates_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PromiseUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseUpdateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_update_v1_promises_manage_updates__update_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                update_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublicationDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseUpdateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    moderate_feedback_v1_promises_manage_feedback__feedback_id__moderation_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feedback_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ModerationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseFeedbackOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reply_v1_promises_manage_feedback__feedback_id__reply_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feedback_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseFeedbackOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_promise_v1_promises__promise_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    give_feedback_v1_promises__promise_id__feedback_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PromiseFeedbackIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseFeedbackOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_area_v1_scorecards_area_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyScorecardsOut"];
+                };
+            };
+        };
+    };
+    list_versions_v1_scorecards_manage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardOut"][];
+                };
+            };
+        };
+    };
+    draft_v1_scorecards_manage_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScorecardDraftIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_v1_scorecards_manage__scorecard_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scorecard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    share_v1_scorecards_manage__scorecard_id__share_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scorecard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_note_v1_scorecards_manage__scorecard_id__notes_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scorecard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScorecardNoteIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_correction_v1_scorecards_manage__scorecard_id__corrections_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scorecard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CorrectionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CorrectionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_correction_v1_scorecards_manage_corrections__correction_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                correction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CorrectionDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_v1_scorecards_manage__scorecard_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scorecard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };

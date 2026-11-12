@@ -211,6 +211,22 @@ Behind the `learning` and `invitations` switches (phase 2).
 
 Registration (`POST /v1/identity/register`) accepts an invitation token in `referralCode`; each token admits one person, and the inviter then sees Pending, and Active once the membership is activated. Referral counts never become permissions, rewards, rankings or priority.
 
+### Promise Tracker and scorecards (`/v1/promises`, `/v1/scorecards`)
+
+Behind the `promises` and `scorecards` switches (phase 2). Refusals are `422 {code: "promise_refused" | "scorecard_refused", problems}`.
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /v1/promises?status&theme&area` | a session | every published promise (M18), labelled party commitment or government responsibility | `401` |
+| `GET /v1/promises/{id}`, `POST .../feedback` `{body}` | a session; feedback from Verified and Active members | milestones, approved updates with corrections beside the originals, moderated feedback and the office's replies (M19) | `404`, `422 membership_not_active` |
+| `POST /v1/promises/manage`, `PUT .../{id}` (drafts), `POST .../{id}/request-publication` | `promise.edit` over the area | drafts with milestones; publication waits for a second person | `422 milestones_required`, `due_before_start`, `published_promises_change_by_update` |
+| `POST /v1/promises/manage/{id}/publication-decision` `{approve, reason?}` | `promise.publish` | published, or back to draft with a reason | `403 own_draft` (the person who asked) |
+| `POST /v1/promises/manage/{id}/updates` `{newStatus?, noteEn, noteTa, evidenceRefs, correctsId?}`, `POST .../updates/{id}/decision` | `promise.edit` drafts, `promise.publish` approves | dated updates applied only on approval; Completed needs evidence, Withdrawn and Blocked a reason; a published promise past its due date becomes Delayed automatically and the office is asked for an update within 10 working days | `422 evidence_required`, `reason_required`, `not_allowed_from:<status>`; `403 own_draft` |
+| `GET /v1/promises/manage`, `.../pending`, `.../report`, feedback moderation and replies | `promise.edit`, `promise.publish` or `content.moderate` | the D16 lists, pending approvals and feedback, counts by status, theme, office and area | `403` |
+| `GET /v1/scorecards/area` | a session | the member's GN, DS division and district for the last four published quarters (M20); `{insufficient: true}` under 10 accepted cases; every value with numerator and denominator | `401` |
+| `POST /v1/scorecards/manage` `{period}`, `.../{id}/share`, `PUT .../{id}/notes`, `.../{id}/publish` | `scorecard.publish` | compute a finished quarter, share for 10 working days, context notes, publish | `422 period_not_finished`, `draft_exists`, `review_period_running` |
+| `POST /v1/scorecards/manage/{id}/corrections`, `.../corrections/{id}/decision` | a case permission to ask; `scorecard.publish` to decide | an accepted correction recomputes the figures; on a published scorecard it publishes the next version and keeps the earlier one | `422 unknown_metric`, `already_decided` |
+
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 
 | Endpoint | Needs | Success | Errors |
