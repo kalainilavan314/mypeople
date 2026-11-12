@@ -195,6 +195,22 @@ Ideas and surveys sit behind the `ideas_surveys` switch, proposals behind `devel
 
 AI topic, duplicate and summary suggestions and semantic search (FR-DEV-004, 005) are not built: they wait for the AI provider decision (OD-42).
 
+### Learning and invitations (`/v1/learning`, `/v1/invitations`)
+
+Behind the `learning` and `invitations` switches (phase 2).
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /v1/learning/courses` | a session | `200 {available, mine, completed}` with lessons and minutes (H15) | `401` |
+| `GET /v1/learning/courses/{id}` | a session | the lessons, which are complete, and `resumePosition` (H16) | `404` (drafts; retired courses only for those who started) |
+| `POST /v1/learning/courses/{id}/lessons/{lessonId}/complete` | a session | progress recorded only here; the last lesson completes the course (My Activity) and never changes a role | `404` |
+| `POST /v1/learning/courses/{id}/save-exit` body `{lessonId}` | a session | the lesson to resume at; nothing is marked complete | `404` |
+| `GET/POST /v1/learning/manage/courses`, `GET/PUT .../{id}` (drafts), `POST .../{id}/state` `{state: published \| retired}` | `content.moderate` [ASSUMPTION: the BRD names no permission] | course authoring | `403`, `422 {code: "learning_refused", problems: ["only_drafts_change" \| "lessons_required" \| "not_allowed_from:<state>"]}` |
+| `GET /v1/invitations/mine` | a session | `200 {referralCode, invitations: [{number, status: "shared" \| "pending" \| "active", createdAt}]}`: never who joined (H20) | `401` |
+| `POST /v1/invitations` body `{language}` | Verified and Active | `201 {number, url, preview}`: the link carries only an opaque `INV-` token (FR-REF-004); `MEMBER_APP_URL` sets its address | `422 membership_not_active`, `too_many_invitations_today` |
+
+Registration (`POST /v1/identity/register`) accepts an invitation token in `referralCode`; each token admits one person, and the inviter then sees Pending, and Active once the membership is activated. Referral counts never become permissions, rewards, rankings or priority.
+
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 
 | Endpoint | Needs | Success | Errors |

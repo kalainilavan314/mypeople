@@ -81,6 +81,9 @@ class Settings(BaseSettings):
     # only through the API. Without it the gallery's photo endpoints answer 503.
     media_storage_dir: Path | None = None
 
+    # The member app's public address. Invitation links (FR-REF-004) point here: <address>/join/<token>.
+    member_app_url: str = "https://app.tmk.lk"
+
     # M1.4 Community Finance (FR-FUND, FR-PAY)
     finance_intake_enabled: bool = False
     finance_bank_name: str | None = None

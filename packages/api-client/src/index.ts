@@ -213,6 +213,19 @@ export type ProposalCategory = Schemas['ProposalIn']['category'];
 export type ProposalStage = Schemas['ProposalSummaryOut']['stage'];
 export type ProposalMoveInput = Schemas['ProposalMoveIn'];
 export type ProposalNeeds = Schemas['NeedsOut'];
+// Learning (H15, H16) and invitations (H19, H20).
+export type CourseCatalogue = Schemas['CatalogueOut'];
+export type CourseCard = Schemas['CourseCardOut'];
+export type CourseDetail = Schemas['CourseDetailOut'];
+export type CourseLesson = Schemas['LessonOut'];
+export type CourseTopic = Schemas['CourseIn']['topic'];
+export type CourseInput = Schemas['CourseIn'];
+export type ManagedCourse = Schemas['ManagedCourseOut'];
+export type ManagedCourseSummary = Schemas['ManagedCourseSummaryOut'];
+export type MyReferrals = Schemas['MyReferralsOut'];
+export type InvitationItem = Schemas['InvitationOut'];
+export type InvitationStatus = Schemas['InvitationOut']['status'];
+export type NewInvitation = Schemas['NewInvitationOut'];
 export type CaseListFilters = {
   stage?: CaseStage[];
   mine?: boolean;
@@ -1307,6 +1320,32 @@ export function createApiClient({
       request<ProposalDetail>('POST', `/v1/proposals/manage/${encodeURIComponent(proposalId)}/stage`, input),
     /** FR-DEV-008: counts by area and category; null means fewer than 10. */
     getProposalNeeds: () => request<ProposalNeeds>('GET', '/v1/proposals/manage/needs'),
+    // Learning (H15, H16). Routes answer 404 "feature_unavailable" while learning is off.
+    getCourseCatalogue: () => request<CourseCatalogue>('GET', '/v1/learning/courses'),
+    getCourse: (courseId: string) => request<CourseDetail>('GET', `/v1/learning/courses/${encodeURIComponent(courseId)}`),
+    /** FR-LRN-002: the only action that records progress. */
+    completeLesson: (courseId: string, lessonId: string) =>
+      request<CourseDetail>(
+        'POST',
+        `/v1/learning/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}/complete`,
+      ),
+    /** FR-LRN-003: remember the lesson to resume at; nothing is marked complete. */
+    saveAndExitCourse: (courseId: string, lessonId: string) =>
+      request<CourseDetail>('POST', `/v1/learning/courses/${encodeURIComponent(courseId)}/save-exit`, { lessonId }),
+    listManagedCourses: () => request<ManagedCourseSummary[]>('GET', '/v1/learning/manage/courses'),
+    getManagedCourse: (courseId: string) =>
+      request<ManagedCourse>('GET', `/v1/learning/manage/courses/${encodeURIComponent(courseId)}`),
+    createCourse: (input: CourseInput) => request<ManagedCourse>('POST', '/v1/learning/manage/courses', input),
+    /** Drafts only: "only_drafts_change" otherwise. */
+    updateCourse: (courseId: string, input: CourseInput) =>
+      request<ManagedCourse>('PUT', `/v1/learning/manage/courses/${encodeURIComponent(courseId)}`, input),
+    moveCourse: (courseId: string, state: 'published' | 'retired') =>
+      request<ManagedCourse>('POST', `/v1/learning/manage/courses/${encodeURIComponent(courseId)}/state`, { state }),
+    // Invitations (H19, H20). Routes answer 404 while invitations is off.
+    /** H20: the member's referral code and invitations with only Shared, Pending or Active. */
+    getMyReferrals: () => request<MyReferrals>('GET', '/v1/invitations/mine'),
+    /** H19: a link with an opaque token and its preview text. Throws "membership_not_active" (422). */
+    createInvitation: (language: 'ta' | 'en') => request<NewInvitation>('POST', '/v1/invitations', { language }),
     // Community Finance endpoints (Milestone 1.4)
     getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),
     createContribution: (body: ContributionCreateInput, idempotencyKey?: string) =>

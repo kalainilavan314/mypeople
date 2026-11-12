@@ -3638,6 +3638,179 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/learning/courses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Catalogue
+         * @description H15: Available, My courses and completed history, with lessons and minutes.
+         */
+        get: operations["read_catalogue_v1_learning_courses_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/learning/manage/courses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Managed */
+        get: operations["list_managed_v1_learning_manage_courses_get"];
+        put?: never;
+        /** Create Course */
+        post: operations["create_course_v1_learning_manage_courses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/learning/manage/courses/{course_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Managed */
+        get: operations["read_managed_v1_learning_manage_courses__course_id__get"];
+        /** Update Course */
+        put: operations["update_course_v1_learning_manage_courses__course_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/learning/manage/courses/{course_id}/state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Move Course */
+        post: operations["move_course_v1_learning_manage_courses__course_id__state_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/learning/courses/{course_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Course
+         * @description H16: the lessons, which are complete, and the lesson to resume.
+         */
+        get: operations["read_course_v1_learning_courses__course_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/learning/courses/{course_id}/lessons/{lesson_id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Complete Lesson
+         * @description FR-LRN-002: progress is recorded only here.
+         */
+        post: operations["complete_lesson_v1_learning_courses__course_id__lessons__lesson_id__complete_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/learning/courses/{course_id}/save-exit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Save And Exit
+         * @description FR-LRN-003: remember the lesson to resume at; nothing is marked complete.
+         */
+        post: operations["save_and_exit_v1_learning_courses__course_id__save_exit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/invitations/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Referrals
+         * @description H20: invitations with the statuses Shared, Pending or Active only; never who joined.
+         */
+        get: operations["my_referrals_v1_invitations_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Invitation
+         * @description H19: a new invitation link and its preview, shared through the phone's share sheet.
+         */
+        post: operations["create_invitation_v1_invitations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -5337,7 +5510,7 @@ export interface components {
              * Kind
              * @enum {string}
              */
-            kind: "identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal";
+            kind: "identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal" | "course";
             /** Reference */
             reference: string;
             /** Title */
@@ -6631,6 +6804,15 @@ export interface components {
                 };
             };
         };
+        /** CatalogueOut */
+        CatalogueOut: {
+            /** Available */
+            available: components["schemas"]["CourseCardOut"][];
+            /** Mine */
+            mine: components["schemas"]["CourseCardOut"][];
+            /** Completed */
+            completed: components["schemas"]["CourseCardOut"][];
+        };
         /** ChainCheckOut */
         ChainCheckOut: {
             /** Ok */
@@ -7150,6 +7332,105 @@ export interface components {
              * Format: date-time
              */
             recordedAt: string;
+        };
+        /** CourseCardOut */
+        CourseCardOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Courseref */
+            courseRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "movement" | "civic" | "app" | "skills";
+            /** Lessons */
+            lessons: number;
+            /** Minutes */
+            minutes: number;
+            /** Completedlessons */
+            completedLessons: number;
+            /** Resumeposition */
+            resumePosition: number | null;
+            /** Completedat */
+            completedAt: string | null;
+        };
+        /** CourseDetailOut */
+        CourseDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Courseref */
+            courseRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "movement" | "civic" | "app" | "skills";
+            /** Lessons */
+            lessons: number;
+            /** Minutes */
+            minutes: number;
+            /** Completedlessons */
+            completedLessons: number;
+            /** Resumeposition */
+            resumePosition: number | null;
+            /** Completedat */
+            completedAt: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "published" | "retired";
+            /** Lessonlist */
+            lessonList: components["schemas"]["LessonOut"][];
+        };
+        /** CourseIn */
+        CourseIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "movement" | "civic" | "app" | "skills";
+            /** Lessons */
+            lessons: components["schemas"]["LessonIn"][];
+        };
+        /** CourseStateIn */
+        CourseStateIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "published" | "retired";
         };
         /** DecisionInput */
         DecisionInput: {
@@ -8597,6 +8878,32 @@ export interface components {
             /** Actionneeded */
             actionNeeded: number;
         };
+        /** InvitationIn */
+        InvitationIn: {
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "ta" | "en";
+        };
+        /** InvitationOut */
+        InvitationOut: {
+            /**
+             * Number
+             * @description Shown as a neutral label, "Invitation 01" (OD-24)
+             */
+            number: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "shared" | "pending" | "active";
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** InvitationRespondIn */
         InvitationRespondIn: {
             /**
@@ -8940,6 +9247,41 @@ export interface components {
             /** Following */
             following: boolean;
         };
+        /** LessonIn */
+        LessonIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Minutes */
+            minutes: number;
+        };
+        /** LessonOut */
+        LessonOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Position */
+            position: number;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Minutes */
+            minutes: number;
+            /** Completed */
+            completed: boolean;
+        };
         /** LinkIn */
         LinkIn: {
             /** Parentcasenumber */
@@ -9028,6 +9370,68 @@ export interface components {
             state: "draft" | "submitted" | "published";
             /** Returnnote */
             returnNote: string | null;
+            /** Publishedat */
+            publishedAt: string | null;
+        };
+        /** ManagedCourseOut */
+        ManagedCourseOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Courseref */
+            courseRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "movement" | "civic" | "app" | "skills";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "published" | "retired";
+            /** Lessons */
+            lessons: components["schemas"]["LessonIn"][];
+            /** Publishedat */
+            publishedAt: string | null;
+        };
+        /** ManagedCourseSummaryOut */
+        ManagedCourseSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Courseref */
+            courseRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "movement" | "civic" | "app" | "skills";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "published" | "retired";
+            /** Lessons */
+            lessons: number;
+            /** Minutes */
+            minutes: number;
             /** Publishedat */
             publishedAt: string | null;
         };
@@ -9567,6 +9971,16 @@ export interface components {
              */
             updatedAt: string;
         };
+        /** MyReferralsOut */
+        MyReferralsOut: {
+            /**
+             * Referralcode
+             * @description The member's own code, for one-tap copy (FR-REF-001)
+             */
+            referralCode: string;
+            /** Invitations */
+            invitations: components["schemas"]["InvitationOut"][];
+        };
         /**
          * MyReportOut
          * @description Only for the reporter: what they sent and where it stands (H09).
@@ -9663,6 +10077,21 @@ export interface components {
         NeedsOut: {
             /** Cells */
             cells: components["schemas"]["NeedsCellOut"][];
+        };
+        /** NewInvitationOut */
+        NewInvitationOut: {
+            /** Number */
+            number: number;
+            /**
+             * Url
+             * @description Carries only the opaque token (FR-REF-004)
+             */
+            url: string;
+            /**
+             * Preview
+             * @description The full invitation text in the chosen language (FR-REF-003)
+             */
+            preview: string;
         };
         /** NoteIn */
         NoteIn: {
@@ -11705,6 +12134,14 @@ export interface components {
              * @enum {string}
              */
             response: "going" | "maybe" | "declined" | "waitlisted";
+        };
+        /** SaveExitIn */
+        SaveExitIn: {
+            /**
+             * Lessonid
+             * Format: uuid
+             */
+            lessonId: string;
         };
         /** SavedIn */
         SavedIn: {
@@ -20682,6 +21119,329 @@ export interface operations {
             };
         };
     };
+    read_catalogue_v1_learning_courses_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CatalogueOut"];
+                };
+            };
+        };
+    };
+    list_managed_v1_learning_manage_courses_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedCourseSummaryOut"][];
+                };
+            };
+        };
+    };
+    create_course_v1_learning_manage_courses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedCourseOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_managed_v1_learning_manage_courses__course_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedCourseOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_course_v1_learning_manage_courses__course_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedCourseOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    move_course_v1_learning_manage_courses__course_id__state_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseStateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedCourseOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_course_v1_learning_courses__course_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    complete_lesson_v1_learning_courses__course_id__lessons__lesson_id__complete_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+                lesson_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    save_and_exit_v1_learning_courses__course_id__save_exit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveExitIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_referrals_v1_invitations_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReferralsOut"];
+                };
+            };
+        };
+    };
+    create_invitation_v1_invitations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvitationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NewInvitationOut"];
+                };
+            };
+            /** @description membership_not_active, too_many_invitations_today */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     read_home_v1_home_get: {
         parameters: {
             query?: never;
@@ -20758,7 +21518,7 @@ export interface operations {
     list_activity_v1_profile_activity_get: {
         parameters: {
             query?: {
-                kind?: ("identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal") | null;
+                kind?: ("identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal" | "course") | null;
                 limit?: number;
             };
             header?: never;

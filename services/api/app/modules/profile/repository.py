@@ -116,6 +116,12 @@ _ACTIVITY = {
         SELECT 'proposal' AS kind, d.proposal_ref AS reference, d.title, d.stage AS state, d.updated_at AS at,
                d.id AS target_id
         FROM community.proposal d WHERE d.author_id = :member""",
+    "course": """
+        SELECT 'course' AS kind, c.course_ref AS reference, c.title_en AS title,
+               CASE WHEN p.completed_at IS NULL THEN 'in_progress' ELSE 'completed' END AS state,
+               COALESCE(p.completed_at, p.updated_at) AS at, c.id AS target_id
+        FROM community.course_progress p JOIN community.course c ON c.id = p.course_id
+        WHERE p.member_id = :member""",
 }
 
 

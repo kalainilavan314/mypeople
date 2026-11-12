@@ -11204,6 +11204,536 @@
         }
       }
     },
+    "/v1/learning/courses": {
+      "get": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Read Catalogue",
+        "description": "H15: Available, My courses and completed history, with lessons and minutes.",
+        "operationId": "read_catalogue_v1_learning_courses_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogueOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/learning/manage/courses": {
+      "get": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "List Managed",
+        "operationId": "list_managed_v1_learning_manage_courses_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ManagedCourseSummaryOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Managed V1 Learning Manage Courses Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Create Course",
+        "operationId": "create_course_v1_learning_manage_courses_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedCourseOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/learning/manage/courses/{course_id}": {
+      "get": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Read Managed",
+        "operationId": "read_managed_v1_learning_manage_courses__course_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Course Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedCourseOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Update Course",
+        "operationId": "update_course_v1_learning_manage_courses__course_id__put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Course Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedCourseOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/learning/manage/courses/{course_id}/state": {
+      "post": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Move Course",
+        "operationId": "move_course_v1_learning_manage_courses__course_id__state_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Course Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseStateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedCourseOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/learning/courses/{course_id}": {
+      "get": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Read Course",
+        "description": "H16: the lessons, which are complete, and the lesson to resume.",
+        "operationId": "read_course_v1_learning_courses__course_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Course Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/learning/courses/{course_id}/lessons/{lesson_id}/complete": {
+      "post": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Complete Lesson",
+        "description": "FR-LRN-002: progress is recorded only here.",
+        "operationId": "complete_lesson_v1_learning_courses__course_id__lessons__lesson_id__complete_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Course Id"
+            }
+          },
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Lesson Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/learning/courses/{course_id}/save-exit": {
+      "post": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Save And Exit",
+        "description": "FR-LRN-003: remember the lesson to resume at; nothing is marked complete.",
+        "operationId": "save_and_exit_v1_learning_courses__course_id__save_exit_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Course Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveExitIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/invitations/mine": {
+      "get": {
+        "tags": [
+          "invitations"
+        ],
+        "summary": "My Referrals",
+        "description": "H20: invitations with the statuses Shared, Pending or Active only; never who joined.",
+        "operationId": "my_referrals_v1_invitations_mine_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyReferralsOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/invitations": {
+      "post": {
+        "tags": [
+          "invitations"
+        ],
+        "summary": "Create Invitation",
+        "description": "H19: a new invitation link and its preview, shared through the phone's share sheet.",
+        "operationId": "create_invitation_v1_invitations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewInvitationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "membership_not_active, too_many_invitations_today"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/v1/home": {
       "get": {
         "tags": [
@@ -11347,7 +11877,8 @@
                     "volunteer_offer",
                     "idea",
                     "survey_response",
-                    "proposal"
+                    "proposal",
+                    "course"
                   ],
                   "type": "string"
                 },
@@ -16538,7 +17069,8 @@
               "volunteer_offer",
               "idea",
               "survey_response",
-              "proposal"
+              "proposal",
+              "course"
             ],
             "title": "Kind"
           },
@@ -20178,6 +20710,38 @@
         "title": "Catalogue",
         "description": "The tiers and the permission matrix, for building the W09 form."
       },
+      "CatalogueOut": {
+        "properties": {
+          "available": {
+            "items": {
+              "$ref": "#/components/schemas/CourseCardOut"
+            },
+            "type": "array",
+            "title": "Available"
+          },
+          "mine": {
+            "items": {
+              "$ref": "#/components/schemas/CourseCardOut"
+            },
+            "type": "array",
+            "title": "Mine"
+          },
+          "completed": {
+            "items": {
+              "$ref": "#/components/schemas/CourseCardOut"
+            },
+            "type": "array",
+            "title": "Completed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "available",
+          "mine",
+          "completed"
+        ],
+        "title": "CatalogueOut"
+      },
       "ChainCheckOut": {
         "properties": {
           "ok": {
@@ -21357,6 +21921,277 @@
           "recordedAt"
         ],
         "title": "ControlOut"
+      },
+      "CourseCardOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "courseRef": {
+            "type": "string",
+            "title": "Courseref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "type": "string",
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "type": "string",
+            "title": "Summaryta"
+          },
+          "topic": {
+            "type": "string",
+            "enum": [
+              "movement",
+              "civic",
+              "app",
+              "skills"
+            ],
+            "title": "Topic"
+          },
+          "lessons": {
+            "type": "integer",
+            "title": "Lessons"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          },
+          "completedLessons": {
+            "type": "integer",
+            "title": "Completedlessons"
+          },
+          "resumePosition": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resumeposition"
+          },
+          "completedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "courseRef",
+          "titleEn",
+          "titleTa",
+          "summaryEn",
+          "summaryTa",
+          "topic",
+          "lessons",
+          "minutes",
+          "completedLessons",
+          "resumePosition",
+          "completedAt"
+        ],
+        "title": "CourseCardOut"
+      },
+      "CourseDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "courseRef": {
+            "type": "string",
+            "title": "Courseref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "type": "string",
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "type": "string",
+            "title": "Summaryta"
+          },
+          "topic": {
+            "type": "string",
+            "enum": [
+              "movement",
+              "civic",
+              "app",
+              "skills"
+            ],
+            "title": "Topic"
+          },
+          "lessons": {
+            "type": "integer",
+            "title": "Lessons"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          },
+          "completedLessons": {
+            "type": "integer",
+            "title": "Completedlessons"
+          },
+          "resumePosition": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resumeposition"
+          },
+          "completedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completedat"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "retired"
+            ],
+            "title": "State"
+          },
+          "lessonList": {
+            "items": {
+              "$ref": "#/components/schemas/LessonOut"
+            },
+            "type": "array",
+            "title": "Lessonlist"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "courseRef",
+          "titleEn",
+          "titleTa",
+          "summaryEn",
+          "summaryTa",
+          "topic",
+          "lessons",
+          "minutes",
+          "completedLessons",
+          "resumePosition",
+          "completedAt",
+          "state",
+          "lessonList"
+        ],
+        "title": "CourseDetailOut"
+      },
+      "CourseIn": {
+        "properties": {
+          "titleEn": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 5,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 5,
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "type": "string",
+            "maxLength": 600,
+            "minLength": 10,
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "type": "string",
+            "maxLength": 900,
+            "minLength": 10,
+            "title": "Summaryta"
+          },
+          "topic": {
+            "type": "string",
+            "enum": [
+              "movement",
+              "civic",
+              "app",
+              "skills"
+            ],
+            "title": "Topic"
+          },
+          "lessons": {
+            "items": {
+              "$ref": "#/components/schemas/LessonIn"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Lessons"
+          }
+        },
+        "type": "object",
+        "required": [
+          "titleEn",
+          "titleTa",
+          "summaryEn",
+          "summaryTa",
+          "topic",
+          "lessons"
+        ],
+        "title": "CourseIn"
+      },
+      "CourseStateIn": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "published",
+              "retired"
+            ],
+            "title": "State"
+          }
+        },
+        "type": "object",
+        "required": [
+          "state"
+        ],
+        "title": "CourseStateIn"
       },
       "DecisionInput": {
         "properties": {
@@ -24987,6 +25822,53 @@
         ],
         "title": "InboxOut"
       },
+      "InvitationIn": {
+        "properties": {
+          "language": {
+            "type": "string",
+            "enum": [
+              "ta",
+              "en"
+            ],
+            "title": "Language"
+          }
+        },
+        "type": "object",
+        "required": [
+          "language"
+        ],
+        "title": "InvitationIn"
+      },
+      "InvitationOut": {
+        "properties": {
+          "number": {
+            "type": "integer",
+            "title": "Number",
+            "description": "Shown as a neutral label, \"Invitation 01\" (OD-24)"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "shared",
+              "pending",
+              "active"
+            ],
+            "title": "Status"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "number",
+          "status",
+          "createdAt"
+        ],
+        "title": "InvitationOut"
+      },
       "InvitationRespondIn": {
         "properties": {
           "action": {
@@ -26040,6 +26922,98 @@
         ],
         "title": "IssueSummaryOut"
       },
+      "LessonIn": {
+        "properties": {
+          "titleEn": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "type": "string",
+            "maxLength": 12000,
+            "minLength": 20,
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "maxLength": 18000,
+            "minLength": 20,
+            "title": "Bodyta"
+          },
+          "minutes": {
+            "type": "integer",
+            "maximum": 120.0,
+            "minimum": 1.0,
+            "title": "Minutes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "titleEn",
+          "titleTa",
+          "bodyEn",
+          "bodyTa",
+          "minutes"
+        ],
+        "title": "LessonIn"
+      },
+      "LessonOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "type": "string",
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "title": "Bodyta"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          },
+          "completed": {
+            "type": "boolean",
+            "title": "Completed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "position",
+          "titleEn",
+          "titleTa",
+          "bodyEn",
+          "bodyTa",
+          "minutes",
+          "completed"
+        ],
+        "title": "LessonOut"
+      },
       "LinkIn": {
         "properties": {
           "parentCaseNumber": {
@@ -26282,6 +27256,160 @@
           "publishedAt"
         ],
         "title": "ManagedAlbumOut"
+      },
+      "ManagedCourseOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "courseRef": {
+            "type": "string",
+            "title": "Courseref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "type": "string",
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "type": "string",
+            "title": "Summaryta"
+          },
+          "topic": {
+            "type": "string",
+            "enum": [
+              "movement",
+              "civic",
+              "app",
+              "skills"
+            ],
+            "title": "Topic"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "retired"
+            ],
+            "title": "State"
+          },
+          "lessons": {
+            "items": {
+              "$ref": "#/components/schemas/LessonIn"
+            },
+            "type": "array",
+            "title": "Lessons"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "courseRef",
+          "titleEn",
+          "titleTa",
+          "summaryEn",
+          "summaryTa",
+          "topic",
+          "state",
+          "lessons",
+          "publishedAt"
+        ],
+        "title": "ManagedCourseOut"
+      },
+      "ManagedCourseSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "courseRef": {
+            "type": "string",
+            "title": "Courseref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "topic": {
+            "type": "string",
+            "enum": [
+              "movement",
+              "civic",
+              "app",
+              "skills"
+            ],
+            "title": "Topic"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "retired"
+            ],
+            "title": "State"
+          },
+          "lessons": {
+            "type": "integer",
+            "title": "Lessons"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "courseRef",
+          "titleEn",
+          "titleTa",
+          "topic",
+          "state",
+          "lessons",
+          "minutes",
+          "publishedAt"
+        ],
+        "title": "ManagedCourseSummaryOut"
       },
       "ManagedEventOut": {
         "properties": {
@@ -27744,6 +28872,28 @@
         ],
         "title": "MyOfferOut"
       },
+      "MyReferralsOut": {
+        "properties": {
+          "referralCode": {
+            "type": "string",
+            "title": "Referralcode",
+            "description": "The member's own code, for one-tap copy (FR-REF-001)"
+          },
+          "invitations": {
+            "items": {
+              "$ref": "#/components/schemas/InvitationOut"
+            },
+            "type": "array",
+            "title": "Invitations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "referralCode",
+          "invitations"
+        ],
+        "title": "MyReferralsOut"
+      },
       "MyReportOut": {
         "properties": {
           "title": {
@@ -28015,6 +29165,31 @@
           "cells"
         ],
         "title": "NeedsOut"
+      },
+      "NewInvitationOut": {
+        "properties": {
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "Carries only the opaque token (FR-REF-004)"
+          },
+          "preview": {
+            "type": "string",
+            "title": "Preview",
+            "description": "The full invitation text in the chosen language (FR-REF-003)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "number",
+          "url",
+          "preview"
+        ],
+        "title": "NewInvitationOut"
       },
       "NoteIn": {
         "properties": {
@@ -33358,6 +34533,20 @@
           "response"
         ],
         "title": "RsvpOut"
+      },
+      "SaveExitIn": {
+        "properties": {
+          "lessonId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Lessonid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lessonId"
+        ],
+        "title": "SaveExitIn"
       },
       "SavedIn": {
         "properties": {

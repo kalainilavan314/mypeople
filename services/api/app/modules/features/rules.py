@@ -39,6 +39,8 @@ FEATURES: dict[str, Feature] = {
         Feature("volunteering", "Volunteer skills, opportunities and assignments (FR-VOL-001 to 008)", 2),
         Feature("ideas_surveys", "Community ideas and surveys (FR-IDEA-001 to 004, FR-SRV-001 to 006)", 2),
         Feature("development_proposals", "Our Development Ideas: development proposals (FR-DEV-001 to 008)", 2),
+        Feature("learning", "Learning and courses (FR-LRN-001 to 004)", 2),
+        Feature("invitations", "Invite a member and My referrals (FR-REF-001 to 006)", 2),
     )
 }
 
