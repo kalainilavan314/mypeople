@@ -297,6 +297,8 @@ export const en = {
     goHome: 'Go to Home',
   },
   home: {
+    staffSection: 'Staff section',
+    staffSectionBody: 'Tasks, check-in, approvals and member look-up for your role.',
     greetingMorning: 'Good morning',
     greetingAfternoon: 'Good afternoon',
     greetingEvening: 'Good evening',
@@ -474,6 +476,7 @@ export const en = {
     state_kept: 'Kept',
   },
   profile: {
+    staffSection: 'Staff section',
     policies: 'Policies and consent',
     noPolicies: 'No current policy needs your action.',
     policyVersion: 'Version {{version}}',

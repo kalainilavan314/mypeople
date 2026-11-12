@@ -4,12 +4,12 @@ import { join, relative } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
-// Every screen in the member and staff apps, not only the shared components,
+// Every screen in the app (members and the Staff section), not only the shared components,
 // meets the parts of the WCAG 2.2 AA checklist a source scan can prove
 // (docs/development/accessibility-checklist.md). What it cannot prove, such
 // as reading order or contrast on images, stays with TalkBack and VoiceOver.
 const root = fileURLToPath(new URL('../../', import.meta.url));
-const FOLDERS = ['apps/member-mobile/app', 'apps/member-mobile/src', 'apps/staff-mobile/app', 'apps/staff-mobile/src', 'packages/mobile-ui/src'];
+const FOLDERS = ['apps/member-mobile/app', 'apps/member-mobile/src', 'packages/mobile-ui/src'];
 
 async function sourceFiles(folder) {
   const found = [];

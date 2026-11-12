@@ -58,7 +58,7 @@ jobs:
           git diff --exit-code -- packages/api-client
 
   mobile-apps:
-    name: Expo member and staff apps
+    name: Expo app (members and the Staff section)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -70,17 +70,15 @@ jobs:
       - name: Accessibility lint for mobile apps
         run: |
           npm run lint -w @my-people/member-mobile
-          npm run lint -w @my-people/staff-mobile
       - name: Typecheck, check Expo versions, bundle for Android and web
         env:
           EXPO_PUBLIC_API_URL: http://localhost:8000
         run: |
           npm run typecheck -w @my-people/mobile-ui
-          for app in member-mobile staff-mobile; do
-            (cd "apps/$app" && npx tsc --noEmit && npx expo install --check \
-              && npx expo export --platform android --output-dir dist-android \
-              && npx expo export --platform web --output-dir dist-web)
-          done
+          cd apps/member-mobile
+          npx tsc --noEmit && npx expo install --check \
+            && npx expo export --platform android --output-dir dist-android \
+            && npx expo export --platform web --output-dir dist-web
 
   admin-web:
     name: Next.js admin dashboard

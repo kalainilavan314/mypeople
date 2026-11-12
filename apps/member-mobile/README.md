@@ -1,6 +1,8 @@
-# My People member app (Expo)
+# My People app (Expo)
 
-The Android and iOS member app (BRD §15A.4): React Native, Expo SDK 58, Expo Router, TypeScript, on the FastAPI `/v1` API. It replaces the PWA in `app/` once it reaches the same features and FastAPI is deployed.
+The Android and iOS app for members and staff (BRD §15A.4): React Native, Expo SDK 58, Expo Router, TypeScript, on the FastAPI `/v1` API. It replaces the PWA in `app/` once it reaches the same features and FastAPI is deployed.
+
+It is one role-aware app (OD-26, the owner's decision of 12 November 2026): everyone signs in with their member account, and people with a staff role also get the Staff section, behind the authenticator code. The staff screens are in `app/(member)/staff`; see `src/features/staff/README.md`.
 
 **Status: member screens built (Batch 21), following the approved PWA designs (`design/mobile/production-design-specification.md`):**
 

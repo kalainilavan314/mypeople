@@ -5,15 +5,18 @@ import { fallbackLanguage, resources } from '@my-people/i18n';
 import { readLanguage, saveLanguage, type AppLanguage } from '@my-people/mobile-ui';
 
 import { en } from '@/i18n/en';
+import { en as staffEn } from '@/i18n/staff/en';
+import { ta as staffTa } from '@/i18n/staff/ta';
 import { ta } from '@/i18n/ta';
 
 // The PWA's shared text, plus this app's own screens under "m"
-// (t('m.signIn.title')). It starts in English, as the PWA does, until the
-// member picks a language on the welcome screen or in Profile.
+// (t('m.signIn.title')) and the Staff section's under "s" (t('s.home.title')).
+// It starts in English, as the PWA does, until the member picks a language on
+// the welcome screen or in Profile.
 void i18n.use(initReactI18next).init({
   resources: {
-    ta: { translation: { ...resources.ta.translation, m: ta } },
-    en: { translation: { ...resources.en.translation, m: en } },
+    ta: { translation: { ...resources.ta.translation, m: ta, s: staffTa } },
+    en: { translation: { ...resources.en.translation, m: en, s: staffEn } },
   },
   lng: fallbackLanguage,
   fallbackLng: fallbackLanguage,

@@ -21,6 +21,8 @@ import {
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
+import { StaffRoleTags } from '@/features/staff/StaffRoleTags';
+import { useMyStaffRoles } from '@/features/staff/useMyStaffRoles';
 import { api } from '@/lib/api';
 import { chooseLanguage } from '@/lib/i18n';
 
@@ -47,6 +49,8 @@ export default function ProfileScreen() {
   const { signOut } = useSession();
   const profile = useApiQuery(() => api().getProfile());
   useReloadOnFocus(profile.reload);
+  const roles = useMyStaffRoles();
+  const staff = roles.assignments.length > 0;
 
   return (
     <Screen edges={[]} onRefresh={profile.reload} refreshing={profile.loading && profile.data !== undefined}>
@@ -74,6 +78,8 @@ export default function ProfileScreen() {
                 ) : null}
                 <View style={styles.tags}>
                   <StatusTag tone={MEMBERSHIP_TONE[data.membershipState]} label={t(`m.home.membership_${data.membershipState}`)} />
+                  {/* The tier the team assigned, as soon as it counts (OD-26: one app for members and staff). */}
+                  <StaffRoleTags roles={roles} />
                   {data.identityState === 'verified' ? null : (
                     <StatusTag
                       tone={IDENTITY_TONE[data.identityState]}
@@ -94,6 +100,9 @@ export default function ProfileScreen() {
         <MenuRow icon="people-outline" label={t('m.profile.hub')} onPress={() => router.push('/hub')} />
         <MenuRow icon="map-outline" label={t('m.profile.myArea')} onPress={() => router.push('/profile/area')} />
         <MenuRow icon="home-outline" label={t('m.household.title')} onPress={() => router.push('/household')} />
+        {staff ? (
+          <MenuRow icon="briefcase-outline" label={t('m.profile.staffSection')} onPress={() => router.push('/staff')} />
+        ) : null}
       </SurfaceCard>
 
       <SurfaceCard style={styles.group}>

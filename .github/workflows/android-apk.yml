@@ -1,6 +1,7 @@
-# Installable Android APKs of the member and staff apps, built on GitHub's runners (which have Java
-# and the Android SDK) and kept as workflow artifacts for 30 days. Each app is built against the
-# public address of its own web version, which proxies /v1 to the API.
+# The installable Android APK of the My People app (members, and the Staff section for people with
+# a staff role), built on GitHub's runners (which have Java and the Android SDK) and kept as a
+# workflow artifact for 30 days. It is built against the public address of the app's web version,
+# which proxies /v1 to the API. The separate staff app was folded into it on 12 November 2026 (OD-26).
 #
 # These are test builds signed with the debug key from `expo prebuild`: fine to install directly,
 # not for the Play Store, which needs our own upload key (and EAS or a keystore secret) first.
@@ -25,9 +26,6 @@ jobs:
           - app: member-mobile
             api: https://app.tmk.lk
             file: my-people-member.apk
-          - app: staff-mobile
-            api: https://staff.tmk.lk
-            file: my-people-staff.apk
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

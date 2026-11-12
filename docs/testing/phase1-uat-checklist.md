@@ -1,6 +1,6 @@
 # Phase 1 user acceptance test checklist
 
-The Gate G1 "Phase 1 Must UAT" record ([gate-g1.md](../requirements/gate-g1.md)): every built Phase 1 screen in the member app, staff app and dashboard (the "Built" rows of the [screen map](../requirements/screen-map.md)), plus the rules that cut across them. Testers work on **staging**, never on production, with the synthetic accounts named in the Account column.
+The Gate G1 "Phase 1 Must UAT" record ([gate-g1.md](../requirements/gate-g1.md)): every built Phase 1 screen in the app (member screens and the Staff section) and the dashboard (the "Built" rows of the [screen map](../requirements/screen-map.md)), plus the rules that cut across them. Testers work on **staging**, never on production, with the synthetic accounts named in the Account column.
 
 The spreadsheet testers fill in is generated from this file, so change the cases here:
 
@@ -10,7 +10,7 @@ py -3.12 scripts/testing/uat_workbook.py --out My-People-Phase1-UAT.xlsx
 
 ## Before testing
 
-- **Addresses (staging):** member app https://staging-app.178.128.126.35.nip.io, staff app https://staging-staff.178.128.126.35.nip.io, dashboard https://staging-admin.178.128.126.35.nip.io. Staging has its own database, keys and files; nothing done there reaches production.
+- **Addresses (staging):** the app https://staging-app.178.128.126.35.nip.io (staff open its Staff section from Home or Profile, or at /staff), dashboard https://staging-admin.178.128.126.35.nip.io. Staging has its own database, keys and files; nothing done there reaches production.
 - **Accounts:** the release operator hands out the sign-in details from `uat-accounts.tsv` on the staging server (keys such as `member-active`, `staff-tier3a`). All live in Jaffna district. Staff add their own authenticator app at their first staff sign-in. Testers may also register new accounts: use a made-up 12-digit NIC of the form `1990` + three digits + five digits, never a real one.
 - **Images:** use test images only (a printed sample card, a photo of a blank card). Never upload a real person's NIC, passport or face.
 - **Not available on staging or production yet:** text messages (no SMS provider, INT-01), push notifications (INT-02; the in-app inbox is used), the party fund (its finance decisions FIN-01 to FIN-05 and a virus scanner are not in place). Mark those cases **Blocked**, not Fail.
@@ -67,12 +67,12 @@ py -3.12 scripts/testing/uat_workbook.py --out My-People-Phase1-UAT.xlsx
 | MEM-45 | M50 Security alerts | member-active (after MEM-44) | Open Security alerts. | New-device sign-ins and session changes are listed. |
 | MEM-46 | Tamil throughout | any account | Complete one whole flow (sign-in to event pass) in Tamil. | Tamil comes first everywhere, with no codes or untranslated keys, in the Noto Sans Tamil font. |
 
-## Staff app
+## Staff section of the app
 
 | ID | Screen | Account | Steps | Expected result |
 |---|---|---|---|---|
-| STF-01 | S01 Staff sign-in and role | staff-tier3a | Sign in to the staff app; add the authenticator shown at first sign-in; sign out and in again with a code. | A code is asked for every session; a wrong code is refused. The Role tab shows "Tier 3A · Jaffna district" and permission names, not codes. |
-| STF-02 | S01 No staff role | member-active | Sign in to the staff app. | A "no staff role" message and no staff screens. |
+| STF-01 | S01 Staff sign-in and role | staff-tier3a | Sign in to the app and open "Staff section" on Home; add the authenticator shown the first time; sign out, sign in again and open the Staff section with a code. | A code is asked for every session; a wrong code is refused. The Role tab shows "Tier 3A · Jaffna district" and permission names, not codes. |
+| STF-02 | S01 No staff role | member-active | Sign in to the app; look at Home and Profile; then go to /staff. | No Staff section entry on Home or Profile; /staff shows the "no staff role" message, a way back, and no staff screens. |
 | STF-03 | S02 Tasks and area | staff-tier3a | Open Home. | Counts only for your own areas; each card opens its queue. |
 | STF-04 | S03 Member lookup | staff-tier3a | Look up member-active by member ID; then an unknown ID; then a member registered outside Jaffna. | Only the minimal fields are shown; unknown and out-of-area IDs give the same "not found". |
 | STF-05 | S08 Attendance scanner | staff-tier3b | Open Check-in: the list shows only events in your areas. Scan member-active's pass from another device, or check in by member ID with a reason; repeat; try your own ID. | Checked in with the name; a repeat says "already checked in"; your own ID is refused as not valid. |
@@ -122,7 +122,7 @@ py -3.12 scripts/testing/uat_workbook.py --out My-People-Phase1-UAT.xlsx
 |---|---|---|---|---|
 | RUL-01 | Nobody decides their own record | staff-tier3a | Look for your own area change, identity review and appeal in your queues; try opening them by address. | Never listed; opening them directly is refused. |
 | RUL-02 | Area limits | staff-tier3a | Register a test account in Mannar; look it up, look for its review and try to activate it. | Outside your area: not found or refused, never shown. |
-| RUL-03 | Second factor every session | staff-tier3a | Sign in to the dashboard and the staff app in a new private window. | A code is asked for again in each new session. |
+| RUL-03 | Second factor every session | staff-tier3a | Sign in to the dashboard, and to the app's Staff section, in a new private window. | A code is asked for again in each new session. |
 | RUL-04 | Signing out everywhere | member-active | Sign out from one browser while signed in on another. | Both browsers need to sign in again. |
 | RUL-05 | Identity images stay private | staff-tier3a | Copy an image link from DSH-04 into another browser that is not signed in; open /evidence/ on the staging address. | Both are refused. |
 | RUL-06 | Audit without personal data | staff-tier5 | In the audit log, open entries for the identity, membership and roles actions above. | Entries show ids and codes only, never names, ID numbers or images. |

@@ -34,12 +34,20 @@
       [
         "expo-image-picker",
         {
-          "cameraPermission": "My People uses the camera to photograph your ID and take a selfie for identity verification, and proof of residence for an area change.",
+          "cameraPermission": "My People uses the camera to photograph your ID and take a selfie for identity verification, proof of residence for an area change, and, for staff, to scan event passes and membership cards at check-in.",
           "photosPermission": "My People lets you choose a photo of your ID or proof of residence when you cannot use the camera.",
           "microphonePermission": false
         }
       ],
-      "expo-sharing"
+      "expo-sharing",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "My People uses the camera to photograph your ID and take a selfie for identity verification, proof of residence for an area change, and, for staff, to scan event passes and membership cards at check-in.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

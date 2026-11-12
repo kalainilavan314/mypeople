@@ -7,7 +7,10 @@ import { api } from '@/lib/api';
 
 export const unstable_settings = { initialRouteName: '(tabs)' };
 
-/** Signed-in screens: the five tabs, and the screens they open on top. */
+/**
+ * Signed-in screens: the five tabs, and the screens they open on top. "staff" is the Staff
+ * section (OD-26: one app for members and staff); it has its own code check, tabs and headers.
+ */
 export default function MemberLayout() {
   const { t } = useTranslation();
   const language = useLanguage();
@@ -53,6 +56,7 @@ export default function MemberLayout() {
       <Stack.Screen name="household/privacy" options={{ title: t('m.household.privacyConsent') }} />
       <Stack.Screen name="fund/index" options={{ title: t('m.fund.title') }} />
       <Stack.Screen name="fund/receipt/[id]" options={{ title: t('m.fund.receiptTitle') }} />
+      <Stack.Screen name="staff" options={{ headerShown: false }} />
     </Stack>
   );
 }

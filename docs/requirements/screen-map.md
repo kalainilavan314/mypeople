@@ -135,24 +135,24 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 
 | Screen | Name | Module | Phase | Status | Place | Note |
 |---|---|---|---|---|---|---|
-| S01 | Staff sign-in and role context | Staff app (SC-19) | 1–2 | Built | `apps/staff-mobile/app/(auth)/` |  |
-| S02 | Tasks and area dashboard | Staff app (SC-19) | 1–2 | Built | `apps/staff-mobile/app/(staff)/(tabs)/index.tsx` |  |
-| S03 | Member support lookup | Staff app (SC-19) | 1–2 | Built | `apps/staff-mobile/app/(staff)/lookup.tsx` |  |
-| S04 | Assisted verification session | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-04 (assisted verification) | `apps/staff-mobile/app/(staff)/assisted-verification/` | Assisted verification only; the queue is W01/W02 on the dashboard |
-| S05 | Field case capture | Field operations (SC-32) | 2 | To build | `apps/staff-mobile/app/(staff)/field-visits/` |  |
-| S06 | Field visit record | Field operations (SC-32) | 2 | To build | `apps/staff-mobile/app/(staff)/field-visits/` |  |
-| S07 | Offline sync and conflicts | Field operations (SC-32) | 2 | To build | `apps/staff-mobile/app/(staff)/field-visits/` |  |
-| S08 | Attendance scanner (GAP-01) | Staff app (SC-19) | 1–2 | Built | `apps/staff-mobile/app/(staff)/(tabs)/check-in.tsx` | Also works offline: scans are queued on the phone and judged by the server at their recorded time, once the STF-01 replay window is approved; waiting scans are settled on the dashboard event page. The tab sends scans left from any event |
-| S09 | Attendance roster and exceptions | Staff app (SC-19) | 1–2 | Built | `apps/staff-mobile/app/(staff)/roster/[id].tsx` |  |
-| S10 | Volunteer assignment manager | Staff app (SC-19) | 1–2 | Partly built | `apps/staff-mobile/app/(staff)/assignments.tsx`, `apps/admin-web/src/app/(staff)/volunteer-assignments/` | Staff see and answer their own duties in the app; managers assign duties on the dashboard. A manager screen in the staff app is still to build |
-| S11 | Referral intake and screening | Community Support (SC-23) | 2 | To build | `apps/staff-mobile/app/(staff)/assistance/` |  |
-| S12 | Assistance case file | Community Support (SC-23) | 2 | To build | `apps/staff-mobile/app/(staff)/assistance/` |  |
-| S13 | Approvals and escalations | Staff app (SC-19) | 1–2 | Built | `apps/staff-mobile/app/(staff)/(tabs)/approvals.tsx` |  |
-| S14 | Operational notifications | Staff app (SC-19) | 1–2 | Built | `apps/staff-mobile/app/(staff)/(tabs)/alerts.tsx` |  |
-| S15 | Election duty roster manager | Election mode (SC-30) | 2 | To build | `apps/staff-mobile/app/(staff)/election-roster/` |  |
-| S16 | Relief distribution record | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/staff-mobile/app/(staff)/relief/` |  |
-| S17 | Appointment calendar | Meet your representative (SC-37) | 3 | To build | `apps/staff-mobile/app/(staff)/appointments/` |  |
-| S18 | Committee coordinator tools | Wings and committees (SC-31) | 3 | To build | `apps/staff-mobile/app/(staff)/committees/` |  |
+| S01 | Staff sign-in and role context | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(auth)/sign-in.tsx`, `apps/member-mobile/app/(member)/staff/_layout.tsx` |  |
+| S02 | Tasks and area dashboard | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/index.tsx` |  |
+| S03 | Member support lookup | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/lookup.tsx` |  |
+| S04 | Assisted verification session | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-04 (assisted verification) | `apps/member-mobile/app/(member)/staff/assisted-verification/` | Assisted verification only; the queue is W01/W02 on the dashboard |
+| S05 | Field case capture | Field operations (SC-32) | 2 | To build | `apps/member-mobile/app/(member)/staff/field-visits/` |  |
+| S06 | Field visit record | Field operations (SC-32) | 2 | To build | `apps/member-mobile/app/(member)/staff/field-visits/` |  |
+| S07 | Offline sync and conflicts | Field operations (SC-32) | 2 | To build | `apps/member-mobile/app/(member)/staff/field-visits/` |  |
+| S08 | Attendance scanner (GAP-01) | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/check-in.tsx` | Also works offline: scans are queued on the phone and judged by the server at their recorded time, once the STF-01 replay window is approved; waiting scans are settled on the dashboard event page. The tab sends scans left from any event |
+| S09 | Attendance roster and exceptions | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/roster/[id].tsx` |  |
+| S10 | Volunteer assignment manager | Staff app (SC-19) | 1–2 | Partly built | `apps/member-mobile/app/(member)/staff/assignments.tsx`, `apps/admin-web/src/app/(staff)/volunteer-assignments/` | Staff see and answer their own duties in the app; managers assign duties on the dashboard. A manager screen in the staff app is still to build |
+| S11 | Referral intake and screening | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/staff/assistance/` |  |
+| S12 | Assistance case file | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/staff/assistance/` |  |
+| S13 | Approvals and escalations | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/approvals.tsx` |  |
+| S14 | Operational notifications | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/alerts.tsx` |  |
+| S15 | Election duty roster manager | Election mode (SC-30) | 2 | To build | `apps/member-mobile/app/(member)/staff/election-roster/` |  |
+| S16 | Relief distribution record | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/staff/relief/` |  |
+| S17 | Appointment calendar | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/staff/appointments/` |  |
+| S18 | Committee coordinator tools | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/staff/committees/` |  |
 
 ## Dashboard
 
