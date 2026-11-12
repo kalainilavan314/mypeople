@@ -40,11 +40,17 @@ class Settings(BaseSettings):
     # Express API's ALLOWED_ORIGINS (comma-separated). Empty means same-origin only.
     allowed_origins: Annotated[list[str], NoDecode] = []
 
-    # How one-time codes are sent (INT-01; no vendor chosen yet). "none" answers
-    # 503 sms_not_configured wherever a code must be sent. "development" keeps
-    # messages in memory and returns the code in the response; it is refused
-    # outside APP_ENV=development, so a live system can never leak codes.
-    sms_provider: Literal["none", "development"] = "none"
+    # How one-time codes are sent (INT-01). "none" answers 503 sms_not_configured
+    # wherever a code must be sent. "development" keeps messages in memory and
+    # returns the code in the response; it is refused outside APP_ENV=development,
+    # so a live system can never leak codes. "notify_lk" sends through Notify.lk
+    # (the owner's choice, 12 November 2026) with the three values below.
+    sms_provider: Literal["none", "development", "notify_lk"] = "none"
+    # Notify.lk account (Settings page of app.notify.lk). The sender ID is the
+    # approved name messages come from; "NotifyDEMO" is for tests only.
+    notify_lk_user_id: str | None = None
+    notify_lk_api_key: SecretStr | None = None
+    notify_lk_sender_id: str | None = None
 
     # Push notifications (INT-02; no credentials yet). "none" keeps notifications in the
     # in-app inbox only; "development" keeps pushes in memory and is refused outside development.
@@ -139,6 +145,17 @@ class Settings(BaseSettings):
     def development_sms_only_in_development(self) -> Self:
         if self.sms_provider == "development" and self.app_env != "development":
             raise ValueError("SMS_PROVIDER=development is allowed only with APP_ENV=development")
+        return self
+
+    @model_validator(mode="after")
+    def notify_lk_needs_its_account(self) -> Self:
+        if self.sms_provider != "notify_lk":
+            return self
+        if not (self.notify_lk_user_id and self.notify_lk_api_key and self.notify_lk_sender_id):
+            raise ValueError("SMS_PROVIDER=notify_lk needs NOTIFY_LK_USER_ID, NOTIFY_LK_API_KEY and NOTIFY_LK_SENDER_ID")
+        # Notify.lk suspends accounts that send one-time codes from its demo sender ID.
+        if self.app_env == "production" and self.notify_lk_sender_id == "NotifyDEMO":
+            raise ValueError("NOTIFY_LK_SENDER_ID=NotifyDEMO is for tests only; use the approved sender ID in production")
         return self
 
     @model_validator(mode="after")

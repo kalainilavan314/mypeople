@@ -3615,6 +3615,9 @@
               }
             }
           },
+          "502": {
+            "description": "sms_failed: the SMS provider did not accept the message"
+          },
           "503": {
             "description": "sms_not_configured: no SMS provider is set up yet (INT-01)"
           },
@@ -3722,6 +3725,9 @@
                 }
               }
             }
+          },
+          "502": {
+            "description": "sms_failed: the SMS provider did not accept the message"
           },
           "503": {
             "description": "sms_not_configured: no SMS provider is set up yet (INT-01)"
@@ -7704,6 +7710,9 @@
           },
           "429": {
             "description": "too_many_requests, with Retry-After"
+          },
+          "502": {
+            "description": "sms_failed"
           },
           "503": {
             "description": "sms_not_configured"

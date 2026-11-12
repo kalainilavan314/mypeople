@@ -216,10 +216,17 @@ old device (needs push), passkeys, and lost-device wipe (FR-STF-010).
   person's identity a reviewer can replace the recovery number, but only on
   an account whose staff tiers all rank below the reviewer's
   (`403 target_outranks_you`).
-- **SMS.** `app/integrations/sms.py` sends through an interface. No vendor is
-  chosen (INT-01), so `SMS_PROVIDER=none` answers `503 sms_not_configured`;
-  `SMS_PROVIDER=development` keeps messages in memory and returns the code
-  in the response, and is refused outside development.
+- **SMS.** `app/integrations/sms.py` sends through an interface (INT-01).
+  `SMS_PROVIDER=notify_lk` sends through Notify.lk, the owner's choice of
+  12 November 2026: a form POST to its send endpoint with `NOTIFY_LK_USER_ID`,
+  `NOTIFY_LK_API_KEY` and `NOTIFY_LK_SENDER_ID`, numbers as `94XXXXXXXXX`, Tamil
+  as Unicode. The API refuses to start without all three, or with the demo
+  sender ID `NotifyDEMO` in production (Notify.lk suspends accounts that send
+  codes from it). A refused or unanswered send is `502 sms_failed`; nothing
+  about the number, text or key is logged. `SMS_PROVIDER=none` answers
+  `503 sms_not_configured`; `SMS_PROVIDER=development` keeps messages in
+  memory and returns the code in the response, and is refused outside
+  development.
 - **Limits.** Five registrations and three assisted-recovery requests per
   address an hour (assumptions).
 
@@ -762,7 +769,8 @@ Settings are read from environment variables, falling back to `services/api/.env
 | `DATABASE_URL` | PostgreSQL URL (required) | The same value the Express API uses; `postgres://` and `postgresql://` both work |
 | `JWT_SECRET` | long random string (required) | Must equal the Express API's `JWT_SECRET`; production refuses the `dev-secret` fallback |
 | `STAFF_MFA_REQUIRED` | `true` (default), `false` | Staff give an authenticator code in each session; only development may switch it off |
-| `SMS_PROVIDER` | `none` (default), `development` | How one-time codes are sent; `development` keeps them in memory and is refused outside development |
+| `SMS_PROVIDER` | `none` (default), `development`, `notify_lk` | How one-time codes are sent; `development` keeps them in memory and is refused outside development; `notify_lk` sends through Notify.lk |
+| `NOTIFY_LK_USER_ID`, `NOTIFY_LK_API_KEY`, `NOTIFY_LK_SENDER_ID` | the Notify.lk account (API key is a secret) | Needed with `SMS_PROVIDER=notify_lk`; `NotifyDEMO` is refused in production |
 | `PASSPORT_NUMBER_PATTERN` | regular expression (optional) | Passport numbers accepted at registration; default 6 to 9 letters or digits |
 | `NIC_PEPPER` | string (required) | Must equal the Express API's `NIC_PEPPER`, and never change; production refuses `dev-pepper` |
 | `ALLOWED_ORIGINS` | comma-separated origins (optional) | Other sites allowed to send cookie-authenticated writes |

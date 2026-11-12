@@ -12140,6 +12140,13 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description sms_failed: the SMS provider did not accept the message */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description sms_not_configured: no SMS provider is set up yet (INT-01) */
             503: {
                 headers: {
@@ -12233,6 +12240,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+            /** @description sms_failed: the SMS provider did not accept the message */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description sms_not_configured: no SMS provider is set up yet (INT-01) */
             503: {
@@ -14992,6 +15006,13 @@ export interface operations {
             };
             /** @description too_many_requests, with Retry-After */
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description sms_failed */
+            502: {
                 headers: {
                     [name: string]: unknown;
                 };
