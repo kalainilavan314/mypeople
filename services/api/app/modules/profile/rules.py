@@ -25,7 +25,7 @@ AREA_REVIEW = "members.verify"
 AreaDecision = Literal["approve", "decline"]
 ActivityKind = Literal[
     "identity_review", "appeal", "event", "removal_request", "area_change", "privacy_request", "issue_report",
-    "volunteer_offer",
+    "volunteer_offer", "idea", "survey_response", "proposal",
 ]
 ACTIVITY_KINDS: tuple[ActivityKind, ...] = (
     "identity_review",
@@ -36,6 +36,9 @@ ACTIVITY_KINDS: tuple[ActivityKind, ...] = (
     "privacy_request",
     "issue_report",  # FR-RPT-014: a report's case appears in My Activity
     "volunteer_offer",  # FR-VOL-005: "Offered, awaiting coordinator"
+    "idea",  # FR-IDEA-002
+    "survey_response",  # FR-SRV-006: "Response submitted"
+    "proposal",  # FR-DEV-007
 )
 
 

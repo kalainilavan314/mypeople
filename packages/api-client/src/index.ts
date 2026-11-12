@@ -189,6 +189,30 @@ export type VolunteerOfferCard = Schemas['OfferCardOut'];
 export type VolunteerOfferDecision = Schemas['OfferDecisionIn'];
 export type VolunteerInboxItem = Schemas['InboxItemOut'];
 export type VolunteerCard = Schemas['VolunteerCardOut'];
+// Ideas (H13), surveys (H14, H21) and development proposals (M15 to M17, D15).
+export type IdeaBoard = Schemas['IdeaBoardOut'];
+export type Idea = Schemas['IdeaOut'];
+export type IdeaInput = Schemas['IdeaIn'];
+export type PendingIdea = Schemas['PendingIdeaOut'];
+export type SurveySummary = Schemas['SurveySummaryOut'];
+export type SurveyDetail = Schemas['SurveyDetailOut'];
+export type SurveyQuestion = Schemas['SurveyQuestionOut'];
+export type SurveyQuestionKind = Schemas['SurveyQuestionOut']['kind'];
+export type SurveyReceipt = Schemas['SurveyReceiptOut'];
+export type SurveyAnswerValue = string | string[] | number;
+export type SurveyInput = Schemas['SurveyIn'];
+export type SurveyQuestionInput = Schemas['SurveyQuestionIn'];
+export type ManagedSurvey = Schemas['ManagedSurveyOut'];
+export type SurveyResults = Schemas['SurveyResultsOut'];
+export type ProposalBoard = Schemas['ProposalBoardOut'];
+export type ProposalSummary = Schemas['ProposalSummaryOut'];
+export type ProposalDetail = Schemas['ProposalDetailOut'];
+export type ProposalInput = Schemas['ProposalIn'];
+export type ProposalRevisionInput = Schemas['ProposalRevisionIn'];
+export type ProposalCategory = Schemas['ProposalIn']['category'];
+export type ProposalStage = Schemas['ProposalSummaryOut']['stage'];
+export type ProposalMoveInput = Schemas['ProposalMoveIn'];
+export type ProposalNeeds = Schemas['NeedsOut'];
 export type CaseListFilters = {
   stage?: CaseStage[];
   mine?: boolean;
@@ -1226,6 +1250,63 @@ export function createApiClient({
         'GET',
         `/v1/volunteering/manage/volunteers${skill ? `?skill=${encodeURIComponent(skill)}` : ''}`,
       ),
+    // Ideas (H13). Routes answer 404 "feature_unavailable" while ideas_surveys is off.
+    getIdeaBoard: () => request<IdeaBoard>('GET', '/v1/ideas'),
+    /** FR-IDEA-002: problems identity_not_verified, membership_not_active, no_area_on_profile, too_many_ideas_today. */
+    submitIdea: (input: IdeaInput) => request<Idea>('POST', '/v1/ideas', input),
+    /** FR-IDEA-004: one support per member; it never changes the idea's status. */
+    setIdeaSupport: (ideaId: string, support: boolean) =>
+      request<Idea>('PUT', `/v1/ideas/${encodeURIComponent(ideaId)}/support`, { support }),
+    withdrawIdea: (ideaId: string) => request<Idea>('POST', `/v1/ideas/${encodeURIComponent(ideaId)}/withdraw`),
+    listPendingIdeas: () => request<PendingIdea[]>('GET', '/v1/ideas/moderation'),
+    moderateIdea: (ideaId: string, publish: boolean, reason?: string) =>
+      request<PendingIdea>('POST', `/v1/ideas/${encodeURIComponent(ideaId)}/moderation`, { publish, reason }),
+    // Surveys (H14, H21).
+    listSurveys: () => request<SurveySummary[]>('GET', '/v1/surveys'),
+    /** The questions, or the receipt once answered (canAnswer false). */
+    getSurvey: (surveyId: string) => request<SurveyDetail>('GET', `/v1/surveys/${encodeURIComponent(surveyId)}`),
+    /** Answers by question id. Problems: answer_required:n, answer_invalid:n, already_answered, survey_closed. */
+    submitSurveyResponse: (surveyId: string, answers: Record<string, SurveyAnswerValue>) =>
+      request<SurveyDetail>('POST', `/v1/surveys/${encodeURIComponent(surveyId)}/responses`, { answers }),
+    listManagedSurveys: () => request<ManagedSurvey[]>('GET', '/v1/surveys/manage'),
+    createSurvey: (input: SurveyInput) => request<ManagedSurvey>('POST', '/v1/surveys/manage', input),
+    updateSurveyDraft: (surveyId: string, input: SurveyInput) =>
+      request<ManagedSurvey>('PUT', `/v1/surveys/manage/${encodeURIComponent(surveyId)}`, input),
+    moveSurvey: (surveyId: string, state: 'open' | 'closed') =>
+      request<ManagedSurvey>('POST', `/v1/surveys/manage/${encodeURIComponent(surveyId)}/state`, { state }),
+    /** Counts only; null means 1 to 9. */
+    getSurveyResults: (surveyId: string) =>
+      request<SurveyResults>('GET', `/v1/surveys/manage/${encodeURIComponent(surveyId)}/results`),
+    // Development proposals (M15 to M17, D15). Routes answer 404 while development_proposals is off.
+    getProposalBoard: (query?: { q?: string; category?: ProposalCategory }) => {
+      const q = new URLSearchParams();
+      if (query?.q) q.set('q', query.q);
+      if (query?.category) q.set('category', query.category);
+      const qs = q.toString();
+      return request<ProposalBoard>('GET', `/v1/proposals${qs ? `?${qs}` : ''}`);
+    },
+    /** M16: the same clientReference returns the first proposal. Throws "proposal_refused" (422) with `problems`. */
+    submitProposal: (input: ProposalInput) => request<ProposalDetail>('POST', '/v1/proposals', input),
+    getProposal: (proposalId: string) => request<ProposalDetail>('GET', `/v1/proposals/${encodeURIComponent(proposalId)}`),
+    reviseProposal: (proposalId: string, input: ProposalRevisionInput) =>
+      request<ProposalDetail>('PUT', `/v1/proposals/${encodeURIComponent(proposalId)}`, input),
+    withdrawProposal: (proposalId: string) =>
+      request<ProposalDetail>('POST', `/v1/proposals/${encodeURIComponent(proposalId)}/withdraw`),
+    listManagedProposals: (filters: { stage?: ProposalStage[]; q?: string; category?: ProposalCategory } = {}) => {
+      const q = new URLSearchParams();
+      for (const stage of filters.stage ?? []) q.append('stage', stage);
+      if (filters.q) q.set('q', filters.q);
+      if (filters.category) q.set('category', filters.category);
+      const qs = q.toString();
+      return request<ProposalSummary[]>('GET', `/v1/proposals/manage${qs ? `?${qs}` : ''}`);
+    },
+    getManagedProposal: (proposalId: string) =>
+      request<ProposalDetail>('GET', `/v1/proposals/manage/${encodeURIComponent(proposalId)}`),
+    /** Moderate (review or rejected) or move a stage; refused (403) without the tier's authority. */
+    moveProposal: (proposalId: string, input: ProposalMoveInput) =>
+      request<ProposalDetail>('POST', `/v1/proposals/manage/${encodeURIComponent(proposalId)}/stage`, input),
+    /** FR-DEV-008: counts by area and category; null means fewer than 10. */
+    getProposalNeeds: () => request<ProposalNeeds>('GET', '/v1/proposals/manage/needs'),
     // Community Finance endpoints (Milestone 1.4)
     getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),
     createContribution: (body: ContributionCreateInput, idempotencyKey?: string) =>

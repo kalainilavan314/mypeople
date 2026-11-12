@@ -174,6 +174,27 @@ Behind the `volunteering` switch (phase 2). Refusals are `422 {code: "volunteer_
 | `GET /manage/inbox`, `POST /manage/inbox/{id}/answer` body `{answer}` | as above | open messages and change requests; the answer reaches the volunteer | `422 already_answered` |
 | `GET /manage/volunteers?skill` | as above | consented skills profiles in the coordinator's areas, by name | `403` |
 
+### Ideas, surveys and development proposals (`/v1/ideas`, `/v1/surveys`, `/v1/proposals`)
+
+Ideas and surveys sit behind the `ideas_surveys` switch, proposals behind `development_proposals` (both phase 2). Refusals are `422 {code: "idea_refused" | "survey_refused" | "proposal_refused", problems}`.
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /v1/ideas` | a session | `200 {local, mine}`: published ideas of the member's area, and their own in every state (H13) | `401` |
+| `POST /v1/ideas` body `{title (≤80), benefit}` | Verified and Active | `201` the idea (`ID-` receipt, pending moderation, in My Activity) | `422 identity_not_verified`, `membership_not_active`, `no_area_on_profile`, `too_many_ideas_today` |
+| `PUT /v1/ideas/{id}/support` body `{support}`, `POST .../withdraw` | Verified and Active, in the idea's area | `200`; one support per member, never a change of status | `404`, `422 own_idea` |
+| `GET /v1/ideas/moderation`, `POST /v1/ideas/{id}/moderation` body `{publish, reason?}` | `content.moderate` over the area | pending ideas; publish or reject with a reason; the author is told | `403 own_record`, `outside_your_area`; `422 reason_required`, `already_moderated` |
+| `GET /v1/surveys`, `GET /v1/surveys/{id}` | a session, in the survey's area | open surveys with the member's receipt; questions, audience, privacy statement, `canAnswer` (H14) | `404` |
+| `POST /v1/surveys/{id}/responses` body `{answers}` | Verified, in the area | `200` with the `SR-` receipt and "What happens next" (H21); anonymous surveys store answers with no link to the member | `422 answer_required:n`, `answer_invalid:n`, `already_answered`, `survey_closed` |
+| `GET/POST /v1/surveys/manage`, `PUT .../{id}` (drafts), `POST .../{id}/state` `{state}`, `GET .../{id}/results` | `surveys.manage` over the area | drafts with questions; open and close; counts with groups of 1 to 9 hidden | `403`, `422 anonymous_surveys_cannot_be_edited`, `questions_required`, `options_required:n`, `only_drafts_change` |
+| `GET /v1/proposals?q&category` | a session | `200 {area, mine}`: published proposals touching the member's area and their own (M15); `q` matches words | `401` |
+| `POST /v1/proposals` body `{clientReference, title, category, area: {level: district \| ds \| gn, code}, problem, solution, benefit, costEstimate?, evidence?}` | Verified and Active | `201` the proposal (`DP-`), pending moderation; the same clientReference returns the first | `422 unknown_area`, `too_many_proposals_today` |
+| `GET /v1/proposals/{id}`, `PUT` (revise a rejected one), `POST .../withdraw` | the author, or a published proposal in the area | stage, reason and history with the recording tier (M17) | `404`, `422 only_rejected_proposals_are_revised` |
+| `GET /v1/proposals/manage?stage&q&category`, `GET .../{id}`, `POST .../{id}/stage` body `{stage, reason?}` | `content.moderate` (publish or reject), `dev.review` (not taken forward), `dev.approve_planning` (approved for planning, funding identified, implementation) | the D15 queue and moves; the author is told | `403 forbidden` (the tier lacks the authority), `own_record`; `422 not_allowed_from:<stage>`, `reason_required` |
+| `GET /v1/proposals/manage/needs` | `dev.review` or `dev.approve_planning` | counts by area and category; groups under 10 hidden, also by subtraction | `403` |
+
+AI topic, duplicate and summary suggestions and semantic search (FR-DEV-004, 005) are not built: they wait for the AI provider decision (OD-42).
+
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 
 | Endpoint | Needs | Success | Errors |

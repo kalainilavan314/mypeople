@@ -104,6 +104,18 @@ _ACTIVITY = {
                f.updated_at AS at, f.id AS target_id
         FROM engagement.volunteer_offer f JOIN engagement.volunteer_opportunity o ON o.id = f.opportunity_id
         WHERE f.member_id = :member""",
+    "idea": """
+        SELECT 'idea' AS kind, i.idea_ref AS reference, i.title, i.state, i.updated_at AS at, i.id AS target_id
+        FROM community.idea i WHERE i.author_id = :member""",
+    "survey_response": """
+        SELECT 'survey_response' AS kind, p.receipt_ref AS reference, s.title_en AS title, 'submitted' AS state,
+               p.updated_at AS at, s.id AS target_id
+        FROM community.survey_participation p JOIN community.survey s ON s.id = p.survey_id
+        WHERE p.member_id = :member""",
+    "proposal": """
+        SELECT 'proposal' AS kind, d.proposal_ref AS reference, d.title, d.stage AS state, d.updated_at AS at,
+               d.id AS target_id
+        FROM community.proposal d WHERE d.author_id = :member""",
 }
 
 

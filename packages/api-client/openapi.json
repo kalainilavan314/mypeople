@@ -9948,6 +9948,1262 @@
         }
       }
     },
+    "/v1/ideas": {
+      "get": {
+        "tags": [
+          "ideas"
+        ],
+        "summary": "Read Board",
+        "description": "H13: Local ideas (published in the member's area) and My ideas (every state).",
+        "operationId": "read_board_v1_ideas_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdeaBoardOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "ideas"
+        ],
+        "summary": "Submit Idea",
+        "description": "FR-IDEA-002: a receipt; shown to others only after moderation.",
+        "operationId": "submit_idea_v1_ideas_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdeaIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdeaOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/ideas/{idea_id}/support": {
+      "put": {
+        "tags": [
+          "ideas"
+        ],
+        "summary": "Set Support",
+        "description": "FR-IDEA-004: one support per member; it never changes the idea's status.",
+        "operationId": "set_support_v1_ideas__idea_id__support_put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "idea_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Idea Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdeaOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ideas/{idea_id}/withdraw": {
+      "post": {
+        "tags": [
+          "ideas"
+        ],
+        "summary": "Withdraw Idea",
+        "operationId": "withdraw_idea_v1_ideas__idea_id__withdraw_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "idea_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Idea Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdeaOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ideas/moderation": {
+      "get": {
+        "tags": [
+          "ideas"
+        ],
+        "summary": "List Pending",
+        "description": "D12: ideas waiting for moderation in the moderator's areas, oldest first.",
+        "operationId": "list_pending_v1_ideas_moderation_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PendingIdeaOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Pending V1 Ideas Moderation Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/ideas/{idea_id}/moderation": {
+      "post": {
+        "tags": [
+          "ideas"
+        ],
+        "summary": "Moderate Idea",
+        "operationId": "moderate_idea_v1_ideas__idea_id__moderation_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "idea_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Idea Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdeaModerationIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingIdeaOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/surveys": {
+      "get": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "List Surveys",
+        "description": "Open surveys for the member's area, with their receipt where they have answered.",
+        "operationId": "list_surveys_v1_surveys_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SurveySummaryOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Surveys V1 Surveys Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/surveys/manage": {
+      "get": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "List Managed",
+        "operationId": "list_managed_v1_surveys_manage_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ManagedSurveyOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Managed V1 Surveys Manage Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Create Survey",
+        "operationId": "create_survey_v1_surveys_manage_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SurveyIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedSurveyOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/surveys/manage/{survey_id}": {
+      "put": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Update Survey",
+        "description": "Drafts only; once open, a survey's questions never change under the people answering it.",
+        "operationId": "update_survey_v1_surveys_manage__survey_id__put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SurveyIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedSurveyOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/surveys/manage/{survey_id}/state": {
+      "post": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Move Survey",
+        "operationId": "move_survey_v1_surveys_manage__survey_id__state_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SurveyStateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedSurveyOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/surveys/manage/{survey_id}/results": {
+      "get": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Read Results",
+        "description": "Counts only; groups of 1 to 9 are hidden.",
+        "operationId": "read_results_v1_surveys_manage__survey_id__results_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyResultsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/surveys/{survey_id}": {
+      "get": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Read Survey",
+        "description": "H14: the questions, audience and privacy statement; or the receipt once answered (H21).",
+        "operationId": "read_survey_v1_surveys__survey_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/surveys/{survey_id}/responses": {
+      "post": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Respond",
+        "description": "FR-SRV-005, 006: one response per member; the receipt and \"What happens next\" come back.",
+        "operationId": "respond_v1_surveys__survey_id__responses_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SurveyResponseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/proposals": {
+      "get": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "Browse",
+        "description": "M15: proposals for my area and my own proposals; `q` matches words in Tamil or English.",
+        "operationId": "browse_v1_proposals_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "roads_transport",
+                    "agriculture",
+                    "fisheries",
+                    "employment",
+                    "education",
+                    "drinking_water",
+                    "healthcare",
+                    "environment",
+                    "waste_management",
+                    "tourism_enterprise",
+                    "digital_literacy",
+                    "youth_skills",
+                    "other"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalBoardOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "Submit",
+        "description": "M16: moderated before anyone else sees it.",
+        "operationId": "submit_v1_proposals_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposalIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/proposals/manage": {
+      "get": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "Staff Queue",
+        "description": "D15: proposals in the viewer's areas, newest activity first.",
+        "operationId": "staff_queue_v1_proposals_manage_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "stage",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "pending_moderation",
+                      "rejected",
+                      "review",
+                      "approved_for_planning",
+                      "funding_identified",
+                      "implementation",
+                      "not_taken_forward",
+                      "withdrawn"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Stage"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "roads_transport",
+                    "agriculture",
+                    "fisheries",
+                    "employment",
+                    "education",
+                    "drinking_water",
+                    "healthcare",
+                    "environment",
+                    "waste_management",
+                    "tourism_enterprise",
+                    "digital_literacy",
+                    "youth_skills",
+                    "other"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProposalSummaryOut"
+                  },
+                  "title": "Response Staff Queue V1 Proposals Manage Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/proposals/manage/needs": {
+      "get": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "Regional Needs",
+        "description": "FR-DEV-008: published proposals by area and category; groups under 10 hidden or merged.",
+        "operationId": "regional_needs_v1_proposals_manage_needs_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NeedsOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/proposals/manage/{proposal_id}": {
+      "get": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "Staff Read",
+        "operationId": "staff_read_v1_proposals_manage__proposal_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Proposal Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/proposals/manage/{proposal_id}/stage": {
+      "post": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "Move",
+        "description": "FR-DEV-003, 006: moderate, or move a stage with the authority it needs; the author is told.",
+        "operationId": "move_v1_proposals_manage__proposal_id__stage_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Proposal Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposalMoveIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/proposals/{proposal_id}": {
+      "get": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "Read",
+        "description": "M17: stage, decision reason and history.",
+        "operationId": "read_v1_proposals__proposal_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Proposal Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "Revise",
+        "description": "A rejected proposal, revised and sent back to moderation.",
+        "operationId": "revise_v1_proposals__proposal_id__put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Proposal Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposalRevisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/proposals/{proposal_id}/withdraw": {
+      "post": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "Withdraw",
+        "operationId": "withdraw_v1_proposals__proposal_id__withdraw_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Proposal Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/home": {
       "get": {
         "tags": [
@@ -10088,7 +11344,10 @@
                     "area_change",
                     "privacy_request",
                     "issue_report",
-                    "volunteer_offer"
+                    "volunteer_offer",
+                    "idea",
+                    "survey_response",
+                    "proposal"
                   ],
                   "type": "string"
                 },
@@ -15276,7 +16535,10 @@
               "area_change",
               "privacy_request",
               "issue_report",
-              "volunteer_offer"
+              "volunteer_offer",
+              "idea",
+              "survey_response",
+              "proposal"
             ],
             "title": "Kind"
           },
@@ -23460,6 +24722,152 @@
         "type": "object",
         "title": "HouseholdUpdateIn"
       },
+      "IdeaBoardOut": {
+        "properties": {
+          "local": {
+            "items": {
+              "$ref": "#/components/schemas/IdeaOut"
+            },
+            "type": "array",
+            "title": "Local"
+          },
+          "mine": {
+            "items": {
+              "$ref": "#/components/schemas/IdeaOut"
+            },
+            "type": "array",
+            "title": "Mine"
+          }
+        },
+        "type": "object",
+        "required": [
+          "local",
+          "mine"
+        ],
+        "title": "IdeaBoardOut"
+      },
+      "IdeaIn": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 5,
+            "title": "Title"
+          },
+          "benefit": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Benefit",
+            "description": "The local benefit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "benefit"
+        ],
+        "title": "IdeaIn"
+      },
+      "IdeaModerationIn": {
+        "properties": {
+          "publish": {
+            "type": "boolean",
+            "title": "Publish"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "publish"
+        ],
+        "title": "IdeaModerationIn"
+      },
+      "IdeaOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "ideaRef": {
+            "type": "string",
+            "title": "Idearef"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "benefit": {
+            "type": "string",
+            "title": "Benefit"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "published",
+              "rejected",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "moderationReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moderationreason",
+            "description": "Shown to the author when the idea was not published"
+          },
+          "supports": {
+            "type": "integer",
+            "title": "Supports"
+          },
+          "supported": {
+            "type": "boolean",
+            "title": "Supported"
+          },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ideaRef",
+          "title",
+          "benefit",
+          "state",
+          "moderationReason",
+          "supports",
+          "supported",
+          "mine",
+          "createdAt"
+        ],
+        "title": "IdeaOut"
+      },
       "IdentityDataItemOut": {
         "properties": {
           "dataEn": {
@@ -25275,6 +26683,92 @@
         ],
         "title": "ManagedOpportunityOut"
       },
+      "ManagedSurveyOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "surveyRef": {
+            "type": "string",
+            "title": "Surveyref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "open",
+              "closed"
+            ],
+            "title": "State"
+          },
+          "anonymous": {
+            "type": "boolean",
+            "title": "Anonymous"
+          },
+          "allowEdits": {
+            "type": "boolean",
+            "title": "Allowedits"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "closesAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closesat"
+          },
+          "responses": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Responses",
+            "description": "Hidden (null) while 1 to 9"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "surveyRef",
+          "titleEn",
+          "titleTa",
+          "state",
+          "anonymous",
+          "allowEdits",
+          "areaKey",
+          "closesAt",
+          "responses",
+          "createdAt"
+        ],
+        "title": "ManagedSurveyOut"
+      },
       "ManualCheckInIn": {
         "properties": {
           "memberCode": {
@@ -26459,6 +27953,68 @@
         ],
         "title": "MyReviewOut",
         "description": "A10, A11, C06: the review reference and state, and what to correct when a correction is asked for."
+      },
+      "NeedsCellOut": {
+        "properties": {
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "roads_transport",
+              "agriculture",
+              "fisheries",
+              "employment",
+              "education",
+              "drinking_water",
+              "healthcare",
+              "environment",
+              "waste_management",
+              "tourism_enterprise",
+              "digital_literacy",
+              "youth_skills",
+              "other"
+            ],
+            "title": "Category"
+          },
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Count",
+            "description": "Null means fewer than 10"
+          }
+        },
+        "type": "object",
+        "required": [
+          "areaKey",
+          "category",
+          "count"
+        ],
+        "title": "NeedsCellOut"
+      },
+      "NeedsOut": {
+        "properties": {
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/NeedsCellOut"
+            },
+            "type": "array",
+            "title": "Cells"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cells"
+        ],
+        "title": "NeedsOut"
       },
       "NoteIn": {
         "properties": {
@@ -27843,6 +29399,46 @@
         ],
         "title": "PasswordResetInput"
       },
+      "PendingIdeaOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "ideaRef": {
+            "type": "string",
+            "title": "Idearef"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "benefit": {
+            "type": "string",
+            "title": "Benefit"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ideaRef",
+          "title",
+          "benefit",
+          "areaKey",
+          "createdAt"
+        ],
+        "title": "PendingIdeaOut"
+      },
       "PeriodFileOut": {
         "properties": {
           "id": {
@@ -29052,6 +30648,503 @@
         ],
         "title": "ProgressOut"
       },
+      "ProposalAreaIn": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "district",
+              "ds",
+              "gn"
+            ],
+            "title": "Level"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 2,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "code"
+        ],
+        "title": "ProposalAreaIn"
+      },
+      "ProposalBoardOut": {
+        "properties": {
+          "area": {
+            "items": {
+              "$ref": "#/components/schemas/ProposalSummaryOut"
+            },
+            "type": "array",
+            "title": "Area"
+          },
+          "mine": {
+            "items": {
+              "$ref": "#/components/schemas/ProposalSummaryOut"
+            },
+            "type": "array",
+            "title": "Mine"
+          }
+        },
+        "type": "object",
+        "required": [
+          "area",
+          "mine"
+        ],
+        "title": "ProposalBoardOut"
+      },
+      "ProposalDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "proposalRef": {
+            "type": "string",
+            "title": "Proposalref"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "roads_transport",
+              "agriculture",
+              "fisheries",
+              "employment",
+              "education",
+              "drinking_water",
+              "healthcare",
+              "environment",
+              "waste_management",
+              "tourism_enterprise",
+              "digital_literacy",
+              "youth_skills",
+              "other"
+            ],
+            "title": "Category"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "pending_moderation",
+              "rejected",
+              "review",
+              "approved_for_planning",
+              "funding_identified",
+              "implementation",
+              "not_taken_forward",
+              "withdrawn"
+            ],
+            "title": "Stage"
+          },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "problem": {
+            "type": "string",
+            "title": "Problem"
+          },
+          "solution": {
+            "type": "string",
+            "title": "Solution"
+          },
+          "benefit": {
+            "type": "string",
+            "title": "Benefit"
+          },
+          "costEstimate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Costestimate"
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence"
+          },
+          "stageReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stagereason",
+            "description": "The decision reason shown to members (FR-DEV-007)"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedat"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/StageEventOut"
+            },
+            "type": "array",
+            "title": "History"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "proposalRef",
+          "title",
+          "category",
+          "areaKey",
+          "stage",
+          "mine",
+          "updatedAt",
+          "problem",
+          "solution",
+          "benefit",
+          "costEstimate",
+          "evidence",
+          "stageReason",
+          "revision",
+          "publishedAt",
+          "createdAt",
+          "history"
+        ],
+        "title": "ProposalDetailOut"
+      },
+      "ProposalIn": {
+        "properties": {
+          "clientReference": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Clientreference",
+            "description": "Made once per draft; sending a draft twice returns the first proposal"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 5,
+            "title": "Title"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "roads_transport",
+              "agriculture",
+              "fisheries",
+              "employment",
+              "education",
+              "drinking_water",
+              "healthcare",
+              "environment",
+              "waste_management",
+              "tourism_enterprise",
+              "digital_literacy",
+              "youth_skills",
+              "other"
+            ],
+            "title": "Category"
+          },
+          "area": {
+            "$ref": "#/components/schemas/ProposalAreaIn"
+          },
+          "problem": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 20,
+            "title": "Problem"
+          },
+          "solution": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 20,
+            "title": "Solution"
+          },
+          "benefit": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Benefit"
+          },
+          "costEstimate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 999999999999.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Costestimate",
+            "description": "Rupees, optional"
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence",
+            "description": "Supporting evidence, optional"
+          }
+        },
+        "type": "object",
+        "required": [
+          "clientReference",
+          "title",
+          "category",
+          "area",
+          "problem",
+          "solution",
+          "benefit"
+        ],
+        "title": "ProposalIn"
+      },
+      "ProposalMoveIn": {
+        "properties": {
+          "stage": {
+            "type": "string",
+            "enum": [
+              "review",
+              "rejected",
+              "approved_for_planning",
+              "funding_identified",
+              "implementation",
+              "not_taken_forward"
+            ],
+            "title": "Stage"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stage"
+        ],
+        "title": "ProposalMoveIn"
+      },
+      "ProposalRevisionIn": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 5,
+            "title": "Title"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "roads_transport",
+              "agriculture",
+              "fisheries",
+              "employment",
+              "education",
+              "drinking_water",
+              "healthcare",
+              "environment",
+              "waste_management",
+              "tourism_enterprise",
+              "digital_literacy",
+              "youth_skills",
+              "other"
+            ],
+            "title": "Category"
+          },
+          "problem": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 20,
+            "title": "Problem"
+          },
+          "solution": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 20,
+            "title": "Solution"
+          },
+          "benefit": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Benefit"
+          },
+          "costEstimate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 999999999999.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Costestimate"
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "category",
+          "problem",
+          "solution",
+          "benefit"
+        ],
+        "title": "ProposalRevisionIn"
+      },
+      "ProposalSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "proposalRef": {
+            "type": "string",
+            "title": "Proposalref"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "roads_transport",
+              "agriculture",
+              "fisheries",
+              "employment",
+              "education",
+              "drinking_water",
+              "healthcare",
+              "environment",
+              "waste_management",
+              "tourism_enterprise",
+              "digital_literacy",
+              "youth_skills",
+              "other"
+            ],
+            "title": "Category"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "pending_moderation",
+              "rejected",
+              "review",
+              "approved_for_planning",
+              "funding_identified",
+              "implementation",
+              "not_taken_forward",
+              "withdrawn"
+            ],
+            "title": "Stage"
+          },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "proposalRef",
+          "title",
+          "category",
+          "areaKey",
+          "stage",
+          "mine",
+          "updatedAt"
+        ],
+        "title": "ProposalSummaryOut"
+      },
       "PublicCardOut": {
         "properties": {
           "displayName": {
@@ -29248,6 +31341,46 @@
         ],
         "title": "QualityOut",
         "description": "M01 capture advice for the member (FR-IDV-001): never a decision, and the photo still counts as received."
+      },
+      "QuestionResultOut": {
+        "properties": {
+          "question": {
+            "$ref": "#/components/schemas/SurveyQuestionOut"
+          },
+          "answered": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answered"
+          },
+          "counts": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Counts",
+            "description": "Option key (or 1 to 5) to a count; null means 1 to 9"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question",
+          "answered",
+          "counts"
+        ],
+        "title": "QuestionResultOut"
       },
       "QueueCountsOut": {
         "properties": {
@@ -32183,6 +34316,82 @@
         ],
         "title": "StaffTimelineEvent"
       },
+      "StageEventOut": {
+        "properties": {
+          "fromStage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "pending_moderation",
+                  "rejected",
+                  "review",
+                  "approved_for_planning",
+                  "funding_identified",
+                  "implementation",
+                  "not_taken_forward",
+                  "withdrawn"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fromstage"
+          },
+          "toStage": {
+            "type": "string",
+            "enum": [
+              "pending_moderation",
+              "rejected",
+              "review",
+              "approved_for_planning",
+              "funding_identified",
+              "implementation",
+              "not_taken_forward",
+              "withdrawn"
+            ],
+            "title": "Tostage"
+          },
+          "actorTier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actortier",
+            "description": "The tier that recorded it; never the person's name"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurredat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fromStage",
+          "toStage",
+          "actorTier",
+          "reason",
+          "occurredAt"
+        ],
+        "title": "StageEventOut"
+      },
       "StepOut": {
         "properties": {
           "name": {
@@ -32239,6 +34448,19 @@
         ],
         "title": "SubmitIn"
       },
+      "SupportIn": {
+        "properties": {
+          "support": {
+            "type": "boolean",
+            "title": "Support"
+          }
+        },
+        "type": "object",
+        "required": [
+          "support"
+        ],
+        "title": "SupportIn"
+      },
       "SurveyAnswersIn": {
         "properties": {
           "answers": {
@@ -32260,6 +34482,563 @@
           "answers"
         ],
         "title": "SurveyAnswersIn"
+      },
+      "SurveyAreaIn": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "province",
+              "district",
+              "ds",
+              "gn"
+            ],
+            "title": "Level"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 2,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "code"
+        ],
+        "title": "SurveyAreaIn"
+      },
+      "SurveyDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "surveyRef": {
+            "type": "string",
+            "title": "Surveyref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "audienceEn": {
+            "type": "string",
+            "title": "Audienceen"
+          },
+          "audienceTa": {
+            "type": "string",
+            "title": "Audienceta"
+          },
+          "anonymous": {
+            "type": "boolean",
+            "title": "Anonymous",
+            "description": "True only when the answers are stored with no link to the member"
+          },
+          "allowEdits": {
+            "type": "boolean",
+            "title": "Allowedits"
+          },
+          "closesAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closesat"
+          },
+          "receipt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SurveyReceiptOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "privacyEn": {
+            "type": "string",
+            "title": "Privacyen"
+          },
+          "privacyTa": {
+            "type": "string",
+            "title": "Privacyta"
+          },
+          "nextStepsEn": {
+            "type": "string",
+            "title": "Nextstepsen"
+          },
+          "nextStepsTa": {
+            "type": "string",
+            "title": "Nextstepsta"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "open",
+              "closed"
+            ],
+            "title": "State"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/SurveyQuestionOut"
+            },
+            "type": "array",
+            "title": "Questions"
+          },
+          "myAnswers": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Myanswers",
+            "description": "The member's own answers, for an identified survey that allows edits"
+          },
+          "canAnswer": {
+            "type": "boolean",
+            "title": "Cananswer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "surveyRef",
+          "titleEn",
+          "titleTa",
+          "audienceEn",
+          "audienceTa",
+          "anonymous",
+          "allowEdits",
+          "closesAt",
+          "receipt",
+          "privacyEn",
+          "privacyTa",
+          "nextStepsEn",
+          "nextStepsTa",
+          "state",
+          "questions",
+          "myAnswers",
+          "canAnswer"
+        ],
+        "title": "SurveyDetailOut"
+      },
+      "SurveyIn": {
+        "properties": {
+          "titleEn": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 5,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 5,
+            "title": "Titleta"
+          },
+          "audienceEn": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Audienceen"
+          },
+          "audienceTa": {
+            "type": "string",
+            "maxLength": 400,
+            "minLength": 3,
+            "title": "Audienceta"
+          },
+          "privacyEn": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Privacyen"
+          },
+          "privacyTa": {
+            "type": "string",
+            "maxLength": 1500,
+            "minLength": 10,
+            "title": "Privacyta"
+          },
+          "nextStepsEn": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Nextstepsen"
+          },
+          "nextStepsTa": {
+            "type": "string",
+            "maxLength": 1500,
+            "minLength": 10,
+            "title": "Nextstepsta"
+          },
+          "anonymous": {
+            "type": "boolean",
+            "title": "Anonymous",
+            "default": false
+          },
+          "allowEdits": {
+            "type": "boolean",
+            "title": "Allowedits",
+            "default": false
+          },
+          "closesAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closesat"
+          },
+          "area": {
+            "$ref": "#/components/schemas/SurveyAreaIn"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/SurveyQuestionIn"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "titleEn",
+          "titleTa",
+          "audienceEn",
+          "audienceTa",
+          "privacyEn",
+          "privacyTa",
+          "nextStepsEn",
+          "nextStepsTa",
+          "area",
+          "questions"
+        ],
+        "title": "SurveyIn"
+      },
+      "SurveyOptionModel": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]{1,40}$",
+            "title": "Key"
+          },
+          "en": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "En"
+          },
+          "ta": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Ta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "en",
+          "ta"
+        ],
+        "title": "SurveyOptionModel"
+      },
+      "SurveyQuestionIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "single",
+              "multiple",
+              "scale",
+              "text"
+            ],
+            "title": "Kind"
+          },
+          "promptEn": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Prompten"
+          },
+          "promptTa": {
+            "type": "string",
+            "maxLength": 400,
+            "minLength": 3,
+            "title": "Promptta"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/SurveyOptionModel"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Options"
+          },
+          "sensitive": {
+            "type": "boolean",
+            "title": "Sensitive",
+            "default": false
+          },
+          "required": {
+            "type": "boolean",
+            "title": "Required",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "promptEn",
+          "promptTa"
+        ],
+        "title": "SurveyQuestionIn"
+      },
+      "SurveyQuestionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "single",
+              "multiple",
+              "scale",
+              "text"
+            ],
+            "title": "Kind"
+          },
+          "promptEn": {
+            "type": "string",
+            "title": "Prompten"
+          },
+          "promptTa": {
+            "type": "string",
+            "title": "Promptta"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/SurveyOptionModel"
+            },
+            "type": "array",
+            "title": "Options"
+          },
+          "sensitive": {
+            "type": "boolean",
+            "title": "Sensitive",
+            "description": "Offers \"Prefer not to say\" (FR-SRV-004)"
+          },
+          "required": {
+            "type": "boolean",
+            "title": "Required"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "position",
+          "kind",
+          "promptEn",
+          "promptTa",
+          "options",
+          "sensitive",
+          "required"
+        ],
+        "title": "SurveyQuestionOut"
+      },
+      "SurveyReceiptOut": {
+        "properties": {
+          "receiptRef": {
+            "type": "string",
+            "title": "Receiptref"
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Submittedat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "receiptRef",
+          "submittedAt",
+          "updatedAt"
+        ],
+        "title": "SurveyReceiptOut"
+      },
+      "SurveyResponseIn": {
+        "properties": {
+          "answers": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Answers",
+            "description": "Question id to an option key, a list of keys, 1 to 5, text, or prefer_not_to_say"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answers"
+        ],
+        "title": "SurveyResponseIn"
+      },
+      "SurveyResultsOut": {
+        "properties": {
+          "survey": {
+            "$ref": "#/components/schemas/ManagedSurveyOut"
+          },
+          "responses": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Responses"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionResultOut"
+            },
+            "type": "array",
+            "title": "Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "survey",
+          "responses",
+          "questions"
+        ],
+        "title": "SurveyResultsOut"
+      },
+      "SurveyStateIn": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "title": "State"
+          }
+        },
+        "type": "object",
+        "required": [
+          "state"
+        ],
+        "title": "SurveyStateIn"
+      },
+      "SurveySummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "surveyRef": {
+            "type": "string",
+            "title": "Surveyref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "audienceEn": {
+            "type": "string",
+            "title": "Audienceen"
+          },
+          "audienceTa": {
+            "type": "string",
+            "title": "Audienceta"
+          },
+          "anonymous": {
+            "type": "boolean",
+            "title": "Anonymous",
+            "description": "True only when the answers are stored with no link to the member"
+          },
+          "allowEdits": {
+            "type": "boolean",
+            "title": "Allowedits"
+          },
+          "closesAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closesat"
+          },
+          "receipt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SurveyReceiptOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "surveyRef",
+          "titleEn",
+          "titleTa",
+          "audienceEn",
+          "audienceTa",
+          "anonymous",
+          "allowEdits",
+          "closesAt",
+          "receipt"
+        ],
+        "title": "SurveySummaryOut"
       },
       "SwitchIn": {
         "properties": {

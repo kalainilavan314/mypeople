@@ -37,6 +37,8 @@ FEATURES: dict[str, Feature] = {
         Feature("community_finance", "Community Finance via Bank Transfer Slips (M1.4, FR-FUND)", 1),
         Feature("community_issues", "My Area, issue reporting and case escalation (FR-RPT, FR-WEB-014 to 029)", 2),
         Feature("volunteering", "Volunteer skills, opportunities and assignments (FR-VOL-001 to 008)", 2),
+        Feature("ideas_surveys", "Community ideas and surveys (FR-IDEA-001 to 004, FR-SRV-001 to 006)", 2),
+        Feature("development_proposals", "Our Development Ideas: development proposals (FR-DEV-001 to 008)", 2),
     )
 }
 

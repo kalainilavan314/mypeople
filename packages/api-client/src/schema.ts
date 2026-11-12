@@ -3263,6 +3263,381 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/ideas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Board
+         * @description H13: Local ideas (published in the member's area) and My ideas (every state).
+         */
+        get: operations["read_board_v1_ideas_get"];
+        put?: never;
+        /**
+         * Submit Idea
+         * @description FR-IDEA-002: a receipt; shown to others only after moderation.
+         */
+        post: operations["submit_idea_v1_ideas_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ideas/{idea_id}/support": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Support
+         * @description FR-IDEA-004: one support per member; it never changes the idea's status.
+         */
+        put: operations["set_support_v1_ideas__idea_id__support_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ideas/{idea_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw Idea */
+        post: operations["withdraw_idea_v1_ideas__idea_id__withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ideas/moderation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Pending
+         * @description D12: ideas waiting for moderation in the moderator's areas, oldest first.
+         */
+        get: operations["list_pending_v1_ideas_moderation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ideas/{idea_id}/moderation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Moderate Idea */
+        post: operations["moderate_idea_v1_ideas__idea_id__moderation_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/surveys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Surveys
+         * @description Open surveys for the member's area, with their receipt where they have answered.
+         */
+        get: operations["list_surveys_v1_surveys_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/surveys/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Managed */
+        get: operations["list_managed_v1_surveys_manage_get"];
+        put?: never;
+        /** Create Survey */
+        post: operations["create_survey_v1_surveys_manage_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/surveys/manage/{survey_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update Survey
+         * @description Drafts only; once open, a survey's questions never change under the people answering it.
+         */
+        put: operations["update_survey_v1_surveys_manage__survey_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/surveys/manage/{survey_id}/state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Move Survey */
+        post: operations["move_survey_v1_surveys_manage__survey_id__state_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/surveys/manage/{survey_id}/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Results
+         * @description Counts only; groups of 1 to 9 are hidden.
+         */
+        get: operations["read_results_v1_surveys_manage__survey_id__results_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/surveys/{survey_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Survey
+         * @description H14: the questions, audience and privacy statement; or the receipt once answered (H21).
+         */
+        get: operations["read_survey_v1_surveys__survey_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/surveys/{survey_id}/responses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Respond
+         * @description FR-SRV-005, 006: one response per member; the receipt and "What happens next" come back.
+         */
+        post: operations["respond_v1_surveys__survey_id__responses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Browse
+         * @description M15: proposals for my area and my own proposals; `q` matches words in Tamil or English.
+         */
+        get: operations["browse_v1_proposals_get"];
+        put?: never;
+        /**
+         * Submit
+         * @description M16: moderated before anyone else sees it.
+         */
+        post: operations["submit_v1_proposals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Staff Queue
+         * @description D15: proposals in the viewer's areas, newest activity first.
+         */
+        get: operations["staff_queue_v1_proposals_manage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/manage/needs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Regional Needs
+         * @description FR-DEV-008: published proposals by area and category; groups under 10 hidden or merged.
+         */
+        get: operations["regional_needs_v1_proposals_manage_needs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/manage/{proposal_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Staff Read */
+        get: operations["staff_read_v1_proposals_manage__proposal_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/manage/{proposal_id}/stage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Move
+         * @description FR-DEV-003, 006: moderate, or move a stage with the authority it needs; the author is told.
+         */
+        post: operations["move_v1_proposals_manage__proposal_id__stage_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/{proposal_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read
+         * @description M17: stage, decision reason and history.
+         */
+        get: operations["read_v1_proposals__proposal_id__get"];
+        /**
+         * Revise
+         * @description A rejected proposal, revised and sent back to moderation.
+         */
+        put: operations["revise_v1_proposals__proposal_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/{proposal_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw */
+        post: operations["withdraw_v1_proposals__proposal_id__withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -4962,7 +5337,7 @@ export interface components {
              * Kind
              * @enum {string}
              */
-            kind: "identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer";
+            kind: "identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal";
             /** Reference */
             reference: string;
             /** Title */
@@ -8108,6 +8483,65 @@ export interface components {
             /** Name */
             name?: string | null;
         };
+        /** IdeaBoardOut */
+        IdeaBoardOut: {
+            /** Local */
+            local: components["schemas"]["IdeaOut"][];
+            /** Mine */
+            mine: components["schemas"]["IdeaOut"][];
+        };
+        /** IdeaIn */
+        IdeaIn: {
+            /** Title */
+            title: string;
+            /**
+             * Benefit
+             * @description The local benefit
+             */
+            benefit: string;
+        };
+        /** IdeaModerationIn */
+        IdeaModerationIn: {
+            /** Publish */
+            publish: boolean;
+            /** Reason */
+            reason?: string | null;
+        };
+        /** IdeaOut */
+        IdeaOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Idearef */
+            ideaRef: string;
+            /** Title */
+            title: string;
+            /** Benefit */
+            benefit: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "published" | "rejected" | "withdrawn";
+            /**
+             * Moderationreason
+             * @description Shown to the author when the idea was not published
+             */
+            moderationReason: string | null;
+            /** Supports */
+            supports: number;
+            /** Supported */
+            supported: boolean;
+            /** Mine */
+            mine: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** IdentityDataItemOut */
         IdentityDataItemOut: {
             /** Dataen */
@@ -8755,6 +9189,43 @@ export interface components {
              */
             createdAt: string;
         };
+        /** ManagedSurveyOut */
+        ManagedSurveyOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Surveyref */
+            surveyRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "open" | "closed";
+            /** Anonymous */
+            anonymous: boolean;
+            /** Allowedits */
+            allowEdits: boolean;
+            /** Areakey */
+            areaKey: string;
+            /** Closesat */
+            closesAt: string | null;
+            /**
+             * Responses
+             * @description Hidden (null) while 1 to 9
+             */
+            responses: number | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** ManualCheckInIn */
         ManualCheckInIn: {
             /**
@@ -9172,6 +9643,26 @@ export interface components {
             decidedAt: string | null;
             /** History */
             history: components["schemas"]["MemberDecisionOut"][];
+        };
+        /** NeedsCellOut */
+        NeedsCellOut: {
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "roads_transport" | "agriculture" | "fisheries" | "employment" | "education" | "drinking_water" | "healthcare" | "environment" | "waste_management" | "tourism_enterprise" | "digital_literacy" | "youth_skills" | "other";
+            /**
+             * Count
+             * @description Null means fewer than 10
+             */
+            count: number | null;
+        };
+        /** NeedsOut */
+        NeedsOut: {
+            /** Cells */
+            cells: components["schemas"]["NeedsCellOut"][];
         };
         /** NoteIn */
         NoteIn: {
@@ -9642,6 +10133,27 @@ export interface components {
             resetToken: string;
             /** Newpassword */
             newPassword: string;
+        };
+        /** PendingIdeaOut */
+        PendingIdeaOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Idearef */
+            ideaRef: string;
+            /** Title */
+            title: string;
+            /** Benefit */
+            benefit: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** PeriodFileOut */
         PeriodFileOut: {
@@ -10151,6 +10663,174 @@ export interface components {
             /** Reviewstate */
             reviewState: string | null;
         };
+        /** ProposalAreaIn */
+        ProposalAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+        };
+        /** ProposalBoardOut */
+        ProposalBoardOut: {
+            /** Area */
+            area: components["schemas"]["ProposalSummaryOut"][];
+            /** Mine */
+            mine: components["schemas"]["ProposalSummaryOut"][];
+        };
+        /** ProposalDetailOut */
+        ProposalDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Proposalref */
+            proposalRef: string;
+            /** Title */
+            title: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "roads_transport" | "agriculture" | "fisheries" | "employment" | "education" | "drinking_water" | "healthcare" | "environment" | "waste_management" | "tourism_enterprise" | "digital_literacy" | "youth_skills" | "other";
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "pending_moderation" | "rejected" | "review" | "approved_for_planning" | "funding_identified" | "implementation" | "not_taken_forward" | "withdrawn";
+            /** Mine */
+            mine: boolean;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Problem */
+            problem: string;
+            /** Solution */
+            solution: string;
+            /** Benefit */
+            benefit: string;
+            /** Costestimate */
+            costEstimate: string | null;
+            /** Evidence */
+            evidence: string | null;
+            /**
+             * Stagereason
+             * @description The decision reason shown to members (FR-DEV-007)
+             */
+            stageReason: string | null;
+            /** Revision */
+            revision: number;
+            /** Publishedat */
+            publishedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** History */
+            history: components["schemas"]["StageEventOut"][];
+        };
+        /** ProposalIn */
+        ProposalIn: {
+            /**
+             * Clientreference
+             * Format: uuid
+             * @description Made once per draft; sending a draft twice returns the first proposal
+             */
+            clientReference: string;
+            /** Title */
+            title: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "roads_transport" | "agriculture" | "fisheries" | "employment" | "education" | "drinking_water" | "healthcare" | "environment" | "waste_management" | "tourism_enterprise" | "digital_literacy" | "youth_skills" | "other";
+            area: components["schemas"]["ProposalAreaIn"];
+            /** Problem */
+            problem: string;
+            /** Solution */
+            solution: string;
+            /** Benefit */
+            benefit: string;
+            /**
+             * Costestimate
+             * @description Rupees, optional
+             */
+            costEstimate?: number | string | null;
+            /**
+             * Evidence
+             * @description Supporting evidence, optional
+             */
+            evidence?: string | null;
+        };
+        /** ProposalMoveIn */
+        ProposalMoveIn: {
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "review" | "rejected" | "approved_for_planning" | "funding_identified" | "implementation" | "not_taken_forward";
+            /** Reason */
+            reason?: string | null;
+        };
+        /** ProposalRevisionIn */
+        ProposalRevisionIn: {
+            /** Title */
+            title: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "roads_transport" | "agriculture" | "fisheries" | "employment" | "education" | "drinking_water" | "healthcare" | "environment" | "waste_management" | "tourism_enterprise" | "digital_literacy" | "youth_skills" | "other";
+            /** Problem */
+            problem: string;
+            /** Solution */
+            solution: string;
+            /** Benefit */
+            benefit: string;
+            /** Costestimate */
+            costEstimate?: number | string | null;
+            /** Evidence */
+            evidence?: string | null;
+        };
+        /** ProposalSummaryOut */
+        ProposalSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Proposalref */
+            proposalRef: string;
+            /** Title */
+            title: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "roads_transport" | "agriculture" | "fisheries" | "employment" | "education" | "drinking_water" | "healthcare" | "environment" | "waste_management" | "tourism_enterprise" | "digital_literacy" | "youth_skills" | "other";
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "pending_moderation" | "rejected" | "review" | "approved_for_planning" | "funding_identified" | "implementation" | "not_taken_forward" | "withdrawn";
+            /** Mine */
+            mine: boolean;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
         /**
          * PublicCardOut
          * @description What a shared public card may show (FR-CARD-012, BR-067): no QR, no identity numbers.
@@ -10217,6 +10897,19 @@ export interface components {
             checked: boolean;
             /** Problems */
             problems: ("blurry" | "too_dark" | "glare" | "too_small")[];
+        };
+        /** QuestionResultOut */
+        QuestionResultOut: {
+            question: components["schemas"]["SurveyQuestionOut"];
+            /** Answered */
+            answered: number | null;
+            /**
+             * Counts
+             * @description Option key (or 1 to 5) to a count; null means 1 to 9
+             */
+            counts: {
+                [key: string]: number | null;
+            };
         };
         /** QueueCountsOut */
         QueueCountsOut: {
@@ -11417,6 +12110,28 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** StageEventOut */
+        StageEventOut: {
+            /** Fromstage */
+            fromStage: ("pending_moderation" | "rejected" | "review" | "approved_for_planning" | "funding_identified" | "implementation" | "not_taken_forward" | "withdrawn") | null;
+            /**
+             * Tostage
+             * @enum {string}
+             */
+            toStage: "pending_moderation" | "rejected" | "review" | "approved_for_planning" | "funding_identified" | "implementation" | "not_taken_forward" | "withdrawn";
+            /**
+             * Actortier
+             * @description The tier that recorded it; never the person's name
+             */
+            actorTier: string | null;
+            /** Reason */
+            reason: string | null;
+            /**
+             * Occurredat
+             * Format: date-time
+             */
+            occurredAt: string;
+        };
         /** StepOut */
         StepOut: {
             /** Name */
@@ -11442,6 +12157,11 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** SupportIn */
+        SupportIn: {
+            /** Support */
+            support: boolean;
+        };
         /** SurveyAnswersIn */
         SurveyAnswersIn: {
             /**
@@ -11451,6 +12171,232 @@ export interface components {
             answers: {
                 [key: string]: string;
             };
+        };
+        /** SurveyAreaIn */
+        SurveyAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "province" | "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+        };
+        /** SurveyDetailOut */
+        SurveyDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Surveyref */
+            surveyRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Audienceen */
+            audienceEn: string;
+            /** Audienceta */
+            audienceTa: string;
+            /**
+             * Anonymous
+             * @description True only when the answers are stored with no link to the member
+             */
+            anonymous: boolean;
+            /** Allowedits */
+            allowEdits: boolean;
+            /** Closesat */
+            closesAt: string | null;
+            receipt: components["schemas"]["SurveyReceiptOut"] | null;
+            /** Privacyen */
+            privacyEn: string;
+            /** Privacyta */
+            privacyTa: string;
+            /** Nextstepsen */
+            nextStepsEn: string;
+            /** Nextstepsta */
+            nextStepsTa: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "open" | "closed";
+            /** Questions */
+            questions: components["schemas"]["SurveyQuestionOut"][];
+            /**
+             * Myanswers
+             * @description The member's own answers, for an identified survey that allows edits
+             */
+            myAnswers: {
+                [key: string]: unknown;
+            } | null;
+            /** Cananswer */
+            canAnswer: boolean;
+        };
+        /** SurveyIn */
+        SurveyIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Audienceen */
+            audienceEn: string;
+            /** Audienceta */
+            audienceTa: string;
+            /** Privacyen */
+            privacyEn: string;
+            /** Privacyta */
+            privacyTa: string;
+            /** Nextstepsen */
+            nextStepsEn: string;
+            /** Nextstepsta */
+            nextStepsTa: string;
+            /**
+             * Anonymous
+             * @default false
+             */
+            anonymous: boolean;
+            /**
+             * Allowedits
+             * @default false
+             */
+            allowEdits: boolean;
+            /** Closesat */
+            closesAt?: string | null;
+            area: components["schemas"]["SurveyAreaIn"];
+            /** Questions */
+            questions: components["schemas"]["SurveyQuestionIn"][];
+        };
+        /** SurveyOptionModel */
+        SurveyOptionModel: {
+            /** Key */
+            key: string;
+            /** En */
+            en: string;
+            /** Ta */
+            ta: string;
+        };
+        /** SurveyQuestionIn */
+        SurveyQuestionIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "single" | "multiple" | "scale" | "text";
+            /** Prompten */
+            promptEn: string;
+            /** Promptta */
+            promptTa: string;
+            /** Options */
+            options?: components["schemas"]["SurveyOptionModel"][];
+            /**
+             * Sensitive
+             * @default false
+             */
+            sensitive: boolean;
+            /**
+             * Required
+             * @default true
+             */
+            required: boolean;
+        };
+        /** SurveyQuestionOut */
+        SurveyQuestionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Position */
+            position: number;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "single" | "multiple" | "scale" | "text";
+            /** Prompten */
+            promptEn: string;
+            /** Promptta */
+            promptTa: string;
+            /** Options */
+            options: components["schemas"]["SurveyOptionModel"][];
+            /**
+             * Sensitive
+             * @description Offers "Prefer not to say" (FR-SRV-004)
+             */
+            sensitive: boolean;
+            /** Required */
+            required: boolean;
+        };
+        /** SurveyReceiptOut */
+        SurveyReceiptOut: {
+            /** Receiptref */
+            receiptRef: string;
+            /**
+             * Submittedat
+             * Format: date-time
+             */
+            submittedAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /** SurveyResponseIn */
+        SurveyResponseIn: {
+            /**
+             * Answers
+             * @description Question id to an option key, a list of keys, 1 to 5, text, or prefer_not_to_say
+             */
+            answers: {
+                [key: string]: unknown;
+            };
+        };
+        /** SurveyResultsOut */
+        SurveyResultsOut: {
+            survey: components["schemas"]["ManagedSurveyOut"];
+            /** Responses */
+            responses: number | null;
+            /** Questions */
+            questions: components["schemas"]["QuestionResultOut"][];
+        };
+        /** SurveyStateIn */
+        SurveyStateIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "closed";
+        };
+        /** SurveySummaryOut */
+        SurveySummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Surveyref */
+            surveyRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Audienceen */
+            audienceEn: string;
+            /** Audienceta */
+            audienceTa: string;
+            /**
+             * Anonymous
+             * @description True only when the answers are stored with no link to the member
+             */
+            anonymous: boolean;
+            /** Allowedits */
+            allowEdits: boolean;
+            /** Closesat */
+            closesAt: string | null;
+            receipt: components["schemas"]["SurveyReceiptOut"] | null;
         };
         /** SwitchIn */
         SwitchIn: {
@@ -19041,6 +19987,701 @@ export interface operations {
             };
         };
     };
+    read_board_v1_ideas_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdeaBoardOut"];
+                };
+            };
+        };
+    };
+    submit_idea_v1_ideas_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdeaIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdeaOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_support_v1_ideas__idea_id__support_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                idea_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdeaOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_idea_v1_ideas__idea_id__withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                idea_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdeaOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_pending_v1_ideas_moderation_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingIdeaOut"][];
+                };
+            };
+        };
+    };
+    moderate_idea_v1_ideas__idea_id__moderation_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                idea_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdeaModerationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingIdeaOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_surveys_v1_surveys_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SurveySummaryOut"][];
+                };
+            };
+        };
+    };
+    list_managed_v1_surveys_manage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedSurveyOut"][];
+                };
+            };
+        };
+    };
+    create_survey_v1_surveys_manage_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SurveyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedSurveyOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_survey_v1_surveys_manage__survey_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                survey_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SurveyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedSurveyOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    move_survey_v1_surveys_manage__survey_id__state_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                survey_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SurveyStateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedSurveyOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_results_v1_surveys_manage__survey_id__results_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                survey_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SurveyResultsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_survey_v1_surveys__survey_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                survey_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SurveyDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    respond_v1_surveys__survey_id__responses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                survey_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SurveyResponseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SurveyDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    browse_v1_proposals_get: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                category?: ("roads_transport" | "agriculture" | "fisheries" | "employment" | "education" | "drinking_water" | "healthcare" | "environment" | "waste_management" | "tourism_enterprise" | "digital_literacy" | "youth_skills" | "other") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalBoardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_v1_proposals_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProposalIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    staff_queue_v1_proposals_manage_get: {
+        parameters: {
+            query?: {
+                stage?: ("pending_moderation" | "rejected" | "review" | "approved_for_planning" | "funding_identified" | "implementation" | "not_taken_forward" | "withdrawn")[] | null;
+                q?: string | null;
+                category?: ("roads_transport" | "agriculture" | "fisheries" | "employment" | "education" | "drinking_water" | "healthcare" | "environment" | "waste_management" | "tourism_enterprise" | "digital_literacy" | "youth_skills" | "other") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    regional_needs_v1_proposals_manage_needs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NeedsOut"];
+                };
+            };
+        };
+    };
+    staff_read_v1_proposals_manage__proposal_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    move_v1_proposals_manage__proposal_id__stage_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProposalMoveIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_v1_proposals__proposal_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revise_v1_proposals__proposal_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProposalRevisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_v1_proposals__proposal_id__withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     read_home_v1_home_get: {
         parameters: {
             query?: never;
@@ -19117,7 +20758,7 @@ export interface operations {
     list_activity_v1_profile_activity_get: {
         parameters: {
             query?: {
-                kind?: ("identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer") | null;
+                kind?: ("identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal") | null;
                 limit?: number;
             };
             header?: never;

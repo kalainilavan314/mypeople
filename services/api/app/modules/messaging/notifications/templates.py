@@ -292,4 +292,38 @@ TEMPLATES: dict[str, Template] = {
         "volunteer_contact",
         action_required=True,
     ),
+    # Ideas and development proposals (FR-IDEA-001, FR-DEV-003, 007).
+    "idea_published": Template(
+        "review",
+        "Your idea has been published",
+        "உங்கள் யோசனை வெளியிடப்பட்டது",
+        "Members in your area can now see and support it. Publishing does not approve a project or budget.",
+        "உங்கள் பகுதி உறுப்பினர்கள் இப்போது அதைப் பார்த்து ஆதரிக்கலாம். வெளியிடுவது திட்டத்தையோ நிதியையோ அங்கீகரிப்பதல்ல.",
+        "idea",
+    ),
+    "idea_rejected": Template(
+        "review",
+        "Your idea was not published",
+        "உங்கள் யோசனை வெளியிடப்படவில்லை",
+        "Open it to see the moderator's reason.",
+        "நடுவரின் காரணத்தைக் காண அதைத் திறக்கவும்.",
+        "idea",
+    ),
+    "proposal_stage": Template(
+        "review",
+        "Your development proposal has moved to a new stage",
+        "உங்கள் அபிவிருத்தி முன்மொழிவு புதிய கட்டத்துக்கு நகர்ந்துள்ளது",
+        "Open it to see the stage, the reason and the next step.",
+        "கட்டம், காரணம், அடுத்த படி ஆகியவற்றைக் காண அதைத் திறக்கவும்.",
+        "proposal",
+    ),
+    "proposal_rejected": Template(
+        "review",
+        "Your development proposal needs changes",
+        "உங்கள் அபிவிருத்தி முன்மொழிவுக்குத் திருத்தங்கள் தேவை",
+        "Open it for the moderator's reason; you can revise it and send it again.",
+        "நடுவரின் காரணத்தைப் பார்க்கவும்; திருத்தி மீண்டும் அனுப்பலாம்.",
+        "proposal",
+        action_required=True,
+    ),
 }

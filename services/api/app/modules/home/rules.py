@@ -50,6 +50,8 @@ GATED_BY_MODULE = {
     "area_projects": "community_issues",
     "volunteer": "volunteering",
     "volunteering": "volunteering",
+    "ideas": "ideas_surveys",
+    "surveys": "ideas_surveys",
 }
 
 # FR-HOME-007 [ASSUMPTION, policy for sponsor confirmation]: what a member who is not yet
