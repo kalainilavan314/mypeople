@@ -2,6 +2,8 @@
 
 `my-people.conf` is a reference copy of the current live My People site on the DigitalOcean production server (`/etc/nginx/sites-available/default`). The server file is the source of truth; this copy exists so changes can be reviewed and the setup rebuilt. The same server also hosts IBC Facts in its own site file, which is not ours to change.
 
+The other site files are copied the same way: `mypeople-mobile.conf` (the member and staff apps at `app.tmk.lk` and `staff.tmk.lk`, with their old nip.io names kept for `/v1` and redirects), `mypeople-admin.conf` (the dashboard at `admin.tmk.lk`) and `mypeople-www.conf` (the member PWA at `www.tmk.lk`). Staging has its own files in `deployment/staging/`.
+
 ---
 
 ## 1. Strangler Route Ownership (`/v1/` beside `/api/`)
