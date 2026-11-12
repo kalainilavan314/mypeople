@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -14,7 +14,8 @@ Db = Annotated[Session, Depends(get_db)]
 
 
 @router.get("")
-def read_home(member: CurrentMember, db: Db) -> HomeOut:
+def read_home(member: CurrentMember, db: Db, request: Request) -> HomeOut:
     """Everything the Home tab shows, decided by the server: H01 or H02, one next step, the next
     event nearby, and which quick actions, tabs and hub services are open or locked with why."""
-    return HomeOut.build(service.home(db, member.id))
+    flags_enforced = request.app.state.settings.feature_flags_enforced
+    return HomeOut.build(service.home(db, member.id, flags_enforced=flags_enforced))

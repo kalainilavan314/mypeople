@@ -339,6 +339,7 @@ export const en = {
     locked: 'Locked',
     reason_identity_not_verified: 'Opens after your identity is verified.',
     reason_membership_not_active: 'Opens when your membership is active.',
+    reason_not_open: 'Not open yet.',
     feature_report_issue: 'Report an issue',
     feature_volunteer: 'Volunteer',
     feature_my_area: 'My area',

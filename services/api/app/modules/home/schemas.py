@@ -16,7 +16,7 @@ class HomeFeatureOut(CamelModel):
 
     key: str
     available: bool
-    reason: Literal["identity_not_verified", "membership_not_active"] | None
+    reason: Literal["identity_not_verified", "membership_not_active", "not_open"] | None
     next_step: Literal["view_verification", "view_membership"] | None
 
     @classmethod

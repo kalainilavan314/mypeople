@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 from app.modules.access import repository as access_repository
 from app.modules.events import repository as events
 from app.modules.events.repository import EventListItem, StoredEvent
+from app.modules.features import repository as features_repository
 from app.modules.home import rules
 from app.modules.identity.recovery import repository as contacts
 from app.modules.identity.reviews import repository as reviews
@@ -51,12 +52,21 @@ class Home:
     hub: list[Lock]
 
 
-def _lock(feature: str, identity_verified: bool, membership_active: bool) -> Lock:
+def _lock(feature: str, identity_verified: bool, membership_active: bool, closed: frozenset[str]) -> Lock:
+    if feature in closed:
+        return Lock(feature, "not_open", None)
     lock = rules.feature_lock(feature, identity_verified=identity_verified, membership_active=membership_active)
     return Lock(feature, lock[0], lock[1]) if lock else Lock(feature, None, None)
 
 
-def home(db: Session, member_id: uuid.UUID) -> Home:
+def _closed_services(db: Session, flags_enforced: bool) -> frozenset[str]:
+    """Services whose module switch is off where switches are enforced (production)."""
+    if not flags_enforced:
+        return frozenset()
+    return frozenset(s for s, module in rules.GATED_BY_MODULE.items() if not features_repository.is_enabled(db, module))
+
+
+def home(db: Session, member_id: uuid.UUID, *, flags_enforced: bool = False) -> Home:
     profile = membership.find_member_profile(db, member_id)
     status = access_repository.find_member_status(db, member_id)
     assert profile is not None and status is not None
@@ -77,6 +87,7 @@ def home(db: Session, member_id: uuid.UUID) -> Home:
     if profile["gs_code"] is None:
         candidates.add("complete_profile")
     step = rules.next_step(candidates)
+    closed = _closed_services(db, flags_enforced)
 
     area_keys = [area.key for area in access_repository.member_area_path(db, member_id)]
     upcoming = events.published_events(
@@ -94,6 +105,6 @@ def home(db: Session, member_id: uuid.UUID) -> Home:
         next_step=step,
         next_step_event=soon if step == "event_soon" else None,
         coming_up=next((item for item in upcoming if item.event.state == "published"), None),
-        features=[_lock(f, verified, active) for f in (*rules.QUICK_ACTIONS, *TABS_WITH_LOCKS)],
-        hub=[_lock(s, verified, active) for s in rules.HUB_SERVICES],
+        features=[_lock(f, verified, active, closed) for f in (*rules.QUICK_ACTIONS, *TABS_WITH_LOCKS)],
+        hub=[_lock(s, verified, active, closed) for s in rules.HUB_SERVICES],
     )

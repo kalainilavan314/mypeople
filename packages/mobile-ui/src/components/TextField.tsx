@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
+import { Platform, Pressable, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 
 import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
 import { useTextScale } from '../display/DisplayPreferences';
@@ -108,6 +108,16 @@ const styles = StyleSheet.create({
   multiline: { minHeight: 112, alignItems: 'flex-start' },
   focused: { borderColor: colors.focusRing, borderWidth: 2 },
   invalid: { borderColor: colors.error },
-  input: { flex: 1, paddingHorizontal: spacing[4], paddingVertical: spacing[2], color: colors.text },
+  input: {
+    flex: 1,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
+    color: colors.text,
+    // The box around the input already shows focus (focusRing, 2 px). Without this the web build
+    // also draws the browser's own focus ring inside it: two borders. Chrome draws its 'auto' ring
+    // at any outline width, so the style itself must be none; React Native's types only list the
+    // native styles, hence the cast, which applies to the web build alone.
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object) : null),
+  },
   reveal: { width: control.input, height: control.input, alignItems: 'center', justifyContent: 'center' },
 });
