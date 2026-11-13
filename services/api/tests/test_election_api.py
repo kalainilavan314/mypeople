@@ -273,4 +273,8 @@ def test_no_field_records_a_vote_an_intention_or_proof_of_voting(make_client):
         for operation in operations.values():
             names.update(parameter["name"] for parameter in operation.get("parameters", []))
 
-    assert [n for n in names if re.search(r"vot(e|ed|er|ing)|ballot|intention", n, re.IGNORECASE)] == []
+    # The only votes in the API are on town hall questions (FR-THL-004: one per member per approved
+    # question, totals only), which rank questions and say nothing about how anyone votes in an election.
+    town_hall_question_votes = {"votes", "voted", "/v1/town-halls/questions/{question_id}/vote"}
+    found = [n for n in names if re.search(r"vot(e|ed|er|ing)|ballot|intention", n, re.IGNORECASE)]
+    assert sorted(set(found) - town_hall_question_votes) == []
