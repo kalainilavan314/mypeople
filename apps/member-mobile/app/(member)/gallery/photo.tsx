@@ -42,7 +42,7 @@ export default function PhotoScreen() {
   const album = useApiQuery(() => api().getAlbum(params.albumId), [params.albumId]);
 
   return (
-    <Screen edges={['bottom']}>
+    <Screen edges={['bottom']} maxContentWidth={720}>
       <QueryView query={album}>
         {(data) => {
           const photo = data.photos[Math.min(index, data.photos.length - 1)];
@@ -50,7 +50,7 @@ export default function PhotoScreen() {
           const caption = localized(photo.captionEn, photo.captionTa);
           return (
             <>
-              <View style={[styles.frame, { aspectRatio: photo.width / photo.height || 4 / 3 }]}>
+              <View style={[styles.frame, { aspectRatio: Math.max(0.8, Math.min(1.5, photo.width / photo.height || 4 / 3)) }]}>
                 <GalleryImage key={photo.id} photoId={photo.id} size="display" alt={caption} style={StyleSheet.absoluteFill} />
               </View>
               {photo.blurred ? <StatusTag tone="neutral" label={t('m.gallery.blurred')} /> : null}
@@ -138,7 +138,7 @@ function RemovalRequest({ photoId }: { photoId: string }) {
 }
 
 const styles = StyleSheet.create({
-  frame: { width: '100%', borderRadius: radius.card, overflow: 'hidden', backgroundColor: colors.surfaceVariant },
+  frame: { width: '100%', maxHeight: 520, alignSelf: 'center', borderRadius: radius.card, overflow: 'hidden', backgroundColor: colors.surfaceVariant },
   pager: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   pageButton: {
     width: control.touchMin,

@@ -133,7 +133,7 @@ def _load_for_decider(db: Session, staff: Staff, appeal_id: uuid.UUID, ip: str, 
     return appeal
 
 
-def queue(db: Session, staff: Staff, *, states: list[str], mine: bool, limit: int) -> list[StoredAppeal]:
+def queue(db: Session, staff: Staff, *, states: list[str], mine: bool, limit: int, offset: int = 0) -> list[StoredAppeal]:
     """D05: appeals in the areas where the person holds idv.appeal.decide, oldest first."""
     return repository.queue(
         db,
@@ -141,6 +141,7 @@ def queue(db: Session, staff: Staff, *, states: list[str], mine: bool, limit: in
         states=states,
         claimed_by=staff.member_id if mine else None,
         limit=limit,
+        offset=offset,
     )
 
 

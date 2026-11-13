@@ -21,6 +21,7 @@ export async function signIn(formData: FormData): Promise<void> {
     redirect(`/sign-in?error=${failure(error).code}`);
   }
   await saveStaffTokens(tokens.token, tokens.refreshToken);
+
   redirect('/mfa');
 }
 

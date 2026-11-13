@@ -99,6 +99,40 @@ def pass_code(client, auth, person: Row, event: dict) -> str:
     return response.json()["code"]
 
 
+def test_manager_list_pages_through_all_scoped_drafts(client, auth, manager, new_event):
+    first = new_event(publish=False)
+    second = new_event(publish=False)
+    headers = auth(manager)
+
+    page_one = client.get("/v1/events/manage", params={"state": "draft", "limit": 1, "offset": 0}, headers=headers)
+    page_two = client.get("/v1/events/manage", params={"state": "draft", "limit": 1, "offset": 1}, headers=headers)
+    page_three = client.get("/v1/events/manage", params={"state": "draft", "limit": 1, "offset": 2}, headers=headers)
+
+    assert page_one.status_code == page_two.status_code == page_three.status_code == 200
+    assert {page_one.json()[0]["id"], page_two.json()[0]["id"]} == {first["id"], second["id"]}
+    assert page_three.json() == []
+
+
+def test_manager_roster_csv_is_scoped_audited_and_spreadsheet_safe(client, db_session, auth, manager, member, new_event):
+    event = new_event()
+    db_session.execute(text("UPDATE npm.member SET full_name = '=1+1' WHERE id = :id"), {"id": member.id})
+    assert rsvp(client, auth, member, event, "going").status_code == 200
+
+    assert client.get(f"/v1/events/{event['id']}/attendance", headers=auth(manager)).status_code == 200
+
+    exported = client.get(f"/v1/events/manage/{event['id']}/attendance.csv", headers=auth(manager))
+
+    assert exported.status_code == 200
+    assert "attachment" in exported.headers["content-disposition"]
+    assert "'=1+1" in exported.text
+    assert "no-store" in exported.headers["cache-control"]
+    audit_row = db_session.execute(
+        text("SELECT details FROM ops.audit_log WHERE action = 'events.roster.exported' AND target_id = :id"),
+        {"id": event["id"]},
+    ).one()
+    assert audit_row.details["rows"] == 1
+
+
 def scan(client, auth, scanner: Row, event: dict, code: str) -> dict:
     response = client.post(f"/v1/events/{event['id']}/scan", json={"code": code}, headers=auth(scanner))
     assert response.status_code == 200, response.text

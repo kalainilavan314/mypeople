@@ -2,16 +2,15 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import type { HomeView } from '@my-people/api-client';
 import { router, type Href } from 'expo-router';
 import { useCallback } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens';
+import { colors, spacing } from '@my-people/design-tokens';
 
 import {
   AppText,
   Button,
   formatDateTime,
-  localHour,
   Notice,
   Screen,
   SurfaceCard,
@@ -23,7 +22,8 @@ import {
 
 import { QueryView } from '@/components/QueryView';
 import { EventRow } from '@/features/events/EventRow';
-import { FeatureTile } from '@/features/home/FeatureTile';
+import { HomeActionTile } from '@/features/home/HomeActionTile';
+import { MemberWelcomeCard } from '@/features/home/MemberWelcomeCard';
 import { api } from '@/lib/api';
 
 type NextStep = NonNullable<HomeView['nextStep']>;
@@ -36,69 +36,41 @@ function nextStepRoute(step: NextStep): Href {
     case 'event_soon':
       return step.eventId ? { pathname: '/events/[id]', params: { id: step.eventId } } : '/events';
     case 'confirm_recovery_number':
-      return '/profile/recovery-number';
+      return { pathname: '/profile/recovery-number', params: { from: 'home' } };
     case 'complete_profile':
       return '/profile/edit';
   }
 }
 
-function greetingKey(): string {
-  const hour = localHour();
-  return hour < 12 ? 'm.home.greetingMorning' : hour < 17 ? 'm.home.greetingAfternoon' : 'm.home.greetingEvening';
-}
-
 /** H01 for Verified and Active members, H02 while identity or membership is pending; the server decides which. */
 export default function HomeScreen() {
   const home = useApiQuery(() => api().getHome());
-  const inbox = useApiQuery(() => api().getNotifications({ limit: 1 }));
 
   const reload = useCallback(() => {
     home.reload();
-    inbox.reload();
-  }, [home.reload, inbox.reload]);
+  }, [home.reload]);
   useReloadOnFocus(reload);
 
   return (
-    <Screen onRefresh={reload} refreshing={home.loading && home.data !== undefined}>
-      <QueryView query={home}>{(data) => <HomeBody data={data} unread={inbox.data?.unread ?? 0} />}</QueryView>
+    <Screen edges={[]} maxContentWidth={720} onRefresh={reload} refreshing={home.loading && home.data !== undefined}>
+      <QueryView query={home}>{(data) => <HomeBody data={data} />}</QueryView>
     </Screen>
   );
 }
 
-function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
+function HomeBody({ data }: { data: HomeView }) {
   const { t } = useTranslation();
   const language = useLanguage();
   const localized = useLocalized();
   const place = [data.districtName, data.gnName].filter(Boolean).join(' / ');
   const next = data.nextStep;
+  const showComingUp = next?.kind !== 'event_soon';
 
   return (
     <>
-      <View style={styles.header}>
-        <View style={styles.headerText}>
-          <AppText step="page" accessibilityRole="header">
-            {`${t(greetingKey())}, ${data.displayName}`}
-          </AppText>
-          {place ? (
-            <View style={styles.place}>
-              <Ionicons name="location-outline" size={16} color={colors.textMuted} />
-              <AppText step="secondary" tone="muted">
-                {place}
-              </AppText>
-            </View>
-          ) : null}
-        </View>
-        <Pressable
-          onPress={() => router.push('/notifications')}
-          accessibilityRole="button"
-          accessibilityLabel={unread > 0 ? `${t('m.home.notifications')}, ${t('m.home.unread', { count: unread })}` : t('m.home.notifications')}
-          style={styles.bell}>
-          <Ionicons name="notifications-outline" size={22} color={colors.primary} />
-          {unread > 0 ? <View style={styles.dot} /> : null}
-        </Pressable>
-      </View>
+      <MemberWelcomeCard place={place} membershipState={data.membershipState} />
 
-      {data.layout === 'awaiting_review' ? (
+      {data.layout === 'awaiting_review' && !next ? (
         <Notice tone="warning" title={t('m.home.awaitingTitle')}>
           <AppText step="secondary" tone="warning">
             {t('m.home.awaitingBody')}
@@ -108,8 +80,8 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
       ) : null}
 
       {next ? (
-        <SurfaceCard accent>
-          <AppText step="caption" tone="muted">
+        <SurfaceCard accent style={styles.nextAction}>
+          <AppText step="caption" tone="primary">
             {t('m.home.nextStep')}
           </AppText>
           <AppText step="section">{t(`m.home.next_${next.kind}`)}</AppText>
@@ -128,51 +100,48 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
         </SurfaceCard>
       ) : null}
 
-      <AppText step="section" accessibilityRole="header">
+      <AppText step="section" accessibilityRole="header" style={styles.sectionTitle}>
         {t('m.home.quickActions')}
       </AppText>
-      <View style={styles.grid}>
-        {data.quickActions.map((feature) => (
-          <FeatureTile key={feature.key} feature={feature} />
+      <View style={styles.actionGrid}>
+        {data.quickActions.map((feature, index) => (
+          <HomeActionTile key={feature.key} feature={feature} tone={index === 0 || index === 3 ? 'red' : 'yellow'} />
         ))}
       </View>
 
-      <View style={styles.sectionRow}>
-        <AppText step="section" accessibilityRole="header" style={styles.flex}>
-          {t('m.home.comingUp')}
-        </AppText>
-        <Button label={t('m.common.seeAll')} variant="quiet" onPress={() => router.push('/events')} />
-      </View>
-      {data.comingUp ? (
-        <EventRow event={data.comingUp} />
-      ) : (
-        <SurfaceCard>
-          <AppText step="secondary" tone="muted">
-            {t('m.home.noEvents')}
-          </AppText>
-          <Button label={t('m.home.browseEvents')} variant="secondary" onPress={() => router.push('/events')} />
-        </SurfaceCard>
-      )}
-
-      <Button label={t('m.home.hub')} variant="secondary" icon="people-outline" onPress={() => router.push('/hub')} />
+      {showComingUp ? (
+        <>
+          <View style={styles.sectionRow}>
+            <AppText step="section" accessibilityRole="header" style={[styles.flex, styles.sectionTitle]}>
+              {t('m.home.comingUp')}
+            </AppText>
+            <Button label={t('m.common.seeAll')} variant="quiet" onPress={() => router.push('/events')} />
+          </View>
+          {data.comingUp ? (
+            <EventRow event={data.comingUp} />
+          ) : (
+            <SurfaceCard style={styles.emptyEvents}>
+              <View style={styles.emptyEventCopy}>
+                <Ionicons name="calendar-outline" size={34} color={colors.primary} />
+                <AppText step="body" tone="secondary" style={styles.flex}>
+                  {t('m.home.noEvents')}
+                </AppText>
+              </View>
+              <Button label={t('m.home.browseEvents')} variant="secondary" onPress={() => router.push('/events')} />
+            </SurfaceCard>
+          )}
+        </>
+      ) : null}
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3] },
-  headerText: { flex: 1, gap: spacing[2] },
-  place: { flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
-  bell: {
-    width: control.touchMin,
-    height: control.touchMin,
-    borderRadius: radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.surfaceVariant,
-  },
-  dot: { position: 'absolute', top: 10, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.error },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
+  nextAction: { backgroundColor: colors.primaryContainer, borderColor: colors.primaryContainer },
+  sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
+  actionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
   sectionRow: { flexDirection: 'row', alignItems: 'center' },
+  emptyEvents: { gap: spacing[4] },
+  emptyEventCopy: { flexDirection: 'row', alignItems: 'center', gap: spacing[3] },
   flex: { flex: 1 },
 });

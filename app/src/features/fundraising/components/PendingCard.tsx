@@ -3,6 +3,7 @@ import type { Donation } from '@/core/api/types';
 import { c, font, radius, shadow } from '@/core/theme/tokens';
 import { fmtDate } from '@/features/fundraising/PartyFund.model';
 import { fmtLKR } from '@/features/fundraising/PartyFund.model';
+import { Icon } from '@/shared/components/Icon';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 export function PendingCard({
@@ -44,7 +45,7 @@ export function PendingCard({
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span style={{ fontSize: 18, lineHeight: 1 }}>🧾</span>
+        <Icon name="fileText" size={18} color={c.ink2} />
         <span style={{ flex: 1, font: `700 14px/1.25 ${font.ta}`, color: c.ink }}>
           {donation.donorName}
         </span>

@@ -19,7 +19,11 @@ export default function AlbumScreen() {
   const album = useApiQuery(() => api().getAlbum(id), [id]);
 
   return (
-    <Screen edges={['bottom']} onRefresh={album.reload} refreshing={album.loading && album.data !== undefined}>
+    <Screen
+      edges={['bottom']}
+      maxContentWidth={720}
+      onRefresh={album.reload}
+      refreshing={album.loading && album.data !== undefined}>
       <QueryView query={album}>
         {(data) => (
           <>
@@ -47,7 +51,7 @@ export default function AlbumScreen() {
             <AppText step="label" tone="muted">
               {t('m.gallery.photos', { count: data.photos.length })}
             </AppText>
-            <View style={styles.grid}>
+            <View style={styles.grid} accessibilityRole="list">
               {data.photos.map((photo, index) => {
                 const caption = localized(photo.captionEn, photo.captionTa);
                 return (
@@ -55,6 +59,7 @@ export default function AlbumScreen() {
                     key={photo.id}
                     onPress={() => router.push({ pathname: '/gallery/photo', params: { albumId: data.id, index: String(index) } })}
                     accessibilityRole="button"
+                    accessibilityHint={t('m.gallery.openPhoto')}
                     accessibilityLabel={`${t('m.gallery.photoOf', { n: photo.number, total: data.photos.length })}. ${caption}`}
                     style={styles.tile}>
                     <GalleryImage photoId={photo.id} size="thumb" alt={caption} style={StyleSheet.absoluteFill} />
@@ -73,6 +78,7 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
   tile: {
     flexBasis: '31%',
+    minWidth: 100,
     flexGrow: 1,
     aspectRatio: 1,
     borderRadius: radius.control,

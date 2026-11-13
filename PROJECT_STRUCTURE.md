@@ -652,9 +652,8 @@ packages/
     src/
       index.ts
       fonts.ts             locked fonts and text styles for native apps
-      strings.ts           shared component text (Tamil pending review)
-      PlannedScreen.tsx
-      ServerStatus.tsx
+      strings.ts           shared component text for controls
+      components/          shared accessible mobile controls
       tabIcon.tsx
 apps/
   member-mobile/

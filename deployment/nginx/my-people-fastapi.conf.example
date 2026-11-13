@@ -1,0 +1,165 @@
+# Candidate Nginx Strangler Configuration for My People Go-Live
+# Specification: BRD MP-BRD-001 v1.1, Delivery Batch F3, docs/architecture/fastapi-go-live.md
+#
+# NOTE: This whole-site example is not the release drop-in and has not been
+# syntax-tested against the host's Certbot files or other sites. The reviewed
+# activation path is fastapi-v1-snippet.conf.example inside the existing site.
+
+# Upstream definitions with keepalive connections for socket reuse
+upstream express_backend {
+    server 127.0.0.1:3001;
+    keepalive 16;
+}
+
+upstream fastapi_backend {
+    server 127.0.0.1:8000;
+    keepalive 16;
+}
+
+upstream admin_backend {
+    server 127.0.0.1:3000;
+    keepalive 16;
+}
+
+# Rate limiting zones (placed in http context or main config)
+# limit_req_zone $binary_remote_addr zone=mypeople_auth_limit:10m rate=10r/m;
+# limit_req_zone $binary_remote_addr zone=mypeople_api_limit:10m rate=120r/m;
+
+server {
+    server_name 178.128.126.35.nip.io _;
+
+    # Default body limit for regular requests (prevents memory exhaustion)
+    client_max_body_size 2m;
+
+    # SSL configuration (managed by Certbot)
+    listen [::]:443 ssl;
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/178.128.126.35.nip.io/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/178.128.126.35.nip.io/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    # Security headers
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(self), microphone=(), geolocation=()" always;
+
+    # -------------------------------------------------------------------------
+    # 1. Private Media & Evidence Isolation (Strictly block static direct access)
+    # Evidence must ONLY be streamed through authenticated FastAPI endpoints (/v1/identity/evidence/...)
+    # -------------------------------------------------------------------------
+    location ^~ /evidence/ {
+        deny all;
+        return 403;
+    }
+
+    location ^~ /private/ {
+        deny all;
+        return 403;
+    }
+
+    # -------------------------------------------------------------------------
+    # 2. Fast Health Checks (Fail-fast timeouts for load balancers & monitoring)
+    # -------------------------------------------------------------------------
+    location = /v1/health {
+        proxy_pass http://fastapi_backend/v1/health;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 2s;
+        proxy_read_timeout 3s;
+        access_log off;
+    }
+
+    location = /api/health {
+        proxy_pass http://express_backend/api/health;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 2s;
+        proxy_read_timeout 3s;
+        access_log off;
+    }
+
+    # -------------------------------------------------------------------------
+    # 3. Document & Photo Uploads (15m body limit for NIC, passport, selfie, gallery)
+    # -------------------------------------------------------------------------
+    location ~ ^/v1/(identity/me/documents(/|$)|content/albums/[^/]+/photos/?$) {
+        client_max_body_size 15m;
+
+        proxy_pass http://fastapi_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        # Crucial: overwrite X-Forwarded-For with single trusted remote address
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection "";
+        proxy_read_timeout 60s;
+    }
+
+    # -------------------------------------------------------------------------
+    # 4. FastAPI Backend (/v1/ strangler route ownership)
+    # -------------------------------------------------------------------------
+    location /v1/ {
+        client_max_body_size 2m;
+
+        proxy_pass http://fastapi_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        # Crucial: overwrite X-Forwarded-For with single trusted remote address
+        # Uvicorn MUST run with: --proxy-headers --forwarded-allow-ips=127.0.0.1
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection "";
+        proxy_read_timeout 30s;
+    }
+
+    # -------------------------------------------------------------------------
+    # 5. Legacy Express API (/api/ route ownership)
+    # -------------------------------------------------------------------------
+    location /api/ {
+        client_max_body_size 12m;
+
+        proxy_pass http://express_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection "";
+        proxy_read_timeout 30s;
+    }
+
+    # -------------------------------------------------------------------------
+    # 6. Default Fallback & Member PWA (Served by Express)
+    # -------------------------------------------------------------------------
+    location / {
+        proxy_pass http://express_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection "";
+        proxy_read_timeout 30s;
+    }
+}
+
+# HTTP to HTTPS redirect
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name 178.128.126.35.nip.io _;
+
+    if ($host = 178.128.126.35.nip.io) {
+        return 301 https://$host$request_uri;
+    }
+    return 404;
+}

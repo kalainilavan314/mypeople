@@ -6,57 +6,62 @@
    Light is the primary theme; dark mode adapts with high-contrast lifted tones.
 =========================================================================== */
 :root {
-  /* Brand navy: #0F2942 on white measures 14.83:1. */
-  --primary: #0f2942;
-  --primary-dark: #091d30;
-  --primary-mid: #1b3a57;
-  --primary-light: #4a627c;
-  --primary-container: #e8edf3;
-  --on-primary-container: #0f2942;
+  /* Brand red: white on #B5121B measures 6.85:1. */
+  --primary: #b5121b;
+  --primary-dark: #8d0a12;
+  --primary-mid: #c51a23;
+  --primary-light: #d9585f;
+  --primary-container: #fbe9ea;
+  --on-primary-container: #8d0a12;
   --on-primary: #ffffff;
 
-  --maroon: #0f2942;
-  --maroon-hover: #1b3a57;
-  --maroon-pressed: #091d30;
-  --maroon-tint: rgba(15, 41, 66, 0.08);
-  --maroon-tint-soft: rgba(15, 41, 66, 0.04);
-  --maroon-tint-border: rgba(15, 41, 66, 0.2);
+  /* Yellow and gold are brand accents, not semantic status colours. */
+  --brand-yellow: #ffd32a;
+  --brand-gold: #d29a16;
+  --on-brand-accent: #211e1b;
 
-  /* Legacy accent aliases resolve to the single navy authority color. */
-  --secondary: #0f2942;
-  --secondary-container: #f1f5f9;
-  --on-secondary-container: #0f2942;
-  --accent: #0f2942;
-  --accent-hover: #091d30;
-  --accent-container: #f1f5f9;
-  --on-accent-container: #0f2942;
+  --maroon: #b5121b;
+  --maroon-hover: #c51a23;
+  --maroon-pressed: #8d0a12;
+  --maroon-tint: rgba(181, 18, 27, 0.08);
+  --maroon-tint-soft: rgba(181, 18, 27, 0.04);
+  --maroon-tint-border: rgba(181, 18, 27, 0.2);
+
+  /* Legacy aliases keep actions red; explicit brand tokens carry yellow/gold. */
+  --secondary: #ffd32a;
+  --secondary-container: #fff5c4;
+  --on-secondary-container: #211e1b;
+  --accent: #d29a16;
+  --accent-hover: #b9820e;
+  --accent-container: #fbf0d3;
+  --on-accent-container: #211e1b;
   --tertiary: #059669;
   --tertiary-container: #dcf3ea;
 
   /* --- Surfaces (spec §2.1) --------------------------------------------- */
-  --page: #f8fafc;
-  --page-outer: #eef2f7;
+  --page: #fffbf5;
+  --page-outer: #f7f0e6;
   --card: #ffffff;
-  --card-cream: #f8fafc;
+  --card-cream: #fffbf5;
   --card-warm: #ffffff;
-  --surface-variant: #f1f5f9;
-  --soft-blue: #f1f5f9;
-  --soft-gray: #f1f5f9;
+  --surface-variant: #f7f0e6;
+  --soft-blue: #f7f0e6;
+  --soft-gray: #f7f0e6;
   --soft-green: #ecfdf5;
 
   /* --- Ink ramp (spec text colours, WCAG AAA/AA on white) --------------- */
-  --ink: #0f172a;
-  --ink-0: #0f172a;
-  --ink-2: #334155;
-  --ink-3: #475569;
-  --ink-4: #475569;
-  --icon-muted: #94a3b8;
+  --ink: #211e1b;
+  --ink-0: #211e1b;
+  --ink-2: #514a43;
+  --ink-3: #665e56;
+  --ink-4: #665e56;
+  --icon-muted: #8c8175;
 
   /* --- Lines (spec border #E2E8F0 / divider #F1F5F9) -------------------- */
-  --hairline: #e2e8f0;
-  --hairline-2: #cbd5e1;
-  --hairline-3: #f1f5f9;
-  --control-border: #64748b;
+  --hairline: #eadfcf;
+  --hairline-2: #cdbfae;
+  --hairline-3: #f3eadf;
+  --control-border: #786d61;
 
   /* --- Semantic (spec §2.1: verified/pending/alert) -------------------- */
   --success: #059669;
@@ -65,30 +70,31 @@
   --warning: #d97706;
   --warning-text: #92400e;
   --warning-bg: #fffbeb;
-  --error: #dc2626;
+  /* #B91C1C keeps error text at WCAG AA contrast on --error-bg. */
+  --error: #b91c1c;
   --error-bg: #fef2f2;
-  --info: #0f2942;
+  --info: #8d0a12;
 
   /* --- Tier accents ----------------------------------------------------- */
   --sprout: #047857;
   --sprout-soft: rgba(5, 150, 105, 0.12);
   --root: #92400e;
   --root-soft: rgba(217, 119, 6, 0.14);
-  --palmyra: #4a627c;
+  --palmyra: #786d61;
 
-  --purple: #0f2942;
-  --lavender: #0f2942;
-  --gold: #b7791f;
+  --purple: #b5121b;
+  --lavender: #b5121b;
+  --gold: #d29a16;
 
   /* Legacy gradient aliases are solid fills. Photo counter scrims are local. */
-  --grad-primary: #0f2942;
+  --grad-primary: #b5121b;
   --grad-join: var(--grad-primary);
   --grad-you: var(--grad-primary);
-  --grad-volunteer: #0f2942;
-  --grad-survey: #0f2942;
-  --grad-community: #0f2942;
-  --grad-events: #0f2942;
-  --grad-agriculture: #0f2942;
+  --grad-volunteer: #b5121b;
+  --grad-survey: #b5121b;
+  --grad-community: #b5121b;
+  --grad-events: #b5121b;
+  --grad-agriculture: #b5121b;
   --green-gradient: var(--grad-primary);
 
   /* --- Radii (tags 4, inputs/buttons 8, cards 12) ----------------------- */
@@ -117,10 +123,10 @@
   --touch-min: 44px;
 
   /* --- Shadows ---------------------------------------------------------- */
-  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-nav: 0 -1px 0 rgba(20, 38, 61, 0.06);
-  --shadow-fab: 0 6px 16px -6px rgba(20, 38, 61, 0.35);
-  --shadow-lg: 0 8px 24px -8px rgba(20, 38, 61, 0.18);
+  --shadow-card: 0 1px 2px rgba(33, 30, 27, 0.04);
+  --shadow-nav: 0 -1px 0 rgba(33, 30, 27, 0.06);
+  --shadow-fab: 0 6px 16px -6px rgba(141, 10, 18, 0.35);
+  --shadow-lg: 0 8px 24px -8px rgba(33, 30, 27, 0.18);
   --shadow-tile: none;
 
   /* --- Fonts ------------------------------------------------------------
@@ -148,14 +154,14 @@
   --radius-control: 8px;
   --radius-tag: 4px;
   --radius-chip: 999px;
-  --pass-bg: #0f2942;
+  --pass-bg: #8d0a12;
   --pass-text: #ffffff;
   --pass-muted: #cbd5e1;
   --pass-verified-bg: #064e3b;
   --pass-verified-text: #a7f3d0;
   --tier-bg: #e2e8f0;
-  --tier-text: #0f2942;
-  --focus-ring: #0f2942;
+  --tier-text: #8d0a12;
+  --focus-ring: #b5121b;
 }
 
 /* ---------------------------------------------------------------------------
@@ -163,27 +169,28 @@
    Activated via data-theme="dark" on <html> element.
 --------------------------------------------------------------------------- */
 :root[data-theme='dark'] {
-  --primary: #4d9bff;
-  --primary-mid: #2f7fe0;
-  --primary-light: #7ab6ff;
-  --primary-container: #102d55;
-  --on-primary-container: #d7e7ff;
-  --on-primary: #051930;
+  --primary: #ff8a90;
+  --primary-dark: #ff6b73;
+  --primary-mid: #f0676e;
+  --primary-light: #ffb0b4;
+  --primary-container: #4a1116;
+  --on-primary-container: #ffdadd;
+  --on-primary: #211e1b;
 
-  --maroon: #4d9bff;
-  --maroon-hover: #7ab6ff;
-  --maroon-pressed: #2f7fe0;
-  --maroon-tint: rgba(77, 155, 255, 0.16);
-  --maroon-tint-soft: rgba(77, 155, 255, 0.08);
-  --maroon-tint-border: rgba(77, 155, 255, 0.32);
+  --maroon: #ff8a90;
+  --maroon-hover: #ffb0b4;
+  --maroon-pressed: #f0676e;
+  --maroon-tint: rgba(255, 138, 144, 0.16);
+  --maroon-tint-soft: rgba(255, 138, 144, 0.08);
+  --maroon-tint-border: rgba(255, 138, 144, 0.32);
 
-  --secondary: #74b3f8;
-  --secondary-container: #153250;
-  --on-secondary-container: #d7e7ff;
-  --accent: #74b3f8;
-  --accent-hover: #93c6ff;
-  --accent-container: #153250;
-  --on-accent-container: #d7e7ff;
+  --secondary: #ffd32a;
+  --secondary-container: #483b0d;
+  --on-secondary-container: #fff3b0;
+  --accent: #e6b43b;
+  --accent-hover: #f1c75e;
+  --accent-container: #47340d;
+  --on-accent-container: #ffedb6;
   --tertiary: #6ddba0;
   --tertiary-container: #123c2c;
 
@@ -216,7 +223,7 @@
   --warning-bg: rgba(240, 169, 46, 0.16);
   --error: #f28b82;
   --error-bg: rgba(242, 139, 130, 0.16);
-  --info: #74b3f8;
+  --info: #ff8a90;
 
   --sprout: #6ddba0;
   --sprout-soft: rgba(109, 219, 160, 0.16);
@@ -224,17 +231,17 @@
   --root-soft: rgba(240, 169, 46, 0.16);
   --palmyra: #a3adbf;
 
-  --purple: #74b3f8;
-  --lavender: #74b3f8;
-  --gold: #f0a92e;
+  --purple: #ff8a90;
+  --lavender: #ff8a90;
+  --gold: #e6b43b;
 
-  --grad-primary: #0f2942;
+  --grad-primary: #8d0a12;
   --grad-join: var(--grad-primary);
   --grad-you: var(--grad-primary);
 
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.35);
   --shadow-nav: 0 -1px 0 rgba(255, 255, 255, 0.08);
-  --shadow-fab: 0 8px 24px -6px rgba(77, 155, 255, 0.45);
+  --shadow-fab: 0 8px 24px -6px rgba(255, 138, 144, 0.4);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
-  --focus-ring: #d7e7ff;
+  --focus-ring: #ffdadd;
 }

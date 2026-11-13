@@ -33,7 +33,7 @@
     "typecheck": "npm run typecheck --prefix app",
     "migrate": "npm run migrate --prefix server",
     "start": "node server/src/index.js",
-    "test:packages": "npm run test --workspace=packages --if-present",
+    "test:packages": "npm run test --workspace=packages --if-present && node --test scripts/accessibility/*.mjs",
     "typecheck:packages": "npm run typecheck --workspace=packages"
   },
   "devDependencies": {

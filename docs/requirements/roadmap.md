@@ -57,6 +57,8 @@ Overlaps in the BRD, settled on 27 October 2026 by the project owner so no scree
 
 **Gate G1** (BRD §20.2): the phase's Must requirements pass user acceptance testing; WCAG 2.2 AA on the new screens; an independent penetration test with no open critical or high findings; a privileged-access review (built: D31); a key-management audit; the pilot reaches at least 70% registration completion and at least 90% of reviews within 5 working days. Sign-off: Sponsor, Tier 5, DPO, vendor.
 
+The [G1 evidence procedure](gate-g1.md) records the verification and pilot results. Its validator cannot grant approval or replace the external reviews.
+
 After a successful pilot the PWA takes fixes only, members move to the new apps, and Express is retired once FastAPI covers everything it serves.
 
 ### M2: Phase 2, community service and accountability, then Gate G2

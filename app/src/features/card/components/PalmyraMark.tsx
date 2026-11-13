@@ -5,7 +5,7 @@ interface Props {
   style?: React.CSSProperties;
 }
 
-export function PalmyraMark({ size = 210, stroke = '#14263D', opacity = 0.16, style }: Props) {
+export function PalmyraMark({ size = 210, stroke = 'var(--primary)', opacity = 0.16, style }: Props) {
   return (
     <svg
       width={size}

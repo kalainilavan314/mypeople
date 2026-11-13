@@ -51,7 +51,7 @@ export function RegisterFields({
           <div
             style={{
               font: `800 23px/1.15 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
-              color: '#14263D',
+              color: 'var(--primary)',
               letterSpacing: 'normal',
             }}
           >
@@ -60,7 +60,7 @@ export function RegisterFields({
           <div
             style={{
               font: `700 13.5px/1.2 var(--font-ui, 'Inter', sans-serif)`,
-              color: '#2563EB',
+              color: 'var(--primary)',
               marginTop: 3,
             }}
           >
@@ -73,7 +73,7 @@ export function RegisterFields({
         <h1
           style={{
             font: `900 26px/1.25 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
-            color: '#14263D',
+            color: 'var(--primary)',
             margin: 0,
             letterSpacing: 'normal',
           }}
@@ -157,7 +157,7 @@ export function RegisterFields({
             border: 'none',
             padding: 0,
             cursor: 'pointer',
-            color: '#14263D',
+            color: 'var(--primary)',
             fontWeight: 700,
             textDecoration: 'underline',
             font: 'inherit',

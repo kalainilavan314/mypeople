@@ -24,6 +24,9 @@ const colorSource: Record<keyof typeof colors, string> = {
   primaryLight: 'primary-light',
   primaryContainer: 'primary-container',
   onPrimary: 'on-primary',
+  brandYellow: 'brand-yellow',
+  brandGold: 'brand-gold',
+  onBrandAccent: 'on-brand-accent',
   page: 'page',
   card: 'card',
   surfaceVariant: 'surface-variant',
@@ -49,6 +52,29 @@ test('colours match the PWA', () => {
   for (const [name, variable] of Object.entries(colorSource)) {
     assert.equal(colors[name as keyof typeof colors], cssVariable(variable).toLowerCase(), name);
   }
+});
+
+function relativeLuminance(hex: string): number {
+  const channels = hex.match(/[\da-f]{2}/gi);
+  assert.ok(channels, `invalid colour: ${hex}`);
+  const [red, green, blue] = channels.map((channel) => {
+    const value = Number.parseInt(channel, 16) / 255;
+    return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+}
+
+function contrast(foreground: string, background: string): number {
+  const lighter = Math.max(relativeLuminance(foreground), relativeLuminance(background));
+  const darker = Math.min(relativeLuminance(foreground), relativeLuminance(background));
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+test('brand text pairings meet WCAG AA', () => {
+  assert.ok(contrast(colors.onPrimary, colors.primary) >= 4.5, 'white on primary red');
+  assert.ok(contrast(colors.onPrimary, colors.primaryDark) >= 4.5, 'white on deep red');
+  assert.ok(contrast(colors.onBrandAccent, colors.brandYellow) >= 4.5, 'charcoal on yellow');
+  assert.ok(contrast(colors.onBrandAccent, colors.brandGold) >= 4.5, 'charcoal on gold');
 });
 
 test('spacing, radii and control sizes match the PWA', () => {

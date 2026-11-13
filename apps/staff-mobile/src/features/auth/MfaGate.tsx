@@ -31,9 +31,13 @@ export function MfaGate({ status, onVerified }: Props) {
   const { signOut } = useSession();
   const [enrolment, setEnrolment] = useState<TotpEnrolment | null>(null);
   const [code, setCode] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
   const enrolling = !status.enabled;
 
-  const start = useApiAction(async () => setEnrolment(await api().startTotpEnrolment()));
+  const start = useApiAction(async () => {
+    setEnrolment(await api().startTotpEnrolment(currentPassword));
+    setCurrentPassword('');
+  });
   const confirm = useApiAction(async () => {
     if (enrolling) await api().confirmTotp(code.trim());
     else await api().verifyMfa(code.trim());
@@ -48,7 +52,17 @@ export function MfaGate({ status, onVerified }: Props) {
         {enrolling ? t('s.mfa.enrolBody') : t('s.mfa.verifyBody')}
       </AppText>
       {enrolling && !enrolment ? (
-        <Button label={t('s.common.continue')} busy={start.busy} onPress={() => void start.run()} />
+        <>
+          <TextField
+            label={t('s.signIn.passwordLabel')}
+            hint={t('s.mfa.passwordStepUp')}
+            value={currentPassword}
+            onChangeText={setCurrentPassword}
+            secret
+            autoComplete="current-password"
+          />
+          <Button label={t('s.common.continue')} busy={start.busy} disabled={!currentPassword} onPress={() => void start.run()} />
+        </>
       ) : null}
       {enrolment ? (
         <SurfaceCard>

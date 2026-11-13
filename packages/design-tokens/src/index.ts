@@ -9,27 +9,33 @@
 // for Tamil, JetBrains Mono for IDs. Do not change them here.
 
 export const colors = {
-  // Civic navy: 14.8:1 contrast on white.
-  primary: '#0f2942',
-  primaryDark: '#091d30',
-  primaryMid: '#1b3a57',
-  primaryLight: '#4a627c',
-  primaryContainer: '#e8edf3',
+  // Brand red: authority and primary action. White text passes WCAG AA.
+  primary: '#b5121b',
+  primaryDark: '#8d0a12',
+  primaryMid: '#c51a23',
+  primaryLight: '#d9585f',
+  primaryContainer: '#fbe9ea',
   onPrimary: '#ffffff',
 
-  page: '#f8fafc',
+  // Brand accents are intentionally separate from semantic state colours.
+  // Yellow is for selected/highlighted states; gold is a scarce premium accent.
+  brandYellow: '#ffd32a',
+  brandGold: '#d29a16',
+  onBrandAccent: '#211e1b',
+
+  page: '#fffbf5',
   card: '#ffffff',
-  surfaceVariant: '#f1f5f9',
+  surfaceVariant: '#f7f0e6',
 
-  text: '#0f172a',
-  textSecondary: '#334155',
-  textMuted: '#475569',
+  text: '#211e1b',
+  textSecondary: '#514a43',
+  textMuted: '#665e56',
 
-  border: '#e2e8f0',
-  inputBorder: '#cbd5e1',
-  divider: '#f1f5f9',
-  controlBorder: '#64748b',
-  focusRing: '#0f2942',
+  border: '#eadfcf',
+  inputBorder: '#cdbfae',
+  divider: '#f3eadf',
+  controlBorder: '#786d61',
+  focusRing: '#b5121b',
 
   // Status is never shown by colour alone: always pair it with an icon and a label.
   success: '#059669',
@@ -38,7 +44,8 @@ export const colors = {
   warning: '#d97706',
   warningText: '#92400e',
   warningBackground: '#fffbeb',
-  error: '#dc2626',
+  // AA body-text contrast on the pale error surface.
+  error: '#b91c1c',
   errorBackground: '#fef2f2',
 } as const;
 
@@ -93,6 +100,24 @@ export const typeScale = {
   secondary: { size: 13, lineHeight: 20, weight: 400 },
   caption: { size: 11, lineHeight: 17, weight: 600 },
   nav: { size: 10, lineHeight: 15, weight: 600 },
+} as const;
+
+/**
+ * Roomier native-app typography for member-facing journeys.
+ *
+ * The canonical families stay locked; this scale only improves readability on
+ * small phone screens. Apps opt in explicitly so the production PWA and the
+ * denser staff application keep their existing scale.
+ */
+export const comfortableTypeScale = {
+  page: { size: 24, lineHeight: 33, weight: 700 },
+  section: { size: 18, lineHeight: 27, weight: 700 },
+  card: { size: 15, lineHeight: 22, weight: 600 },
+  body: { size: 16, lineHeight: 24, weight: 400 },
+  label: { size: 14, lineHeight: 21, weight: 600 },
+  secondary: { size: 14, lineHeight: 21, weight: 400 },
+  caption: { size: 12, lineHeight: 18, weight: 600 },
+  nav: { size: 12, lineHeight: 18, weight: 600 },
 } as const;
 
 /** Tamil script needs more line height than Latin text. */

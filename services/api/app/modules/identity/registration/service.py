@@ -187,9 +187,13 @@ def progress(db: Session, member_id: uuid.UUID) -> Progress:
     route = repository.account_route(db, member_id)
     received = {d.kind for d in documents_repository.current_documents(db, member_id)}
     review = reviews_repository.latest_review(db, member_id)
+    member = reviews_repository.find_member(db, member_id)
+    assert member is not None
+    already_verified = member.verification_status == "identity_confirmed"
     steps = [
-        Step("identity_consent", has_identity_consent(db, member_id)),
-        *(Step(kind, kind in received) for kind in REQUIRED_DOCUMENTS[route]),  # type: ignore[index]
-        Step("submit", review is not None),
+        Step("identity_consent", already_verified or has_identity_consent(db, member_id)),
+        *(Step(kind, already_verified or kind in received) for kind in REQUIRED_DOCUMENTS[route]),  # type: ignore[index]
+        Step("submit", already_verified or review is not None),
     ]
-    return Progress(route=route, steps=steps, review_state=review.state if review else None)
+    review_state = review.state if review else "verified" if already_verified else None
+    return Progress(route=route, steps=steps, review_state=review_state)

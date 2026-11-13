@@ -1,5 +1,5 @@
 import { DISTRICTS, type GsFlat } from '@/core/api/divisions';
-import { font } from '@/core/theme/tokens';
+import { c, font } from '@/core/theme/tokens';
 import { Icon } from '@/shared/components/Icon';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -86,7 +86,7 @@ export function GsSheet({
               margin: '0 auto 14px',
             }}
           />
-          <div style={{ font: `800 17px/1.2 ${font.ta}`, color: '#14263D', marginBottom: 12 }}>
+          <div style={{ font: `800 17px/1.2 ${font.ta}`, color: c.primary, marginBottom: 12 }}>
             {ds?.name_en ?? district?.name_en} · {t('profileSetup.gs', 'GN பிரிவு')}
           </div>
           <div
@@ -113,7 +113,7 @@ export function GsSheet({
                 outline: 'none',
                 background: 'transparent',
                 font: `500 14px/1 ${font.ta}`,
-                color: '#14263D',
+                color: c.primary,
               }}
             />
           </div>
@@ -144,7 +144,7 @@ export function GsSheet({
                 <span
                   style={{
                     font: `700 12px/1 ${font.mono}`,
-                    color: active ? '#1D4ED8' : '#14263D',
+                    color: active ? c.primary : c.ink,
                     background: active ? '#DBEAFE' : '#F1F5F9',
                     padding: '5px 8px',
                     borderRadius: 6,
@@ -157,12 +157,12 @@ export function GsSheet({
                   style={{
                     flex: 1,
                     font: `600 14.5px/1.3 ${font.ui}`,
-                    color: active ? '#1D4ED8' : '#14263D',
+                    color: active ? c.primary : c.ink,
                   }}
                 >
                   {g.name}
                 </span>
-                {active && <Icon name="check" size={18} color="#1D4ED8" strokeWidth={2.8} />}
+                {active && <Icon name="check" size={18} color={c.primary} strokeWidth={2.8} />}
               </button>
             );
           })}

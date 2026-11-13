@@ -11,7 +11,7 @@ export function Steps({ step, total = 3 }: { step: number; total?: number }) {
                 width: 22,
                 height: 22,
                 borderRadius: '50%',
-                background: active ? '#14263D' : done ? '#2563EB' : '#E2E8F0',
+                background: active ? 'var(--primary)' : done ? 'var(--brand-gold)' : '#E2E8F0',
                 color: active || done ? '#ffffff' : '#64748B',
                 font: '700 11px/22px var(--font-ui, sans-serif)',
                 display: 'grid',
@@ -27,7 +27,7 @@ export function Steps({ step, total = 3 }: { step: number; total?: number }) {
                 style={{
                   width: 14,
                   height: 1.5,
-                  background: done ? '#2563EB' : '#E2E8F0',
+                  background: done ? 'var(--brand-gold)' : '#E2E8F0',
                 }}
               />
             )}

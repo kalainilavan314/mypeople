@@ -28,8 +28,13 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
   const text = stringsFor(useLanguage());
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const close = () => {
+    setQuery('');
+    setOpen(false);
+  };
   const chosen = options.find((option) => option.value === value);
   const shown = query ? options.filter((option) => option.label.toLowerCase().includes(query.toLowerCase())) : options;
+  const isInvalid = Boolean(error);
 
   return (
     <View style={styles.field}>
@@ -37,30 +42,37 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
       <Pressable
         onPress={() => setOpen(true)}
         disabled={disabled}
-        accessibilityRole="button"
+        accessible
+        accessibilityRole="combobox"
         accessibilityLabel={`${label}: ${chosen?.label ?? placeholder}`}
+        accessibilityHint={error ?? undefined}
+        accessibilityState={{ disabled, expanded: open }}
         aria-disabled={disabled}
-        style={[styles.box, disabled && styles.disabled, error ? styles.invalid : null]}>
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        style={[styles.box, disabled && styles.disabled, isInvalid ? styles.invalid : null]}>
         <AppText step="body" tone={chosen ? 'default' : 'muted'} style={styles.value}>
           {chosen?.label ?? placeholder}
         </AppText>
         <Ionicons name="chevron-down" size={20} color={colors.textMuted} />
       </Pressable>
       {error ? (
-        <AppText step="secondary" tone="error" accessibilityRole="alert">
+        <AppText step="secondary" tone="error" accessibilityRole="alert" accessibilityLiveRegion="polite">
           {error}
         </AppText>
       ) : null}
-      <Modal visible={open} animationType="slide" onRequestClose={() => setOpen(false)}>
+      <Modal visible={open} animationType="slide" onRequestClose={close} accessibilityViewIsModal>
         <SafeAreaView style={styles.sheet}>
           <View style={styles.sheetHeader}>
             <AppText step="section" accessibilityRole="header" style={styles.value}>
               {label}
             </AppText>
             <Pressable
-              onPress={() => setOpen(false)}
+              onPress={close}
+              accessible
               accessibilityRole="button"
               accessibilityLabel={text.close}
+              hitSlop={8}
               style={styles.close}>
               <Ionicons name="close" size={24} color={colors.text} />
             </Pressable>
@@ -76,10 +88,12 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
               <Pressable
                 onPress={() => {
                   onChange(item.value);
-                  setQuery('');
-                  setOpen(false);
+                  close();
                 }}
+                accessible
                 accessibilityRole="button"
+                accessibilityLabel={item.label}
+                accessibilityState={{ selected: item.value === value }}
                 aria-selected={item.value === value}
                 style={({ pressed }) => [styles.option, pressed && styles.pressed]}>
                 <AppText step="body" style={styles.value}>
@@ -99,11 +113,13 @@ const styles = StyleSheet.create({
   field: { gap: spacing[1] },
   box: {
     minHeight: control.height,
+    minWidth: control.touchMin,
     borderWidth: 1,
     borderColor: colors.inputBorder,
     borderRadius: radius.control,
     backgroundColor: colors.card,
     paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[2],
@@ -113,7 +129,7 @@ const styles = StyleSheet.create({
   value: { flex: 1 },
   sheet: { flex: 1, backgroundColor: colors.page, padding: spacing.gutter, gap: spacing[3] },
   sheetHeader: { flexDirection: 'row', alignItems: 'center' },
-  close: { width: control.touchMin, height: control.touchMin, alignItems: 'center', justifyContent: 'center' },
+  close: { width: control.height, height: control.height, alignItems: 'center', justifyContent: 'center' },
   option: {
     minHeight: control.height,
     flexDirection: 'row',
@@ -121,6 +137,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
     paddingHorizontal: spacing[2],
+    paddingVertical: spacing[2],
   },
   pressed: { backgroundColor: colors.surfaceVariant },
 });

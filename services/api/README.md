@@ -21,14 +21,15 @@ Current scope:
 | `GET /v1/geography/districts`, `.../districts/{code}/ds-divisions`, `.../ds-divisions/{code}/gn-divisions` | the area lists, public |
 | `GET /v1/events`, `GET /v1/events/{id}`, `PUT /v1/events/{id}/rsvp`, `GET /v1/events/{id}/pass`, `.../pass/code` | events for members: list with filters, detail, RSVP, the event pass and its 60-second QR code |
 | `GET /v1/events/manage`, `GET /v1/events/manage/{id}`, `POST /v1/events`, `PATCH /v1/events/{id}`, `POST .../publish`, `.../cancel` | the event console; needs `events.manage` over the event's area |
-| `GET`/`PATCH /v1/profile`, `GET /v1/profile/activity`, `GET`/`PUT`/`DELETE /v1/profile/survey-answers`, `GET /v1/profile/identity-data` | the member's profile: locked legal details, display name and gender, My Activity, optional survey answers, the identity-data notice |
+| `GET`/`PATCH /v1/profile`, `GET /v1/profile/activity`, `GET`/`PUT`/`DELETE /v1/profile/survey-answers`, `GET /v1/profile/identity-data` | the member's profile: locked legal details, display name, gender, and language preference (`ta` or `en`), My Activity, optional survey answers, the identity-data notice |
 | `POST /v1/profile/area-changes`, `GET .../mine`, `PUT .../{id}/proof`, `POST .../{id}/withdraw` | GN area-change requests with proof of residence |
 | `GET /v1/profile/area-changes`, `GET .../{id}/proof`, `POST .../{id}/decision` | reviewing area changes; needs `members.verify` over the requested area |
 | `POST /v1/auth/password` | a new password, only with the current one |
 | `POST /v1/privacy/closure-code`, `POST /v1/privacy/requests`, `GET /v1/privacy/requests/mine` | data-subject requests: a copy of one's data, or closing the account |
 | `GET /v1/privacy/requests`, `POST .../{id}/decision` | the DPO register; needs `privacy.requests.handle` |
 | `GET /v1/notifications`, `POST .../{id}/read`, `POST .../read-all`, `GET`/`PUT .../choices`, `POST .../devices`, `.../devices/unregister` | the in-app inbox (All, Action needed), channel choices and quiet hours, push devices |
-| `GET`/`POST /v1/notifications/broadcasts`, `PATCH .../{id}`, `POST .../preview`, `.../submit`, `.../approve`, `.../cancel` | staff broadcasts; need `notifications.send` over the area |
+| `GET`/`POST /v1/notifications/broadcasts`, `POST .../reach`, `PATCH .../{id}`, `POST .../preview`, `.../submit`, `.../approve`, `.../cancel` | staff broadcasts by area and optional effective staff tier; need `notifications.send` over the area |
+| `GET /v1/community/reports/counts`, `GET /v1/community/reports`, `GET /v1/community/reports/{id}` | area-scoped operational reports; need `reports.view`; list/detail access is audited |
 | `GET /v1/home` | the Home tab: H01 or H02, one next step, the next event nearby, open and locked features with reasons, the hub |
 | `GET /v1/content/albums`, `GET /v1/content/albums/{id}`, `GET /v1/content/photos/{id}/{thumb\|display}` | the gallery for members: published albums, album detail, the photos |
 | `POST /v1/content/photos/{id}/removal-requests`, `GET /v1/content/removal-requests/mine`, `POST /v1/content/removal-requests/public` | photo removal requests with receipts, for members and, through a public form, for people who are not |
@@ -49,7 +50,7 @@ Current scope:
 | `GET /v1/access/me` | the caller's staff assignments that count now |
 | `GET /v1/access/assignments` | assignments in the caller's areas (W09); needs `roles.assign` |
 | `GET /v1/membership/lookup?code` | one member by exact member ID in the caller's areas (S03); needs `members.view_profile` |
-| `GET /v1/access/catalogue`, `POST /v1/access/assignments/preview`, `POST /v1/access/assignments`, `POST /v1/access/assignments/{id}/revoke` | staff assignments (W09); need `roles.assign` |
+| `GET /v1/access/catalogue`, `POST /v1/access/assignments/preview`, `POST /v1/access/assignment-previews`, `GET`/`POST .../{id}`, `POST /v1/access/assignments/{id}/revoke` | staff assignments (W09); role grants require a staff-bound durable preview and confirmation |
 | `GET /v1/access/reviews`, `POST /v1/access/reviews/{assignmentId}` | this quarter's access review (FR-AUTH-027, D31); need `audit.view` |
 | `GET /v1/audit`, `GET /v1/audit/verify` | the audit log and its hash-chain check; need `audit.view` |
 | `GET /v1/identity/me/documents`, `PUT /v1/identity/me/documents/{kind}` | which identity images the server holds for the member; upload or replace one (the body is the image) |
@@ -61,6 +62,8 @@ Current scope:
 | `GET /v1/identity/appeals`, `GET /v1/identity/appeals/{id}`, `POST .../claim`, `.../release`, `.../decision` | the appeals queue (D05); need `idv.appeal.decide` over the member's area |
 | `POST /v1/identity/duplicates` | a reviewer reports a suspected duplicate account (needs `members.verify`) |
 | `GET /v1/identity/duplicates`, `GET /v1/identity/duplicates/{id}`, `POST .../claim`, `.../release`, `.../decision` | duplicate investigations (D04); need `idv.duplicate.investigate` over both accounts' areas |
+| `GET /v1/fund/config`, `POST /v1/fund/contributions`, `PUT .../{id}/slip`, `POST .../{id}/submit`, `GET .../mine`, `GET .../mine/{id}`, `.../receipt` | community finance member intake: bank details, draft creation, encrypted slip upload, submission, receipts (gated by `community_finance`) |
+| `GET /v1/finance/contributions`, `GET .../{id}`, `POST .../{id}/claim`, `POST .../slip-view-token`, `GET /v1/finance/slips/{token}`, `POST .../{id}/reconcile`, `POST .../{id}/approve`, `GET /v1/finance/ledger.csv` | staff finance queue and slip ledger: separation of duties (RB-12), reconciliation, independent approval, short-lived slip streaming, CSV ledger export |
 
 ## Staff access (BRD §9)
 
@@ -83,7 +86,7 @@ python -m app.modules.access.bootstrap <member-id> --permission members.verify
 ```
 
 It is refused when a Super Administrator already exists. Everyone else is
-assigned through `/v1/access/assignments`. The Express API still reads its
+assigned through a durable `/v1/access/assignment-previews` record, followed by its one-time `/confirm` route. The Express API still reads its
 old `is_admin` flag for its own four staff routes until they move here.
 
 ## Registration (BRD A03 to A18, FR-AUTH-010 to 013)
@@ -618,6 +621,26 @@ cases cannot be edited.
 
 Not yet: passport numbers and device signals (registration batch), and
 keyed-hash rotation with KMS-held keys (FR-IDV-006, OD-20).
+
+## Community finance (BRD H17, H18, D10; FR-FIN-001 to 010, BR-095 to 097)
+
+Community finance provides bank-transfer slip intake for member contributions
+and an operational review queue and ledger for staff (Milestone 1.4).
+
+- **Intake & gating.** Member routes (`/v1/fund/*`) require the `community_finance`
+  feature flag and an enabled, fully configured bank account profile; otherwise they fail
+  closed (`503 finance_not_configured`).
+- **Encrypted evidence vault.** Bank transfer slips are inspected for MIME magic bytes (JPEG/PNG only),
+  size (15 MB max), image dimension / decompression bomb safety (max 40 MP), stripped of EXIF metadata,
+  scanned by ClamAV outside development, and stored encrypted at rest using AES-256-GCM authenticated encryption.
+- **Workflow & separation of duties (RB-12).**
+  - Members draft a contribution, upload slip evidence, acknowledge required declarations, and submit (`SUBMITTED`).
+  - Reviewers (`finance.review`) claim records into `PENDING_REVIEW` and reconcile against bank statement references (`APPROVAL_PENDING` or `NEEDS_CORRECTION`).
+  - Approvers (`finance.approve`) independently approve (`VERIFIED`) or reject (`REJECTED`). The approver must be
+    a different staff member from the reviewer and cannot be the contributing member.
+  - On independent approval, an immutable sequential receipt code (`CN-XXXXX`) is atomically assigned.
+- **Ledger export.** Staff with `finance.export` can export monthly reconciliation ledgers as CSV
+  with formula-injection protection (`=`, `+`, `-`, `@` escaped).
 
 ## Sessions
 

@@ -1,13 +1,14 @@
 import { c, font, radius } from '@/core/theme/tokens';
 import { GOLD } from '@/features/fundraising/PartyFund.model';
+import { Icon, type IconName } from '@/shared/components/Icon';
 export function MethodCard({
-  emoji,
+  icon,
   title,
   sub,
   active,
   onClick,
 }: {
-  emoji: string;
+  icon: IconName;
   title: string;
   sub: string;
   active: boolean;
@@ -31,7 +32,7 @@ export function MethodCard({
         boxShadow: active ? 'none' : 'var(--shadow-card)',
       }}
     >
-      <span style={{ fontSize: 26, lineHeight: 1 }}>{emoji}</span>
+      <Icon name={icon} size={26} color={active ? c.primary : c.ink2} />
       <span style={{ font: `700 14px/1.25 ${font.ta}`, color: active ? c.primary : c.ink }}>
         {title}
       </span>

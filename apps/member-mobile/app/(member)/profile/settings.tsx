@@ -1,4 +1,4 @@
-import type { NotificationChoices } from '@my-people/api-client';
+import type { EffectiveGovernancePolicy, NotificationChoices } from '@my-people/api-client';
 import { useState } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -30,8 +30,9 @@ export default function SettingsScreen() {
   const { t } = useTranslation();
   const language = useLanguage();
   const choices = useApiQuery(() => api().getNotificationChoices());
+  const policies = useApiQuery(() => api().listMyGovernancePolicies(), [language]);
   return (
-    <Screen edges={['bottom']}>
+    <Screen edges={['bottom']} maxContentWidth={720}>
       <AppText step="section" accessibilityRole="header">
         {t('m.profile.language')}
       </AppText>
@@ -48,8 +49,49 @@ export default function SettingsScreen() {
         {t('m.profile.notifications')}
       </AppText>
       <QueryView query={choices}>{(data) => <ChoicesForm initial={data} />}</QueryView>
+      <AppText step="section" accessibilityRole="header">
+        {t('m.profile.policies')}
+      </AppText>
+      <QueryView query={policies}>{(data) => <PolicyChoices items={data} reload={policies.reload} />}</QueryView>
     </Screen>
   );
+}
+
+function PolicyChoices({ items, reload }: { items: EffectiveGovernancePolicy[]; reload: () => void }) {
+  const { t } = useTranslation();
+  const action = useApiAction(async (policy: EffectiveGovernancePolicy, next: 'acknowledged' | 'granted' | 'withdrawn') => {
+    await api().recordGovernanceConsent(policy.id, {
+      action: next,
+      legalBasis: policy.policyType === 'optional_consent' ? 'consent' : 'legal_notice_acknowledgement',
+    });
+    reload();
+  });
+  if (items.length === 0) return <AppText step="secondary" tone="muted">{t('m.profile.noPolicies')}</AppText>;
+  return <>
+    {items.map((policy) => {
+      const optional = policy.policyType === 'optional_consent';
+      const active = optional ? policy.myAction === 'granted' : policy.myAction === 'acknowledged';
+      return <SurfaceCard key={policy.id}>
+        <AppText step="section">{policy.policyKey}</AppText>
+        <AppText step="caption" tone="muted">{t('m.profile.policyVersion', { version: policy.version })}</AppText>
+        <AppText step="body" tone="secondary">{policy.contentText}</AppText>
+        <Notice tone={active ? 'success' : 'warning'}>
+          {active ? t('m.profile.policyCurrent') : t('m.profile.policyActionNeeded')}
+        </Notice>
+        {optional ? <Button
+          label={active ? t('m.profile.withdrawConsent') : t('m.profile.giveConsent')}
+          variant={active ? 'secondary' : 'primary'}
+          busy={action.busy}
+          onPress={() => void action.run(policy, active ? 'withdrawn' : 'granted')}
+        /> : !active ? <Button
+          label={t('m.profile.acknowledgePolicy')}
+          busy={action.busy}
+          onPress={() => void action.run(policy, 'acknowledged')}
+        /> : null}
+      </SurfaceCard>;
+    })}
+    {action.error ? <Notice tone="error">{t('m.errors.unknown')}</Notice> : null}
+  </>;
 }
 
 function ChoicesForm({ initial }: { initial: NotificationChoices }) {
@@ -70,16 +112,17 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
     setTopics(result.topics);
     setSaved(true);
   });
-  const quietInvalid = (quietStart !== '' && !TIME.test(quietStart)) || (quietEnd !== '' && !TIME.test(quietEnd));
+  const quietInvalid = (quietStart === '') !== (quietEnd === '') ||
+    (quietStart !== '' && !TIME.test(quietStart)) || (quietEnd !== '' && !TIME.test(quietEnd));
 
   const toggle = (topic: string, channel: 'push' | 'sms', value: boolean) =>
     setTopics(topics.map((item) => (item.topic === topic ? { ...item, [channel]: value } : item)));
 
   return (
     <>
-      <SurfaceCard>
-        {topics.map((item) => (
-          <View key={item.topic} style={styles.topic}>
+      <SurfaceCard style={styles.topicList}>
+        {topics.map((item, index) => (
+          <View key={item.topic} style={[styles.topic, index > 0 && styles.topicDivider]}>
             <View style={styles.topicLabel}>
               <AppText step="label">{t(`m.profile.topic_${item.topic}`)}</AppText>
               {item.locked ? (
@@ -98,7 +141,7 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
                   disabled={item.locked}
                   onValueChange={(value) => toggle(item.topic, channel, value)}
                   accessibilityLabel={`${t(`m.profile.topic_${item.topic}`)}: ${channel === 'push' ? t('m.profile.pushLabel') : t('m.profile.smsLabel')}`}
-                  trackColor={{ true: colors.primary, false: colors.inputBorder }}
+                  trackColor={{ true: colors.success, false: colors.inputBorder }}
                 />
               </View>
             ))}
@@ -127,7 +170,7 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
           }}
         />
       </SurfaceCard>
-      {quietInvalid ? <Notice tone="error">{t('m.profile.quietHoursHint')}</Notice> : null}
+      {quietInvalid ? <Notice tone="error">{t('m.profile.quietHoursInvalid')}</Notice> : null}
       {save.error ? <Notice tone="error">{errorMessage(t, save.error)}</Notice> : null}
       {saved ? <Notice tone="success">{t('m.profile.saved')}</Notice> : null}
       <Button label={t('m.common.save')} busy={save.busy} busyLabel={t('m.common.saving')} disabled={quietInvalid} onPress={() => void save.run()} />
@@ -136,7 +179,9 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
 }
 
 const styles = StyleSheet.create({
-  topic: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], minHeight: 56, borderBottomWidth: 1, borderBottomColor: colors.divider },
+  topicList: { padding: 0, gap: 0, overflow: 'hidden' },
+  topic: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], minHeight: 64, padding: spacing[3] },
+  topicDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
   topicLabel: { flex: 1 },
   channel: { alignItems: 'center', gap: 2 },
   quiet: { flexDirection: 'row', gap: spacing[3] },

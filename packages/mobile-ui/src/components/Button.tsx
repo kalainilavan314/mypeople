@@ -32,23 +32,29 @@ export function Button({ label, onPress, variant = 'primary', busy = false, busy
   const fill = FILL[variant];
   const inactive = disabled || busy;
   const textColor = fill.text === 'inverse' ? colors.onPrimary : fill.text === 'error' ? colors.error : colors.primary;
+  const accessibleName = busy && busyLabel ? busyLabel : label;
+
   return (
     <Pressable
       onPress={onPress}
       disabled={inactive}
+      accessible
       accessibilityRole="button"
+      accessibilityLabel={accessibleName}
+      accessibilityState={{ disabled: inactive, busy }}
       aria-disabled={inactive}
       aria-busy={busy}
       accessibilityHint={accessibilityHint}
+      hitSlop={{ top: 2, bottom: 2, left: 4, right: 4 }}
       style={({ pressed }) => [
         styles.button,
         { backgroundColor: pressed ? fill.pressed : fill.background, borderColor: fill.border },
         disabled && styles.disabled,
       ]}>
-      <View style={styles.inner}>
+      <View accessible={false} style={styles.inner}>
         {busy ? <ActivityIndicator size="small" color={textColor} /> : icon ? <Ionicons name={icon} size={20} color={textColor} /> : null}
         <AppText step="label" tone={fill.text} style={styles.label}>
-          {busy && busyLabel ? busyLabel : label}
+          {accessibleName}
         </AppText>
       </View>
     </Pressable>
@@ -58,10 +64,13 @@ export function Button({ label, onPress, variant = 'primary', busy = false, busy
 const styles = StyleSheet.create({
   button: {
     minHeight: control.height,
+    minWidth: control.touchMin,
     borderRadius: radius.control,
     borderWidth: 1,
     paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
     justifyContent: 'center',
+    alignItems: 'center',
   },
   inner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing[2] },
   label: { textAlign: 'center', flexShrink: 1 },

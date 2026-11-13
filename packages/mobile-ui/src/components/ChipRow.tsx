@@ -14,7 +14,7 @@ type Props<K extends string> = {
   label: string;
 };
 
-/** Filter chips that scroll sideways on their own; the chosen one is solid navy (spec §6). */
+/** Filter chips that scroll sideways on their own; the chosen one uses the brand highlight. */
 export function ChipRow<K extends string>({ options, selected, onSelect, label }: Props<K>) {
   return (
     <ScrollView
@@ -32,7 +32,7 @@ export function ChipRow<K extends string>({ options, selected, onSelect, label }
             accessibilityRole="tab"
             aria-selected={active}
             style={[styles.chip, active ? styles.active : styles.inactive]}>
-            <AppText step="label" tone={active ? 'inverse' : 'secondary'}>
+            <AppText step="label" tone={active ? 'brandAccent' : 'secondary'}>
               {option.label}
             </AppText>
           </Pressable>
@@ -51,6 +51,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
   },
-  active: { backgroundColor: colors.primary, borderColor: colors.primary },
+  active: { backgroundColor: colors.brandYellow, borderColor: colors.brandGold },
   inactive: { backgroundColor: colors.card, borderColor: colors.inputBorder },
 });

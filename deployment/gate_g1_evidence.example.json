@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "candidateCommit": "",
+  "uat": {
+    "inventoryRef": "",
+    "apps": {
+      "memberMobile": {"total": null, "passed": null, "evidenceRef": ""},
+      "staffMobile": {"total": null, "passed": null, "evidenceRef": ""},
+      "adminWeb": {"total": null, "passed": null, "evidenceRef": ""}
+    }
+  },
+  "accessibility": {
+    "inventoryRef": "",
+    "apps": {
+      "memberMobile": {"total": null, "passed": null, "evidenceRef": ""},
+      "staffMobile": {"total": null, "passed": null, "evidenceRef": ""},
+      "adminWeb": {"total": null, "passed": null, "evidenceRef": ""}
+    }
+  },
+  "penetration": {"independentTester": "", "reportRef": "", "openCritical": null, "openHigh": null},
+  "accessReview": {"totalGrants": null, "certifiedGrants": null, "tier5Ref": "", "evidenceRef": ""},
+  "keyAudit": {
+    "reportRef": "",
+    "tokenSigning": false,
+    "nicPepper": false,
+    "cardHmac": false,
+    "evidenceEncryption": false,
+    "credentialSalt": false
+  },
+  "pilot": {
+    "startedAt": "",
+    "endedAt": "",
+    "gnCodes": [],
+    "definitionRef": "",
+    "measurementRef": "",
+    "registrationStarted": null,
+    "registrationCompleted": null,
+    "reviewsDecided": null,
+    "reviewsWithinFiveWorkingDays": null
+  },
+  "signoffs": {
+    "sponsor": {"recordRef": "", "signedAt": ""},
+    "tier5": {"recordRef": "", "signedAt": ""},
+    "dpo": {"recordRef": "", "signedAt": ""},
+    "vendor": {"recordRef": "", "signedAt": ""}
+  }
+}

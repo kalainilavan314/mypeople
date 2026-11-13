@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -8,15 +9,18 @@ import {
   Button,
   DateBadge,
   formatSpan,
+  Notice,
   Screen,
   SurfaceCard,
   useApiQuery,
   useLanguage,
   useLocalized,
   useReloadOnFocus,
+  useApiAction,
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
+import { syncQueuedAttendance } from '@/features/scan/offlineQueue';
 import { api } from '@/lib/api';
 import { useStaff } from '@/providers/StaffProvider';
 
@@ -32,14 +36,30 @@ export default function CheckInScreen() {
   const language = useLanguage();
   const localized = useLocalized();
   const { permissions } = useStaff();
-  const events = useApiQuery(() => api().listEvents({ scope: 'all', until: new Date(Date.now() + WEEK_MS).toISOString() }));
+  const canScan = permissions.has('events.checkin_scan');
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
+  const sync = useApiAction(async () => {
+    const result = await syncQueuedAttendance();
+    const accepted = result?.results.filter((item) => item.status === 'ACCEPTED').length ?? 0;
+    const review = result?.results.filter((item) => item.status === 'NEEDS_REVIEW' || item.status === 'EXPIRED_QUEUE').length ?? 0;
+    setSyncMessage(t('s.checkIn.syncResult', { accepted, review }));
+  });
+  const events = useApiQuery(
+    async () => canScan ? api().listEvents({ scope: 'all', until: new Date(Date.now() + WEEK_MS).toISOString() }) : [],
+    [canScan],
+  );
   useReloadOnFocus(events.reload);
+
+  if (!canScan) {
+    return <Screen edges={[]}><Notice tone="warning">{t('s.checkIn.noAccess')}</Notice></Screen>;
+  }
 
   return (
     <Screen edges={[]} onRefresh={events.reload} refreshing={events.loading && events.data !== undefined}>
-      {permissions.has('events.checkin_scan') ? (
-        <Button label={t('s.checkIn.cardCheck')} variant="secondary" icon="card-outline" onPress={() => router.push('/card-check')} />
-      ) : null}
+      <Button label={t('s.checkIn.syncQueued')} variant="secondary" icon="cloud-upload-outline" busy={sync.busy} onPress={() => void sync.run()} />
+      {syncMessage ? <Notice tone="success">{syncMessage}</Notice> : null}
+      {sync.error ? <Notice tone="error">{t('errors.offline')}</Notice> : null}
+      <Button label={t('s.checkIn.cardCheck')} variant="secondary" icon="card-outline" onPress={() => router.push('/card-check')} />
       <AppText step="section" accessibilityRole="header">
         {t('s.checkIn.chooseEvent')}
       </AppText>
@@ -66,13 +86,11 @@ export default function CheckInScreen() {
                       </AppText>
                     </View>
                   </View>
-                  {permissions.has('events.checkin_scan') ? (
-                    <Button
-                      label={t('s.checkIn.scanPass')}
-                      icon="qr-code-outline"
-                      onPress={() => router.push({ pathname: '/checkin/[id]', params: { id: event.id } })}
-                    />
-                  ) : null}
+                  <Button
+                    label={t('s.checkIn.scanPass')}
+                    icon="qr-code-outline"
+                    onPress={() => router.push({ pathname: '/checkin/[id]', params: { id: event.id } })}
+                  />
                   <Button
                     label={t('s.checkIn.roster')}
                     variant="secondary"

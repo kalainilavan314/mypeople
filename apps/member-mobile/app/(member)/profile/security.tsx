@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, Platform, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import type { SecurityAlert, SecurityAlertAnswer } from '@my-people/api-client';
-import { spacing } from '@my-people/design-tokens';
+import { colors, spacing } from '@my-people/design-tokens';
 
 import {
   AppText,
@@ -55,8 +55,25 @@ export default function SecurityScreen() {
     sessions.reload();
   };
 
+  const confirmRevoke = (id: string, device: string) => confirmSecurityAction(
+    t('m.profile.signOutDevice'),
+    t('m.profile.revokeDeviceExplain', { device }),
+    t('m.common.cancel'),
+    () => void revoke.run(id),
+  );
+  const confirmOthers = () => confirmSecurityAction(
+    t('m.profile.signOutOthers'),
+    t('m.profile.revokeOthersExplain'),
+    t('m.common.cancel'),
+    () => void revokeOthers.run(),
+  );
+
   return (
-    <Screen edges={['bottom']} onRefresh={reload} refreshing={sessions.loading && sessions.data !== undefined}>
+    <Screen
+      edges={['bottom']}
+      maxContentWidth={720}
+      onRefresh={reload}
+      refreshing={sessions.loading && sessions.data !== undefined}>
       {secured ? <Notice tone="success">{t('m.profile.alertSecured')}</Notice> : null}
       <QueryView query={alerts}>
         {(list) => <SecurityAlerts alerts={list} busy={answer.busy} onAnswer={(id, reply) => void answer.run(id, reply)} />}
@@ -68,24 +85,32 @@ export default function SecurityScreen() {
       <QueryView query={sessions}>
         {(list) => (
           <>
-            {list.map((session) => (
-              <SurfaceCard key={session.id}>
-                <View style={styles.row}>
-                  <AppText step="card" style={styles.flex}>
-                    {session.deviceLabel}
-                  </AppText>
-                  {session.current ? <StatusTag tone="verified" label={t('m.profile.thisDevice')} /> : null}
-                </View>
-                <AppText step="secondary" tone="muted">
-                  {t('m.profile.lastUsed', { time: formatDateTime(session.lastSeenAt, language) })}
-                </AppText>
-                {!session.current ? (
-                  <Button label={t('m.profile.signOutDevice')} variant="secondary" busy={revoke.busy} onPress={() => void revoke.run(session.id)} />
-                ) : null}
+            {list.length > 0 ? (
+              <SurfaceCard style={styles.sessionsCard}>
+                {list.map((session, index) => (
+                  <View key={session.id} style={[styles.session, index > 0 && styles.sessionDivider]}>
+                    <View style={styles.row}>
+                      <AppText step="card" style={styles.flex}>
+                        {session.deviceLabel}
+                      </AppText>
+                      {session.current ? <StatusTag tone="verified" label={t('m.profile.thisDevice')} /> : null}
+                    </View>
+                    <AppText step="secondary" tone="muted">
+                      {t('m.profile.lastUsed', { time: formatDateTime(session.lastSeenAt, language) })}
+                    </AppText>
+                    {!session.current ? (
+                      <Button label={t('m.profile.signOutDevice')} variant="secondary" busy={revoke.busy} onPress={() => confirmRevoke(session.id, session.deviceLabel)} />
+                    ) : null}
+                  </View>
+                ))}
               </SurfaceCard>
-            ))}
+            ) : (
+              <AppText step="secondary" tone="muted">
+                {t('m.common.empty')}
+              </AppText>
+            )}
             {list.some((session) => !session.current) ? (
-              <Button label={t('m.profile.signOutOthers')} variant="danger" busy={revokeOthers.busy} onPress={() => void revokeOthers.run()} />
+              <Button label={t('m.profile.signOutOthers')} variant="danger" busy={revokeOthers.busy} onPress={confirmOthers} />
             ) : null}
           </>
         )}
@@ -94,6 +119,17 @@ export default function SecurityScreen() {
       <PasswordChange />
     </Screen>
   );
+}
+
+function confirmSecurityAction(title: string, message: string, cancel: string, onConfirm: () => void) {
+  if (Platform.OS === 'web') {
+    if (globalThis.confirm(`${title}\n\n${message}`)) onConfirm();
+    return;
+  }
+  Alert.alert(title, message, [
+    { text: cancel, style: 'cancel' },
+    { text: title, style: 'destructive', onPress: onConfirm },
+  ]);
 }
 
 type AlertsProps = {
@@ -201,4 +237,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
   actions: { gap: spacing[2] },
   flex: { flex: 1 },
+  sessionsCard: { padding: 0, gap: 0, overflow: 'hidden' },
+  session: { gap: spacing[2], padding: spacing[3] },
+  sessionDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
 });
