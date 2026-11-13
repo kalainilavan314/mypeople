@@ -26,7 +26,7 @@ import { requireStaff } from '@/lib/staff';
 
 const UUID = /^[0-9a-f-]{36}$/i;
 const FOCUS = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
-const NOT_FOUND = 'This opportunity does not exist, is outside your areas, or is not among the 100 most recent.';
+const NOT_FOUND = 'This opportunity does not exist or is outside your areas.';
 const REFUSED = 'Volunteering opportunities need the volunteer management permission (volunteers.manage).';
 const STATE_TONES = { draft: 'neutral', open: 'waiting', closed: 'done', cancelled: 'refused' } as const;
 const OFFER_TONES: Record<string, 'waiting' | 'done' | 'refused' | 'neutral'> = {
@@ -73,12 +73,10 @@ async function OpportunityView({ params, searchParams }: Pick<PageProps<'/volunt
   }
 
   const client = await staffApi();
-  let opportunity: ManagedVolunteerOpportunity | undefined;
+  let opportunity: ManagedVolunteerOpportunity;
   let offers: VolunteerOfferCard[];
   try {
-    // The API has no single-opportunity read for coordinators; the list holds every field.
-    opportunity = (await client.listManagedVolunteerOpportunities()).find((item) => item.id === id);
-    offers = opportunity ? await client.listVolunteerOffers(id) : [];
+    [opportunity, offers] = await Promise.all([client.getManagedVolunteerOpportunity(id), client.listVolunteerOffers(id)]);
   } catch (error) {
     if (error instanceof ApiError && error.code === 'feature_unavailable') {
       return (
@@ -95,15 +93,6 @@ async function OpportunityView({ params, searchParams }: Pick<PageProps<'/volunt
       </>
     );
   }
-  if (!opportunity) {
-    return (
-      <>
-        {backLink}
-        <PageProblem locale={locale} message={NOT_FOUND} />
-      </>
-    );
-  }
-
   // Skill names only replace keys on screen; without them the keys are shown.
   let skills: VolunteerSkill[] = [];
   try {

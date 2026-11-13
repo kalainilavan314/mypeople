@@ -1,4 +1,4 @@
-import type { ElectionNotice, ElectionPeriodFile } from '@my-people/api-client';
+import { ApiError, type ElectionNotice, type ElectionPeriodFile, type ElectionPeriodReport } from '@my-people/api-client';
 import Link from 'next/link';
 import { connection } from 'next/server';
 import { Suspense, type ReactNode } from 'react';
@@ -12,6 +12,7 @@ import { SubmitButton } from '@/components/SubmitButton';
 import { closePeriod, withdrawNotice } from '@/features/elections/actions';
 import { areaKeyText, electionTypeText, overlapRefs, silenceStatus, silenceText } from '@/features/elections/periods';
 import { PublishNoticeForm } from '@/features/elections/PublishNoticeForm';
+import { REPORT_LABELS } from '@/features/elections/roster';
 import { api } from '@/lib/api';
 import { formatDate, formatDateTime } from '@/lib/format';
 import { getAdminLocale, getDictionary, getLocalizedProblem, type Locale, type TranslationDictionary } from '@/lib/i18n';
@@ -164,6 +165,23 @@ async function PeriodFile({ params, searchParams }: Pick<PageProps<'/elections/[
         </section>
       </div>
 
+      <section aria-labelledby="roster-heading" className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="roster-heading" className="flex flex-col text-base font-bold">
+            <span lang="ta">பணிப் பட்டியலும் கால அறிக்கையும்</span>
+            <span lang="en" className="text-sm font-semibold text-muted">
+              Duty roster and period report
+            </span>
+          </h2>
+          <Link href={`/elections/${period.id}/roster`} className={`inline-flex min-h-11 items-center rounded-lg border border-line px-4 text-sm font-semibold text-primary hover:bg-surface ${FOCUS}`}>
+            Open the duty roster
+          </Link>
+        </div>
+        <Suspense fallback={<ConsoleLoading rows={2} />}>
+          <PeriodReport periodId={period.id} locale={locale} />
+        </Suspense>
+      </section>
+
       <section aria-labelledby="notices-heading" className="flex flex-col gap-3">
         <h2 id="notices-heading" lang={locale} className="text-lg font-bold">
           {words.noticesTitle}
@@ -195,6 +213,32 @@ async function PeriodFile({ params, searchParams }: Pick<PageProps<'/elections/[
         </p>
       )}
     </>
+  );
+}
+
+/** FR-ELX-009: what happened in the period, in counts (Tier 5, election.mode.manage). */
+async function PeriodReport({ periodId, locale }: { periodId: string; locale: Locale }) {
+  let report: ElectionPeriodReport;
+  try {
+    report = await (await staffApi()).getElectionPeriodReport(periodId);
+  } catch (error) {
+    if (error instanceof ApiError && error.code === 'feature_unavailable') {
+      return <p className="text-sm text-muted">The election duty roster is not switched on yet, so there is no period report.</p>;
+    }
+    return <LoadFailure error={error} locale={locale} refused="The period report is for Tier 5 (election mode management)." notFound="The period report is not available." />;
+  }
+  return (
+    <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+      {REPORT_LABELS.map((item) => (
+        <div key={item.key} className="rounded-lg bg-surface p-3">
+          <dt className="flex flex-col text-xs text-muted">
+            <span lang="ta">{item.ta}</span>
+            <span lang="en">{item.en}</span>
+          </dt>
+          <dd className="mt-1 text-xl font-semibold tabular-nums text-text">{report[item.key]}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 

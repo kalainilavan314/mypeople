@@ -1,4 +1,4 @@
-import { ApiError, type ManagedSurvey, type SurveyQuestion } from '@my-people/api-client';
+import { ApiError, type ManagedSurveyFile } from '@my-people/api-client';
 import Link from 'next/link';
 import { connection } from 'next/server';
 import { Suspense, type ReactNode } from 'react';
@@ -20,7 +20,7 @@ import { requireStaff } from '@/lib/staff';
 
 const UUID = /^[0-9a-f-]{36}$/i;
 const FOCUS = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
-const NOT_FOUND = 'This survey does not exist, is outside your areas, or is not among the 100 most recent.';
+const NOT_FOUND = 'This survey does not exist or is outside your areas.';
 const REFUSED = 'Surveys need the survey management permission (surveys.manage).';
 const TONES = { draft: 'neutral', open: 'waiting', closed: 'done' } as const;
 
@@ -60,13 +60,9 @@ async function SurveyView({ params, searchParams }: Pick<PageProps<'/surveys/[id
   }
 
   const client = await staffApi();
-  let survey: ManagedSurvey | undefined;
-  let questions: SurveyQuestion[] = [];
+  let survey: ManagedSurveyFile;
   try {
-    // The API has no single-survey read for staff; the list holds the settings. A draft's questions
-    // come from its results read, which has no answers yet (the API records that it was opened).
-    survey = (await client.listManagedSurveys()).find((item) => item.id === id);
-    if (survey?.state === 'draft') questions = (await client.getSurveyResults(id)).questions.map((result) => result.question);
+    survey = await client.getManagedSurvey(id);
   } catch (error) {
     if (error instanceof ApiError && error.code === 'feature_unavailable') {
       return (
@@ -83,20 +79,18 @@ async function SurveyView({ params, searchParams }: Pick<PageProps<'/surveys/[id
       </>
     );
   }
-  if (!survey) {
-    return (
-      <>
-        {backLink}
-        <PageProblem locale={locale} message={NOT_FOUND} />
-      </>
-    );
-  }
-
+  const { questions } = survey;
   const areaNames = await loadAreaNames([survey.areaKey]);
   const areaName = `${areaText(survey.areaKey, areaNames, 'en')} · ${areaText(survey.areaKey, areaNames, 'ta')}`;
   const current: Record<string, string> = {
     titleTa: survey.titleTa,
     titleEn: survey.titleEn,
+    audienceTa: survey.audienceTa,
+    audienceEn: survey.audienceEn,
+    privacyTa: survey.privacyTa,
+    privacyEn: survey.privacyEn,
+    nextStepsTa: survey.nextStepsTa,
+    nextStepsEn: survey.nextStepsEn,
     closesAt: toSriLankaDateTimeInput(survey.closesAt),
     anonymous: survey.anonymous ? '1' : '',
     allowEdits: survey.allowEdits ? '1' : '',
@@ -157,12 +151,23 @@ async function SurveyView({ params, searchParams }: Pick<PageProps<'/surveys/[id
             <Section
               id="edit"
               title="Change the draft"
-              intro="Saving replaces the whole draft. The API does not send back a draft’s audience, privacy and next-steps texts, so write them again before saving; the titles, settings and questions are filled in.">
+              intro="Saving replaces the whole draft: its texts, settings and questions.">
               <SurveyForm surveyId={survey.id} current={current} fixedArea={survey.areaKey} fixedAreaName={areaName} />
             </Section>
           ) : (
-            <Section id="questions" title="Questions" intro="An open or closed survey cannot change.">
-              <p className="text-sm text-muted">The questions and their counts are on the results page.</p>
+            <Section id="questions" title="Questions" intro="An open or closed survey cannot change. Counts are on the results page.">
+              <ol className="flex list-decimal flex-col gap-2 pl-5 text-sm">
+                {questions.map((question) => (
+                  <li key={question.id}>
+                    <span lang="ta" className="block text-text">
+                      {question.promptTa}
+                    </span>
+                    <span lang="en" className="block text-muted">
+                      {question.promptEn} · {KIND_LABELS[question.kind].en}
+                    </span>
+                  </li>
+                ))}
+              </ol>
             </Section>
           )}
         </div>

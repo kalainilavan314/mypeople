@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 import { PROPOSAL_TARGETS, readModeration } from '../development/forms.ts';
+import { OUTCOMES, OUTCOME_LABELS, readMisinfoAppeal, readMisinfoDecision } from './factcheck.ts';
 import { builtModules } from '../../lib/modules.ts';
 import { bilingualConfirmation, bilingualMessageFor, bilingualProblemText } from '../../lib/messages.ts';
 
@@ -39,8 +40,37 @@ test('the queue lists ideas and proposals oldest first and sends cases to the ca
   assert.match(page, /moderated inside each case file/);
 });
 
-test('no section pretends misinformation reports exist yet', async () => {
-  assert.doesNotMatch(await readSrc('app/(staff)/moderation/page.tsx'), /misinformation/i);
+test('misinformation reports are decided by a person, with a reason, never an automatic score (BR-149)', async () => {
+  const page = await readSrc('app/(staff)/moderation/page.tsx');
+  assert.match(page, /A person decides; there is no automatic score\./);
+  assert.match(page, /தவறான தகவல் முறைப்பாடுகள்/);
+  assert.match(page, /listFactCheckQueue\(true\)/);
+  assert.match(page, /\/evidence\/factcheck\/\$\{report\.id\}/);
+  assert.doesNotMatch(page, /not built yet|confidence|score=|aiScore/i);
+  assert.deepEqual(readMisinfoDecision(form({ outcome: 'false', reason: 'too short' })).problems, ['factcheck_reason_required']);
+  assert.deepEqual(readMisinfoDecision(form({ reason: 'The photo is from 2019, not this week.' })).problems, ['outcome_required']);
+  assert.deepEqual(readMisinfoDecision(form({ outcome: 'misleading', reason: 'The photo is from 2019, not this week.' })).input, {
+    outcome: 'misleading',
+    reason: 'The photo is from 2019, not this week.',
+  });
+  assert.deepEqual(readMisinfoAppeal(form({ change: 'change', reason: 'New evidence from the GN office.' })).problems, ['new_outcome_required']);
+  assert.deepEqual(readMisinfoAppeal(form({ change: 'uphold', reason: 'The original evidence stands.' })).input, { change: false, reason: 'The original evidence stands.' });
+  assert.equal(OUTCOMES.length, 4);
+  for (const outcome of OUTCOMES) assert.match(OUTCOME_LABELS[outcome].ta, /[஀-௿]/, outcome);
+});
+
+test('the screenshot proxy never lets a browser or proxy keep the image', async () => {
+  const route = await readSrc('app/evidence/factcheck/[reportId]/route.ts');
+  assert.match(route, /no-store, private/);
+  assert.match(route, /\/v1\/fact-checks\/manage\/\$\{encodeURIComponent\(reportId\)\}\/screenshot/);
+  assert.match(route, /readStaffToken/);
+});
+
+test('fact-check refusals say who cannot decide', () => {
+  assert.match(bilingualMessageFor('original_decider').en, /someone else must decide the appeal/);
+  assert.match(bilingualMessageFor('original_decider').ta, /[஀-௿]/);
+  assert.match(bilingualMessageFor('factcheck_refused').ta, /[஀-௿]/);
+  for (const done of ['misinfo_decided', 'misinfo_appeal_upheld', 'misinfo_appeal_changed']) assert.match(bilingualConfirmation(done).ta, /[஀-௿]/, done);
 });
 
 test('moderation refusals and confirmations have Tamil and English words', () => {
