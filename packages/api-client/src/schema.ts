@@ -5131,6 +5131,154 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/fact-checks/screenshots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Screenshot
+         * @description Re-encoded without metadata and sealed; attach it to a report by id.
+         */
+        post: operations["upload_screenshot_v1_fact_checks_screenshots_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report
+         * @description M48: report suspected misinformation with a link or a screenshot.
+         */
+        post: operations["report_v1_fact_checks_reports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/reports/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Reports */
+        get: operations["my_reports_v1_fact_checks_reports_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/reports/{report_id}/appeal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Appeal */
+        post: operations["appeal_v1_fact_checks_reports__report_id__appeal_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Queue
+         * @description D12: reports waiting for a decision and appeals waiting for a second person, oldest first.
+         */
+        get: operations["queue_v1_fact_checks_manage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/manage/{report_id}/screenshot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Screenshot */
+        get: operations["read_screenshot_v1_fact_checks_manage__report_id__screenshot_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/manage/{report_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide */
+        post: operations["decide_v1_fact_checks_manage__report_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/manage/{report_id}/appeal-decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Appeal
+         * @description Never by the first fact-checker (403 original_decider).
+         */
+        post: operations["decide_appeal_v1_fact_checks_manage__report_id__appeal_decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -9784,6 +9932,30 @@ export interface components {
             /** Reason */
             reason?: string | null;
         };
+        /** FactCheckAppealDecisionIn */
+        FactCheckAppealDecisionIn: {
+            /** Change */
+            change: boolean;
+            /** Outcome */
+            outcome?: ("false" | "misleading" | "accurate" | "not_actionable") | null;
+            /** Reason */
+            reason: string;
+        };
+        /** FactCheckAppealIn */
+        FactCheckAppealIn: {
+            /** Body */
+            body: string;
+        };
+        /** FactCheckDecisionIn */
+        FactCheckDecisionIn: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "false" | "misleading" | "accurate" | "not_actionable";
+            /** Reason */
+            reason: string;
+        };
         /** FactIn */
         FactIn: {
             /** Statement */
@@ -11626,6 +11798,59 @@ export interface components {
             titleTa: string;
             /** Duedate */
             dueDate?: string | null;
+        };
+        /** MisinfoReportIn */
+        MisinfoReportIn: {
+            /** Link */
+            link?: string | null;
+            /** Description */
+            description: string;
+            /** Screenshotid */
+            screenshotId?: string | null;
+        };
+        /** MisinfoReportOut */
+        MisinfoReportOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Reportref */
+            reportRef: string;
+            /** Link */
+            link: string | null;
+            /** Description */
+            description: string;
+            /** Hasscreenshot */
+            hasScreenshot: boolean;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "decided";
+            /**
+             * Outcome
+             * @description Decided by a person; never an automatic score (BR-149)
+             */
+            outcome: ("false" | "misleading" | "accurate" | "not_actionable") | null;
+            /** Reason */
+            reason: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+            /**
+             * Appealstate
+             * @enum {string}
+             */
+            appealState: "none" | "open" | "upheld" | "changed";
+            /** Appealoutcome */
+            appealOutcome: ("false" | "misleading" | "accurate" | "not_actionable") | null;
+            /** Appealreason */
+            appealReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** ModerationIn */
         ModerationIn: {
@@ -14704,6 +14929,18 @@ export interface components {
             /** Correctionreason */
             correctionReason: string | null;
         };
+        /** ScreenshotOut */
+        ScreenshotOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
+        };
         /**
          * SecurityAlertOut
          * @description M50: a flagged sign-in or a reused refresh token. A coarse device label; never an address or a place.
@@ -15200,6 +15437,52 @@ export interface components {
              * @default []
              */
             consentLogs: components["schemas"]["ConsentLogOut"][];
+        };
+        /** StaffMisinfoReportOut */
+        StaffMisinfoReportOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Reportref */
+            reportRef: string;
+            /** Link */
+            link: string | null;
+            /** Description */
+            description: string;
+            /** Hasscreenshot */
+            hasScreenshot: boolean;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "decided";
+            /**
+             * Outcome
+             * @description Decided by a person; never an automatic score (BR-149)
+             */
+            outcome: ("false" | "misleading" | "accurate" | "not_actionable") | null;
+            /** Reason */
+            reason: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+            /**
+             * Appealstate
+             * @enum {string}
+             */
+            appealState: "none" | "open" | "upheld" | "changed";
+            /** Appealoutcome */
+            appealOutcome: ("false" | "misleading" | "accurate" | "not_actionable") | null;
+            /** Appealreason */
+            appealReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Appealbody */
+            appealBody: string | null;
         };
         /** StaffReconcileRequest */
         StaffReconcileRequest: {
@@ -27175,6 +27458,246 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PeriodReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_screenshot_v1_fact_checks_screenshots_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScreenshotOut"];
+                };
+            };
+        };
+    };
+    report_v1_fact_checks_reports_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MisinfoReportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MisinfoReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_reports_v1_fact_checks_reports_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MisinfoReportOut"][];
+                };
+            };
+        };
+    };
+    appeal_v1_fact_checks_reports__report_id__appeal_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FactCheckAppealIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MisinfoReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    queue_v1_fact_checks_manage_get: {
+        parameters: {
+            query?: {
+                open_only?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffMisinfoReportOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_screenshot_v1_fact_checks_manage__report_id__screenshot_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The screenshot, without metadata */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/webp": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_v1_fact_checks_manage__report_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FactCheckDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffMisinfoReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_appeal_v1_fact_checks_manage__report_id__appeal_decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FactCheckAppealDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffMisinfoReportOut"];
                 };
             };
             /** @description Validation Error */

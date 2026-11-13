@@ -474,4 +474,21 @@ TEMPLATES: dict[str, Template] = {
         "படிக்க எனது கடமைகளைத் திறக்கவும்.",
         "roster_shift",
     ),
+    # Fact-checks (FR-AUT-007).
+    "factcheck_decided": Template(
+        "review",
+        "Your misinformation report has been checked",
+        "நீங்கள் முறையிட்ட தவறான தகவல் சரிபார்க்கப்பட்டது",
+        "Open it to see the fact-checker's finding and reason. You can appeal once.",
+        "சரிபார்ப்பாளரின் முடிவையும் காரணத்தையும் காண அதைத் திறக்கவும். ஒருமுறை மேன்முறையீடு செய்யலாம்.",
+        "misinfo_report",
+    ),
+    "factcheck_appeal_decided": Template(
+        "review",
+        "Your fact-check appeal has been decided",
+        "உங்கள் சரிபார்ப்பு மேன்முறையீடு முடிவு செய்யப்பட்டது",
+        "Open it for the outcome and the reason.",
+        "முடிவையும் காரணத்தையும் காண அதைத் திறக்கவும்.",
+        "misinfo_report",
+    ),
 }

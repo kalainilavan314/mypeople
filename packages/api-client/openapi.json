@@ -16132,6 +16132,406 @@
         }
       }
     },
+    "/v1/fact-checks/screenshots": {
+      "post": {
+        "tags": [
+          "fact-checks"
+        ],
+        "summary": "Upload Screenshot",
+        "description": "Re-encoded without metadata and sealed; attach it to a report by id.",
+        "operationId": "upload_screenshot_v1_fact_checks_screenshots_post",
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScreenshotOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/fact-checks/reports": {
+      "post": {
+        "tags": [
+          "fact-checks"
+        ],
+        "summary": "Report",
+        "description": "M48: report suspected misinformation with a link or a screenshot.",
+        "operationId": "report_v1_fact_checks_reports_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MisinfoReportIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MisinfoReportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/fact-checks/reports/mine": {
+      "get": {
+        "tags": [
+          "fact-checks"
+        ],
+        "summary": "My Reports",
+        "operationId": "my_reports_v1_fact_checks_reports_mine_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MisinfoReportOut"
+                  },
+                  "type": "array",
+                  "title": "Response My Reports V1 Fact Checks Reports Mine Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/fact-checks/reports/{report_id}/appeal": {
+      "post": {
+        "tags": [
+          "fact-checks"
+        ],
+        "summary": "Appeal",
+        "operationId": "appeal_v1_fact_checks_reports__report_id__appeal_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Report Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FactCheckAppealIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MisinfoReportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fact-checks/manage": {
+      "get": {
+        "tags": [
+          "fact-checks"
+        ],
+        "summary": "Queue",
+        "description": "D12: reports waiting for a decision and appeals waiting for a second person, oldest first.",
+        "operationId": "queue_v1_fact_checks_manage_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "open_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Open Only"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffMisinfoReportOut"
+                  },
+                  "title": "Response Queue V1 Fact Checks Manage Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fact-checks/manage/{report_id}/screenshot": {
+      "get": {
+        "tags": [
+          "fact-checks"
+        ],
+        "summary": "Read Screenshot",
+        "operationId": "read_screenshot_v1_fact_checks_manage__report_id__screenshot_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Report Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The screenshot, without metadata",
+            "content": {
+              "image/webp": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fact-checks/manage/{report_id}/decision": {
+      "post": {
+        "tags": [
+          "fact-checks"
+        ],
+        "summary": "Decide",
+        "operationId": "decide_v1_fact_checks_manage__report_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Report Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FactCheckDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffMisinfoReportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fact-checks/manage/{report_id}/appeal-decision": {
+      "post": {
+        "tags": [
+          "fact-checks"
+        ],
+        "summary": "Decide Appeal",
+        "description": "Never by the first fact-checker (403 original_decider).",
+        "operationId": "decide_appeal_v1_fact_checks_manage__report_id__appeal_decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Report Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FactCheckAppealDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffMisinfoReportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/home": {
       "get": {
         "tags": [
@@ -29219,6 +29619,84 @@
         ],
         "title": "ExecutiveDecisionIn"
       },
+      "FactCheckAppealDecisionIn": {
+        "properties": {
+          "change": {
+            "type": "boolean",
+            "title": "Change"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "false",
+                  "misleading",
+                  "accurate",
+                  "not_actionable"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "change",
+          "reason"
+        ],
+        "title": "FactCheckAppealDecisionIn"
+      },
+      "FactCheckAppealIn": {
+        "properties": {
+          "body": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Body"
+          }
+        },
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "title": "FactCheckAppealIn"
+      },
+      "FactCheckDecisionIn": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "false",
+              "misleading",
+              "accurate",
+              "not_actionable"
+            ],
+            "title": "Outcome"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcome",
+          "reason"
+        ],
+        "title": "FactCheckDecisionIn"
+      },
       "FactIn": {
         "properties": {
           "statement": {
@@ -34177,6 +34655,187 @@
           "titleTa"
         ],
         "title": "MilestoneModel"
+      },
+      "MisinfoReportIn": {
+        "properties": {
+          "link": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000,
+                "pattern": "^https?://"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Description"
+          },
+          "screenshotId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Screenshotid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "description"
+        ],
+        "title": "MisinfoReportIn"
+      },
+      "MisinfoReportOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "reportRef": {
+            "type": "string",
+            "title": "Reportref"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "hasScreenshot": {
+            "type": "boolean",
+            "title": "Hasscreenshot"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "decided"
+            ],
+            "title": "State"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "false",
+                  "misleading",
+                  "accurate",
+                  "not_actionable"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome",
+            "description": "Decided by a person; never an automatic score (BR-149)"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          },
+          "appealState": {
+            "type": "string",
+            "enum": [
+              "none",
+              "open",
+              "upheld",
+              "changed"
+            ],
+            "title": "Appealstate"
+          },
+          "appealOutcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "false",
+                  "misleading",
+                  "accurate",
+                  "not_actionable"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appealoutcome"
+          },
+          "appealReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appealreason"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "reportRef",
+          "link",
+          "description",
+          "hasScreenshot",
+          "state",
+          "outcome",
+          "reason",
+          "decidedAt",
+          "appealState",
+          "appealOutcome",
+          "appealReason",
+          "createdAt"
+        ],
+        "title": "MisinfoReportOut"
       },
       "ModerationIn": {
         "properties": {
@@ -42362,6 +43021,30 @@
         ],
         "title": "ScorecardOut"
       },
+      "ScreenshotOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "width",
+          "height"
+        ],
+        "title": "ScreenshotOut"
+      },
       "SecurityAlertOut": {
         "properties": {
           "id": {
@@ -43545,6 +44228,159 @@
           "targetMemberName"
         ],
         "title": "StaffHouseholdViewOut"
+      },
+      "StaffMisinfoReportOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "reportRef": {
+            "type": "string",
+            "title": "Reportref"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "hasScreenshot": {
+            "type": "boolean",
+            "title": "Hasscreenshot"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "decided"
+            ],
+            "title": "State"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "false",
+                  "misleading",
+                  "accurate",
+                  "not_actionable"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome",
+            "description": "Decided by a person; never an automatic score (BR-149)"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          },
+          "appealState": {
+            "type": "string",
+            "enum": [
+              "none",
+              "open",
+              "upheld",
+              "changed"
+            ],
+            "title": "Appealstate"
+          },
+          "appealOutcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "false",
+                  "misleading",
+                  "accurate",
+                  "not_actionable"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appealoutcome"
+          },
+          "appealReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appealreason"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "appealBody": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appealbody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "reportRef",
+          "link",
+          "description",
+          "hasScreenshot",
+          "state",
+          "outcome",
+          "reason",
+          "decidedAt",
+          "appealState",
+          "appealOutcome",
+          "appealReason",
+          "createdAt",
+          "appealBody"
+        ],
+        "title": "StaffMisinfoReportOut"
       },
       "StaffReconcileRequest": {
         "properties": {

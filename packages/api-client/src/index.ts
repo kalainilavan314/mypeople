@@ -283,6 +283,10 @@ export type RosterShiftInput = Schemas['ShiftIn'];
 export type MyRosterShift = Schemas['MyShiftOut'];
 export type ElectionPeriodReport = Schemas['PeriodReportOut'];
 export type ManagedSurveyFile = Schemas['ManagedSurveyFileOut'];
+// Fact-checks (M48 reporting part, D12).
+export type MisinfoReport = Schemas['MisinfoReportOut'];
+export type StaffMisinfoReport = Schemas['StaffMisinfoReportOut'];
+export type MisinfoOutcome = NonNullable<Schemas['MisinfoReportOut']['outcome']>;
 export type CaseListFilters = {
   stage?: CaseStage[];
   mine?: boolean;
@@ -1643,6 +1647,27 @@ export function createApiClient({
       request<ManagedVolunteerOpportunity>(
         'GET',
         `/v1/volunteering/manage/opportunities/${encodeURIComponent(opportunityId)}`,
+      ),
+    // Fact-checks (M48 reporting part, D12). 404 while fact_checks is off. Checking a statement against
+    // its signed original waits for the signing keys (INT-24).
+    uploadMisinfoScreenshot: (image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
+      request<{ id: string; width: number; height: number }>('POST', '/v1/fact-checks/screenshots', image, contentType),
+    /** A link or a screenshot is required ("link_or_screenshot_required"). */
+    reportMisinformation: (input: { link?: string; description: string; screenshotId?: string }) =>
+      request<MisinfoReport>('POST', '/v1/fact-checks/reports', input),
+    listMyMisinfoReports: () => request<MisinfoReport[]>('GET', '/v1/fact-checks/reports/mine'),
+    appealMisinfoDecision: (reportId: string, body: string) =>
+      request<MisinfoReport>('POST', `/v1/fact-checks/reports/${encodeURIComponent(reportId)}/appeal`, { body }),
+    listFactCheckQueue: (openOnly = true) =>
+      request<StaffMisinfoReport[]>('GET', `/v1/fact-checks/manage${openOnly ? '' : '?open_only=false'}`),
+    decideMisinfoReport: (reportId: string, outcome: MisinfoOutcome, reason: string) =>
+      request<StaffMisinfoReport>('POST', `/v1/fact-checks/manage/${encodeURIComponent(reportId)}/decision`, { outcome, reason }),
+    /** Never by the first fact-checker (403 "original_decider"). */
+    decideMisinfoAppeal: (reportId: string, change: boolean, reason: string, outcome?: MisinfoOutcome) =>
+      request<StaffMisinfoReport>(
+        'POST',
+        `/v1/fact-checks/manage/${encodeURIComponent(reportId)}/appeal-decision`,
+        { change, outcome, reason },
       ),
     // Community Finance endpoints (Milestone 1.4)
     getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),

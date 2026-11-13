@@ -267,6 +267,16 @@ Behind the `field_visits` and `election_roster` switches (phase 2). Neither reco
 | `GET/POST /v1/election/roster/manage/shifts`, `GET .../{id}`, `POST .../{id}/offers` `{memberCode}`, `.../cancel`, `.../messages` | `election.roster.manage` over the area | shifts in a declared period's area, offers to Verified and Active members in the shift's area, operational messages to the people on the shift | `422 period_not_declared`, `outside_the_election_area`, `places_filled`, `member_outside_shift_area` |
 | `GET /v1/election/roster/periods/{id}/report` | `election.mode.manage` | FR-ELX-009 counts: shifts, roster changes and messages, broadcasts sent, content published, silence blocks | `403`, `404` |
 
+### Fact-checks (`/v1/fact-checks`)
+
+Behind the `fact_checks` switch (phase 2). A person decides every report; no automatic score exists (BR-149). Checking a statement against its signed original (FR-AUT-005, M47, D30) waits for the signing keys (INT-24).
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `POST /screenshots` body = the image, `POST /reports` `{link?, description, screenshotId?}` | a session | `201` the `MR-` report, pending | `422 link_or_screenshot_required`, `screenshot_not_found`, `too_many_reports_today` |
+| `GET /reports/mine`, `POST /reports/{id}/appeal` `{body}` | the reporter | outcome and reason; one appeal | `422 not_decided`, `already_appealed` |
+| `GET /manage?open_only`, `GET /manage/{id}/screenshot`, `POST /manage/{id}/decision` `{outcome, reason}`, `POST /manage/{id}/appeal-decision` `{change, outcome?, reason}` | `content.moderate` | the D12 fact-check queue; screenshot views audited | `403 own_record`, `original_decider`; `422 already_decided`, `no_open_appeal`, `new_outcome_required` |
+
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 
 | Endpoint | Needs | Success | Errors |
