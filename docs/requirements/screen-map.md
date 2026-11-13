@@ -6,12 +6,14 @@ Built screens are in the Expo member and staff apps and the Next.js dashboard; n
 
 | App | Screens | Built |
 |---|---|---|
-| Member app | 112 | 55 |
-| Staff app | 18 | 7 |
-| Dashboard | 44 | 19 |
-| **All** | **174** | **81** |
+| Member app | 112 | 84 |
+| Staff app | 18 | 14 |
+| Dashboard | 44 | 33 |
+| **All** | **174** | **131** |
 
-Status: **Built**; **API ready** (the endpoint exists and is tested, only the screen is missing); **To build**; **Blocked** (waits on the decision or integration named).
+Counted on 13 November 2026, after the Phase 2 build. Three staff app screens (S11, S12, S15) are built on the dashboard rather than in the app; M48 is partly built and not counted. Phase 2 modules stay behind their switches until Gate G2 (`docs/requirements/phase2-status.md`).
+
+Status: **Built**; **API built** (the endpoint exists and is tested, only the screen is missing); **Partly built**; **To build**; **Blocked** (waits on the decision or integration named).
 
 
 ## Member app
@@ -45,18 +47,18 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | H07 | Report a concern | Community issues (SC-05) | 2 | Built | `apps/member-mobile/app/(member)/issues/` |  |
 | H08 | Review report | Community issues (SC-05) | 2 | Built | `apps/member-mobile/app/(member)/issues/` |  |
 | H09 | Report receipt and progress | Community issues (SC-05) | 2 | Built | `apps/member-mobile/app/(member)/issues/` | Same screen as H06 (`issues/[id].tsx`); receipt with `receipt=1` |
-| H10 | Volunteer skills | Volunteering (SC-06) | 2 | API built | `apps/member-mobile/app/(member)/volunteer/` |  |
-| H11 | Volunteer opportunity | Volunteering (SC-06) | 2 | API built | `apps/member-mobile/app/(member)/volunteer/` |  |
-| H12 | My assignment | Volunteering (SC-06) | 2 | API built | `apps/member-mobile/app/(member)/volunteer/` | Also lists M30 election duties |
-| H13 | Community ideas | Ideas and surveys (SC-07) | 2 | API built | `apps/member-mobile/app/(member)/ideas/` | Decided: one Ideas area with M15–M17 |
-| H14 | Take a survey | Ideas and surveys (SC-07) | 2 | API built | `apps/member-mobile/app/(member)/surveys/[id].tsx` |  |
-| H15 | Learning and courses | Learning (SC-08) | 2 | API built | `apps/member-mobile/app/(member)/learning/` |  |
-| H16 | Course lesson | Learning (SC-08) | 2 | API built | `apps/member-mobile/app/(member)/learning/[lesson].tsx` |  |
+| H10 | Volunteer skills | Volunteering (SC-06) | 2 | Built | `apps/member-mobile/app/(member)/volunteer/` | Behind `volunteering` |
+| H11 | Volunteer opportunity | Volunteering (SC-06) | 2 | Built | `apps/member-mobile/app/(member)/volunteer/` |  |
+| H12 | My assignment | Volunteering (SC-06) | 2 | Built | `apps/member-mobile/app/(member)/volunteer/` | Also lists M30 election duties |
+| H13 | Community ideas | Ideas and surveys (SC-07) | 2 | Built | `apps/member-mobile/app/(member)/ideas/` | Decided: one Ideas area with M15–M17 |
+| H14 | Take a survey | Ideas and surveys (SC-07) | 2 | Built | `apps/member-mobile/app/(member)/surveys/[id].tsx` | Behind `ideas_surveys` |
+| H15 | Learning and courses | Learning (SC-08) | 2 | Built | `apps/member-mobile/app/(member)/learning/` | Behind `learning` |
+| H16 | Course lesson | Learning (SC-08) | 2 | Built | `apps/member-mobile/app/(member)/learning/[lesson].tsx` |  |
 | H17 | Party fund contribution | Party fund (SC-09) | 2 | Built | `apps/member-mobile/app/(member)/fund/` | M1.4 bank slip intake |
 | H18 | Contribution receipt | Party fund (SC-09) | 2 | Built | `apps/member-mobile/app/(member)/fund/receipt/[id].tsx` | M1.4 verified receipt card |
-| H19 | Invite a member | Referrals (SC-10) | 2 | API built | `apps/member-mobile/app/(member)/referrals/invite.tsx` |  |
-| H20 | My referrals | Referrals (SC-10) | 2 | API built | `apps/member-mobile/app/(member)/referrals/` |  |
-| H21 | Survey submitted | Ideas and surveys (SC-07) | 2 | API built | `apps/member-mobile/app/(member)/surveys/[id]/done.tsx` |  |
+| H19 | Invite a member | Referrals (SC-10) | 2 | Built | `apps/member-mobile/app/(member)/referrals/invite.tsx` | Behind `invitations`; the invitation link opens `app/join/[token].tsx` |
+| H20 | My referrals | Referrals (SC-10) | 2 | Built | `apps/member-mobile/app/(member)/referrals/` |  |
+| H21 | Survey submitted | Ideas and surveys (SC-07) | 2 | Built | `apps/member-mobile/app/(member)/surveys/[id]/done.tsx` |  |
 | E01 | Events list | Events (SC-11) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/events.tsx` |  |
 | E02 | Events map | Events (SC-11) | 1 | Built | `apps/member-mobile/app/(member)/events/[id].tsx` |  |
 | E03 | Event filters | Events (SC-11) | 1 | Built | `apps/member-mobile/app/(member)/events/[id].tsx` |  |
@@ -88,26 +90,26 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | M08 | Invite adult member | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
 | M09 | Household invitation response | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
 | M10 | Household privacy and consent | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
-| M11 | Community Support / சமூக உதவி | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/assistance/` |  |
-| M12 | Request support | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/assistance/` |  |
-| M13 | Support case status | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/assistance/` |  |
-| M14 | Support complaint or appeal | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/assistance/` |  |
-| M15 | Our Development Ideas / எமது அபிவிருத்தி யோசனைகள் | Development ideas (SC-24) | 2 | API built | `apps/member-mobile/app/(member)/ideas/proposals/` | Decided: shares the Ideas area with H13 |
-| M16 | Submit development proposal | Development ideas (SC-24) | 2 | API built | `apps/member-mobile/app/(member)/ideas/proposals/` | Decided: shares the Ideas area with H13 |
-| M17 | Proposal detail and stage | Development ideas (SC-24) | 2 | API built | `apps/member-mobile/app/(member)/ideas/proposals/` | Decided: shares the Ideas area with H13 |
-| M18 | Promise Tracker / வாக்குறுதி முன்னேற்றக் கண்காணிப்பு | Promise Tracker (SC-25) | 2 | To build | `apps/member-mobile/app/(member)/promises/` |  |
-| M19 | Promise detail | Promise Tracker (SC-25) | 2 | To build | `apps/member-mobile/app/(member)/promises/` |  |
-| M20 | Area accountability scorecard | Accountability scorecard (SC-26) | 2 | To build | `apps/member-mobile/app/(member)/promises/scorecard.tsx` |  |
-| M21 | Town hall live | Town hall (SC-27) | 2 | To build | `apps/member-mobile/app/(member)/town-hall/` |  |
-| M22 | Ask and vote | Town hall (SC-27) | 2 | To build | `apps/member-mobile/app/(member)/town-hall/` |  |
-| M23 | Town hall archive | Town hall (SC-27) | 2 | To build | `apps/member-mobile/app/(member)/town-hall/` |  |
+| M11 | Community Support / சமூக உதவி | Community Support (SC-23) | 2 | Built | `apps/member-mobile/app/(member)/support/` | Behind `community_support`; the folder is `support/` (the Home tile's name) |
+| M12 | Request support | Community Support (SC-23) | 2 | Built | `apps/member-mobile/app/(member)/support/request.tsx` |  |
+| M13 | Support case status | Community Support (SC-23) | 2 | Built | `apps/member-mobile/app/(member)/support/[id].tsx` |  |
+| M14 | Support complaint or appeal | Community Support (SC-23) | 2 | Built | `apps/member-mobile/app/(member)/support/[id].tsx` | Complaint or appeal from the case status screen |
+| M15 | Our Development Ideas / எமது அபிவிருத்தி யோசனைகள் | Development ideas (SC-24) | 2 | Built | `apps/member-mobile/app/(member)/ideas/proposals/` | Decided: shares the Ideas area with H13 |
+| M16 | Submit development proposal | Development ideas (SC-24) | 2 | Built | `apps/member-mobile/app/(member)/ideas/proposals/` | Decided: shares the Ideas area with H13 |
+| M17 | Proposal detail and stage | Development ideas (SC-24) | 2 | Built | `apps/member-mobile/app/(member)/ideas/proposals/` | Decided: shares the Ideas area with H13 |
+| M18 | Promise Tracker / வாக்குறுதி முன்னேற்றக் கண்காணிப்பு | Promise Tracker (SC-25) | 2 | Built | `apps/member-mobile/app/(member)/promises/` | Behind `promises` |
+| M19 | Promise detail | Promise Tracker (SC-25) | 2 | Built | `apps/member-mobile/app/(member)/promises/[id].tsx` |  |
+| M20 | Area accountability scorecard | Accountability scorecard (SC-26) | 2 | Built | `apps/member-mobile/app/(member)/promises/scorecard.tsx` | Behind `scorecards` |
+| M21 | Town hall live | Town hall (SC-27) | 2 | Built | `apps/member-mobile/app/(member)/town-halls/[id].tsx` | Behind `town_halls`; the live stream waits for OD-44 and DEP-20 (provider links shown once known) |
+| M22 | Ask and vote | Town hall (SC-27) | 2 | Built | `apps/member-mobile/app/(member)/town-halls/[id].tsx` | Voice questions wait for OD-42 |
+| M23 | Town hall archive | Town hall (SC-27) | 2 | Built | `apps/member-mobile/app/(member)/town-halls/` |  |
 | M24 | Budgeting cycle overview | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
 | M25 | Budget project detail | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
 | M26 | Cast budgeting ballot | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
 | M27 | Budgeting results | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
 | M28 | Tamil AI Assistant | Tamil AI assistant (SC-29) | 3 | Blocked: OD-42 (AI provider) | `apps/member-mobile/app/(member)/assistant.tsx` |  |
 | M29 | Election information | Election mode (SC-30) | 2 | Blocked: DEP-19 (legal opinion) | `apps/member-mobile/app/(member)/election.tsx` |  |
-| M30 | Duty roster and shift check-in | Election mode (SC-30) | 2 | To build | `apps/member-mobile/app/(member)/volunteer/ (duty roster with H12)` | Decided: election duties listed with H12 My assignment |
+| M30 | Duty roster and shift check-in | Election mode (SC-30) | 2 | Built | `apps/member-mobile/app/(member)/volunteer/assignments.tsx` | Behind `election_roster`; decided: election duties listed with H12 My assignment |
 | M31 | My committees | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/committees/` |  |
 | M32 | Committee space | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/committees/` |  |
 | M33 | Membership renewal | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 (renewal) | `apps/member-mobile/app/(member)/renewal/` |  |
@@ -125,7 +127,7 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | M45 | Messages and channels | SMS and WhatsApp (SC-39) | 1 SMS, 2 WhatsApp | Built (preferences; SMS waits on INT-01, push on INT-02, WhatsApp in Phase 2) | `apps/member-mobile/app/(member)/profile/settings.tsx (channels, with P05)` | Independent push/SMS toggles per category; no second preferences screen. Decided: extends the P05 settings screen; no second preferences screen. |
 | M46 | Diaspora participation | Diaspora (SC-40) | 3 | To build | `apps/member-mobile/app/(member)/diaspora.tsx` |  |
 | M47 | Official updates | Official content and fact-checks (SC-41) | 2 | Blocked: INT-24 | `apps/member-mobile/app/(member)/official/` |  |
-| M48 | Check or report a statement | Official content and fact-checks (SC-41) | 2 | To build | `apps/member-mobile/app/(member)/official/` |  |
+| M48 | Check or report a statement | Official content and fact-checks (SC-41) | 2 | Partly built | `apps/member-mobile/app/(member)/official/` | Reporting a statement is built (behind `fact_checks`); checking a statement by code waits for INT-24 |
 | M49 | Devices and sessions | Account and device security (SC-42) | 1 | Built (remote revocation) | `apps/member-mobile/app/(member)/profile/security.tsx` | Confirmed session termination; device file wipe and passkeys await INT-02/INT-09. |
 | M50 | Security alerts | Account and device security (SC-42) | 1 | Built | `apps/member-mobile/app/(member)/profile/security.tsx` |  |
 | M51 | Card payment handoff | Payment gateway (SC-43) | 3, subject to OD-27 | Blocked: OD-27, OD-40 (payments) | `apps/member-mobile/app/(member)/fund/payment/` |  |
@@ -139,17 +141,17 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | S02 | Tasks and area dashboard | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/index.tsx` |  |
 | S03 | Member support lookup | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/lookup.tsx` |  |
 | S04 | Assisted verification session | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-04 (assisted verification) | `apps/member-mobile/app/(member)/staff/assisted-verification/` | Assisted verification only; the queue is W01/W02 on the dashboard |
-| S05 | Field case capture | Field operations (SC-32) | 2 | To build | `apps/member-mobile/app/(member)/staff/field-visits/` |  |
-| S06 | Field visit record | Field operations (SC-32) | 2 | To build | `apps/member-mobile/app/(member)/staff/field-visits/` |  |
-| S07 | Offline sync and conflicts | Field operations (SC-32) | 2 | To build | `apps/member-mobile/app/(member)/staff/field-visits/` |  |
+| S05 | Field case capture | Field operations (SC-32) | 2 | Built | `apps/member-mobile/app/(member)/staff/field-visits/` | Behind `field_visits`; saved on the phone first and sent when online |
+| S06 | Field visit record | Field operations (SC-32) | 2 | Built | `apps/member-mobile/app/(member)/staff/field-visits/` |  |
+| S07 | Offline sync and conflicts | Field operations (SC-32) | 2 | Built | `apps/member-mobile/app/(member)/staff/field-visits/sync.tsx` |  |
 | S08 | Attendance scanner (GAP-01) | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/check-in.tsx` | Also works offline: scans are queued on the phone and judged by the server at their recorded time, once the STF-01 replay window is approved; waiting scans are settled on the dashboard event page. The tab sends scans left from any event |
 | S09 | Attendance roster and exceptions | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/roster/[id].tsx` |  |
-| S10 | Volunteer assignment manager | Staff app (SC-19) | 1–2 | Partly built | `apps/member-mobile/app/(member)/staff/assignments.tsx`, `apps/admin-web/src/app/(staff)/volunteer-assignments/` | Staff see and answer their own duties in the app; managers assign duties on the dashboard. A manager screen in the staff app is still to build |
-| S11 | Referral intake and screening | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/staff/assistance/` |  |
-| S12 | Assistance case file | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/staff/assistance/` |  |
+| S10 | Volunteer assignment manager | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/volunteers/`, `apps/admin-web/src/app/(staff)/volunteering/` | Managers answer offers and see volunteers in the staff app; opportunities are created on the dashboard |
+| S11 | Referral intake and screening | Community Support (SC-23) | 2 | Built (dashboard) | `apps/admin-web/src/app/(staff)/support/new/` | Intake and screening on the dashboard; a staff app version is not built |
+| S12 | Assistance case file | Community Support (SC-23) | 2 | Built (dashboard) | `apps/admin-web/src/app/(staff)/support/[id]/` | The case file on the dashboard; a staff app version is not built |
 | S13 | Approvals and escalations | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/approvals.tsx` |  |
 | S14 | Operational notifications | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/alerts.tsx` |  |
-| S15 | Election duty roster manager | Election mode (SC-30) | 2 | To build | `apps/member-mobile/app/(member)/staff/election-roster/` |  |
+| S15 | Election duty roster manager | Election mode (SC-30) | 2 | Built (dashboard) | `apps/admin-web/src/app/(staff)/roster/`, `apps/admin-web/src/app/(staff)/elections/[id]/roster/` | Shifts, offers, messages and cancellation on the dashboard; members answer and check in with M30 |
 | S16 | Relief distribution record | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/staff/relief/` |  |
 | S17 | Appointment calendar | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/staff/appointments/` |  |
 | S18 | Committee coordinator tools | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/staff/committees/` |  |
@@ -178,19 +180,19 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | D09 | Notification and messaging composer (GAP-05) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/messages/` | Paginated bilingual broadcasts with area and effective staff-authorization-tier targeting, live reach, final reach recalculation, approval and audited dispatch. No member ranking. |
 | D10 | Finance queue and ledger (GAP-06) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/finance/` | M1.4 two-person reconciliation queue and ledger; P3 readiness at `/finance-readiness` |
 | D11 | Payment reconciliation | Payment gateway (SC-43) | 3, subject to OD-27 | Blocked: OD-27, OD-40 | `apps/admin-web/src/app/(staff)/finance/payments/` |  |
-| D12 | Moderation and fact-check queue (GAP-07) | Official content and fact-checks (SC-41) | 2 | To build | `apps/admin-web/src/app/(staff)/moderation/` |  |
-| D13 | Assistance case management | Community Support (SC-23) | 2 | To build | `apps/admin-web/src/app/(staff)/assistance/` |  |
-| D14 | Assistance programmes and criteria | Community Support (SC-23) | 2 | To build | `apps/admin-web/src/app/(staff)/assistance/programmes/` |  |
-| D15 | Development proposal review | Development ideas (SC-24) | 2 | API built | `apps/admin-web/src/app/(staff)/development/` |  |
-| D16 | Promise Tracker administration | Promise Tracker (SC-25) | 2 | To build | `apps/admin-web/src/app/(staff)/promises/` |  |
-| D17 | Scorecard publication | Accountability scorecard (SC-26) | 2 | To build | `apps/admin-web/src/app/(staff)/scorecards/` |  |
-| D18 | Town hall production and moderation | Town hall (SC-27) | 2 | To build | `apps/admin-web/src/app/(staff)/town-hall/` |  |
+| D12 | Moderation and fact-check queue (GAP-07) | Official content and fact-checks (SC-41) | 2 | Built | `apps/admin-web/src/app/(staff)/moderation/` | Ideas, proposals and the fact-check queue (behind `fact_checks`) |
+| D13 | Assistance case management | Community Support (SC-23) | 2 | Built | `apps/admin-web/src/app/(staff)/support/` | Behind `community_support`; the folder is `support/` |
+| D14 | Assistance programmes and criteria | Community Support (SC-23) | 2 | Built | `apps/admin-web/src/app/(staff)/support/programmes/` | Statistics with small numbers hidden at `support/statistics` |
+| D15 | Development proposal review | Development ideas (SC-24) | 2 | Built | `apps/admin-web/src/app/(staff)/development/` |  |
+| D16 | Promise Tracker administration | Promise Tracker (SC-25) | 2 | Built | `apps/admin-web/src/app/(staff)/promises/` | Delay and status report at `promises/report` |
+| D17 | Scorecard publication | Accountability scorecard (SC-26) | 2 | Built | `apps/admin-web/src/app/(staff)/scorecards/` |  |
+| D18 | Town hall production and moderation | Town hall (SC-27) | 2 | Built | `apps/admin-web/src/app/(staff)/town-halls/` |  |
 | D19 | Budgeting administration | Participatory budgeting (SC-28) | 3 | To build | `apps/admin-web/src/app/(staff)/budgeting/` |  |
 | D20 | Assistant knowledge base | Tamil AI assistant (SC-29) | 3 | Blocked: OD-42 | `apps/admin-web/src/app/(staff)/assistant/` |  |
 | D21 | AI model registry and monitoring | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-42 | `apps/admin-web/src/app/(staff)/ai-models/` |  |
 | D22 | Election mode administration | Election mode (SC-30) | 2 | Built (periods, silence windows, notices; duty roster, polling information and period report have no API yet) | `apps/admin-web/src/app/(staff)/elections/` |  |
 | D23 | Committees and wings administration | Wings and committees (SC-31) | 3 | To build | `apps/admin-web/src/app/(staff)/committees/` |  |
-| D24 | Field operations oversight | Field operations (SC-32) | 2 | To build | `apps/admin-web/src/app/(staff)/field/` |  |
+| D24 | Field operations oversight | Field operations (SC-32) | 2 | Built | `apps/admin-web/src/app/(staff)/field/` | Counts by area and month; visits deleted after 12 months (OD-38) |
 | D25 | Renewals and certificates | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 | `apps/admin-web/src/app/(staff)/renewals/` |  |
 | D26 | Disaster alerts and relief logistics | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/admin-web/src/app/(staff)/disaster/` |  |
 | D27 | Blood request desk | Blood donors (SC-35) | 3 | Blocked: OD-39 | `apps/admin-web/src/app/(staff)/blood-requests/` |  |
