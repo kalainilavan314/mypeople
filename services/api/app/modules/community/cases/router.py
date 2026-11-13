@@ -37,6 +37,7 @@ from app.modules.community.cases.schemas import (
     NoteIn,
     OwnerOptionOut,
     OwnerOptionsOut,
+    PendingModerationOut,
     ProgressIn,
     PublicSummaryIn,
     RegionalPlanIn,
@@ -49,6 +50,7 @@ from app.modules.features.dependencies import require_feature
 
 Db = Annotated[Session, Depends(get_db)]
 CaseStaff = Annotated[Staff, Depends(require_permission(*service.READ_PERMISSIONS))]
+Moderator = Annotated[Staff, Depends(require_permission(service.MODERATE))]
 
 router = APIRouter(prefix="/v1/cases", tags=["cases"], dependencies=[Depends(require_feature("community_issues"))])
 
@@ -109,6 +111,15 @@ def list_cases(
         offset=offset,
         counts=found.counts,
     )
+
+
+@router.get("/manage/pending-moderation", response_model=PendingModerationOut, responses=REFUSED)
+def list_pending_moderation(staff: Moderator, db: Db) -> PendingModerationOut:
+    """D12: public summaries to write (or update after closure) and added information to moderate, in the
+    moderator's areas, oldest first. Items the viewer reported or wrote are marked; another moderator decides them."""
+    with _answers():
+        queue = service.pending_moderation(db, staff)
+    return PendingModerationOut.build(queue, staff.member_id)
 
 
 @router.get("/{case_id}", response_model=IssueCaseFileOut, responses=REFUSED)
@@ -200,6 +211,7 @@ def forward_to_ds(case_id: uuid.UUID, body: ForwardIn, staff: CaseStaff, request
     forward = service.Forward(
         location_confirmed=body.location_confirmed, description_clear=body.description_clear,
         evidence_reviewed=body.evidence_reviewed, owner_id=body.owner_id, note=body.note,
+        affected_area=body.affected_area,
     )
     return _act(db, staff, case_id, lambda: service.forward_to_ds(db, staff, case_id, forward, ip))
 
@@ -251,7 +263,8 @@ def record_progress(case_id: uuid.UUID, body: ProgressIn, staff: CaseStaff, requ
 
 @router.post("/{case_id}/close", response_model=IssueCaseFileOut, responses=REFUSED)
 def close_case(case_id: uuid.UUID, body: CaseCloseIn, staff: CaseStaff, request: Request, db: Db) -> IssueCaseFileOut:
-    """W08: the closing report; Resolved only with evidence and a Tamil and English summary (FR-WEB-026)."""
+    """W08: the closing report; Resolved only with evidence and a Tamil and English summary (FR-WEB-026).
+    The closing summary reaches the reporter; the public sees only the moderator's public summary (BR-032)."""
     ip = client_ip(request)
     report = service.ClosingReport(**body.model_dump())
     return _act(db, staff, case_id, lambda: service.close_case(db, staff, case_id, report, ip))
@@ -279,7 +292,8 @@ def decide_challenge(case_id: uuid.UUID, body: ChallengeDecisionIn, staff: CaseS
 
 @router.post("/{case_id}/public-summary", response_model=IssueCaseFileOut, responses=REFUSED)
 def set_public_summary(case_id: uuid.UUID, body: PublicSummaryIn, staff: CaseStaff, request: Request, db: Db) -> IssueCaseFileOut:
-    """BR-032: publish a moderated public summary, or withhold it with a reason."""
+    """BR-032: publish a moderated public summary, or withhold it with a reason; also after closure, to
+    give the public the outcome."""
     ip = client_ip(request)
     summary = service.PublicSummary(**body.model_dump())
     return _act(db, staff, case_id, lambda: service.set_public_summary(db, staff, case_id, summary, ip))
@@ -289,7 +303,11 @@ def set_public_summary(case_id: uuid.UUID, body: PublicSummaryIn, staff: CaseSta
 def moderate_addition(
     case_id: uuid.UUID, addition_id: uuid.UUID, body: AdditionModerationIn, staff: CaseStaff, request: Request, db: Db
 ) -> IssueCaseFileOut:
+    """D12: approve (as written or as an edited version) or reject with a reason; never one's own (403 own_record)."""
     ip = client_ip(request)
     return _act(
-        db, staff, case_id, lambda: service.moderate_addition(db, staff, case_id, addition_id, body.approve, body.reason, ip)
+        db, staff, case_id,
+        lambda: service.moderate_addition(
+            db, staff, case_id, addition_id, body.approve, body.reason, ip, edited_body=body.edited_body
+        ),
     )

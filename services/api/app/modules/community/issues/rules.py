@@ -65,6 +65,15 @@ CASE_PERMISSIONS: frozenset[str] = frozenset(
 # Tiers that assist without deciding (FR-WEB-020).
 ASSISTING_TIERS: frozenset[Tier] = frozenset({"2B", "3B"})
 
+# History entries that hand a case to its next stage or owner: each carries the previous owner, the
+# new owner, a note and the time (FR-WEB-029), so the note is never empty.
+HANDOVER_KINDS: frozenset[str] = frozenset(
+    {
+        "returned", "forwarded", "ds_report", "district_action", "escalated", "regional_plan", "executive_approved",
+        "executive_returned", "executive_declined", "assigned", "closed", "reopened",
+    }
+)
+
 # The stages in which each staff action makes sense; outside them the answer is wrong_stage.
 ACTION_STAGES: dict[str, frozenset[str]] = {
     "note": OPEN_STAGES,
@@ -173,12 +182,14 @@ def check_may_report(*, identity_verified: bool, membership_active: bool) -> str
     return None
 
 
-def check_report(*, description: str, location_kind: str, location_text: str | None, has_area: bool, photos: int) -> list[str]:
+def check_report(*, description: str, location_kind: str, location_text: str | None, has_gn: bool, photos: int) -> list[str]:
+    """A case starts with the GN collector of the reporter's division, so every report needs a GN
+    division on the reporter's profile, whatever place the report describes (W03)."""
     problems = []
     if len(description.strip()) < DESCRIPTION_MIN:
         problems.append("description_too_short")
-    if location_kind == "my_gn" and not has_area:
-        problems.append("no_area_on_profile")
+    if not has_gn:
+        problems.append("no_gn_on_profile")
     if location_kind != "my_gn" and not (location_text and location_text.strip()):
         problems.append("location_required")
     if photos > MAX_REPORT_PHOTOS:

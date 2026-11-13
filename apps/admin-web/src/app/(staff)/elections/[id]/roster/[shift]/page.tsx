@@ -23,7 +23,10 @@ const REFUSED = 'The election duty roster needs the roster permission (election.
 
 const one = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
 
-/** FR-ELX-006, 007: one shift: the people offered it, offers by member ID, a message, and cancelling. */
+/**
+ * FR-ELX-006, 007: one shift: the people offered it, offers by member ID, operational messages to the
+ * volunteers who accepted it with the messages already sent, and cancelling.
+ */
 export default function ShiftPage(props: PageProps<'/elections/[id]/roster/[shift]'>) {
   return (
     <Suspense fallback={<ConsoleLoading rows={6} />}>
@@ -95,28 +98,48 @@ async function ShiftView({ params, searchParams }: Pick<PageProps<'/elections/[i
       <Feedback done={one(query.done)} />
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
-        <Section id="people" ta="பணியாளர்கள்" en={`People offered this shift (${shift.assignments.length})`} intro="Check-in records a time and, optionally, that the person confirmed the site. No location is recorded.">
-          {shift.assignments.length === 0 ? (
-            <p className="text-sm text-muted">No one has been offered this shift yet.</p>
-          ) : (
-            <ul className="flex flex-col divide-y divide-line text-sm">
-              {shift.assignments.map((assignment) => (
-                <li key={assignment.id} className="flex flex-col gap-1 py-2">
-                  <p className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold text-text">{assignment.volunteerName}</span>
-                    <span className="font-mono text-xs text-muted">{assignment.memberCode}</span>
-                    <BilingualTag label={ASSIGNMENT_LABELS[assignment.state] ?? { ta: assignment.state, en: assignment.state }} tone={assignment.state === 'accepted' ? 'done' : assignment.state === 'offered' ? 'waiting' : 'neutral'} />
-                  </p>
-                  <p className="text-xs tabular-nums text-muted">
-                    {assignment.respondedAt ? `answered ${formatDateTime(assignment.respondedAt)}` : 'no answer yet'}
-                    {assignment.checkedInAt ? ` · checked in ${formatDateTime(assignment.checkedInAt)}${assignment.siteConfirmed ? ' (site confirmed)' : ''}` : ''}
-                    {assignment.checkedOutAt ? ` · checked out ${formatDateTime(assignment.checkedOutAt)}` : ''}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Section>
+        <div className="flex min-w-0 flex-col gap-6">
+          <Section id="people" ta="பணியாளர்கள்" en={`People offered this shift (${shift.assignments.length})`} intro="Check-in records a time and, optionally, that the person confirmed the site. No location is recorded.">
+            {shift.assignments.length === 0 ? (
+              <p className="text-sm text-muted">No one has been offered this shift yet.</p>
+            ) : (
+              <ul className="flex flex-col divide-y divide-line text-sm">
+                {shift.assignments.map((assignment) => (
+                  <li key={assignment.id} className="flex flex-col gap-1 py-2">
+                    <p className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold text-text">{assignment.volunteerName}</span>
+                      <span className="font-mono text-xs text-muted">{assignment.memberCode}</span>
+                      <BilingualTag label={ASSIGNMENT_LABELS[assignment.state] ?? { ta: assignment.state, en: assignment.state }} tone={assignment.state === 'accepted' ? 'done' : assignment.state === 'offered' ? 'waiting' : 'neutral'} />
+                    </p>
+                    <p className="text-xs tabular-nums text-muted">
+                      {assignment.respondedAt ? `answered ${formatDateTime(assignment.respondedAt)}` : 'no answer yet'}
+                      {assignment.checkedInAt ? ` · checked in ${formatDateTime(assignment.checkedInAt)}${assignment.siteConfirmed ? ' (site confirmed)' : ''}` : ''}
+                      {assignment.checkedOutAt ? ` · checked out ${formatDateTime(assignment.checkedOutAt)}` : ''}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Section>
+
+          <Section id="messages" ta="அனுப்பிய பணிச் செய்திகள்" en={`Messages sent (${shift.messages.length})`} intro="Operational messages go only to the volunteers who accepted this shift.">
+            {shift.messages.length === 0 ? (
+              <p className="text-sm text-muted">No message has been sent to this shift yet.</p>
+            ) : (
+              <ul className="flex flex-col divide-y divide-line text-sm">
+                {shift.messages.map((message) => (
+                  <li key={message.id} className="flex flex-col gap-1 py-2">
+                    <p lang="ta" className="whitespace-pre-wrap text-text">{message.bodyTa}</p>
+                    <p lang="en" className="whitespace-pre-wrap text-muted">{message.bodyEn}</p>
+                    <p className="text-xs tabular-nums text-muted">
+                      {formatDateTime(message.createdAt)} · sent by {message.sentByName} · to {message.recipients} {message.recipients === 1 ? 'volunteer' : 'volunteers'}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Section>
+        </div>
 
         <aside aria-label="Shift actions" className="flex flex-col gap-4">
           {open ? (
@@ -135,7 +158,7 @@ async function ShiftView({ params, searchParams }: Pick<PageProps<'/elections/[i
             <SimpleForm
               id="message"
               title="Operational message"
-              intro="Sent to everyone offered or accepted on this shift."
+              intro="Sent to the volunteers who accepted this shift; offers not yet answered do not get it."
               action={messageShift}
               hidden={hidden}
               fields={[

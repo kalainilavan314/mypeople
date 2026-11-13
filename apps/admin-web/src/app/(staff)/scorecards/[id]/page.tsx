@@ -205,7 +205,7 @@ async function ScorecardView({ params, searchParams }: Pick<PageProps<'/scorecar
             <SimpleForm
               id="share"
               title="Share with the responsible tiers"
-              intro="They then have 10 working days to ask for corrections before it can be published."
+              intro="The case handlers over its areas are told. They then have 10 working days to ask for corrections before it can be published."
               action={shareScorecard}
               hidden={{ scorecardId: card.id }}
               fields={[]}
@@ -236,7 +236,7 @@ async function ScorecardView({ params, searchParams }: Pick<PageProps<'/scorecar
             <SimpleForm
               id="request-correction"
               title="Ask for a correction"
-              intro="Name the area and the figure, and say what is wrong."
+              intro="Name one of the areas you handle cases for and the figure, and say what is wrong."
               action={requestCorrection}
               hidden={{ scorecardId: card.id }}
               fields={[

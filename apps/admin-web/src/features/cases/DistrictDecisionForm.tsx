@@ -24,7 +24,7 @@ export function DistrictDecisionForm({ caseId, owners, minDate }: { caseId: stri
         <CaseFormProblems
           form="district"
           state={state}
-          fields={['decision', 'authority', 'resources', 'office', 'ownerId', 'dueDate', 'reason', 'decisionRequired', 'regionalOwnerId']}
+          fields={['decision', 'authority', 'scope', 'resources', 'office', 'ownerId', 'dueDate', 'reason', 'decisionRequired', 'regionalOwnerId']}
         />
         <input type="hidden" name="caseId" value={caseId} />
         <DistrictFields state={state} owners={owners} minDate={minDate} />
@@ -63,6 +63,15 @@ function DistrictFields({ state, owners, minDate }: { state: CaseFormState; owne
         <>
           <CaseField form="district" name="authority" label="Delegated authority used" hint="For example the circular or the budget line that allows the district to act." required state={state}>
             {(control) => <input {...control} required maxLength={500} defaultValue={values.authority} className={CONTROL} />}
+          </CaseField>
+          <CaseField
+            form="district"
+            name="scope"
+            label="Approved scope"
+            hint="The work the implementation owner is to do, and nothing beyond it. It is shown at implementation."
+            required
+            state={state}>
+            {(control) => <textarea {...control} required maxLength={2000} rows={3} defaultValue={values.scope} className={TEXTAREA} />}
           </CaseField>
           <CaseField form="district" name="resources" label="Resources" required state={state}>
             {(control) => <textarea {...control} required maxLength={1000} rows={2} defaultValue={values.resources} className={TEXTAREA} />}

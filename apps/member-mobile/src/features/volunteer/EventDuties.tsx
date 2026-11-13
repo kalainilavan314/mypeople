@@ -1,5 +1,4 @@
 import type { VolunteerAssignment } from '@my-people/api-client';
-import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -21,6 +20,7 @@ import { QueryView } from '@/components/QueryView';
 import { api } from '@/lib/api';
 import { errorMessage, featureClosed } from '@/lib/errors';
 
+import { EventPassLink } from './EventPassLink';
 import { whenText } from './labels';
 
 /**
@@ -74,12 +74,7 @@ export function EventDuties({ query }: { query: Loaded<VolunteerAssignment[]> })
                   tone={item.state === 'accepted' || item.state === 'completed' ? 'verified' : item.state === 'offered' ? 'pending' : 'neutral'}
                   label={t(`s.assignments.state_${item.state}`)}
                 />
-                <Button
-                  label={t('m.volunteer.viewEvent')}
-                  variant="secondary"
-                  icon="calendar-outline"
-                  onPress={() => router.push({ pathname: '/events/[id]', params: { id: item.eventId } })}
-                />
+                <EventPassLink eventId={item.eventId} />
                 {item.state === 'offered' ? (
                   <>
                     <Button label={t('s.assignments.accept')} busy={respond.busy} onPress={() => void respond.run(item, 'accepted')} />

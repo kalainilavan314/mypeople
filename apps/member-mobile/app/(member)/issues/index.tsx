@@ -19,6 +19,7 @@ import {
   useReloadOnFocus,
 } from '@my-people/mobile-ui';
 
+import { AreaScorecardCard } from '@/features/issues/AreaScorecardCard';
 import { IssueCard } from '@/features/issues/IssueCard';
 import { IssuesQueryView } from '@/features/issues/IssuesQueryView';
 import { IssueStatusTag } from '@/features/issues/IssueStatusTag';
@@ -33,7 +34,7 @@ function segmentFrom(param: string | undefined): Segment {
 
 /**
  * H05 My area: Updates, Issues and Projects published for the member's GN division
- * (FR-RPT-001, 003). A list only: there are no GN boundaries to draw a map from, and a made-up
+ * (FR-RPT-001, 003), with the division's latest published scorecard figures (M20). A list only: there are no GN boundaries to draw a map from, and a made-up
  * map would pretend to know where things are. Home's Local reports and Area projects tiles open
  * it on their own segment (?segment=issues or projects).
  */
@@ -82,6 +83,7 @@ function AreaBody({ area, initial }: { area: MyArea; initial: Segment }) {
       </SurfaceCard>
 
       <Button label={t('m.issues.reportConcern')} icon="megaphone-outline" onPress={() => router.push('/issues/report')} />
+      <AreaScorecardCard />
       <MyReportsRow />
 
       <SegmentedControl

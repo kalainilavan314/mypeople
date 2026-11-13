@@ -14,7 +14,7 @@ _ISSUE_COLUMNS = """
     i.location_text, i.district_code, i.ds_code, i.gn_code, i.area_path, i.visibility, i.stage, i.owner_id,
     i.stage_entered_at, i.stage_due_at, i.breach_alerted_at, i.parent_id, i.public_state, i.public_title_en,
     i.public_title_ta, i.public_summary_en, i.public_summary_ta, i.published_at, i.implementation_due_at,
-    i.closed_at, i.closed_level, i.closing_summary_en, i.closing_summary_ta, i.closure_round, i.created_at,
+    i.closed_at, i.closed_level, i.closing_summary_en, i.closing_summary_ta, i.closure_round, i.affected_area, i.created_at,
     i.updated_at, owner.full_name AS owner_name, parent.case_number AS parent_case_number, parent.stage AS parent_stage
 """
 _ISSUE_FROM = """
@@ -58,6 +58,7 @@ class StoredIssue:
     closing_summary_en: str | None
     closing_summary_ta: str | None
     closure_round: int
+    affected_area: str | None  # W03: recorded by the GN collector when forwarding
     created_at: datetime
     updated_at: datetime
     owner_name: str | None
@@ -514,13 +515,18 @@ class StoredAddition:
     moderated_by: uuid.UUID | None
     moderated_at: datetime | None
     moderation_reason: str | None
+    published_body: str | None  # D12: the moderator's edited version, shown instead of body when set
     created_at: datetime
     photos: int
+
+    @property
+    def public_body(self) -> str:
+        return self.published_body or self.body
 
 
 _ADDITIONS = """
     SELECT a.id, a.issue_id, a.member_id, m.full_name AS member_name, a.body, a.is_reply, a.state, a.moderated_by,
-           a.moderated_at, a.moderation_reason, a.created_at,
+           a.moderated_at, a.moderation_reason, a.published_body, a.created_at,
            (SELECT count(*) FROM community.issue_evidence e WHERE e.addition_id = a.id) AS photos
     FROM community.issue_addition a JOIN npm.member m ON m.id = a.member_id
 """
@@ -549,14 +555,119 @@ def find_addition(db: Session, addition_id: uuid.UUID) -> StoredAddition | None:
     return StoredAddition(**row) if row else None
 
 
-def moderate_addition(db: Session, addition_id: uuid.UUID, state: str, moderator: uuid.UUID, reason: str | None) -> None:
+def moderate_addition(
+    db: Session, addition_id: uuid.UUID, state: str, moderator: uuid.UUID, reason: str | None, published_body: str | None
+) -> None:
     db.execute(
         text(
             """UPDATE community.issue_addition SET state = :state, moderated_by = :moderator,
-                      moderated_at = clock_timestamp(), moderation_reason = :reason WHERE id = :id"""
+                      moderated_at = clock_timestamp(), moderation_reason = :reason, published_body = :published
+               WHERE id = :id"""
         ),
-        {"id": addition_id, "state": state, "moderator": moderator, "reason": reason},
+        {"id": addition_id, "state": state, "moderator": moderator, "reason": reason, "published": published_body},
     )
+
+
+def additions_by(db: Session, issue_id: uuid.UUID, member_id: uuid.UUID) -> list[StoredAddition]:
+    """What one member added to an issue, in every state, for that member's own view."""
+    rows = db.execute(
+        text(f"{_ADDITIONS} WHERE a.issue_id = :id AND a.member_id = :member ORDER BY a.created_at"),
+        {"id": issue_id, "member": member_id},
+    ).mappings()
+    return [StoredAddition(**row) for row in rows]
+
+
+# --- The moderation queue (D12) ------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class PendingSummary:
+    """A public case whose public summary a moderator still has to write, or to update after closure."""
+
+    issue: StoredIssue
+    needs: str  # first_summary | update_after_closure
+    waiting_since: datetime
+
+
+def pending_summaries(db: Session, areas: list[str] | None, limit: int = 100) -> list[PendingSummary]:
+    """Public cases never published (any open or resolved stage), and published ones closed since
+    their summary was last written, so the closing outcome reaches the public only through a moderator."""
+    params: dict[str, Any] = {"limit": limit}
+    area_condition = "TRUE"
+    if areas is not None:
+        area_condition = "i.area_path && CAST(:areas AS text[])"
+        params["areas"] = areas
+    rows = db.execute(
+        text(
+            f"""
+            SELECT * FROM (
+                SELECT {_ISSUE_COLUMNS},
+                       CASE WHEN i.public_state = 'pending' THEN 'first_summary' ELSE 'update_after_closure' END AS needs,
+                       CASE WHEN i.public_state = 'pending' THEN i.created_at ELSE i.closed_at END AS waiting_since
+                {_ISSUE_FROM}
+                WHERE i.visibility = 'public' AND {area_condition}
+                  AND i.stage IN ('gn', 'returned', 'ds', 'district', 'regional', 'executive', 'implementation', 'resolved')
+                  AND (i.public_state = 'pending'
+                       OR (i.public_state = 'published' AND i.stage = 'resolved' AND i.closed_at IS NOT NULL
+                           AND NOT EXISTS (SELECT 1 FROM community.case_action s
+                                           WHERE s.issue_id = i.id AND s.kind = 'public_summary'
+                                             AND s.created_at >= i.closed_at)))
+            ) queue
+            ORDER BY waiting_since, id LIMIT :limit
+            """
+        ),
+        params,
+    ).mappings()
+    found = []
+    for row in rows:
+        values = dict(row)
+        needs = values.pop("needs")
+        waiting_since = values.pop("waiting_since")
+        found.append(PendingSummary(issue=_issue(values), needs=needs, waiting_since=waiting_since))
+    return found
+
+
+@dataclass(frozen=True)
+class PendingAddition:
+    addition: StoredAddition
+    case_number: str
+    reporter_id: uuid.UUID
+    area_path: list[str]
+
+
+def pending_additions(db: Session, areas: list[str] | None, limit: int = 100) -> list[PendingAddition]:
+    """Added information waiting for a moderator in these areas, oldest first."""
+    params: dict[str, Any] = {"limit": limit}
+    area_condition = "TRUE"
+    if areas is not None:
+        area_condition = "i.area_path && CAST(:areas AS text[])"
+        params["areas"] = areas
+    rows = db.execute(
+        text(
+            f"""
+            SELECT a.id, a.issue_id, a.member_id, m.full_name AS member_name, a.body, a.is_reply, a.state, a.moderated_by,
+                   a.moderated_at, a.moderation_reason, a.published_body, a.created_at,
+                   (SELECT count(*) FROM community.issue_evidence e WHERE e.addition_id = a.id) AS photos,
+                   i.case_number, i.reporter_id, i.area_path
+            FROM community.issue_addition a
+            JOIN npm.member m ON m.id = a.member_id
+            JOIN community.issue i ON i.id = a.issue_id
+            WHERE a.state = 'pending' AND {area_condition}
+            ORDER BY a.created_at, a.id LIMIT :limit
+            """
+        ),
+        params,
+    ).mappings()
+    found = []
+    for row in rows:
+        values = dict(row)
+        case_number = values.pop("case_number")
+        reporter_id = values.pop("reporter_id")
+        area_path = list(values.pop("area_path") or [])
+        found.append(
+            PendingAddition(addition=StoredAddition(**values), case_number=case_number, reporter_id=reporter_id, area_path=area_path)
+        )
+    return found
 
 
 @dataclass(frozen=True)

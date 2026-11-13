@@ -9,6 +9,26 @@ import { getAdminLocale, getLocalizedMessage } from '@/lib/i18n';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
 
+/** Why D02 refused to open a household record; each refusal is audited by the API. */
+const REFUSALS: Record<string, { ta: string; en: string }> = {
+  no_caseworker_consent: {
+    ta: 'இந்த உறுப்பினருக்குச் சமூகப் பணியாளர்களுடன் பகிரப்பட்ட குடும்பப் பதிவு எதுவும் இல்லை. குடும்பத் தலைவர் செயலியில் (எனது குடும்பம், தனியுரிமை & ஒப்புதல்) அணுகலை அனுமதிக்கலாம்.',
+    en: 'No household record is shared with caseworkers for this member. The head of a household can allow access in the app (My Household, Privacy & Consent).',
+  },
+  outside_your_area: {
+    ta: 'இந்த உறுப்பினர் அல்லது குடும்பம் உங்கள் ஆளுகைப் பகுதிக்கு உட்படாதது (PRM-33).',
+    en: 'This member or household is outside your permitted area (PRM-33).',
+  },
+  forbidden: {
+    ta: 'இப்பதிவைத் திறக்கத் தேவையான அனுமதி (household.view_for_case) உங்களிடம் இல்லை.',
+    en: 'You do not have the permission needed to open this record (household.view_for_case).',
+  },
+  target_member_not_found: {
+    ta: 'இந்த அடையாளக் குறியீட்டுடன் உறுப்பினர் எவரும் இல்லை.',
+    en: 'No member has this ID.',
+  },
+};
+
 export default function MemberHouseholdPage(props: PageProps<'/members/[memberId]'>) {
   return (
     <Suspense fallback={<p className="text-muted">… Loading</p>}>
@@ -47,7 +67,7 @@ async function MemberHouseholdContent({
     data = await api.staffViewHousehold(memberId);
   } catch (error) {
     if (isRefusal(error)) {
-      const isForbidden = error.status === 403 || error.code === 'forbidden' || error.code === 'not_in_your_area';
+      const refusal = REFUSALS[error.code];
       return (
         <div className="flex flex-col gap-4">
           <PageHeader ta="குடும்ப நிர்வாகம்" en="Household record">
@@ -57,11 +77,7 @@ async function MemberHouseholdContent({
           </PageHeader>
           <section className="rounded-xl border border-error bg-error-bg p-4 text-sm text-error">
             <p lang={locale} className="font-semibold">
-              ! {isForbidden
-                ? locale === 'ta'
-                  ? 'இந்த உறுப்பினர் உங்கள் ஆளுகைப் பகுதிக்கு உட்படாதவர் (PRM-33).'
-                  : 'This member is outside your permitted geographic area (PRM-33).'
-                : getLocalizedMessage(error.code, locale)}
+              ! {refusal ? refusal[locale] : getLocalizedMessage(error.code, locale)}
             </p>
           </section>
         </div>

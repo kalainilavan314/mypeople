@@ -7,9 +7,9 @@ from typing import Any, Literal
 from pydantic import Field
 
 from app.core.schemas import CamelModel
-from app.modules.community.cases.service import CaseFile
+from app.modules.community.cases.service import CaseFile, ModerationQueue
 from app.modules.community.issues import rules
-from app.modules.community.issues.repository import Holder, StoredAction, StoredIssue
+from app.modules.community.issues.repository import Holder, PendingAddition, PendingSummary, StoredAction, StoredIssue
 
 FindingKind = Literal["verified_fact", "assumption", "option", "stakeholder", "resource_need", "open_question"]
 ResponsibleTierChoice = Literal["3A", "3B", "4", "5"]
@@ -113,12 +113,14 @@ class CaseAdditionOut(CamelModel):
     """Added information; the person is named only as the reporter or "a member" (data minimisation)."""
 
     id: uuid.UUID
-    body: str
+    body: str = Field(description="As the member wrote it")
+    published_body: str | None = Field(description="The moderator's edited version shown to members, when one was made")
     from_reporter: bool
     is_reply: bool
     state: str
     moderation_reason: str | None
     photos: int
+    mine: bool = Field(description="The viewer wrote it, so another moderator decides it (BR-085)")
     created_at: datetime
 
 
@@ -137,6 +139,7 @@ class IssueCaseFileOut(IssueCaseOut):
     description: str
     location_kind: str
     location_text: str | None
+    affected_area: str | None = Field(description="W03: the affected area the GN collector recorded when forwarding")
     public_title_en: str | None
     public_title_ta: str | None
     public_summary_en: str | None
@@ -160,6 +163,7 @@ class IssueCaseFileOut(IssueCaseOut):
             description=issue.description,
             location_kind=issue.location_kind,
             location_text=issue.location_text,
+            affected_area=issue.affected_area,
             public_title_en=issue.public_title_en,
             public_title_ta=issue.public_title_ta,
             public_summary_en=issue.public_summary_en,
@@ -178,8 +182,9 @@ class IssueCaseFileOut(IssueCaseOut):
             ],
             additions=[
                 CaseAdditionOut(
-                    id=a.id, body=a.body, from_reporter=a.member_id == issue.reporter_id, is_reply=a.is_reply,
-                    state=a.state, moderation_reason=a.moderation_reason, photos=a.photos, created_at=a.created_at,
+                    id=a.id, body=a.body, published_body=a.published_body, from_reporter=a.member_id == issue.reporter_id,
+                    is_reply=a.is_reply, state=a.state, moderation_reason=a.moderation_reason, photos=a.photos,
+                    mine=a.member_id == case.viewer, created_at=a.created_at,
                 )
                 for a in case.additions
             ],
@@ -215,6 +220,82 @@ class CasePhotoOut(CamelModel):
     height: int
 
 
+class PendingSummaryOut(CamelModel):
+    """A public case whose public summary waits for a moderator (BR-032)."""
+
+    id: uuid.UUID
+    case_number: str
+    category: str
+    stage: str
+    area_path: list[str]
+    gn_code: str | None
+    ds_code: str | None
+    district_code: str | None
+    title: str = Field(description="The reporter's own title, for the moderator only")
+    description: str
+    public_state: str
+    public_title_en: str | None
+    public_title_ta: str | None
+    public_summary_en: str | None
+    public_summary_ta: str | None
+    closing_summary_en: str | None
+    closing_summary_ta: str | None
+    closed_at: datetime | None
+    needs: Literal["first_summary", "update_after_closure"]
+    waiting_since: datetime
+    mine: bool = Field(description="The viewer reported it, so another moderator writes the summary")
+
+    @classmethod
+    def build(cls, pending: PendingSummary, viewer: uuid.UUID) -> "PendingSummaryOut":
+        issue = pending.issue
+        return cls(
+            id=issue.id, case_number=issue.case_number, category=issue.category, stage=issue.stage,
+            area_path=issue.area_path, gn_code=issue.gn_code, ds_code=issue.ds_code, district_code=issue.district_code,
+            title=issue.title, description=issue.description, public_state=issue.public_state,
+            public_title_en=issue.public_title_en, public_title_ta=issue.public_title_ta,
+            public_summary_en=issue.public_summary_en, public_summary_ta=issue.public_summary_ta,
+            closing_summary_en=issue.closing_summary_en, closing_summary_ta=issue.closing_summary_ta,
+            closed_at=issue.closed_at, needs=pending.needs,  # type: ignore[arg-type]
+            waiting_since=pending.waiting_since, mine=issue.reporter_id == viewer,
+        )
+
+
+class PendingAdditionOut(CamelModel):
+    """Added information waiting for a moderator; the person is named only as the reporter or "a member"."""
+
+    id: uuid.UUID
+    issue_id: uuid.UUID
+    case_number: str
+    area_path: list[str]
+    body: str
+    from_reporter: bool
+    is_reply: bool
+    photos: int
+    created_at: datetime
+    mine: bool = Field(description="The viewer wrote it or reported the case, so another moderator decides it")
+
+    @classmethod
+    def build(cls, pending: PendingAddition, viewer: uuid.UUID) -> "PendingAdditionOut":
+        a = pending.addition
+        return cls(
+            id=a.id, issue_id=a.issue_id, case_number=pending.case_number, area_path=pending.area_path, body=a.body,
+            from_reporter=a.member_id == pending.reporter_id, is_reply=a.is_reply, photos=a.photos, created_at=a.created_at,
+            mine=viewer in (a.member_id, pending.reporter_id),
+        )
+
+
+class PendingModerationOut(CamelModel):
+    summaries: list[PendingSummaryOut]
+    additions: list[PendingAdditionOut]
+
+    @classmethod
+    def build(cls, queue: ModerationQueue, viewer: uuid.UUID) -> "PendingModerationOut":
+        return cls(
+            summaries=[PendingSummaryOut.build(item, viewer) for item in queue.summaries],
+            additions=[PendingAdditionOut.build(item, viewer) for item in queue.additions],
+        )
+
+
 # --- Inputs ----------------------------------------------------------------------------------------------
 
 
@@ -248,6 +329,7 @@ class ForwardIn(CamelModel):
     evidence_reviewed: bool
     owner_id: uuid.UUID = Field(description="The named DS owner (FR-WEB-017)")
     note: str = Field(min_length=3, max_length=2000)
+    affected_area: str = Field(min_length=3, max_length=300, description="W03: the area the problem affects, as confirmed")
 
 
 class DsReportIn(CamelModel):
@@ -267,6 +349,7 @@ class DistrictDecisionIn(CamelModel):
     reason: str | None = Field(default=None, max_length=2000)
     decision_required: str | None = Field(default=None, max_length=1000)
     regional_owner_id: uuid.UUID | None = None
+    scope: str | None = Field(default=None, max_length=2000, description="W08: the approved scope; needed to act")
 
 
 class RegionalPlanIn(CamelModel):
@@ -299,7 +382,10 @@ class CaseCloseIn(CamelModel):
     evidence_refs: list[str] = Field(default_factory=list, max_length=20)
     photo_ids: list[uuid.UUID] = Field(default_factory=list, max_length=6)
     limitations: str | None = Field(default=None, max_length=2000)
-    summary_en: str = Field(min_length=10, max_length=1000, description="Shown to the reporter and followers")
+    summary_en: str = Field(
+        min_length=10, max_length=1000,
+        description="Shown to the reporter only; others see the moderator's public summary (BR-032)",
+    )
     summary_ta: str = Field(min_length=10, max_length=1500)
 
 
@@ -328,3 +414,8 @@ class PublicSummaryIn(CamelModel):
 class AdditionModerationIn(CamelModel):
     approve: bool
     reason: str | None = Field(default=None, max_length=500)
+    edited_body: str | None = Field(
+        default=None, min_length=5, max_length=2000,
+        description="D12: an edited version to publish instead, e.g. with names or phone numbers taken out; "
+        "used only when approving",
+    )

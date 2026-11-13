@@ -34,6 +34,12 @@ const TITLES: Record<string, string> = {
 };
 
 const NOTE_LABELS: Record<string, string> = {
+  forwarded: 'Handover note',
+  ds_report: 'Recommendation',
+  district_action: 'Approved scope',
+  regional_plan: 'Solution',
+  executive_approved: 'Approved scope',
+  assigned: 'Handover note',
   returned: 'Question',
   escalated: 'Reason',
   executive_returned: 'Question',
@@ -46,6 +52,12 @@ const NOTE_LABELS: Record<string, string> = {
   public_summary: 'Reason',
   addition_moderated: 'Reason',
 };
+
+/**
+ * Handovers whose note repeats one of their own details (the recommendation, the solution, the
+ * approved scope): the history shows the note, the full report shows the details only once.
+ */
+export const NOTE_IN_DETAILS: ReadonlySet<string> = new Set(['ds_report', 'district_action', 'regional_plan', 'executive_approved']);
 
 /** Reports and decisions the case file also shows in full, version by version. */
 export const REPORT_KINDS: ReadonlySet<string> = new Set([
@@ -75,7 +87,9 @@ export function historyTitle(entry: Pick<CaseAction, 'kind' | 'details'>): strin
     return entry.details.action === 'published' ? 'Public summary published' : 'Public summary withheld';
   }
   if (entry.kind === 'addition_moderated') {
-    return entry.details.approved === true ? 'Added information approved' : 'Added information rejected';
+    if (entry.details.appeal) return 'Added information approved on appeal';
+    if (entry.details.approved !== true) return 'Added information rejected';
+    return entry.details.redacted === true ? 'Added information approved as an edited version' : 'Added information approved';
   }
   if ((entry.kind === 'ds_report' || entry.kind === 'regional_plan') && value(entry.details.version)) {
     return `${TITLES[entry.kind]} (version ${value(entry.details.version)})`;
@@ -103,7 +117,10 @@ export function detailLines(entry: Pick<CaseAction, 'kind' | 'details'>): Detail
           ['Source', value(d.source)],
         ];
       case 'forwarded':
-        return [['Completeness check', 'Location confirmed, description clear, evidence reviewed']];
+        return [
+          ['Completeness check', 'Location confirmed, description clear, evidence reviewed'],
+          ['Affected area', value(d.affectedArea)],
+        ];
       case 'ds_report':
         return [
           ['Summary', value(d.summary)],
@@ -112,6 +129,7 @@ export function detailLines(entry: Pick<CaseAction, 'kind' | 'details'>): Detail
         ];
       case 'district_action':
         return [
+          ['Approved scope', value(d.scope)],
           ['Delegated authority', value(d.authority)],
           ['Resources', value(d.resources)],
           ['Responsible office', value(d.office)],

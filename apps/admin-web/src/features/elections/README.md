@@ -14,7 +14,7 @@ PRM-49 (`election.roster.manage`), on `/v1/election/roster`; off until the `elec
 
 - `/roster`: the declared periods that cover the coordinator's areas (a GN coordinator sees a district-wide period). Reachable without election mode management.
 - `/elections/[id]/roster`: the period's duty shifts in the coordinator's areas, and a new shift inside the election area.
-- `/elections/[id]/roster/[shift]`: offer the shift to a Verified and Active member by member code, see answers and check-in times, send an operational message to the people on the shift, cancel it with a reason.
+- `/elections/[id]/roster/[shift]`: offer the shift to a Verified and Active member by member code, see answers and check-in times, send an operational message to the volunteers who accepted the shift and see the messages already sent, cancel it with a reason. The period page (`/elections/[id]`) shows the FR-ELX-009 report with the audit entries behind it (ids only).
 - `/elections/[id]`: the period report (FR-ELX-009): shifts, roster changes and messages, broadcasts and content published, silence blocks, all in counts.
 
 No voter data is collected or shown (FR-ELX-010): no vote choice, intention or proof of voting, and check-in records no location. Polling information is not built yet (`docs/requirements/post-launch-placeholders.md`).

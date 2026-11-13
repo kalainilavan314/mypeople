@@ -27,8 +27,17 @@ export function minutesSeconds(total: number): string {
   return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
-/** One outcome recorded after the session (OutcomeIn): words, and a promise or case it led to. */
-export type Outcome = { textEn: string; textTa: string; promiseId: string | null; caseNumber: string | null };
+/**
+ * One outcome recorded after the session (OutcomeIn): words, and a published promise or a case it
+ * led to. caseId is set only when this member may open the case (M23).
+ */
+export type Outcome = {
+  textEn: string;
+  textTa: string;
+  promiseId: string | null;
+  caseNumber: string | null;
+  caseId: string | null;
+};
 
 export function readOutcomes(raw: Record<string, unknown>[]): Outcome[] {
   const text = (value: unknown) => (typeof value === 'string' ? value : '');
@@ -39,6 +48,7 @@ export function readOutcomes(raw: Record<string, unknown>[]): Outcome[] {
       textTa: text(item.textTa),
       promiseId: optional(item.promiseId),
       caseNumber: optional(item.caseNumber),
+      caseId: optional(item.caseId),
     }))
     .filter((item) => item.textEn !== '');
 }

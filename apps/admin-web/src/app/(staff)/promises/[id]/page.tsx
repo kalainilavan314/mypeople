@@ -18,6 +18,7 @@ import {
   STATUS_TONES,
   THEME_LABELS,
   UPDATE_STATUSES,
+  pastDue,
 } from '@/features/promises/forms';
 import { PromiseForm } from '@/features/promises/PromiseForm';
 import { api } from '@/lib/api';
@@ -87,6 +88,9 @@ async function PromiseView({ params, searchParams }: Pick<PageProps<'/promises/[
   const areaNames = await loadAreaNames([promise.areaKey]);
   const published = promise.publication === 'published';
   const approvedUpdates = promise.updates.filter((update) => update.decision === 'approved' || update.decision === 'system');
+  // The API refuses other status changes once the due date has passed (overdue_stays_delayed).
+  const overdue = pastDue(promise.dueDate, new Date());
+  const statusChoices = overdue ? UPDATE_STATUSES.filter((status) => status === 'completed' || status === 'withdrawn') : UPDATE_STATUSES;
   const current: Record<string, string> = {
     titleTa: promise.titleTa,
     titleEn: promise.titleEn,
@@ -111,8 +115,10 @@ async function PromiseView({ params, searchParams }: Pick<PageProps<'/promises/[
       name: 'newStatus',
       label: 'New status (optional)',
       kind: 'select',
-      hint: 'Delayed is set by the due date, not chosen. Completed needs evidence; Blocked and Withdrawn need the reason in the note.',
-      options: [{ value: '', label: 'No change of status' }, ...UPDATE_STATUSES.map((status) => ({ value: status, label: `${STATUS_LABELS[status].ta} · ${STATUS_LABELS[status].en}` }))],
+      hint: overdue
+        ? 'The due date has passed, so the promise stays Delayed: only Completed (with evidence) or Withdrawn (with the reason in both languages) can be chosen, or a note without a change of status.'
+        : 'Delayed is set by the due date, not chosen. Completed needs evidence; Blocked and Withdrawn need the reason in both languages.',
+      options: [{ value: '', label: 'No change of status' }, ...statusChoices.map((status) => ({ value: status, label: `${STATUS_LABELS[status].ta} · ${STATUS_LABELS[status].en}` }))],
     },
     {
       name: 'correctsId',
@@ -166,7 +172,7 @@ async function PromiseView({ params, searchParams }: Pick<PageProps<'/promises/[
               <Detail label="Planned start">{formatDate(promise.plannedStart)}</Detail>
               <Detail label="Due">{formatDate(promise.dueDate)}</Detail>
               {promise.blockersEn || promise.blockersTa ? <div className="sm:col-span-2"><Detail label="Known blockers"><Both ta={promise.blockersTa} en={promise.blockersEn} /></Detail></div> : null}
-              {promise.statusReason ? <div className="sm:col-span-2"><Detail label="Reason shown with the status">{promise.statusReason}</Detail></div> : null}
+              {promise.statusReason ? <div className="sm:col-span-2"><Detail label="Reason shown with the status"><Both ta={promise.statusReasonTa} en={promise.statusReason} /></Detail></div> : null}
             </dl>
           </Section>
 

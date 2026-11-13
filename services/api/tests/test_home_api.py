@@ -147,3 +147,68 @@ def test_issue_reporting_tiles_are_not_open_while_their_module_is_off(database_s
     for tile in (actions["report_issue"], actions["my_area"], hub["local_reports"], hub["area_projects"]):
         assert (tile["available"], tile["reason"]) == (False, "not_open")
     assert enforced.get("/v1/issues/area", headers=auth(member)).status_code == 404
+
+
+def add_promise(db_session, drafter: Row, area_key: str, area_path: list[str], status: str = "not_started",
+                publication: str = "published") -> None:
+    db_session.execute(
+        text(
+            """
+            INSERT INTO community.promise (title_en, title_ta, description_en, description_ta, source_reference,
+                                           source_published_on, office_en, office_ta, kind, theme, area_key, area_path,
+                                           planned_start, due_date, target_en, target_ta, drafted_by, publication, status)
+            VALUES ('Repair the coast road', 'கரையோர வீதியைச் சீரமைத்தல்', 'Resurface the damaged coast road.',
+                    'சேதமடைந்த கரையோர வீதியை மீள அமைத்தல்.', 'Manifesto 2026', current_date, 'Roads Office',
+                    'வீதி அலுவலகம்', 'party_commitment', 'roads_transport', :key, :path, current_date,
+                    current_date + 90, '12 km resurfaced', '12 கி.மீ. மீள அமைக்கப்படும்', :by, :publication, :status)
+            """
+        ),
+        {"key": area_key, "path": area_path, "by": drafter.id, "publication": publication, "status": status},
+    )
+
+
+def test_home_counts_the_promises_made_for_the_members_area(client, db_session, auth, member_in, area):
+    # M18: the Promise Tracker is on Home too, with the promises that cover where the member lives.
+    member = member_in(area, verified=True, active=True)
+    district = ["platform", f"province:{area.province}", f"district:{area.district}"]
+    gn = [*district, f"ds:{area.ds}", f"gn:{area.gn}"]
+    other = db_session.scalar(
+        text("SELECT district_code FROM geo.district WHERE district_code <> :d ORDER BY district_code LIMIT 1"),
+        {"d": area.district},
+    )
+    before = client.get("/v1/home", headers=auth(member)).json()["promises"]
+    add_promise(db_session, member, f"district:{area.district}", district, status="in_progress")
+    add_promise(db_session, member, f"gn:{area.gn}", gn)
+    add_promise(db_session, member, f"district:{other}", ["platform", f"province:{area.province}", f"district:{other}"])
+    add_promise(db_session, member, f"district:{area.district}", district, publication="draft")
+
+    after = client.get("/v1/home", headers=auth(member)).json()["promises"]
+
+    assert (after["feature"]["key"], after["feature"]["available"]) == ("promises", True)
+    assert after["total"] == before["total"] + 2
+    counts = {item["status"]: item["count"] for item in after["counts"]}
+    earlier = {item["status"]: item["count"] for item in before["counts"]}
+    assert counts["in_progress"] == earlier.get("in_progress", 0) + 1
+    assert counts["not_started"] == earlier.get("not_started", 0) + 1
+    assert [item["status"] for item in after["counts"]] == [
+        s for s in ("not_started", "in_progress", "completed", "delayed", "blocked", "withdrawn") if s in counts
+    ]
+
+
+def test_the_promise_tracker_on_home_is_not_open_while_its_switch_is_off(database_settings, db_session, auth, member_in,
+                                                                         area):
+    from app.db.session import get_db
+    from app.main import create_app
+
+    app = create_app(database_settings.model_copy(update={"enforce_feature_flags": True}))
+    app.dependency_overrides[get_db] = lambda: db_session
+    enforced = TestClient(app)
+    member = member_in(area, verified=True, active=True)
+    add_promise(db_session, member, f"district:{area.district}",
+                ["platform", f"province:{area.province}", f"district:{area.district}"])
+    db_session.execute(text("UPDATE ops.feature_flag SET enabled = false WHERE key = 'promises'"))
+
+    promises = enforced.get("/v1/home", headers=auth(member)).json()["promises"]
+
+    assert (promises["feature"]["available"], promises["feature"]["reason"]) == (False, "not_open")
+    assert (promises["total"], promises["counts"]) == (0, [])

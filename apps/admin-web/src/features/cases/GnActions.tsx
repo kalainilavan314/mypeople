@@ -91,7 +91,7 @@ export function ForwardForm({ caseId, owners, factCount }: { caseId: string; own
       title="Forward to divisional research"
       intro="Complete the check, then name the divisional officer who takes the case next.">
       <form key={state?.attempt ?? 0} action={action} className="flex flex-col gap-4">
-        <CaseFormProblems form="forward" state={state} fields={['checklist', 'ownerId', 'note']} />
+        <CaseFormProblems form="forward" state={state} fields={['checklist', 'affectedArea', 'ownerId', 'note']} />
         <input type="hidden" name="caseId" value={caseId} />
         <ForwardFields state={state} owners={owners} factCount={factCount} />
       </form>
@@ -105,7 +105,8 @@ function ForwardFields({ state, owners, factCount }: { state: CaseFormState; own
     Object.fromEntries(CHECKS.map((check) => [check.name, values[check.name] === '1'])),
   );
   const [ownerId, setOwnerId] = useState(values.ownerId ?? '');
-  const ready = CHECKS.every((check) => ticked[check.name]) && ownerId !== '' && factCount > 0;
+  const [affectedArea, setAffectedArea] = useState(values.affectedArea ?? '');
+  const ready = CHECKS.every((check) => ticked[check.name]) && affectedArea.trim().length >= 3 && ownerId !== '' && factCount > 0;
   const checklistErrors = problemsFor(state, 'checklist');
 
   return (
@@ -127,6 +128,26 @@ function ForwardFields({ state, owners, factCount }: { state: CaseFormState; own
         ))}
         <FieldErrors id="forward-checklist-error" problems={checklistErrors} />
       </fieldset>
+      <CaseField
+        form="forward"
+        name="affectedArea"
+        label="Affected area"
+        hint="Where the problem reaches, as you confirmed it: for example the lanes, the stretch of road or the number of houses."
+        required
+        state={state}>
+        {(control) => (
+          <textarea
+            {...control}
+            required
+            minLength={3}
+            maxLength={300}
+            rows={2}
+            defaultValue={affectedArea}
+            onChange={(event) => setAffectedArea(event.target.value)}
+            className={TEXTAREA}
+          />
+        )}
+      </CaseField>
       <CaseField form="forward" name="ownerId" label="Divisional owner" required state={state}>
         {(control) => <OwnerSelect control={control} options={owners} defaultValue={ownerId} onChange={setOwnerId} />}
       </CaseField>
@@ -138,7 +159,7 @@ function ForwardFields({ state, owners, factCount }: { state: CaseFormState; own
           {factCount === 0
             ? 'Add at least one observed fact first. '
             : ''}
-          Forward is available once all three checks are ticked and a divisional owner is chosen.
+          Forward is available once all three checks are ticked, the affected area is written and a divisional owner is chosen.
         </p>
       ) : null}
       <CaseSubmit ready={ready} describedBy={!ready ? 'forward-waiting' : undefined}>

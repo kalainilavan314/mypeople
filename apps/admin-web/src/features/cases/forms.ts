@@ -47,23 +47,25 @@ export function valuesOf(form: FormLike, names: readonly string[]): Record<strin
 
 type Read<T> = { input: T | null; problems: string[] };
 
-/** FR-WEB-017: the three completeness checks and a named divisional owner. */
+/** FR-WEB-017: the three completeness checks, the affected area (W03) and a named divisional owner. */
 export function readForward(form: FormLike): Read<CaseForwardInput> {
   const locationConfirmed = form.get('locationConfirmed') === '1';
   const descriptionClear = form.get('descriptionClear') === '1';
   const evidenceReviewed = form.get('evidenceReviewed') === '1';
   const ownerId = uuidOrNull(form, 'ownerId');
+  const affectedArea = text(form, 'affectedArea');
   const problems: string[] = [];
   if (!(locationConfirmed && descriptionClear && evidenceReviewed)) problems.push('completeness_check_incomplete');
+  if (affectedArea.length < 3) problems.push('affected_area_required');
   if (!ownerId) problems.push('owner_required');
   if (problems.length > 0 || !ownerId) return { input: null, problems };
   return {
-    input: { locationConfirmed, descriptionClear, evidenceReviewed, ownerId, note: text(form, 'note') },
+    input: { locationConfirmed, descriptionClear, evidenceReviewed, ownerId, note: text(form, 'note'), affectedArea },
     problems,
   };
 }
 
-/** FR-WEB-021: act within delegated authority, or escalate with the reason and the decision needed. */
+/** FR-WEB-021: act within delegated authority and an approved scope (W08), or escalate with the reason and the decision needed. */
 export function readDistrictDecision(form: FormLike): Read<CaseDistrictDecisionInput> {
   const decision = text(form, 'decision');
   if (decision === 'act') {
@@ -72,6 +74,7 @@ export function readDistrictDecision(form: FormLike): Read<CaseDistrictDecisionI
       authority: text(form, 'authority'),
       resources: text(form, 'resources'),
       office: text(form, 'office'),
+      scope: text(form, 'scope'),
       ownerId: uuidOrNull(form, 'ownerId'),
       dueDate: dateOrNull(form, 'dueDate'),
     };
@@ -79,6 +82,7 @@ export function readDistrictDecision(form: FormLike): Read<CaseDistrictDecisionI
       ...(input.authority ? [] : ['authority_required']),
       ...(input.resources ? [] : ['resources_required']),
       ...(input.office ? [] : ['office_required']),
+      ...(input.scope ? [] : ['scope_required']),
       ...(input.dueDate ? [] : ['due_date_required']),
       ...(input.ownerId ? [] : ['owner_required']),
     ];

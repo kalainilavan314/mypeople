@@ -51,6 +51,21 @@ export const STATE_LABELS: Readonly<Record<string, Words>> = {
   withdrawn: { ta: 'மீளப்பெறப்பட்டது', en: 'Withdrawn' },
 };
 
+/** M12: a proposal waits for the applicant's consent in the app; nothing is shared before it. */
+export const REFERRAL_STATE_LABELS: Readonly<Record<string, Words>> = {
+  proposed: { ta: 'விண்ணப்பதாரரின் ஒப்புதலுக்காகக் காத்திருக்கிறது', en: 'Waiting for the applicant’s consent' },
+  consent_declined: { ta: 'விண்ணப்பதாரர் ஒப்புக்கொள்ளவில்லை', en: 'The applicant did not consent' },
+  sent: { ta: 'பங்காளருக்கு அனுப்பப்பட்டது', en: 'Sent to the partner' },
+  accepted: { ta: 'பங்காளர் ஏற்றுக்கொண்டார்', en: 'Accepted by the partner' },
+  completed: { ta: 'நிறைவடைந்தது', en: 'Completed' },
+  declined: { ta: 'பங்காளர் மறுத்தார்', en: 'Declined by the partner' },
+};
+
+/** What a partner said is recorded only for a referral shared with them after consent. */
+export function partnerMayAnswer(state: string): boolean {
+  return state === 'sent' || state === 'accepted';
+}
+
 export const PARTNER_KINDS: readonly SupportPartnerInput['kind'][] = ['ngo', 'public_service', 'hospital', 'other'];
 export const PARTNER_KIND_LABELS: Readonly<Record<string, Words>> = {
   ngo: { ta: 'அரச சார்பற்ற நிறுவனம்', en: 'NGO' },
@@ -71,11 +86,14 @@ export const SUPPORT_TARGETS: ProblemTargets = {
   partner_required: 'partnerId',
   partner_not_found: 'partnerId',
   partner_consent_required: 'consent',
+  purpose_required: 'purpose',
+  referral_not_shared: 'state',
   caseworker_required: 'caseworkerId',
   caseworker_not_eligible: 'caseworkerId',
   case_note_required: 'body',
   outcome_required: 'outcome',
   criteria_version_required: 'criteriaVersionId',
+  criteria_not_current: 'criteriaVersionId',
   reason_required: 'reasonTa',
   delivery_incomplete: 'kind',
   close_note_required: 'note',
@@ -129,6 +147,26 @@ export function readIntake(form: FormLike): Read<SupportIntakeInput> {
     },
     problems,
   };
+}
+
+type ReferralInput = { partnerId: string; purpose: string; consent: boolean };
+
+/**
+ * M12, FR-AST-004: a partner and why. An applicant with an app account answers the proposal there
+ * (`consentInApp`); for anyone else the caseworker confirms the consent the applicant gave them.
+ */
+export function readReferral(form: FormLike): Read<ReferralInput> {
+  const partnerId = uuidOrNull(form, 'partnerId');
+  const purpose = text(form, 'purpose');
+  const inApp = form.get('consentInApp') === '1';
+  const consent = form.get('consent') === '1';
+  const problems = [
+    ...(partnerId ? [] : ['partner_required']),
+    ...(purpose.length >= 3 && purpose.length <= 500 ? [] : ['purpose_required']),
+    ...(inApp || consent ? [] : ['partner_consent_required']),
+  ];
+  if (problems.length > 0 || !partnerId) return { input: null, problems };
+  return { input: { partnerId, purpose, consent: !inApp && consent }, problems };
 }
 
 /** FR-AST-008: an outcome against the programme's published criteria version, with reasons in both languages. */
@@ -200,10 +238,22 @@ export function readPartner(form: FormLike): Read<SupportPartnerInput> {
   return { input: { name, kind, contact }, problems: [] };
 }
 
-/** The current published criteria version of each active programme, for a decision. */
-export function criteriaOptions(programmes: readonly { nameEn: string; nameTa: string; active: boolean; criteriaVersionId: string | null; criteriaVersion: number | null }[]) {
+type CriteriaSource = {
+  nameEn: string;
+  nameTa: string;
+  active: boolean;
+  categories: readonly string[];
+  criteriaVersionId: string | null;
+  criteriaVersion: number | null;
+};
+
+/**
+ * D13: the current published criteria version of each active programme, for a decision. Given the
+ * case's kind of help, only programmes that cover it; the API refuses any other ("criteria_not_current").
+ */
+export function criteriaOptions(programmes: readonly CriteriaSource[], category?: SupportCategory) {
   return programmes
-    .filter((programme) => programme.active && programme.criteriaVersionId)
+    .filter((programme) => programme.active && programme.criteriaVersionId && (!category || programme.categories.includes(category)))
     .map((programme) => ({
       value: programme.criteriaVersionId as string,
       label: `${programme.nameTa} · ${programme.nameEn} (criteria v${programme.criteriaVersion})`,

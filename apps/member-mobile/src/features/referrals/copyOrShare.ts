@@ -1,34 +1,35 @@
-import { Platform, Share } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
+import { Share } from 'react-native';
 
-type WebClipboard = { writeText: (text: string) => Promise<void> };
+/** H19 one-tap copy, on phones and on the web; false when the clipboard refused (the text stays selectable). */
+export async function copyText(text: string): Promise<boolean> {
+  try {
+    await Clipboard.setStringAsync(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
-function webClipboard(): WebClipboard | null {
-  if (Platform.OS !== 'web') return null;
-  const browser = globalThis as { navigator?: { clipboard?: WebClipboard } };
-  return browser.navigator?.clipboard ?? null;
+export type ShareOutcome = 'shared' | 'copied' | 'dismissed';
+
+function closedUnsent(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && (error as { name?: unknown }).name === 'AbortError';
 }
 
 /**
- * The app has no clipboard module (adding expo-clipboard means a new native build), so the phone
- * apps hand the code to the share sheet, which offers Copy; the web version copies it at once.
+ * Opens the share sheet with the text, a separate action from Copy. iOS and the web say when it
+ * was closed without sharing ('dismissed'); Android always reports 'shared'. A browser with no
+ * share sheet copies the text instead ('copied'), or 'dismissed' when even that fails.
  */
-export const copiesDirectly = webClipboard() !== null;
-
-/** Copies the text (web) or opens the share sheet with it (phones); true once it was copied. */
-export async function copyOrShare(text: string): Promise<boolean> {
-  const clipboard = webClipboard();
-  if (clipboard) {
-    try {
-      await clipboard.writeText(text);
-      return true;
-    } catch {
-      // The browser refused (no permission or not a secure page): the share sheet below instead.
-    }
-  }
+export async function shareText(text: string): Promise<ShareOutcome> {
   try {
-    await Share.share({ message: text });
-  } catch {
-    // Closed or not available: nothing was shared.
+    const result = await Share.share({ message: text });
+    // react-native-web resolves with nothing once the browser's share sheet has shared.
+    return result?.action === Share.dismissedAction ? 'dismissed' : 'shared';
+  } catch (error) {
+    // The web's share sheet rejects with AbortError when it is closed unsent.
+    if (closedUnsent(error)) return 'dismissed';
   }
-  return false;
+  return (await copyText(text)) ? 'copied' : 'dismissed';
 }

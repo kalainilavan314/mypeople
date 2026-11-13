@@ -42,6 +42,12 @@ function done(caseId: string, code: string): never {
   redirect(`/cases/${caseId}?done=${encodeURIComponent(code)}`);
 }
 
+/** Moderation forms also sit in the one moderation queue (D12); only that fixed page is a way back, never an address from the form. */
+function doneModerating(formData: FormData, caseId: string, code: string, section: string): never {
+  if (text(formData, 'returnTo') === 'moderation') redirect(`/moderation?done=${encodeURIComponent(code)}#${section}`);
+  done(caseId, code);
+}
+
 function refused(error: unknown, values: Record<string, string>): CaseFormState {
   const { code, problems } = failure(error);
   return { error: code, problems, values, attempt: Date.now() };
@@ -117,7 +123,7 @@ export async function linkDuplicate(_previous: CaseFormState, formData: FormData
 
 export async function forwardToDs(_previous: CaseFormState, formData: FormData): Promise<CaseFormState> {
   const caseId = caseIdFrom(formData);
-  const values = valuesOf(formData, ['locationConfirmed', 'descriptionClear', 'evidenceReviewed', 'ownerId', 'note']);
+  const values = valuesOf(formData, ['locationConfirmed', 'descriptionClear', 'evidenceReviewed', 'affectedArea', 'ownerId', 'note']);
   const { input, problems } = readForward(formData);
   if (!input) return incomplete(problems, values);
   try {
@@ -171,7 +177,7 @@ export async function sendDsReport(_previous: CaseFormState, formData: FormData)
 export async function decideAtDistrict(_previous: CaseFormState, formData: FormData): Promise<CaseFormState> {
   const caseId = caseIdFrom(formData);
   const values = valuesOf(formData, [
-    'decision', 'authority', 'resources', 'office', 'ownerId', 'dueDate', 'reason', 'decisionRequired', 'regionalOwnerId',
+    'decision', 'authority', 'scope', 'resources', 'office', 'ownerId', 'dueDate', 'reason', 'decisionRequired', 'regionalOwnerId',
   ]);
   const { input, problems } = readDistrictDecision(formData);
   if (!input) return incomplete(problems, values);
@@ -317,22 +323,25 @@ export async function setPublicSummary(_previous: CaseFormState, formData: FormD
   } catch (error) {
     return refused(error, values);
   }
-  done(caseId, input.publish ? 'summary_published' : 'summary_withheld');
+  doneModerating(formData, caseId, input.publish ? 'summary_published' : 'summary_withheld', 'case-summaries');
 }
 
 export async function moderateAddition(_previous: CaseFormState, formData: FormData): Promise<CaseFormState> {
   const caseId = caseIdFrom(formData);
   const additionId = uuidOrNull(formData, 'additionId');
   if (!additionId) redirect(`/cases/${caseId}`);
-  const values = valuesOf(formData, ['reason']);
+  const values = valuesOf(formData, ['reason', 'editedBody']);
   const approve = formData.get('approve') === '1';
   if (!approve && !values.reason) return incomplete(['reason_required'], values);
+  // An edited version is published instead of the member's words only when approving (D12).
+  const editedBody = approve && values.editedBody ? values.editedBody : undefined;
   try {
-    await (await staffApi()).moderateCaseAddition(caseId, additionId, approve, values.reason || undefined);
+    await (await staffApi()).moderateCaseAddition(caseId, additionId, approve, values.reason || undefined, editedBody);
   } catch (error) {
     return refused(error, values);
   }
-  done(caseId, approve ? 'addition_approved' : 'addition_rejected');
+  const code = approve ? (editedBody ? 'addition_redacted' : 'addition_approved') : 'addition_rejected';
+  doneModerating(formData, caseId, code, 'case-additions');
 }
 
 // --- PRM-13: the reporter's contact, for the case owner only --------------------------------------------

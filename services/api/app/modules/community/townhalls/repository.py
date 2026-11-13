@@ -126,8 +126,11 @@ def questions(db: Session, townhall_id: uuid.UUID, viewer: uuid.UUID, *, states:
         conditions.append("q.state = ANY(:states)")
         params["states"] = list(states)
     if query:
+        # The member's words are matched literally: % and _ are not wildcards here. The backslash is
+        # PostgreSQL's default LIKE escape character, so it is escaped first.
+        escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
         conditions.append("(q.body ILIKE :q OR q.answer_en ILIKE :q OR q.answer_ta ILIKE :q)")
-        params["q"] = f"%{query}%"
+        params["q"] = f"%{escaped}%"
     rows = db.execute(text(f"{_QUESTION} WHERE {' AND '.join(conditions)} ORDER BY q.created_at"), params).mappings()
     return [Question(**row) for row in rows]
 
@@ -170,6 +173,10 @@ def set_reminder(db: Session, townhall_id: uuid.UUID, member_id: uuid.UUID, on: 
     else:
         db.execute(text("DELETE FROM community.townhall_reminder WHERE townhall_id = :t AND member_id = :m"),
                    {"t": townhall_id, "m": member_id})
+
+
+def reminder_members(db: Session, townhall_id: uuid.UUID) -> list[uuid.UUID]:
+    return list(db.scalars(text("SELECT member_id FROM community.townhall_reminder WHERE townhall_id = :t"), {"t": townhall_id}))
 
 
 def reminded(db: Session, townhall_id: uuid.UUID, member_id: uuid.UUID) -> bool:

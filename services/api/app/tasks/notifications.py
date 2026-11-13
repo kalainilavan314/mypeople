@@ -6,8 +6,9 @@ Run once every minute from a systemd timer (mypeople-notifications.timer):
 Jobs performed per cycle:
 1. Send due staff broadcasts (with election silence holds and audit trails).
 2. Escalate overdue photo removal requests (> 18h) to Tier 5 reviewers.
-3. Alert the next tier once about each case stage past its time limit (FR-WEB-028), and mark
-   published promises past their due date Delayed (FR-PRM-009).
+3. Alert the next tier once about each case stage past its time limit (FR-WEB-028), mark
+   published promises past their due date Delayed (FR-PRM-009), and tell the publishers once when
+   a Delayed promise's 10 working days for an update pass without one.
 4. Dispatch pending push notifications respecting quiet hours and preferences.
 
 Concurrency & Safety:
@@ -59,6 +60,7 @@ def run_once(db: Session, push: PushSender, now: datetime | None = None) -> dict
     escalated = gallery.escalate_overdue(db)
     cases_alerted = case_breaches.alert_breaches(db, moment)
     promises_delayed = promises.mark_delayed(db, moment)
+    promise_updates_missed = promises.escalate_missed_updates(db, moment)
     townhall_reminders = townhalls.remind(db, moment)
     field_visits_purged = field_visits.purge(db, moment)
     pushed = notifications.dispatch(db, push, moment)
@@ -67,6 +69,7 @@ def run_once(db: Session, push: PushSender, now: datetime | None = None) -> dict
         "removalsEscalated": escalated,
         "caseBreachesAlerted": cases_alerted,
         "promisesDelayed": promises_delayed,
+        "promiseUpdatesMissed": promise_updates_missed,
         "townHallReminders": townhall_reminders,
         "fieldVisitsPurged": field_visits_purged,
         **asdict(pushed),

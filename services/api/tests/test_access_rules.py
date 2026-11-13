@@ -159,7 +159,8 @@ def test_without_roles_assign_nothing_can_be_granted():
     assert "outside_your_area" in check(district_coordinator("analytics.view"), granter=reviewer)
 
 
-def test_rb12_assistance_decisions_never_sit_with_fundraising_in_the_same_area():
+def test_rb12_assistance_decisions_never_sit_with_fundraising_in_any_area():
+    """FR-AST-013: whatever the areas, the same person never decides assistance and holds fundraising rights."""
     treasurer = Grantee(
         member_id=MEMBER_ID,
         identity_verified=True,
@@ -170,7 +171,27 @@ def test_rb12_assistance_decisions_never_sit_with_fundraising_in_the_same_area()
 
     assert "separation_of_duties" in check(district_coordinator("assistance.decide"), granter=granter, grantee=treasurer)
     elsewhere = check(district_coordinator("assistance.decide"), granter=granter, grantee=treasurer, area_path=OTHER_DISTRICT_PATH)
-    assert "separation_of_duties" not in elsewhere
+    assert "separation_of_duties" in elsewhere
+    # Rights that do not conflict are still granted next to fundraising.
+    assert "separation_of_duties" not in check(district_coordinator("assistance.casework"), granter=granter, grantee=treasurer)
+
+
+def test_rb12_an_assistance_decider_gets_no_election_roster_rights_in_another_province():
+    decider = Grantee(
+        member_id=MEMBER_ID,
+        identity_verified=True,
+        membership_active=True,
+        assignments=((Assignment("3A", DISTRICT, frozenset({"assistance.decide"})), DISTRICT_PATH),),
+    )
+    roster = AssignmentRequest(member_id=MEMBER_ID, tier="3A", area=Area("district", "LK51"),
+                               permissions=frozenset({"election.roster.manage"}))
+
+    assert "separation_of_duties" in check(roster, grantee=decider, area_path=ELSEWHERE_PATH)
+    # Both rights in one request are refused too, and so is a grant whose area is unknown.
+    both = AssignmentRequest(member_id=MEMBER_ID, tier="3A", area=DISTRICT,
+                             permissions=frozenset({"assistance.decide", "election.roster.manage"}))
+    assert "separation_of_duties" in check(both)
+    assert "separation_of_duties" in check(roster, grantee=decider, area_path=None)
 
 
 # --- Checks, revocation and review ------------------------------------------------------

@@ -1,18 +1,20 @@
 """Ask the Leader / Live Town Hall (BRD M21 to M23, D18, FR-THL-001 to 009, BR-118 to 120).
 
 Producers (townhall.produce) schedule sessions for an area; none may be scheduled or go live inside
-an election silence window, and one in an election period needs a recorded legal review. Members ask
-by text; moderators (townhall.moderate) approve, merge or reject with a reason before anyone else
-sees a question; each member votes once per approved question and only totals are shown. After the
-session every approved question is answered live (with the time in the recording) or in writing,
-and outcomes may link to promises or cases.
+an election silence window, and one in an election period needs a recorded legal review, checked
+again when it goes live. Verified and Active members ask by text; moderators (townhall.moderate)
+approve, merge or reject with a reason before anyone else sees a question; each such member votes
+once per approved question while the session is upcoming or live, and only totals are shown. A
+cancelled session is announced to everyone who asked for a reminder. After the session every
+approved question is answered live (with the time in the recording) or in writing, and outcomes may
+link to published promises or existing cases.
 
 Not built: the video player's stream itself (OD-44, DEP-20 streaming provider), voice questions with
 Tamil speech-to-text (AI-11, OD-42) and AI transcript summaries (AI-08).
 """
 
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from typing import Any
 
@@ -23,6 +25,9 @@ from app.modules.access import rules as access_rules
 from app.modules.access.rules import Area, AreaPath, area_from_key
 from app.modules.access.service import AccessRefused, Staff, refuse, visible_areas
 from app.modules.audit import service as audit
+from app.modules.community.issues import repository as issues_repository
+from app.modules.community.issues import service as issues_service
+from app.modules.community.promises import repository as promises_repository
 from app.modules.community.townhalls import repository
 from app.modules.community.townhalls.repository import Question, TownHall
 from app.modules.election import repository as election_repository
@@ -73,7 +78,30 @@ def view(db: Session, member_id: uuid.UUID, townhall_id: uuid.UUID, query: str |
         raise TownHallNotFound()
     shown = [q for q in repository.questions(db, townhall_id, member_id, query=query)
              if q.state == "approved" or q.member_id == member_id]
+    found = replace(found, outcomes=[_member_outcome(db, member_id, outcome) for outcome in found.outcomes])
     return SessionView(found, shown, repository.reminded(db, townhall_id, member_id))
+
+
+def _member_outcome(db: Session, member_id: uuid.UUID, outcome: dict[str, Any]) -> dict[str, Any]:
+    """M23: an outcome links to its case only when this member may open the case (their own report,
+    or a public one in their GN division); otherwise the case number is shown without a link."""
+    case_id = None
+    number = outcome.get("caseNumber")
+    issue = issues_repository.find_by_number(db, number) if isinstance(number, str) and number else None
+    if issue is not None:
+        try:
+            issues_service.detail(db, member_id, issue.id)
+            case_id = str(issue.id)
+        except issues_service.IssueNotFound:
+            case_id = None
+    return {**outcome, "caseId": case_id}
+
+
+def _may_take_part(db: Session, member_id: uuid.UUID) -> None:
+    """Asking and voting both need a Verified identity and an Active membership."""
+    status = access_repository.find_member_status(db, member_id)
+    if status is None or not (status.identity_verified and status.membership_active):
+        raise TownHallRefused("membership_not_active")
 
 
 def ask(db: Session, member_id: uuid.UUID, townhall_id: uuid.UUID, body: str, ip: str) -> Question:
@@ -81,9 +109,7 @@ def ask(db: Session, member_id: uuid.UUID, townhall_id: uuid.UUID, body: str, ip
     current = view(db, member_id, townhall_id)
     if current.townhall.state not in ("scheduled", "live"):
         raise TownHallRefused("session_closed")
-    status = access_repository.find_member_status(db, member_id)
-    if status is None or not (status.identity_verified and status.membership_active):
-        raise TownHallRefused("membership_not_active")
+    _may_take_part(db, member_id)
     if repository.count_member_questions(db, townhall_id, member_id) >= QUESTIONS_PER_SESSION:
         raise TownHallRefused("too_many_questions")
     question_id = repository.insert_question(db, townhall_id, member_id, body.strip())
@@ -96,11 +122,15 @@ def ask(db: Session, member_id: uuid.UUID, townhall_id: uuid.UUID, body: str, ip
 
 
 def vote(db: Session, member_id: uuid.UUID, question_id: uuid.UUID) -> Question:
-    """FR-THL-004: one vote per member per approved question; a second vote is ignored."""
+    """FR-THL-004: one vote per member per approved question, while the session is upcoming or live;
+    a second vote is ignored."""
     question = repository.find_question(db, question_id, member_id)
     if question is None or question.state != "approved":
         raise TownHallNotFound()
-    view(db, member_id, question.townhall_id)
+    current = view(db, member_id, question.townhall_id)
+    if current.townhall.state not in ("scheduled", "live"):
+        raise TownHallRefused("session_closed")
+    _may_take_part(db, member_id)
     if question.member_id == member_id:
         raise TownHallRefused("own_question")
     repository.vote(db, question_id, member_id)
@@ -199,10 +229,16 @@ def move(db: Session, staff: Staff, townhall_id: uuid.UUID, state: str, reason: 
         now = datetime.now(UTC)
         election.refuse_if_silent(db, staff, action="townhall.live", target=("townhall", str(townhall_id)),
                                   area_path=found.area_path, spans=[(now, found.ends_at)], ip=ip)
+        # FR-THL-008: an election period may have been declared since the session was scheduled.
+        periods = election_repository.overlapping(db, found.area_path, now, max(now, found.ends_at))
+        if periods and not (found.legal_review_ref or "").strip():
+            raise TownHallRefused("legal_review_required")
     if state == "cancelled":
         if not (reason and reason.strip()):
             raise TownHallRefused("reason_required")
         values["cancel_reason"] = reason.strip()
+        for member_id in repository.reminder_members(db, townhall_id):
+            notifications.notify(db, member_id, "townhall_cancelled", townhall_id)
     repository.update(db, townhall_id, values)
     audit.record(db, actor_id=staff.member_id, action=f"townhall.{state}", target_type="townhall", target_id=str(townhall_id),
                  area_path=_path(found.area_path), ip=ip)
@@ -293,6 +329,9 @@ def archive(db: Session, staff: Staff, townhall_id: uuid.UUID, values: dict[str,
     _require(db, staff, PRODUCE, found.area_path, ip, str(townhall_id))
     if found.state != "ended":
         raise TownHallRefused(f"not_allowed_from:{found.state}")
+    problems = _outcome_problems(db, values.get("outcomes") or [])
+    if problems:
+        raise TownHallRefused(problems)
     repository.update(db, townhall_id, values)
     audit.record(db, actor_id=staff.member_id, action="townhall.archived", target_type="townhall", target_id=str(townhall_id),
                  area_path=_path(found.area_path), ip=ip)
@@ -300,6 +339,21 @@ def archive(db: Session, staff: Staff, townhall_id: uuid.UUID, values: dict[str,
     archived = repository.find(db, townhall_id)
     assert archived is not None
     return archived
+
+
+def _outcome_problems(db: Session, outcomes: list[dict[str, Any]]) -> list[str]:
+    """M23: an outcome links only to a published promise or an existing case; numbered from 1."""
+    problems = []
+    for position, outcome in enumerate(outcomes, start=1):
+        promise_id = outcome.get("promiseId")
+        if promise_id:
+            promise = promises_repository.find(db, uuid.UUID(str(promise_id)))
+            if promise is None or promise.publication != "published":
+                problems.append(f"outcome_promise_not_published:{position}")
+        number = outcome.get("caseNumber")
+        if number and issues_repository.find_by_number(db, str(number)) is None:
+            problems.append(f"outcome_case_not_found:{position}")
+    return problems
 
 
 def remind(db: Session, now: datetime) -> int:

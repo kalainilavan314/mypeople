@@ -24,6 +24,8 @@ Stage = Literal[
     "not_taken_forward", "withdrawn",
 ]
 PUBLISHED_STAGES = ("review", "approved_for_planning", "funding_identified", "implementation", "not_taken_forward")
+# A proposal is for a District, DS division or GN division; members see those of their own three.
+PROPOSAL_LEVELS = ("district", "ds", "gn")
 
 MODERATE = "content.moderate"  # PRM-20
 REVIEW = "dev.review"  # PRM-38

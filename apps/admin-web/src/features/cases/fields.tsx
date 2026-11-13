@@ -16,6 +16,9 @@ import type { CaseFormState } from './forms';
 /** The field each refusal reason points at; the summary links to it and the field repeats it. */
 export const PROBLEM_FIELDS: Readonly<Record<string, string>> = {
   completeness_check_incomplete: 'checklist',
+  affected_area_required: 'affectedArea',
+  scope_required: 'scope',
+  edited_body_too_short: 'editedBody',
   owner_required: 'ownerId',
   owner_not_eligible: 'ownerId',
   already_owner: 'ownerId',

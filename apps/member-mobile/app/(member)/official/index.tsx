@@ -11,8 +11,9 @@ import { api } from '@/lib/api';
 
 /**
  * M48 Check or report a statement: the member's reports with what a fact-checker decided. A person
- * checks every report; there is no automatic score (BR-149). Checking an official statement by its
- * code waits for the signing keys (INT-24), so it is only announced here, not offered.
+ * checks every report; there is no automatic score (BR-149). Official updates (M47) and checking a
+ * statement by its code both wait for the signing keys (INT-24), so they are only announced here, not
+ * offered: nothing is labelled "Official statement" without a signature.
  */
 export default function OfficialStatementsScreen() {
   const { t } = useTranslation();

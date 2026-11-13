@@ -30,7 +30,9 @@ class TownHallOut(CamelModel):
     recording_url: str | None
     transcript_en: str | None
     transcript_ta: str | None
-    outcomes: list[dict[str, Any]]
+    outcomes: list[dict[str, Any]] = Field(
+        description="textEn, textTa, promiseId and caseNumber; members also get caseId, set only when they may open the case"
+    )
     cancel_reason: str | None
 
     @classmethod
@@ -126,8 +128,9 @@ class TownHallAnswerIn(CamelModel):
 class OutcomeIn(CamelModel):
     text_en: str = Field(min_length=3, max_length=500)
     text_ta: str = Field(min_length=3, max_length=800)
-    promise_id: uuid.UUID | None = None
-    case_number: str | None = Field(default=None, max_length=20)
+    promise_id: uuid.UUID | None = Field(default=None, description="A published promise")
+    case_number: str | None = Field(default=None, pattern=r"^CI-[0-9]{5,}$", max_length=20,
+                                    description="An existing case, e.g. CI-00012")
 
 
 class ArchiveIn(CamelModel):

@@ -144,6 +144,7 @@ export type IssueStatus = Schemas['IssueSummaryOut']['status'];
 export type IssueResponsibleTier = NonNullable<Schemas['IssueSummaryOut']['responsibleTier']>;
 export type IssuePhoto = Schemas['IssuePhotoOut'];
 export type IssueAddition = Schemas['AdditionOut'];
+export type MyIssueAddition = Schemas['MyAdditionOut'];
 export type ClosureResponseInput = Schemas['ClosureResponseIn'];
 export type CaseSummary = Schemas['IssueCaseOut'];
 export type CaseList = Schemas['IssueCaseListOut'];
@@ -168,6 +169,15 @@ export type CaseCloseInput = Schemas['CaseCloseIn'];
 export type CaseAssignInput = Schemas['AssignIn'];
 export type CaseChallengeDecisionInput = Schemas['ChallengeDecisionIn'];
 export type CasePublicSummaryInput = Schemas['PublicSummaryIn'];
+export type PendingModeration = Schemas['PendingModerationOut'];
+export type PendingCaseSummary = Schemas['PendingSummaryOut'];
+export type PendingCaseAddition = Schemas['PendingAdditionOut'];
+// One appeal against a moderation decision on an idea or added information (D12).
+export type ModerationAppeal = Schemas['ModerationAppealOut'];
+export type ModerationAppealItemKind = Schemas['ModerationAppealIn']['itemKind'];
+export type ModerationAppealState = Schemas['ModerationAppealOut']['state'];
+export type StaffModerationAppeal = Schemas['StaffModerationAppealOut'];
+export type ModerationAppealDecisionInput = Schemas['ModerationAppealDecisionIn'];
 // Volunteering (H10 to H12, S10).
 export type VolunteerSkills = Schemas['VolunteerSkillsOut'];
 export type VolunteerSkill = Schemas['SkillOut'];
@@ -192,6 +202,9 @@ export type VolunteerCard = Schemas['VolunteerCardOut'];
 // Ideas (H13), surveys (H14, H21) and development proposals (M15 to M17, D15).
 export type IdeaBoard = Schemas['IdeaBoardOut'];
 export type Idea = Schemas['IdeaOut'];
+export type IdeaAppeal = Schemas['IdeaAppealOut'];
+/** D12: the moderator's edited (redacted) version; an omitted field keeps the author's text. */
+export type IdeaEdits = Pick<Schemas['IdeaModerationIn'], 'editedTitle' | 'editedBenefit'>;
 export type IdeaInput = Schemas['IdeaIn'];
 export type PendingIdea = Schemas['PendingIdeaOut'];
 export type SurveySummary = Schemas['SurveySummaryOut'];
@@ -226,6 +239,7 @@ export type MyReferrals = Schemas['MyReferralsOut'];
 export type InvitationItem = Schemas['InvitationOut'];
 export type InvitationStatus = Schemas['InvitationOut']['status'];
 export type NewInvitation = Schemas['NewInvitationOut'];
+export type InvitationPreview = Schemas['InvitationPreviewOut'];
 // Promise Tracker (M18, M19, D16) and scorecards (M20, D17).
 export type PromiseSummary = Schemas['PromiseSummaryOut'];
 export type PromiseDetail = Schemas['PromiseDetailOut'];
@@ -264,6 +278,11 @@ export type SupportProgrammeInput = Schemas['ProgrammeIn'];
 export type SupportPartner = Schemas['PartnerOut'];
 export type SupportPartnerInput = Schemas['PartnerIn'];
 export type SupportStatistics = Schemas['StatisticsOut'];
+export type PublicSupportForm = Schemas['PublicSupportFormOut'];
+export type PublicSupportReceipt = Schemas['PublicReceiptOut'];
+export type PublicSupportStatistics = Schemas['PublicSupportStatisticsOut'];
+export type MySupportReferral = Schemas['MyReferralOut'];
+export type SupportReferral = Schemas['ReferralOut'];
 // Town halls (M21 to M23, D18).
 export type TownHall = Schemas['TownHallOut'];
 export type TownHallSession = Schemas['TownHallSessionOut'];
@@ -283,6 +302,8 @@ export type RosterShiftInput = Schemas['ShiftIn'];
 export type MyRosterShift = Schemas['MyShiftOut'];
 export type RosterPeriod = Schemas['OpenPeriodOut'];
 export type ElectionPeriodReport = Schemas['PeriodReportOut'];
+export type ElectionPeriodReportEntry = Schemas['PeriodReportEntryOut'];
+export type RosterMessage = Schemas['RosterMessageOut'];
 export type ManagedSurveyFile = Schemas['ManagedSurveyFileOut'];
 // Fact-checks (M48 reporting part, D12).
 export type MisinfoReport = Schemas['MisinfoReportOut'];
@@ -303,9 +324,15 @@ export type HouseholdInvitation = Schemas['HouseholdInvitationOut'];
 export type HouseholdCreateInput = Schemas['HouseholdCreateIn'];
 export type HouseholdUpdateInput = Schemas['HouseholdUpdateIn'];
 export type InviteAdultInput = Schemas['InviteAdultIn'];
+export type HouseholdInvitationSent = Schemas['HouseholdInvitationSentOut'];
 export type InvitationRespondInput = Schemas['InvitationRespondIn'];
 export type ConsentNotice = Schemas['ConsentNoticeOut'];
-export type ConsentLog = Schemas['ConsentLogOut'];
+export type HouseholdLogEntry = Schemas['HouseholdLogEntryOut'];
+export type HouseholdPlace = Schemas['HouseholdPlaceOut'];
+export type DependantInput = Schemas['DependantIn'];
+export type DependantUpdateInput = Schemas['DependantUpdateIn'];
+export type MyHouseholdDetailsInput = Schemas['MyHouseholdDetailsIn'];
+export type MemberRelationshipInput = Schemas['MemberRelationshipIn'];
 export type InvitationsList = Schemas['InvitationsListOut'];
 export type StaffHouseholdView = Schemas['StaffHouseholdViewOut'];
 export type FundConfig = Schemas['FundConfigResponse'];
@@ -1149,13 +1176,30 @@ export function createApiClient({
     createHousehold: (body: HouseholdCreateInput) => request<Household>('POST', '/v1/households', body),
     updateHousehold: (body: HouseholdUpdateInput) => request<Household>('PATCH', '/v1/households/mine', body),
     getMyInvitations: () => request<InvitationsList>('GET', '/v1/households/invitations/mine'),
-    inviteAdult: (body: InviteAdultInput) => request<HouseholdInvitation>('POST', '/v1/households/invitations', body),
+    /** M08: a neutral confirmation; the invitee's name is never returned before they accept. */
+    inviteAdult: (body: InviteAdultInput) =>
+      request<HouseholdInvitationSent>('POST', '/v1/households/invitations', body),
     respondInvitation: (invitationId: string, body: InvitationRespondInput) =>
       request<Household | null>('POST', `/v1/households/invitations/${encodeURIComponent(invitationId)}/respond`, body),
     revokeInvitation: (invitationId: string) =>
       request<void>('POST', `/v1/households/invitations/${encodeURIComponent(invitationId)}/revoke`),
     removeHouseholdMember: (memberRecordId: string) =>
       request<void>('POST', `/v1/households/members/${encodeURIComponent(memberRecordId)}/remove`),
+    /** OD-30: an adult's own age band and occupation category; null clears a field. */
+    updateMyHouseholdDetails: (body: MyHouseholdDetailsInput) =>
+      request<Household>('PATCH', '/v1/households/members/me', body),
+    /** M10: the head corrects an adult's relationship. */
+    correctHouseholdRelationship: (memberRecordId: string, body: MemberRelationshipInput) =>
+      request<Household>('PATCH', `/v1/households/members/${encodeURIComponent(memberRecordId)}`, body),
+    /** M07 / OD-31: a child's minimum record; the adult who adds it is its guardian. */
+    addHouseholdDependant: (body: DependantInput) => request<Household>('POST', '/v1/households/dependants', body),
+    updateHouseholdDependant: (memberRecordId: string, body: DependantUpdateInput) =>
+      request<Household>('PATCH', `/v1/households/dependants/${encodeURIComponent(memberRecordId)}`, body),
+    removeHouseholdDependant: (memberRecordId: string) =>
+      request<void>('DELETE', `/v1/households/dependants/${encodeURIComponent(memberRecordId)}`),
+    getHouseholdLog: () => request<HouseholdLogEntry[]>('GET', '/v1/households/mine/log'),
+    giveCaseworkerConsent: () => request<Household>('POST', '/v1/households/mine/caseworker-consent'),
+    withdrawCaseworkerConsent: () => request<Household>('DELETE', '/v1/households/mine/caseworker-consent'),
     leaveHousehold: () => request<void>('POST', '/v1/households/leave'),
     getHouseholdPrivacyNotice: () => request<ConsentNotice>('GET', '/v1/households/privacy'),
     staffViewHousehold: (targetMemberId: string) =>
@@ -1258,12 +1302,34 @@ export function createApiClient({
       request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/challenge-decision`, input),
     setCasePublicSummary: (caseId: string, input: CasePublicSummaryInput) =>
       request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/public-summary`, input),
-    moderateCaseAddition: (caseId: string, additionId: string, approve: boolean, reason?: string) =>
+    /** D12: approve (optionally as an edited version with names or contact details taken out) or reject with a reason. */
+    moderateCaseAddition: (caseId: string, additionId: string, approve: boolean, reason?: string, editedBody?: string) =>
       request<CaseFile>(
         'POST',
         `/v1/cases/${encodeURIComponent(caseId)}/additions/${encodeURIComponent(additionId)}/moderation`,
-        { approve, reason },
+        { approve, reason, editedBody },
       ),
+    /** D12, content.moderate: public summaries to write or update and added information to moderate, oldest first. */
+    listPendingCaseModeration: () => request<PendingModeration>('GET', '/v1/cases/manage/pending-moderation'),
+    // Moderation appeals (D12). An idea's appeal answers 404 "feature_unavailable" while ideas_surveys is off,
+    // added information's while community_issues is off. Refusals: "appeal_refused" (422) with `problems`
+    // not_rejected, already_appealed or already_decided; 403 own_record, outside_your_area, original_moderator.
+    /** The author of a rejected idea or added information appeals the decision, once. */
+    appealModeration: (input: { itemKind: ModerationAppealItemKind; itemId: string; body: string }) =>
+      request<ModerationAppeal>('POST', '/v1/moderation-appeals', input),
+    /** The member's own appeal on one of their items, or null when they have not appealed it. */
+    getMyModerationAppeal: async (itemKind: ModerationAppealItemKind, itemId: string) =>
+      (
+        await request<{ appeal: ModerationAppeal | null }>(
+          'GET',
+          `/v1/moderation-appeals/mine?itemKind=${encodeURIComponent(itemKind)}&itemId=${encodeURIComponent(itemId)}`,
+        )
+      ).appeal,
+    /** content.moderate: appeals in the moderator's areas, open ones first, oldest first. */
+    listModerationAppeals: () => request<StaffModerationAppeal[]>('GET', '/v1/moderation-appeals/manage'),
+    /** Decided by a moderator who neither made the first decision nor wrote the item. */
+    decideModerationAppeal: (appealId: string, input: ModerationAppealDecisionInput) =>
+      request<StaffModerationAppeal>('POST', `/v1/moderation-appeals/manage/${encodeURIComponent(appealId)}/decision`, input),
     // Volunteering (H10 to H12, S10). Every route answers 404 "feature_unavailable" while the
     // volunteering module is switched off. Refusals: "volunteer_refused" (422) with `problems`.
     /** H10: the skills list, availability choices and the member's own profile (or null). */
@@ -1334,8 +1400,13 @@ export function createApiClient({
       request<Idea>('PUT', `/v1/ideas/${encodeURIComponent(ideaId)}/support`, { support }),
     withdrawIdea: (ideaId: string) => request<Idea>('POST', `/v1/ideas/${encodeURIComponent(ideaId)}/withdraw`),
     listPendingIdeas: () => request<PendingIdea[]>('GET', '/v1/ideas/moderation'),
-    moderateIdea: (ideaId: string, publish: boolean, reason?: string) =>
-      request<PendingIdea>('POST', `/v1/ideas/${encodeURIComponent(ideaId)}/moderation`, { publish, reason }),
+    /**
+     * D12: publish as written, publish an edited (redacted) title or benefit, or reject with a reason.
+     * Problems: reason_required, already_moderated, edits_only_when_publishing, edited_title_length,
+     * edited_benefit_length.
+     */
+    moderateIdea: (ideaId: string, publish: boolean, reason?: string, edits: IdeaEdits = {}) =>
+      request<PendingIdea>('POST', `/v1/ideas/${encodeURIComponent(ideaId)}/moderation`, { publish, reason, ...edits }),
     // Surveys (H14, H21).
     listSurveys: () => request<SurveySummary[]>('GET', '/v1/surveys'),
     /** The questions, or the receipt once answered (canAnswer false). */
@@ -1406,8 +1477,17 @@ export function createApiClient({
     // Invitations (H19, H20). Routes answer 404 while invitations is off.
     /** H20: the member's referral code and invitations with only Shared, Pending or Active. */
     getMyReferrals: () => request<MyReferrals>('GET', '/v1/invitations/mine'),
-    /** H19: a link with an opaque token and its preview text. Throws "membership_not_active" (422). */
+    /** H19: the invitation text before sharing; creates nothing. Throws "membership_not_active" (422). */
+    previewInvitation: (language: 'ta' | 'en') =>
+      request<InvitationPreview>('GET', `/v1/invitations/preview?language=${encodeURIComponent(language)}`),
+    /**
+     * H19: call as the member shares. A link with an opaque token and its text; listed as Shared
+     * from now on. Throws "membership_not_active" or "too_many_invitations_today" (422).
+     */
     createInvitation: (language: 'ta' | 'en') => request<NewInvitation>('POST', '/v1/invitations', { language }),
+    /** The share sheet was closed unsent: takes back the invitation just made. 404 once it may be out. */
+    cancelInvitation: (invitationNumber: number) =>
+      request<void>('POST', `/v1/invitations/${encodeURIComponent(String(invitationNumber))}/cancel`),
     // Promise Tracker (M18, M19, D16). Routes answer 404 "feature_unavailable" while promises is off.
     listPromises: (filters: { status?: PromiseStatus; theme?: PromiseTheme; area?: string } = {}) => {
       const q = new URLSearchParams();
@@ -1497,11 +1577,31 @@ export function createApiClient({
     getSupportHome: () => request<SupportHome>('GET', '/v1/assistance'),
     /** M12: problems consent_required, unknown_area. */
     requestSupport: (input: SupportRequestInput) => request<MySupportRequest>('POST', '/v1/assistance/requests', input),
+    /** S11 public web form, no account: the official emergency numbers first, then the categories. */
+    getPublicSupportForm: () => request<PublicSupportForm>('GET', '/v1/assistance/public-form'),
+    /**
+     * S11 public web form, no account: answers only the AS- reference. Problems consent_required,
+     * phone_required, unknown_area, too_many_requests (5 an hour per address).
+     */
+    requestSupportPublicly: (input: SupportRequestInput) =>
+      request<PublicSupportReceipt>('POST', '/v1/assistance/public-requests', input),
+    /** D14, no account: requests by district and kind of help; a null count means fewer than 10. */
+    getPublicSupportStatistics: () => request<PublicSupportStatistics>('GET', '/v1/assistance/statistics'),
     getMySupportRequest: (caseId: string) =>
       request<MySupportRequest>('GET', `/v1/assistance/requests/${encodeURIComponent(caseId)}`),
     /** M14: one complaint or appeal per decision ("already_appealed"). */
     appealSupportDecision: (caseId: string, input: SupportAppealInput) =>
       request<SupportAppeal>('POST', `/v1/assistance/requests/${encodeURIComponent(caseId)}/appeals`, input),
+    /**
+     * M12: the applicant agrees that this partner may see the request (it is then sent) or refuses; once.
+     * Problems referral_already_answered, not_allowed_from:<closed|withdrawn>.
+     */
+    answerSupportReferral: (caseId: string, referralId: string, consent: boolean) =>
+      request<MySupportRequest>(
+        'POST',
+        `/v1/assistance/requests/${encodeURIComponent(caseId)}/referrals/${encodeURIComponent(referralId)}/consent`,
+        { consent },
+      ),
     listSupportCases: (states: string[] = []) => {
       const q = new URLSearchParams();
       for (const state of states) q.append('state', state);
@@ -1510,28 +1610,37 @@ export function createApiClient({
     },
     recordSupportIntake: (input: SupportIntakeInput) =>
       request<SupportCaseSummary>('POST', '/v1/assistance/manage/intake', input),
-    /** S12: only the assigned caseworker and decision-makers (403 "not_assigned"); audited. */
+    /**
+     * S12: the full file only for the assigned caseworker and decision-makers; intake staff get the summary
+     * of a case waiting for screening (fullFile false); anyone else 403 "not_assigned". Every opening is audited.
+     */
     getSupportCase: (caseId: string) =>
       request<SupportCaseFile>('GET', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}`),
     listSupportCaseworkers: (caseId: string) =>
       request<SupportCaseworker[]>('GET', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/caseworkers`),
+    /** Intake staff who route a case get its summary back (fullFile false): the file is now the caseworker's. */
     assignSupportCase: (caseId: string, caseworkerId: string) =>
       request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/assign`, { caseworkerId }),
     linkSupportCase: (caseId: string, otherCaseId: string) =>
       request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/link`, { otherCaseId }),
     addSupportCaseNote: (caseId: string, body: string) =>
       request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/notes`, { body }),
+    /** D13: the latest criteria of an active programme for the case's kind of help ("criteria_not_current" otherwise). */
     decideSupportCase: (caseId: string, input: SupportDecisionInput) =>
       request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/decision`, input),
     recordSupportDelivery: (caseId: string, input: SupportDeliveryInput) =>
       request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/deliveries`, input),
-    /** Consent for this partner is required ("partner_consent_required"). */
-    referSupportCase: (caseId: string, partnerId: string, consent: boolean) =>
+    /**
+     * M12: proposed to an applicant who answers in the app (file.consentInApp); otherwise sent at once with
+     * the consent the caseworker records ("partner_consent_required" without it).
+     */
+    referSupportCase: (caseId: string, partnerId: string, purpose: string, consent: boolean) =>
       request<SupportCaseFile>(
         'POST',
         `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/referrals`,
-        { partnerId, consent },
+        { partnerId, purpose, consent },
       ),
+    /** What the partner said; only for a referral shared after consent ("referral_not_shared" otherwise). */
     updateSupportReferral: (caseId: string, referralId: string, state: 'accepted' | 'completed' | 'declined', outcome?: string) =>
       request<SupportCaseFile>(
         'POST',
@@ -1643,6 +1752,9 @@ export function createApiClient({
     /** FR-ELX-009, Tier 5 (election.mode.manage). */
     getElectionPeriodReport: (periodId: string) =>
       request<ElectionPeriodReport>('GET', `/v1/election/roster/periods/${encodeURIComponent(periodId)}/report`),
+    /** FR-ELX-009: the audit entries behind the period report, newest first; ids only. */
+    listElectionPeriodReportEntries: (periodId: string) =>
+      request<ElectionPeriodReportEntry[]>('GET', `/v1/election/roster/periods/${encodeURIComponent(periodId)}/report/entries`),
     /** The whole survey (texts and questions), for its editor. */
     getManagedSurvey: (surveyId: string) =>
       request<ManagedSurveyFile>('GET', `/v1/surveys/manage/${encodeURIComponent(surveyId)}`),

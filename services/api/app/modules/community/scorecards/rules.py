@@ -81,7 +81,7 @@ def figures(facts: list[CaseFacts]) -> dict[str, Any]:
             "insufficient": False,
             "metrics": {
                 "accepted": {"value": accepted, "numerator": accepted, "denominator": None},
-                "closed_with_evidence": {"value": len(closed), "numerator": len(closed), "denominator": None},
+                "closed_with_evidence": {"value": len(closed), "numerator": len(closed), "denominator": accepted},
                 "resolution_rate": _ratio(len(closed), accepted),
                 "on_time_rate": _ratio(sum(1 for c in closed if c.on_time), len(closed)),
                 "currently_delayed": {"value": sum(1 for c in cases if c.delayed), "numerator": None, "denominator": None},

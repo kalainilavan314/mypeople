@@ -4,7 +4,8 @@ Each stage is worked by the tier that holds its permission over the case's area;
 add facts and notes but never send a decision (FR-WEB-020). Every move records the previous owner,
 the new owner, a note and the time in the append-only case history (FR-WEB-029), and the stage's
 time limit restarts. A case is never deleted: it is returned for details, linked to a parent, or
-declined with a reason. Staff never act on a case they reported themselves (BR-085).
+declined with a reason. Staff never act on a case they reported themselves, nor moderate what they
+added to one (BR-085). A case that enters a stage without a named owner tells everyone who may take it.
 """
 
 import uuid
@@ -61,9 +62,9 @@ def allowed_actions(staff: Staff, issue: StoredIssue, open_challenge: bool) -> l
     stage = issue.stage
     own = issue.reporter_id == staff.member_id
     actions: list[str] = []
-    if stage in rules.OPEN_STAGES and any(_holds(staff, p, issue, deciding=False) for p in rules.CASE_PERMISSIONS):
-        actions.append("note")
     if not own:
+        if stage in rules.OPEN_STAGES and any(_holds(staff, p, issue, deciding=False) for p in rules.CASE_PERMISSIONS):
+            actions.append("note")
         if stage in ("gn", "returned") and _holds(staff, "cases.collect", issue, deciding=False):
             actions.append("fact")
         if stage == "ds" and _holds(staff, "cases.research", issue, deciding=False):
@@ -91,10 +92,12 @@ def allowed_actions(staff: Staff, issue: StoredIssue, open_challenge: bool) -> l
             or _holds(staff, "cases.approve_executive", issue, deciding=True)
         ):
             actions.append("decide_challenge")
-    if issue.visibility == "public" and stage != "linked" and _holds(staff, MODERATE, issue, deciding=False):
-        actions.append("publish_summary")
-    if _holds(staff, MODERATE, issue, deciding=False):
-        actions.append("moderate_additions")
+        # A resolved public case may get an updated summary: the closing summary itself reaches
+        # only the reporter, so the public hears the outcome through a moderator (BR-032).
+        if issue.visibility == "public" and stage != "linked" and _holds(staff, MODERATE, issue, deciding=False):
+            actions.append("publish_summary")
+        if _holds(staff, MODERATE, issue, deciding=False):
+            actions.append("moderate_additions")
     if issue.owner_id == staff.member_id and _holds(staff, CONTACT, issue, deciding=False):
         actions.append("view_reporter_contact")
     return actions
@@ -198,6 +201,7 @@ class CaseFile:
     challenge: repository.StoredClosureResponse | None
     allowed: list[str]
     overdue: bool
+    viewer: uuid.UUID
 
 
 def case_file(db: Session, staff: Staff, issue_id: uuid.UUID, ip: str) -> CaseFile:
@@ -227,6 +231,7 @@ def _file(db: Session, staff: Staff, issue: StoredIssue) -> CaseFile:
         challenge=challenge,
         allowed=allowed_actions(staff, issue, challenge is not None),
         overdue=rules.is_overdue(issue.stage, issue.stage_due_at, datetime.now(UTC)),
+        viewer=staff.member_id,
     )
 
 
@@ -279,11 +284,13 @@ def _record(
     *,
     note: str | None = None,
     details: dict[str, Any] | None = None,
+    audit_details: dict[str, Any] | None = None,
 ) -> uuid.UUID:
+    """An entry that does not move the case; audit_details adds ids and flags (never text) to the audit entry."""
     action_id = repository.insert_action(db, issue.id, kind, actor_id=staff.member_id, note=note, details=details)
     audit.record(
         db, actor_id=staff.member_id, action=f"case.{kind}", target_type="issue", target_id=str(issue.id),
-        area_path=issue_path(issue), details={"stage": issue.stage}, ip=ip,
+        area_path=issue_path(issue), details={"stage": issue.stage, **(audit_details or {})}, ip=ip,
     )
     return action_id
 
@@ -302,7 +309,9 @@ def _move(
     implementation_due: datetime | None = None,
     extra: dict[str, Any] | None = None,
 ) -> uuid.UUID:
-    """Move a case to a stage with a new owner, restarting the stage clock (FR-WEB-028, 029)."""
+    """Move a case to a stage with a new owner, restarting the stage clock (FR-WEB-028, 029). A
+    handover always carries a note; a stage entered without an owner is announced to all who may take it."""
+    assert kind not in rules.HANDOVER_KINDS or (note and note.strip()), f"a {kind} handover needs a note"
     now = datetime.now(UTC)
     repository.update_issue(
         db,
@@ -322,7 +331,11 @@ def _move(
         db, actor_id=staff.member_id, action=f"case.{kind}", target_type="issue", target_id=str(issue.id),
         area_path=issue_path(issue), details={"from": issue.stage, "to": to_stage}, ip=ip,
     )
+    if issue.owner_id is None and issue.stage in rules.STAGE_PERMISSION:
+        notices.taken(db, issue.id, _stage_holders(db, issue, issue.stage))
     notices.assigned(db, issue.id, issue.owner_id, new_owner)
+    if new_owner is None and to_stage in rules.STAGE_PERMISSION:
+        notices.waiting(db, issue.id, _stage_holders(db, issue, to_stage))
     moved = repository.find_issue(db, issue.id)
     assert moved is not None
     # Members hear only of a change they can see: one of the four stages, or a decline. A report
@@ -332,6 +345,12 @@ def _move(
     if seen_now != seen_before or to_stage == "declined":
         notices.stage_changed(db, moved)
     return action_id
+
+
+def _stage_holders(db: Session, issue: StoredIssue, stage: str) -> list[uuid.UUID]:
+    """Everyone who may own the case at this stage: deciding holders of its permission over the area."""
+    permission = rules.STAGE_PERMISSION[stage]
+    return [h.member_id for h in repository.permission_holders(db, permission, issue.area_path) if h.member_id != issue.reporter_id]
 
 
 def _due(day: date) -> datetime:
@@ -408,6 +427,7 @@ class Forward:
     evidence_reviewed: bool
     owner_id: uuid.UUID
     note: str
+    affected_area: str
 
 
 def forward_to_ds(db: Session, staff: Staff, issue_id: uuid.UUID, forward: Forward, ip: str) -> None:
@@ -420,12 +440,18 @@ def forward_to_ds(db: Session, staff: Staff, issue_id: uuid.UUID, forward: Forwa
         description_clear=forward.description_clear,
         evidence_reviewed=forward.evidence_reviewed,
     )
+    if len(forward.affected_area.strip()) < 3:
+        problems.append("affected_area_required")
     if problems:
         raise CaseRefused(problems)
     owner = _eligible_owner(db, issue, "cases.research", forward.owner_id)
     _move(
         db, staff, issue, "forwarded", "ds", ip, new_owner=owner, note=forward.note.strip(),
-        details={"checklist": {"locationConfirmed": True, "descriptionClear": True, "evidenceReviewed": True}},
+        details={
+            "checklist": {"locationConfirmed": True, "descriptionClear": True, "evidenceReviewed": True},
+            "affectedArea": forward.affected_area.strip(),
+        },
+        extra={"affected_area": forward.affected_area.strip()},
     )
     db.commit()
 
@@ -447,7 +473,7 @@ def send_ds_report(db: Session, staff: Staff, issue_id: uuid.UUID, report: DsRep
     owner = _eligible_owner(db, issue, "cases.decide_district", report.district_owner_id)
     version = repository.count_actions(db, issue.id, "ds_report") + 1
     _move(
-        db, staff, issue, "ds_report", "district", ip, new_owner=owner,
+        db, staff, issue, "ds_report", "district", ip, new_owner=owner, note=report.recommendation.strip(),
         details={
             "version": version,
             "summary": report.summary.strip(),
@@ -469,6 +495,7 @@ class DistrictDecision:
     reason: str | None = None
     decision_required: str | None = None
     regional_owner_id: uuid.UUID | None = None
+    scope: str | None = None  # W08: the approved scope the implementation works to
 
 
 def decide_at_district(db: Session, staff: Staff, issue_id: uuid.UUID, decision: DistrictDecision, ip: str) -> None:
@@ -479,19 +506,24 @@ def decide_at_district(db: Session, staff: Staff, issue_id: uuid.UUID, decision:
     if decision.decision == "act":
         missing = [
             name
-            for name, value in (("authority", decision.authority), ("resources", decision.resources), ("office", decision.office))
+            for name, value in (
+                ("authority", decision.authority), ("resources", decision.resources), ("office", decision.office),
+                ("scope", decision.scope),
+            )
             if not (value and value.strip())
         ]
         if missing or decision.due_date is None:
             raise CaseRefused([f"{name}_required" for name in missing] + ([] if decision.due_date else ["due_date_required"]))
         _check_due(decision.due_date)
         owner = _eligible_owner(db, issue, "cases.implement_and_close", decision.owner_id)
+        scope = decision.scope.strip()  # type: ignore[union-attr]
         _move(
-            db, staff, issue, "district_action", "implementation", ip, new_owner=owner,
+            db, staff, issue, "district_action", "implementation", ip, new_owner=owner, note=scope,
             details={
                 "authority": decision.authority.strip(),  # type: ignore[union-attr]
                 "resources": decision.resources.strip(),  # type: ignore[union-attr]
                 "office": decision.office.strip(),  # type: ignore[union-attr]
+                "scope": scope,
                 "dueDate": decision.due_date.isoformat(),
             },
             implementation_due=_due(decision.due_date),
@@ -526,7 +558,7 @@ def submit_regional_plan(db: Session, staff: Staff, issue_id: uuid.UUID, plan: R
     version = repository.count_actions(db, issue.id, "regional_plan") + 1
     _move(
         db, staff, issue, "regional_plan", "executive", ip,
-        new_owner=executives[0].member_id if len(executives) == 1 else None,
+        new_owner=executives[0].member_id if len(executives) == 1 else None, note=plan.solution.strip(),
         details={
             "version": version,
             "solution": plan.solution.strip(),
@@ -563,7 +595,7 @@ def decide_executive(db: Session, staff: Staff, issue_id: uuid.UUID, decision: E
         _check_due(decision.due_date)
         owner = _eligible_owner(db, issue, "cases.implement_and_close", decision.implementer_id)
         _move(
-            db, staff, issue, "executive_approved", "implementation", ip, new_owner=owner,
+            db, staff, issue, "executive_approved", "implementation", ip, new_owner=owner, note=decision.scope.strip(),
             details={
                 "conditions": decision.conditions.strip(),
                 "scope": decision.scope.strip(),
@@ -677,6 +709,8 @@ def assign(db: Session, staff: Staff, issue_id: uuid.UUID, owner_id: uuid.UUID, 
         db, issue.id, "assigned", actor_id=staff.member_id, previous_owner_id=issue.owner_id, new_owner_id=owner,
         note=note.strip(),
     )
+    if issue.owner_id is None:
+        notices.taken(db, issue.id, _stage_holders(db, issue, issue.stage))
     audit.record(
         db, actor_id=staff.member_id, action="case.assigned", target_type="issue", target_id=str(issue.id),
         area_path=issue_path(issue), details={"stage": issue.stage}, ip=ip,
@@ -750,27 +784,56 @@ def set_public_summary(db: Session, staff: Staff, issue_id: uuid.UUID, summary: 
         if not (summary.reason and summary.reason.strip()):
             raise CaseRefused("reason_required")
         repository.update_issue(db, issue.id, public_state="withheld")
+    outcome = "published" if summary.publish else "withheld"
     _record(
         db, staff, issue, "public_summary", ip, note=None if summary.publish else summary.reason,
-        details={"action": "published" if summary.publish else "withheld"},
+        details={"action": outcome}, audit_details={"outcome": outcome},
     )
     db.commit()
 
 
 def moderate_addition(
-    db: Session, staff: Staff, issue_id: uuid.UUID, addition_id: uuid.UUID, approve: bool, reason: str | None, ip: str
+    db: Session,
+    staff: Staff,
+    issue_id: uuid.UUID,
+    addition_id: uuid.UUID,
+    approve: bool,
+    reason: str | None,
+    ip: str,
+    edited_body: str | None = None,
 ) -> None:
+    """D12: approve added information (as written, or as the moderator's edited version with names or
+    contact details taken out), or reject it with a reason. Never one's own addition (BR-085)."""
     issue = _load(db, staff, issue_id, lock=True)
     _require(db, staff, issue, "moderate_additions", ip)
     addition = repository.find_addition(db, addition_id)
     if addition is None or addition.issue_id != issue.id:
         raise CaseNotFound()
+    if addition.member_id == staff.member_id:
+        record_denial(
+            db, actor_id=staff.member_id, permission="cases:moderate_additions", reason="own_record", ip=ip,
+            target=("issue_addition", str(addition.id)), area_path=issue_path(issue),
+        )
+        db.commit()
+        raise AccessRefused("own_record")
     if addition.state != "pending":
         raise CaseRefused("already_moderated")
     if not approve and not (reason and reason.strip()):
         raise CaseRefused("reason_required")
-    repository.moderate_addition(db, addition.id, "approved" if approve else "rejected", staff.member_id, reason)
-    _record(db, staff, issue, "addition_moderated", ip, note=reason, details={"addition": str(addition.id), "approved": approve})
+    # The edited version is kept only when approving and only when it differs from what was written.
+    published = (edited_body or "").strip() if approve else ""
+    if published and len(published) < 5:
+        raise CaseRefused("edited_body_too_short")
+    redacted = bool(published) and published != addition.body.strip()
+    repository.moderate_addition(
+        db, addition.id, "approved" if approve else "rejected", staff.member_id, reason.strip() if reason else None,
+        published if redacted else None,
+    )
+    _record(
+        db, staff, issue, "addition_moderated", ip, note=reason.strip() if reason else None,
+        details={"addition": str(addition.id), "approved": approve, "redacted": redacted},
+        audit_details={"addition": str(addition.id), "outcome": "approved" if approve else "rejected", "redacted": redacted},
+    )
     db.commit()
 
 
@@ -793,3 +856,21 @@ def save_case_photo(db: Session, vault: EvidenceVault, staff: Staff, issue_id: u
     found = repository.find_evidence(db, evidence_id)
     assert found is not None
     return found
+
+
+# --- The moderation queue (D12) ------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class ModerationQueue:
+    summaries: list[repository.PendingSummary]
+    additions: list[repository.PendingAddition]
+
+
+def pending_moderation(db: Session, staff: Staff) -> ModerationQueue:
+    """Public summaries to write or update and added information to moderate, in the moderator's
+    areas, oldest first; one queue for every moderator instead of a visit to each case file."""
+    if not access_rules.holds(staff.rule_assignments(), MODERATE):
+        raise AccessRefused("forbidden")
+    areas = visible_areas(staff, MODERATE)
+    return ModerationQueue(summaries=repository.pending_summaries(db, areas), additions=repository.pending_additions(db, areas))

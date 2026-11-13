@@ -16,6 +16,9 @@ class Idea:
     author_id: uuid.UUID
     title: str
     benefit: str
+    # D12: the moderator's edited (redacted) version, shown to everyone but the author.
+    published_title: str | None
+    published_benefit: str | None
     area_key: str
     area_path: list[str]
     state: str
@@ -27,7 +30,7 @@ class Idea:
 
 
 _SELECT = """
-    SELECT i.id, i.idea_ref, i.author_id, i.title, i.benefit, i.area_key, i.area_path, i.state, i.moderation_reason,
+    SELECT i.id, i.idea_ref, i.author_id, i.title, i.benefit, i.published_title, i.published_benefit, i.area_key, i.area_path, i.state, i.moderation_reason,
            i.created_at, i.updated_at,
            (SELECT count(*) FROM community.idea_support s WHERE s.idea_id = i.id) AS supports,
            EXISTS (SELECT 1 FROM community.idea_support s WHERE s.idea_id = i.id AND s.member_id = :viewer) AS supported
@@ -46,6 +49,7 @@ def find(db: Session, idea_id: uuid.UUID, viewer: uuid.UUID) -> Idea | None:
 
 
 def published_in(db: Session, area_keys: list[str], viewer: uuid.UUID) -> list[Idea]:
+    """Published ideas whose area path includes any of the given keys."""
     return _rows(
         db, "i.state = 'published' AND i.area_path && CAST(:areas AS text[]) ORDER BY i.updated_at DESC LIMIT 100",
         {"areas": area_keys or ["none"], "viewer": viewer},
@@ -82,7 +86,9 @@ def insert(db: Session, author_id: uuid.UUID, title: str, benefit: str, area_key
     )
 
 
-def set_state(db: Session, idea_id: uuid.UUID, state: str, *, moderator: uuid.UUID | None = None, reason: str | None = None) -> None:
+def set_state(db: Session, idea_id: uuid.UUID, state: str, *, moderator: uuid.UUID | None = None, reason: str | None = None,
+              published_title: str | None = None, published_benefit: str | None = None) -> None:
+    """A moderation decision also stores the moderator's edited version, if any (None keeps the author's text)."""
     if moderator is None:
         db.execute(text("UPDATE community.idea SET state = :state, updated_at = clock_timestamp() WHERE id = :id"),
                    {"state": state, "id": idea_id})
@@ -90,9 +96,11 @@ def set_state(db: Session, idea_id: uuid.UUID, state: str, *, moderator: uuid.UU
     db.execute(
         text(
             """UPDATE community.idea SET state = :state, moderation_reason = :reason, moderated_by = :by,
+                      published_title = :published_title, published_benefit = :published_benefit,
                       moderated_at = clock_timestamp(), updated_at = clock_timestamp() WHERE id = :id"""
         ),
-        {"state": state, "reason": reason, "by": moderator, "id": idea_id},
+        {"state": state, "reason": reason, "by": moderator, "published_title": published_title,
+         "published_benefit": published_benefit, "id": idea_id},
     )
 
 
@@ -104,3 +112,27 @@ def set_support(db: Session, idea_id: uuid.UUID, member_id: uuid.UUID, support: 
         )
     else:
         db.execute(text("DELETE FROM community.idea_support WHERE idea_id = :i AND member_id = :m"), {"i": idea_id, "m": member_id})
+
+
+@dataclass(frozen=True)
+class IdeaAppeal:
+    """The author's one appeal of a moderation decision (D12), as the moderation-appeals module keeps it."""
+
+    idea_id: uuid.UUID
+    state: str
+    reason: str | None
+    created_at: datetime
+    decided_at: datetime | None
+
+
+def appeals_for(db: Session, idea_ids: list[uuid.UUID]) -> dict[uuid.UUID, IdeaAppeal]:
+    if not idea_ids:
+        return {}
+    rows = db.execute(
+        text(
+            """SELECT item_id AS idea_id, state, reason, created_at, decided_at FROM community.moderation_appeal
+               WHERE item_kind = 'idea' AND item_id = ANY(:ids)"""
+        ),
+        {"ids": idea_ids},
+    ).mappings()
+    return {row["idea_id"]: IdeaAppeal(**row) for row in rows}

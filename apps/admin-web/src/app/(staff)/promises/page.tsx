@@ -11,7 +11,7 @@ import { LoadFailure, PageProblem } from '@/components/PageProblem';
 import { ButtonLink, FOCUS_RING, NotSwitchedOn, Section } from '@/components/PageSection';
 import { RecordTable } from '@/components/RecordTable';
 import { SimpleForm } from '@/components/SimpleForm';
-import { decideUpdate, moderateFeedback } from '@/features/promises/actions';
+import { decidePublication, decideUpdate, moderateFeedback } from '@/features/promises/actions';
 import { DECISION_FIELDS, MODERATION_FIELDS } from '@/features/promises/decision';
 import { PROMISE_TARGETS, STATUSES, STATUS_LABELS, STATUS_TONES, THEMES, THEME_LABELS } from '@/features/promises/forms';
 import { api } from '@/lib/api';
@@ -137,7 +137,7 @@ async function PromiseList({ searchParams }: { searchParams: PageProps<'/promise
   );
 }
 
-/** Updates waiting for a second person (promise.publish) and feedback waiting for a moderator. */
+/** Promises and updates waiting for a second person (promise.publish), and feedback waiting for a moderator (D16). */
 async function PendingWork() {
   await connection();
   if (!api) return null;
@@ -150,8 +150,37 @@ async function PendingWork() {
     if (error instanceof ApiError && error.code === 'feature_unavailable') return null;
     return <LoadFailure error={error} locale={locale} refused={REFUSED} notFound="The pending work is not available." />;
   }
+  const areaNames = await loadAreaNames(pending.publications.map((promise) => promise.areaKey));
   return (
     <>
+      <Section id="pending-publications" ta="வெளியீட்டு அங்கீகாரத்துக்காகக் காத்திருக்கும் வாக்குறுதிகள்" en={`Promises waiting for publication approval (${pending.publications.length})`} intro="A second person approves every publication. Neither the person who drafted a promise nor the one who asked for publication can approve it.">
+        {pending.publications.length === 0 ? (
+          <p className="text-sm text-muted">No promises are waiting.</p>
+        ) : (
+          <ul className="flex flex-col gap-4">
+            {pending.publications.map((promise) => (
+              <li key={promise.id} className="flex flex-col gap-2 rounded-lg border border-line p-3 text-sm">
+                <p className="flex flex-wrap items-center gap-2">
+                  <Link href={`/promises/${promise.id}`} className={`font-mono font-semibold text-primary underline ${FOCUS_RING}`}>
+                    {promise.promiseRef}
+                  </Link>
+                  <BilingualTag label={THEME_LABELS[promise.theme]} />
+                  <span className="text-xs text-muted">{areaText(promise.areaKey, areaNames, 'en')} · due {formatDate(promise.dueDate)}</span>
+                </p>
+                <BilingualText ta={promise.titleTa} en={promise.titleEn} />
+                <SimpleForm
+                  id={`publication-${promise.id.slice(0, 8)}`}
+                  action={decidePublication}
+                  hidden={{ promiseId: promise.id, returnTo: 'list' }}
+                  fields={DECISION_FIELDS}
+                  submits={[{ label: 'Record decision' }]}
+                  targets={PROMISE_TARGETS}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+      </Section>
       <Section id="pending-updates" ta="அங்கீகாரத்துக்காகக் காத்திருக்கும் புதுப்பிப்புகள்" en={`Updates waiting for approval (${pending.updates.length})`} intro="A second person approves every status change. You cannot approve an update you drafted.">
         {pending.updates.length === 0 ? (
           <p className="text-sm text-muted">No updates are waiting.</p>

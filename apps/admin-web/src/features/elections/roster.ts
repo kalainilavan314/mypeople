@@ -70,3 +70,26 @@ export const REPORT_LABELS: readonly { key: 'shifts' | 'rosterAssignments' | 'ro
   { key: 'contentPublished', ta: 'வெளியிடப்பட்ட உள்ளடக்கம்', en: 'Content published' },
   { key: 'silenceBlocks', ta: 'அமைதிக்காலத்தில் தடுக்கப்பட்டவை', en: 'Blocked by the silence period' },
 ];
+
+/** FR-ELX-009: the words for each kind of audit entry the period report lists; unknown ones show their code. */
+export const REPORT_ENTRY_LABELS: Readonly<Record<string, { ta: string; en: string }>> = {
+  'messaging.broadcast.sent': { ta: 'அறிவித்தல் அனுப்பப்பட்டது', en: 'Broadcast sent' },
+  'events.event.published': { ta: 'நிகழ்வு வெளியிடப்பட்டது', en: 'Event published' },
+  'gallery.album.published': { ta: 'படத்தொகுப்பு வெளியிடப்பட்டது', en: 'Album published' },
+  'promise.published': { ta: 'வாக்குறுதி வெளியிடப்பட்டது', en: 'Promise published' },
+  'scorecard.published': { ta: 'மதிப்பீட்டு அட்டை வெளியிடப்பட்டது', en: 'Scorecard published' },
+  'election.silence.blocked': { ta: 'அமைதிக்காலத்தில் தடுக்கப்பட்டது', en: 'Blocked by the silence period' },
+  'election.roster.shift_created': { ta: 'பணி நேரம் உருவாக்கப்பட்டது', en: 'Shift created' },
+  'election.roster.offered': { ta: 'பணி வழங்கப்பட்டது', en: 'Shift offered' },
+  'election.roster.accepted': { ta: 'பணி ஏற்றுக்கொள்ளப்பட்டது', en: 'Shift accepted' },
+  'election.roster.declined': { ta: 'பணி மறுக்கப்பட்டது', en: 'Shift declined' },
+  'election.roster.shift_cancelled': { ta: 'பணி நேரம் இரத்து செய்யப்பட்டது', en: 'Shift cancelled' },
+  'election.roster.message_sent': { ta: 'பணிச் செய்தி அனுப்பப்பட்டது', en: 'Roster message sent' },
+  'election.roster.checked_in': { ta: 'பணிக்கு வருகை பதிவுசெய்யப்பட்டது', en: 'Checked in' },
+  'election.roster.checked_out': { ta: 'பணியிலிருந்து வெளியேறியது பதிவுசெய்யப்பட்டது', en: 'Checked out' },
+};
+
+/** The words for an audit entry in the period report: its label, or its code when it has none. */
+export function reportEntryLabel(action: string): { ta: string; en: string } {
+  return REPORT_ENTRY_LABELS[action] ?? { ta: action, en: action };
+}

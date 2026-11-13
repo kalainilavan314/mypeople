@@ -78,14 +78,39 @@ def respond(db: Session, member_id: uuid.UUID, survey_id: uuid.UUID, answers: di
     if problems:
         raise SurveyRefused(problems)
     cleaned = {key: value.strip() if isinstance(value, str) else value for key, value in answers.items()}
-    if current.receipt is None:
-        repository.record_response(db, survey_id, member_id, cleaned, current.survey.anonymous)
-    else:
+    if current.receipt is not None:
         repository.replace_response(db, survey_id, member_id, cleaned)
+    elif not repository.record_participation(db, survey_id, member_id):
+        db.rollback()
+        raise SurveyRefused("already_answered")  # a second send that raced the first
+    elif not current.survey.anonymous:
+        repository.record_answers(db, survey_id, member_id, cleaned)
     # The audit entry records that the member took part, never what they answered.
     audit.record(db, actor_id=member_id, action="survey.responded", target_type="survey", target_id=str(survey_id), ip=ip)
     db.commit()
+    if current.receipt is None and current.survey.anonymous:
+        _record_anonymous_answers(db, survey_id, member_id, cleaned, ip)
     return view(db, member_id, survey_id)
+
+
+def _record_anonymous_answers(db: Session, survey_id: uuid.UUID, member_id: uuid.UUID, answers: dict[str, Any],
+                              ip: str) -> None:
+    """FR-SRV-003: an anonymous survey's answers are written in their own transaction, after the
+    participation row is committed. Rows written in one transaction share its id (xmin), which
+    would let anyone with database access tie the answers back to the member.
+
+    If the answers cannot be saved, the participation is taken back, so the member is never left
+    marked as answered with no answer, and may send again."""
+    try:
+        repository.record_answers(db, survey_id, None, answers)
+        db.commit()
+    except Exception:
+        db.rollback()
+        repository.remove_participation(db, survey_id, member_id)
+        audit.record(db, actor_id=member_id, action="survey.response_undone", target_type="survey",
+                     target_id=str(survey_id), ip=ip)
+        db.commit()
+        raise
 
 
 # --- Managers ------------------------------------------------------------------------------------------

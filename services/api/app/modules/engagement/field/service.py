@@ -2,21 +2,23 @@
 
 Coordinators with field.collect record community visits on their phones, usually without signal, and
 sync them later. The server decides: each visit has a version, and an edit made from an older version
-comes back as a conflict with the server's copy for the coordinator to resolve (FR-FLD-008). Visits
-are only for GN divisions inside the coordinator's assignment. Supervisors see visits and open
-follow-ups in their areas. After 12 months visits are deleted and only counts remain.
+comes back as a conflict with the server's copy for the coordinator to resolve (FR-FLD-008); a resend
+of what the server already holds is simply unchanged. The place is optional and chosen by hand (S05):
+a GN or a DS division inside the coordinator's assignment, or none, when the visit belongs to the one
+area where they collect. Supervisors see visits and open follow-ups in their areas. After 12 calendar
+months visits are deleted and only counts remain.
 """
 
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any
 
 from sqlalchemy.orm import Session
 
 from app.modules.access import repository as access_repository
 from app.modules.access import rules as access_rules
-from app.modules.access.rules import Area
+from app.modules.access.rules import Area, AreaPath
 from app.modules.access.service import AccessRefused, Staff, visible_areas
 from app.modules.audit import service as audit
 from app.modules.engagement.field import repository, rules
@@ -27,7 +29,8 @@ from app.modules.engagement.field.repository import Visit
 class VisitIn:
     client_id: uuid.UUID
     base_version: int | None
-    gn_code: str
+    gn_code: str | None
+    ds_code: str | None
     visited_at: datetime
     consent: str
     concerns: list[str]
@@ -55,19 +58,44 @@ def _clean(text_value: str | None) -> str | None:
     return text_value.strip() if text_value and text_value.strip() else None
 
 
+def _place(db: Session, staff: Staff, item: VisitIn) -> AreaPath | str:
+    """The visit's area path, or the problem with its place. A visit with no place belongs to the
+    coordinator's area when they collect over exactly one area; otherwise they must choose one."""
+    if item.gn_code and item.ds_code:
+        return "one_place_only"
+    if item.gn_code:
+        path = access_repository.area_path(db, Area("gn", item.gn_code))
+    elif item.ds_code:
+        path = access_repository.area_path(db, Area("ds", item.ds_code))
+    else:
+        areas = {a.area for a in staff.assignments if rules.PERMISSION in a.permissions}
+        if len(areas) != 1:
+            return "place_required"
+        path = access_repository.area_path(db, areas.pop())
+    if path is None or not access_rules.holds(staff.rule_assignments(), rules.PERMISSION, path):
+        return "outside_your_area"  # FR-FLD-003
+    return path
+
+
+def _same(stored: Visit, values: dict[str, Any]) -> bool:
+    """True when a resent visit says exactly what the server holds."""
+    return all(getattr(stored, field) == values[field] for field in repository.FIELDS)
+
+
 def sync(db: Session, staff: Staff, visits: list[VisitIn], ip: str) -> list[SyncResult]:
     """Each visit is judged on its own; one refusal does not stop the others."""
     _require(staff)
     results = []
     for item in visits:
-        path = access_repository.area_path(db, Area("gn", item.gn_code))
-        if path is None or not access_rules.holds(staff.rule_assignments(), rules.PERMISSION, path):
-            results.append(SyncResult(item.client_id, "refused", ["outside_your_area"], None))  # FR-FLD-003
+        path = _place(db, staff, item)
+        if isinstance(path, str):
+            results.append(SyncResult(item.client_id, "refused", [path], None))
             continue
         declined = item.consent == "declined"
         values: dict[str, Any] = {
-            "gn_code": item.gn_code, "area_path": [a.key for a in path], "visited_at": item.visited_at,
-            "consent": item.consent, "concerns": [] if declined else sorted(set(item.concerns)),
+            "gn_code": item.gn_code or None, "ds_code": item.ds_code or None, "area_path": [a.key for a in path],
+            "visited_at": item.visited_at, "consent": item.consent,
+            "concerns": [] if declined else sorted(set(item.concerns)),
             "notes": None if declined else _clean(item.notes), "place_text": None if declined else _clean(item.place_text),
             "follow_up": None if declined else _clean(item.follow_up),
             "case_number": None if declined else _clean(item.case_number),
@@ -84,10 +112,10 @@ def sync(db: Session, staff: Staff, visits: list[VisitIn], ip: str) -> list[Sync
         if existing is not None and existing.coordinator_id != staff.member_id:
             results.append(SyncResult(item.client_id, "refused", ["not_your_visit"], None))
             continue
-        outcome = rules.sync_outcome(exists=existing is not None, server_version=existing.version if existing else None,
-                                     base_version=item.base_version)
-        if outcome == "conflict":
-            results.append(SyncResult(item.client_id, "conflict", [], existing))
+        outcome = rules.sync_outcome(exists=existing is not None, same_values=existing is not None and _same(existing, values),
+                                     server_version=existing.version if existing else None, base_version=item.base_version)
+        if outcome in ("conflict", "unchanged"):
+            results.append(SyncResult(item.client_id, outcome, [], existing))
             continue
         if outcome == "created":
             repository.insert(db, item.client_id, staff.member_id, values)
@@ -115,6 +143,7 @@ def supervised(db: Session, staff: Staff, open_follow_ups: bool) -> list[Visit]:
 
 
 def counts(db: Session, staff: Staff) -> list[tuple[str, str, int]]:
+    """(place, concern, visits): the place is an area key, 'gn:...', 'ds:...' or a wider area."""
     _require(staff)
     return repository.counts(db, visible_areas(staff, rules.PERMISSION))
 
@@ -136,7 +165,7 @@ def set_follow_up(db: Session, staff: Staff, visit_id: uuid.UUID, done: bool, ip
 
 
 def purge(db: Session, now: datetime) -> int:
-    """FR-FLD-009, run by the notifications task: delete visits older than the retention period."""
-    removed = repository.purge_older_than(db, now - timedelta(days=30 * rules.RETENTION_MONTHS))
+    """FR-FLD-009, run by the notifications task: delete visits older than 12 calendar months."""
+    removed = repository.purge_older_than(db, now, rules.RETENTION_MONTHS)
     db.commit()
     return removed

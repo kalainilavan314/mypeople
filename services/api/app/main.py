@@ -29,6 +29,7 @@ from app.modules.community.cases import router as community_cases
 from app.modules.community.factchecks import router as community_factchecks
 from app.modules.community.ideas import router as community_ideas
 from app.modules.community.learning import router as community_learning
+from app.modules.community.moderation_appeals import router as community_moderation_appeals
 from app.modules.community.promises import router as community_promises
 from app.modules.community.proposals import router as community_proposals
 from app.modules.community.scorecards import router as community_scorecards
@@ -126,6 +127,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(community_reports)
     app.include_router(community_issues.router)
     app.include_router(community_cases.router)
+    app.include_router(community_moderation_appeals.router)
     app.include_router(volunteering.router)
     app.include_router(community_ideas.router)
     app.include_router(community_surveys.router)

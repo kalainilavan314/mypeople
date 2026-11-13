@@ -95,7 +95,8 @@ class PromiseDetailOut(PromiseSummaryOut):
     target_ta: str
     blockers_en: str | None
     blockers_ta: str | None
-    status_reason: str | None
+    status_reason: str | None = Field(description="The public reason for Withdrawn or Blocked, in English")
+    status_reason_ta: str | None = Field(description="The same reason in Tamil")
     publication: Literal["draft", "awaiting_approval", "published"]
     published_at: datetime | None
     update_due_at: datetime | None
@@ -111,7 +112,7 @@ class PromiseDetailOut(PromiseSummaryOut):
             description_en=p.description_en, description_ta=p.description_ta, source_reference=p.source_reference,
             source_published_on=p.source_published_on, planned_start=p.planned_start, target_en=p.target_en,
             target_ta=p.target_ta, blockers_en=p.blockers_en, blockers_ta=p.blockers_ta, status_reason=p.status_reason,
-            publication=p.publication,  # type: ignore[arg-type]
+            status_reason_ta=p.status_reason_ta, publication=p.publication,  # type: ignore[arg-type]
             published_at=p.published_at, update_due_at=p.update_due_at,
             milestones=[MilestoneModel.build(m) for m in view.milestones],
             updates=[PromiseUpdateOut.build(u) for u in view.updates],
@@ -173,6 +174,7 @@ class ReplyIn(CamelModel):
 
 
 class PendingWorkOut(CamelModel):
+    publications: list[PromiseSummaryOut] = Field(description="Promises waiting for a second person to approve publication")
     updates: list[PromiseUpdateOut]
     feedback: list[PromiseFeedbackOut]
 

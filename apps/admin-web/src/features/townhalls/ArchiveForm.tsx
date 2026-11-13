@@ -38,10 +38,10 @@ export function ArchiveForm({ townhallId, current }: { townhallId: string; curre
           name="outcomesJson"
           legend="Outcomes / விளைவுகள்"
           rowLabel="Outcome"
-          hint="Link an outcome to a promise (its id from the promise tracker) or a community case (its number, e.g. CS-1234) when there is one."
+          hint="Link an outcome to a published promise (its id from the promise tracker) or an existing community case (its number, e.g. CI-00012) when there is one."
           max={50}
           initialJson={values.outcomesJson ?? '[]'}
-          problems={(state?.problems ?? []).filter((problem) => problem.startsWith('outcome_text_required'))}
+          problems={(state?.problems ?? []).filter((problem) => problem.startsWith('outcome_'))}
           columns={[
             { key: 'textTa', label: 'Outcome in Tamil', lang: 'ta', required: true, maxLength: 800 },
             { key: 'textEn', label: 'Outcome in English', lang: 'en', required: true, maxLength: 500 },

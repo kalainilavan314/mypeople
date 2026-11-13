@@ -58,6 +58,20 @@ def count_recent(db: Session, inviter_id: uuid.UUID) -> int:
     ) or 0
 
 
+def delete_unshared(db: Session, inviter_id: uuid.UUID, number: int, within_minutes: int) -> bool:
+    """Removes the inviter's invitation only while nobody has used it and it is minutes old."""
+    removed = db.scalar(
+        text(
+            """DELETE FROM membership.invitation
+               WHERE inviter_id = :inviter AND number = :number AND invitee_id IS NULL
+                 AND created_at > clock_timestamp() - make_interval(mins => :minutes)
+               RETURNING id"""
+        ),
+        {"inviter": inviter_id, "number": number, "minutes": within_minutes},
+    )
+    return removed is not None
+
+
 def inviter_for_token(db: Session, token: str) -> uuid.UUID | None:
     """The inviter of an unused invitation."""
     return db.scalar(

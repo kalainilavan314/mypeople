@@ -26,8 +26,8 @@ import { ToggleChips } from '@/components/ToggleChips';
 import { CASE_NUMBER, CONCERNS, LIMITS } from '@/features/staff/fieldVisits/concerns';
 import { FieldAccess } from '@/features/staff/fieldVisits/FieldAccess';
 import { encryptedOnDevice } from '@/features/staff/fieldVisits/secureChunks';
-import { useGnOptions } from '@/features/staff/fieldVisits/useGnOptions';
-import { saveVisit, useLocalVisits, type LocalVisit } from '@/features/staff/fieldVisits/visitStore';
+import { usePlaceOptions } from '@/features/staff/fieldVisits/usePlaceOptions';
+import { blankIfDeclined, saveVisit, useLocalVisits, type LocalVisit } from '@/features/staff/fieldVisits/visitStore';
 
 function backToVisits() {
   if (router.canGoBack()) router.back();
@@ -39,6 +39,8 @@ function newVisit(): LocalVisit {
     clientId: Crypto.randomUUID(),
     baseVersion: null,
     gnCode: '',
+    dsCode: '',
+    noPlace: false,
     visitedAt: new Date().toISOString(),
     consent: 'given',
     concerns: [],
@@ -55,9 +57,10 @@ function newVisit(): LocalVisit {
 
 /**
  * S05, S06 Record a field visit, or (?clientId=) change one still on the phone. Consent comes first:
- * if the person declines, only the GN division and the time are kept (FR-FLD-004). The GN division
- * is chosen by hand and the phone's location is never asked for. Saved encrypted on the phone until
- * it is synced (S07).
+ * if the person declines, only the place and the time are kept, on the phone as on the server
+ * (FR-FLD-004). The place is optional and chosen by hand: a GN or a DS division of the coordinator's
+ * areas, or none when they collect in one area only; the phone's location is never asked for. Saved
+ * encrypted on the phone until it is synced (S07).
  */
 export default function NewFieldVisitScreen() {
   return (
@@ -90,20 +93,23 @@ type Step = 'consent' | 'details';
 function VisitForm({ initial, editing, memberId }: { initial: LocalVisit; editing: boolean; memberId: string }) {
   const { t } = useTranslation();
   const language = useLanguage();
-  const { query: gnOptions, label } = useGnOptions();
+  const { query: placeOptions, nameOf, singleArea, singleAreaText } = usePlaceOptions();
   const [visit, setVisit] = useState<LocalVisit>(initial);
   const [step, setStep] = useState<Step>(editing ? 'details' : 'consent');
   const [showErrors, setShowErrors] = useState(false);
   const save = useApiAction(async () => {
     // Changed notes are checked again; a confirmation given for the old words does not carry over.
     const notesChanged = visit.notes !== initial.notes || visit.followUp !== initial.followUp || visit.placeText !== initial.placeText;
-    await saveVisit(memberId, {
-      ...visit,
-      status: 'pending',
-      problems: [],
-      server: null,
-      confirmedNotPolitical: notesChanged ? false : visit.confirmedNotPolitical,
-    });
+    await saveVisit(
+      memberId,
+      blankIfDeclined({
+        ...visit,
+        status: 'pending',
+        problems: [],
+        server: null,
+        confirmedNotPolitical: notesChanged ? false : visit.confirmedNotPolitical,
+      }),
+    );
     backToVisits();
   });
   const set = <K extends keyof LocalVisit>(key: K, value: LocalVisit[K]) => setVisit((current) => ({ ...current, [key]: value }));
@@ -140,13 +146,24 @@ function VisitForm({ initial, editing, memberId }: { initial: LocalVisit; editin
   }
 
   const declined = visit.consent === 'declined';
+  // A visit with no place is allowed only while the coordinator collects in exactly one area.
+  const placeValue = visit.gnCode ? `gn:${visit.gnCode}` : visit.dsCode ? `ds:${visit.dsCode}` : visit.noPlace && singleArea ? 'none' : null;
+  const choosePlace = (value: string) => {
+    const [level, code = ''] = value.split(':');
+    setVisit((current) => ({
+      ...current,
+      gnCode: level === 'gn' ? code : '',
+      dsCode: level === 'ds' ? code : '',
+      noPlace: value === 'none',
+    }));
+  };
   const problems = {
-    gn: visit.gnCode === '',
+    place: placeValue === null,
     concerns: !declined && visit.concerns.length === 0,
     caseNumber: !declined && visit.caseNumber.trim() !== '' && !CASE_NUMBER.test(visit.caseNumber.trim()),
   };
   const submit = () => {
-    if (problems.gn || problems.concerns || problems.caseNumber) {
+    if (problems.place || problems.concerns || problems.caseNumber) {
       setShowErrors(true);
       return;
     }
@@ -171,16 +188,19 @@ function VisitForm({ initial, editing, memberId }: { initial: LocalVisit; editin
       </SurfaceCard>
 
       <SurfaceCard style={styles.card}>
-        <QueryView query={gnOptions}>
+        <QueryView query={placeOptions}>
           {(data) => (
             <>
               <SelectField
-                label={t('s.fieldVisits.gn')}
-                placeholder={t('s.fieldVisits.chooseGn')}
-                value={visit.gnCode || null}
-                options={data.options.map((option) => ({ value: option.code, label: label(option.code) }))}
-                onChange={(code) => set('gnCode', code)}
-                error={showErrors && problems.gn ? t('s.fieldVisits.gnError') : null}
+                label={t('s.fieldVisits.placeChoice')}
+                placeholder={singleArea ? t('s.fieldVisits.choosePlaceOrNone') : t('s.fieldVisits.choosePlace')}
+                value={placeValue}
+                options={[
+                  ...(singleAreaText ? [{ value: 'none', label: t('s.fieldVisits.noPlaceOption', { area: singleAreaText }) }] : []),
+                  ...data.options.map((option) => ({ value: option.key, label: nameOf(option.key) })),
+                ]}
+                onChange={choosePlace}
+                error={showErrors && problems.place ? t('s.fieldVisits.placeError') : null}
               />
               {data.saved ? (
                 <AppText step="caption" tone="muted">
@@ -191,7 +211,7 @@ function VisitForm({ initial, editing, memberId }: { initial: LocalVisit; editin
           )}
         </QueryView>
         <AppText step="secondary" tone="muted">
-          {t('s.fieldVisits.noLocation')}
+          {singleArea ? t('s.fieldVisits.placeOptional') : t('s.fieldVisits.placeNeeded')} {t('s.fieldVisits.noLocation')}
         </AppText>
       </SurfaceCard>
 

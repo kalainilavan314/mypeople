@@ -61,6 +61,10 @@ GATED_BY_MODULE = {
     "support": "community_support",
 }
 
+# M18: the Promise Tracker is also shown on Home itself, with a count of the promises made for the
+# member's area by status, as well as in the Community Hub. It follows the same switch and policy.
+PROMISE_TRACKER = "promises"
+
 # FR-HOME-007 [ASSUMPTION, policy for sponsor confirmation]: what a member who is not yet
 # Verified and Active may use. Reading and events stay open to everyone; reporting a local
 # issue (FR-RPT-017, BR-026), taking part in decisions, volunteering, inviting and contributing

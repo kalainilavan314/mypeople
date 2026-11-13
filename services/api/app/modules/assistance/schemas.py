@@ -10,8 +10,9 @@ from typing import Any, Literal
 from pydantic import Field
 
 from app.core.schemas import CamelModel
+from app.modules.assistance import rules
 from app.modules.assistance.repository import Appeal, Case, Decision, Partner, Programme
-from app.modules.assistance.rules import Category, Outcome
+from app.modules.assistance.rules import Category, Outcome, ReferralState
 from app.modules.assistance.service import ApplicantView, CaseFile
 
 
@@ -107,12 +108,31 @@ class SupportAppealOut(CamelModel):
                    due_at=a.due_at, reason=a.reason, created_at=a.created_at, decided_at=a.decided_at)
 
 
+class MyReferralOut(CamelModel):
+    """A partner referral as the applicant sees it: who, why and where it stands, never the
+    caseworker's notes on what the partner said."""
+
+    id: uuid.UUID
+    partner: str
+    partner_kind: Literal["ngo", "public_service", "hospital", "other"]
+    purpose: str | None
+    state: ReferralState = Field(description="proposed: waits for the applicant's consent; nothing is shared until then")
+    consent_at: datetime | None
+    created_at: datetime
+
+    @classmethod
+    def build(cls, r: dict[str, Any]) -> "MyReferralOut":
+        return cls(id=r["id"], partner=r["partner"], partner_kind=r["kind"], purpose=r["purpose"], state=r["state"],
+                   consent_at=r["consent_at"], created_at=r["created_at"])
+
+
 class MyRequestOut(MyRequestSummaryOut):
     """M13: status and what happened; never internal notes or who handled it."""
 
     decisions: list[SupportDecisionOut]
     deliveries: list[DeliveryOut]
     appeals: list[SupportAppealOut]
+    referrals: list[MyReferralOut] = Field(description="M12: each partner referral; a proposed one waits for the applicant's answer")
 
     @classmethod
     def from_view(cls, view: ApplicantView) -> "MyRequestOut":
@@ -122,7 +142,12 @@ class MyRequestOut(MyRequestSummaryOut):
             deliveries=[DeliveryOut(**{k: d[k] for k in ("kind", "amount", "delivered_on", "provider", "evidence")})
                         for d in view.deliveries],
             appeals=[SupportAppealOut.build(a) for a in view.appeals],
+            referrals=[MyReferralOut.build(r) for r in view.referrals],
         )
+
+
+class ReferralConsentIn(CamelModel):
+    consent: bool = Field(description="True: this partner may see the request; False: it is not shared with them")
 
 
 class AppealIn(CamelModel):
@@ -133,6 +158,31 @@ class AppealIn(CamelModel):
 
 class PublicReceiptOut(CamelModel):
     case_ref: str
+
+
+class PublicSupportFormOut(CamelModel):
+    """The public web form without an account: the official emergency numbers first, then the categories."""
+
+    emergency_contacts: list[EmergencyContactOut]
+    categories: list[Category]
+
+
+class PublicSupportCellOut(CamelModel):
+    area_key: str = Field(description="'district:<code>', or 'platform' for requests that named no area")
+    category: Category
+    count: int | None = Field(description="Requests received; null means fewer than 10")
+
+
+class PublicSupportStatisticsOut(CamelModel):
+    """D14: anonymised aggregates only (FR-AST-012)."""
+
+    minimum_group: int = Field(description="Groups smaller than this are hidden")
+    cells: list[PublicSupportCellOut]
+
+    @classmethod
+    def build(cls, rows: list[tuple[str, str, int | None]]) -> "PublicSupportStatisticsOut":
+        return cls(minimum_group=rules.SMALL_GROUP,
+                   cells=[PublicSupportCellOut(area_key=a, category=c, count=n) for a, c, n in rows])  # type: ignore[arg-type]
 
 
 # --- Staff ----------------------------------------------------------------------------------------------
@@ -172,17 +222,23 @@ class ReferralOut(CamelModel):
     id: uuid.UUID
     partner: str
     kind: str
-    state: str
+    purpose: str | None = Field(description="Why the case would go to this partner; null on referrals made before 0043")
+    state: ReferralState = Field(description="proposed: waits for the applicant's consent in the app; consent_declined: refused")
     outcome: str | None
-    consent_at: datetime
+    consent_at: datetime | None
+    consent_recorded_by: Literal["applicant", "caseworker"] | None = Field(
+        description="applicant: given in the app; caseworker: recorded for an applicant without an account"
+    )
     created_at: datetime
 
 
 class StaffCaseFileOut(StaffCaseSummaryOut):
-    applicant_name: str
+    full_file: bool = Field(description="False: the summary only, for intake staff routing a case waiting for screening (S12); "
+                                        "the person's details, the request and the record are then null or empty")
+    applicant_name: str | None
     applicant_phone: str | None
     household: str | None
-    summary: str
+    summary: str | None
     linked_case_ref: str | None
     notes: list[NoteOut]
     decisions: list[SupportDecisionOut]
@@ -192,14 +248,21 @@ class StaffCaseFileOut(StaffCaseSummaryOut):
     possible_duplicates: list[StaffCaseSummaryOut] = Field(description="Suggestions to link, never grounds to reject (FR-AST-006)")
     may_decide: bool
     may_work: bool
+    may_assign: bool = Field(description="Decision-makers, or anyone who may open a case that has no caseworker yet")
+    consent_in_app: bool = Field(description="True: the applicant answers each referral proposal in the app (M12); "
+                                             "False: the caseworker records the consent the applicant gave them")
 
     @classmethod
     def from_file(cls, f: CaseFile) -> "StaffCaseFileOut":
         c = f.case
         return cls(
             **StaffCaseSummaryOut.build(c).model_dump(),
-            applicant_name=c.applicant_name, applicant_phone=c.applicant_phone, household=c.household, summary=c.summary,
-            linked_case_ref=c.linked_case_ref,
+            full_file=f.full,
+            applicant_name=c.applicant_name if f.full else None,
+            applicant_phone=c.applicant_phone if f.full else None,
+            household=c.household if f.full else None,
+            summary=c.summary if f.full else None,
+            linked_case_ref=c.linked_case_ref if f.full else None,
             notes=[NoteOut(**n) for n in f.notes],
             decisions=[SupportDecisionOut.build(d) for d in f.decisions],
             deliveries=[DeliveryOut(**{k: d[k] for k in ("kind", "amount", "delivered_on", "provider", "evidence")})
@@ -207,7 +270,8 @@ class StaffCaseFileOut(StaffCaseSummaryOut):
             referrals=[ReferralOut(**r) for r in f.referrals],
             appeals=[SupportAppealOut.build(a) for a in f.appeals],
             possible_duplicates=[StaffCaseSummaryOut.build(d) for d in f.duplicates],
-            may_decide=f.may_decide, may_work=f.may_work,
+            may_decide=f.may_decide, may_work=f.may_work, may_assign=f.may_assign,
+            consent_in_app=c.applicant_member_id is not None,
         )
 
 
@@ -245,7 +309,9 @@ class DeliveryIn(CamelModel):
 
 class ReferralIn(CamelModel):
     partner_id: uuid.UUID
-    consent: bool = Field(description="The applicant agreed to this partner seeing the case")
+    purpose: str = Field(min_length=3, max_length=500, description="Why the case would go to this partner; the applicant sees it")
+    consent: bool = Field(default=False, description="Only for an applicant without an account: they agreed, to the caseworker, "
+                                                     "that this partner may see the case. A member answers in the app instead.")
 
 
 class ReferralUpdateIn(CamelModel):

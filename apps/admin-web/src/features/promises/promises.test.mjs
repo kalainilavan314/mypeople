@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-import { PROMISE_TARGETS, STATUSES, STATUS_LABELS, THEMES, THEME_LABELS, UPDATE_STATUSES, evidenceRefs, parseMilestones, readDecision, readPromise, readPromiseUpdate } from './forms.ts';
+import { PROMISE_TARGETS, STATUSES, STATUS_LABELS, THEMES, THEME_LABELS, UPDATE_STATUSES, evidenceRefs, parseMilestones, pastDue, readDecision, readPromise, readPromiseUpdate } from './forms.ts';
+import { totalsBy } from './report.ts';
 import { builtModules, plannedModules } from '../../lib/modules.ts';
 import { targetOf } from '../../lib/formState.ts';
 import { bilingualConfirmation, bilingualMessageFor, bilingualProblemText } from '../../lib/messages.ts';
@@ -75,7 +76,7 @@ test('a publication decision is approve, or return with a reason; the requester 
   assert.deepEqual(readDecision(form({ decision: 'approve' })).input, { approve: true });
   assert.deepEqual(readDecision(form({ decision: 'return' })).problems, ['reason_required']);
   assert.deepEqual(readDecision(form({})).problems, ['decision_required']);
-  assert.match(bilingualMessageFor('own_draft').en, /You asked for this, so you cannot approve it/);
+  assert.match(bilingualMessageFor('own_draft').en, /asked for it to be approved, so you cannot approve it/);
   assert.match(bilingualMessageFor('own_draft').ta, /[஀-௿]/);
 });
 
@@ -98,4 +99,31 @@ test('promise refusals and confirmations have Tamil and English words', () => {
   for (const done of ['promise_drafted', 'promise_saved', 'promise_publication_requested', 'promise_published', 'promise_returned', 'promise_update_drafted', 'promise_update_approved', 'promise_update_rejected', 'feedback_published', 'feedback_rejected', 'feedback_replied']) {
     assert.match(bilingualConfirmation(done).ta, /[஀-௿]/, done);
   }
+});
+
+test('past the due date only Completed or Withdrawn may be chosen, in Sri Lankan time (overdue_stays_delayed)', () => {
+  // 19:00 UTC on 12 November is already 13 November in Sri Lanka.
+  assert.equal(pastDue('2026-11-12', new Date('2026-11-12T19:00:00Z')), true);
+  assert.equal(pastDue('2026-11-12', new Date('2026-11-12T18:00:00Z')), false);
+  assert.equal(targetOf(PROMISE_TARGETS, 'overdue_stays_delayed'), 'newStatus');
+  const words = bilingualProblemText('overdue_stays_delayed');
+  assert.match(words.ta, /[஀-௿]/);
+  assert.match(words.en, /due date has passed/);
+});
+
+test('the report adds up per status, area, theme and office; pending work lists promises waiting for publication (D16)', async () => {
+  const rows = [
+    { status: 'in_progress', theme: 'health', officeEn: 'Ministry of Health', areaKey: 'district:LK41', count: 2 },
+    { status: 'delayed', theme: 'health', officeEn: 'Ministry of Health', areaKey: 'district:LK42', count: 3 },
+    { status: 'in_progress', theme: 'housing', officeEn: 'Housing Office', areaKey: 'district:LK41', count: 1 },
+  ];
+  assert.deepEqual(totalsBy(rows, (row) => row.status), [{ key: 'delayed', count: 3 }, { key: 'in_progress', count: 3 }]);
+  assert.deepEqual(totalsBy(rows, (row) => row.officeEn), [{ key: 'Ministry of Health', count: 5 }, { key: 'Housing Office', count: 1 }]);
+  assert.deepEqual(totalsBy(rows, (row) => row.areaKey), [{ key: 'district:LK41', count: 3 }, { key: 'district:LK42', count: 3 }]);
+  const report = await readSrc('app/(staff)/promises/report/page.tsx');
+  for (const heading of ['Per status', 'Per area', 'Per theme', 'Per office']) assert.ok(report.includes(heading), heading);
+  const list = await readSrc('app/(staff)/promises/page.tsx');
+  assert.match(list, /pending\.publications/);
+  assert.match(list, /decidePublication/);
+  assert.match(bilingualMessageFor('own_draft').en, /drafted/);
 });

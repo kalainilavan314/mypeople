@@ -10,20 +10,23 @@ import { failure } from '@/lib/messages';
 import { staffApi } from '@/lib/session';
 
 import { FACTCHECK_REFUSED, readMisinfoAppeal, readMisinfoDecision } from './factcheck';
+import { readIdeaEdits } from './ideaEdits';
 
 // D12: the moderation queue. The API checks content.moderate over the item's area and refuses a
 // moderator's own idea or proposal (own_record); the author is told the outcome and any reason.
 
 const IDEA_REFUSED = 'idea_refused';
 
+/** Publish as written or in an edited (redacted) version, or reject with a reason (D12). */
 export async function moderateIdea(_previous: FormState, formData: FormData): Promise<FormState> {
   const id = uuidOrNull(formData, 'itemId');
   if (!id) redirect('/moderation');
-  const values = valuesOf(formData, ['reason']);
+  const values = valuesOf(formData, ['reason', 'editedTitle', 'editedBenefit']);
   const { input, problems } = readModeration(formData);
-  if (!input) return incomplete(IDEA_REFUSED, problems, values);
+  const { edits, problems: editProblems } = readIdeaEdits(formData);
+  if (!input || editProblems.length > 0) return incomplete(IDEA_REFUSED, [...problems, ...editProblems], values);
   try {
-    await (await staffApi()).moderateIdea(id, input.publish, input.reason ?? undefined);
+    await (await staffApi()).moderateIdea(id, input.publish, input.reason ?? undefined, edits);
   } catch (error) {
     const { code, problems: refusedProblems } = failure(error);
     return { error: code, problems: refusedProblems, values, attempt: Date.now() };

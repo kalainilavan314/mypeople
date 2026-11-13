@@ -9,6 +9,7 @@ import { AppText, Button, formatDateTime, StatusTag, SurfaceCard, useLanguage, u
 import { DetailRow } from '@/components/DetailRow';
 
 import { ContactCoordinator } from './ContactCoordinator';
+import { EventPassLink } from './EventPassLink';
 import { whenText } from './labels';
 import { OfferStatusTag } from './OfferStatusTag';
 
@@ -42,7 +43,8 @@ export function OfferCard({ item, reload }: { item: VolunteerOfferItem; reload: 
         <DetailRow label={t('m.volunteer.where')} value={localized(opportunity.placeEn, opportunity.placeTa)} />
       )}
       {offer.decisionReason ? <DetailRow label={t('m.volunteer.reason')} value={offer.decisionReason} /> : null}
-      {eventId ? (
+      {eventId && active ? <EventPassLink eventId={eventId} /> : null}
+      {eventId && !active ? (
         <Button
           label={t('m.volunteer.viewEvent')}
           variant="secondary"

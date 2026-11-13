@@ -64,13 +64,22 @@ test('answers are live with seconds, or written in both languages (FR-THL-006)',
   assert.equal(atTime(65), '1:05');
 });
 
-test('the archive links outcomes to a promise id or a case number', () => {
-  const { input } = readArchive(form({ recordingUrl: 'https://video.example/1', outcomesJson: JSON.stringify([{ textTa: 'சாலை சீரமைப்பு', textEn: 'Road repair', promiseId: PROMISE, caseNumber: '' }, { textTa: 'நீர் வழங்கல்', textEn: 'Water supply', promiseId: 'x', caseNumber: 'cs-12' }]) }));
+test('the archive links outcomes to a promise id or a case number (M23)', () => {
+  const { input } = readArchive(form({ recordingUrl: 'https://video.example/1', outcomesJson: JSON.stringify([{ textTa: 'சாலை சீரமைப்பு', textEn: 'Road repair', promiseId: PROMISE, caseNumber: '' }, { textTa: 'நீர் வழங்கல்', textEn: 'Water supply', promiseId: '', caseNumber: 'ci-00012' }]) }));
   assert.deepEqual(input.outcomes, [
     { textTa: 'சாலை சீரமைப்பு', textEn: 'Road repair', promiseId: PROMISE, caseNumber: null },
-    { textTa: 'நீர் வழங்கல்', textEn: 'Water supply', promiseId: null, caseNumber: 'CS-12' },
+    { textTa: 'நீர் வழங்கல்', textEn: 'Water supply', promiseId: null, caseNumber: 'CI-00012' },
   ]);
   assert.deepEqual(readArchive(form({ recordingUrl: 'ftp://x', outcomesJson: JSON.stringify([{ textTa: '', textEn: 'x' }]) })).problems, ['recording_link_https', 'outcome_text_required:1']);
+  // A wrong promise id or case number is said, never dropped silently.
+  const wrong = readArchive(form({ outcomesJson: JSON.stringify([{ textTa: 'நீர் வழங்கல்', textEn: 'Water supply', promiseId: 'x', caseNumber: 'cs-12' }]) }));
+  assert.equal(wrong.input, null);
+  assert.deepEqual(wrong.problems, ['outcome_promise_id_invalid:1', 'outcome_case_number_invalid:1']);
+  for (const problem of ['outcome_promise_id_invalid:1', 'outcome_promise_not_published:2', 'outcome_case_number_invalid:1', 'outcome_case_not_found:3']) {
+    const words = bilingualProblemText(problem);
+    assert.match(words.ta, /[஀-௿]/, problem);
+    assert.match(words.en, /^Outcome \d/, problem);
+  }
 });
 
 test('the form says the streaming provider is still to be chosen', async () => {

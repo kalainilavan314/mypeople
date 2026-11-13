@@ -68,7 +68,7 @@ def submit(db: Session, member_id: uuid.UUID, new: NewProposal, ip: str) -> Prop
         raise ProposalRefused("identity_not_verified")
     if not status.membership_active:
         raise ProposalRefused("membership_not_active")
-    if new.area.level not in ("district", "ds", "gn"):
+    if new.area.level not in rules.PROPOSAL_LEVELS:
         raise ProposalRefused("area_level_invalid")
     path = access_repository.area_path(db, new.area)
     if path is None:
@@ -137,15 +137,16 @@ class ProposalView:
     history: list[StageEvent]
 
 
-def _member_keys(db: Session, member_id: uuid.UUID) -> list[str]:
-    return [a.key for a in access_repository.member_area_path(db, member_id)]
+def _local_keys(db: Session, member_id: uuid.UUID) -> list[str]:
+    """M15 "proposals for my area": the member's GN division, DS division and district. The province
+    and platform levels would bring in every proposal in the Northern Province."""
+    return [a.key for a in access_repository.member_area_path(db, member_id) if a.level in rules.PROPOSAL_LEVELS]
 
 
 def browse(db: Session, member_id: uuid.UUID, query: str | None, category: str | None) -> tuple[list[Proposal], list[Proposal]]:
     """M15: published proposals touching the member's area, and their own in every stage."""
-    keys = [k for k in _member_keys(db, member_id) if k != "platform"]
-    area = repository.search(db, area_keys=keys, stages=list(rules.PUBLISHED_STAGES), author_id=None, query=query,
-                             category=category, limit=100)
+    area = repository.search(db, area_keys=_local_keys(db, member_id), stages=list(rules.PUBLISHED_STAGES), author_id=None,
+                             query=query, category=category, limit=100)
     mine = repository.search(db, area_keys=None, stages=None, author_id=member_id, query=query, category=category, limit=100)
     return area, mine
 
@@ -155,8 +156,8 @@ def view(db: Session, member_id: uuid.UUID, proposal_id: uuid.UUID) -> ProposalV
     if proposal is None:
         raise ProposalNotFound()
     mine = proposal.author_id == member_id
-    keys = _member_keys(db, member_id)
-    visible = mine or (proposal.stage in rules.PUBLISHED_STAGES and any(key in proposal.area_path for key in keys if key != "platform"))
+    keys = _local_keys(db, member_id)
+    visible = mine or (proposal.stage in rules.PUBLISHED_STAGES and any(key in proposal.area_path for key in keys))
     if not visible:
         raise ProposalNotFound()
     return ProposalView(proposal=proposal, mine=mine, history=repository.history(db, proposal_id))

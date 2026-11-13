@@ -17,6 +17,8 @@ from app.modules.access.rules import PLATFORM, AreaPath, area_from_key
 from app.modules.audit import service as audit
 from app.modules.community.issues import evidence, notices, repository, rules
 from app.modules.community.issues.repository import StoredIssue
+from app.modules.community.moderation_appeals import service as moderation_appeals
+from app.modules.community.moderation_appeals.repository import StoredAppeal
 from app.modules.geography import repository as geography
 from app.modules.identity.documents.vault import EvidenceVault
 
@@ -57,14 +59,19 @@ def _member_area(db: Session, member_id: uuid.UUID) -> tuple[repository.MemberPl
     return repository.member_place(db, member_id), access_repository.member_area_path(db, member_id)
 
 
-def reporting_options(db: Session, member_id: uuid.UUID) -> ReportingOptions:
+def _may_report(db: Session, member_id: uuid.UUID) -> str | None:
     status = access_repository.find_member_status(db, member_id)
     assert status is not None
-    reason = rules.check_may_report(identity_verified=status.identity_verified, membership_active=status.membership_active)
+    return rules.check_may_report(identity_verified=status.identity_verified, membership_active=status.membership_active)
+
+
+def reporting_options(db: Session, member_id: uuid.UUID) -> ReportingOptions:
+    reason = _may_report(db, member_id)
     place, path = _member_area(db, member_id)
     name_en, name_ta = _gn_names(db, place.gn_code)
     return ReportingOptions(
-        allowed=reason is None, reason=reason, has_area=path != (PLATFORM,), gn_name_en=name_en, gn_name_ta=name_ta
+        allowed=reason is None, reason=reason, has_area=path != (PLATFORM,) and place.gn_code is not None,
+        gn_name_en=name_en, gn_name_ta=name_ta,
     )
 
 
@@ -78,7 +85,11 @@ class SavedPhoto:
 def save_photo(
     db: Session, vault: EvidenceVault, member_id: uuid.UUID, data: bytes, *, purpose: str, issue_id: uuid.UUID | None = None
 ) -> SavedPhoto:
-    """Re-encode without metadata, seal and record; attached to a report or addition when it is sent."""
+    """Re-encode without metadata, seal and record; attached to a report or addition when it is sent.
+    Only a member who may report sends photos at all (FR-RPT-017), so nobody else fills the store."""
+    reason = _may_report(db, member_id)
+    if reason:
+        raise IssueRefused(reason)
     since = datetime.now(UTC) - timedelta(days=1)
     if repository.count_uploads_since(db, member_id, since) >= UNATTACHED_PHOTOS_PER_DAY:
         raise IssueRefused("too_many_photos_today")
@@ -114,9 +125,7 @@ def submit_report(db: Session, member_id: uuid.UUID, report: NewReport, ip: str)
     if existing is not None:
         return existing
 
-    status = access_repository.find_member_status(db, member_id)
-    assert status is not None
-    reason = rules.check_may_report(identity_verified=status.identity_verified, membership_active=status.membership_active)
+    reason = _may_report(db, member_id)
     if reason:
         raise IssueRefused(reason)
     place, path = _member_area(db, member_id)
@@ -124,11 +133,9 @@ def submit_report(db: Session, member_id: uuid.UUID, report: NewReport, ip: str)
         description=report.description,
         location_kind=report.location_kind,
         location_text=report.location_text,
-        has_area=path != (PLATFORM,) and (report.location_kind != "my_gn" or place.gn_code is not None),
+        has_gn=path != (PLATFORM,) and place.gn_code is not None,
         photos=len(report.photo_ids),
     )
-    if path == (PLATFORM,) and "no_area_on_profile" not in problems:
-        problems.append("no_area_on_profile")
     now = datetime.now(UTC)
     if repository.count_reports_since(db, member_id, now - timedelta(days=1)) >= REPORTS_PER_DAY:
         problems.append("too_many_reports_today")
@@ -164,7 +171,7 @@ def submit_report(db: Session, member_id: uuid.UUID, report: NewReport, ip: str)
         return found
     repository.attach_evidence(db, photos, issue_id)
     # The GN coordinator owns a new case when there is exactly one; otherwise it waits in the
-    # area's queue until one of them takes it (FR-WEB-014).
+    # area's queue until one of them takes it, and every one of them is told (FR-WEB-014).
     collectors = [h for h in repository.permission_holders(db, "cases.collect", [a.key for a in path]) if h.member_id != member_id]
     owner = collectors[0].member_id if len(collectors) == 1 else None
     if owner is not None:
@@ -172,7 +179,10 @@ def submit_report(db: Session, member_id: uuid.UUID, report: NewReport, ip: str)
     repository.insert_action(
         db, issue_id, "submitted", actor_id=member_id, to_stage="gn", new_owner_id=owner, details={"photos": len(photos)}
     )
-    notices.assigned(db, issue_id, None, owner)
+    if owner is not None:
+        notices.assigned(db, issue_id, None, owner)
+    else:
+        notices.waiting(db, issue_id, [h.member_id for h in collectors])
     repository.follow(db, issue_id, member_id)
     issue = repository.find_issue(db, issue_id)
     assert issue is not None
@@ -207,6 +217,8 @@ class IssueView:
     response: repository.StoredClosureResponse | None
     next_step: str | None
     challenge_until: datetime | None
+    my_additions: list[repository.StoredAddition]  # what this member added, in every state
+    addition_appeals: dict[uuid.UUID, StoredAppeal]  # their appeals against a rejection, open or decided (D12)
 
 
 def _steps(db: Session, issue: StoredIssue, view_stage: str) -> list[tuple[int, datetime | None]]:
@@ -248,6 +260,7 @@ def _view(db: Session, issue: StoredIssue, member_id: uuid.UUID) -> IssueView:
         last = repository.last_action(db, issue.id, ("returned",))
         returned = last.note if last else None
     open_stage = view_stage in rules.OPEN_STAGES
+    my_additions = repository.additions_by(db, issue.id, member_id)
     return IssueView(
         issue=issue,
         view_stage=view_stage,
@@ -264,6 +277,8 @@ def _view(db: Session, issue: StoredIssue, member_id: uuid.UUID) -> IssueView:
         if mine
         else None,
         challenge_until=issue.closed_at + rules.CHALLENGE_WINDOW if mine and issue.closed_at else None,
+        my_additions=my_additions,
+        addition_appeals=moderation_appeals.mine_for_items(db, member_id, "addition", [a.id for a in my_additions]),
     )
 
 

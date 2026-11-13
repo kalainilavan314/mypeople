@@ -2541,6 +2541,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/cases/manage/pending-moderation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Pending Moderation
+         * @description D12: public summaries to write (or update after closure) and added information to moderate, in the
+         *     moderator's areas, oldest first. Items the viewer reported or wrote are marked; another moderator decides them.
+         */
+        get: operations["list_pending_moderation_v1_cases_manage_pending_moderation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/cases/{case_id}": {
         parameters: {
             query?: never;
@@ -2861,6 +2882,7 @@ export interface paths {
         /**
          * Close Case
          * @description W08: the closing report; Resolved only with evidence and a Tamil and English summary (FR-WEB-026).
+         *     The closing summary reaches the reporter; the public sees only the moderator's public summary (BR-032).
          */
         post: operations["close_case_v1_cases__case_id__close_post"];
         delete?: never;
@@ -2920,7 +2942,8 @@ export interface paths {
         put?: never;
         /**
          * Set Public Summary
-         * @description BR-032: publish a moderated public summary, or withhold it with a reason.
+         * @description BR-032: publish a moderated public summary, or withhold it with a reason; also after closure, to
+         *     give the public the outcome.
          */
         post: operations["set_public_summary_v1_cases__case_id__public_summary_post"];
         delete?: never;
@@ -2938,8 +2961,91 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Moderate Addition */
+        /**
+         * Moderate Addition
+         * @description D12: approve (as written or as an edited version) or reject with a reason; never one's own (403 own_record).
+         */
         post: operations["moderate_addition_v1_cases__case_id__additions__addition_id__moderation_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/moderation-appeals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Appeal
+         * @description The author of a rejected idea or added information appeals the decision, once.
+         */
+        post: operations["appeal_v1_moderation_appeals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/moderation-appeals/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Appeal
+         * @description The member's appeal on one of their own items, or none.
+         */
+        get: operations["read_my_appeal_v1_moderation_appeals_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/moderation-appeals/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Appeals
+         * @description D12: appeals in the moderator's areas, open ones first, oldest first.
+         */
+        get: operations["list_appeals_v1_moderation_appeals_manage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/moderation-appeals/manage/{appeal_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Appeal
+         * @description Decided by a moderator over the area who is neither the first moderator nor the author.
+         */
+        post: operations["decide_appeal_v1_moderation_appeals_manage__appeal_id__decision_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3354,7 +3460,12 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Moderate Idea */
+        /**
+         * Moderate Idea
+         * @description D12: publish as written, publish an edited (redacted) version, or reject with a reason.
+         *     Problems: reason_required, already_moderated, edits_only_when_publishing, edited_title_length,
+         *     edited_benefit_length.
+         */
         post: operations["moderate_idea_v1_ideas__idea_id__moderation_post"];
         delete?: never;
         options?: never;
@@ -3776,6 +3887,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/invitations/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Preview Invitation
+         * @description H19 "preview, then share": the invitation text before sharing. Creates nothing, so a preview is
+         *     never listed under My referrals.
+         */
+        get: operations["preview_invitation_v1_invitations_preview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/invitations/mine": {
         parameters: {
             query?: never;
@@ -3807,9 +3939,31 @@ export interface paths {
         put?: never;
         /**
          * Create Invitation
-         * @description H19: a new invitation link and its preview, shared through the phone's share sheet.
+         * @description H19: a new invitation link and its text, made as the member shares through the phone's share
+         *     sheet; from now on it is listed as Shared.
          */
         post: operations["create_invitation_v1_invitations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/invitations/{number}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel Invitation
+         * @description The share sheet was closed without sharing: takes back the unused invitation made a few
+         *     minutes ago, so it is not listed as Shared.
+         */
+        post: operations["cancel_invitation_v1_invitations__number__cancel_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3863,7 +4017,7 @@ export interface paths {
         };
         /**
          * Pending Work
-         * @description Updates waiting for a second person's approval, and feedback waiting for moderation.
+         * @description Promises and updates waiting for a second person's approval, and feedback waiting for moderation.
          */
         get: operations["pending_work_v1_promises_manage_pending_get"];
         put?: never;
@@ -3943,7 +4097,7 @@ export interface paths {
         put?: never;
         /**
          * Decide Publication
-         * @description FR-PRM-003: a second authorised person approves; the person who asked cannot (403 own_draft).
+         * @description FR-PRM-003: a second authorised person approves; neither the drafter nor the person who asked may (403 own_draft).
          */
         post: operations["decide_publication_v1_promises_manage__promise_id__publication_decision_post"];
         delete?: never;
@@ -4256,6 +4410,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/assistance/public-form": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Public Form
+         * @description S11 public web form, no account needed: the official emergency numbers first, then the categories.
+         */
+        get: operations["public_form_v1_assistance_public_form_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/assistance/public-requests": {
         parameters: {
             query?: never;
@@ -4270,6 +4444,26 @@ export interface paths {
          * @description The public web form for people without an account: answers only the AS- reference.
          */
         post: operations["request_support_publicly_v1_assistance_public_requests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/statistics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Public Statistics
+         * @description D14, no account needed: requests by district and kind of help only; groups under 10 hidden (FR-AST-012).
+         */
+        get: operations["public_statistics_v1_assistance_statistics_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -4310,6 +4504,26 @@ export interface paths {
          * @description M14: one complaint or appeal per decision.
          */
         post: operations["appeal_v1_assistance_requests__case_id__appeals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/requests/{case_id}/referrals/{referral_id}/consent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Answer Referral
+         * @description M12: the applicant agrees that this partner may see the request (it is then sent), or refuses; once.
+         */
+        post: operations["answer_referral_v1_assistance_requests__case_id__referrals__referral_id__consent_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4362,7 +4576,8 @@ export interface paths {
         };
         /**
          * Read Case
-         * @description S12: only the assigned caseworker and decision-makers; every opening is audited.
+         * @description S12: the full file only for the assigned caseworker and decision-makers; intake staff get the summary of a
+         *     case waiting for screening (fullFile false). Every opening is audited.
          */
         get: operations["read_case_v1_assistance_manage_cases__case_id__get"];
         put?: never;
@@ -4399,7 +4614,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Assign */
+        /**
+         * Assign
+         * @description Intake staff route a case waiting for screening and get its summary back; decision-makers may reassign.
+         */
         post: operations["assign_v1_assistance_manage_cases__case_id__assign_post"];
         delete?: never;
         options?: never;
@@ -4487,7 +4705,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Refer */
+        /**
+         * Refer
+         * @description M12: proposed to an applicant with an app account, who answers there; sent at once with the consent the
+         *     caseworker records for anyone else.
+         */
         post: operations["refer_v1_assistance_manage_cases__case_id__referrals_post"];
         delete?: never;
         options?: never;
@@ -4871,7 +5093,7 @@ export interface paths {
         put?: never;
         /**
          * Sync
-         * @description S07: send visits made offline; each comes back created, updated, in conflict or refused.
+         * @description S07: send visits made offline; each comes back created, updated, unchanged, in conflict or refused.
          */
         post: operations["sync_v1_field_visits_sync_post"];
         delete?: never;
@@ -5122,7 +5344,7 @@ export interface paths {
         put?: never;
         /**
          * Message
-         * @description FR-ELX-007: an operational message to the people on this shift.
+         * @description FR-ELX-007: an operational message to the volunteers who accepted this shift.
          */
         post: operations["message_v1_election_roster_manage_shifts__shift_id__messages_post"];
         delete?: never;
@@ -5140,9 +5362,30 @@ export interface paths {
         };
         /**
          * Period Report
-         * @description FR-ELX-009: messages sent, roster changes and content published during the period.
+         * @description FR-ELX-009: messages sent, roster changes and content published during the period, in its area.
          */
         get: operations["period_report_v1_election_roster_periods__period_id__report_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/periods/{period_id}/report/entries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Period Report Entries
+         * @description FR-ELX-009: the audit entries behind the report, newest first (at most 500): broadcasts, content
+         *     published and silence blocks in the period's time and area, and every roster change for its shifts.
+         */
+        get: operations["period_report_entries_v1_election_roster_periods__period_id__report_entries_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6694,6 +6937,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/households/mine/log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Household Log
+         * @description M10: the household's change log for its confirmed adults: what changed, who, and when.
+         */
+        get: operations["read_household_log_v1_households_mine_log_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/mine/caseworker-consent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Give Caseworker Consent
+         * @description The head lets a caseworker in the household's area open its record.
+         */
+        post: operations["give_caseworker_consent_v1_households_mine_caseworker_consent_post"];
+        /**
+         * Withdraw Caseworker Consent
+         * @description Any confirmed adult withdraws caseworker access.
+         */
+        delete: operations["withdraw_caseworker_consent_v1_households_mine_caseworker_consent_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/households/invitations/mine": {
         parameters: {
             query?: never;
@@ -6762,6 +7049,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/households/members/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update My Details
+         * @description An adult's own age band and occupation category (OD-30).
+         */
+        patch: operations["update_my_details_v1_households_members_me_patch"];
+        trace?: never;
+    };
+    "/v1/households/members/{member_record_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Correct Relationship
+         * @description The head corrects an adult's relationship (M10).
+         */
+        patch: operations["correct_relationship_v1_households_members__member_record_id__patch"];
+        trace?: never;
+    };
     "/v1/households/members/{member_record_id}/remove": {
         parameters: {
             query?: never;
@@ -6777,6 +7104,44 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/v1/households/dependants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Dependant
+         * @description M07: a child's minimum record, added by a verified adult of the household as guardian.
+         */
+        post: operations["add_dependant_v1_households_dependants_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/dependants/{member_record_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove Dependant */
+        delete: operations["remove_dependant_v1_households_dependants__member_record_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Dependant */
+        patch: operations["update_dependant_v1_households_dependants__member_record_id__patch"];
         trace?: never;
     };
     "/v1/households/leave": {
@@ -6820,7 +7185,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Staff View Household */
+        /**
+         * Staff View Household
+         * @description D02 read-only: refused `outside_your_area` or `no_caseworker_consent` (both audited).
+         */
         get: operations["staff_view_household_v1_households_staff__target_member_id__get"];
         put?: never;
         post?: never;
@@ -7035,6 +7403,11 @@ export interface components {
             approve: boolean;
             /** Reason */
             reason?: string | null;
+            /**
+             * Editedbody
+             * @description D12: an edited version to publish instead, e.g. with names or phone numbers taken out; used only when approving
+             */
+            editedBody?: string | null;
         };
         /** AdditionOut */
         AdditionOut: {
@@ -8175,8 +8548,16 @@ export interface components {
              * Format: uuid
              */
             id: string;
-            /** Body */
+            /**
+             * Body
+             * @description As the member wrote it
+             */
             body: string;
+            /**
+             * Publishedbody
+             * @description The moderator's edited version shown to members, when one was made
+             */
+            publishedBody: string | null;
             /** Fromreporter */
             fromReporter: boolean;
             /** Isreply */
@@ -8187,6 +8568,11 @@ export interface components {
             moderationReason: string | null;
             /** Photos */
             photos: number;
+            /**
+             * Mine
+             * @description The viewer wrote it, so another moderator decides it (BR-085)
+             */
+            mine: boolean;
             /**
              * Createdat
              * Format: date-time
@@ -8205,7 +8591,7 @@ export interface components {
             limitations?: string | null;
             /**
              * Summaryen
-             * @description Shown to the reporter and followers
+             * @description Shown to the reporter only; others see the moderator's public summary (BR-032)
              */
             summaryEn: string;
             /** Summaryta */
@@ -8684,39 +9070,6 @@ export interface components {
         ConsentInput: {
             /** Noticeversion */
             noticeVersion: string;
-        };
-        /** ConsentLogOut */
-        ConsentLogOut: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /**
-             * Householdid
-             * Format: uuid
-             */
-            householdId: string;
-            /** Action */
-            action: string;
-            /** Memberid */
-            memberId?: string | null;
-            /**
-             * Actorid
-             * Format: uuid
-             */
-            actorId: string;
-            /** Actorname */
-            actorName?: string | null;
-            /** Details */
-            details?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Createdat
-             * Format: date-time
-             */
-            createdAt: string;
         };
         /** ConsentNoticeOut */
         ConsentNoticeOut: {
@@ -9259,6 +9612,31 @@ export interface components {
             /** Evidence */
             evidence: string;
         };
+        /**
+         * DependantIn
+         * @description M07 child record: first name, relationship and birth year only. Unknown fields (an ID
+         *     number, a phone, a photo) are refused, never silently dropped.
+         */
+        DependantIn: {
+            /** Firstname */
+            firstName: string;
+            /**
+             * Relationship
+             * @enum {string}
+             */
+            relationship: "child" | "grandchild" | "sibling" | "other";
+            /** Birthyear */
+            birthYear: number;
+        };
+        /** DependantUpdateIn */
+        DependantUpdateIn: {
+            /** Firstname */
+            firstName?: string | null;
+            /** Relationship */
+            relationship?: ("child" | "grandchild" | "sibling" | "other") | null;
+            /** Birthyear */
+            birthYear?: number | null;
+        };
         /** DeviceIn */
         DeviceIn: {
             /** Token */
@@ -9322,6 +9700,11 @@ export interface components {
             decisionRequired?: string | null;
             /** Regionalownerid */
             regionalOwnerId?: string | null;
+            /**
+             * Scope
+             * @description W08: the approved scope; needed to act
+             */
+            scope?: string | null;
         };
         /**
          * DocumentOut
@@ -10009,9 +10392,14 @@ export interface components {
             baseVersion?: number | null;
             /**
              * Gncode
-             * @description Chosen by hand; location is never tracked
+             * @description Chosen by hand; location is never tracked. Give a GN, a DS or neither
              */
-            gnCode: string;
+            gnCode?: string | null;
+            /**
+             * Dscode
+             * @description A DS division chosen by hand instead of a GN
+             */
+            dsCode?: string | null;
             /**
              * Visitedat
              * Format: date-time
@@ -10055,7 +10443,14 @@ export interface components {
             /** Coordinatorname */
             coordinatorName: string;
             /** Gncode */
-            gnCode: string;
+            gnCode: string | null;
+            /** Dscode */
+            dsCode: string | null;
+            /**
+             * Areakey
+             * @description The visit's most specific area: its GN, its DS, or the coordinator's area when no place was given
+             */
+            areaKey: string;
             /**
              * Visitedat
              * Format: date-time
@@ -10239,6 +10634,11 @@ export interface components {
             ownerId: string;
             /** Note */
             note: string;
+            /**
+             * Affectedarea
+             * @description W03: the area the problem affects, as confirmed
+             */
+            affectedArea: string;
         };
         /** FundConfigResponse */
         FundConfigResponse: {
@@ -10437,13 +10837,44 @@ export interface components {
              */
             tabs: components["schemas"]["HomeFeatureOut"][];
             hub: components["schemas"]["HomeHubOut"];
+            promises: components["schemas"]["HomePromisesOut"];
+        };
+        /** HomePromiseCountOut */
+        HomePromiseCountOut: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "not_started" | "in_progress" | "completed" | "delayed" | "blocked" | "withdrawn";
+            /** Count */
+            count: number;
+        };
+        /**
+         * HomePromisesOut
+         * @description M18 on Home: the Promise Tracker, with the published promises made for the member's GN, DS
+         *     division, district, province or the whole platform, counted by status.
+         */
+        HomePromisesOut: {
+            /** @description Open, or not open yet while the Promise Tracker is switched off */
+            feature: components["schemas"]["HomeFeatureOut"];
+            /** Total */
+            total: number;
+            /**
+             * Counts
+             * @description Statuses with at least one promise, in the tracker's order
+             */
+            counts: components["schemas"]["HomePromiseCountOut"][];
         };
         /** HouseholdCreateIn */
         HouseholdCreateIn: {
             /** Name */
             name?: string | null;
         };
-        /** HouseholdInvitationOut */
+        /**
+         * HouseholdInvitationOut
+         * @description An invitation. The invitee's name is never included: the inviter typed a member code, and a
+         *     name before the invitee accepts would let anyone look names up by code (M08).
+         */
         HouseholdInvitationOut: {
             /**
              * Id
@@ -10469,8 +10900,6 @@ export interface components {
              * Format: uuid
              */
             inviteeMemberId: string;
-            /** Inviteename */
-            inviteeName: string;
             /** Inviteecode */
             inviteeCode?: string | null;
             /** Relationship */
@@ -10493,6 +10922,60 @@ export interface components {
             /** Respondedat */
             respondedAt?: string | null;
         };
+        /**
+         * HouseholdInvitationSentOut
+         * @description The neutral answer to sending an invitation: nothing about the invitee.
+         */
+        HouseholdInvitationSentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Relationship
+             * @enum {string}
+             */
+            relationship: "spouse" | "parent" | "sibling" | "other";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending" | "accepted" | "declined" | "revoked" | "expired";
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+        };
+        /**
+         * HouseholdLogEntryOut
+         * @description One change in the household's log (M10): what, who and when; nothing else.
+         */
+        HouseholdLogEntryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "create_household" | "update_name" | "invite_adult" | "accept_invitation" | "decline_invitation" | "revoke_invitation" | "leave_household" | "remove_member" | "add_dependent" | "remove_dependent" | "dissolve_household" | "staff_view" | "update_member" | "caseworker_consent_given" | "caseworker_consent_withdrawn";
+            /**
+             * Actor
+             * @enum {string}
+             */
+            actor: "you" | "household_member" | "former_member" | "caseworker";
+            /** Actorname */
+            actorName?: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** HouseholdMemberOut */
         HouseholdMemberOut: {
             /**
@@ -10513,14 +10996,14 @@ export interface components {
              * Role
              * @enum {string}
              */
-            role: "head" | "adult";
+            role: "head" | "adult" | "dependent";
             /** Displayname */
             displayName: string;
             /**
              * Relationship
              * @enum {string}
              */
-            relationship: "head" | "spouse" | "parent" | "sibling" | "other";
+            relationship: "head" | "spouse" | "parent" | "sibling" | "child" | "grandchild" | "other";
             /**
              * Status
              * @enum {string}
@@ -10533,6 +11016,14 @@ export interface components {
             joinedAt: string;
             /** Removedat */
             removedAt?: string | null;
+            /** Ageband */
+            ageBand?: ("18_24" | "25_34" | "35_44" | "45_54" | "55_64" | "65_plus") | null;
+            /** Occupationcategory */
+            occupationCategory?: ("farming" | "fishing" | "daily_labour" | "trade" | "government" | "private_sector" | "self_employed" | "student" | "homemaker" | "retired" | "unemployed" | "other") | null;
+            /** Birthyear */
+            birthYear?: number | null;
+            /** Guardianmemberid */
+            guardianMemberId?: string | null;
         };
         /** HouseholdOut */
         HouseholdOut: {
@@ -10541,6 +11032,11 @@ export interface components {
              * Format: uuid
              */
             id: string;
+            /**
+             * Householdcode
+             * @description A short reference shown to the household, e.g. HH-1A2B3C4D
+             */
+            householdCode: string;
             /**
              * Createdby
              * Format: uuid
@@ -10561,6 +11057,16 @@ export interface components {
             /** Dissolvedat */
             dissolvedAt?: string | null;
             /**
+             * Places
+             * @description District, DS division and GN division
+             * @default []
+             */
+            places: components["schemas"]["HouseholdPlaceOut"][];
+            /** Caseworkerconsentat */
+            caseworkerConsentAt?: string | null;
+            /** Caseworkerconsentby */
+            caseworkerConsentBy?: string | null;
+            /**
              * Members
              * @default []
              */
@@ -10571,17 +11077,56 @@ export interface components {
              */
             pendingInvitations: components["schemas"]["HouseholdInvitationOut"][];
             /** Myrole */
-            myRole?: ("head" | "adult") | null;
+            myRole?: ("head" | "adult" | "dependent") | null;
+            /** Mymemberid */
+            myMemberId?: string | null;
             /**
              * Ishead
              * @default false
              */
             isHead: boolean;
         };
+        /** HouseholdPlaceOut */
+        HouseholdPlaceOut: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+            /** Nameen */
+            nameEn?: string | null;
+            /** Nameta */
+            nameTa?: string | null;
+        };
         /** HouseholdUpdateIn */
         HouseholdUpdateIn: {
             /** Name */
             name?: string | null;
+        };
+        /**
+         * IdeaAppealOut
+         * @description The author's one appeal of a moderation decision (D12) and, once decided, its outcome.
+         */
+        IdeaAppealOut: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "upheld" | "changed";
+            /**
+             * Reason
+             * @description The deciding moderator's reason, once decided
+             */
+            reason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Decidedat */
+            decidedAt: string | null;
         };
         /** IdeaBoardOut */
         IdeaBoardOut: {
@@ -10606,6 +11151,16 @@ export interface components {
             publish: boolean;
             /** Reason */
             reason?: string | null;
+            /**
+             * Editedtitle
+             * @description D12: publish this redacted title instead of the author's
+             */
+            editedTitle?: string | null;
+            /**
+             * Editedbenefit
+             * @description D12: publish this redacted benefit instead of the author's
+             */
+            editedBenefit?: string | null;
         };
         /** IdeaOut */
         IdeaOut: {
@@ -10616,7 +11171,10 @@ export interface components {
             id: string;
             /** Idearef */
             ideaRef: string;
-            /** Title */
+            /**
+             * Title
+             * @description The author sees what they wrote; everyone else the published (possibly edited) version
+             */
             title: string;
             /** Benefit */
             benefit: string;
@@ -10630,6 +11188,23 @@ export interface components {
              * @description Shown to the author when the idea was not published
              */
             moderationReason: string | null;
+            /**
+             * Editedbymoderator
+             * @description Author only: a moderator published an edited version (D12)
+             */
+            editedByModerator: boolean;
+            /**
+             * Publishedtitle
+             * @description Author only: the edited title others see, when it was edited
+             */
+            publishedTitle: string | null;
+            /**
+             * Publishedbenefit
+             * @description Author only: the edited benefit others see, when it was edited
+             */
+            publishedBenefit: string | null;
+            /** @description Author only: their one appeal of the moderation decision */
+            appeal: components["schemas"]["IdeaAppealOut"] | null;
             /** Supports */
             supports: number;
             /** Supported */
@@ -10757,6 +11332,14 @@ export interface components {
              */
             createdAt: string;
         };
+        /** InvitationPreviewOut */
+        InvitationPreviewOut: {
+            /**
+             * Preview
+             * @description The full invitation text; its link's token is made only on sharing
+             */
+            preview: string;
+        };
         /** InvitationRespondIn */
         InvitationRespondIn: {
             /**
@@ -10848,6 +11431,11 @@ export interface components {
             locationKind: string;
             /** Locationtext */
             locationText: string | null;
+            /**
+             * Affectedarea
+             * @description W03: the affected area the GN collector recorded when forwarding
+             */
+            affectedArea: string | null;
             /** Publictitleen */
             publicTitleEn: string | null;
             /** Publictitleta */
@@ -11000,7 +11588,12 @@ export interface components {
             canAddInformation: boolean;
             /** Communityupdates */
             communityUpdates: components["schemas"]["CommunityUpdateOut"][];
-            /** Closingsummaryen */
+            /** Myadditions */
+            myAdditions: components["schemas"]["MyAdditionOut"][];
+            /**
+             * Closingsummaryen
+             * @description The closing report's member summary, for the reporter only (BR-032)
+             */
             closingSummaryEn: string | null;
             /** Closingsummaryta */
             closingSummaryTa: string | null;
@@ -11726,6 +12319,14 @@ export interface components {
              */
             joinedAt: string;
         };
+        /** MemberRelationshipIn */
+        MemberRelationshipIn: {
+            /**
+             * Relationship
+             * @enum {string}
+             */
+            relationship: "spouse" | "parent" | "sibling" | "other";
+        };
         /** MembershipChangeInput */
         MembershipChangeInput: {
             /**
@@ -11872,12 +12473,116 @@ export interface components {
              */
             createdAt: string;
         };
+        /** ModerationAppealDecisionIn */
+        ModerationAppealDecisionIn: {
+            /**
+             * Change
+             * @description True publishes the idea or approves the added information; False upholds the rejection
+             */
+            change: boolean;
+            /**
+             * Reason
+             * @description Told to the author
+             */
+            reason: string;
+        };
+        /** ModerationAppealIn */
+        ModerationAppealIn: {
+            /**
+             * Itemkind
+             * @enum {string}
+             */
+            itemKind: "idea" | "addition";
+            /**
+             * Itemid
+             * Format: uuid
+             */
+            itemId: string;
+            /**
+             * Body
+             * @description Why the author thinks the decision was wrong
+             */
+            body: string;
+        };
+        /**
+         * ModerationAppealOut
+         * @description The author's own appeal; it never names a moderator.
+         */
+        ModerationAppealOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Itemkind
+             * @enum {string}
+             */
+            itemKind: "idea" | "addition";
+            /**
+             * Itemid
+             * Format: uuid
+             */
+            itemId: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "upheld" | "changed";
+            /** Body */
+            body: string;
+            /**
+             * Reason
+             * @description The deciding moderator's reason, once decided
+             */
+            reason: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** ModerationIn */
         ModerationIn: {
             /** Publish */
             publish: boolean;
             /** Reason */
             reason?: string | null;
+        };
+        /**
+         * MyAdditionOut
+         * @description Information this member added to the issue, in every state, with the reason if it was rejected
+         *     and their one appeal against that (D12). Never shown to anyone else in this form.
+         */
+        MyAdditionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Body */
+            body: string;
+            /** State */
+            state: string;
+            /** Isreply */
+            isReply: boolean;
+            /** Moderationreason */
+            moderationReason: string | null;
+            /**
+             * Edited
+             * @description A moderator published an edited version; the member still sees their own words here
+             */
+            edited: boolean;
+            /** Canappeal */
+            canAppeal: boolean;
+            appeal: components["schemas"]["ModerationAppealOut"] | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** MyAreaOut */
         MyAreaOut: {
@@ -11895,6 +12600,17 @@ export interface components {
             projects: components["schemas"]["IssueSummaryOut"][];
         };
         /**
+         * MyHouseholdDetailsIn
+         * @description An adult's own entry (OD-30: each adult confirms their own). A field left out stays as it
+         *     is; a field sent as null is cleared.
+         */
+        MyHouseholdDetailsIn: {
+            /** Ageband */
+            ageBand?: ("18_24" | "25_34" | "35_44" | "45_54" | "55_64" | "65_plus") | null;
+            /** Occupationcategory */
+            occupationCategory?: ("farming" | "fishing" | "daily_labour" | "trade" | "government" | "private_sector" | "self_employed" | "student" | "homemaker" | "retired" | "unemployed" | "other") | null;
+        };
+        /**
          * MyMembershipOut
          * @description The member's own membership state (A12, C06). The reason code is shown; staff notes are not.
          */
@@ -11908,6 +12624,11 @@ export interface components {
             reasonCode: string | null;
             /** Changedat */
             changedAt: string | null;
+        };
+        /** MyModerationAppealOut */
+        MyModerationAppealOut: {
+            /** @description None when the member has not appealed this item */
+            appeal: components["schemas"]["ModerationAppealOut"] | null;
         };
         /** MyOfferOut */
         MyOfferOut: {
@@ -11943,6 +12664,40 @@ export interface components {
              * Format: date-time
              */
             updatedAt: string;
+        };
+        /**
+         * MyReferralOut
+         * @description A partner referral as the applicant sees it: who, why and where it stands, never the
+         *     caseworker's notes on what the partner said.
+         */
+        MyReferralOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Partner */
+            partner: string;
+            /**
+             * Partnerkind
+             * @enum {string}
+             */
+            partnerKind: "ngo" | "public_service" | "hospital" | "other";
+            /** Purpose */
+            purpose: string | null;
+            /**
+             * State
+             * @description proposed: waits for the applicant's consent; nothing is shared until then
+             * @enum {string}
+             */
+            state: "proposed" | "consent_declined" | "sent" | "accepted" | "completed" | "declined";
+            /** Consentat */
+            consentAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** MyReferralsOut */
         MyReferralsOut: {
@@ -12047,6 +12802,11 @@ export interface components {
             deliveries: components["schemas"]["DeliveryOut"][];
             /** Appeals */
             appeals: components["schemas"]["SupportAppealOut"][];
+            /**
+             * Referrals
+             * @description M12: each partner referral; a proposed one waits for the applicant's answer
+             */
+            referrals: components["schemas"]["MyReferralOut"][];
         };
         /** MyRequestSummaryOut */
         MyRequestSummaryOut: {
@@ -12627,9 +13387,15 @@ export interface components {
             textEn: string;
             /** Textta */
             textTa: string;
-            /** Promiseid */
+            /**
+             * Promiseid
+             * @description A published promise
+             */
             promiseId?: string | null;
-            /** Casenumber */
+            /**
+             * Casenumber
+             * @description An existing case, e.g. CI-00012
+             */
             caseNumber?: string | null;
         };
         /** OwnerOptionOut */
@@ -12727,6 +13493,44 @@ export interface components {
             /** Newpassword */
             newPassword: string;
         };
+        /**
+         * PendingAdditionOut
+         * @description Added information waiting for a moderator; the person is named only as the reporter or "a member".
+         */
+        PendingAdditionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Issueid
+             * Format: uuid
+             */
+            issueId: string;
+            /** Casenumber */
+            caseNumber: string;
+            /** Areapath */
+            areaPath: string[];
+            /** Body */
+            body: string;
+            /** Fromreporter */
+            fromReporter: boolean;
+            /** Isreply */
+            isReply: boolean;
+            /** Photos */
+            photos: number;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Mine
+             * @description The viewer wrote it or reported the case, so another moderator decides it
+             */
+            mine: boolean;
+        };
         /** PendingIdeaOut */
         PendingIdeaOut: {
             /**
@@ -12736,10 +13540,23 @@ export interface components {
             id: string;
             /** Idearef */
             ideaRef: string;
-            /** Title */
+            /**
+             * Title
+             * @description As the author wrote it
+             */
             title: string;
             /** Benefit */
             benefit: string;
+            /**
+             * Publishedtitle
+             * @description The moderator's edited title, when one was published
+             */
+            publishedTitle: string | null;
+            /**
+             * Publishedbenefit
+             * @description The moderator's edited benefit, when one was published
+             */
+            publishedBenefit: string | null;
             /** Areakey */
             areaKey: string;
             /**
@@ -12748,8 +13565,83 @@ export interface components {
              */
             createdAt: string;
         };
+        /** PendingModerationOut */
+        PendingModerationOut: {
+            /** Summaries */
+            summaries: components["schemas"]["PendingSummaryOut"][];
+            /** Additions */
+            additions: components["schemas"]["PendingAdditionOut"][];
+        };
+        /**
+         * PendingSummaryOut
+         * @description A public case whose public summary waits for a moderator (BR-032).
+         */
+        PendingSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Casenumber */
+            caseNumber: string;
+            /** Category */
+            category: string;
+            /** Stage */
+            stage: string;
+            /** Areapath */
+            areaPath: string[];
+            /** Gncode */
+            gnCode: string | null;
+            /** Dscode */
+            dsCode: string | null;
+            /** Districtcode */
+            districtCode: string | null;
+            /**
+             * Title
+             * @description The reporter's own title, for the moderator only
+             */
+            title: string;
+            /** Description */
+            description: string;
+            /** Publicstate */
+            publicState: string;
+            /** Publictitleen */
+            publicTitleEn: string | null;
+            /** Publictitleta */
+            publicTitleTa: string | null;
+            /** Publicsummaryen */
+            publicSummaryEn: string | null;
+            /** Publicsummaryta */
+            publicSummaryTa: string | null;
+            /** Closingsummaryen */
+            closingSummaryEn: string | null;
+            /** Closingsummaryta */
+            closingSummaryTa: string | null;
+            /** Closedat */
+            closedAt: string | null;
+            /**
+             * Needs
+             * @enum {string}
+             */
+            needs: "first_summary" | "update_after_closure";
+            /**
+             * Waitingsince
+             * Format: date-time
+             */
+            waitingSince: string;
+            /**
+             * Mine
+             * @description The viewer reported it, so another moderator writes the summary
+             */
+            mine: boolean;
+        };
         /** PendingWorkOut */
         PendingWorkOut: {
+            /**
+             * Publications
+             * @description Promises waiting for a second person to approve publication
+             */
+            publications: components["schemas"]["PromiseSummaryOut"][];
             /** Updates */
             updates: components["schemas"]["PromiseUpdateOut"][];
             /** Feedback */
@@ -12944,6 +13836,23 @@ export interface components {
             declaredAt: string;
             /** Closedat */
             closedAt: string | null;
+        };
+        /**
+         * PeriodReportEntryOut
+         * @description One audit entry behind the period report: what happened, to which record and when; ids only.
+         */
+        PeriodReportEntryOut: {
+            /** Action */
+            action: string;
+            /** Targettype */
+            targetType: string | null;
+            /** Targetid */
+            targetId: string | null;
+            /**
+             * Occurredat
+             * Format: date-time
+             */
+            occurredAt: string;
         };
         /** PeriodReportOut */
         PeriodReportOut: {
@@ -13397,8 +14306,16 @@ export interface components {
             blockersEn: string | null;
             /** Blockersta */
             blockersTa: string | null;
-            /** Statusreason */
+            /**
+             * Statusreason
+             * @description The public reason for Withdrawn or Blocked, in English
+             */
             statusReason: string | null;
+            /**
+             * Statusreasonta
+             * @description The same reason in Tamil
+             */
+            statusReasonTa: string | null;
             /**
              * Publication
              * @enum {string}
@@ -13824,6 +14741,47 @@ export interface components {
             /** Reason */
             reason?: string | null;
         };
+        /** PublicSupportCellOut */
+        PublicSupportCellOut: {
+            /**
+             * Areakey
+             * @description 'district:<code>', or 'platform' for requests that named no area
+             */
+            areaKey: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /**
+             * Count
+             * @description Requests received; null means fewer than 10
+             */
+            count: number | null;
+        };
+        /**
+         * PublicSupportFormOut
+         * @description The public web form without an account: the official emergency numbers first, then the categories.
+         */
+        PublicSupportFormOut: {
+            /** Emergencycontacts */
+            emergencyContacts: components["schemas"]["EmergencyContactOut"][];
+            /** Categories */
+            categories: ("food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood")[];
+        };
+        /**
+         * PublicSupportStatisticsOut
+         * @description D14: anonymised aggregates only (FR-AST-012).
+         */
+        PublicSupportStatisticsOut: {
+            /**
+             * Minimumgroup
+             * @description Groups smaller than this are hidden
+             */
+            minimumGroup: number;
+            /** Cells */
+            cells: components["schemas"]["PublicSupportCellOut"][];
+        };
         /** PublicationDecisionIn */
         PublicationDecisionIn: {
             /** Approve */
@@ -14108,6 +15066,14 @@ export interface components {
             /** Phone */
             phone: string;
         };
+        /** ReferralConsentIn */
+        ReferralConsentIn: {
+            /**
+             * Consent
+             * @description True: this partner may see the request; False: it is not shared with them
+             */
+            consent: boolean;
+        };
         /** ReferralIn */
         ReferralIn: {
             /**
@@ -14116,8 +15082,14 @@ export interface components {
              */
             partnerId: string;
             /**
+             * Purpose
+             * @description Why the case would go to this partner; the applicant sees it
+             */
+            purpose: string;
+            /**
              * Consent
-             * @description The applicant agreed to this partner seeing the case
+             * @description Only for an applicant without an account: they agreed, to the caseworker, that this partner may see the case. A member answers in the app instead.
+             * @default false
              */
             consent: boolean;
         };
@@ -14132,15 +15104,26 @@ export interface components {
             partner: string;
             /** Kind */
             kind: string;
-            /** State */
-            state: string;
+            /**
+             * Purpose
+             * @description Why the case would go to this partner; null on referrals made before 0043
+             */
+            purpose: string | null;
+            /**
+             * State
+             * @description proposed: waits for the applicant's consent in the app; consent_declined: refused
+             * @enum {string}
+             */
+            state: "proposed" | "consent_declined" | "sent" | "accepted" | "completed" | "declined";
             /** Outcome */
             outcome: string | null;
+            /** Consentat */
+            consentAt: string | null;
             /**
-             * Consentat
-             * Format: date-time
+             * Consentrecordedby
+             * @description applicant: given in the app; caseworker: recorded for an applicant without an account
              */
-            consentAt: string;
+            consentRecordedBy: ("applicant" | "caseworker") | null;
             /**
              * Createdat
              * Format: date-time
@@ -14446,7 +15429,7 @@ export interface components {
             reason: string | null;
             /**
              * Hasarea
-             * @description The member's profile names an area, which every report needs
+             * @description The member's profile names a GN division, which every report needs (W03)
              */
             hasArea: boolean;
             /** Gnnameen */
@@ -14765,6 +15748,30 @@ export interface components {
             bodyEn: string;
             /** Bodyta */
             bodyTa: string;
+        };
+        /**
+         * RosterMessageOut
+         * @description S15: an operational message already sent to the volunteers rostered on a shift.
+         */
+        RosterMessageOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Sentbyname */
+            sentByName: string;
+            /** Recipients */
+            recipients: number;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** RosterOut */
         RosterOut: {
@@ -15110,6 +16117,11 @@ export interface components {
             state: "open" | "cancelled";
             /** Assignments */
             assignments: components["schemas"]["RosterAssignmentOut"][];
+            /**
+             * Messages
+             * @description Messages already sent to the shift, newest first
+             */
+            messages: components["schemas"]["RosterMessageOut"][];
         };
         /** ShiftIn */
         ShiftIn: {
@@ -15293,14 +16305,19 @@ export interface components {
              * Format: date-time
              */
             createdAt: string;
+            /**
+             * Fullfile
+             * @description False: the summary only, for intake staff routing a case waiting for screening (S12); the person's details, the request and the record are then null or empty
+             */
+            fullFile: boolean;
             /** Applicantname */
-            applicantName: string;
+            applicantName: string | null;
             /** Applicantphone */
             applicantPhone: string | null;
             /** Household */
             household: string | null;
             /** Summary */
-            summary: string;
+            summary: string | null;
             /** Linkedcaseref */
             linkedCaseRef: string | null;
             /** Notes */
@@ -15322,6 +16339,16 @@ export interface components {
             mayDecide: boolean;
             /** Maywork */
             mayWork: boolean;
+            /**
+             * Mayassign
+             * @description Decision-makers, or anyone who may open a case that has no caseworker yet
+             */
+            mayAssign: boolean;
+            /**
+             * Consentinapp
+             * @description True: the applicant answers each referral proposal in the app (M12); False: the caseworker records the consent the applicant gave them
+             */
+            consentInApp: boolean;
         };
         /** StaffCaseSummaryOut */
         StaffCaseSummaryOut: {
@@ -15461,7 +16488,10 @@ export interface components {
             /** Offset */
             offset: number;
         };
-        /** StaffHouseholdViewOut */
+        /**
+         * StaffHouseholdViewOut
+         * @description D02 read-only caseworker view, only when the household has given caseworker consent.
+         */
         StaffHouseholdViewOut: {
             /**
              * Permitted
@@ -15477,12 +16507,7 @@ export interface components {
             targetMemberCode: string;
             /** Targetmembername */
             targetMemberName: string;
-            household?: components["schemas"]["HouseholdOut"] | null;
-            /**
-             * Consentlogs
-             * @default []
-             */
-            consentLogs: components["schemas"]["ConsentLogOut"][];
+            household: components["schemas"]["HouseholdOut"];
         };
         /** StaffMisinfoReportOut */
         StaffMisinfoReportOut: {
@@ -15529,6 +16554,79 @@ export interface components {
             createdAt: string;
             /** Appealbody */
             appealBody: string | null;
+        };
+        /**
+         * StaffModerationAppealOut
+         * @description What the deciding moderator reads: the item's words, the first decision and the appeal.
+         */
+        StaffModerationAppealOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Itemkind
+             * @enum {string}
+             */
+            itemKind: "idea" | "addition";
+            /**
+             * Itemid
+             * Format: uuid
+             */
+            itemId: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "upheld" | "changed";
+            /** Body */
+            body: string;
+            /**
+             * Reason
+             * @description The deciding moderator's reason, once decided
+             */
+            reason: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Areapath */
+            areaPath: string[];
+            /**
+             * Itemtitle
+             * @description An idea's title; None for added information
+             */
+            itemTitle: string | null;
+            /**
+             * Itemtext
+             * @description An idea's benefit, or the added information as the member wrote it
+             */
+            itemText: string | null;
+            /** Itemstate */
+            itemState: string | null;
+            /**
+             * Originalreason
+             * @description The first moderator's reason for rejecting it
+             */
+            originalReason: string | null;
+            /** Originaldecidedat */
+            originalDecidedAt: string | null;
+            /**
+             * Issueid
+             * @description The case added information belongs to
+             */
+            issueId: string | null;
+            /** Casenumber */
+            caseNumber: string | null;
+            /**
+             * Candecide
+             * @description False for the first moderator, the author, a decided appeal or another area; the API checks again
+             */
+            canDecide: boolean;
         };
         /** StaffReconcileRequest */
         StaffReconcileRequest: {
@@ -15620,7 +16718,10 @@ export interface components {
             transcriptEn: string | null;
             /** Transcriptta */
             transcriptTa: string | null;
-            /** Outcomes */
+            /**
+             * Outcomes
+             * @description textEn, textTa, promiseId and caseNumber; members also get caseId, set only when they may open the case
+             */
             outcomes: {
                 [key: string]: unknown;
             }[];
@@ -16137,10 +17238,10 @@ export interface components {
             outcome: "created" | "updated" | "unchanged" | "conflict" | "refused";
             /**
              * Problems
-             * @description outside_your_area, concerns_required, political_content, ...
+             * @description outside_your_area, place_required, one_place_only, concerns_required, political_profiling (always refused), political_content (refused until confirmed), not_your_visit
              */
             problems: string[];
-            /** @description The server's copy; on a conflict, the version to compare with */
+            /** @description The server's copy; on a conflict, the version to compare with; unchanged when the resend matches it */
             visit: components["schemas"]["FieldVisitOut"] | null;
         };
         /** Tier5AssignmentOut */
@@ -16483,7 +17584,10 @@ export interface components {
             transcriptEn: string | null;
             /** Transcriptta */
             transcriptTa: string | null;
-            /** Outcomes */
+            /**
+             * Outcomes
+             * @description textEn, textTa, promiseId and caseNumber; members also get caseId, set only when they may open the case
+             */
             outcomes: {
                 [key: string]: unknown;
             }[];
@@ -16551,7 +17655,10 @@ export interface components {
             transcriptEn: string | null;
             /** Transcriptta */
             transcriptTa: string | null;
-            /** Outcomes */
+            /**
+             * Outcomes
+             * @description textEn, textTa, promiseId and caseNumber; members also get caseId, set only when they may open the case
+             */
             outcomes: {
                 [key: string]: unknown;
             }[];
@@ -16609,8 +17716,16 @@ export interface components {
         };
         /** VisitCountOut */
         VisitCountOut: {
-            /** Gncode */
-            gnCode: string;
+            /**
+             * Areakey
+             * @description 'gn:...', 'ds:...', or a wider area for visits recorded without a place
+             */
+            areaKey: string;
+            /**
+             * Gncode
+             * @description The GN code when the count is for a GN division
+             */
+            gnCode: string | null;
             /** Concern */
             concern: string;
             /** Visits */
@@ -22088,6 +23203,47 @@ export interface operations {
             };
         };
     };
+    list_pending_moderation_v1_cases_manage_pending_moderation_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingModerationOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     read_case_v1_cases__case_id__get: {
         parameters: {
             query?: never;
@@ -23245,6 +24401,162 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+        };
+    };
+    appeal_v1_moderation_appeals_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ModerationAppealIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModerationAppealOut"];
+                };
+            };
+            /** @description forbidden, own_record, outside_your_area, original_moderator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found, or feature_unavailable while the item's module is off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description appeal_refused with problems: not_rejected, already_appealed, appeal_too_short, already_decided, reason_required */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_my_appeal_v1_moderation_appeals_mine_get: {
+        parameters: {
+            query: {
+                itemKind: "idea" | "addition";
+                itemId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyModerationAppealOut"];
+                };
+            };
+            /** @description forbidden, own_record, outside_your_area, original_moderator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found, or feature_unavailable while the item's module is off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description appeal_refused with problems: not_rejected, already_appealed, appeal_too_short, already_decided, reason_required */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_appeals_v1_moderation_appeals_manage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffModerationAppealOut"][];
+                };
+            };
+        };
+    };
+    decide_appeal_v1_moderation_appeals_manage__appeal_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appeal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ModerationAppealDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffModerationAppealOut"];
+                };
+            };
+            /** @description forbidden, own_record, outside_your_area, original_moderator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found, or feature_unavailable while the item's module is off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description appeal_refused with problems: not_rejected, already_appealed, appeal_too_short, already_decided, reason_required */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -25005,6 +26317,35 @@ export interface operations {
             };
         };
     };
+    preview_invitation_v1_invitations_preview_get: {
+        parameters: {
+            query: {
+                language: "ta" | "en";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationPreviewOut"];
+                };
+            };
+            /** @description membership_not_active */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     my_referrals_v1_invitations_mine_get: {
         parameters: {
             query?: never;
@@ -25053,6 +26394,42 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    cancel_invitation_v1_invitations__number__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
@@ -25857,6 +27234,26 @@ export interface operations {
             };
         };
     };
+    public_form_v1_assistance_public_form_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicSupportFormOut"];
+                };
+            };
+        };
+    };
     request_support_publicly_v1_assistance_public_requests_post: {
         parameters: {
             query?: never;
@@ -25886,6 +27283,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    public_statistics_v1_assistance_statistics_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicSupportStatisticsOut"];
                 };
             };
         };
@@ -25943,6 +27360,42 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SupportAppealOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    answer_referral_v1_assistance_requests__case_id__referrals__referral_id__consent_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+                referral_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReferralConsentIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyRequestOut"];
                 };
             };
             /** @description Validation Error */
@@ -27533,6 +28986,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PeriodReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    period_report_entries_v1_election_roster_periods__period_id__report_entries_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                period_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PeriodReportEntryOut"][];
                 };
             };
             /** @description Validation Error */
@@ -30613,6 +32097,66 @@ export interface operations {
             };
         };
     };
+    read_household_log_v1_households_mine_log_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdLogEntryOut"][];
+                };
+            };
+        };
+    };
+    give_caseworker_consent_v1_households_mine_caseworker_consent_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
+            };
+        };
+    };
+    withdraw_caseworker_consent_v1_households_mine_caseworker_consent_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
+            };
+        };
+    };
     list_my_invitations_v1_households_invitations_mine_get: {
         parameters: {
             query?: never;
@@ -30652,7 +32196,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HouseholdInvitationOut"];
+                    "application/json": components["schemas"]["HouseholdInvitationSentOut"];
                 };
             };
             /** @description Validation Error */
@@ -30730,6 +32274,74 @@ export interface operations {
             };
         };
     };
+    update_my_details_v1_households_members_me_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MyHouseholdDetailsIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    correct_relationship_v1_households_members__member_record_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                member_record_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MemberRelationshipIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     remove_member_v1_households_members__member_record_id__remove_post: {
         parameters: {
             query?: never;
@@ -30747,6 +32359,103 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_dependant_v1_households_dependants_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DependantIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_dependant_v1_households_dependants__member_record_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                member_record_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_dependant_v1_households_dependants__member_record_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                member_record_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DependantUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
             };
             /** @description Validation Error */
             422: {

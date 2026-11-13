@@ -21,12 +21,13 @@ import { FeatureQueryView } from '@/components/FeatureQueryView';
 import { ReceiptCard } from '@/components/ReceiptCard';
 import { AppealForm } from '@/features/support/AppealForm';
 import { APPEAL_TONES, STATE_TONES } from '@/features/support/labels';
+import { Referrals } from '@/features/support/Referrals';
 import { api } from '@/lib/api';
 
 /**
  * M13 My support request: its AS- reference, where it stands, each decision with its reason, the
- * help delivered, and complaints or appeals (M14). The reference reveals nothing about the person,
- * place or kind of help.
+ * help delivered, the partner referrals the applicant agrees to or refuses (M12), and complaints or
+ * appeals (M14). The reference reveals nothing about the person, place or kind of help.
  */
 export default function SupportRequestStatusScreen() {
   const { id, receipt } = useLocalSearchParams<{ id: string; receipt?: string }>();
@@ -74,6 +75,9 @@ function RequestBody({ request, receipt, reload }: { request: MySupportRequest; 
           {t('m.support.sentOn', { date: formatDate(request.createdAt, language) })}
         </AppText>
       </View>
+
+      {/* A proposal waits for this person's answer, so it comes before the record. */}
+      {request.referrals.length > 0 ? <Referrals caseId={request.id} referrals={request.referrals} onAnswered={reload} /> : null}
 
       <SurfaceCard style={styles.card}>
         <AppText step="section" accessibilityRole="header">

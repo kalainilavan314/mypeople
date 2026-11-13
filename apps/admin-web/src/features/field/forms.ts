@@ -14,19 +14,29 @@ export const CONCERN_LABELS: Readonly<Record<string, { ta: string; en: string }>
   other: { ta: 'ஏனையவை', en: 'Other' },
 };
 
-/** Visits by GN division (rows) and concern (columns), from the API's counts. */
-export function countsTable(counts: readonly { gnCode: string; concern: string; visits: number }[]): {
-  gns: string[];
+/**
+ * Visits by place (rows) and concern (columns), from the API's counts. A place is an area key: a GN
+ * or a DS division, or the coordinator's own area for a visit recorded without a place (S05).
+ */
+export function countsTable(counts: readonly { areaKey: string; concern: string; visits: number }[]): {
+  places: string[];
   concerns: string[];
-  count: (gn: string, concern: string) => number;
+  count: (place: string, concern: string) => number;
 } {
-  const gns = [...new Set(counts.map((row) => row.gnCode))].sort();
+  const places = [...new Set(counts.map((row) => row.areaKey))].sort();
   const used = new Set(counts.map((row) => row.concern));
   const concerns = [...Object.keys(CONCERN_LABELS).filter((concern) => used.has(concern)), ...[...used].filter((concern) => !(concern in CONCERN_LABELS))];
-  const cells = new Map(counts.map((row) => [`${row.gnCode}|${row.concern}`, row.visits]));
+  const cells = new Map(counts.map((row) => [`${row.areaKey}|${row.concern}`, row.visits]));
   return {
-    gns,
+    places,
     concerns,
-    count: (gn, concern) => cells.get(`${gn}|${concern}`) ?? 0,
+    count: (place, concern) => cells.get(`${place}|${concern}`) ?? 0,
   };
+}
+
+/** A visit's place for the oversight list: its GN or DS division, or that none was given. */
+export function visitPlaceKey(visit: { gnCode?: string | null; dsCode?: string | null; areaKey: string }): { key: string; given: boolean } {
+  if (visit.gnCode) return { key: `gn:${visit.gnCode}`, given: true };
+  if (visit.dsCode) return { key: `ds:${visit.dsCode}`, given: true };
+  return { key: visit.areaKey, given: false };
 }

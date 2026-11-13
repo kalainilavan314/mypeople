@@ -9,12 +9,13 @@ from app.core.schemas import CamelModel
 from app.modules.community.issues import rules
 from app.modules.community.issues.rules import Category, LocationKind, MemberStatus, ResponsibleTier, Visibility
 from app.modules.community.issues.service import IssueView, MyArea, ReportingOptions
+from app.modules.community.moderation_appeals.schemas import ModerationAppealOut
 
 
 class ReportingOptionsOut(CamelModel):
     allowed: bool = Field(description="Only Verified and Active members report (FR-RPT-017)")
     reason: str | None = Field(description="identity_not_verified or membership_not_active when not allowed")
-    has_area: bool = Field(description="The member's profile names an area, which every report needs")
+    has_area: bool = Field(description="The member's profile names a GN division, which every report needs (W03)")
     gn_name_en: str | None
     gn_name_ta: str | None
     categories: list[Category]
@@ -59,6 +60,21 @@ class IssueStepOut(CamelModel):
 
 class CommunityUpdateOut(CamelModel):
     body: str
+    created_at: datetime
+
+
+class MyAdditionOut(CamelModel):
+    """Information this member added to the issue, in every state, with the reason if it was rejected
+    and their one appeal against that (D12). Never shown to anyone else in this form."""
+
+    id: uuid.UUID
+    body: str
+    state: str
+    is_reply: bool
+    moderation_reason: str | None
+    edited: bool = Field(description="A moderator published an edited version; the member still sees their own words here")
+    can_appeal: bool
+    appeal: ModerationAppealOut | None
     created_at: datetime
 
 
@@ -132,7 +148,8 @@ class IssueDetailOut(IssueSummaryOut):
     can_follow: bool
     can_add_information: bool
     community_updates: list[CommunityUpdateOut]
-    closing_summary_en: str | None
+    my_additions: list[MyAdditionOut]
+    closing_summary_en: str | None = Field(description="The closing report's member summary, for the reporter only (BR-032)")
     closing_summary_ta: str | None
     closed_at: datetime | None
     report: MyReportOut | None
@@ -173,9 +190,26 @@ class IssueDetailOut(IssueSummaryOut):
             steps=[IssueStepOut(stage=stage, reached_at=at) for stage, at in view.steps],
             can_follow=view.can_follow,
             can_add_information=view.can_add_information,
-            community_updates=[CommunityUpdateOut(body=a.body, created_at=a.created_at) for a in view.community_updates],
-            closing_summary_en=issue.closing_summary_en if resolved else None,
-            closing_summary_ta=issue.closing_summary_ta if resolved else None,
+            # The moderator's edited version when one was made (D12), never the words as first written.
+            community_updates=[CommunityUpdateOut(body=a.public_body, created_at=a.created_at) for a in view.community_updates],
+            my_additions=[
+                MyAdditionOut(
+                    id=a.id,
+                    body=a.body,
+                    state=a.state,
+                    is_reply=a.is_reply,
+                    moderation_reason=a.moderation_reason if a.state == "rejected" else None,
+                    edited=a.published_body is not None,
+                    can_appeal=a.state == "rejected" and a.id not in view.addition_appeals,
+                    appeal=ModerationAppealOut.build(view.addition_appeals[a.id]) if a.id in view.addition_appeals else None,
+                    created_at=a.created_at,
+                )
+                for a in view.my_additions
+            ],
+            # Only the reporter reads the closing summary as written; everyone else sees the
+            # public summary a moderator published (BR-032).
+            closing_summary_en=issue.closing_summary_en if resolved and view.mine else None,
+            closing_summary_ta=issue.closing_summary_ta if resolved and view.mine else None,
             closed_at=issue.closed_at if resolved else None,
             report=report,
         )

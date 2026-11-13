@@ -262,6 +262,15 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     ta: 'இக்கோரிக்கை ஏற்கனவே மூடப்பட்டுவிட்டது.',
     en: 'This request has already been closed.',
   },
+  // Moderation appeals (D12).
+  appeal_refused: {
+    ta: 'மேன்முறையீடு பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணத்தைப் பார்க்கவும்.',
+    en: 'The appeal was not recorded. See the reason below.',
+  },
+  original_moderator: {
+    ta: 'முதல் நடுவர் முடிவை நீங்களே எடுத்ததால் இந்த மேன்முறையீட்டை வேறொரு நடுவர் தீர்மானிக்க வேண்டும்.',
+    en: 'You made the first moderation decision, so another moderator must decide this appeal.',
+  },
   // Community cases (W03 to W08).
   case_refused: {
     ta: 'இந்த நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
@@ -334,8 +343,8 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     en: 'The fact-check decision was not recorded.',
   },
   own_draft: {
-    ta: 'நீங்களே கோரியதால் இதை நீங்கள் அங்கீகரிக்க முடியாது; வெளியிடும் அனுமதியுள்ள வேறொருவர் அங்கீகரிக்க வேண்டும்.',
-    en: 'You asked for this, so you cannot approve it; another person with promise publishing must approve it.',
+    ta: 'இதை நீங்களே வரைந்ததால் அல்லது அங்கீகாரம் கோரியதால் இதை நீங்கள் அங்கீகரிக்க முடியாது; வெளியிடும் அனுமதியுள்ள வேறொருவர் அங்கீகரிக்க வேண்டும்.',
+    en: 'You drafted this or asked for it to be approved, so you cannot approve it; another person with promise publishing must approve it.',
   },
   not_assigned: {
     ta: 'இந்த உதவி விவகாரம் ஒதுக்கப்பட்ட பணியாளருக்கும் முடிவெடுப்பவர்களுக்கும் மட்டுமே திறக்கும். இம்முயற்சி தணிக்கைப் பதிவில் சேர்க்கப்பட்டது.',
@@ -355,6 +364,19 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
   reason_required: {
     ta: 'காரணத்தைத் தெரிவுசெய்யவும் அல்லது உள்ளிடவும்.',
     en: 'Choose or provide a reason.',
+  },
+  // D12: an idea published in an edited (redacted) version.
+  edited_title_length: {
+    ta: 'திருத்திய தலைப்பு 5 முதல் 80 எழுத்துகளுக்குள் இருக்க வேண்டும்.',
+    en: 'The edited title must be 5 to 80 characters.',
+  },
+  edited_benefit_length: {
+    ta: 'திருத்திய பயன் 10 முதல் 1000 எழுத்துகளுக்குள் இருக்க வேண்டும்.',
+    en: 'The edited benefit must be 10 to 1000 characters.',
+  },
+  edits_only_when_publishing: {
+    ta: 'திருத்திய பதிப்பை வெளியிடும்போது மட்டுமே பயன்படுத்த முடியும். நிராகரிக்க, திருத்தங்களை நீக்கவும்.',
+    en: 'An edited version is used only when publishing. Clear the edits to reject.',
   },
   tamil_caption_missing: {
     ta: 'சமர்ப்பிப்பதற்கு முன் ஒவ்வொரு படத்திற்கும் தமிழ்க் குறிப்பு அவசியமாகும்.',
@@ -675,6 +697,30 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'இத்தகவல் ஏற்கனவே மதிப்பாய்வு செய்யப்பட்டுவிட்டது.',
     en: 'This information has already been moderated.',
   },
+  affected_area_required: {
+    ta: 'பாதிக்கப்பட்ட பகுதியை எழுதவும் (3 முதல் 300 எழுத்துகள்).',
+    en: 'Write the affected area (3 to 300 characters).',
+  },
+  scope_required: {
+    ta: 'அனுமதிக்கப்பட்ட வேலை வரம்பை எழுதவும்.',
+    en: 'Write the approved scope of the work.',
+  },
+  edited_body_too_short: {
+    ta: 'திருத்திய பதிப்பு குறைந்தது 5 எழுத்துகள் இருக்க வேண்டும்; அப்படியே வெளியிட வெறுமையாக விடவும்.',
+    en: 'The edited version needs at least 5 characters; leave it empty to publish the text as written.',
+  },
+  appeal_too_short: {
+    ta: 'மேன்முறையீட்டுக்குக் குறைந்தது 10 எழுத்துகள் எழுதவும்.',
+    en: 'Write at least 10 characters for the appeal.',
+  },
+  not_rejected: {
+    ta: 'நிராகரிக்கப்பட்ட முடிவுக்கு மட்டுமே மேன்முறையீடு செய்யலாம்.',
+    en: 'Only a rejection can be appealed.',
+  },
+  already_appealed: {
+    ta: 'இந்த முடிவுக்கு ஏற்கனவே மேன்முறையீடு செய்யப்பட்டுள்ளது.',
+    en: 'This decision has already been appealed.',
+  },
   photo_not_found: {
     ta: 'சேர்த்த புகைப்படங்களில் ஒன்று காணப்படவில்லை. மீண்டும் தெரிவுசெய்யவும்.',
     en: 'One of the photos was not found. Choose it again.',
@@ -906,6 +952,16 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'திருத்தப்பட வேண்டிய எண்ணிக்கையைத் தெரிவுசெய்யவும்.',
     en: 'Choose the figure to correct.',
   },
+  // Promise Tracker: past the due date a promise stays Delayed until it is finished.
+  overdue_stays_delayed: {
+    ta: 'இறுதித் திகதி கடந்துவிட்டதால் இந்த வாக்குறுதி தாமதமானது என்றே இருக்கும். சான்றுடன் நிறைவேற்றப்பட்டது, காரணத்துடன் மீளப்பெறப்பட்டது, அல்லது நிலையை மாற்றாத குறிப்பு மட்டுமே ஏற்கப்படும்.',
+    en: 'The due date has passed, so this promise stays Delayed. Only Completed (with evidence), Withdrawn (with the reason) or a note without a change of status is accepted.',
+  },
+  // Scorecards: a correction names one of the card's own areas.
+  area_not_on_scorecard: {
+    ta: 'இந்தப் பகுதி இந்த மதிப்பீட்டு அட்டையில் இல்லை. அட்டையில் உள்ள பகுதிகளில் ஒன்றைத் தெரிவுசெய்யவும்.',
+    en: 'This area is not on this scorecard. Choose one of the areas it shows.',
+  },
   area_key_required: {
     ta: 'பகுதியைத் தெரிவுசெய்யவும்.',
     en: 'Choose the area.',
@@ -974,6 +1030,10 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'வெளியிடப்பட்ட நிபந்தனைப் பதிப்பைத் தெரிவுசெய்யவும்.',
     en: 'Choose a published criteria version.',
   },
+  criteria_not_current: {
+    ta: 'இந்த உதவி வகையை உள்ளடக்கும் செயலிலுள்ள திட்டமொன்றின் தற்போதைய நிபந்தனைப் பதிப்பைத் தெரிவுசெய்யவும். முந்தைய பதிப்புகளும் நிறுத்தப்பட்ட திட்டங்களும் ஏற்கப்படாது.',
+    en: 'Choose the current criteria of an active programme that covers this kind of help. Earlier versions and retired programmes are not accepted.',
+  },
   delivery_incomplete: {
     ta: 'வழங்கியது, அளவு, திகதி, வழங்கியவர், சான்று அனைத்தையும் உள்ளிடவும்.',
     en: 'Enter what was given, how much, the date, who gave it and the evidence.',
@@ -1010,6 +1070,14 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'பங்காளர் கூறியதைத் தெரிவுசெய்யவும்.',
     en: 'Choose what the partner said.',
   },
+  purpose_required: {
+    ta: 'இப்பங்காளருக்குப் பரிந்துரைப்பதற்கான காரணத்தை எழுதவும் (3 முதல் 500 எழுத்துகள்). விண்ணப்பதாரர் இதைப் பார்ப்பார்.',
+    en: 'Write why the case would go to this partner (3 to 500 characters). The applicant sees it.',
+  },
+  referral_not_shared: {
+    ta: 'இப்பரிந்துரை பங்காளருடன் பகிரப்படவில்லை: விண்ணப்பதாரர் இன்னும் ஒப்புக்கொள்ளவில்லை, அல்லது மறுத்துவிட்டார்.',
+    en: 'This referral was not shared with the partner: the applicant has not consented yet, or declined.',
+  },
   speakers_required: {
     ta: 'பேச்சாளர்களைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
     en: 'Write the speakers in Tamil and English.',
@@ -1027,8 +1095,8 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     en: 'The recording link must start with https://.',
   },
   legal_review_required: {
-    ta: 'தேர்தல் காலப்பகுதியில் சட்ட மீளாய்வுக் குறிப்பு தேவை.',
-    en: 'A legal review reference is needed in an election period.',
+    ta: 'தேர்தல் காலப்பகுதியில் சட்ட மீளாய்வுக் குறிப்பு தேவை. அமர்வின் விவரங்களில் அதைச் சேர்த்து மீண்டும் முயற்சிக்கவும்.',
+    en: 'A legal review reference is needed in an election period. Add it to the session details, then try again.',
   },
   merge_target_required: {
     ta: 'இணைக்க வேண்டிய அங்கீகரிக்கப்பட்ட கேள்வியைத் தெரிவுசெய்யவும்.',
@@ -1133,6 +1201,22 @@ const NUMBERED_PROBLEMS: Record<string, (n: string) => BilingualText> = {
   outcome_text_required: (n) => ({
     ta: `விளைவு ${n} ஐத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 3 எழுத்துகள்).`,
     en: `Write outcome ${n} in Tamil and English (at least 3 characters).`,
+  }),
+  outcome_promise_id_invalid: (n) => ({
+    ta: `விளைவு ${n}: வாக்குறுதி அடையாள இலக்கம் சரியில்லை. வாக்குறுதிக் கண்காணிப்பிலிருந்து அதைப் படியெடுக்கவும்.`,
+    en: `Outcome ${n}: the promise id is not valid. Copy it from the promise tracker.`,
+  }),
+  outcome_promise_not_published: (n) => ({
+    ta: `விளைவு ${n}: இந்த வாக்குறுதி இல்லை அல்லது இன்னும் வெளியிடப்படவில்லை. வெளியிடப்பட்ட வாக்குறுதியுடன் மட்டுமே இணைக்கலாம்.`,
+    en: `Outcome ${n}: this promise does not exist or is not published yet. Link only a published promise.`,
+  }),
+  outcome_case_number_invalid: (n) => ({
+    ta: `விளைவு ${n}: விவகார இலக்கம் CI-00012 போன்ற வடிவில் இருக்க வேண்டும்.`,
+    en: `Outcome ${n}: a case number looks like CI-00012.`,
+  }),
+  outcome_case_not_found: (n) => ({
+    ta: `விளைவு ${n}: இந்த இலக்கத்தில் விவகாரம் எதுவும் இல்லை.`,
+    en: `Outcome ${n}: there is no case with this number.`,
   }),
 };
 
@@ -1376,6 +1460,18 @@ const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
     ta: 'சேர்க்கப்பட்ட தகவல் நிராகரிக்கப்பட்டது.',
     en: 'Added information rejected.',
   },
+  addition_redacted: {
+    ta: 'திருத்திய வடிவம் அங்கீகரிக்கப்பட்டு வெளியிடப்பட்டது.',
+    en: 'Edited version approved and published.',
+  },
+  moderation_appeal_changed: {
+    ta: 'மேன்முறையீடு ஏற்கப்பட்டது; விடயம் வெளியிடப்பட்டது. எழுதியவருக்குக் காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'Appeal accepted; the item is published. The author is told your reason.',
+  },
+  moderation_appeal_upheld: {
+    ta: 'முதல் முடிவு உறுதிசெய்யப்பட்டது. எழுதியவருக்குக் காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'First decision upheld. The author is told your reason.',
+  },
   // Volunteering (S10).
   opportunity_created: {
     ta: 'வாய்ப்பு வரைவாகச் சேமிக்கப்பட்டது. திறக்கும் வரை உறுப்பினர்கள் இதைக் காணமாட்டார்கள்.',
@@ -1574,6 +1670,10 @@ const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
   support_referred: {
     ta: 'பங்காளருக்குப் பரிந்துரைக்கப்பட்டது.',
     en: 'Referred to the partner.',
+  },
+  support_referral_proposed: {
+    ta: 'பரிந்துரை முன்மொழியப்பட்டது. விண்ணப்பதாரர் செயலியில் ஒப்புக்கொண்ட பின்னரே அது பங்காளருக்கு அனுப்பப்படும்.',
+    en: 'Referral proposed. It goes to the partner only after the applicant consents in the app.',
   },
   support_referral_updated: {
     ta: 'பரிந்துரை புதுப்பிக்கப்பட்டது.',

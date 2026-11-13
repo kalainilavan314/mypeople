@@ -10,8 +10,19 @@ from PIL import Image
 from sqlalchemy import text
 
 from app.modules.community.issues import breaches
+from app.modules.community.issues.rules import HANDOVER_KINDS
 
 DESCRIPTION = "The water pipe beside the school gate has been leaking for a week and the road is flooding."
+AFFECTED_AREA = "School lane, from the gate to the bus stop (about 200 m)"
+SUMMARY = {
+    "publish": True, "titleEn": "Leaking water main near the school", "titleTa": "பாடசாலை அருகே நீர்க்குழாய் கசிவு",
+    "summaryEn": "A leaking water main near the school gate has been reported.",
+    "summaryTa": "பாடசாலை வாயில் அருகே நீர்க்குழாய் கசிவு முறையிடப்பட்டுள்ளது.",
+}
+CLOSING = {
+    "outcome": "Joint resealed.", "evidenceRefs": ["Job card 55"], "summaryEn": "The joint was resealed by Mr Kumar.",
+    "summaryTa": "இணைப்பு மீண்டும் அடைக்கப்பட்டது.",
+}
 
 
 @pytest.fixture
@@ -19,10 +30,29 @@ def client(identity_client):
     return identity_client
 
 
+CASE_ROLES = [
+    "cases.collect", "cases.research", "cases.decide_district", "cases.plan_regional", "cases.approve_executive",
+    "cases.implement_and_close", "content.moderate",
+]
+
+
+def set_aside_other_case_staff(db_session, keep):
+    """Test set-up: staff already in the database copy are set aside (inside the rolled-back test
+    transaction), so who owns a case and who is told depends only on the people a test creates."""
+    db_session.execute(
+        text(
+            """UPDATE access.staff_assignment SET state = 'revoked', ended_at = now()
+               WHERE state = 'active' AND permissions && CAST(:roles AS text[]) AND member_id <> :keep"""
+        ),
+        {"roles": CASE_ROLES, "keep": keep.id},
+    )
+
+
 @pytest.fixture
-def team(create_member, assign, area, super_admin):
+def team(create_member, assign, area, super_admin, db_session):
     """One person for each tier of the decision line in the test area; the Super Administrator
     (Tier 5 by default holds cases.approve_executive) grants the others."""
+    set_aside_other_case_staff(db_session, super_admin)
 
     def staff(tier, level, code, permissions):
         person = create_member(verified=True)
@@ -160,6 +190,7 @@ def test_a_case_climbs_from_gn_to_executive_and_is_closed_with_evidence(client, 
     # W03: nothing is forwarded without a fact, a completeness check and an eligible DS owner.
     early = staff_post(client, auth, gn, case_id, "forward", {
         "locationConfirmed": True, "descriptionClear": True, "evidenceReviewed": True, "ownerId": str(ds.id), "note": "Seen on site",
+        "affectedArea": AFFECTED_AREA,
     })
     assert early.status_code == 409 and early.json()["detail"]["problems"] == ["facts_required"]
     no_source = staff_post(client, auth, gn, case_id, "facts", {"statement": "Pipe cracked at the joint"})
@@ -168,14 +199,16 @@ def test_a_case_climbs_from_gn_to_executive_and_is_closed_with_evidence(client, 
                                                             "source": "Site visit by GN coordinator"}).status_code == 200
     wrong_owner = staff_post(client, auth, gn, case_id, "forward", {
         "locationConfirmed": True, "descriptionClear": True, "evidenceReviewed": True,
-        "ownerId": str(team["ds_assistant"].id), "note": "Seen on site",
+        "ownerId": str(team["ds_assistant"].id), "note": "Seen on site", "affectedArea": AFFECTED_AREA,
     })
     assert wrong_owner.json()["detail"]["problems"] == ["owner_not_eligible"]  # 2B never owns a decision
     forwarded = staff_post(client, auth, gn, case_id, "forward", {
         "locationConfirmed": True, "descriptionClear": True, "evidenceReviewed": True, "ownerId": str(ds.id),
-        "note": "Confirmed on site; needs the water board.",
+        "note": "Confirmed on site; needs the water board.", "affectedArea": AFFECTED_AREA,
     })
     assert forwarded.json()["stage"] == "ds" and forwarded.json()["ownerName"]
+    assert forwarded.json()["affectedArea"] == AFFECTED_AREA
+    assert forwarded.json()["history"][-1]["details"]["affectedArea"] == AFFECTED_AREA
     assert notices(db_session, member, "issue_progress") == 1
     assert notices(db_session, ds, "case_assigned") == 1
 
@@ -233,6 +266,16 @@ def test_a_case_climbs_from_gn_to_executive_and_is_closed_with_evidence(client, 
     kinds = [h["kind"] for h in closed.json()["history"]]
     assert kinds[:2] == ["submitted", "fact"] and kinds[-1] == "closed"
     assert all(h["previousOwnerName"] is not None for h in closed.json()["history"] if h["kind"] in ("ds_report", "escalated"))
+    assert closed.json()["affectedArea"] == AFFECTED_AREA  # still in the file at the last stage
+    # FR-WEB-029: every handover row has the previous owner, the new owner, a note and the time.
+    handovers = [h for h in closed.json()["history"] if h["kind"] in HANDOVER_KINDS]
+    assert {h["kind"] for h in handovers} >= {"forwarded", "ds_report", "escalated", "regional_plan", "executive_approved", "closed"}
+    assert all(h["note"] and h["note"].strip() and h["createdAt"] for h in handovers)
+    assert all(h["previousOwnerName"] for h in handovers if h["kind"] != "regional_plan")
+    notes = {h["kind"]: h["note"] for h in handovers}
+    assert notes["ds_report"] == "Replace the cracked section of the main."
+    assert notes["regional_plan"] == "Replace 40 m of main with the water board."
+    assert notes["executive_approved"] == "Replace the cracked main section."
 
     view = client.get(f"/v1/issues/{case_id}", headers=auth(member)).json()
     assert (view["status"], view["stage"], view["report"]["nextStep"]) == ("resolved", 4, "rate_closure")
@@ -248,6 +291,7 @@ def test_a_challenge_reopens_the_case_with_a_new_owner(client, auth, member_in, 
     staff_post(client, auth, gn, case_id, "facts", {"statement": "Leak seen", "source": "Visit"})
     staff_post(client, auth, gn, case_id, "forward", {
         "locationConfirmed": True, "descriptionClear": True, "evidenceReviewed": True, "ownerId": str(ds.id), "note": "Seen on site",
+        "affectedArea": AFFECTED_AREA,
     })
     staff_post(client, auth, ds, case_id, "ds-report", {
         "summary": "Small leak at the joint.", "recommendation": "District maintenance crew can fix it.",
@@ -256,12 +300,14 @@ def test_a_challenge_reopens_the_case_with_a_new_owner(client, auth, member_in, 
     acted = staff_post(client, auth, district, case_id, "district-decision", {
         "decision": "act", "authority": "District maintenance budget", "resources": "Two plumbers",
         "office": "District secretariat", "ownerId": str(district.id), "dueDate": in_days(7),
+        "scope": "Reseal the cracked joint at the school gate.",
     })
     assert acted.json().get("stage") == "implementation", acted.json()
-    closed = staff_post(client, auth, district, case_id, "close", {
-        "outcome": "Joint resealed.", "evidenceRefs": ["Job card 55"], "summaryEn": "The joint was resealed.",
-        "summaryTa": "இணைப்பு மீண்டும் அடைக்கப்பட்டது.",
-    })
+    action = acted.json()["history"][-1]
+    assert (action["kind"], action["note"], action["details"]["scope"]) == (
+        "district_action", "Reseal the cracked joint at the school gate.", "Reseal the cracked joint at the school gate.",
+    )
+    closed = staff_post(client, auth, district, case_id, "close", CLOSING)
     assert closed.json()["closedLevel"] == "district"
     # FR-WEB-022: Tiers 4 and 5 hear about every district closure, and can list them.
     assert notices(db_session, team["regional"], "case_district_closure") == 1
@@ -316,7 +362,7 @@ def test_a_duplicate_is_linked_and_its_reporter_hears_the_parents_progress(clien
     staff_post(client, auth, team["gn"], parent["id"], "facts", {"statement": "Leak seen", "source": "Visit"})
     staff_post(client, auth, team["gn"], parent["id"], "forward", {
         "locationConfirmed": True, "descriptionClear": True, "evidenceReviewed": True, "ownerId": str(team["ds"].id),
-        "note": "Two reports of the same leak.",
+        "note": "Two reports of the same leak.", "affectedArea": AFFECTED_AREA,
     })
     child_view = client.get(f"/v1/issues/{child['id']}", headers=auth(second)).json()
     parent_file = client.get(f"/v1/cases/{parent['id']}", headers=auth(team["ds"])).json()
@@ -375,6 +421,44 @@ def test_staff_never_act_on_a_case_they_reported(client, auth, area, team, db_se
     assert "forward" not in file["allowedActions"] and "fact" not in file["allowedActions"]
     refused = staff_post(client, auth, gn, case["id"], "facts", {"statement": "Leak", "source": "Me"})
     assert (refused.status_code, refused.json()["detail"]) == (403, "own_record")
+    noted = staff_post(client, auth, gn, case["id"], "notes", {"text": "My own note on my report"})
+    assert (noted.status_code, noted.json()["detail"]) == (403, "own_record")
+
+
+def test_a_moderator_never_moderates_their_own_report_or_what_they_added(
+    client, auth, member_in, area, team, create_member, assign, super_admin, db_session
+):
+    moderator = team["district"]  # holds content.moderate over the district
+    db_session.execute(
+        text("UPDATE npm.member SET gs_code = :gn, ds_code = :ds, district_code = :d WHERE id = :id"),
+        {"gn": area.gn, "ds": area.ds, "d": area.district, "id": moderator.id},
+    )
+    own_case = report(client, auth, moderator, visibility="public").json()["id"]
+    own_file = client.get(f"/v1/cases/{own_case}", headers=auth(moderator)).json()
+    for action in ("note", "publish_summary", "moderate_additions"):
+        assert action not in own_file["allowedActions"], action
+    summary = staff_post(client, auth, moderator, own_case, "public-summary", SUMMARY)
+    assert (summary.status_code, summary.json()["detail"]) == (403, "own_record")
+
+    # Someone else's public case, to which the moderator added information themselves.
+    reporter = member_in(area, verified=True, active=True)
+    case_id = report(client, auth, reporter, visibility="public").json()["id"]
+    staff_post(client, auth, team["district"], case_id, "public-summary", SUMMARY)
+    added = client.post(f"/v1/issues/{case_id}/information", json={"body": "I saw it myself this morning."},
+                        headers=auth(moderator)).json()
+    refused = staff_post(client, auth, moderator, case_id, f"additions/{added['id']}/moderation", {"approve": True})
+    assert (refused.status_code, refused.json()["detail"]) == (403, "own_record")
+    denied = db_session.scalar(
+        text("""SELECT count(*) FROM ops.audit_log WHERE actor_id = :id AND action = 'access.denied'
+                AND target_id = :addition"""),
+        {"id": moderator.id, "addition": added["id"]},
+    )
+    assert denied == 1
+    # Another moderator over the area decides it.
+    other = create_member(verified=True)
+    assign(other, "3A", "district", area.district, ["content.moderate"], granted_by=super_admin)
+    approved = staff_post(client, auth, other, case_id, f"additions/{added['id']}/moderation", {"approve": True})
+    assert approved.status_code == 200
 
 
 def test_a_public_summary_is_published_by_a_moderator_and_shown_in_my_area(client, auth, member_in, area, team, db_session):
@@ -384,17 +468,13 @@ def test_a_public_summary_is_published_by_a_moderator_and_shown_in_my_area(clien
 
     before = client.get("/v1/issues/area", headers=auth(neighbour)).json()
     hidden = client.get(f"/v1/issues/{case_id}", headers=auth(neighbour))
-    published = staff_post(client, auth, team["district"], case_id, "public-summary", {
-        "publish": True, "titleEn": "Leaking water main near the school", "titleTa": "பாடசாலை அருகே நீர்க்குழாய் கசிவு",
-        "summaryEn": "A leaking water main near the school gate has been reported.",
-        "summaryTa": "பாடசாலை வாயில் அருகே நீர்க்குழாய் கசிவு முறையிடப்பட்டுள்ளது.",
-    })
+    published = staff_post(client, auth, team["district"], case_id, "public-summary", SUMMARY)
     after = client.get("/v1/issues/area", headers=auth(neighbour)).json()
     seen = client.get(f"/v1/issues/{case_id}", headers=auth(neighbour)).json()
 
-    assert before["hasArea"] is True and before["issues"] == [] and hidden.status_code == 404
+    assert before["hasArea"] is True and case_id not in [i["id"] for i in before["issues"]] and hidden.status_code == 404
     assert published.json()["publicState"] == "published"
-    assert [i["titleEn"] for i in after["issues"]] == ["Leaking water main near the school"]
+    assert [i["titleEn"] for i in after["issues"] if i["id"] == case_id] == ["Leaking water main near the school"]
     assert seen["report"] is None and seen["canFollow"] is True
     assert DESCRIPTION not in str(seen)  # the reporter's own words stay private
 
@@ -407,24 +487,251 @@ def test_a_public_summary_is_published_by_a_moderator_and_shown_in_my_area(clien
     staff_post(client, auth, team["district"], case_id, f"additions/{addition_id}/moderation", {"approve": True})
     updates = client.get(f"/v1/issues/{case_id}", headers=auth(neighbour)).json()["communityUpdates"]
     assert [u["body"] for u in updates] == ["The leak is worse after rain."]
+    audited = db_session.scalar(
+        text("SELECT details FROM ops.audit_log WHERE action = 'case.addition_moderated' AND target_id = :id"), {"id": case_id}
+    )
+    assert audited["addition"] == addition_id and audited["outcome"] == "approved" and audited["redacted"] is False
 
     staff_post(client, auth, team["gn"], case_id, "facts", {"statement": "Leak seen", "source": "Visit"})
     staff_post(client, auth, team["gn"], case_id, "forward", {
         "locationConfirmed": True, "descriptionClear": True, "evidenceReviewed": True, "ownerId": str(team["ds"].id),
-        "note": "Seen on site",
+        "note": "Seen on site", "affectedArea": AFFECTED_AREA,
     })
     assert notices(db_session, neighbour, "issue_followed_progress") == 1
     assert client.get("/v1/issues/area", headers=auth(neighbour)).json()["updates"][0]["stage"] == 2
+
+
+def test_a_moderator_publishes_an_edited_version_of_added_information(client, auth, member_in, area, team, db_session):
+    reporter = member_in(area, verified=True, active=True)
+    neighbour = member_in(area, verified=True, active=True)
+    case_id = report(client, auth, reporter, visibility="public").json()["id"]
+    staff_post(client, auth, team["district"], case_id, "public-summary", SUMMARY)
+    added = client.post(f"/v1/issues/{case_id}/information", json={"body": "Call Ravi on 0771234567, he saw the leak."},
+                        headers=auth(neighbour)).json()
+
+    blank = staff_post(client, auth, team["district"], case_id, f"additions/{added['id']}/moderation", {
+        "approve": True, "editedBody": "   ok    ",
+    })
+    assert blank.status_code == 409 and blank.json()["detail"]["problems"] == ["edited_body_too_short"]
+    redacted = staff_post(client, auth, team["district"], case_id, f"additions/{added['id']}/moderation", {
+        "approve": True, "editedBody": "A neighbour saw the leak.",
+    })
+    seen_by_others = client.get(f"/v1/issues/{case_id}", headers=auth(reporter)).json()["communityUpdates"]
+    stored = db_session.execute(
+        text("SELECT body, published_body FROM community.issue_addition WHERE id = :id"), {"id": added["id"]}
+    ).one()
+    audited = db_session.scalar(
+        text("SELECT details FROM ops.audit_log WHERE action = 'case.addition_moderated' AND target_id = :id"), {"id": case_id}
+    )
+
+    assert redacted.status_code == 200
+    assert redacted.json()["additions"][0]["publishedBody"] == "A neighbour saw the leak."
+    assert [u["body"] for u in seen_by_others] == ["A neighbour saw the leak."]
+    assert "0771234567" not in str(seen_by_others)
+    assert stored.body.startswith("Call Ravi") and stored.published_body == "A neighbour saw the leak."
+    assert audited == {"stage": "gn", "addition": added["id"], "outcome": "approved", "redacted": True}
+    assert "0771234567" not in str(audited)  # ids and flags only
+
+
+def test_the_closing_summary_reaches_only_the_reporter_and_the_public_hears_through_a_moderator(
+    client, auth, member_in, area, team, db_session
+):
+    reporter = member_in(area, verified=True, active=True)
+    neighbour = member_in(area, verified=True, active=True)
+    district = team["district"]
+    case_id = report(client, auth, reporter, visibility="public").json()["id"]
+    staff_post(client, auth, district, case_id, "public-summary", SUMMARY)
+    client.put(f"/v1/issues/{case_id}/follow", json={"follow": True}, headers=auth(neighbour))
+    staff_post(client, auth, team["gn"], case_id, "facts", {"statement": "Leak seen", "source": "Visit"})
+    staff_post(client, auth, team["gn"], case_id, "forward", {
+        "locationConfirmed": True, "descriptionClear": True, "evidenceReviewed": True, "ownerId": str(team["ds"].id),
+        "note": "Seen on site", "affectedArea": AFFECTED_AREA,
+    })
+    staff_post(client, auth, team["ds"], case_id, "ds-report", {
+        "summary": "Small leak at the joint.", "recommendation": "District maintenance crew can fix it.",
+        "districtOwnerId": str(district.id),
+    })
+    staff_post(client, auth, district, case_id, "district-decision", {
+        "decision": "act", "authority": "District maintenance budget", "resources": "Two plumbers",
+        "office": "District secretariat", "ownerId": str(district.id), "dueDate": in_days(7),
+        "scope": "Reseal the cracked joint at the school gate.",
+    })
+    closed = staff_post(client, auth, district, case_id, "close", CLOSING)
+    assert closed.json()["stage"] == "resolved"
+
+    mine = client.get(f"/v1/issues/{case_id}", headers=auth(reporter)).json()
+    theirs = client.get(f"/v1/issues/{case_id}", headers=auth(neighbour)).json()
+    assert mine["closingSummaryEn"] == "The joint was resealed by Mr Kumar."
+    assert theirs["closingSummaryEn"] is None and theirs["closingSummaryTa"] is None
+    assert "Mr Kumar" not in str(theirs)
+    assert theirs["summaryEn"] == SUMMARY["summaryEn"] and theirs["status"] == "resolved"
+
+    # The moderator is asked to update the public summary after closure, and may.
+    queue = client.get("/v1/cases/manage/pending-moderation", headers=auth(district)).json()
+    assert [(s["id"], s["needs"]) for s in queue["summaries"] if s["id"] == case_id] == [(case_id, "update_after_closure")]
+    assert "publish_summary" in closed.json()["allowedActions"]
+    updated = staff_post(client, auth, district, case_id, "public-summary", {
+        **SUMMARY, "summaryEn": "The leaking joint near the school gate has been resealed.",
+        "summaryTa": "பாடசாலை வாயில் அருகே கசிந்த இணைப்பு மீண்டும் அடைக்கப்பட்டது.",
+    })
+    assert updated.status_code == 200
+    again = client.get(f"/v1/issues/{case_id}", headers=auth(neighbour)).json()
+    assert again["summaryEn"] == "The leaking joint near the school gate has been resealed."
+    later = client.get("/v1/cases/manage/pending-moderation", headers=auth(district)).json()
+    assert case_id not in [s["id"] for s in later["summaries"]]
+    audited = db_session.scalars(
+        text("SELECT details->>'outcome' FROM ops.audit_log WHERE action = 'case.public_summary' AND target_id = :id"),
+        {"id": case_id},
+    ).all()
+    assert audited == ["published", "published"]
+
+
+def test_one_queue_holds_public_summaries_and_added_information_waiting_for_a_moderator(
+    client, auth, member_in, area, team, create_member, assign, super_admin, db_session
+):
+    reporter = member_in(area, verified=True, active=True)
+    neighbour = member_in(area, verified=True, active=True)
+    first = report(client, auth, reporter, visibility="public").json()["id"]
+    second = report(client, auth, reporter, visibility="public", title="Broken street light").json()["id"]
+    report(client, auth, reporter)  # team only: never in the queue
+    staff_post(client, auth, team["district"], second, "public-summary", SUMMARY)
+    added = client.post(f"/v1/issues/{second}/information", json={"body": "The light is out at night too."},
+                        headers=auth(neighbour)).json()
+
+    queue = client.get("/v1/cases/manage/pending-moderation", headers=auth(team["district"]))
+    elsewhere = create_member(verified=True)
+    other_district = db_session.scalar(
+        text("SELECT district_code FROM geo.district WHERE district_code <> :d ORDER BY district_code LIMIT 1"),
+        {"d": area.district},
+    )
+    assign(elsewhere, "3A", "district", other_district, ["content.moderate"], granted_by=super_admin)
+    outside = client.get("/v1/cases/manage/pending-moderation", headers=auth(elsewhere)).json()
+    not_moderator = client.get("/v1/cases/manage/pending-moderation", headers=auth(team["gn"]))
+
+    assert queue.status_code == 200
+    body = queue.json()
+    ours = {first, second}
+    assert [(s["id"], s["needs"], s["mine"]) for s in body["summaries"] if s["id"] in ours] == [(first, "first_summary", False)]
+    assert [(a["id"], a["issueId"], a["body"], a["fromReporter"]) for a in body["additions"] if a["issueId"] in ours] == [
+        (added["id"], second, "The light is out at night too.", False)
+    ]
+    assert not [s for s in outside["summaries"] if s["id"] in ours]
+    assert not [a for a in outside["additions"] if a["issueId"] in ours]
+    assert not_moderator.status_code == 403
+
+
+def test_a_member_without_a_gn_division_cannot_report_or_send_photos(client, auth, create_member, area, team, db_session):
+    member = create_member(verified=True, active=True)
+    db_session.execute(
+        text("UPDATE npm.member SET gs_code = NULL, ds_code = :ds, district_code = :d WHERE id = :id"),
+        {"ds": area.ds, "d": area.district, "id": member.id},
+    )
+
+    options = client.get("/v1/issues/reporting", headers=auth(member)).json()
+    refused = report(client, auth, member, locationKind="landmark", locationText="Near the Nallur temple")
+
+    assert options["allowed"] is True and options["hasArea"] is False
+    assert refused.status_code == 422 and refused.json()["detail"]["problems"] == ["no_gn_on_profile"]
+
+
+def test_only_members_who_may_report_send_photos(client, auth, member_in, area):
+    pending = member_in(area)  # not verified, not active
+    inactive = member_in(area, verified=True)
+
+    for person, reason in ((pending, "identity_not_verified"), (inactive, "membership_not_active")):
+        for path in ("/v1/issues/photos", "/v1/issues/addition-photos"):
+            sent = client.post(path, content=jpeg_with_camera_details(), headers={**auth(person), "Content-Type": "image/jpeg"})
+            assert (sent.status_code, sent.json()["detail"]["problems"]) == (422, [reason]), path
+
+
+def test_a_case_without_a_named_owner_is_announced_to_everyone_who_may_take_it(
+    client, auth, member_in, area, team, create_member, assign, super_admin, db_session
+):
+    second_gn = create_member(verified=True)
+    assign(second_gn, "1", "gn", area.gn, ["cases.collect"], granted_by=super_admin)
+    second_executive = create_member(verified=True)
+    assign(second_executive, "5", "platform", None, ["cases.approve_executive"], granted_by=super_admin)
+    member = member_in(area, verified=True, active=True)
+
+    case_id = report(client, auth, member).json()["id"]
+    case = client.get(f"/v1/cases/{case_id}", headers=auth(team["gn"])).json()
+    assert case["ownerId"] is None
+    assert notices(db_session, team["gn"], "case_waiting") == notices(db_session, second_gn, "case_waiting") == 1
+    assert notices(db_session, team["gn"], "case_assigned") == 0
+
+    taken = staff_post(client, auth, team["gn"], case_id, "assign", {"ownerId": str(team["gn"].id), "note": "Taking it."})
+    assert taken.json()["ownerId"] == str(team["gn"].id)
+    still_waiting = db_session.scalar(
+        text("""SELECT count(*) FROM notifications.notification WHERE member_id = :id AND template = 'case_waiting'
+                AND action_done_at IS NULL"""),
+        {"id": second_gn.id},
+    )
+    assert still_waiting == 0
+
+    # Up the line to a regional plan, which two Tier 5 holders may approve.
+    staff_post(client, auth, team["gn"], case_id, "facts", {"statement": "Leak seen", "source": "Visit"})
+    staff_post(client, auth, team["gn"], case_id, "forward", {
+        "locationConfirmed": True, "descriptionClear": True, "evidenceReviewed": True, "ownerId": str(team["ds"].id),
+        "note": "Seen on site", "affectedArea": AFFECTED_AREA,
+    })
+    staff_post(client, auth, team["ds"], case_id, "ds-report", {
+        "summary": "Leak confirmed.", "recommendation": "Replace the main section.", "districtOwnerId": str(team["district"].id),
+    })
+    staff_post(client, auth, team["district"], case_id, "district-decision", {
+        "decision": "escalate", "reason": "Beyond the district budget.", "decisionRequired": "Funding",
+        "regionalOwnerId": str(team["regional"].id),
+    })
+    planned = staff_post(client, auth, team["regional"], case_id, "regional-plan", {
+        "solution": "Replace 40 m of main with the water board.", "responsibleTier": "4", "resources": "Water board crew",
+        "expectedOutcome": "No leak; road dry.", "reportingPlan": "Weekly photo update to Tier 5.",
+    })
+    assert planned.json()["stage"] == "executive" and planned.json()["ownerId"] is None
+    assert notices(db_session, team["executive"], "case_waiting") == notices(db_session, second_executive, "case_waiting") == 1
+
+
+def test_forwarding_needs_the_affected_area(client, auth, member_in, area, team):
+    member = member_in(area, verified=True, active=True)
+    case_id = report(client, auth, member).json()["id"]
+    staff_post(client, auth, team["gn"], case_id, "facts", {"statement": "Leak seen", "source": "Visit"})
+
+    missing = staff_post(client, auth, team["gn"], case_id, "forward", {
+        "locationConfirmed": True, "descriptionClear": True, "evidenceReviewed": True, "ownerId": str(team["ds"].id),
+        "note": "Seen on site",
+    })
+    blank = staff_post(client, auth, team["gn"], case_id, "forward", {
+        "locationConfirmed": True, "descriptionClear": True, "evidenceReviewed": True, "ownerId": str(team["ds"].id),
+        "note": "Seen on site", "affectedArea": "   ",
+    })
+
+    assert missing.status_code == 422
+    assert blank.status_code == 409 and blank.json()["detail"]["problems"] == ["affected_area_required"]
+
+
+def test_the_district_acts_only_within_an_approved_scope(client, auth, member_in, area, team):
+    member = member_in(area, verified=True, active=True)
+    case_id = report(client, auth, member).json()["id"]
+    staff_post(client, auth, team["gn"], case_id, "facts", {"statement": "Leak seen", "source": "Visit"})
+    staff_post(client, auth, team["gn"], case_id, "forward", {
+        "locationConfirmed": True, "descriptionClear": True, "evidenceReviewed": True, "ownerId": str(team["ds"].id),
+        "note": "Seen on site", "affectedArea": AFFECTED_AREA,
+    })
+    staff_post(client, auth, team["ds"], case_id, "ds-report", {
+        "summary": "Small leak at the joint.", "recommendation": "District maintenance crew can fix it.",
+        "districtOwnerId": str(team["district"].id),
+    })
+
+    refused = staff_post(client, auth, team["district"], case_id, "district-decision", {
+        "decision": "act", "authority": "District maintenance budget", "resources": "Two plumbers",
+        "office": "District secretariat", "ownerId": str(team["district"].id), "dueDate": in_days(7),
+    })
+    assert refused.status_code == 409 and refused.json()["detail"]["problems"] == ["scope_required"]
 
 
 def test_a_team_only_report_cannot_be_published(client, auth, member_in, area, team):
     member = member_in(area, verified=True, active=True)
     case_id = report(client, auth, member).json()["id"]
 
-    refused = staff_post(client, auth, team["district"], case_id, "public-summary", {
-        "publish": True, "titleEn": "Leaking water main", "titleTa": "நீர்க்குழாய் கசிவு",
-        "summaryEn": "A leaking water main was reported.", "summaryTa": "நீர்க்குழாய் கசிவு முறையிடப்பட்டது.",
-    })
+    refused = staff_post(client, auth, team["district"], case_id, "public-summary", SUMMARY)
     assert refused.status_code == 403
 
 

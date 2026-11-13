@@ -93,7 +93,13 @@ export function IntakeForm({ areaOptions, partners }: { areaOptions: readonly Ar
         <ActionField form={FORM} name="phone" label="Phone number (optional)" hint="Used only to reach the applicant about this request." state={state} targets={SUPPORT_TARGETS}>
           {(control) => <input {...control} type="tel" inputMode="tel" maxLength={16} autoComplete="off" defaultValue={values.phone} className={CONTROL} />}
         </ActionField>
-        <ActionField form={FORM} name="household" label="Household (optional)" hint="For example: 2 adults, 3 children." state={state} targets={SUPPORT_TARGETS}>
+        <ActionField
+          form={FORM}
+          name="household"
+          label="Household (optional)"
+          hint="Who lives with the applicant, for example: mother and two school children. Repeat requests are matched by the applicant's name or phone, never by this text."
+          state={state}
+          targets={SUPPORT_TARGETS}>
           {(control) => <input {...control} maxLength={120} defaultValue={values.household} className={CONTROL} />}
         </ActionField>
       </div>

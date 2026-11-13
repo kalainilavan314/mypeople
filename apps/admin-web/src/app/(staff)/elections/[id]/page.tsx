@@ -1,4 +1,10 @@
-import { ApiError, type ElectionNotice, type ElectionPeriodFile, type ElectionPeriodReport } from '@my-people/api-client';
+import {
+  ApiError,
+  type ElectionNotice,
+  type ElectionPeriodFile,
+  type ElectionPeriodReport,
+  type ElectionPeriodReportEntry,
+} from '@my-people/api-client';
 import Link from 'next/link';
 import { connection } from 'next/server';
 import { Suspense, type ReactNode } from 'react';
@@ -12,7 +18,7 @@ import { SubmitButton } from '@/components/SubmitButton';
 import { closePeriod, withdrawNotice } from '@/features/elections/actions';
 import { areaKeyText, electionTypeText, overlapRefs, silenceStatus, silenceText } from '@/features/elections/periods';
 import { PublishNoticeForm } from '@/features/elections/PublishNoticeForm';
-import { REPORT_LABELS } from '@/features/elections/roster';
+import { REPORT_LABELS, reportEntryLabel } from '@/features/elections/roster';
 import { api } from '@/lib/api';
 import { formatDate, formatDateTime } from '@/lib/format';
 import { getAdminLocale, getDictionary, getLocalizedProblem, type Locale, type TranslationDictionary } from '@/lib/i18n';
@@ -20,6 +26,7 @@ import { staffApi } from '@/lib/session';
 import { requireStaff } from '@/lib/staff';
 
 const PERMISSION = 'election.mode.manage';
+const REPORT_REFUSED = 'The period report is for Tier 5 (election mode management) in the period’s area.';
 const UUID = /^[0-9a-f-]{36}$/i;
 const FOCUS = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
 
@@ -180,6 +187,9 @@ async function PeriodFile({ params, searchParams }: Pick<PageProps<'/elections/[
         <Suspense fallback={<ConsoleLoading rows={2} />}>
           <PeriodReport periodId={period.id} locale={locale} />
         </Suspense>
+        <Suspense fallback={<ConsoleLoading rows={4} />}>
+          <PeriodReportEntries periodId={period.id} locale={locale} />
+        </Suspense>
       </section>
 
       <section aria-labelledby="notices-heading" className="flex flex-col gap-3">
@@ -225,7 +235,7 @@ async function PeriodReport({ periodId, locale }: { periodId: string; locale: Lo
     if (error instanceof ApiError && error.code === 'feature_unavailable') {
       return <p className="text-sm text-muted">The election duty roster is not switched on yet, so there is no period report.</p>;
     }
-    return <LoadFailure error={error} locale={locale} refused="The period report is for Tier 5 (election mode management)." notFound="The period report is not available." />;
+    return <LoadFailure error={error} locale={locale} refused={REPORT_REFUSED} notFound="The period report is not available." />;
   }
   return (
     <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
@@ -239,6 +249,73 @@ async function PeriodReport({ periodId, locale }: { periodId: string; locale: Lo
         </div>
       ))}
     </dl>
+  );
+}
+
+/**
+ * FR-ELX-009: the audit entries behind the report, newest first: what happened, to which record and
+ * when. Ids only; the report never shows message text or who received it.
+ */
+async function PeriodReportEntries({ periodId, locale }: { periodId: string; locale: Locale }) {
+  let entries: ElectionPeriodReportEntry[];
+  try {
+    entries = await (await staffApi()).listElectionPeriodReportEntries(periodId);
+  } catch (error) {
+    if (error instanceof ApiError && error.code === 'feature_unavailable') return null;
+    return <LoadFailure error={error} locale={locale} refused={REPORT_REFUSED} notFound="The period report is not available." />;
+  }
+  return (
+    <div className="flex flex-col gap-2">
+      <h3 className="flex flex-col text-sm font-bold">
+        <span lang="ta">அறிக்கைக்குரிய பதிவுகள்</span>
+        <span lang="en" className="text-xs font-semibold text-muted">
+          What the report counts: messages, roster changes and content published (latest 500)
+        </span>
+      </h3>
+      {entries.length === 0 ? (
+        <p className="rounded-lg bg-surface p-4 text-sm text-muted">Nothing has been sent, changed or published for this period yet.</p>
+      ) : (
+        <div className="overflow-x-auto rounded-lg border border-line">
+          <table className="w-full text-left text-sm">
+            <caption className="sr-only">Audit entries in the election period report, newest first</caption>
+            <thead className="border-b border-line text-xs">
+              <tr>
+                <th scope="col" className="px-3 py-2 font-semibold text-text">
+                  <span lang="ta" className="block">நடந்தது</span>
+                  <span lang="en" className="block font-normal text-muted">What happened</span>
+                </th>
+                <th scope="col" className="px-3 py-2 font-semibold text-text">
+                  <span lang="ta" className="block">பதிவு</span>
+                  <span lang="en" className="block font-normal text-muted">Record</span>
+                </th>
+                <th scope="col" className="px-3 py-2 font-semibold text-text">
+                  <span lang="ta" className="block">நேரம்</span>
+                  <span lang="en" className="block font-normal text-muted">Time</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {entries.map((entry, index) => {
+                const label = reportEntryLabel(entry.action);
+                return (
+                  <tr key={`${entry.occurredAt}-${entry.targetId ?? ''}-${index}`}>
+                    <td className="px-3 py-2">
+                      <span lang="ta" className="block text-text">{label.ta}</span>
+                      <span lang="en" className="block text-xs text-muted">{label.en}</span>
+                    </td>
+                    <td className="px-3 py-2 text-xs text-muted">
+                      {entry.targetType ? <span className="block">{entry.targetType.replace(/_/g, ' ')}</span> : null}
+                      {entry.targetId ? <span className="block break-all font-mono">{entry.targetId}</span> : '—'}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2 text-xs tabular-nums text-muted">{formatDateTime(entry.occurredAt)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   );
 }
 

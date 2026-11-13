@@ -258,7 +258,7 @@ async function SessionView({ params, searchParams }: Pick<PageProps<'/town-halls
             <SimpleForm
               id="move"
               title="Run the session"
-              intro="Refused while an election silence period covers this area and time; in an election period a legal review reference is needed."
+              intro="Refused while an election silence period covers this area and time. In an election period, including one declared after the session was scheduled, a legal review reference is needed to schedule it and to go live."
               action={moveTownHall}
               hidden={hidden}
               fields={[]}

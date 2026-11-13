@@ -11,7 +11,7 @@ import { LoadFailure, PageProblem } from '@/components/PageProblem';
 import { FOCUS_RING, NotSwitchedOn, Section } from '@/components/PageSection';
 import { SimpleForm } from '@/components/SimpleForm';
 import { setFollowUp } from '@/features/field/actions';
-import { CONCERN_LABELS, countsTable } from '@/features/field/forms';
+import { CONCERN_LABELS, countsTable, visitPlaceKey } from '@/features/field/forms';
 import { api } from '@/lib/api';
 import { loadAreaNames } from '@/lib/areas';
 import { areaText, formatDateTime } from '@/lib/format';
@@ -24,9 +24,9 @@ const REFUSED = 'Field visits need the field collection permission (field.collec
 const one = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
 
 /**
- * D24: community-service visits in the supervisor's areas, their follow-ups, and counts by GN
- * division and concern. Nothing political is recorded or shown; a visit whose consent was declined
- * shows only its place and time.
+ * D24: community-service visits in the supervisor's areas, their follow-ups, and counts by place
+ * and concern. The place is a GN or DS division, or none (S05). Nothing political is recorded or
+ * shown; a visit whose consent was declined shows only its place and time.
  */
 export default function FieldPage(props: PageProps<'/field'>) {
   return (
@@ -59,7 +59,7 @@ async function Visits({ searchParams }: { searchParams: PageProps<'/field'>['sea
     if (error instanceof ApiError && error.code === 'feature_unavailable') return <NotSwitchedOn what="Field visits" />;
     return <LoadFailure error={error} locale={locale} refused={REFUSED} notFound="The visit list is not available." />;
   }
-  const areaNames = await loadAreaNames(visits.map((visit) => `gn:${visit.gnCode}`));
+  const areaNames = await loadAreaNames(visits.map((visit) => visitPlaceKey(visit).key));
 
   return (
     <div className="flex flex-col gap-4">
@@ -91,7 +91,9 @@ async function Visits({ searchParams }: { searchParams: PageProps<'/field'>['sea
             <li key={visit.id} className="flex flex-col gap-2 rounded-xl border border-line bg-card p-4 text-sm">
               <p className="flex flex-wrap items-center gap-2">
                 <span className="font-mono text-xs font-semibold text-muted">{visit.visitRef}</span>
-                <span className="font-semibold text-text">{areaText(`gn:${visit.gnCode}`, areaNames, 'en')}</span>
+                <span className="font-semibold text-text">
+                  {visitPlaceKey(visit).given ? areaText(visitPlaceKey(visit).key, areaNames, 'en') : `No place given (${areaText(visit.areaKey, areaNames, 'en')})`}
+                </span>
                 <span className="text-xs tabular-nums text-muted">{formatDateTime(visit.visitedAt)}</span>
                 {visit.consent === 'declined' ? <BilingualTag label={{ ta: 'ஒப்புதல் மறுக்கப்பட்டது', en: 'Consent declined' }} /> : null}
               </p>
@@ -155,18 +157,25 @@ async function Counts() {
     return <LoadFailure error={error} locale={locale} refused={REFUSED} notFound="The visit counts are not available." />;
   }
   const table = countsTable(counts);
-  const areaNames = await loadAreaNames(table.gns.map((gn) => `gn:${gn}`));
+  const areaNames = await loadAreaNames(table.places);
   return (
-    <Section id="counts" ta="கிராம சேவகர் பிரிவுவாரியான எண்ணிக்கைகள்" en="Visits by GN division and concern">
-      {table.gns.length === 0 ? (
+    <Section
+      id="counts"
+      ta="இடவாரியான எண்ணிக்கைகள்"
+      en="Visits by place and concern"
+      intro="A place is a GN or DS division. Visits recorded without a place are counted under the coordinator's area.">
+      {table.places.length === 0 ? (
         <p className="text-sm text-muted">Nothing to count yet.</p>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-line">
           <table className="w-full text-left text-sm">
-            <caption className="sr-only">Visits by GN division and concern</caption>
+            <caption className="sr-only">Visits by place and concern</caption>
             <thead className="border-b border-line text-xs">
               <tr>
-                <th scope="col" className="px-3 py-2 font-semibold text-text">GN division</th>
+                <th scope="col" className="px-3 py-2 font-semibold text-text">
+                  <span lang="ta" className="block">இடம்</span>
+                  <span lang="en" className="block font-normal text-muted">Place</span>
+                </th>
                 {table.concerns.map((concern) => (
                   <th key={concern} scope="col" className="px-3 py-2 font-semibold text-text">
                     <span lang="ta" className="block">{CONCERN_LABELS[concern]?.ta ?? concern}</span>
@@ -176,11 +185,11 @@ async function Counts() {
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
-              {table.gns.map((gn) => (
-                <tr key={gn}>
-                  <th scope="row" className="px-3 py-2 font-semibold text-text">{areaText(`gn:${gn}`, areaNames, 'en')}</th>
+              {table.places.map((place) => (
+                <tr key={place}>
+                  <th scope="row" className="px-3 py-2 font-semibold text-text">{areaText(place, areaNames, 'en')}</th>
                   {table.concerns.map((concern) => (
-                    <td key={concern} className="px-3 py-2 tabular-nums text-text">{table.count(gn, concern)}</td>
+                    <td key={concern} className="px-3 py-2 tabular-nums text-text">{table.count(place, concern)}</td>
                   ))}
                 </tr>
               ))}

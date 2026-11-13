@@ -1,4 +1,8 @@
-"""SQL for field visits and the counts kept after retention."""
+"""SQL for field visits and the counts kept after retention.
+
+Every function opens the row-level firewall for its own transaction first: without that, field
+rows are invisible to the database session (Alembic 0042, MP-FEA-002 §8).
+"""
 
 import uuid
 from dataclasses import dataclass
@@ -9,6 +13,10 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 
+def _open(db: Session) -> None:
+    db.execute(text("SELECT set_config('field.firewall', 'open', true)"))
+
+
 @dataclass(frozen=True)
 class Visit:
     id: uuid.UUID
@@ -16,7 +24,8 @@ class Visit:
     client_id: uuid.UUID
     coordinator_id: uuid.UUID
     coordinator_name: str
-    gn_code: str
+    gn_code: str | None
+    ds_code: str | None
     area_path: list[str]
     visited_at: datetime
     consent: str
@@ -33,12 +42,17 @@ class Visit:
 
 
 _SELECT = """
-    SELECT v.id, v.visit_ref, v.client_id, v.coordinator_id, m.full_name AS coordinator_name, v.gn_code, v.area_path,
-           v.visited_at, v.consent, v.concerns, v.notes, v.place_text, v.follow_up, v.follow_up_by, v.follow_up_done_at,
-           v.case_number, v.version, v.created_at, v.updated_at
+    SELECT v.id, v.visit_ref, v.client_id, v.coordinator_id, m.full_name AS coordinator_name, v.gn_code, v.ds_code,
+           v.area_path, v.visited_at, v.consent, v.concerns, v.notes, v.place_text, v.follow_up, v.follow_up_by,
+           v.follow_up_done_at, v.case_number, v.version, v.created_at, v.updated_at
     FROM field.visit v JOIN npm.member m ON m.id = v.coordinator_id
 """
-FIELDS = ("gn_code", "area_path", "visited_at", "consent", "concerns", "notes", "place_text", "follow_up", "case_number")
+FIELDS = ("gn_code", "ds_code", "area_path", "visited_at", "consent", "concerns", "notes", "place_text", "follow_up",
+          "case_number")
+
+# The most specific area a visit is counted under: its GN, its DS, or (no place chosen) the
+# coordinator's own area, the last key of its area path.
+_PLACE = "COALESCE('gn:' || v.gn_code, 'ds:' || v.ds_code, v.area_path[cardinality(v.area_path)])"
 
 
 def _visit(row: Any) -> Visit:
@@ -46,16 +60,19 @@ def _visit(row: Any) -> Visit:
 
 
 def by_client_id(db: Session, client_id: uuid.UUID, *, lock: bool = False) -> Visit | None:
+    _open(db)
     row = db.execute(text(f"{_SELECT} WHERE v.client_id = :c{' FOR UPDATE OF v' if lock else ''}"), {"c": client_id}).mappings().one_or_none()
     return _visit(row) if row else None
 
 
 def find(db: Session, visit_id: uuid.UUID) -> Visit | None:
+    _open(db)
     row = db.execute(text(f"{_SELECT} WHERE v.id = :id"), {"id": visit_id}).mappings().one_or_none()
     return _visit(row) if row else None
 
 
 def insert(db: Session, client_id: uuid.UUID, coordinator_id: uuid.UUID, values: dict[str, Any]) -> None:
+    _open(db)
     db.execute(
         text(f"""INSERT INTO field.visit (client_id, coordinator_id, {', '.join(FIELDS)})
                  VALUES (:client_id, :coordinator_id, {', '.join(':' + f for f in FIELDS)})"""),
@@ -64,6 +81,7 @@ def insert(db: Session, client_id: uuid.UUID, coordinator_id: uuid.UUID, values:
 
 
 def update(db: Session, client_id: uuid.UUID, values: dict[str, Any]) -> None:
+    _open(db)
     sets = ", ".join(f"{f} = :{f}" for f in FIELDS)
     db.execute(
         text(f"UPDATE field.visit SET {sets}, version = version + 1, updated_at = clock_timestamp() WHERE client_id = :client_id"),
@@ -72,6 +90,7 @@ def update(db: Session, client_id: uuid.UUID, values: dict[str, Any]) -> None:
 
 
 def mine(db: Session, coordinator_id: uuid.UUID, since: datetime | None) -> list[Visit]:
+    _open(db)
     condition, params = "v.coordinator_id = :c", {"c": coordinator_id}
     if since is not None:
         condition += " AND v.updated_at > :since"
@@ -80,6 +99,7 @@ def mine(db: Session, coordinator_id: uuid.UUID, since: datetime | None) -> list
 
 
 def in_areas(db: Session, areas: list[str] | None, open_follow_ups: bool, limit: int) -> list[Visit]:
+    _open(db)
     conditions, params = ["TRUE"], {"limit": limit}
     if areas is not None:
         conditions.append("v.area_path && CAST(:areas AS text[])")
@@ -91,6 +111,7 @@ def in_areas(db: Session, areas: list[str] | None, open_follow_ups: bool, limit:
 
 
 def set_follow_up(db: Session, visit_id: uuid.UUID, by: uuid.UUID | None, done: bool) -> None:
+    _open(db)
     db.execute(
         text("""UPDATE field.visit SET follow_up_by = COALESCE(:by, follow_up_by),
                        follow_up_done_at = CASE WHEN :done THEN clock_timestamp() ELSE NULL END,
@@ -99,47 +120,57 @@ def set_follow_up(db: Session, visit_id: uuid.UUID, by: uuid.UUID | None, done: 
     )
 
 
-def purge_older_than(db: Session, cutoff: datetime) -> int:
-    """Fold old visits into monthly counts, then delete them (FR-FLD-009)."""
+def purge_older_than(db: Session, now: datetime, months: int) -> int:
+    """Fold visits older than the retention period (calendar months) into monthly counts, then
+    delete them (FR-FLD-009).
+
+    A kept count is keyed by the visit's place ('gn:...', 'ds:...', or the coordinator's area for a
+    visit with no place) and keeps the visit's area path for the supervisors' area check.
+    """
+    _open(db)
+    params = {"now": now, "months": months}
+    cutoff = "CAST(:now AS timestamptz) - make_interval(months => :months)"
     db.execute(
         text(
-            """
-            INSERT INTO field.visit_count (gn_code, month, concern, visits)
-            SELECT v.gn_code, date_trunc('month', v.visited_at)::date,
+            f"""
+            INSERT INTO field.visit_count (place_key, area_path, month, concern, visits)
+            SELECT {_PLACE}, min(v.area_path), date_trunc('month', v.visited_at)::date,
                    COALESCE(c.concern, 'consent_declined'), count(*)
-            FROM field.visit v LEFT JOIN LATERAL unnest(NULLIF(v.concerns, '{}')) AS c(concern) ON TRUE
-            WHERE v.visited_at < :cutoff
-            GROUP BY 1, 2, 3
-            ON CONFLICT (gn_code, month, concern) DO UPDATE SET visits = field.visit_count.visits + EXCLUDED.visits
+            FROM field.visit v LEFT JOIN LATERAL unnest(NULLIF(v.concerns, '{{}}')) AS c(concern) ON TRUE
+            WHERE v.visited_at < {cutoff}
+            GROUP BY 1, 3, 4
+            ON CONFLICT (place_key, month, concern) DO UPDATE SET visits = field.visit_count.visits + EXCLUDED.visits
             """
         ),
-        {"cutoff": cutoff},
+        params,
     )
-    return db.execute(text("DELETE FROM field.visit WHERE visited_at < :cutoff"), {"cutoff": cutoff}).rowcount
+    return db.execute(text(f"DELETE FROM field.visit WHERE visited_at < {cutoff}"), params).rowcount
 
 
 def counts(db: Session, areas: list[str] | None) -> list[tuple[str, str, int]]:
-    """Visits by GN and concern: kept counts plus live visits, for supervisors (D24)."""
+    """Visits by place and concern: kept counts plus live visits, for supervisors (D24).
+
+    The place is an area key: 'gn:...', 'ds:...', or the coordinator's area for a visit with no place.
+    """
+    _open(db)
     params: dict[str, Any] = {}
     live_area = kept_area = ""
     if areas is not None:
         live_area = "AND v.area_path && CAST(:areas AS text[])"
-        kept_area = """AND EXISTS (SELECT 1 FROM geo.gn_division g JOIN geo.ds_division d ON d.ds_code = g.ds_code
-                                    WHERE g.gn_code = k.gn_code AND (('gn:' || g.gn_code) = ANY(:areas)
-                                    OR ('ds:' || g.ds_code) = ANY(:areas) OR ('district:' || d.district_code) = ANY(:areas)))"""
+        kept_area = "WHERE k.area_path && CAST(:areas AS text[])"
         params["areas"] = areas or ["none"]
     rows = db.execute(
         text(
             f"""
-            SELECT gn_code, concern, sum(n)::int AS n FROM (
-                SELECT v.gn_code, COALESCE(c.concern, 'consent_declined') AS concern, count(*) AS n
+            SELECT place, concern, sum(n)::int AS n FROM (
+                SELECT {_PLACE} AS place, COALESCE(c.concern, 'consent_declined') AS concern, count(*) AS n
                 FROM field.visit v LEFT JOIN LATERAL unnest(NULLIF(v.concerns, '{{}}')) AS c(concern) ON TRUE
                 WHERE TRUE {live_area} GROUP BY 1, 2
                 UNION ALL
-                SELECT k.gn_code, k.concern, k.visits FROM field.visit_count k WHERE TRUE {kept_area}
+                SELECT k.place_key, k.concern, k.visits FROM field.visit_count k {kept_area}
             ) all_counts GROUP BY 1, 2 ORDER BY 1, 2
             """
         ),
         params,
     )
-    return [(row.gn_code, row.concern, row.n) for row in rows]
+    return [(row.place, row.concern, row.n) for row in rows]

@@ -13,6 +13,7 @@ import {
   readIntake,
   readPartner,
   readProgramme,
+  readReferral,
 } from './forms';
 
 // D13, D14: community support. Help never depends on membership, donations or political support,
@@ -41,12 +42,20 @@ export async function recordIntake(_previous: FormState, formData: FormData): Pr
   redirect(`/support?done=support_intake_recorded&case=${encodeURIComponent(id)}`);
 }
 
+/**
+ * Screening: intake staff route a case to a caseworker, decision-makers may reassign it. Intake staff
+ * then lose the case (S12: the file is the caseworker's), so they go back to the queue.
+ */
 export async function assignCaseworker(_previous: FormState, formData: FormData): Promise<FormState> {
   const id = caseIdFrom(formData);
   const caseworkerId = uuidOrNull(formData, 'caseworkerId');
   if (!caseworkerId) return incomplete(SUPPORT_REFUSED, ['caseworker_required'], {});
-  const failed = await attempt({}, (api) => api.assignSupportCase(id, caseworkerId));
+  let stillOpen = true;
+  const failed = await attempt({}, async (api) => {
+    stillOpen = (await api.assignSupportCase(id, caseworkerId)).fullFile;
+  });
   if (failed) return failed;
+  if (!stillOpen) redirect('/support?done=support_assigned');
   toCase(id, 'support_assigned');
 }
 
@@ -89,16 +98,18 @@ export async function recordDelivery(_previous: FormState, formData: FormData): 
   toCase(id, 'support_delivered');
 }
 
-/** FR-AST-004: a referral only with the applicant's consent for this partner to see the case. */
+/**
+ * M12, FR-AST-004: consent for each partner referral. A member answers the proposal in the app, so it
+ * waits for them; for anyone else the caseworker confirms the consent the applicant gave them.
+ */
 export async function referCase(_previous: FormState, formData: FormData): Promise<FormState> {
   const id = caseIdFrom(formData);
-  const values = valuesOf(formData, ['partnerId', 'consent']);
-  const partnerId = uuidOrNull(formData, 'partnerId');
-  const problems = [...(partnerId ? [] : ['partner_required']), ...(values.consent === '1' ? [] : ['partner_consent_required'])];
-  if (problems.length || !partnerId) return incomplete(SUPPORT_REFUSED, problems, values);
-  const failed = await attempt(values, (api) => api.referSupportCase(id, partnerId, true));
+  const values = valuesOf(formData, ['partnerId', 'purpose', 'consent']);
+  const { input, problems } = readReferral(formData);
+  if (!input) return incomplete(SUPPORT_REFUSED, problems, values);
+  const failed = await attempt(values, (api) => api.referSupportCase(id, input.partnerId, input.purpose, input.consent));
   if (failed) return failed;
-  toCase(id, 'support_referred');
+  toCase(id, formData.get('consentInApp') === '1' ? 'support_referral_proposed' : 'support_referred');
 }
 
 export async function updateReferral(_previous: FormState, formData: FormData): Promise<FormState> {

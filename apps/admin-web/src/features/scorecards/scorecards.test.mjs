@@ -40,6 +40,7 @@ test('figures show "Insufficient data" under 10 cases and every value with its n
       insufficient: false,
       metrics: {
         accepted: { value: 14, numerator: 14, denominator: null },
+        closed_with_evidence: { value: 9, numerator: 9, denominator: 14 },
         resolution_rate: { value: 62.5, numerator: 5, denominator: 8 },
         average_processing_days: { value: 6.2, numerator: null, denominator: 9 },
       },
@@ -48,6 +49,7 @@ test('figures show "Insufficient data" under 10 cases and every value with its n
   assert.deepEqual(areas.map((area) => [area.areaKey, area.insufficient]), [['district:LK41', false], ['gn:G1', true]]);
   const byKey = Object.fromEntries(areas[0].metrics.map((metric) => [metric.key, metricText(metric)]));
   assert.equal(byKey.accepted, '14');
+  assert.equal(byKey.closed_with_evidence, '9 (of 14 accepted)');
   assert.equal(byKey.resolution_rate, '62.5% (5 ÷ 8)');
   assert.equal(byKey.average_processing_days, '6.2 days (over 9 closed cases)');
   assert.equal(byKey.reopen_rate, '—');

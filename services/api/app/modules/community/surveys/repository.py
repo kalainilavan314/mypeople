@@ -141,15 +141,30 @@ def participation(db: Session, survey_id: uuid.UUID, member_id: uuid.UUID) -> Pa
     return Participation(row.receipt_ref, row.submitted_at, row.updated_at) if row else None
 
 
-def record_response(db: Session, survey_id: uuid.UUID, member_id: uuid.UUID, answers: dict[str, Any], anonymous: bool) -> None:
-    """Participation names the member; an anonymous survey's answers do not (FR-SRV-003)."""
-    db.execute(
-        text("INSERT INTO community.survey_participation (survey_id, member_id) VALUES (:s, :m)"),
+def record_participation(db: Session, survey_id: uuid.UUID, member_id: uuid.UUID) -> bool:
+    """Participation names the member (one per survey); False when they had already taken part."""
+    inserted = db.scalar(
+        text(
+            """INSERT INTO community.survey_participation (survey_id, member_id) VALUES (:s, :m)
+               ON CONFLICT DO NOTHING RETURNING receipt_ref"""
+        ),
         {"s": survey_id, "m": member_id},
     )
+    return inserted is not None
+
+
+def remove_participation(db: Session, survey_id: uuid.UUID, member_id: uuid.UUID) -> None:
+    db.execute(
+        text("DELETE FROM community.survey_participation WHERE survey_id = :s AND member_id = :m"),
+        {"s": survey_id, "m": member_id},
+    )
+
+
+def record_answers(db: Session, survey_id: uuid.UUID, member_id: uuid.UUID | None, answers: dict[str, Any]) -> None:
+    """member_id is None for an anonymous survey: nothing in the row ties the answers to the member (FR-SRV-003)."""
     db.execute(
         text("INSERT INTO community.survey_response (survey_id, member_id, answers) VALUES (:s, :m, CAST(:a AS jsonb))"),
-        {"s": survey_id, "m": None if anonymous else member_id, "a": json.dumps(answers)},
+        {"s": survey_id, "m": member_id, "a": json.dumps(answers)},
     )
 
 

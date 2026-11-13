@@ -71,6 +71,21 @@ def test_progress_is_recorded_only_on_complete_and_resumes_after_save_and_exit(c
     assert tiers == 0  # FR-LRN-004: completing a course never grants a role
 
 
+def test_a_retired_course_stays_in_the_history_of_those_who_took_it(client, auth, member_in, area, author):
+    learner, newcomer = (member_in(area, verified=True, active=True) for _ in range(2))
+    course_id = published_course(client, auth, author, lessons=1)
+    lesson_id = client.get(f"/v1/learning/courses/{course_id}", headers=auth(learner)).json()["lessonList"][0]["id"]
+    client.post(f"/v1/learning/courses/{course_id}/lessons/{lesson_id}/complete", headers=auth(learner))
+
+    retired = client.post(f"/v1/learning/manage/courses/{course_id}/state", json={"state": "retired"}, headers=auth(author))
+    history = client.get("/v1/learning/courses", headers=auth(learner)).json()
+    offered = client.get("/v1/learning/courses", headers=auth(newcomer)).json()
+
+    assert retired.json()["state"] == "retired"
+    assert [c["id"] for c in history["completed"]] == [course_id]  # H15 completed-course history
+    assert course_id not in [c["id"] for c in offered["available"]]
+
+
 def test_only_published_courses_are_seen_and_drafts_only_change(client, auth, member_in, area, author):
     member = member_in(area, verified=True, active=True)
     draft = client.post("/v1/learning/manage/courses", json={
@@ -96,14 +111,36 @@ def test_only_published_courses_are_seen_and_drafts_only_change(client, auth, me
 def test_an_invitation_link_carries_only_an_opaque_token(client, auth, member_in, area):
     member = member_in(area, verified=True, active=True)
 
+    previewed = client.get("/v1/invitations/preview", params={"language": "ta"}, headers=auth(member)).json()
+    before = client.get("/v1/invitations/mine", headers=auth(member)).json()
     created = client.post("/v1/invitations", json={"language": "ta"}, headers=auth(member)).json()
     mine = client.get("/v1/invitations/mine", headers=auth(member)).json()
 
+    assert previewed["preview"].startswith("என் மக்கள்") and "/join/" in previewed["preview"]
+    assert before["invitations"] == []  # H20: a preview is never listed as Shared
     assert re.fullmatch(r"https://[^/]+/join/INV-[A-Z2-7]{12}", created["url"]), created["url"]
     assert created["preview"].startswith("என் மக்கள்") and created["url"] in created["preview"]
     assert mine["referralCode"] and mine["invitations"] == [
         {"number": 1, "status": "shared", "createdAt": mine["invitations"][0]["createdAt"]}
     ]
+
+
+def test_a_share_that_was_closed_unsent_is_taken_back(client, auth, member_in, area, db_session):
+    member = member_in(area, verified=True, active=True)
+    first = client.post("/v1/invitations", json={"language": "en"}, headers=auth(member)).json()
+    second = client.post("/v1/invitations", json={"language": "en"}, headers=auth(member)).json()
+    db_session.execute(
+        text("UPDATE membership.invitation SET created_at = created_at - interval '1 hour' WHERE token = :t"),
+        {"t": first["url"].rsplit("/", 1)[1]},
+    )
+
+    cancelled = client.post(f"/v1/invitations/{second['number']}/cancel", headers=auth(member))
+    too_late = client.post(f"/v1/invitations/{first['number']}/cancel", headers=auth(member))
+    listed = client.get("/v1/invitations/mine", headers=auth(member)).json()["invitations"]
+
+    assert cancelled.status_code == 204
+    assert too_late.status_code == 404  # an older link may already be out with someone: never broken
+    assert [i["number"] for i in listed] == [first["number"]]
 
 
 def test_an_invitation_goes_pending_then_active_without_naming_anyone(client, auth, member_in, area, db_session):

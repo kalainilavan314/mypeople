@@ -18,7 +18,7 @@ from app.modules.access.rules import Area
 from app.modules.access.service import AccessRefused, Staff
 from app.modules.auth.dependencies import CurrentMember
 from app.modules.election.roster import service
-from app.modules.election.roster.repository import Assignment, Shift
+from app.modules.election.roster.repository import Assignment, ReportEntry, SentMessage, Shift
 from app.modules.features.dependencies import require_feature
 
 Db = Annotated[Session, Depends(get_db)]
@@ -68,8 +68,25 @@ class RosterAssignmentOut(CamelModel):
                    site_confirmed=a.site_confirmed)
 
 
+class RosterMessageOut(CamelModel):
+    """S15: an operational message already sent to the volunteers rostered on a shift."""
+
+    id: uuid.UUID
+    body_en: str
+    body_ta: str
+    sent_by_name: str
+    recipients: int
+    created_at: datetime
+
+    @classmethod
+    def build(cls, m: SentMessage) -> "RosterMessageOut":
+        return cls(id=m.id, body_en=m.body_en, body_ta=m.body_ta, sent_by_name=m.sent_by_name, recipients=m.recipients,
+                   created_at=m.created_at)
+
+
 class ShiftFileOut(ShiftOut):
     assignments: list[RosterAssignmentOut]
+    messages: list[RosterMessageOut] = Field(description="Messages already sent to the shift, newest first")
 
 
 class MyShiftOut(CamelModel):
@@ -131,6 +148,19 @@ class CheckInIn(CamelModel):
     site_confirmed: bool | None = Field(default=None, description="Optional; no location is ever recorded")
 
 
+class PeriodReportEntryOut(CamelModel):
+    """One audit entry behind the period report: what happened, to which record and when; ids only."""
+
+    action: str
+    target_type: str | None
+    target_id: str | None
+    occurred_at: datetime
+
+    @classmethod
+    def build(cls, e: ReportEntry) -> "PeriodReportEntryOut":
+        return cls(action=e.action, target_type=e.target_type, target_id=e.target_id, occurred_at=e.occurred_at)
+
+
 class PeriodReportOut(CamelModel):
     shifts: int
     roster_assignments: int
@@ -156,7 +186,8 @@ def _answers() -> Iterator[None]:
 
 
 def _file(f: service.ShiftFile) -> ShiftFileOut:
-    return ShiftFileOut(**ShiftOut.build(f.shift).model_dump(), assignments=[RosterAssignmentOut.build(a) for a in f.assignments])
+    return ShiftFileOut(**ShiftOut.build(f.shift).model_dump(), assignments=[RosterAssignmentOut.build(a) for a in f.assignments],
+                        messages=[RosterMessageOut.build(m) for m in f.messages])
 
 
 @router.get("/mine", response_model=list[MyShiftOut])
@@ -234,13 +265,21 @@ def cancel(shift_id: uuid.UUID, body: ReasonIn, staff: Coordinator, request: Req
 
 @router.post("/manage/shifts/{shift_id}/messages", response_model=SentOut)
 def message(shift_id: uuid.UUID, body: RosterMessageIn, staff: Coordinator, request: Request, db: Db) -> SentOut:
-    """FR-ELX-007: an operational message to the people on this shift."""
+    """FR-ELX-007: an operational message to the volunteers who accepted this shift."""
     with _answers():
         return SentOut(recipients=service.message(db, staff, shift_id, body.body_en, body.body_ta, client_ip(request)))
 
 
 @router.get("/periods/{period_id}/report", response_model=PeriodReportOut)
-def period_report(period_id: uuid.UUID, staff: ElectionLead, db: Db) -> PeriodReportOut:
-    """FR-ELX-009: messages sent, roster changes and content published during the period."""
+def period_report(period_id: uuid.UUID, staff: ElectionLead, request: Request, db: Db) -> PeriodReportOut:
+    """FR-ELX-009: messages sent, roster changes and content published during the period, in its area."""
     with _answers():
-        return PeriodReportOut(**service.report(db, staff, period_id))
+        return PeriodReportOut(**service.report(db, staff, period_id, client_ip(request)))
+
+
+@router.get("/periods/{period_id}/report/entries", response_model=list[PeriodReportEntryOut])
+def period_report_entries(period_id: uuid.UUID, staff: ElectionLead, request: Request, db: Db) -> list[PeriodReportEntryOut]:
+    """FR-ELX-009: the audit entries behind the report, newest first (at most 500): broadcasts, content
+    published and silence blocks in the period's time and area, and every roster change for its shifts."""
+    with _answers():
+        return [PeriodReportEntryOut.build(e) for e in service.report_entries(db, staff, period_id, client_ip(request))]

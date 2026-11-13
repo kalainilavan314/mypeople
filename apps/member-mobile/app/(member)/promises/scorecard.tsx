@@ -22,8 +22,9 @@ import { api } from '@/lib/api';
 
 /**
  * M20 Area scorecard: the member's GN division, DS division and district, each with its last four
- * published quarters. Under 10 accepted cases an area shows "Insufficient data", never figures that
- * could single anyone out; no person is named (FR-ACS-001 to 004).
+ * published quarters. Every value shows its numerator, denominator and quarter (M20). Under 10
+ * accepted cases an area shows "Insufficient data", never figures that could single anyone out; no
+ * person is named (FR-ACS-001 to 004).
  */
 export default function ScorecardScreen() {
   const { t } = useTranslation();
@@ -45,7 +46,7 @@ export default function ScorecardScreen() {
                 {t('m.scorecards.noArea')}
               </AppText>
             ) : (
-              data.areas.map((area) => <AreaCard key={area.areaKey} area={area} slaVersion={data.slaVersion} />)
+              data.areas.map((area) => <AreaCard key={area.areaKey} area={area} />)
             )}
             <AppText step="caption" tone="muted">
               {t('m.scorecards.slaVersion', { version: data.slaVersion })}
@@ -57,7 +58,7 @@ export default function ScorecardScreen() {
   );
 }
 
-function AreaCard({ area, slaVersion }: { area: AreaScorecard; slaVersion: string }) {
+function AreaCard({ area }: { area: AreaScorecard }) {
   const { t } = useTranslation();
   const language = useLanguage();
   const localized = useLocalized();
@@ -100,7 +101,7 @@ function AreaCard({ area, slaVersion }: { area: AreaScorecard; slaVersion: strin
                 METRICS.map((metric) => {
                   const figure = figures.metrics[metric];
                   return figure ? (
-                    <MetricRow key={metric} metric={metric} figure={figure} period={period.period} slaVersion={slaVersion} />
+                    <MetricRow key={metric} metric={metric} figure={figure} period={period.period} />
                   ) : null;
                 })
               )}

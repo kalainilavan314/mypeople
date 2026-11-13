@@ -20,6 +20,7 @@ import { IssuesQueryView } from '@/features/issues/IssuesQueryView';
 import { IssueStatusTag } from '@/features/issues/IssueStatusTag';
 import { IssueStepper } from '@/features/issues/IssueStepper';
 import { CATEGORY_ICONS, CATEGORY_TINTS } from '@/features/issues/labels';
+import { MyAdditions } from '@/features/issues/MyAdditions';
 import { MyReportSection } from '@/features/issues/MyReportSection';
 import { PublicIssueSection } from '@/features/issues/PublicIssueSection';
 import { ReceiptBanner } from '@/features/issues/ReceiptBanner';
@@ -27,8 +28,10 @@ import { api } from '@/lib/api';
 
 /**
  * H06 Local issue and H09 My report and progress, one screen: everyone sees the case ID, status,
- * who holds it and the four-stage stepper (OD-13); the reporter also sees their own report, and
- * others the moderated public summary. With receipt=1 it opens as the receipt (FR-RPT-014).
+ * who holds it and the four-stage stepper (OD-13); the reporter also sees their own report and the
+ * closing summary, and others the moderated public summary (BR-032). Anyone who added information
+ * sees where it stands and may appeal a rejection once (D12). With receipt=1 it opens as the receipt
+ * (FR-RPT-014).
  */
 export default function IssueScreen() {
   const { id, receipt } = useLocalSearchParams<{ id: string; receipt?: string }>();
@@ -112,6 +115,8 @@ function IssueBody({ issue, receipt, reload }: { issue: IssueDetail; receipt: bo
       ) : (
         <PublicIssueSection issue={issue} reload={reload} />
       )}
+
+      <MyAdditions additions={issue.myAdditions} reload={reload} />
     </>
   );
 }

@@ -1,7 +1,9 @@
 """Invite a member and My referrals (BRD H19, H20, FR-REF-001 to 006, BR-053 to 056).
 
 An invitation link carries only an opaque random token (FR-REF-004); the app shares it through the
-phone's share sheet and never asks for contacts (FR-REF-002). Each invitation is listed with a
+phone's share sheet and never asks for contacts (FR-REF-002). The preview creates nothing: an
+invitation is made only as the member shares (and taken back if the share sheet reports it was
+closed unsent), so "Shared" is true of every listed one. Each invitation is listed with a
 neutral label ("Invitation 01") and one of three statuses, Shared, Pending or Active, with nothing
 about the person who used it (FR-REF-005, OD-24). Referral counts never become permissions,
 rewards, rankings or priority (FR-REF-006): nothing here is read by any other module.
@@ -19,7 +21,9 @@ from app.modules.audit import service as audit
 from app.modules.membership.invitations import repository
 
 INVITATIONS_PER_DAY = 20  # [ASSUMPTION] plenty for a member, too few to spam with
+CANCEL_WITHIN_MINUTES = 15  # [ASSUMPTION] long enough for a share sheet, short enough that no link is out yet
 TOKEN_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
+PREVIEW_TOKEN = "…"  # stands in for the token in a preview; the real one is made on sharing
 
 Status = Literal["shared", "pending", "active"]
 
@@ -40,6 +44,10 @@ class InvitationRefused(Exception):
     def __init__(self, code: str) -> None:
         super().__init__(code)
         self.code = code
+
+
+class InvitationNotFound(Exception):
+    pass
 
 
 def new_token() -> str:
@@ -74,11 +82,23 @@ class NewInvitation:
     preview: str
 
 
-def create(db: Session, member_id: uuid.UUID, language: str, app_url: str, ip: str) -> NewInvitation:
+def _require_active(db: Session, member_id: uuid.UUID) -> None:
     status = access_repository.find_member_status(db, member_id)
     assert status is not None
     if not (status.identity_verified and status.membership_active):
         raise InvitationRefused("membership_not_active")
+
+
+def preview(db: Session, member_id: uuid.UUID, language: str, app_url: str) -> str:
+    """FR-REF-003: the full invitation text before sharing. Nothing is created, so an invitation
+    that is only previewed is never listed as Shared (H20); the link's token is made on sharing."""
+    _require_active(db, member_id)
+    return PREVIEW[language].format(url=link(app_url, PREVIEW_TOKEN))
+
+
+def create(db: Session, member_id: uuid.UUID, language: str, app_url: str, ip: str) -> NewInvitation:
+    """Called as the member shares: the invitation exists, and is listed as Shared, from now on."""
+    _require_active(db, member_id)
     if repository.count_recent(db, member_id) >= INVITATIONS_PER_DAY:
         raise InvitationRefused("too_many_invitations_today")
     token = new_token()
@@ -88,3 +108,13 @@ def create(db: Session, member_id: uuid.UUID, language: str, app_url: str, ip: s
     number = next(i.number for i in repository.by_inviter(db, member_id) if i.token == token)
     url = link(app_url, token)
     return NewInvitation(token=token, number=number, url=url, preview=PREVIEW[language].format(url=url))
+
+
+def cancel(db: Session, member_id: uuid.UUID, number: int, ip: str) -> None:
+    """The share sheet was closed without sharing: the invitation made a moment ago is taken back so
+    it is not listed as Shared. Only an unused one from the last few minutes, so a link that is
+    already out with someone is never broken."""
+    if not repository.delete_unshared(db, member_id, number, CANCEL_WITHIN_MINUTES):
+        raise InvitationNotFound()
+    audit.record(db, actor_id=member_id, action="invitation.cancelled", target_type="member", target_id=str(member_id), ip=ip)
+    db.commit()

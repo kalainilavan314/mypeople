@@ -16,7 +16,7 @@ import { DistrictDecisionForm } from '@/features/cases/DistrictDecisionForm';
 import { AddFindingForm, DsReportForm } from '@/features/cases/DsActions';
 import { ExecutiveDecisionForm } from '@/features/cases/ExecutiveDecisionForm';
 import { AddFactForm, ForwardForm, LinkForm, ReturnForm } from '@/features/cases/GnActions';
-import { REPORT_KINDS, historyTitle, noteLabel } from '@/features/cases/history';
+import { NOTE_IN_DETAILS, REPORT_KINDS, historyTitle, noteLabel } from '@/features/cases/history';
 import { ClosingReportForm, ProgressForm } from '@/features/cases/ImplementationActions';
 import { AssignForm, NoteForm, TakeCaseForm } from '@/features/cases/OwnershipActions';
 import { PublicSummaryForm } from '@/features/cases/PublicSummaryForm';
@@ -132,6 +132,9 @@ async function CaseFileView({ params, searchParams }: Pick<PageProps<'/cases/[id
   const facts = file.history.filter((entry) => entry.kind === 'fact');
   const findings = file.history.filter((entry) => entry.kind === 'finding');
   const reports = file.history.filter((entry) => REPORT_KINDS.has(entry.kind)).reverse();
+  // W08: the implementation works to the scope the district or the executive approved, the latest one.
+  const approval = file.history.findLast((entry) => entry.kind === 'district_action' || entry.kind === 'executive_approved');
+  const approvedScope = typeof approval?.details.scope === 'string' ? approval.details.scope : null;
   const stageOwners = ownersFor(STAGE_PERMISSION[file.stage]);
   const canTake = allowed.has('assign') && !file.ownerId && stageOwners.some((owner) => owner.memberId === staff.member.id);
   // Forms remount after every recorded action, so a finished form starts empty again.
@@ -176,8 +179,26 @@ async function CaseFileView({ params, searchParams }: Pick<PageProps<'/cases/[id
                 {file.locationText ? <span className="block whitespace-pre-wrap">{file.locationText}</span> : null}
               </Detail>
               <Detail label="Visibility">{file.visibility === 'public' ? 'Public case' : 'Case team only'}</Detail>
+              <Detail label="Affected area">
+                {file.affectedArea ? (
+                  <span className="whitespace-pre-wrap">{file.affectedArea}</span>
+                ) : (
+                  <span className="text-muted">Recorded by the GN collector when the case is forwarded</span>
+                )}
+              </Detail>
             </dl>
           </Section>
+
+          {approvedScope && (file.stage === 'implementation' || file.stage === 'resolved') ? (
+            <Section id="scope" title="Approved scope" intro="The work the implementation owner does, as approved. Progress and the closing report are checked against it.">
+              <p className="whitespace-pre-wrap text-sm leading-6 text-text">{approvedScope}</p>
+              {approval ? (
+                <p className="text-xs text-muted">
+                  {historyTitle(approval)} · {approval.actorName ?? 'unknown'} · {formatDateTime(approval.createdAt)}
+                </p>
+              ) : null}
+            </Section>
+          ) : null}
 
           <Section id="evidence" title="Evidence photos" intro="Every photo opened here is recorded in the audit log.">
             {file.evidence.length === 0 ? <p className="text-sm text-muted">No photos yet.</p> : <PhotoGrid caseId={file.id} photos={file.evidence} />}
@@ -219,7 +240,7 @@ async function CaseFileView({ params, searchParams }: Pick<PageProps<'/cases/[id
                         </time>
                       </div>
                       <p className="text-xs text-muted">By {entry.actorName ?? 'unknown'}</p>
-                      {entry.note ? (
+                      {entry.note && !NOTE_IN_DETAILS.has(entry.kind) ? (
                         <div className="text-sm">
                           <p className="text-xs text-muted">{noteLabel(entry.kind)}</p>
                           <p className="whitespace-pre-wrap text-text">{entry.note}</p>
@@ -237,7 +258,10 @@ async function CaseFileView({ params, searchParams }: Pick<PageProps<'/cases/[id
           ) : null}
 
           {file.closingSummaryEn || file.closingSummaryTa ? (
-            <Section id="closing" title="Member summary of the closing report">
+            <Section
+              id="closing"
+              title="Member summary of the closing report"
+              intro="Only the reporter reads this. Followers and the area see the public summary a moderator publishes.">
               <div className="grid gap-3 text-sm md:grid-cols-2">
                 <div>
                   <p className="text-xs text-muted">Tamil</p>
@@ -270,9 +294,19 @@ async function CaseFileView({ params, searchParams }: Pick<PageProps<'/cases/[id
                       {addition.photos > 0 ? <span>· {addition.photos === 1 ? '1 photo' : `${addition.photos} photos`} (under Evidence photos)</span> : null}
                     </div>
                     <p className="whitespace-pre-wrap text-text">{addition.body}</p>
+                    {addition.publishedBody ? (
+                      <div className="rounded-lg bg-surface p-2">
+                        <p className="text-xs font-semibold text-muted">Published to members as this edited version</p>
+                        <p className="whitespace-pre-wrap text-text">{addition.publishedBody}</p>
+                      </div>
+                    ) : null}
                     {addition.moderationReason ? <p className="text-xs text-muted">Moderation reason: {addition.moderationReason}</p> : null}
                     {allowed.has('moderate_additions') && addition.state === 'pending' ? (
-                      <AdditionModeration key={version} caseId={file.id} additionId={addition.id} />
+                      addition.mine ? (
+                        <p className="text-sm font-semibold text-warning">! You added this; another moderator decides it.</p>
+                      ) : (
+                        <AdditionModeration key={version} caseId={file.id} additionId={addition.id} />
+                      )
                     ) : null}
                   </li>
                 ))}
@@ -322,6 +356,7 @@ async function CaseFileView({ params, searchParams }: Pick<PageProps<'/cases/[id
               {allowed.has('publish_summary') ? (
                 <PublicSummaryForm
                   caseId={file.id}
+                  afterClosure={file.stage === 'resolved'}
                   current={{
                     titleTa: file.publicTitleTa ?? '',
                     titleEn: file.publicTitleEn ?? '',

@@ -13,6 +13,7 @@ export const SCORECARD_TARGETS: ProblemTargets = {
   draft_exists: 'period',
   unknown_metric: 'metric',
   area_key_required: 'areaKey',
+  area_not_on_scorecard: 'areaKey',
   reason_required: 'reason',
   decision_required: 'decision',
   decision_note_required: 'note',
@@ -66,12 +67,16 @@ export function readFigures(figures: Readonly<Record<string, unknown>>): AreaFig
     .sort((a, b) => order(a.areaKey) - order(b.areaKey) || a.areaKey.localeCompare(b.areaKey));
 }
 
-/** A value with its parts: "62.5% (5 ÷ 8)", "14", "6.2 days (over 9 closed cases)"; "—" when there is none. */
+/**
+ * A value with its parts: "62.5% (5 ÷ 8)", "14", "9 (of 14 accepted)", "6.2 days (over 9 closed cases)";
+ * "—" when there is none (M20: the numerator and denominator go with every value that has them).
+ */
 export function metricText(metric: MetricValue): string {
   const unit = METRICS.find((m) => m.key === metric.key)?.unit ?? 'count';
   if (metric.value === null) return '—';
   if (unit === 'percent') return `${metric.value}% (${metric.numerator ?? 0} ÷ ${metric.denominator ?? 0})`;
   if (unit === 'days') return `${metric.value} days (over ${metric.denominator ?? 0} closed cases)`;
+  if (metric.denominator !== null) return `${metric.value} (of ${metric.denominator} accepted)`;
   return String(metric.value);
 }
 

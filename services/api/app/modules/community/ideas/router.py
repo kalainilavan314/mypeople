@@ -49,7 +49,8 @@ def read_board(member: CurrentMember, db: Db) -> IdeaBoardOut:
     """H13: Local ideas (published in the member's area) and My ideas (every state)."""
     found = service.board(db, member.id)
     return IdeaBoardOut(
-        local=[IdeaOut.build(i, member.id) for i in found.local], mine=[IdeaOut.build(i, member.id) for i in found.mine]
+        local=[IdeaOut.build(i, member.id) for i in found.local],
+        mine=[IdeaOut.build(i, member.id, found.appeals.get(i.id)) for i in found.mine],
     )
 
 
@@ -81,5 +82,11 @@ def list_pending(staff: Moderator, db: Db) -> list[PendingIdeaOut]:
 
 @router.post("/{idea_id}/moderation", response_model=PendingIdeaOut)
 def moderate_idea(idea_id: uuid.UUID, body: IdeaModerationIn, staff: Moderator, request: Request, db: Db) -> PendingIdeaOut:
+    """D12: publish as written, publish an edited (redacted) version, or reject with a reason.
+    Problems: reason_required, already_moderated, edits_only_when_publishing, edited_title_length,
+    edited_benefit_length."""
+    edits = service.Edits(title=body.edited_title, benefit=body.edited_benefit)
     with _answers():
-        return PendingIdeaOut.build(service.moderate(db, staff, idea_id, body.publish, body.reason, client_ip(request)))
+        return PendingIdeaOut.build(
+            service.moderate(db, staff, idea_id, body.publish, body.reason, client_ip(request), edits)
+        )

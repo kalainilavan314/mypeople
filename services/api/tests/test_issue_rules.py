@@ -44,17 +44,27 @@ def test_only_verified_and_active_members_report(verified, active, expected):
 
 
 def test_a_report_needs_a_real_description_and_a_place():
-    assert rules.check_report(description="Too short", location_kind="my_gn", location_text=None, has_area=True, photos=0) == [
+    assert rules.check_report(description="Too short", location_kind="my_gn", location_text=None, has_gn=True, photos=0) == [
         "description_too_short"
     ]
     long = "The water pipe near the school has been broken for a week."
-    assert rules.check_report(description=long, location_kind="landmark", location_text=" ", has_area=True, photos=0) == [
+    assert rules.check_report(description=long, location_kind="landmark", location_text=" ", has_gn=True, photos=0) == [
         "location_required"
     ]
     assert rules.check_report(description=long, location_kind="text", location_text="Nallur bus stop junction",
-                              has_area=True, photos=0) == []
+                              has_gn=True, photos=0) == []
     assert "too_many_photos" in rules.check_report(description=long, location_kind="my_gn", location_text=None,
-                                                    has_area=True, photos=4)
+                                                    has_gn=True, photos=4)
+
+
+def test_every_report_needs_a_gn_division_on_the_profile_whatever_place_it_describes():
+    # The case starts with the GN collector of the reporter's division (W03), so a typed landmark
+    # does not stand in for a missing GN division.
+    long = "The water pipe near the school has been broken for a week."
+    for kind, place in (("my_gn", None), ("landmark", "Nallur temple car park"), ("text", "Behind the bus stand")):
+        assert rules.check_report(description=long, location_kind=kind, location_text=place, has_gn=False, photos=0) == [
+            "no_gn_on_profile"
+        ]
 
 
 def test_the_member_sees_four_stages_and_a_linked_report_follows_its_parent():
@@ -117,3 +127,10 @@ def test_district_closures_are_told_apart_from_executive_ones():
 def test_assisting_tiers_never_decide():
     assert rules.ASSISTING_TIERS == {"2B", "3B"}
     assert set(rules.STAGE_PERMISSION.values()) <= rules.CASE_PERMISSIONS
+
+
+def test_every_stage_change_and_handover_is_a_handover_kind_that_carries_a_note():
+    # FR-WEB-029: previous owner, new owner, note and time on every handover row.
+    assert {"forwarded", "ds_report", "district_action", "escalated", "regional_plan", "executive_approved", "assigned",
+            "closed", "reopened"} <= rules.HANDOVER_KINDS
+    assert "note" not in rules.HANDOVER_KINDS and "submitted" not in rules.HANDOVER_KINDS

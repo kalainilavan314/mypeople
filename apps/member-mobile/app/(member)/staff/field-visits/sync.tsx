@@ -22,14 +22,15 @@ import { DetailRow } from '@/components/DetailRow';
 import { FieldAccess } from '@/features/staff/fieldVisits/FieldAccess';
 import { encryptedOnDevice } from '@/features/staff/fieldVisits/secureChunks';
 import { syncPending, type SyncReport } from '@/features/staff/fieldVisits/syncVisits';
-import { useGnOptions } from '@/features/staff/fieldVisits/useGnOptions';
+import { usePlaceOptions } from '@/features/staff/fieldVisits/usePlaceOptions';
 import { removeVisit, saveVisit, useLocalVisits, type LocalVisit } from '@/features/staff/fieldVisits/visitStore';
 import { errorMessage } from '@/features/staff/errors';
 
 /**
- * S07 Sync: sends the visits waiting on this phone and shows what happened to each. A refusal for
- * political-looking notes can be fixed by editing them or by confirming they are not political; a
- * conflict shows the coordinator's notes beside the server's, to keep one or the other.
+ * S07 Sync: sends the visits waiting on this phone and shows what happened to each. Notes that record
+ * how someone votes, their party or persuasion must be edited; notes that only look political can
+ * also be confirmed as not political. A conflict shows the coordinator's notes beside the server's,
+ * to keep one or the other; a visit the server already holds as it is leaves the phone.
  */
 export default function FieldSyncScreen() {
   return (
@@ -43,7 +44,7 @@ function SyncBody() {
   const { t } = useTranslation();
   const member = useMember();
   const local = useLocalVisits(member.id);
-  const { label } = useGnOptions();
+  const { label } = usePlaceOptions();
   const [reports, setReports] = useState<SyncReport[]>([]);
   const sync = useApiAction(async (visits: LocalVisit[]) => {
     setReports(await syncPending(member.id, visits));
@@ -98,7 +99,7 @@ function SyncBody() {
           <ConflictCard
             key={visit.clientId}
             visit={visit}
-            gnName={label(visit.gnCode)}
+            gnName={label({ gnCode: visit.gnCode || null, dsCode: visit.dsCode || null })}
             busy={sync.busy}
             onKeepMine={() => void resend({ ...visit, status: 'pending', baseVersion: visit.server?.version ?? visit.baseVersion, server: null })}
             onUseServer={() => void removeVisit(member.id, visit.clientId)}
@@ -107,7 +108,7 @@ function SyncBody() {
           <RefusedCard
             key={visit.clientId}
             visit={visit}
-            gnName={label(visit.gnCode)}
+            gnName={label({ gnCode: visit.gnCode || null, dsCode: visit.dsCode || null })}
             busy={sync.busy}
             onConfirm={() => void resend({ ...visit, status: 'pending', problems: [], confirmedNotPolitical: true })}
             onDelete={async () => {
@@ -143,7 +144,9 @@ type RefusedProps = { visit: LocalVisit; gnName: string; busy: boolean; onConfir
 
 function RefusedCard({ visit, gnName, busy, onConfirm, onDelete }: RefusedProps) {
   const { t } = useTranslation();
-  const political = visit.problems.includes('political_content');
+  // Words that only look political may be confirmed; a vote, a party or persuasion must be removed.
+  const political = visit.problems.includes('political_content') && !visit.problems.includes('political_profiling');
+  const editNotes = political || visit.problems.includes('political_profiling');
   return (
     <SurfaceCard style={styles.card}>
       <VisitHeading visit={visit} gnName={gnName} />
@@ -154,7 +157,7 @@ function RefusedCard({ visit, gnName, busy, onConfirm, onDelete }: RefusedProps)
         </AppText>
       ))}
       <Button
-        label={political ? t('s.fieldVisits.editNotes') : t('s.fieldVisits.editVisit')}
+        label={editNotes ? t('s.fieldVisits.editNotes') : t('s.fieldVisits.editVisit')}
         variant="secondary"
         icon="create-outline"
         disabled={busy}

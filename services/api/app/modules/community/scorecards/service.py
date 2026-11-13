@@ -1,9 +1,11 @@
 """Public accountability scorecard (BRD M20, D17, FR-ACS-001 to 008).
 
 A scorecard is computed for a finished quarter from the cases themselves, shared with the
-responsible tiers for 10 working days so they can ask for corrections, then published with the
-scorecard.publish permission. A correction after publication publishes the next version and keeps
-the earlier one (FR-ACS-006). Members see their GN, DS and district for the last four periods.
+responsible tiers (the case handlers over its areas, who are told) for 10 working days so they can
+ask for corrections about their own areas, then published with the scorecard.publish permission.
+Only one version of a quarter is published at a time: publishing a new version, or a correction
+after publication, supersedes the earlier one, which stays readable (FR-ACS-006). Members see their
+GN, DS and district for the last four periods.
 """
 
 import uuid
@@ -14,12 +16,14 @@ from sqlalchemy.orm import Session
 
 from app.modules.access import repository as access_repository
 from app.modules.access import rules as access_rules
-from app.modules.access.service import AccessRefused, Staff
+from app.modules.access.rules import Area, AreaPath, area_from_key
+from app.modules.access.service import AccessRefused, Staff, refuse
 from app.modules.audit import service as audit
 from app.modules.community.issues.rules import CASE_PERMISSIONS, add_working_days
 from app.modules.community.scorecards import repository, rules
 from app.modules.community.scorecards.repository import Correction, Scorecard
 from app.modules.geography import repository as geography
+from app.modules.messaging.notifications import service as notifications
 
 READERS = (rules.PUBLISH, *sorted(CASE_PERMISSIONS))
 
@@ -131,12 +135,25 @@ def _open_card(db: Session, staff: Staff, scorecard_id: uuid.UUID, states: tuple
     return card
 
 
+def _responsible_areas(db: Session, card: Scorecard) -> list[str]:
+    """The card's areas and the provinces above its districts, whose case handlers answer for them."""
+    keys = set(card.figures)
+    for key in card.figures:
+        if key.startswith("district:"):
+            path = access_repository.area_path(db, area_from_key(key))
+            keys.update(area.key for area in path or () if area.level == "province")
+    return sorted(keys)
+
+
 def share(db: Session, staff: Staff, scorecard_id: uuid.UUID, ip: str) -> Scorecard:
-    """FR-ACS-005: the responsible tiers have 10 working days to ask for corrections."""
+    """FR-ACS-005: the responsible tiers are told and have 10 working days to ask for corrections."""
     card = _open_card(db, staff, scorecard_id, ("draft",))
     now = datetime.now(UTC)
     repository.update(db, card.id, {"state": "shared", "shared_at": now,
                                     "publishable_at": add_working_days(now, rules.SHARE_WORKING_DAYS)})
+    for holder in repository.holders(db, sorted(CASE_PERMISSIONS), _responsible_areas(db, card)):
+        if holder != staff.member_id:
+            notifications.notify(db, holder, "scorecard_shared", card.id)
     audit.record(db, actor_id=staff.member_id, action="scorecard.shared", target_type="scorecard", target_id=str(card.id), ip=ip)
     db.commit()
     found = repository.find(db, card.id)
@@ -161,6 +178,14 @@ def set_note(db: Session, staff: Staff, scorecard_id: uuid.UUID, area_key: str, 
     return found
 
 
+def _area_path(db: Session, area_key: str) -> AreaPath:
+    area: Area = area_from_key(area_key)
+    path = access_repository.area_path(db, area)
+    if path is None:
+        raise ScorecardRefused("area_not_on_scorecard")
+    return path
+
+
 def request_correction(db: Session, staff: Staff, scorecard_id: uuid.UUID, area_key: str, metric: str, reason: str,
                        ip: str) -> Correction:
     _require(staff, READERS)
@@ -171,6 +196,12 @@ def request_correction(db: Session, staff: Staff, scorecard_id: uuid.UUID, area_
         raise ScorecardRefused("not_allowed_from:superseded")
     if metric not in rules.METRICS:
         raise ScorecardRefused("unknown_metric")
+    if area_key not in card.figures:
+        raise ScorecardRefused("area_not_on_scorecard")
+    path = _area_path(db, area_key)
+    # Only the tiers responsible for the area (or a publisher) may question its figures.
+    if not any(access_rules.holds(staff.rule_assignments(), p, path) for p in (rules.PUBLISH, *sorted(CASE_PERMISSIONS))):
+        refuse(db, staff, rules.PUBLISH, "outside_your_area", ip, target=("scorecard", str(card.id)), area_path=path)
     correction_id = repository.insert_correction(db, card.id, area_key, metric, reason.strip(), staff.member_id)
     audit.record(db, actor_id=staff.member_id, action="scorecard.correction_requested", target_type="scorecard",
                  target_id=str(card.id), details={"area": area_key, "metric": metric}, ip=ip)
@@ -214,7 +245,9 @@ def publish(db: Session, staff: Staff, scorecard_id: uuid.UUID, ip: str) -> Scor
     problem = rules.check_publish(card.state, card.publishable_at, datetime.now(UTC))
     if problem:
         raise ScorecardRefused(problem)
+    repository.supersede_other_versions(db, card.period, card.id)
     repository.update(db, card.id, {"state": "published", "published_by": staff.member_id, "published_at": datetime.now(UTC)})
+    notifications.complete_action(db, "scorecard", card.id)
     audit.record(db, actor_id=staff.member_id, action="scorecard.published", target_type="scorecard",
                  target_id=str(card.id), details={"period": card.period, "version": card.version}, ip=ip)
     db.commit()

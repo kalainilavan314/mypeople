@@ -20,6 +20,8 @@ import { DetailRow } from '@/components/DetailRow';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 
+import { IdeaAppealSection } from './IdeaAppealSection';
+
 /** The state pill's colour; the words are My Activity's (m.profile.activityState_idea_*). */
 const STATE_TONES: Record<Idea['state'], Tone> = {
   pending: 'pending',
@@ -31,7 +33,9 @@ const STATE_TONES: Record<Idea['state'], Tone> = {
 /**
  * One community idea (H13). Others' published ideas can be supported, once per member; the count
  * is shown, but support never approves anything (FR-IDEA-004). The author sees the moderation
- * state, the moderator's reason when it was not published, and can withdraw it.
+ * state, the moderator's reason when it was not published, the edited version others see when a
+ * moderator published one (D12), their one appeal, and can withdraw it. Everyone else sees only
+ * the published version.
  */
 export function IdeaCard({ idea, onChanged }: { idea: Idea; onChanged: () => void }) {
   const { t } = useTranslation();
@@ -72,6 +76,16 @@ export function IdeaCard({ idea, onChanged }: { idea: Idea; onChanged: () => voi
       {idea.mine && idea.state === 'rejected' && idea.moderationReason ? (
         <DetailRow label={t('m.ideas.moderatorReason')} value={idea.moderationReason} />
       ) : null}
+      {idea.mine && idea.editedByModerator ? (
+        <Notice tone="info" title={t('m.ideas.editedTitle')}>
+          {t('m.ideas.editedBody')}
+        </Notice>
+      ) : null}
+      {idea.mine && idea.publishedTitle ? <DetailRow label={t('m.ideas.publishedTitle')} value={idea.publishedTitle} /> : null}
+      {idea.mine && idea.publishedBenefit ? (
+        <DetailRow label={t('m.ideas.publishedBenefit')} value={idea.publishedBenefit} />
+      ) : null}
+      {idea.mine ? <IdeaAppealSection idea={idea} onChanged={onChanged} /> : null}
       <AppText step="caption" tone="muted">
         {t('m.ideas.postedOn', { date: formatDate(idea.createdAt, language) })}
       </AppText>

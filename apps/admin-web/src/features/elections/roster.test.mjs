@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-import { REPORT_LABELS, ROSTER_TARGETS, memberCodeFrom, readShift } from './roster.ts';
+import { REPORT_ENTRY_LABELS, REPORT_LABELS, ROSTER_TARGETS, memberCodeFrom, readShift, reportEntryLabel } from './roster.ts';
 import { targetOf } from '../../lib/formState.ts';
 import { bilingualConfirmation, bilingualMessageFor, bilingualProblemText } from '../../lib/messages.ts';
 
@@ -49,4 +49,19 @@ test('roster refusals and confirmations have Tamil and English words', () => {
     assert.notEqual(words.en, problem.replace(/_/g, ' '), problem);
   }
   for (const done of ['roster_shift_created', 'roster_offered', 'roster_shift_cancelled', 'roster_message_sent']) assert.match(bilingualConfirmation(done).ta, /[஀-௿]/, done);
+});
+
+test('the period page lists the entries behind the report, ids only, with Tamil and English words', async () => {
+  const page = await readSrc('app/(staff)/elections/[id]/page.tsx');
+  assert.match(page, /listElectionPeriodReportEntries\(periodId\)/);
+  for (const action of ['gallery.album.published', 'promise.published', 'scorecard.published', 'messaging.broadcast.sent', 'election.roster.shift_created']) {
+    assert.match(REPORT_ENTRY_LABELS[action].ta, /[஀-௿]/, action);
+  }
+  assert.deepEqual(reportEntryLabel('something.new'), { ta: 'something.new', en: 'something.new' });
+});
+
+test('the shift page lists the messages already sent to its volunteers', async () => {
+  const page = await readSrc('app/(staff)/elections/[id]/roster/[shift]/page.tsx');
+  assert.match(page, /shift\.messages\.map/);
+  assert.doesNotMatch(page, /everyone offered or accepted/);
 });

@@ -84,6 +84,18 @@ def assigned(db: Session, issue_id: uuid.UUID, previous_owner: uuid.UUID | None,
         notifications.notify(db, new_owner, "case_assigned", issue_id)
 
 
+def waiting(db: Session, issue_id: uuid.UUID, holders: list[uuid.UUID]) -> None:
+    """A case entered a stage without a named owner: everyone who may take it is told (FR-WEB-014)."""
+    for member_id in dict.fromkeys(holders):
+        notifications.notify(db, member_id, "case_waiting", issue_id)
+
+
+def taken(db: Session, issue_id: uuid.UUID, holders: list[uuid.UUID]) -> None:
+    """Someone owns the waiting case now, so the others' "take it" task is done."""
+    for member_id in dict.fromkeys(holders):
+        notifications.complete_action(db, "case", issue_id, member_id)
+
+
 def overdue(db: Session, issue: StoredIssue, recipients: list[uuid.UUID]) -> None:
     for member_id in recipients:
         notifications.notify(db, member_id, "case_overdue", issue.id)

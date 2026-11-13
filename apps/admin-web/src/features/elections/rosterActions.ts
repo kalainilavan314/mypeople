@@ -57,7 +57,7 @@ export async function cancelShift(_previous: FormState, formData: FormData): Pro
   redirect(`/elections/${periodId}/roster/${shiftId}?done=roster_shift_cancelled`);
 }
 
-/** FR-ELX-007: an operational message to the people on the shift, in Tamil and English. */
+/** FR-ELX-007: an operational message to the volunteers who accepted the shift, in Tamil and English. */
 export async function messageShift(_previous: FormState, formData: FormData): Promise<FormState> {
   const { periodId, shiftId } = shiftPath(formData);
   const values = valuesOf(formData, ['bodyTa', 'bodyEn']);

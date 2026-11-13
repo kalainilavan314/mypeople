@@ -31,13 +31,17 @@ test('publishing needs nothing more; rejecting needs the reason the author is to
   assert.equal(PROPOSAL_TARGETS.reason_required, 'reason');
 });
 
-test('the queue lists ideas and proposals oldest first and sends cases to the case files', async () => {
+test('one queue holds ideas, proposals, case summaries, added information and appeals, oldest first (D12)', async () => {
   const page = await readSrc('app/(staff)/moderation/page.tsx');
   assert.match(page, /listPendingIdeas\(\)/);
   assert.match(page, /listManagedProposals\(\{ stage: \['pending_moderation'\] \}\)/);
   assert.match(page, /oldestFirst\(/);
-  assert.match(page, /href="\/cases\?stage=resolved"/);
-  assert.match(page, /moderated inside each case file/);
+  assert.match(page, /listPendingCaseModeration\(\)/);
+  assert.match(page, /listModerationAppeals\(\)/);
+  // The case forms come back to the queue, and nobody moderates their own case or addition.
+  assert.match(page, /returnTo="moderation"/);
+  assert.match(page, /another moderator decides it/);
+  assert.match(page, /id="case-summaries"|'case-summaries'/);
 });
 
 test('misinformation reports are decided by a person, with a reason, never an automatic score (BR-149)', async () => {

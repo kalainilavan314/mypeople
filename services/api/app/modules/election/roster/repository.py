@@ -138,11 +138,47 @@ def insert_message(db: Session, shift_id: uuid.UUID, body_en: str, body_ta: str,
     )
 
 
+@dataclass(frozen=True)
+class SentMessage:
+    id: uuid.UUID
+    body_en: str
+    body_ta: str
+    sent_by_name: str
+    recipients: int
+    created_at: datetime
+
+
+def messages(db: Session, shift_id: uuid.UUID) -> list[SentMessage]:
+    """S15: the operational messages already sent to the shift, newest first."""
+    rows = db.execute(
+        text("""SELECT r.id, r.body_en, r.body_ta, COALESCE(dn.display_name, m.full_name) AS sent_by_name, r.recipients,
+                       r.created_at
+                FROM election.roster_message r JOIN npm.member m ON m.id = r.sent_by
+                LEFT JOIN profile.display_name dn ON dn.member_id = m.id
+                WHERE r.shift_id = :s ORDER BY r.created_at DESC LIMIT 200"""),
+        {"s": shift_id},
+    ).mappings()
+    return [SentMessage(**row) for row in rows]
+
+
+# FR-ELX-009: what the period report counts and lists from the audit log. Content published means
+# events, albums, promises and scorecards made public.
+BROADCAST_ACTIONS = ("messaging.broadcast.sent",)
+CONTENT_ACTIONS = ("events.event.published", "gallery.album.published", "promise.published", "scorecard.published")
+SILENCE_ACTIONS = ("election.silence.blocked",)
+
+# An audit entry belongs to the period when it happened inside the period's time and in its area:
+# inside the area (its path holds the period's area), or over it (a province-wide or platform-wide
+# entry, whose path is part of the period's own path, reached the period's area too).
+_IN_PERIOD = """l.occurred_at BETWEEN p.starts_at AND p.ends_at
+                AND (p.area_key = ANY(l.area_path) OR l.area_path <@ p.area_path)"""
+
+
 def period_report(db: Session, period_id: uuid.UUID) -> dict[str, int]:
     """FR-ELX-009: what was sent, changed and published in the period's area and time."""
     row = db.execute(
         text(
-            """
+            f"""
             WITH p AS (SELECT * FROM election.period WHERE id = :id)
             SELECT
               (SELECT count(*) FROM election.roster_shift s WHERE s.period_id = :id) AS shifts,
@@ -152,14 +188,54 @@ def period_report(db: Session, period_id: uuid.UUID) -> dict[str, int]:
                WHERE s.period_id = :id AND a.state IN ('declined', 'cancelled')) AS roster_changes,
               (SELECT count(*) FROM election.roster_message m JOIN election.roster_shift s ON s.id = m.shift_id
                WHERE s.period_id = :id) AS roster_messages,
-              (SELECT count(*) FROM ops.audit_log l, p WHERE l.occurred_at BETWEEN p.starts_at AND p.ends_at
-               AND l.action = 'messaging.broadcast.sent') AS broadcasts_sent,
-              (SELECT count(*) FROM ops.audit_log l, p WHERE l.occurred_at BETWEEN p.starts_at AND p.ends_at
-               AND l.action IN ('events.event.published', 'gallery.album.publish')) AS content_published,
-              (SELECT count(*) FROM ops.audit_log l, p WHERE l.occurred_at BETWEEN p.starts_at AND p.ends_at
-               AND l.action = 'election.silence.blocked') AS silence_blocks
+              (SELECT count(*) FROM ops.audit_log l, p WHERE {_IN_PERIOD}
+               AND l.action = ANY(CAST(:broadcasts AS text[]))) AS broadcasts_sent,
+              (SELECT count(*) FROM ops.audit_log l, p WHERE {_IN_PERIOD}
+               AND l.action = ANY(CAST(:content AS text[]))) AS content_published,
+              (SELECT count(*) FROM ops.audit_log l, p WHERE {_IN_PERIOD}
+               AND l.action = ANY(CAST(:silence AS text[]))) AS silence_blocks
             """
         ),
-        {"id": period_id},
+        {"id": period_id, "broadcasts": list(BROADCAST_ACTIONS), "content": list(CONTENT_ACTIONS),
+         "silence": list(SILENCE_ACTIONS)},
     ).mappings().one()
     return dict(row)
+
+
+@dataclass(frozen=True)
+class ReportEntry:
+    action: str
+    target_type: str | None
+    target_id: str | None
+    occurred_at: datetime
+
+
+def period_report_entries(db: Session, period_id: uuid.UUID, limit: int) -> list[ReportEntry]:
+    """FR-ELX-009: the audit entries behind the report, newest first; ids only, never text.
+
+    Broadcasts, published content and silence blocks inside the period's time and area, and every
+    roster entry about this period's shifts (shifts are created before the period may start).
+    """
+    rows = db.execute(
+        text(
+            f"""
+            WITH p AS (SELECT * FROM election.period WHERE id = :id)
+            SELECT action, target_type, target_id, occurred_at FROM (
+                SELECT l.id, l.action, l.target_type, l.target_id, l.occurred_at
+                FROM ops.audit_log l, p
+                WHERE {_IN_PERIOD} AND l.action = ANY(CAST(:actions AS text[]))
+                UNION ALL
+                -- A shift can only exist once its period is declared, which bounds the search in time.
+                SELECT l.id, l.action, l.target_type, l.target_id, l.occurred_at
+                FROM ops.audit_log l, p
+                WHERE l.occurred_at >= p.declared_at AND l.action LIKE 'election.roster.%'
+                  AND l.target_type = 'roster_shift'
+                  AND l.target_id IN (SELECT s.id::text FROM election.roster_shift s WHERE s.period_id = :id)
+            ) entries
+            ORDER BY occurred_at DESC, id DESC
+            LIMIT :limit
+            """
+        ),
+        {"id": period_id, "actions": [*BROADCAST_ACTIONS, *CONTENT_ACTIONS, *SILENCE_ACTIONS], "limit": limit},
+    ).mappings()
+    return [ReportEntry(**row) for row in rows]

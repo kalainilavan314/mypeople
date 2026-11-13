@@ -17,14 +17,18 @@ import {
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
+import { CaseworkerConsentCard } from '@/features/household/CaseworkerConsentCard';
+import { HouseholdHistory } from '@/features/household/HouseholdHistory';
+import { adultsOf } from '@/features/household/labels';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 
 /**
  * Screen M10: Household Privacy & Consent / குடும்பத் தனியுரிமை & ஒப்புதல்
- * BRD v1.1 SC-22, FR-HH-010, BR-098, BR-099, BR-100, BR-101.
- * Voluntary participation, bilateral consent, single active household,
- * purpose separation, and withdrawal of consent.
+ * BRD v1.1 SC-22, FR-HH-010, BR-098 to BR-101; MP-FEA-002 §4.1 (OD-30 consent per purpose).
+ * Voluntary participation, bilateral consent, caseworker access given by the head and withdrawn by
+ * any adult, the household's change history, and withdrawal of consent (leaving). Corrections and
+ * deletions of the household's details are on the household screen.
  */
 export default function HouseholdPrivacyScreen() {
   const { t } = useTranslation();
@@ -40,11 +44,12 @@ export default function HouseholdPrivacyScreen() {
     return true;
   });
 
-  const handleWithdrawConfirm = async (isHead: boolean) => {
-    const action = isHead ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold');
+  // The head of a household with other adults hands over and leaves; only the last adult ends it.
+  const handleWithdrawConfirm = async (ends: boolean) => {
+    const action = ends ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold');
     const confirmed = await confirmAction({
       title: action,
-      message: isHead ? t('m.household.dissolveConfirm') : t('m.household.leaveConfirm'),
+      message: ends ? t('m.household.dissolveConfirm') : t('m.household.leaveConfirm'),
       confirmLabel: action,
       cancelLabel: t('m.common.cancel'),
       destructive: true,
@@ -161,65 +166,91 @@ export default function HouseholdPrivacyScreen() {
       </SurfaceCard>
 
       <QueryView query={householdQuery}>
-        {(household) => (
-          <SurfaceCard style={styles.card}>
-            <AppText step="card" style={styles.cardTitle}>
-              {localized('Your Consent Status', 'உங்கள் ஒப்புதல் நிலை')}
-            </AppText>
-
+        {(household) => {
+          const ends = Boolean(household?.isHead) && (household ? adultsOf(household).length === 1 : false);
+          return (
+            <View style={styles.stack}>
             {household ? (
-              <View>
-                <View style={styles.statusRow}>
-                  <StatusTag tone="verified" label={localized('Active Consent', 'செயலில் உள்ள ஒப்புதல்')} />
-                  <AppText step="body" style={styles.householdName}>
-                    {household.name || localized('Unnamed Household', 'பெயரிடப்படாத குடும்பம்')}
+              <CaseworkerConsentCard household={household} onChanged={() => void householdQuery.reload()} />
+            ) : null}
+            {household ? (
+              <HouseholdHistory version={`${household.updatedAt}:${household.members.length}`} />
+            ) : null}
+            <SurfaceCard style={styles.card}>
+              <AppText step="card" style={styles.cardTitle}>
+                {localized('Your Consent Status', 'உங்கள் ஒப்புதல் நிலை')}
+              </AppText>
+
+              {household ? (
+                <View>
+                  <View style={styles.statusRow}>
+                    <StatusTag tone="verified" label={localized('Active Consent', 'செயலில் உள்ள ஒப்புதல்')} />
+                    <AppText step="body" style={styles.householdName}>
+                      {household.name || localized('Unnamed Household', 'பெயரிடப்படாத குடும்பம்')}
+                    </AppText>
+                  </View>
+                  <AppText step="secondary" tone="secondary" style={styles.paragraph}>
+                    {household.isHead && ends
+                      ? localized(
+                          'You are the registered Head of this household. Dissolving the household withdraws consent for the group and removes all linkages.',
+                          'நீங்கள் இக்குடும்பத்தின் தலைவர். குடும்பத்தைக் கலைப்பது அனைவரது இணைப்புகளையும் நீக்கி ஒப்புதலை மீட்டெடுக்கும்.',
+                        )
+                      : localized(
+                          'You are an adult member of this household. You may withdraw your consent and leave the household at any time.',
+                          'நீங்கள் இக்குடும்பத்தின் உறுப்பினர். எந்நேரத்திலும் ஒப்புதலைத் திரும்பப் பெற்று வெளியேறலாம்.',
+                        )}
+                  </AppText>
+                  {household.isHead && !ends ? (
+                    <AppText step="secondary" tone="secondary" style={styles.paragraph}>
+                      {t('m.household.headLeaveNote')}
+                    </AppText>
+                  ) : null}
+                  <View style={styles.topMargin}>
+                    <Button
+                      label={t('m.household.title')}
+                      variant="secondary"
+                      onPress={() => router.push('/household' as any)}
+                    />
+                  </View>
+
+                  {withdrawConsent.error ? (
+                    <View style={styles.topMargin}>
+                      <Notice tone="error">
+                        {errorMessage(t, withdrawConsent.error)}
+                      </Notice>
+                    </View>
+                  ) : null}
+
+                  <View style={styles.topMargin}>
+                    <Button
+                      label={ends ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold')}
+                      variant="danger"
+                      busy={withdrawConsent.busy}
+                      onPress={() => handleWithdrawConfirm(ends)}
+                    />
+                  </View>
+                </View>
+              ) : (
+                <View>
+                  <StatusTag tone="pending" label={localized('No Active Consent', 'செயலில் உள்ள ஒப்புதல் இல்லை')} />
+                  <AppText step="secondary" tone="muted" style={styles.topMargin}>
+                    {t('m.household.emptyHousehold')}
                   </AppText>
                 </View>
-                <AppText step="secondary" tone="secondary" style={styles.paragraph}>
-                  {household.isHead
-                    ? localized(
-                        'You are the registered Head of this household. Dissolving the household withdraws consent for the group and removes all linkages.',
-                        'நீங்கள் இக்குடும்பத்தின் தலைவர். குடும்பத்தைக் கலைப்பது அனைவரது இணைப்புகளையும் நீக்கி ஒப்புதலை மீட்டெடுக்கும்.',
-                      )
-                    : localized(
-                        'You are an adult member of this household. You may withdraw your consent and leave the household at any time.',
-                        'நீங்கள் இக்குடும்பத்தின் உறுப்பினர். எந்நேரத்திலும் ஒப்புதலைத் திரும்பப் பெற்று வெளியேறலாம்.',
-                      )}
-                </AppText>
-
-                {withdrawConsent.error ? (
-                  <View style={styles.topMargin}>
-                    <Notice tone="error">
-                      {errorMessage(t, withdrawConsent.error)}
-                    </Notice>
-                  </View>
-                ) : null}
-
-                <View style={styles.topMargin}>
-                  <Button
-                    label={household.isHead ? t('m.household.dissolveHousehold') : t('m.household.leaveHousehold')}
-                    variant="danger"
-                    busy={withdrawConsent.busy}
-                    onPress={() => handleWithdrawConfirm(household.isHead)}
-                  />
-                </View>
-              </View>
-            ) : (
-              <View>
-                <StatusTag tone="pending" label={localized('No Active Consent', 'செயலில் உள்ள ஒப்புதல் இல்லை')} />
-                <AppText step="secondary" tone="muted" style={styles.topMargin}>
-                  {t('m.household.emptyHousehold')}
-                </AppText>
-              </View>
-            )}
-          </SurfaceCard>
-        )}
+              )}
+            </SurfaceCard>
+            </View>
+          );
+        }}
       </QueryView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  stack: {
+    gap: spacing[4],
+  },
   card: {
     gap: spacing[2],
   },

@@ -84,10 +84,28 @@ def publish_criteria(db: Session, programme_id: uuid.UUID, criteria_en: str, cri
     )
 
 
-def criteria_exists(db: Session, criteria_version_id: uuid.UUID) -> bool:
+@dataclass(frozen=True)
+class CriteriaFacts:
+    """What D13 needs to know about a criteria version a decision cites."""
+
+    latest: bool
+    active: bool
+    categories: list[str]
+
+
+def criteria_facts(db: Session, criteria_version_id: uuid.UUID) -> CriteriaFacts | None:
     _open(db)
-    return bool(db.scalar(text("SELECT EXISTS (SELECT 1 FROM assistance.criteria_version WHERE id = :id)"),
-                          {"id": criteria_version_id}))
+    row = db.execute(
+        text(
+            """SELECT v.version = (SELECT max(o.version) FROM assistance.criteria_version o WHERE o.programme_id = v.programme_id)
+                          AS latest,
+                      p.active, p.categories
+               FROM assistance.criteria_version v JOIN assistance.programme p ON p.id = v.programme_id
+               WHERE v.id = :id"""
+        ),
+        {"id": criteria_version_id},
+    ).mappings().one_or_none()
+    return CriteriaFacts(latest=row["latest"], active=row["active"], categories=list(row["categories"])) if row else None
 
 
 @dataclass(frozen=True)
@@ -231,17 +249,30 @@ def update_case(db: Session, case_id: uuid.UUID, values: dict[str, Any]) -> None
                {**values, "id": case_id})
 
 
+def _normal_name(sql: str) -> str:
+    """Names compare without case, dots, commas or extra spaces: "S. Kumar" is "s kumar"."""
+    return rf"lower(btrim(regexp_replace({sql}, '[\s.,]+', ' ', 'g')))"
+
+
+def _normal_phone(sql: str) -> str:
+    """Phones compare by their digits, with +94 read as 0: "+94 77 123 4567" is "0771234567"."""
+    return rf"regexp_replace(regexp_replace({sql}, '[^0-9]', '', 'g'), '^94([0-9]{{9}})$', '0\1')"
+
+
 def possible_duplicates(db: Session, case: Case) -> list[Case]:
-    """FR-AST-006: other requests from the same applicant phone or household in the last 30 days."""
+    """FR-AST-006, S11: other requests in the 30 days around this one from the same applicant: the same
+    phone, the same app account, or the same name. The household is free text ("2 adults, 3 children")
+    that many unrelated families share, so it never makes a match on its own."""
     _open(db)
     rows = db.execute(
         text(
             f"""{_CASE} WHERE c.id <> :id AND c.created_at > :created - interval '30 days'
-                AND ((a.phone IS NOT NULL AND a.phone = :phone) OR (a.household IS NOT NULL AND lower(a.household) = lower(:household))
-                     OR (a.member_id IS NOT NULL AND a.member_id = :member))
+                AND ((a.member_id IS NOT NULL AND a.member_id = :member)
+                     OR (a.phone IS NOT NULL AND {_normal_phone('a.phone')} = {_normal_phone('CAST(:phone AS text)')})
+                     OR {_normal_name('a.full_name')} = {_normal_name('CAST(:name AS text)')})
                 ORDER BY c.created_at DESC LIMIT 10"""
         ),
-        {"id": case.id, "created": case.created_at, "phone": case.applicant_phone, "household": case.household,
+        {"id": case.id, "created": case.created_at, "phone": case.applicant_phone, "name": case.applicant_name,
          "member": case.applicant_member_id},
     ).mappings()
     return [_case(row) for row in rows]
@@ -334,12 +365,38 @@ def deliveries(db: Session, case_id: uuid.UUID) -> list[dict[str, Any]]:
     return [dict(row) for row in rows]
 
 
-def add_referral(db: Session, case_id: uuid.UUID, partner_id: uuid.UUID, by: uuid.UUID) -> uuid.UUID:
+def add_referral(db: Session, case_id: uuid.UUID, partner_id: uuid.UUID, purpose: str, by: uuid.UUID, *,
+                 caseworker_consent: bool) -> uuid.UUID:
+    """Sent at once with the consent the caseworker recorded, or proposed to wait for the applicant's."""
     _open(db)
     return db.scalar(
-        text("""INSERT INTO assistance.referral (case_id, partner_id, consent_at, created_by)
-                VALUES (:c, :p, clock_timestamp(), :by) RETURNING id"""),
-        {"c": case_id, "p": partner_id, "by": by},
+        text("""INSERT INTO assistance.referral (case_id, partner_id, purpose, state, consent_at, consent_recorded_by, created_by)
+                VALUES (:c, :p, :purpose, CASE WHEN :consented THEN 'sent' ELSE 'proposed' END,
+                        CASE WHEN :consented THEN clock_timestamp() END, CASE WHEN :consented THEN 'caseworker' END, :by)
+                RETURNING id"""),
+        {"c": case_id, "p": partner_id, "purpose": purpose, "consented": caseworker_consent, "by": by},
+    )
+
+
+def referral_state(db: Session, referral_id: uuid.UUID, case_id: uuid.UUID, *, lock: bool = False) -> str | None:
+    _open(db)
+    return db.scalar(
+        text(f"SELECT state FROM assistance.referral WHERE id = :id AND case_id = :c{' FOR UPDATE' if lock else ''}"),
+        {"id": referral_id, "c": case_id},
+    )
+
+
+def answer_referral(db: Session, referral_id: uuid.UUID, consent: bool) -> None:
+    """The applicant's own answer: consent shares the case with the partner, a refusal keeps it closed."""
+    _open(db)
+    db.execute(
+        text("""UPDATE assistance.referral
+                SET state = CASE WHEN :consent THEN 'sent' ELSE 'consent_declined' END,
+                    consent_at = CASE WHEN :consent THEN clock_timestamp() END,
+                    consent_recorded_by = CASE WHEN :consent THEN 'applicant' END,
+                    updated_at = clock_timestamp()
+                WHERE id = :id AND state = 'proposed'"""),
+        {"consent": consent, "id": referral_id},
     )
 
 
@@ -355,7 +412,8 @@ def update_referral(db: Session, referral_id: uuid.UUID, case_id: uuid.UUID, sta
 def referrals(db: Session, case_id: uuid.UUID) -> list[dict[str, Any]]:
     _open(db)
     rows = db.execute(
-        text("""SELECT r.id, p.name AS partner, p.kind, r.state, r.outcome, r.consent_at, r.created_at
+        text("""SELECT r.id, p.name AS partner, p.kind, r.purpose, r.state, r.outcome, r.consent_at, r.consent_recorded_by,
+                       r.created_at
                 FROM assistance.referral r JOIN assistance.partner p ON p.id = r.partner_id
                 WHERE r.case_id = :c ORDER BY r.created_at"""),
         {"c": case_id},

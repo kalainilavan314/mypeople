@@ -20,7 +20,16 @@ import {
   updateReferral,
 } from '@/features/support/actions';
 import { appealFields } from '@/features/support/appealFields';
-import { CATEGORY_LABELS, OUTCOMES, OUTCOME_LABELS, STATE_LABELS, SUPPORT_TARGETS, criteriaOptions } from '@/features/support/forms';
+import {
+  CATEGORY_LABELS,
+  OUTCOMES,
+  OUTCOME_LABELS,
+  REFERRAL_STATE_LABELS,
+  STATE_LABELS,
+  SUPPORT_TARGETS,
+  criteriaOptions,
+  partnerMayAnswer,
+} from '@/features/support/forms';
 import { api } from '@/lib/api';
 import { loadAreaNames } from '@/lib/areas';
 import { areaText, formatDate, formatDateTime } from '@/lib/format';
@@ -44,9 +53,10 @@ async function quietly<T>(load: () => Promise<T[]>): Promise<T[]> {
 }
 
 /**
- * D13: one support case. It opens only for its assigned caseworker and the decision-makers of its
- * area (FR-AST-007); every other look is refused and logged. Membership, verification and political
- * data are never part of it.
+ * D13: one support case. Its file opens only for its assigned caseworker and the decision-makers of
+ * its area (FR-AST-007, S12); intake staff see only the summary of a case waiting for screening, to
+ * route it to a caseworker. Every other look is refused, and every look is logged. Membership,
+ * verification and political data are never part of it.
  */
 export default function SupportCasePage(props: PageProps<'/support/[id]'>) {
   return (
@@ -105,17 +115,17 @@ async function CaseView({ params, searchParams }: Pick<PageProps<'/support/[id]'
   }
 
   const [caseworkers, programmes, partners] = await Promise.all([
-    file.mayDecide ? quietly<SupportCaseworker>(() => client.listSupportCaseworkers(id)) : Promise.resolve([] as SupportCaseworker[]),
+    file.mayAssign ? quietly<SupportCaseworker>(() => client.listSupportCaseworkers(id)) : Promise.resolve([] as SupportCaseworker[]),
     file.mayDecide ? quietly<SupportProgramme>(() => client.listSupportProgrammes()) : Promise.resolve([] as SupportProgramme[]),
     file.mayWork ? quietly<SupportPartner>(() => client.listSupportPartners()) : Promise.resolve([] as SupportPartner[]),
   ]);
   const areaNames = await loadAreaNames([file.areaKey]);
-  const criteria = criteriaOptions(programmes);
+  const criteria = criteriaOptions(programmes, file.category);
   const open = file.state !== 'closed' && file.state !== 'withdrawn';
   const decidable = file.state === 'screening' || file.state === 'assessment';
   const hidden = { caseId: file.id };
 
-  return (
+  const header = (
     <>
       {backLink}
       <header className="flex flex-col gap-2">
@@ -125,7 +135,7 @@ async function CaseView({ params, searchParams }: Pick<PageProps<'/support/[id]'
           {file.emergency ? <BilingualTag label={{ ta: 'அவசரம்', en: 'Emergency' }} tone="refused" /> : null}
           <BilingualTag label={CATEGORY_LABELS[file.category]} />
         </div>
-        <h1 className="text-2xl font-semibold tracking-tight text-text">{file.applicantName}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-text">{file.applicantName ?? 'Case summary'}</h1>
         <p className="text-sm text-muted">
           {areaText(file.areaKey, areaNames, 'en')} · received {formatDateTime(file.createdAt)} by {file.channel} ·{' '}
           {file.caseworkerName ? `caseworker ${file.caseworkerName}` : 'no caseworker yet'}
@@ -134,7 +144,29 @@ async function CaseView({ params, searchParams }: Pick<PageProps<'/support/[id]'
       </header>
 
       <Feedback done={one(query.done)} />
+    </>
+  );
 
+  // S12: intake staff routing a case waiting for screening get only its summary from the API.
+  if (!file.fullFile) {
+    return (
+      <>
+        {header}
+        <div className="flex max-w-2xl flex-col gap-4">
+          <p role="note" className="rounded-lg border border-line bg-surface p-3 text-sm text-text">
+            You see the summary only. The person&apos;s name, phone, household and request, and the case record, open only for
+            the assigned caseworker and the decision-makers of the area. Route the case to a caseworker of the area; after that it
+            leaves your queue.
+          </p>
+          {file.mayAssign && open ? <AssignForm caseId={file.id} caseworkers={caseworkers} /> : null}
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {header}
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
         <div className="flex min-w-0 flex-col gap-6">
           <Section id="request" ta="கோரிக்கை" en="The request">
@@ -211,14 +243,24 @@ async function CaseView({ params, searchParams }: Pick<PageProps<'/support/[id]'
               <ul className="flex flex-col divide-y divide-line text-sm">
                 {file.referrals.map((referral) => (
                   <li key={referral.id} className="flex flex-col gap-2 py-3">
-                    <span className="font-semibold text-text">
-                      {referral.partner} · {referral.state}
-                    </span>
+                    <p className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold text-text">{referral.partner}</span>
+                      <BilingualTag
+                        label={REFERRAL_STATE_LABELS[referral.state] ?? { ta: referral.state, en: referral.state }}
+                        tone={referral.state === 'proposed' ? 'waiting' : referral.state === 'consent_declined' || referral.state === 'declined' ? 'neutral' : 'done'}
+                      />
+                    </p>
+                    {referral.purpose ? <p className="whitespace-pre-wrap text-sm text-text">Purpose: {referral.purpose}</p> : null}
                     <span className="text-xs text-muted">
-                      referred {formatDateTime(referral.createdAt)} · consent recorded {formatDateTime(referral.consentAt)}
+                      proposed {formatDateTime(referral.createdAt)} ·{' '}
+                      {referral.consentAt
+                        ? `consent ${referral.consentRecordedBy === 'applicant' ? 'given by the applicant in the app' : 'recorded by the caseworker'} ${formatDateTime(referral.consentAt)}`
+                        : referral.state === 'proposed'
+                          ? 'nothing is shared until the applicant consents in the app'
+                          : 'nothing was shared'}
                       {referral.outcome ? ` · outcome: ${referral.outcome}` : ''}
                     </span>
-                    {file.mayWork && open && referral.state !== 'completed' && referral.state !== 'declined' ? (
+                    {file.mayWork && open && partnerMayAnswer(referral.state) ? (
                       <SimpleForm
                         id={`referral-${referral.id.slice(0, 8)}`}
                         action={updateReferral}
@@ -297,27 +339,7 @@ async function CaseView({ params, searchParams }: Pick<PageProps<'/support/[id]'
         </div>
 
         <aside aria-label="Case actions" className="flex flex-col gap-4">
-          {file.mayDecide && open ? (
-            <SimpleForm
-              id="assign"
-              title="Assign a caseworker"
-              intro={caseworkers.length ? 'Only the assigned caseworker and the decision-makers can open the case.' : 'No one in this area holds casework yet.'}
-              action={assignCaseworker}
-              hidden={hidden}
-              fields={[
-                {
-                  name: 'caseworkerId',
-                  label: 'Caseworker',
-                  kind: 'select',
-                  required: true,
-                  wide: true,
-                  options: [{ value: '', label: 'Choose a caseworker' }, ...caseworkers.map((worker) => ({ value: worker.memberId, label: worker.fullName }))],
-                },
-              ]}
-              submits={[{ label: 'Assign' }]}
-              targets={SUPPORT_TARGETS}
-            />
-          ) : null}
+          {file.mayAssign && open ? <AssignForm caseId={file.id} caseworkers={caseworkers} /> : null}
           {file.mayDecide && decidable ? (
             <SimpleForm
               id="decision"
@@ -357,14 +379,21 @@ async function CaseView({ params, searchParams }: Pick<PageProps<'/support/[id]'
             <SimpleForm
               id="refer"
               title="Refer to a partner"
-              intro="Only with the applicant's consent for this partner to see the case."
+              intro={
+                file.consentInApp
+                  ? 'The applicant has an app account: they see the partner and the purpose, and the referral is sent only if they consent there.'
+                  : 'Only with the applicant’s consent for this partner to see the case. Ask them first, then record it.'
+              }
               action={referCase}
-              hidden={hidden}
+              hidden={{ ...hidden, consentInApp: file.consentInApp ? '1' : '0' }}
               fields={[
                 { name: 'partnerId', label: 'Partner', kind: 'select', required: true, wide: true, options: [{ value: '', label: partners.length ? 'Choose the partner' : 'No partners yet' }, ...partners.filter((p) => p.active).map((p) => ({ value: p.id, label: `${p.name} (${p.kind})` }))] },
-                { name: 'consent', label: 'The applicant agreed that this partner may see the case.', kind: 'checkbox', required: true, wide: true },
+                { name: 'purpose', label: 'Purpose, shown to the applicant', kind: 'textarea', required: true, minLength: 3, maxLength: 500, wide: true },
+                ...(file.consentInApp
+                  ? []
+                  : [{ name: 'consent', label: 'The applicant agreed that this partner may see the case.', kind: 'checkbox' as const, required: true, wide: true }]),
               ]}
-              submits={[{ label: 'Refer', tone: 'secondary' }]}
+              submits={[{ label: file.consentInApp ? 'Propose to the applicant' : 'Refer', tone: 'secondary' }]}
               targets={SUPPORT_TARGETS}
             />
           ) : null}
@@ -382,5 +411,29 @@ async function CaseView({ params, searchParams }: Pick<PageProps<'/support/[id]'
         </aside>
       </div>
     </>
+  );
+}
+
+function AssignForm({ caseId, caseworkers }: { caseId: string; caseworkers: readonly SupportCaseworker[] }) {
+  return (
+    <SimpleForm
+      id="assign"
+      title="Assign a caseworker"
+      intro={caseworkers.length ? 'Only the assigned caseworker and the decision-makers can open the case.' : 'No one in this area holds casework yet.'}
+      action={assignCaseworker}
+      hidden={{ caseId }}
+      fields={[
+        {
+          name: 'caseworkerId',
+          label: 'Caseworker',
+          kind: 'select',
+          required: true,
+          wide: true,
+          options: [{ value: '', label: 'Choose a caseworker' }, ...caseworkers.map((worker) => ({ value: worker.memberId, label: worker.fullName }))],
+        },
+      ]}
+      submits={[{ label: 'Assign' }]}
+      targets={SUPPORT_TARGETS}
+    />
   );
 }

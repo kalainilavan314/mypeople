@@ -1,7 +1,6 @@
-import type { NewInvitation } from '@my-people/api-client';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Share, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens/mobile';
@@ -19,52 +18,56 @@ import {
 } from '@my-people/mobile-ui';
 
 import { FeatureQueryView } from '@/components/FeatureQueryView';
-import { copiesDirectly, copyOrShare } from '@/features/referrals/copyOrShare';
+import { copyText, shareText, type ShareOutcome } from '@/features/referrals/copyOrShare';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 
 /**
- * H19 Invite a member: the member's referral code to copy, and an invitation in Tamil or English
- * to preview in full and share through the phone's share sheet (FR-REF-001 to 004). The link
- * carries only an opaque token; the app never asks for the contacts list.
+ * H19 Invite a member: the member's referral code to copy in one tap, and an invitation in Tamil or
+ * English to preview in full and then share through the phone's share sheet (FR-REF-001 to 004).
+ * The preview makes nothing: the invitation and its opaque link are made only as the member shares,
+ * so My invitations never lists one that was only previewed (H20). The app never asks for contacts.
  */
 export default function InviteScreen() {
   const referrals = useApiQuery(() => api().getMyReferrals());
   return (
     <Screen edges={['bottom']} maxContentWidth={720}>
       <FeatureQueryView feature="referrals" query={referrals}>
-        {(data) => <InviteBody code={data.referralCode} onCreated={referrals.reload} />}
+        {(data) => <InviteBody code={data.referralCode} onShared={referrals.reload} />}
       </FeatureQueryView>
     </Screen>
   );
 }
 
-function InviteBody({ code, onCreated }: { code: string; onCreated: () => void }) {
+type Shared = { outcome: ShareOutcome; number: number };
+
+function InviteBody({ code, onShared }: { code: string; onShared: () => void }) {
   const { t } = useTranslation();
   const appLanguage = useLanguage();
   const [language, setLanguage] = useState<AppLanguage>(appLanguage);
-  const [invitation, setInvitation] = useState<NewInvitation | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [shared, setShared] = useState<Shared | null>(null);
+  const [copied, setCopied] = useState<boolean | null>(null);
 
-  // One invitation per language chosen: previewing and then sharing use the same link.
-  const prepare = useApiAction(async () => {
-    const made = invitation ?? (await api().createInvitation(language));
-    if (!invitation) {
-      setInvitation(made);
-      onCreated();
-    }
-    return made;
+  const showPreview = useApiAction(async () => {
+    setPreview((await api().previewInvitation(language)).preview);
   });
-  const share = async () => {
-    const made = await prepare.run();
-    if (!made) return;
-    try {
-      await Share.share({ message: made.preview });
-    } catch {
-      // Closed or not available: nothing was shared.
+  const share = useApiAction(async () => {
+    setShared(null);
+    const made = await api().createInvitation(language);
+    const outcome = await shareText(made.preview);
+    if (outcome === 'dismissed') {
+      try {
+        await api().cancelInvitation(made.number);
+      } catch {
+        // Not taken back (no connection): it stays listed as Shared, which is the safe side.
+      }
     }
-  };
-  const copy = async () => setCopied(await copyOrShare(code));
+    setShared({ outcome, number: made.number });
+    onShared();
+  });
+  const error = showPreview.error ?? share.error;
+  const number = (n: number) => String(n).padStart(2, '0');
 
   return (
     <View style={styles.body}>
@@ -77,14 +80,14 @@ function InviteBody({ code, onCreated }: { code: string; onCreated: () => void }
           {t('m.referrals.codeHint')}
         </AppText>
         <Button
-          label={copiesDirectly ? t('m.referrals.copyCode') : t('m.referrals.shareCode')}
+          label={t('m.referrals.copyCode')}
           variant="secondary"
-          icon={copiesDirectly ? 'copy-outline' : 'share-outline'}
-          onPress={() => void copy()}
+          icon="copy-outline"
+          onPress={() => void copyText(code).then(setCopied)}
         />
-        {copied ? (
-          <AppText step="secondary" tone="success" accessibilityLiveRegion="polite">
-            {t('m.referrals.copied')}
+        {copied !== null ? (
+          <AppText step="secondary" tone={copied ? 'success' : 'error'} accessibilityLiveRegion="polite">
+            {copied ? t('m.referrals.copied') : t('m.referrals.copyFailed')}
           </AppText>
         ) : null}
       </SurfaceCard>
@@ -102,35 +105,48 @@ function InviteBody({ code, onCreated }: { code: string; onCreated: () => void }
           onSelect={(next) => {
             if (next === language) return;
             setLanguage(next);
-            setInvitation(null);
-            prepare.clearError();
+            setPreview(null);
+            setShared(null);
+            showPreview.clearError();
+            share.clearError();
           }}
           options={[
             { key: 'ta', label: 'தமிழ்' },
             { key: 'en', label: 'English' },
           ]}
         />
-        {invitation ? (
-          <View style={styles.preview} accessible accessibilityLabel={`${t('m.referrals.preview')}. ${invitation.preview}`}>
+        {preview ? (
+          <View style={styles.preview} accessible accessibilityLabel={`${t('m.referrals.preview')}. ${preview}`}>
             <AppText step="caption" tone="primary">
-              {t('m.referrals.previewNumber', { number: String(invitation.number).padStart(2, '0') })}
+              {t('m.referrals.preview')}
             </AppText>
             <AppText step="body" selectable>
-              {invitation.preview}
+              {preview}
+            </AppText>
+            <AppText step="secondary" tone="muted">
+              {t('m.referrals.previewLinkNote')}
             </AppText>
           </View>
-        ) : null}
-        {prepare.error ? <Notice tone="error">{errorMessage(t, prepare.error, 'referrals')}</Notice> : null}
-        {invitation ? null : (
+        ) : (
           <Button
             label={t('m.referrals.previewInvitation')}
             variant="secondary"
             icon="eye-outline"
-            busy={prepare.busy}
-            onPress={() => void prepare.run()}
+            busy={showPreview.busy}
+            onPress={() => void showPreview.run()}
           />
         )}
-        <Button label={t('m.referrals.shareInvitation')} icon="share-social-outline" busy={prepare.busy && invitation !== null} onPress={() => void share()} />
+        {error ? <Notice tone="error">{errorMessage(t, error, 'referrals')}</Notice> : null}
+        <Button label={t('m.referrals.shareInvitation')} icon="share-social-outline" busy={share.busy} onPress={() => void share.run()} />
+        {shared ? (
+          <Notice tone={shared.outcome === 'dismissed' ? 'info' : 'success'}>
+            {shared.outcome === 'shared'
+              ? t('m.referrals.sharedNumber', { number: number(shared.number) })
+              : shared.outcome === 'copied'
+                ? t('m.referrals.copiedInvitation', { number: number(shared.number) })
+                : t('m.referrals.notShared')}
+          </Notice>
+        ) : null}
         <AppText step="secondary" tone="muted">
           {t('m.referrals.privacyNote')}
         </AppText>

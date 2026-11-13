@@ -85,6 +85,33 @@ def latest_published_period(db: Session) -> str | None:
     return db.scalar(text("SELECT max(period) FROM community.scorecard WHERE state = 'published'"))
 
 
+def supersede_other_versions(db: Session, period: str, keep_id: uuid.UUID) -> None:
+    """Only one version of a quarter is ever published; the others stay readable as superseded."""
+    db.execute(
+        text("""UPDATE community.scorecard SET state = 'superseded'
+                WHERE period = :p AND state = 'published' AND id <> :keep"""),
+        {"p": period, "keep": keep_id},
+    )
+
+
+def holders(db: Session, permissions: list[str], area_keys: list[str]) -> list[uuid.UUID]:
+    """Active staff holding any of the permissions over one of the areas, or over the whole platform."""
+    return list(
+        db.scalars(
+            text(
+                """
+                SELECT DISTINCT a.member_id FROM access.staff_assignment a
+                JOIN membership.membership ms ON ms.member_id = a.member_id AND ms.state = 'active'
+                WHERE a.state = 'active' AND a.permissions && CAST(:permissions AS text[])
+                  AND (a.review_due_at IS NULL OR a.review_due_at > now())
+                  AND (a.area_level = 'platform' OR (a.area_level || ':' || a.area_code) = ANY(:areas))
+                """
+            ),
+            {"permissions": permissions, "areas": area_keys},
+        )
+    )
+
+
 def has_open_draft(db: Session, period: str) -> bool:
     return bool(db.scalar(
         text("SELECT EXISTS (SELECT 1 FROM community.scorecard WHERE period = :p AND state IN ('draft', 'shared'))"),

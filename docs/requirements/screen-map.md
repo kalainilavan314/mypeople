@@ -85,11 +85,11 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | M03 | Guided liveness capture | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-28, OD-29 (biometrics) | `apps/member-mobile/app/(member)/verify/` |  |
 | M04 | Verification appeal | AI-assisted identity screening (SC-21) | 1–2 | Built (feature-gated) | `apps/member-mobile/app/(member)/verify/appeal.tsx` | Uses `/v1/identity/me/review/appeal`; shows decision reasons and 10-working-day target. |
 | M05 | Assisted verification request | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-04 (assisted verification) | `apps/member-mobile/app/(member)/verify/` |  |
-| M06 | My Household / எனது குடும்பம் | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
-| M07 | Add household member | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
-| M08 | Invite adult member | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
+| M06 | My Household / எனது குடும்பம் | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` | Verified members only; household ID (`HH-`) with its District, DS and GN; the first adult becomes head when the head leaves |
+| M07 | Add household member | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` | Children as guardian-managed minimum records (first name, relationship, birth year; OD-31 recommendation); adults join only by invitation and describe themselves (OD-30) |
+| M08 | Invite adult member | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` | Member code or the phone's share sheet; the inviter never sees the invitee's name before they accept |
 | M09 | Household invitation response | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
-| M10 | Household privacy and consent | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
+| M10 | Household privacy and consent | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` | Change log for the household's adults; correct and erase; caseworker consent given by the head, withdrawn by any adult |
 | M11 | Community Support / சமூக உதவி | Community Support (SC-23) | 2 | Built | `apps/member-mobile/app/(member)/support/` | Behind `community_support`; the folder is `support/` (the Home tile's name) |
 | M12 | Request support | Community Support (SC-23) | 2 | Built | `apps/member-mobile/app/(member)/support/request.tsx` |  |
 | M13 | Support case status | Community Support (SC-23) | 2 | Built | `apps/member-mobile/app/(member)/support/[id].tsx` |  |
@@ -147,8 +147,8 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | S08 | Attendance scanner (GAP-01) | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/check-in.tsx` | Also works offline: scans are queued on the phone and judged by the server at their recorded time, once the STF-01 replay window is approved; waiting scans are settled on the dashboard event page. The tab sends scans left from any event |
 | S09 | Attendance roster and exceptions | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/roster/[id].tsx` |  |
 | S10 | Volunteer assignment manager | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/volunteers/`, `apps/admin-web/src/app/(staff)/volunteering/` | Managers answer offers and see volunteers in the staff app; opportunities are created on the dashboard |
-| S11 | Referral intake and screening | Community Support (SC-23) | 2 | Built (dashboard) | `apps/admin-web/src/app/(staff)/support/new/` | Intake and screening on the dashboard; a staff app version is not built |
-| S12 | Assistance case file | Community Support (SC-23) | 2 | Built (dashboard) | `apps/admin-web/src/app/(staff)/support/[id]/` | The case file on the dashboard; a staff app version is not built |
+| S11 | Referral intake and screening | Community Support (SC-23) | 2 | Built (dashboard) | `apps/admin-web/src/app/(staff)/support/new/` | Intake on the dashboard; the public request form is `apps/member-mobile/app/help/support.tsx` (`/help/support`, no account) |
+| S12 | Assistance case file | Community Support (SC-23) | 2 | Built (dashboard) | `apps/admin-web/src/app/(staff)/support/[id]/` | The case file on the dashboard: intake staff see only the summary until a caseworker is assigned |
 | S13 | Approvals and escalations | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/approvals.tsx` |  |
 | S14 | Operational notifications | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/alerts.tsx` |  |
 | S15 | Election duty roster manager | Election mode (SC-30) | 2 | Built (dashboard) | `apps/admin-web/src/app/(staff)/roster/`, `apps/admin-web/src/app/(staff)/elections/[id]/roster/` | Shifts, offers, messages and cancellation on the dashboard; members answer and check in with M30 |
@@ -170,7 +170,7 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | W08 | Implementation and closure | Case workspaces (SC-16) | 2 | Built | `apps/admin-web/src/app/(staff)/cases/` |  |
 | W09 | Role, area and permission assignment | Verification and roles (SC-15) | 1 | Built | `apps/admin-web/src/app/(staff)/access/page.tsx` |  |
 | D01 | Admin home and work queues | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/page.tsx` | Area-scoped queues refresh each minute; community reports have filtered pagination, record detail, audited access and an immutable submission-area snapshot. |
-| D02 | Member and household administration | My Household (SC-22) | 2 | Built | `apps/admin-web/src/app/(staff)/members/` |  |
+| D02 | Member and household administration | My Household (SC-22) | 2 | Built | `apps/admin-web/src/app/(staff)/members/` | Read-only by design until a household management permission exists; opening needs the household's caseworker consent |
 | D03 | Identity screening panel | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/verification/[id]/page.tsx` | Shown on the W02 review page |
 | D04 | Duplicate investigation workspace | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/duplicates/` | Paginated investigations and case decisions |
 | D05 | Verification appeals queue | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/appeals/` | Paginated appeals and decision records |
@@ -180,9 +180,9 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | D09 | Notification and messaging composer (GAP-05) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/messages/` | Paginated bilingual broadcasts with area and effective staff-authorization-tier targeting, live reach, final reach recalculation, approval and audited dispatch. No member ranking. |
 | D10 | Finance queue and ledger (GAP-06) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/finance/` | M1.4 two-person reconciliation queue and ledger; P3 readiness at `/finance-readiness` |
 | D11 | Payment reconciliation | Payment gateway (SC-43) | 3, subject to OD-27 | Blocked: OD-27, OD-40 | `apps/admin-web/src/app/(staff)/finance/payments/` |  |
-| D12 | Moderation and fact-check queue (GAP-07) | Official content and fact-checks (SC-41) | 2 | Built | `apps/admin-web/src/app/(staff)/moderation/` | Ideas, proposals and the fact-check queue (behind `fact_checks`) |
+| D12 | Moderation and fact-check queue (GAP-07) | Official content and fact-checks (SC-41) | 2 | Built | `apps/admin-web/src/app/(staff)/moderation/` | One queue: ideas, proposals, case summaries, added information, fact-checks and moderation appeals; publish an edited (redacted) version |
 | D13 | Assistance case management | Community Support (SC-23) | 2 | Built | `apps/admin-web/src/app/(staff)/support/` | Behind `community_support`; the folder is `support/` |
-| D14 | Assistance programmes and criteria | Community Support (SC-23) | 2 | Built | `apps/admin-web/src/app/(staff)/support/programmes/` | Statistics with small numbers hidden at `support/statistics` |
+| D14 | Assistance programmes and criteria | Community Support (SC-23) | 2 | Built | `apps/admin-web/src/app/(staff)/support/programmes/` | Staff statistics at `support/statistics`; public district counts on `/help/support`, groups under 10 hidden |
 | D15 | Development proposal review | Development ideas (SC-24) | 2 | Built | `apps/admin-web/src/app/(staff)/development/` |  |
 | D16 | Promise Tracker administration | Promise Tracker (SC-25) | 2 | Built | `apps/admin-web/src/app/(staff)/promises/` | Delay and status report at `promises/report` |
 | D17 | Scorecard publication | Accountability scorecard (SC-26) | 2 | Built | `apps/admin-web/src/app/(staff)/scorecards/` |  |

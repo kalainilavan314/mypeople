@@ -46,12 +46,15 @@ class Catalogue:
 
 
 def catalogue(db: Session, member_id: uuid.UUID) -> Catalogue:
-    """FR-LRN-001: Available, My courses (started) and completed history."""
+    """FR-LRN-001: Available, My courses (started) and completed history. A course retired after the
+    member started or finished it stays in their lists (H15 completed-course history), but is no
+    longer offered to anyone else."""
     started = repository.member_course_ids(db, member_id)
     available, mine, completed = [], [], []
-    for course in repository.courses(db, ("published",)):
+    for course in repository.courses(db, ("published", "retired")):
         if course.id not in started:
-            available.append(CourseCard(course, None))
+            if course.state == "published":
+                available.append(CourseCard(course, None))
             continue
         card = CourseCard(course, repository.progress(db, course.id, member_id))
         (completed if started[course.id] else mine).append(card)

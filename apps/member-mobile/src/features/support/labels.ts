@@ -1,4 +1,4 @@
-import type { MySupportRequest, SupportAppeal, SupportCategory } from '@my-people/api-client';
+import type { MySupportReferral, MySupportRequest, SupportAppeal, SupportCategory } from '@my-people/api-client';
 import type { Tone } from '@my-people/mobile-ui';
 
 /** The ten categories (FR-AST-002); words are m.support.category_<key>. */
@@ -28,6 +28,16 @@ export const APPEAL_TONES: Record<SupportAppeal['state'], Tone> = {
   open: 'pending',
   upheld: 'neutral',
   changed: 'verified',
+};
+
+/** A proposal waits for the applicant's answer; the words are m.support.referralState_<state>. */
+export const REFERRAL_TONES: Record<MySupportReferral['state'], Tone> = {
+  proposed: 'pending',
+  consent_declined: 'neutral',
+  sent: 'neutral',
+  accepted: 'verified',
+  completed: 'verified',
+  declined: 'neutral',
 };
 
 /** The API's limits (SupportRequestIn, AppealIn). */

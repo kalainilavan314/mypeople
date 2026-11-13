@@ -4,13 +4,14 @@ Every public promise with its source, responsible office, measurable target, due
 labelled a party commitment or a government responsibility (BR-113). The Promise Office drafts;
 a second authorised person approves publication and each status change. Updates and corrections
 are never overwritten. A published promise past its due date becomes Delayed and the office is
-asked for an update within 10 working days. Members read every published promise and may leave
-moderated feedback; the office replies.
+asked for an update within 10 working days; when none is approved in time, the publishers over the
+promise's area are told once. Members read every published promise and may leave moderated
+feedback; the office replies.
 """
 
 import uuid
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from typing import Any
 
 from sqlalchemy.orm import Session
@@ -85,6 +86,10 @@ def give_feedback(db: Session, member_id: uuid.UUID, promise_id: uuid.UUID, body
 def _require(db: Session, staff: Staff, permission: str, path: AreaPath, ip: str, target: str) -> None:
     if not access_rules.holds(staff.rule_assignments(), permission, path):
         refuse(db, staff, permission, "outside_your_area", ip, target=("promise", target), area_path=path)
+
+
+def _today(now: datetime | None = None) -> date:
+    return (now or datetime.now(UTC)).astimezone(LOCAL_ZONE).date()
 
 
 def _staff_areas(staff: Staff) -> list[str] | None:
@@ -176,7 +181,7 @@ def decide_publication(db: Session, staff: Staff, promise_id: uuid.UUID, approve
     _require(db, staff, rules.PUBLISH, _path(promise), ip, str(promise_id))
     if promise.publication != "awaiting_approval":
         raise PromiseRefused(f"not_allowed_from:{promise.publication}")
-    if rules.check_second_person(promise.publication_requested_by, staff.member_id):
+    if rules.check_second_person(promise.drafted_by, staff.member_id, promise.publication_requested_by):
         refuse(db, staff, rules.PUBLISH, "own_draft", ip, target=("promise", str(promise_id)), area_path=_path(promise))
     if approve:
         now = datetime.now(UTC)
@@ -204,7 +209,8 @@ def draft_update(db: Session, staff: Staff, promise_id: uuid.UUID, *, new_status
     _require(db, staff, rules.EDIT, _path(promise), ip, str(promise_id))
     if promise.publication != "published":
         raise PromiseRefused("not_published")
-    problems = rules.check_update(current=promise.status, new_status=new_status, evidence_refs=evidence_refs, note=note_en)
+    problems = rules.check_update(current=promise.status, new_status=new_status, evidence_refs=evidence_refs, note=note_en,
+                                  note_ta=note_ta, overdue=rules.past_due(promise.due_date, _today()))
     if corrects_id is not None:
         corrected = repository.find_update(db, corrects_id)
         if corrected is None or corrected.promise_id != promise_id:
@@ -240,15 +246,19 @@ def decide_update(db: Session, staff: Staff, update_id: uuid.UUID, approve: bool
     if not approve and not (reason and reason.strip()):
         raise PromiseRefused("reason_required")
     if approve:
-        # Re-checked at approval, in case the promise moved on since the draft.
+        # Re-checked at approval, in case the promise moved on (or its due date passed) since the draft.
         problems = rules.check_update(current=promise.status, new_status=update.new_status,
-                                      evidence_refs=update.evidence_refs, note=update.note_en)
+                                      evidence_refs=update.evidence_refs, note=update.note_en, note_ta=update.note_ta,
+                                      overdue=rules.past_due(promise.due_date, _today()))
         if problems:
             raise PromiseRefused(problems)
-        values: dict[str, Any] = {"last_verified_at": datetime.now(UTC), "update_due_at": None}
+        values: dict[str, Any] = {"last_verified_at": datetime.now(UTC), "update_due_at": None,
+                                  "update_missed_alerted_at": None}
         if update.new_status:
+            with_reason = update.new_status in ("withdrawn", "blocked")
             values["status"] = update.new_status
-            values["status_reason"] = update.note_en if update.new_status in ("withdrawn", "blocked") else None
+            values["status_reason"] = update.note_en if with_reason else None
+            values["status_reason_ta"] = update.note_ta if with_reason else None
         repository.update(db, promise.id, values)
     repository.decide_update(db, update.id, approve, staff.member_id, reason.strip() if reason else None)
     notifications.complete_action(db, "promise", promise.id)
@@ -260,11 +270,21 @@ def decide_update(db: Session, staff: Staff, update_id: uuid.UUID, approve: bool
     return found
 
 
-def pending_work(db: Session, staff: Staff) -> tuple[list[Update], list[Feedback]]:
+@dataclass(frozen=True)
+class PendingWork:
+    publications: list[Promise]  # promises waiting for a second person to approve publication (D16)
+    updates: list[Update]
+    feedback: list[Feedback]
+
+
+def pending_work(db: Session, staff: Staff) -> PendingWork:
     areas = _staff_areas(staff)
-    updates = repository.pending_updates(db, areas) if access_rules.holds(staff.rule_assignments(), rules.PUBLISH) else []
-    feedback = repository.pending_feedback(db, areas) if access_rules.holds(staff.rule_assignments(), MODERATE) else []
-    return updates, feedback
+    publisher = access_rules.holds(staff.rule_assignments(), rules.PUBLISH)
+    return PendingWork(
+        publications=repository.awaiting_publication(db, areas) if publisher else [],
+        updates=repository.pending_updates(db, areas) if publisher else [],
+        feedback=repository.pending_feedback(db, areas) if access_rules.holds(staff.rule_assignments(), MODERATE) else [],
+    )
 
 
 def moderate_feedback(db: Session, staff: Staff, feedback_id: uuid.UUID, publish: bool, reason: str | None, ip: str) -> Feedback:
@@ -320,11 +340,11 @@ def report(db: Session, staff: Staff) -> list[tuple[str, str, str, str, int]]:
 def mark_delayed(db: Session, now: datetime) -> int:
     """FR-PRM-009: run by the notifications task. Past the due date, a published promise that is not
     finished becomes Delayed; the Promise Office is asked for an update within 10 working days."""
-    today = now.astimezone(LOCAL_ZONE).date()
+    today = _today(now)
     count = 0
     for promise in repository.overdue(db, today):
         due = add_working_days(now, rules.UPDATE_WITHIN_WORKING_DAYS)
-        repository.update(db, promise.id, {"status": "delayed", "update_due_at": due})
+        repository.update(db, promise.id, {"status": "delayed", "update_due_at": due, "update_missed_alerted_at": None})
         repository.insert_update(
             db, promise.id, new_status="delayed",
             note_en=f"The due date {promise.due_date.isoformat()} passed before completion.",
@@ -333,6 +353,21 @@ def mark_delayed(db: Session, now: datetime) -> int:
         )
         for holder in repository.holders(db, rules.EDIT, promise.area_path):
             notifications.notify(db, holder, "promise_update_due", promise.id)
+        count += 1
+    db.commit()
+    return count
+
+
+def escalate_missed_updates(db: Session, now: datetime) -> int:
+    """Run by the notifications task: a Delayed promise whose 10 working days passed without an
+    approved update is raised once with the publishers over its area."""
+    count = 0
+    for promise in repository.missed_updates(db, now):
+        for holder in repository.holders(db, rules.PUBLISH, promise.area_path):
+            notifications.notify(db, holder, "promise_update_missed", promise.id)
+        repository.update(db, promise.id, {"update_missed_alerted_at": now})
+        audit.record(db, actor_id=None, action="promise.update_missed", target_type="promise", target_id=str(promise.id),
+                     area_path=_path(promise))
         count += 1
     db.commit()
     return count

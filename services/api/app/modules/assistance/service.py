@@ -133,6 +133,7 @@ class ApplicantView:
     decisions: list[Decision]
     deliveries: list[dict[str, Any]]
     appeals: list[Appeal]
+    referrals: list[dict[str, Any]]  # each partner referral, so the applicant can answer a proposal (M12)
 
 
 def my_requests(db: Session, member_id: uuid.UUID) -> list[Case]:
@@ -144,7 +145,7 @@ def my_request(db: Session, member_id: uuid.UUID, case_id: uuid.UUID) -> Applica
     if case is None or case.applicant_member_id != member_id:
         raise SupportNotFound()
     return ApplicantView(case, repository.decisions(db, case_id), repository.deliveries(db, case_id),
-                         repository.appeals(db, case_id))
+                         repository.appeals(db, case_id), repository.referrals(db, case_id))
 
 
 def appeal(db: Session, member_id: uuid.UUID, case_id: uuid.UUID, decision_id: uuid.UUID, kind: str, body: str, ip: str) -> Appeal:
@@ -173,20 +174,22 @@ def _decides(staff: Staff, case: Case) -> bool:
     return access_rules.holds(staff.rule_assignments(), rules.DECIDE, _path(case.area_path))
 
 
-def _may_read(staff: Staff, case: Case) -> bool:
+def _access(staff: Staff, case: Case) -> rules.Access | None:
     path = _path(case.area_path)
     assigned = case.caseworker_id == staff.member_id and access_rules.holds(staff.rule_assignments(), rules.CASEWORK, path)
     screening = case.state == "screening" and case.caseworker_id is None and access_rules.holds(
         staff.rule_assignments(), rules.INTAKE, path
     )
-    return rules.may_read(assigned=assigned, decides=_decides(staff, case), intake_while_screening=screening)
+    return rules.case_access(assigned=assigned, decides=_decides(staff, case), intake_while_screening=screening)
 
 
-def _load(db: Session, staff: Staff, case_id: uuid.UUID, ip: str, *, lock: bool = False) -> Case:
+def _load(db: Session, staff: Staff, case_id: uuid.UUID, ip: str, *, lock: bool = False, summary_enough: bool = False) -> Case:
+    """The case, if the viewer may open its full file (or, where `summary_enough`, its summary)."""
     case = repository.find_case(db, case_id, lock=lock)
     if case is None:
         raise SupportNotFound()
-    if not _may_read(staff, case):
+    access = _access(staff, case)
+    if access is None or (access == "summary" and not summary_enough):
         # FR-AST-007: refused and logged, even for staff of the same area.
         refuse(db, staff, "assistance.case", "not_assigned", ip, target=("assistance_case", str(case_id)),
                area_path=_path(case.area_path))
@@ -216,6 +219,7 @@ def queue(db: Session, staff: Staff, states: list[str] | None) -> list[Case]:
 @dataclass(frozen=True)
 class CaseFile:
     case: Case
+    full: bool  # False: the summary only, for intake staff routing a case (S12)
     notes: list[dict[str, Any]]
     decisions: list[Decision]
     deliveries: list[dict[str, Any]]
@@ -224,30 +228,42 @@ class CaseFile:
     duplicates: list[Case]
     may_decide: bool
     may_work: bool
+    may_assign: bool
 
 
-def case_file(db: Session, staff: Staff, case_id: uuid.UUID, ip: str, *, audited: bool = True) -> CaseFile:
-    case = _load(db, staff, case_id, ip)
-    if audited:
-        audit.record(db, actor_id=staff.member_id, action="assistance.case.opened", target_type="assistance_case",
-                     target_id=str(case_id), area_path=_path(case.area_path), ip=ip)
-        db.commit()
-    may_work = case.caseworker_id == staff.member_id
+def _file(db: Session, staff: Staff, case: Case, *, full: bool) -> CaseFile:
+    may_assign = _decides(staff, case) or case.caseworker_id is None
+    if not full:
+        return CaseFile(case=case, full=False, notes=[], decisions=[], deliveries=[], referrals=[], appeals=[], duplicates=[],
+                        may_decide=False, may_work=False, may_assign=may_assign)
     return CaseFile(
-        case=case, notes=repository.notes(db, case_id), decisions=repository.decisions(db, case_id),
-        deliveries=repository.deliveries(db, case_id), referrals=repository.referrals(db, case_id),
-        appeals=repository.appeals(db, case_id), duplicates=repository.possible_duplicates(db, case),
-        may_decide=_decides(staff, case), may_work=may_work,
+        case=case, full=True, notes=repository.notes(db, case.id), decisions=repository.decisions(db, case.id),
+        deliveries=repository.deliveries(db, case.id), referrals=repository.referrals(db, case.id),
+        appeals=repository.appeals(db, case.id), duplicates=repository.possible_duplicates(db, case),
+        may_decide=_decides(staff, case), may_work=case.caseworker_id == staff.member_id, may_assign=may_assign,
     )
 
 
+def case_file(db: Session, staff: Staff, case_id: uuid.UUID, ip: str, *, audited: bool = True) -> CaseFile:
+    """S12: every opening is audited, the summary too."""
+    case = _load(db, staff, case_id, ip, summary_enough=True)
+    full = _access(staff, case) == "full"
+    if audited:
+        audit.record(db, actor_id=staff.member_id, action="assistance.case.opened", target_type="assistance_case",
+                     target_id=str(case_id), area_path=_path(case.area_path), details={"view": "full" if full else "summary"},
+                     ip=ip)
+        db.commit()
+    return _file(db, staff, case, full=full)
+
+
 def caseworkers(db: Session, staff: Staff, case_id: uuid.UUID, ip: str) -> list[tuple[uuid.UUID, str]]:
-    case = _load(db, staff, case_id, ip)
+    case = _load(db, staff, case_id, ip, summary_enough=True)
     return repository.staff_holders(db, rules.CASEWORK, case.area_path)
 
 
-def assign(db: Session, staff: Staff, case_id: uuid.UUID, caseworker_id: uuid.UUID, ip: str) -> None:
-    case = _load(db, staff, case_id, ip, lock=True)
+def assign(db: Session, staff: Staff, case_id: uuid.UUID, caseworker_id: uuid.UUID, ip: str) -> CaseFile:
+    """Screening: intake staff route an unassigned case to a caseworker; decision-makers may reassign."""
+    case = _load(db, staff, case_id, ip, lock=True, summary_enough=True)
     if not (_decides(staff, case) or case.caseworker_id is None):
         refuse(db, staff, rules.DECIDE, "forbidden", ip, target=("assistance_case", str(case_id)), area_path=_path(case.area_path))
     if caseworker_id not in {member for member, _ in repository.staff_holders(db, rules.CASEWORK, case.area_path)}:
@@ -258,6 +274,10 @@ def assign(db: Session, staff: Staff, case_id: uuid.UUID, caseworker_id: uuid.UU
     audit.record(db, actor_id=staff.member_id, action="assistance.case.assigned", target_type="assistance_case",
                  target_id=str(case_id), area_path=_path(case.area_path), ip=ip)
     db.commit()
+    assigned = repository.find_case(db, case_id)
+    assert assigned is not None
+    # Intake staff who routed the case keep only its summary in the answer: the file is now the caseworker's.
+    return _file(db, staff, assigned, full=_access(staff, assigned) == "full")
 
 
 def link(db: Session, staff: Staff, case_id: uuid.UUID, other_id: uuid.UUID, ip: str) -> None:
@@ -286,6 +306,12 @@ def add_note(db: Session, staff: Staff, case_id: uuid.UUID, body: str, ip: str) 
     db.commit()
 
 
+def _criteria_problem(db: Session, criteria_version_id: uuid.UUID, case: Case) -> str | None:
+    facts = repository.criteria_facts(db, criteria_version_id)
+    return rules.check_criteria(found=facts is not None, latest=bool(facts and facts.latest), active=bool(facts and facts.active),
+                                categories=facts.categories if facts else [], category=case.category)
+
+
 def decide(db: Session, staff: Staff, case_id: uuid.UUID, outcome: str, criteria_version_id: uuid.UUID, reason_en: str,
            reason_ta: str, ip: str) -> None:
     """FR-AST-008: against the published criteria version, with reasons and the decision-maker."""
@@ -293,8 +319,8 @@ def decide(db: Session, staff: Staff, case_id: uuid.UUID, outcome: str, criteria
     if not _decides(staff, case):
         refuse(db, staff, rules.DECIDE, "forbidden", ip, target=("assistance_case", str(case_id)), area_path=_path(case.area_path))
     problems = rules.check_decision(state=case.state, reason_en=reason_en, reason_ta=reason_ta)
-    if not repository.criteria_exists(db, criteria_version_id):
-        problems.append("criteria_version_required")
+    if criteria_problem := _criteria_problem(db, criteria_version_id, case):
+        problems.append(criteria_problem)
     if problems:
         raise SupportRefused(problems)
     repository.insert_decision(db, case_id, outcome, criteria_version_id, reason_en.strip(), reason_ta.strip(), staff.member_id)
@@ -322,27 +348,63 @@ def record_delivery(db: Session, staff: Staff, case_id: uuid.UUID, kind: str, am
     db.commit()
 
 
-def refer(db: Session, staff: Staff, case_id: uuid.UUID, partner_id: uuid.UUID, consent: bool, ip: str) -> None:
-    """FR-AST-004: consent for this partner first, then the referral."""
+def refer(db: Session, staff: Staff, case_id: uuid.UUID, partner_id: uuid.UUID, purpose: str, consent: bool, ip: str) -> None:
+    """M12, FR-AST-004: consent again for each partner referral, before anything is shared. An applicant
+    with an app account gives or refuses it there, so the caseworker only proposes the referral; for a
+    request from the hotline, the public form or a partner, the caseworker records the consent the
+    applicant gave them."""
     case = _load(db, staff, case_id, ip)
     _require_worker(db, staff, case, ip)
-    if not consent:
+    in_app = case.applicant_member_id is not None
+    if not in_app and not consent:
         raise SupportRefused("partner_consent_required")
     partner = repository.find_partner(db, partner_id)
     if partner is None or not partner.active:
         raise SupportRefused("partner_not_found")
-    repository.add_referral(db, case_id, partner_id, staff.member_id)
-    audit.record(db, actor_id=staff.member_id, action="assistance.case.referred", target_type="assistance_case",
-                 target_id=str(case_id), area_path=_path(case.area_path), details={"partner": str(partner_id)}, ip=ip)
+    referral_id = repository.add_referral(db, case_id, partner_id, purpose.strip(), staff.member_id, caseworker_consent=not in_app)
+    # Ids only: never the purpose, which describes the person's need.
+    audit.record(db, actor_id=staff.member_id, action="assistance.referral.proposed" if in_app else "assistance.case.referred",
+                 target_type="assistance_case", target_id=str(case_id), area_path=_path(case.area_path),
+                 details={"partner": str(partner_id), "referral": str(referral_id)}, ip=ip)
+    if in_app:
+        notifications.notify(db, case.applicant_member_id, "assistance_referral_consent", case_id)
+    db.commit()
+
+
+def answer_referral(db: Session, member_id: uuid.UUID, case_id: uuid.UUID, referral_id: uuid.UUID, consent: bool,
+                    ip: str) -> None:
+    """M12: the applicant agrees that this partner may see their request, or refuses; once."""
+    view = my_request(db, member_id, case_id)
+    state = repository.referral_state(db, referral_id, case_id, lock=True)
+    if state is None:
+        raise SupportNotFound()
+    if problem := rules.check_answer(referral_state=state, case_state=view.case.state):
+        raise SupportRefused(problem)
+    repository.answer_referral(db, referral_id, consent)
+    audit.record(db, actor_id=member_id, action="assistance.referral.consented" if consent else "assistance.referral.consent_declined",
+                 target_type="assistance_case", target_id=str(case_id), area_path=_path(view.case.area_path),
+                 details={"referral": str(referral_id)}, ip=ip)
+    if not any(r["state"] == "proposed" for r in repository.referrals(db, case_id)):
+        notifications.complete_action(db, "support_request", case_id, member_id)
     db.commit()
 
 
 def update_referral(db: Session, staff: Staff, case_id: uuid.UUID, referral_id: uuid.UUID, state: str, outcome: str | None,
                     ip: str) -> None:
+    """What the partner said; only for a referral shared with them after consent."""
     case = _load(db, staff, case_id, ip)
     _require_worker(db, staff, case, ip)
+    current = repository.referral_state(db, referral_id, case_id, lock=True)
+    if current is None:
+        raise SupportNotFound()
+    if problem := rules.check_partner_update(current):
+        raise SupportRefused(problem)
     if not repository.update_referral(db, referral_id, case_id, state, outcome.strip() if outcome else None):
         raise SupportNotFound()
+    # Ids and the new state only: never the outcome text.
+    audit.record(db, actor_id=staff.member_id, action="assistance.referral.updated", target_type="assistance_case",
+                 target_id=str(case_id), area_path=_path(case.area_path), details={"referral": str(referral_id), "state": state},
+                 ip=ip)
     db.commit()
 
 
@@ -377,6 +439,8 @@ def decide_appeal(db: Session, staff: Staff, appeal_id: uuid.UUID, change: bool,
     if change:
         if outcome is None or criteria_version_id is None or not reason_ta:
             raise SupportRefused("new_decision_required")
+        if criteria_problem := _criteria_problem(db, criteria_version_id, case):
+            raise SupportRefused(criteria_problem)
         repository.insert_decision(db, case.id, outcome, criteria_version_id, reason.strip(), reason_ta.strip(),
                                    staff.member_id, replaces_id=original.id)
     repository.decide_appeal(db, appeal_id, "changed" if change else "upheld", staff.member_id, reason.strip())
@@ -470,3 +534,12 @@ def statistics(db: Session, staff: Staff) -> list[tuple[str, str, str, int | Non
         category, state = key.split("|")
         out.append(("platform" if area == "district:none" else area, category, state, count))
     return out
+
+
+def public_statistics(db: Session) -> list[tuple[str, str, int | None]]:
+    """D14, FR-AST-012: requests received by district and kind of help, for anyone to read. Only
+    district figures, never a DS or GN division, state or date, and no totals that could be
+    subtracted; any group under 10 is hidden (None)."""
+    rows = [(district or "none", None, category, count) for district, _, category, _, count in repository.statistics(db, None)]
+    return [("platform" if area == "district:none" else area, category, count)
+            for area, category, count in small_numbers.area_table(rows)]

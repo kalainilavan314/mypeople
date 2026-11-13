@@ -81,6 +81,7 @@ export const PROMISE_TARGETS: ProblemTargets = {
   too_many_milestones: 'milestonesJson',
   update_note_required: 'noteTa',
   evidence_required: 'evidenceRefs',
+  overdue_stays_delayed: 'newStatus',
   reason_required: 'reason',
   decision_required: 'decision',
   reply_required: 'replyTa',
@@ -166,6 +167,14 @@ export function readPromise(form: FormLike, { needsArea }: { needsArea: boolean 
     },
     problems,
   };
+}
+
+/**
+ * The due date has passed in Sri Lankan time (UTC+05:30, no daylight saving). The API then keeps the
+ * promise Delayed: only Completed or Withdrawn, or a note without a status, is accepted.
+ */
+export function pastDue(dueDate: string, now: Date): boolean {
+  return dueDate < new Date(now.getTime() + (5 * 60 + 30) * 60 * 1000).toISOString().slice(0, 10);
 }
 
 /** Evidence references, one per line, trimmed, at most 20. */

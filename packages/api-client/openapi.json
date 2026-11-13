@@ -7520,6 +7520,45 @@
         }
       }
     },
+    "/v1/cases/manage/pending-moderation": {
+      "get": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "List Pending Moderation",
+        "description": "D12: public summaries to write (or update after closure) and added information to moderate, in the\nmoderator's areas, oldest first. Items the viewer reported or wrote are marked; another moderator decides them.",
+        "operationId": "list_pending_moderation_v1_cases_manage_pending_moderation_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingModerationOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record"
+          },
+          "404": {
+            "description": "not_found: no such case, or outside the viewer's areas"
+          },
+          "409": {
+            "description": "case_refused with problems such as wrong_stage or owner_not_eligible"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/v1/cases/{case_id}": {
       "get": {
         "tags": [
@@ -8624,7 +8663,7 @@
           "cases"
         ],
         "summary": "Close Case",
-        "description": "W08: the closing report; Resolved only with evidence and a Tamil and English summary (FR-WEB-026).",
+        "description": "W08: the closing report; Resolved only with evidence and a Tamil and English summary (FR-WEB-026).\nThe closing summary reaches the reporter; the public sees only the moderator's public summary (BR-032).",
         "operationId": "close_case_v1_cases__case_id__close_post",
         "security": [
           {
@@ -8837,7 +8876,7 @@
           "cases"
         ],
         "summary": "Set Public Summary",
-        "description": "BR-032: publish a moderated public summary, or withhold it with a reason.",
+        "description": "BR-032: publish a moderated public summary, or withhold it with a reason; also after closure, to\ngive the public the outcome.",
         "operationId": "set_public_summary_v1_cases__case_id__public_summary_post",
         "security": [
           {
@@ -8908,6 +8947,7 @@
           "cases"
         ],
         "summary": "Moderate Addition",
+        "description": "D12: approve (as written or as an edited version) or reject with a reason; never one's own (403 own_record).",
         "operationId": "moderate_addition_v1_cases__case_id__additions__addition_id__moderation_post",
         "security": [
           {
@@ -8978,6 +9018,214 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/v1/moderation-appeals": {
+      "post": {
+        "tags": [
+          "moderation-appeals"
+        ],
+        "summary": "Appeal",
+        "description": "The author of a rejected idea or added information appeals the decision, once.",
+        "operationId": "appeal_v1_moderation_appeals_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModerationAppealIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModerationAppealOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record, outside_your_area, original_moderator"
+          },
+          "404": {
+            "description": "not_found, or feature_unavailable while the item's module is off"
+          },
+          "422": {
+            "description": "appeal_refused with problems: not_rejected, already_appealed, appeal_too_short, already_decided, reason_required"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/moderation-appeals/mine": {
+      "get": {
+        "tags": [
+          "moderation-appeals"
+        ],
+        "summary": "Read My Appeal",
+        "description": "The member's appeal on one of their own items, or none.",
+        "operationId": "read_my_appeal_v1_moderation_appeals_mine_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "itemKind",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "idea",
+                "addition"
+              ],
+              "type": "string",
+              "title": "Itemkind"
+            }
+          },
+          {
+            "name": "itemId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Itemid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyModerationAppealOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record, outside_your_area, original_moderator"
+          },
+          "404": {
+            "description": "not_found, or feature_unavailable while the item's module is off"
+          },
+          "422": {
+            "description": "appeal_refused with problems: not_rejected, already_appealed, appeal_too_short, already_decided, reason_required"
+          }
+        }
+      }
+    },
+    "/v1/moderation-appeals/manage": {
+      "get": {
+        "tags": [
+          "moderation-appeals"
+        ],
+        "summary": "List Appeals",
+        "description": "D12: appeals in the moderator's areas, open ones first, oldest first.",
+        "operationId": "list_appeals_v1_moderation_appeals_manage_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StaffModerationAppealOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Appeals V1 Moderation Appeals Manage Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/moderation-appeals/manage/{appeal_id}/decision": {
+      "post": {
+        "tags": [
+          "moderation-appeals"
+        ],
+        "summary": "Decide Appeal",
+        "description": "Decided by a moderator over the area who is neither the first moderator nor the author.",
+        "operationId": "decide_appeal_v1_moderation_appeals_manage__appeal_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "appeal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Appeal Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModerationAppealDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffModerationAppealOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record, outside_your_area, original_moderator"
+          },
+          "404": {
+            "description": "not_found, or feature_unavailable while the item's module is off"
+          },
+          "422": {
+            "description": "appeal_refused with problems: not_rejected, already_appealed, appeal_too_short, already_decided, reason_required"
           }
         }
       }
@@ -10227,6 +10475,7 @@
           "ideas"
         ],
         "summary": "Moderate Idea",
+        "description": "D12: publish as written, publish an edited (redacted) version, or reject with a reason.\nProblems: reason_required, already_moderated, edits_only_when_publishing, edited_title_length,\nedited_benefit_length.",
         "operationId": "moderate_idea_v1_ideas__idea_id__moderation_post",
         "security": [
           {
@@ -11759,6 +12008,54 @@
         }
       }
     },
+    "/v1/invitations/preview": {
+      "get": {
+        "tags": [
+          "invitations"
+        ],
+        "summary": "Preview Invitation",
+        "description": "H19 \"preview, then share\": the invitation text before sharing. Creates nothing, so a preview is\nnever listed under My referrals.",
+        "operationId": "preview_invitation_v1_invitations_preview_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "language",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "ta",
+                "en"
+              ],
+              "type": "string",
+              "title": "Language"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationPreviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "membership_not_active"
+          }
+        }
+      }
+    },
     "/v1/invitations/mine": {
       "get": {
         "tags": [
@@ -11795,7 +12092,7 @@
           "invitations"
         ],
         "summary": "Create Invitation",
-        "description": "H19: a new invitation link and its preview, shared through the phone's share sheet.",
+        "description": "H19: a new invitation link and its text, made as the member shares through the phone's share\nsheet; from now on it is listed as Shared.",
         "operationId": "create_invitation_v1_invitations_post",
         "requestBody": {
           "content": {
@@ -11830,6 +12127,53 @@
             "HTTPBearer": []
           }
         ]
+      }
+    },
+    "/v1/invitations/{number}/cancel": {
+      "post": {
+        "tags": [
+          "invitations"
+        ],
+        "summary": "Cancel Invitation",
+        "description": "The share sheet was closed without sharing: takes back the unused invitation made a few\nminutes ago, so it is not listed as Shared.",
+        "operationId": "cancel_invitation_v1_invitations__number__cancel_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/v1/promises": {
@@ -12101,7 +12445,7 @@
           "promises"
         ],
         "summary": "Pending Work",
-        "description": "Updates waiting for a second person's approval, and feedback waiting for moderation.",
+        "description": "Promises and updates waiting for a second person's approval, and feedback waiting for moderation.",
         "operationId": "pending_work_v1_promises_manage_pending_get",
         "responses": {
           "200": {
@@ -12327,7 +12671,7 @@
           "promises"
         ],
         "summary": "Decide Publication",
-        "description": "FR-PRM-003: a second authorised person approves; the person who asked cannot (403 own_draft).",
+        "description": "FR-PRM-003: a second authorised person approves; neither the drafter nor the person who asked may (403 own_draft).",
         "operationId": "decide_publication_v1_promises_manage__promise_id__publication_decision_post",
         "security": [
           {
@@ -13272,6 +13616,28 @@
         ]
       }
     },
+    "/v1/assistance/public-form": {
+      "get": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Public Form",
+        "description": "S11 public web form, no account needed: the official emergency numbers first, then the categories.",
+        "operationId": "public_form_v1_assistance_public_form_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicSupportFormOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/assistance/public-requests": {
       "post": {
         "tags": [
@@ -13307,6 +13673,28 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/statistics": {
+      "get": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Public Statistics",
+        "description": "D14, no account needed: requests by district and kind of help only; groups under 10 hidden (FR-AST-012).",
+        "operationId": "public_statistics_v1_assistance_statistics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicSupportStatisticsOut"
                 }
               }
             }
@@ -13411,6 +13799,78 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SupportAppealOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/requests/{case_id}/referrals/{referral_id}/consent": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Answer Referral",
+        "description": "M12: the applicant agrees that this partner may see the request (it is then sent), or refuses; once.",
+        "operationId": "answer_referral_v1_assistance_requests__case_id__referrals__referral_id__consent_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "referral_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Referral Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReferralConsentIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyRequestOut"
                 }
               }
             }
@@ -13555,7 +14015,7 @@
           "assistance"
         ],
         "summary": "Read Case",
-        "description": "S12: only the assigned caseworker and decision-makers; every opening is audited.",
+        "description": "S12: the full file only for the assigned caseworker and decision-makers; intake staff get the summary of a\ncase waiting for screening (fullFile false). Every opening is audited.",
         "operationId": "read_case_v1_assistance_manage_cases__case_id__get",
         "security": [
           {
@@ -13662,6 +14122,7 @@
           "assistance"
         ],
         "summary": "Assign",
+        "description": "Intake staff route a case waiting for screening and get its summary back; decision-makers may reassign.",
         "operationId": "assign_v1_assistance_manage_cases__case_id__assign_post",
         "security": [
           {
@@ -13968,6 +14429,7 @@
           "assistance"
         ],
         "summary": "Refer",
+        "description": "M12: proposed to an applicant with an app account, who answers there; sent at once with the consent the\ncaseworker records for anyone else.",
         "operationId": "refer_v1_assistance_manage_cases__case_id__referrals_post",
         "security": [
           {
@@ -15269,7 +15731,7 @@
           "field"
         ],
         "summary": "Sync",
-        "description": "S07: send visits made offline; each comes back created, updated, in conflict or refused.",
+        "description": "S07: send visits made offline; each comes back created, updated, unchanged, in conflict or refused.",
         "operationId": "sync_v1_field_visits_sync_post",
         "requestBody": {
           "content": {
@@ -16058,7 +16520,7 @@
           "election-roster"
         ],
         "summary": "Message",
-        "description": "FR-ELX-007: an operational message to the people on this shift.",
+        "description": "FR-ELX-007: an operational message to the volunteers who accepted this shift.",
         "operationId": "message_v1_election_roster_manage_shifts__shift_id__messages_post",
         "security": [
           {
@@ -16120,7 +16582,7 @@
           "election-roster"
         ],
         "summary": "Period Report",
-        "description": "FR-ELX-009: messages sent, roster changes and content published during the period.",
+        "description": "FR-ELX-009: messages sent, roster changes and content published during the period, in its area.",
         "operationId": "period_report_v1_election_roster_periods__period_id__report_get",
         "security": [
           {
@@ -16149,6 +16611,62 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PeriodReportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/election/roster/periods/{period_id}/report/entries": {
+      "get": {
+        "tags": [
+          "election-roster"
+        ],
+        "summary": "Period Report Entries",
+        "description": "FR-ELX-009: the audit entries behind the report, newest first (at most 500): broadcasts, content\npublished and silence blocks in the period's time and area, and every roster change for its shifts.",
+        "operationId": "period_report_entries_v1_election_roster_periods__period_id__report_entries_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "period_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Period Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PeriodReportEntryOut"
+                  },
+                  "title": "Response Period Report Entries V1 Election Roster Periods  Period Id  Report Entries Get"
                 }
               }
             }
@@ -21039,6 +21557,98 @@
         ]
       }
     },
+    "/v1/households/mine/log": {
+      "get": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Read Household Log",
+        "description": "M10: the household's change log for its confirmed adults: what changed, who, and when.",
+        "operationId": "read_household_log_v1_households_mine_log_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/HouseholdLogEntryOut"
+                  },
+                  "type": "array",
+                  "title": "Response Read Household Log V1 Households Mine Log Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/households/mine/caseworker-consent": {
+      "post": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Give Caseworker Consent",
+        "description": "The head lets a caseworker in the household's area open its record.",
+        "operationId": "give_caseworker_consent_v1_households_mine_caseworker_consent_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Withdraw Caseworker Consent",
+        "description": "Any confirmed adult withdraws caseworker access.",
+        "operationId": "withdraw_caseworker_consent_v1_households_mine_caseworker_consent_delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/v1/households/invitations/mine": {
       "get": {
         "tags": [
@@ -21091,7 +21701,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HouseholdInvitationOut"
+                  "$ref": "#/components/schemas/HouseholdInvitationSentOut"
                 }
               }
             }
@@ -21230,6 +21840,118 @@
         }
       }
     },
+    "/v1/households/members/me": {
+      "patch": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Update My Details",
+        "description": "An adult's own age band and occupation category (OD-30).",
+        "operationId": "update_my_details_v1_households_members_me_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MyHouseholdDetailsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/households/members/{member_record_id}": {
+      "patch": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Correct Relationship",
+        "description": "The head corrects an adult's relationship (M10).",
+        "operationId": "correct_relationship_v1_households_members__member_record_id__patch",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "member_record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Member Record Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemberRelationshipIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/households/members/{member_record_id}/remove": {
       "post": {
         "tags": [
@@ -21237,6 +21959,159 @@
         ],
         "summary": "Remove Member",
         "operationId": "remove_member_v1_households_members__member_record_id__remove_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "member_record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Member Record Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/households/dependants": {
+      "post": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Add Dependant",
+        "description": "M07: a child's minimum record, added by a verified adult of the household as guardian.",
+        "operationId": "add_dependant_v1_households_dependants_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DependantIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/households/dependants/{member_record_id}": {
+      "patch": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Update Dependant",
+        "operationId": "update_dependant_v1_households_dependants__member_record_id__patch",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "member_record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Member Record Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DependantUpdateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "households"
+        ],
+        "summary": "Remove Dependant",
+        "operationId": "remove_dependant_v1_households_dependants__member_record_id__delete",
         "security": [
           {
             "APIKeyCookie": []
@@ -21323,6 +22198,7 @@
           "households"
         ],
         "summary": "Staff View Household",
+        "description": "D02 read-only: refused `outside_your_area` or `no_caseworker_consent` (both audited).",
         "operationId": "staff_view_household_v1_households_staff__target_member_id__get",
         "security": [
           {
@@ -22002,6 +22878,20 @@
               }
             ],
             "title": "Reason"
+          },
+          "editedBody": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000,
+                "minLength": 5
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Editedbody",
+            "description": "D12: an edited version to publish instead, e.g. with names or phone numbers taken out; used only when approving"
           }
         },
         "type": "object",
@@ -25283,7 +26173,20 @@
           },
           "body": {
             "type": "string",
-            "title": "Body"
+            "title": "Body",
+            "description": "As the member wrote it"
+          },
+          "publishedBody": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedbody",
+            "description": "The moderator's edited version shown to members, when one was made"
           },
           "fromReporter": {
             "type": "boolean",
@@ -25312,6 +26215,11 @@
             "type": "integer",
             "title": "Photos"
           },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine",
+            "description": "The viewer wrote it, so another moderator decides it (BR-085)"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time",
@@ -25322,11 +26230,13 @@
         "required": [
           "id",
           "body",
+          "publishedBody",
           "fromReporter",
           "isReply",
           "state",
           "moderationReason",
           "photos",
+          "mine",
           "createdAt"
         ],
         "title": "CaseAdditionOut",
@@ -25374,7 +26284,7 @@
             "maxLength": 1000,
             "minLength": 10,
             "title": "Summaryen",
-            "description": "Shown to the reporter and followers"
+            "description": "Shown to the reporter only; others see the moderator's public summary (BR-032)"
           },
           "summaryTa": {
             "type": "string",
@@ -26596,78 +27506,6 @@
           "noticeVersion"
         ],
         "title": "ConsentInput"
-      },
-      "ConsentLogOut": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Id"
-          },
-          "householdId": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Householdid"
-          },
-          "action": {
-            "type": "string",
-            "title": "Action"
-          },
-          "memberId": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Memberid"
-          },
-          "actorId": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Actorid"
-          },
-          "actorName": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Actorname"
-          },
-          "details": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Details"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Createdat"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "householdId",
-          "action",
-          "actorId",
-          "createdAt"
-        ],
-        "title": "ConsentLogOut"
       },
       "ConsentNoticeOut": {
         "properties": {
@@ -27894,6 +28732,93 @@
         ],
         "title": "DeliveryOut"
       },
+      "DependantIn": {
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "pattern": "^\\D*[^\\d\\s]\\D*$",
+            "title": "Firstname"
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "child",
+              "grandchild",
+              "sibling",
+              "other"
+            ],
+            "title": "Relationship"
+          },
+          "birthYear": {
+            "type": "integer",
+            "maximum": 2100.0,
+            "minimum": 1900.0,
+            "title": "Birthyear"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "firstName",
+          "relationship",
+          "birthYear"
+        ],
+        "title": "DependantIn",
+        "description": "M07 child record: first name, relationship and birth year only. Unknown fields (an ID\nnumber, a phone, a photo) are refused, never silently dropped."
+      },
+      "DependantUpdateIn": {
+        "properties": {
+          "firstName": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50,
+                "minLength": 1,
+                "pattern": "^\\D*[^\\d\\s]\\D*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Firstname"
+          },
+          "relationship": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "child",
+                  "grandchild",
+                  "sibling",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relationship"
+          },
+          "birthYear": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 2100.0,
+                "minimum": 1900.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Birthyear"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "DependantUpdateIn"
+      },
       "DeviceIn": {
         "properties": {
           "token": {
@@ -28085,6 +29010,19 @@
               }
             ],
             "title": "Regionalownerid"
+          },
+          "scope": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scope",
+            "description": "W08: the approved scope; needed to act"
           }
         },
         "type": "object",
@@ -29792,11 +30730,32 @@
             "description": "The server version this edit started from; null for a new visit"
           },
           "gnCode": {
-            "type": "string",
-            "maxLength": 20,
-            "minLength": 3,
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Gncode",
-            "description": "Chosen by hand; location is never tracked"
+            "description": "Chosen by hand; location is never tracked. Give a GN, a DS or neither"
+          },
+          "dsCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dscode",
+            "description": "A DS division chosen by hand instead of a GN"
           },
           "visitedAt": {
             "type": "string",
@@ -29890,7 +30849,6 @@
         "type": "object",
         "required": [
           "clientId",
-          "gnCode",
           "visitedAt",
           "consent"
         ],
@@ -29917,8 +30875,31 @@
             "title": "Coordinatorname"
           },
           "gnCode": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Gncode"
+          },
+          "dsCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dscode"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey",
+            "description": "The visit's most specific area: its GN, its DS, or the coordinator's area when no place was given"
           },
           "visitedAt": {
             "type": "string",
@@ -30013,6 +30994,8 @@
           "clientId",
           "coordinatorName",
           "gnCode",
+          "dsCode",
+          "areaKey",
           "visitedAt",
           "consent",
           "concerns",
@@ -30428,6 +31411,13 @@
             "maxLength": 2000,
             "minLength": 3,
             "title": "Note"
+          },
+          "affectedArea": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Affectedarea",
+            "description": "W03: the area the problem affects, as confirmed"
           }
         },
         "type": "object",
@@ -30436,7 +31426,8 @@
           "descriptionClear",
           "evidenceReviewed",
           "ownerId",
-          "note"
+          "note",
+          "affectedArea"
         ],
         "title": "ForwardIn"
       },
@@ -30980,6 +31971,9 @@
           },
           "hub": {
             "$ref": "#/components/schemas/HomeHubOut"
+          },
+          "promises": {
+            "$ref": "#/components/schemas/HomePromisesOut"
           }
         },
         "type": "object",
@@ -30995,9 +31989,64 @@
           "comingUp",
           "quickActions",
           "tabs",
-          "hub"
+          "hub",
+          "promises"
         ],
         "title": "HomeOut"
+      },
+      "HomePromiseCountOut": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "not_started",
+              "in_progress",
+              "completed",
+              "delayed",
+              "blocked",
+              "withdrawn"
+            ],
+            "title": "Status"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "count"
+        ],
+        "title": "HomePromiseCountOut"
+      },
+      "HomePromisesOut": {
+        "properties": {
+          "feature": {
+            "$ref": "#/components/schemas/HomeFeatureOut",
+            "description": "Open, or not open yet while the Promise Tracker is switched off"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "counts": {
+            "items": {
+              "$ref": "#/components/schemas/HomePromiseCountOut"
+            },
+            "type": "array",
+            "title": "Counts",
+            "description": "Statuses with at least one promise, in the tracker's order"
+          }
+        },
+        "type": "object",
+        "required": [
+          "feature",
+          "total",
+          "counts"
+        ],
+        "title": "HomePromisesOut",
+        "description": "M18 on Home: the Promise Tracker, with the published promises made for the member's GN, DS\ndivision, district, province or the whole platform, counted by status."
       },
       "HouseholdCreateIn": {
         "properties": {
@@ -31053,10 +32102,6 @@
             "type": "string",
             "format": "uuid",
             "title": "Inviteememberid"
-          },
-          "inviteeName": {
-            "type": "string",
-            "title": "Inviteename"
           },
           "inviteeCode": {
             "anyOf": [
@@ -31114,13 +32159,122 @@
           "inviterMemberId",
           "inviterName",
           "inviteeMemberId",
-          "inviteeName",
           "relationship",
           "status",
           "createdAt",
           "expiresAt"
         ],
-        "title": "HouseholdInvitationOut"
+        "title": "HouseholdInvitationOut",
+        "description": "An invitation. The invitee's name is never included: the inviter typed a member code, and a\nname before the invitee accepts would let anyone look names up by code (M08)."
+      },
+      "HouseholdInvitationSentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "spouse",
+              "parent",
+              "sibling",
+              "other"
+            ],
+            "title": "Relationship"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "accepted",
+              "declined",
+              "revoked",
+              "expired"
+            ],
+            "title": "Status"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiresat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "relationship",
+          "status",
+          "expiresAt"
+        ],
+        "title": "HouseholdInvitationSentOut",
+        "description": "The neutral answer to sending an invitation: nothing about the invitee."
+      },
+      "HouseholdLogEntryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "create_household",
+              "update_name",
+              "invite_adult",
+              "accept_invitation",
+              "decline_invitation",
+              "revoke_invitation",
+              "leave_household",
+              "remove_member",
+              "add_dependent",
+              "remove_dependent",
+              "dissolve_household",
+              "staff_view",
+              "update_member",
+              "caseworker_consent_given",
+              "caseworker_consent_withdrawn"
+            ],
+            "title": "Action"
+          },
+          "actor": {
+            "type": "string",
+            "enum": [
+              "you",
+              "household_member",
+              "former_member",
+              "caseworker"
+            ],
+            "title": "Actor"
+          },
+          "actorName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actorname"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "action",
+          "actor",
+          "createdAt"
+        ],
+        "title": "HouseholdLogEntryOut",
+        "description": "One change in the household's log (M10): what, who and when; nothing else."
       },
       "HouseholdMemberOut": {
         "properties": {
@@ -31161,7 +32315,8 @@
             "type": "string",
             "enum": [
               "head",
-              "adult"
+              "adult",
+              "dependent"
             ],
             "title": "Role"
           },
@@ -31176,6 +32331,8 @@
               "spouse",
               "parent",
               "sibling",
+              "child",
+              "grandchild",
               "other"
             ],
             "title": "Relationship"
@@ -31204,6 +32361,73 @@
               }
             ],
             "title": "Removedat"
+          },
+          "ageBand": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "18_24",
+                  "25_34",
+                  "35_44",
+                  "45_54",
+                  "55_64",
+                  "65_plus"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ageband"
+          },
+          "occupationCategory": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "farming",
+                  "fishing",
+                  "daily_labour",
+                  "trade",
+                  "government",
+                  "private_sector",
+                  "self_employed",
+                  "student",
+                  "homemaker",
+                  "retired",
+                  "unemployed",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occupationcategory"
+          },
+          "birthYear": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Birthyear"
+          },
+          "guardianMemberId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guardianmemberid"
           }
         },
         "type": "object",
@@ -31224,6 +32448,11 @@
             "type": "string",
             "format": "uuid",
             "title": "Id"
+          },
+          "householdCode": {
+            "type": "string",
+            "title": "Householdcode",
+            "description": "A short reference shown to the household, e.g. HH-1A2B3C4D"
           },
           "createdBy": {
             "type": "string",
@@ -31263,6 +32492,39 @@
             ],
             "title": "Dissolvedat"
           },
+          "places": {
+            "items": {
+              "$ref": "#/components/schemas/HouseholdPlaceOut"
+            },
+            "type": "array",
+            "title": "Places",
+            "description": "District, DS division and GN division",
+            "default": []
+          },
+          "caseworkerConsentAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caseworkerconsentat"
+          },
+          "caseworkerConsentBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caseworkerconsentby"
+          },
           "members": {
             "items": {
               "$ref": "#/components/schemas/HouseholdMemberOut"
@@ -31285,7 +32547,8 @@
                 "type": "string",
                 "enum": [
                   "head",
-                  "adult"
+                  "adult",
+                  "dependent"
                 ]
               },
               {
@@ -31293,6 +32556,18 @@
               }
             ],
             "title": "Myrole"
+          },
+          "myMemberId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mymemberid"
           },
           "isHead": {
             "type": "boolean",
@@ -31303,11 +32578,57 @@
         "type": "object",
         "required": [
           "id",
+          "householdCode",
           "createdBy",
           "createdAt",
           "updatedAt"
         ],
         "title": "HouseholdOut"
+      },
+      "HouseholdPlaceOut": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "district",
+              "ds",
+              "gn"
+            ],
+            "title": "Level"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "nameEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nameta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "code"
+        ],
+        "title": "HouseholdPlaceOut"
       },
       "HouseholdUpdateIn": {
         "properties": {
@@ -31326,6 +32647,57 @@
         },
         "type": "object",
         "title": "HouseholdUpdateIn"
+      },
+      "IdeaAppealOut": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "upheld",
+              "changed"
+            ],
+            "title": "State"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "The deciding moderator's reason, once decided"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "state",
+          "reason",
+          "createdAt",
+          "decidedAt"
+        ],
+        "title": "IdeaAppealOut",
+        "description": "The author's one appeal of a moderation decision (D12) and, once decided, its outcome."
       },
       "IdeaBoardOut": {
         "properties": {
@@ -31391,6 +32763,34 @@
               }
             ],
             "title": "Reason"
+          },
+          "editedTitle": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80,
+                "minLength": 5
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Editedtitle",
+            "description": "D12: publish this redacted title instead of the author's"
+          },
+          "editedBenefit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000,
+                "minLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Editedbenefit",
+            "description": "D12: publish this redacted benefit instead of the author's"
           }
         },
         "type": "object",
@@ -31412,7 +32812,8 @@
           },
           "title": {
             "type": "string",
-            "title": "Title"
+            "title": "Title",
+            "description": "The author sees what they wrote; everyone else the published (possibly edited) version"
           },
           "benefit": {
             "type": "string",
@@ -31440,6 +32841,46 @@
             "title": "Moderationreason",
             "description": "Shown to the author when the idea was not published"
           },
+          "editedByModerator": {
+            "type": "boolean",
+            "title": "Editedbymoderator",
+            "description": "Author only: a moderator published an edited version (D12)"
+          },
+          "publishedTitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedtitle",
+            "description": "Author only: the edited title others see, when it was edited"
+          },
+          "publishedBenefit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedbenefit",
+            "description": "Author only: the edited benefit others see, when it was edited"
+          },
+          "appeal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IdeaAppealOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Author only: their one appeal of the moderation decision"
+          },
           "supports": {
             "type": "integer",
             "title": "Supports"
@@ -31466,6 +32907,10 @@
           "benefit",
           "state",
           "moderationReason",
+          "editedByModerator",
+          "publishedTitle",
+          "publishedBenefit",
+          "appeal",
           "supports",
           "supported",
           "mine",
@@ -31738,6 +33183,20 @@
         ],
         "title": "InvitationOut"
       },
+      "InvitationPreviewOut": {
+        "properties": {
+          "preview": {
+            "type": "string",
+            "title": "Preview",
+            "description": "The full invitation text; its link's token is made only on sharing"
+          }
+        },
+        "type": "object",
+        "required": [
+          "preview"
+        ],
+        "title": "InvitationPreviewOut"
+      },
       "InvitationRespondIn": {
         "properties": {
           "action": {
@@ -31969,6 +33428,18 @@
             ],
             "title": "Locationtext"
           },
+          "affectedArea": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Affectedarea",
+            "description": "W03: the affected area the GN collector recorded when forwarding"
+          },
           "publicTitleEn": {
             "anyOf": [
               {
@@ -32131,6 +33602,7 @@
           "description",
           "locationKind",
           "locationText",
+          "affectedArea",
           "publicTitleEn",
           "publicTitleTa",
           "publicSummaryEn",
@@ -32486,6 +33958,13 @@
             "type": "array",
             "title": "Communityupdates"
           },
+          "myAdditions": {
+            "items": {
+              "$ref": "#/components/schemas/MyAdditionOut"
+            },
+            "type": "array",
+            "title": "Myadditions"
+          },
           "closingSummaryEn": {
             "anyOf": [
               {
@@ -32495,7 +33974,8 @@
                 "type": "null"
               }
             ],
-            "title": "Closingsummaryen"
+            "title": "Closingsummaryen",
+            "description": "The closing report's member summary, for the reporter only (BR-032)"
           },
           "closingSummaryTa": {
             "anyOf": [
@@ -32550,6 +34030,7 @@
           "canFollow",
           "canAddInformation",
           "communityUpdates",
+          "myAdditions",
           "closingSummaryEn",
           "closingSummaryTa",
           "closedAt",
@@ -34428,6 +35909,26 @@
         "title": "MemberProfile",
         "description": "The signed-in member's own profile.\n\nJSON keys are camelCase, matching the Express /api/me response. The NIC\nhash, password hash and staff-only review fields are never part of it."
       },
+      "MemberRelationshipIn": {
+        "properties": {
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "spouse",
+              "parent",
+              "sibling",
+              "other"
+            ],
+            "title": "Relationship"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "relationship"
+        ],
+        "title": "MemberRelationshipIn"
+      },
       "MembershipChangeInput": {
         "properties": {
           "action": {
@@ -34871,6 +36372,136 @@
         ],
         "title": "MisinfoReportOut"
       },
+      "ModerationAppealDecisionIn": {
+        "properties": {
+          "change": {
+            "type": "boolean",
+            "title": "Change",
+            "description": "True publishes the idea or approves the added information; False upholds the rejection"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason",
+            "description": "Told to the author"
+          }
+        },
+        "type": "object",
+        "required": [
+          "change",
+          "reason"
+        ],
+        "title": "ModerationAppealDecisionIn"
+      },
+      "ModerationAppealIn": {
+        "properties": {
+          "itemKind": {
+            "type": "string",
+            "enum": [
+              "idea",
+              "addition"
+            ],
+            "title": "Itemkind"
+          },
+          "itemId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Itemid"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Body",
+            "description": "Why the author thinks the decision was wrong"
+          }
+        },
+        "type": "object",
+        "required": [
+          "itemKind",
+          "itemId",
+          "body"
+        ],
+        "title": "ModerationAppealIn"
+      },
+      "ModerationAppealOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "itemKind": {
+            "type": "string",
+            "enum": [
+              "idea",
+              "addition"
+            ],
+            "title": "Itemkind"
+          },
+          "itemId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Itemid"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "upheld",
+              "changed"
+            ],
+            "title": "State"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "The deciding moderator's reason, once decided"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "itemKind",
+          "itemId",
+          "state",
+          "body",
+          "reason",
+          "decidedAt",
+          "createdAt"
+        ],
+        "title": "ModerationAppealOut",
+        "description": "The author's own appeal; it never names a moderator."
+      },
       "ModerationIn": {
         "properties": {
           "publish": {
@@ -34895,6 +36526,76 @@
           "publish"
         ],
         "title": "ModerationIn"
+      },
+      "MyAdditionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "isReply": {
+            "type": "boolean",
+            "title": "Isreply"
+          },
+          "moderationReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moderationreason"
+          },
+          "edited": {
+            "type": "boolean",
+            "title": "Edited",
+            "description": "A moderator published an edited version; the member still sees their own words here"
+          },
+          "canAppeal": {
+            "type": "boolean",
+            "title": "Canappeal"
+          },
+          "appeal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModerationAppealOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "body",
+          "state",
+          "isReply",
+          "moderationReason",
+          "edited",
+          "canAppeal",
+          "appeal",
+          "createdAt"
+        ],
+        "title": "MyAdditionOut",
+        "description": "Information this member added to the issue, in every state, with the reason if it was rejected\nand their one appeal against that (D12). Never shown to anyone else in this form."
       },
       "MyAreaOut": {
         "properties": {
@@ -34957,6 +36658,58 @@
         ],
         "title": "MyAreaOut"
       },
+      "MyHouseholdDetailsIn": {
+        "properties": {
+          "ageBand": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "18_24",
+                  "25_34",
+                  "35_44",
+                  "45_54",
+                  "55_64",
+                  "65_plus"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ageband"
+          },
+          "occupationCategory": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "farming",
+                  "fishing",
+                  "daily_labour",
+                  "trade",
+                  "government",
+                  "private_sector",
+                  "self_employed",
+                  "student",
+                  "homemaker",
+                  "retired",
+                  "unemployed",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occupationcategory"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "MyHouseholdDetailsIn",
+        "description": "An adult's own entry (OD-30: each adult confirms their own). A field left out stays as it\nis; a field sent as null is cleared."
+      },
       "MyMembershipOut": {
         "properties": {
           "state": {
@@ -35001,6 +36754,26 @@
         ],
         "title": "MyMembershipOut",
         "description": "The member's own membership state (A12, C06). The reason code is shown; staff notes are not."
+      },
+      "MyModerationAppealOut": {
+        "properties": {
+          "appeal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModerationAppealOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "None when the member has not appealed this item"
+          }
+        },
+        "type": "object",
+        "required": [
+          "appeal"
+        ],
+        "title": "MyModerationAppealOut"
       },
       "MyOfferOut": {
         "properties": {
@@ -35104,6 +36877,82 @@
           "updatedAt"
         ],
         "title": "MyOfferOut"
+      },
+      "MyReferralOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "partner": {
+            "type": "string",
+            "title": "Partner"
+          },
+          "partnerKind": {
+            "type": "string",
+            "enum": [
+              "ngo",
+              "public_service",
+              "hospital",
+              "other"
+            ],
+            "title": "Partnerkind"
+          },
+          "purpose": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purpose"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "consent_declined",
+              "sent",
+              "accepted",
+              "completed",
+              "declined"
+            ],
+            "title": "State",
+            "description": "proposed: waits for the applicant's consent; nothing is shared until then"
+          },
+          "consentAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consentat"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "partner",
+          "partnerKind",
+          "purpose",
+          "state",
+          "consentAt",
+          "createdAt"
+        ],
+        "title": "MyReferralOut",
+        "description": "A partner referral as the applicant sees it: who, why and where it stands, never the\ncaseworker's notes on what the partner said."
       },
       "MyReferralsOut": {
         "properties": {
@@ -35348,6 +37197,14 @@
             },
             "type": "array",
             "title": "Appeals"
+          },
+          "referrals": {
+            "items": {
+              "$ref": "#/components/schemas/MyReferralOut"
+            },
+            "type": "array",
+            "title": "Referrals",
+            "description": "M12: each partner referral; a proposed one waits for the applicant's answer"
           }
         },
         "type": "object",
@@ -35361,7 +37218,8 @@
           "updatedAt",
           "decisions",
           "deliveries",
-          "appeals"
+          "appeals",
+          "referrals"
         ],
         "title": "MyRequestOut",
         "description": "M13: status and what happened; never internal notes or who handled it."
@@ -36991,19 +38849,22 @@
                 "type": "null"
               }
             ],
-            "title": "Promiseid"
+            "title": "Promiseid",
+            "description": "A published promise"
           },
           "caseNumber": {
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 20
+                "maxLength": 20,
+                "pattern": "^CI-[0-9]{5,}$"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Casenumber"
+            "title": "Casenumber",
+            "description": "An existing case, e.g. CI-00012"
           }
         },
         "type": "object",
@@ -37251,6 +39112,72 @@
         ],
         "title": "PasswordResetInput"
       },
+      "PendingAdditionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "issueId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Issueid"
+          },
+          "caseNumber": {
+            "type": "string",
+            "title": "Casenumber"
+          },
+          "areaPath": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Areapath"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "fromReporter": {
+            "type": "boolean",
+            "title": "Fromreporter"
+          },
+          "isReply": {
+            "type": "boolean",
+            "title": "Isreply"
+          },
+          "photos": {
+            "type": "integer",
+            "title": "Photos"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine",
+            "description": "The viewer wrote it or reported the case, so another moderator decides it"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "issueId",
+          "caseNumber",
+          "areaPath",
+          "body",
+          "fromReporter",
+          "isReply",
+          "photos",
+          "createdAt",
+          "mine"
+        ],
+        "title": "PendingAdditionOut",
+        "description": "Added information waiting for a moderator; the person is named only as the reporter or \"a member\"."
+      },
       "PendingIdeaOut": {
         "properties": {
           "id": {
@@ -37264,11 +39191,36 @@
           },
           "title": {
             "type": "string",
-            "title": "Title"
+            "title": "Title",
+            "description": "As the author wrote it"
           },
           "benefit": {
             "type": "string",
             "title": "Benefit"
+          },
+          "publishedTitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedtitle",
+            "description": "The moderator's edited title, when one was published"
+          },
+          "publishedBenefit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedbenefit",
+            "description": "The moderator's edited benefit, when one was published"
           },
           "areaKey": {
             "type": "string",
@@ -37286,13 +39238,243 @@
           "ideaRef",
           "title",
           "benefit",
+          "publishedTitle",
+          "publishedBenefit",
           "areaKey",
           "createdAt"
         ],
         "title": "PendingIdeaOut"
       },
+      "PendingModerationOut": {
+        "properties": {
+          "summaries": {
+            "items": {
+              "$ref": "#/components/schemas/PendingSummaryOut"
+            },
+            "type": "array",
+            "title": "Summaries"
+          },
+          "additions": {
+            "items": {
+              "$ref": "#/components/schemas/PendingAdditionOut"
+            },
+            "type": "array",
+            "title": "Additions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "summaries",
+          "additions"
+        ],
+        "title": "PendingModerationOut"
+      },
+      "PendingSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "caseNumber": {
+            "type": "string",
+            "title": "Casenumber"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "areaPath": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Areapath"
+          },
+          "gnCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gncode"
+          },
+          "dsCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dscode"
+          },
+          "districtCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Districtcode"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "The reporter's own title, for the moderator only"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "publicState": {
+            "type": "string",
+            "title": "Publicstate"
+          },
+          "publicTitleEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publictitleen"
+          },
+          "publicTitleTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publictitleta"
+          },
+          "publicSummaryEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicsummaryen"
+          },
+          "publicSummaryTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicsummaryta"
+          },
+          "closingSummaryEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closingsummaryen"
+          },
+          "closingSummaryTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closingsummaryta"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedat"
+          },
+          "needs": {
+            "type": "string",
+            "enum": [
+              "first_summary",
+              "update_after_closure"
+            ],
+            "title": "Needs"
+          },
+          "waitingSince": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Waitingsince"
+          },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine",
+            "description": "The viewer reported it, so another moderator writes the summary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caseNumber",
+          "category",
+          "stage",
+          "areaPath",
+          "gnCode",
+          "dsCode",
+          "districtCode",
+          "title",
+          "description",
+          "publicState",
+          "publicTitleEn",
+          "publicTitleTa",
+          "publicSummaryEn",
+          "publicSummaryTa",
+          "closingSummaryEn",
+          "closingSummaryTa",
+          "closedAt",
+          "needs",
+          "waitingSince",
+          "mine"
+        ],
+        "title": "PendingSummaryOut",
+        "description": "A public case whose public summary waits for a moderator (BR-032)."
+      },
       "PendingWorkOut": {
         "properties": {
+          "publications": {
+            "items": {
+              "$ref": "#/components/schemas/PromiseSummaryOut"
+            },
+            "type": "array",
+            "title": "Publications",
+            "description": "Promises waiting for a second person to approve publication"
+          },
           "updates": {
             "items": {
               "$ref": "#/components/schemas/PromiseUpdateOut"
@@ -37310,6 +39492,7 @@
         },
         "type": "object",
         "required": [
+          "publications",
           "updates",
           "feedback"
         ],
@@ -37655,6 +39838,50 @@
           "closedAt"
         ],
         "title": "PeriodOut"
+      },
+      "PeriodReportEntryOut": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "targetType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Targettype"
+          },
+          "targetId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Targetid"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurredat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "targetType",
+          "targetId",
+          "occurredAt"
+        ],
+        "title": "PeriodReportEntryOut",
+        "description": "One audit entry behind the period report: what happened, to which record and when; ids only."
       },
       "PeriodReportOut": {
         "properties": {
@@ -38911,7 +41138,20 @@
                 "type": "null"
               }
             ],
-            "title": "Statusreason"
+            "title": "Statusreason",
+            "description": "The public reason for Withdrawn or Blocked, in English"
+          },
+          "statusReasonTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Statusreasonta",
+            "description": "The same reason in Tamil"
           },
           "publication": {
             "type": "string",
@@ -38992,6 +41232,7 @@
           "blockersEn",
           "blockersTa",
           "statusReason",
+          "statusReasonTa",
           "publication",
           "publishedAt",
           "updateDueAt",
@@ -40200,6 +42441,110 @@
         ],
         "title": "PublicSummaryIn"
       },
+      "PublicSupportCellOut": {
+        "properties": {
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey",
+            "description": "'district:<code>', or 'platform' for requests that named no area"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "food",
+              "low_income",
+              "unemployment",
+              "education",
+              "disability_access",
+              "elderly_care",
+              "housing",
+              "emergency_needs",
+              "vocational_training",
+              "livelihood"
+            ],
+            "title": "Category"
+          },
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Count",
+            "description": "Requests received; null means fewer than 10"
+          }
+        },
+        "type": "object",
+        "required": [
+          "areaKey",
+          "category",
+          "count"
+        ],
+        "title": "PublicSupportCellOut"
+      },
+      "PublicSupportFormOut": {
+        "properties": {
+          "emergencyContacts": {
+            "items": {
+              "$ref": "#/components/schemas/EmergencyContactOut"
+            },
+            "type": "array",
+            "title": "Emergencycontacts"
+          },
+          "categories": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "food",
+                "low_income",
+                "unemployment",
+                "education",
+                "disability_access",
+                "elderly_care",
+                "housing",
+                "emergency_needs",
+                "vocational_training",
+                "livelihood"
+              ]
+            },
+            "type": "array",
+            "title": "Categories"
+          }
+        },
+        "type": "object",
+        "required": [
+          "emergencyContacts",
+          "categories"
+        ],
+        "title": "PublicSupportFormOut",
+        "description": "The public web form without an account: the official emergency numbers first, then the categories."
+      },
+      "PublicSupportStatisticsOut": {
+        "properties": {
+          "minimumGroup": {
+            "type": "integer",
+            "title": "Minimumgroup",
+            "description": "Groups smaller than this are hidden"
+          },
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/PublicSupportCellOut"
+            },
+            "type": "array",
+            "title": "Cells"
+          }
+        },
+        "type": "object",
+        "required": [
+          "minimumGroup",
+          "cells"
+        ],
+        "title": "PublicSupportStatisticsOut",
+        "description": "D14: anonymised aggregates only (FR-AST-012)."
+      },
       "PublicationDecisionIn": {
         "properties": {
           "approve": {
@@ -40923,6 +43268,20 @@
         ],
         "title": "RecoveryContactOut"
       },
+      "ReferralConsentIn": {
+        "properties": {
+          "consent": {
+            "type": "boolean",
+            "title": "Consent",
+            "description": "True: this partner may see the request; False: it is not shared with them"
+          }
+        },
+        "type": "object",
+        "required": [
+          "consent"
+        ],
+        "title": "ReferralConsentIn"
+      },
       "ReferralIn": {
         "properties": {
           "partnerId": {
@@ -40930,16 +43289,24 @@
             "format": "uuid",
             "title": "Partnerid"
           },
+          "purpose": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Purpose",
+            "description": "Why the case would go to this partner; the applicant sees it"
+          },
           "consent": {
             "type": "boolean",
             "title": "Consent",
-            "description": "The applicant agreed to this partner seeing the case"
+            "description": "Only for an applicant without an account: they agreed, to the caseworker, that this partner may see the case. A member answers in the app instead.",
+            "default": false
           }
         },
         "type": "object",
         "required": [
           "partnerId",
-          "consent"
+          "purpose"
         ],
         "title": "ReferralIn"
       },
@@ -40958,9 +43325,30 @@
             "type": "string",
             "title": "Kind"
           },
+          "purpose": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purpose",
+            "description": "Why the case would go to this partner; null on referrals made before 0043"
+          },
           "state": {
             "type": "string",
-            "title": "State"
+            "enum": [
+              "proposed",
+              "consent_declined",
+              "sent",
+              "accepted",
+              "completed",
+              "declined"
+            ],
+            "title": "State",
+            "description": "proposed: waits for the applicant's consent in the app; consent_declined: refused"
           },
           "outcome": {
             "anyOf": [
@@ -40974,9 +43362,32 @@
             "title": "Outcome"
           },
           "consentAt": {
-            "type": "string",
-            "format": "date-time",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Consentat"
+          },
+          "consentRecordedBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "applicant",
+                  "caseworker"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consentrecordedby",
+            "description": "applicant: given in the app; caseworker: recorded for an applicant without an account"
           },
           "createdAt": {
             "type": "string",
@@ -40989,9 +43400,11 @@
           "id",
           "partner",
           "kind",
+          "purpose",
           "state",
           "outcome",
           "consentAt",
+          "consentRecordedBy",
           "createdAt"
         ],
         "title": "ReferralOut"
@@ -41725,7 +44138,7 @@
           "hasArea": {
             "type": "boolean",
             "title": "Hasarea",
-            "description": "The member's profile names an area, which every report needs"
+            "description": "The member's profile names a GN division, which every report needs (W03)"
           },
           "gnNameEn": {
             "anyOf": [
@@ -42623,6 +45036,47 @@
         ],
         "title": "RosterMessageIn"
       },
+      "RosterMessageOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "bodyEn": {
+            "type": "string",
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "title": "Bodyta"
+          },
+          "sentByName": {
+            "type": "string",
+            "title": "Sentbyname"
+          },
+          "recipients": {
+            "type": "integer",
+            "title": "Recipients"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "bodyEn",
+          "bodyTa",
+          "sentByName",
+          "recipients",
+          "createdAt"
+        ],
+        "title": "RosterMessageOut",
+        "description": "S15: an operational message already sent to the volunteers rostered on a shift."
+      },
       "RosterOut": {
         "properties": {
           "eventId": {
@@ -43363,6 +45817,14 @@
             },
             "type": "array",
             "title": "Assignments"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/RosterMessageOut"
+            },
+            "type": "array",
+            "title": "Messages",
+            "description": "Messages already sent to the shift, newest first"
           }
         },
         "type": "object",
@@ -43381,7 +45843,8 @@
           "accepted",
           "offered",
           "state",
-          "assignments"
+          "assignments",
+          "messages"
         ],
         "title": "ShiftFileOut"
       },
@@ -43771,8 +46234,20 @@
             "format": "date-time",
             "title": "Createdat"
           },
+          "fullFile": {
+            "type": "boolean",
+            "title": "Fullfile",
+            "description": "False: the summary only, for intake staff routing a case waiting for screening (S12); the person's details, the request and the record are then null or empty"
+          },
           "applicantName": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Applicantname"
           },
           "applicantPhone": {
@@ -43798,7 +46273,14 @@
             "title": "Household"
           },
           "summary": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Summary"
           },
           "linkedCaseRef": {
@@ -43862,6 +46344,16 @@
           "mayWork": {
             "type": "boolean",
             "title": "Maywork"
+          },
+          "mayAssign": {
+            "type": "boolean",
+            "title": "Mayassign",
+            "description": "Decision-makers, or anyone who may open a case that has no caseworker yet"
+          },
+          "consentInApp": {
+            "type": "boolean",
+            "title": "Consentinapp",
+            "description": "True: the applicant answers each referral proposal in the app (M12); False: the caseworker records the consent the applicant gave them"
           }
         },
         "type": "object",
@@ -43875,6 +46367,7 @@
           "caseworkerName",
           "areaKey",
           "createdAt",
+          "fullFile",
           "applicantName",
           "applicantPhone",
           "household",
@@ -43887,7 +46380,9 @@
           "appeals",
           "possibleDuplicates",
           "mayDecide",
-          "mayWork"
+          "mayWork",
+          "mayAssign",
+          "consentInApp"
         ],
         "title": "StaffCaseFileOut"
       },
@@ -44283,31 +46778,18 @@
             "title": "Targetmembername"
           },
           "household": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/HouseholdOut"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "consentLogs": {
-            "items": {
-              "$ref": "#/components/schemas/ConsentLogOut"
-            },
-            "type": "array",
-            "title": "Consentlogs",
-            "default": []
+            "$ref": "#/components/schemas/HouseholdOut"
           }
         },
         "type": "object",
         "required": [
           "targetMemberId",
           "targetMemberCode",
-          "targetMemberName"
+          "targetMemberName",
+          "household"
         ],
-        "title": "StaffHouseholdViewOut"
+        "title": "StaffHouseholdViewOut",
+        "description": "D02 read-only caseworker view, only when the household has given caseworker consent."
       },
       "StaffMisinfoReportOut": {
         "properties": {
@@ -44461,6 +46943,187 @@
           "appealBody"
         ],
         "title": "StaffMisinfoReportOut"
+      },
+      "StaffModerationAppealOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "itemKind": {
+            "type": "string",
+            "enum": [
+              "idea",
+              "addition"
+            ],
+            "title": "Itemkind"
+          },
+          "itemId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Itemid"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "upheld",
+              "changed"
+            ],
+            "title": "State"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "The deciding moderator's reason, once decided"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "areaPath": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Areapath"
+          },
+          "itemTitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Itemtitle",
+            "description": "An idea's title; None for added information"
+          },
+          "itemText": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Itemtext",
+            "description": "An idea's benefit, or the added information as the member wrote it"
+          },
+          "itemState": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Itemstate"
+          },
+          "originalReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Originalreason",
+            "description": "The first moderator's reason for rejecting it"
+          },
+          "originalDecidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Originaldecidedat"
+          },
+          "issueId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issueid",
+            "description": "The case added information belongs to"
+          },
+          "caseNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Casenumber"
+          },
+          "canDecide": {
+            "type": "boolean",
+            "title": "Candecide",
+            "description": "False for the first moderator, the author, a decided appeal or another area; the API checks again"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "itemKind",
+          "itemId",
+          "state",
+          "body",
+          "reason",
+          "decidedAt",
+          "createdAt",
+          "areaPath",
+          "itemTitle",
+          "itemText",
+          "itemState",
+          "originalReason",
+          "originalDecidedAt",
+          "issueId",
+          "caseNumber",
+          "canDecide"
+        ],
+        "title": "StaffModerationAppealOut",
+        "description": "What the deciding moderator reads: the item's words, the first decision and the appeal."
       },
       "StaffReconcileRequest": {
         "properties": {
@@ -44672,7 +47335,8 @@
               "type": "object"
             },
             "type": "array",
-            "title": "Outcomes"
+            "title": "Outcomes",
+            "description": "textEn, textTa, promiseId and caseNumber; members also get caseId, set only when they may open the case"
           },
           "cancelReason": {
             "anyOf": [
@@ -45993,7 +48657,7 @@
             },
             "type": "array",
             "title": "Problems",
-            "description": "outside_your_area, concerns_required, political_content, ..."
+            "description": "outside_your_area, place_required, one_place_only, concerns_required, political_profiling (always refused), political_content (refused until confirmed), not_your_visit"
           },
           "visit": {
             "anyOf": [
@@ -46004,7 +48668,7 @@
                 "type": "null"
               }
             ],
-            "description": "The server's copy; on a conflict, the version to compare with"
+            "description": "The server's copy; on a conflict, the version to compare with; unchanged when the resend matches it"
           }
         },
         "type": "object",
@@ -46827,7 +49491,8 @@
               "type": "object"
             },
             "type": "array",
-            "title": "Outcomes"
+            "title": "Outcomes",
+            "description": "textEn, textTa, promiseId and caseNumber; members also get caseId, set only when they may open the case"
           },
           "cancelReason": {
             "anyOf": [
@@ -47010,7 +49675,8 @@
               "type": "object"
             },
             "type": "array",
-            "title": "Outcomes"
+            "title": "Outcomes",
+            "description": "textEn, textTa, promiseId and caseNumber; members also get caseId, set only when they may open the case"
           },
           "cancelReason": {
             "anyOf": [
@@ -47179,9 +49845,22 @@
       },
       "VisitCountOut": {
         "properties": {
-          "gnCode": {
+          "areaKey": {
             "type": "string",
-            "title": "Gncode"
+            "title": "Areakey",
+            "description": "'gn:...', 'ds:...', or a wider area for visits recorded without a place"
+          },
+          "gnCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gncode",
+            "description": "The GN code when the count is for a GN division"
           },
           "concern": {
             "type": "string",
@@ -47194,6 +49873,7 @@
         },
         "type": "object",
         "required": [
+          "areaKey",
           "gnCode",
           "concern",
           "visits"

@@ -33,6 +33,7 @@ class Promise:
     blockers_ta: str | None
     status: str
     status_reason: str | None
+    status_reason_ta: str | None
     publication: str
     drafted_by: uuid.UUID
     publication_requested_by: uuid.UUID | None
@@ -46,7 +47,7 @@ class Promise:
 _PROMISE = """
     SELECT id, promise_ref, title_en, title_ta, description_en, description_ta, source_reference, source_published_on,
            office_en, office_ta, kind, theme, area_key, area_path, planned_start, due_date, target_en, target_ta,
-           blockers_en, blockers_ta, status, status_reason, publication, drafted_by, publication_requested_by,
+           blockers_en, blockers_ta, status, status_reason, status_reason_ta, publication, drafted_by, publication_requested_by,
            published_at, last_verified_at, update_due_at, created_at, updated_at
     FROM community.promise
 """
@@ -265,6 +266,35 @@ def overdue(db: Session, today: date) -> list[Promise]:
         {"today": today},
     ).mappings()
     return [_promise(row) for row in rows]
+
+
+def missed_updates(db: Session, now: datetime) -> list[Promise]:
+    """Published promises whose 10 working days for an update have passed and nobody was told yet."""
+    rows = db.execute(
+        text(f"""{_PROMISE} WHERE publication = 'published' AND update_due_at < :now
+                 AND update_missed_alerted_at IS NULL FOR UPDATE SKIP LOCKED"""),
+        {"now": now},
+    ).mappings()
+    return [_promise(row) for row in rows]
+
+
+def awaiting_publication(db: Session, areas: list[str] | None) -> list[Promise]:
+    condition, params = "publication = 'awaiting_approval'", {}
+    if areas is not None:
+        condition += " AND area_path && CAST(:areas AS text[])"
+        params["areas"] = areas or ["none"]
+    rows = db.execute(text(f"{_PROMISE} WHERE {condition} ORDER BY updated_at"), params).mappings()
+    return [_promise(row) for row in rows]
+
+
+def status_counts(db: Session, area_keys: list[str]) -> dict[str, int]:
+    """Published promises made for one of these areas (a member's GN up to the whole platform), by status."""
+    rows = db.execute(
+        text("""SELECT status, count(*) AS n FROM community.promise
+                WHERE publication = 'published' AND area_key = ANY(:keys) GROUP BY status"""),
+        {"keys": area_keys},
+    )
+    return {row.status: row.n for row in rows}
 
 
 def report(db: Session, areas: list[str] | None) -> list[tuple[str, str, str, str, int]]:

@@ -51,6 +51,8 @@ function PromiseBody({ promise }: { promise: PromiseDetail }) {
   const localized = useLocalized();
   const areaName = useAreaName(promise.areaKey);
   const blockers = promise.blockersEn ? localized(promise.blockersEn, promise.blockersTa ?? '') : null;
+  // Withdrawn and Blocked carry a public reason in both languages (older ones in English only).
+  const statusReason = promise.statusReason ? localized(promise.statusReason, promise.statusReasonTa ?? '') : null;
 
   return (
     <>
@@ -75,7 +77,7 @@ function PromiseBody({ promise }: { promise: PromiseDetail }) {
           {t('m.promises.status')}
         </AppText>
         <PromiseStatusTag status={promise.status} />
-        {promise.statusReason ? <DetailRow label={t('m.promises.statusReason')} value={promise.statusReason} /> : null}
+        {statusReason ? <DetailRow label={t('m.promises.statusReason')} value={statusReason} /> : null}
         {blockers ? <DetailRow label={t('m.promises.blockers')} value={blockers} /> : null}
         <DetailRow
           label={t('m.promises.lastVerified')}

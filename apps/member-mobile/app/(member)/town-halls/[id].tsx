@@ -225,9 +225,16 @@ function PastSession({ session, outcomes }: { session: TownHallSession; outcomes
           {outcomes.map((outcome, index) => (
             <View key={`${outcome.textEn}-${index}`} style={styles.outcome}>
               <AppText step="body">{localized(outcome.textEn, outcome.textTa)}</AppText>
-              {outcome.caseNumber ? (
+              {outcome.caseNumber && outcome.caseId ? (
+                <Button
+                  label={t('m.townHalls.viewCase', { number: outcome.caseNumber })}
+                  variant="quiet"
+                  icon="document-text-outline"
+                  onPress={() => router.push({ pathname: '/issues/[id]', params: { id: outcome.caseId ?? '' } })}
+                />
+              ) : outcome.caseNumber ? (
                 <AppText step="secondary" tone="muted" mono>
-                  {outcome.caseNumber}
+                  {t('m.townHalls.caseNumber', { number: outcome.caseNumber })}
                 </AppText>
               ) : null}
               {outcome.promiseId ? (

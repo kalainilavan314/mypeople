@@ -1,7 +1,7 @@
 import type { IssueLocationKind, IssueReportingOptions } from '@my-people/api-client';
 import * as Crypto from 'expo-crypto';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -37,7 +37,8 @@ import { api } from '@/lib/api';
 
 /**
  * H07 Report a concern. Only Verified and Active members with a GN division on their profile see
- * the form (FR-RPT-017). Every change is saved on the device at once (FR-RPT-010); "Review report"
+ * the form (FR-RPT-017); without one, the no-area notice sends them to set it, because every case
+ * starts with their GN collector (W03), whatever place the report describes. Every change is saved on the device at once (FR-RPT-010); "Review report"
  * checks the fields first and shows what is missing beside each one (FR-RPT-008).
  */
 export default function ReportIssueScreen() {
@@ -160,13 +161,10 @@ function DescriptionCounter({ length, min }: { length: number; min: number }) {
 function PlaceCard({ draft, options, error }: { draft: IssueDraft; options: IssueReportingOptions; error: boolean }) {
   const { t } = useTranslation();
   const localized = useLocalized();
+  // The form is shown only with a GN division on the profile (hasArea), so "my GN division" is always a choice.
   const gnName = options.gnNameEn ? localized(options.gnNameEn, options.gnNameTa ?? '') : null;
-  // A profile area above GN level has no division to report for, so the place must be written.
-  useEffect(() => {
-    if (!gnName && draft.locationKind === 'my_gn') updateDraft((current) => ({ ...current, locationKind: 'landmark' }));
-  }, [gnName, draft.locationKind]);
   const kinds: { key: IssueLocationKind; label: string }[] = [
-    ...(gnName ? [{ key: 'my_gn' as const, label: t('m.issues.placeMyGn') }] : []),
+    { key: 'my_gn', label: t('m.issues.placeMyGn') },
     { key: 'landmark', label: t('m.issues.placeLandmark') },
     { key: 'text', label: t('m.issues.placeText') },
   ];

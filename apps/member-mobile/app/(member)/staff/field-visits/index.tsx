@@ -21,7 +21,7 @@ import {
 import { QueryView } from '@/components/QueryView';
 import { FieldAccess } from '@/features/staff/fieldVisits/FieldAccess';
 import { encryptedOnDevice } from '@/features/staff/fieldVisits/secureChunks';
-import { useGnOptions } from '@/features/staff/fieldVisits/useGnOptions';
+import { syncedPlace, usePlaceOptions } from '@/features/staff/fieldVisits/usePlaceOptions';
 import { useLocalVisits, type LocalVisit } from '@/features/staff/fieldVisits/visitStore';
 import { api } from '@/lib/api';
 import { featureClosed } from '@/lib/errors';
@@ -40,7 +40,7 @@ function FieldVisitsBody() {
   const language = useLanguage();
   const member = useMember();
   const local = useLocalVisits(member.id);
-  const { label } = useGnOptions();
+  const { label } = usePlaceOptions();
   const synced = useApiQuery(() => api().listMyFieldVisits());
   useReloadOnFocus(synced.reload);
   const waiting = local?.filter((visit) => visit.status === 'pending').length ?? 0;
@@ -66,7 +66,7 @@ function FieldVisitsBody() {
           <>
             <AppText step="body">{t('s.fieldVisits.waitingCount', { waiting, action: needsAction })}</AppText>
             {local.map((visit) => (
-              <LocalRow key={visit.clientId} visit={visit} gnName={label(visit.gnCode)} />
+              <LocalRow key={visit.clientId} visit={visit} gnName={label({ gnCode: visit.gnCode || null, dsCode: visit.dsCode || null })} />
             ))}
           </>
         )}
@@ -93,7 +93,7 @@ function FieldVisitsBody() {
             ) : (
               <View style={styles.list}>
                 {items.map((visit) => (
-                  <SyncedRow key={visit.id} visit={visit} gnName={label(visit.gnCode)} language={language} />
+                  <SyncedRow key={visit.id} visit={visit} gnName={label(syncedPlace(visit))} language={language} />
                 ))}
               </View>
             )

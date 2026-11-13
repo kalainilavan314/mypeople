@@ -84,10 +84,11 @@ def list_managed(
 
 @router.get("/manage/pending", response_model=PendingWorkOut)
 def pending_work(staff: PromiseStaff, db: Db) -> PendingWorkOut:
-    """Updates waiting for a second person's approval, and feedback waiting for moderation."""
-    updates, feedback = service.pending_work(db, staff)
-    return PendingWorkOut(updates=[PromiseUpdateOut.build(u) for u in updates],
-                          feedback=[PromiseFeedbackOut.build(f) for f in feedback])
+    """Promises and updates waiting for a second person's approval, and feedback waiting for moderation."""
+    work = service.pending_work(db, staff)
+    return PendingWorkOut(publications=[PromiseSummaryOut.build(p) for p in work.publications],
+                          updates=[PromiseUpdateOut.build(u) for u in work.updates],
+                          feedback=[PromiseFeedbackOut.build(f) for f in work.feedback])
 
 
 @router.get("/manage/report", response_model=list[ReportRowOut])
@@ -135,7 +136,7 @@ def request_publication(promise_id: uuid.UUID, staff: Office, request: Request, 
 @router.post("/manage/{promise_id}/publication-decision", response_model=PromiseDetailOut)
 def decide_publication(promise_id: uuid.UUID, body: PublicationDecisionIn, staff: Publisher, request: Request,
                        db: Db) -> PromiseDetailOut:
-    """FR-PRM-003: a second authorised person approves; the person who asked cannot (403 own_draft)."""
+    """FR-PRM-003: a second authorised person approves; neither the drafter nor the person who asked may (403 own_draft)."""
     with _answers():
         service.decide_publication(db, staff, promise_id, body.approve, body.reason, client_ip(request))
         return PromiseDetailOut.from_view(service.staff_view(db, staff, promise_id))

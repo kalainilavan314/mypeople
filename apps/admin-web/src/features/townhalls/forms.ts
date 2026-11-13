@@ -72,6 +72,10 @@ export const TOWNHALL_TARGETS: ProblemTargets = {
   time_required: 'atSecond',
   bilingual_answer_required: 'answerTa',
   outcome_text_required: 'outcomesJson',
+  outcome_promise_id_invalid: 'outcomesJson',
+  outcome_promise_not_published: 'outcomesJson',
+  outcome_case_number_invalid: 'outcomesJson',
+  outcome_case_not_found: 'outcomesJson',
   recording_link_https: 'recordingUrl',
 };
 
@@ -155,9 +159,14 @@ export function readAnswer(form: FormLike): Read<{ mode: 'live' | 'written'; atS
   return { input: { mode, answerTa, answerEn }, problems: [] };
 }
 
+/** A community case number, as the cases API gives it (CI- and at least five digits). */
+const CASE_NUMBER = /^CI-[0-9]{5,}$/;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /**
- * FR-THL-007: the archive of an ended session: the recording, transcripts, and outcomes in both
+ * FR-THL-007, M23: the archive of an ended session: the recording, transcripts, and outcomes in both
  * languages, each linked to a promise (its id) or a community case (its number) where there is one.
+ * The API checks that the promise is published and the case exists.
  */
 export function readArchive(form: FormLike): Read<TownHallArchiveInput> {
   const recording = link(form, 'recordingUrl');
@@ -172,13 +181,12 @@ export function readArchive(form: FormLike): Read<TownHallArchiveInput> {
   const outcomes = list.slice(0, 50).map((item, index) => {
     const entry = (typeof item === 'object' && item !== null ? item : {}) as Record<string, unknown>;
     const str = (key: string) => (typeof entry[key] === 'string' ? (entry[key] as string).trim() : '');
+    const promiseId = str('promiseId');
+    const caseNumber = str('caseNumber').toUpperCase();
     if (str('textTa').length < 3 || str('textEn').length < 3) problems.push(`outcome_text_required:${index + 1}`);
-    return {
-      textTa: str('textTa'),
-      textEn: str('textEn'),
-      promiseId: /^[0-9a-f-]{36}$/i.test(str('promiseId')) ? str('promiseId') : null,
-      caseNumber: str('caseNumber').toUpperCase() || null,
-    };
+    if (promiseId && !UUID.test(promiseId)) problems.push(`outcome_promise_id_invalid:${index + 1}`);
+    if (caseNumber && !CASE_NUMBER.test(caseNumber)) problems.push(`outcome_case_number_invalid:${index + 1}`);
+    return { textTa: str('textTa'), textEn: str('textEn'), promiseId: promiseId || null, caseNumber: caseNumber || null };
   });
   if (problems.length) return { input: null, problems };
   return {

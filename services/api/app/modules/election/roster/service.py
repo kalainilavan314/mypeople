@@ -3,7 +3,8 @@
 Coordinators with election.roster.manage create shifts for a declared election period in their area
 and offer them to Verified and Active members; volunteers accept or decline, check in and out with an
 optional site confirmation and no location tracking. Coordinators send operational messages to the
-people on a shift. Nothing here records a vote choice, intention or proof of voting.
+volunteers rostered on a shift, those who accepted it. Nothing here records a vote choice, intention or
+proof of voting. Tier 5 reads the election-period audit report for a period in their area.
 """
 
 import uuid
@@ -20,12 +21,13 @@ from app.modules.access.rules import Area, AreaPath, area_from_key
 from app.modules.access.service import AccessRefused, Staff, refuse, visible_areas
 from app.modules.audit import service as audit
 from app.modules.election.roster import repository
-from app.modules.election.roster.repository import Assignment, Shift
+from app.modules.election.roster.repository import Assignment, ReportEntry, SentMessage, Shift
 from app.modules.messaging.notifications import service as notifications
 
 PERMISSION = "election.roster.manage"  # PRM-49
 REPORT = "election.mode.manage"  # PRM-48
 CHECK_IN_EARLY = timedelta(hours=1)
+REPORT_ENTRIES = 500
 
 
 class RosterRefused(Exception):
@@ -124,6 +126,13 @@ def create_shift(db: Session, staff: Staff, period_id: uuid.UUID, area: Area, va
 class ShiftFile:
     shift: Shift
     assignments: list[Assignment]
+    messages: list[SentMessage]
+
+
+def _file(db: Session, shift_id: uuid.UUID) -> ShiftFile:
+    shift = repository.find_shift(db, shift_id)
+    assert shift is not None
+    return ShiftFile(shift, repository.assignments(db, shift_id), repository.messages(db, shift_id))
 
 
 def shift_file(db: Session, staff: Staff, shift_id: uuid.UUID, ip: str) -> ShiftFile:
@@ -131,7 +140,7 @@ def shift_file(db: Session, staff: Staff, shift_id: uuid.UUID, ip: str) -> Shift
     if shift is None:
         raise RosterNotFound()
     _require(db, staff, shift.area_path, ip, str(shift_id))
-    return ShiftFile(shift, repository.assignments(db, shift_id))
+    return _file(db, shift_id)
 
 
 def offer(db: Session, staff: Staff, shift_id: uuid.UUID, member_code: str, ip: str) -> ShiftFile:
@@ -158,7 +167,7 @@ def offer(db: Session, staff: Staff, shift_id: uuid.UUID, member_code: str, ip: 
     audit.record(db, actor_id=staff.member_id, action="election.roster.offered", target_type="roster_shift",
                  target_id=str(shift_id), area_path=_path(shift.area_path), ip=ip)
     db.commit()
-    return ShiftFile(repository.find_shift(db, shift_id), repository.assignments(db, shift_id))  # type: ignore[arg-type]
+    return _file(db, shift_id)
 
 
 def cancel(db: Session, staff: Staff, shift_id: uuid.UUID, reason: str, ip: str) -> ShiftFile:
@@ -173,16 +182,17 @@ def cancel(db: Session, staff: Staff, shift_id: uuid.UUID, reason: str, ip: str)
     audit.record(db, actor_id=staff.member_id, action="election.roster.shift_cancelled", target_type="roster_shift",
                  target_id=str(shift_id), area_path=_path(shift.area_path), details={"reason": reason.strip()}, ip=ip)
     db.commit()
-    return ShiftFile(repository.find_shift(db, shift_id), repository.assignments(db, shift_id))  # type: ignore[arg-type]
+    return _file(db, shift_id)
 
 
 def message(db: Session, staff: Staff, shift_id: uuid.UUID, body_en: str, body_ta: str, ip: str) -> int:
-    """FR-ELX-007: an operational message to the people on the shift, within the sender's scope."""
+    """FR-ELX-007: an operational message to the volunteers rostered on the shift, within the sender's
+    scope. Only those who accepted it are rostered; an open offer is not yet a duty."""
     shift = repository.find_shift(db, shift_id)
     if shift is None:
         raise RosterNotFound()
     _require(db, staff, shift.area_path, ip, str(shift_id))
-    people = [a.member_id for a in repository.assignments(db, shift_id) if a.state in ("offered", "accepted")]
+    people = [a.member_id for a in repository.assignments(db, shift_id) if a.state == "accepted"]
     for member_id in people:
         notifications.notify(db, member_id, "roster_message", shift_id, body_en=body_en.strip(), body_ta=body_ta.strip())
     repository.insert_message(db, shift_id, body_en.strip(), body_ta.strip(), staff.member_id, len(people))
@@ -192,14 +202,28 @@ def message(db: Session, staff: Staff, shift_id: uuid.UUID, body_en: str, body_t
     return len(people)
 
 
-def report(db: Session, staff: Staff, period_id: uuid.UUID) -> dict[str, int]:
-    """FR-ELX-009: the election-period audit report for Tier 5."""
+def _reported_period(db: Session, staff: Staff, period_id: uuid.UUID, ip: str) -> None:
+    """Tier 5 reads the report only for a period inside an area where they manage election mode."""
     if not access_rules.holds(staff.rule_assignments(), REPORT):
         raise AccessRefused("forbidden")
-    exists = db.scalar(text("SELECT EXISTS (SELECT 1 FROM election.period WHERE id = :id)"), {"id": period_id})
-    if not exists:
+    keys = db.scalar(text("SELECT area_path FROM election.period WHERE id = :id"), {"id": period_id})
+    if keys is None:
         raise RosterNotFound()
+    path = _path(list(keys))
+    if not access_rules.holds(staff.rule_assignments(), REPORT, path):
+        refuse(db, staff, REPORT, "outside_your_area", ip, target=("election_period", str(period_id)), area_path=path)
+
+
+def report(db: Session, staff: Staff, period_id: uuid.UUID, ip: str) -> dict[str, int]:
+    """FR-ELX-009: the election-period audit report: counts of messages, roster changes and content."""
+    _reported_period(db, staff, period_id, ip)
     return repository.period_report(db, period_id)
+
+
+def report_entries(db: Session, staff: Staff, period_id: uuid.UUID, ip: str) -> list[ReportEntry]:
+    """FR-ELX-009: the entries behind the report, newest first, ids only."""
+    _reported_period(db, staff, period_id, ip)
+    return repository.period_report_entries(db, period_id, REPORT_ENTRIES)
 
 
 # --- Volunteers (M30) ------------------------------------------------------------------------------------

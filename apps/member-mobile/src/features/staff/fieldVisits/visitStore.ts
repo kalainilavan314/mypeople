@@ -13,7 +13,11 @@ export type LocalVisit = {
   clientId: string;
   /** The server version this edit started from; null for a visit never synced. */
   baseVersion: number | null;
+  /** The place, chosen by hand (S05): a GN division, or a DS division, or neither ('' when not set). */
   gnCode: string;
+  dsCode: string;
+  /** The coordinator chose to give no place; the visit is then counted under their one area. */
+  noPlace: boolean;
   visitedAt: string;
   consent: 'given' | 'declined';
   concerns: FieldVisitConcern[];
@@ -67,7 +71,9 @@ async function readVisit(clientId: string): Promise<LocalVisit | null> {
   const text = await readChunked(visitKey(clientId));
   if (!text) return null;
   try {
-    return JSON.parse(text) as LocalVisit;
+    // Visits saved before the place became optional have no DS code or no-place choice.
+    const visit = JSON.parse(text) as Partial<LocalVisit> & Omit<LocalVisit, 'dsCode' | 'noPlace'>;
+    return { ...visit, dsCode: visit.dsCode ?? '', noPlace: visit.noPlace ?? false };
   } catch {
     return null;
   }
@@ -152,14 +158,24 @@ export function useLocalVisits(memberId: string): LocalVisit[] | null {
   return current.memberId === memberId ? current.visits : null;
 }
 
-/** What the server is sent; a declined visit carries only its GN division and time (FR-FLD-004). */
+/**
+ * A declined visit keeps nothing that was typed, not even on this phone (FR-FLD-004): concerns,
+ * notes, landmark, follow-up and case number are emptied before it is saved. The place and time stay.
+ */
+export function blankIfDeclined(visit: LocalVisit): LocalVisit {
+  if (visit.consent !== 'declined') return visit;
+  return { ...visit, concerns: [], notes: '', placeText: '', followUp: '', caseNumber: '', confirmedNotPolitical: false };
+}
+
+/** What the server is sent; a declined visit carries only its place and time (FR-FLD-004). */
 export function toInput(visit: LocalVisit): FieldVisitInput {
   const declined = visit.consent === 'declined';
   const optional = (text: string) => (declined || text.trim() === '' ? null : text.trim());
   return {
     clientId: visit.clientId,
     baseVersion: visit.baseVersion,
-    gnCode: visit.gnCode,
+    gnCode: visit.gnCode || null,
+    dsCode: visit.gnCode ? null : visit.dsCode || null,
     visitedAt: visit.visitedAt,
     consent: visit.consent,
     concerns: declined ? [] : visit.concerns,

@@ -27,7 +27,10 @@ router = APIRouter(prefix="/v1/field", tags=["field"], dependencies=[Depends(req
 class FieldVisitIn(CamelModel):
     client_id: uuid.UUID = Field(description="Made on the phone; the same visit always has the same id")
     base_version: int | None = Field(default=None, description="The server version this edit started from; null for a new visit")
-    gn_code: str = Field(min_length=3, max_length=20, description="Chosen by hand; location is never tracked")
+    gn_code: str | None = Field(default=None, min_length=3, max_length=20,
+                                description="Chosen by hand; location is never tracked. Give a GN, a DS or neither")
+    ds_code: str | None = Field(default=None, min_length=3, max_length=20,
+                                description="A DS division chosen by hand instead of a GN")
     visited_at: datetime
     consent: Literal["given", "declined"]
     concerns: list[Concern] = Field(default_factory=list, max_length=12)
@@ -47,7 +50,9 @@ class FieldVisitOut(CamelModel):
     visit_ref: str
     client_id: uuid.UUID
     coordinator_name: str
-    gn_code: str
+    gn_code: str | None
+    ds_code: str | None
+    area_key: str = Field(description="The visit's most specific area: its GN, its DS, or the coordinator's area when no place was given")
     visited_at: datetime
     consent: Literal["given", "declined"]
     concerns: list[str]
@@ -63,7 +68,7 @@ class FieldVisitOut(CamelModel):
     def build(cls, v: Visit) -> "FieldVisitOut":
         return cls(
             id=v.id, visit_ref=v.visit_ref, client_id=v.client_id, coordinator_name=v.coordinator_name, gn_code=v.gn_code,
-            visited_at=v.visited_at, consent=v.consent, concerns=v.concerns, notes=v.notes,  # type: ignore[arg-type]
+            ds_code=v.ds_code, area_key=v.area_path[-1], visited_at=v.visited_at, consent=v.consent, concerns=v.concerns, notes=v.notes,  # type: ignore[arg-type]
             place_text=v.place_text, follow_up=v.follow_up, follow_up_done_at=v.follow_up_done_at,
             case_number=v.case_number, version=v.version, updated_at=v.updated_at,
         )
@@ -72,8 +77,12 @@ class FieldVisitOut(CamelModel):
 class SyncResultOut(CamelModel):
     client_id: uuid.UUID
     outcome: Literal["created", "updated", "unchanged", "conflict", "refused"]
-    problems: list[str] = Field(description="outside_your_area, concerns_required, political_content, ...")
-    visit: FieldVisitOut | None = Field(description="The server's copy; on a conflict, the version to compare with")
+    problems: list[str] = Field(
+        description="outside_your_area, place_required, one_place_only, concerns_required, political_profiling "
+                    "(always refused), political_content (refused until confirmed), not_your_visit"
+    )
+    visit: FieldVisitOut | None = Field(description="The server's copy; on a conflict, the version to compare with; "
+                                                    "unchanged when the resend matches it")
 
 
 class FollowUpIn(CamelModel):
@@ -81,14 +90,15 @@ class FollowUpIn(CamelModel):
 
 
 class VisitCountOut(CamelModel):
-    gn_code: str
+    area_key: str = Field(description="'gn:...', 'ds:...', or a wider area for visits recorded without a place")
+    gn_code: str | None = Field(description="The GN code when the count is for a GN division")
     concern: str
     visits: int
 
 
 @router.post("/visits/sync", response_model=list[SyncResultOut])
 def sync(body: SyncIn, staff: Collector, request: Request, db: Db) -> list[SyncResultOut]:
-    """S07: send visits made offline; each comes back created, updated, in conflict or refused."""
+    """S07: send visits made offline; each comes back created, updated, unchanged, in conflict or refused."""
     items = [service.VisitIn(**v.model_dump()) for v in body.visits]
     try:
         results = service.sync(db, staff, items, client_ip(request))
@@ -112,7 +122,8 @@ def supervised(staff: Collector, db: Db, open_follow_ups: Annotated[bool, Query(
 
 @router.get("/manage/counts", response_model=list[VisitCountOut])
 def counts(staff: Collector, db: Db) -> list[VisitCountOut]:
-    return [VisitCountOut(gn_code=g, concern=c, visits=n) for g, c, n in service.counts(db, staff)]
+    return [VisitCountOut(area_key=place, gn_code=place.removeprefix("gn:") if place.startswith("gn:") else None,
+                          concern=c, visits=n) for place, c, n in service.counts(db, staff)]
 
 
 @router.post("/manage/visits/{visit_id}/follow-up", response_model=FieldVisitOut)
