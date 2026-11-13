@@ -1,7 +1,8 @@
-import type { ProposalCategory, ProposalDetail, ProposalInput } from '@my-people/api-client';
+import type { ProposalCategory, ProposalDetail } from '@my-people/api-client';
 import * as Crypto from 'expo-crypto';
 
 import { NO_AREA, type AreaChoice } from '@/features/area/AreaFields';
+import { chosenArea } from '@/features/area/chosenArea';
 import { deviceDraftStorage, type OwnedDraft } from '@/lib/deviceDraft';
 
 import { LIMITS, PROPOSAL_CATEGORIES } from './labels';
@@ -89,13 +90,7 @@ export function fieldsFrom(proposal: ProposalDetail): ProposalFields {
   };
 }
 
-/** The smallest area chosen: a GN division, else a DS division, else a district. */
-export function chosenArea(area: AreaChoice): ProposalInput['area'] | null {
-  if (area.gn) return { level: 'gn', code: area.gn };
-  if (area.ds) return { level: 'ds', code: area.ds };
-  if (area.district) return { level: 'district', code: area.district };
-  return null;
-}
+export { chosenArea };
 
 export type ProposalField = 'title' | 'category' | 'area' | 'problem' | 'solution' | 'benefit';
 

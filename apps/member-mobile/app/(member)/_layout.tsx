@@ -77,6 +77,16 @@ export default function MemberLayout() {
       <Stack.Screen name="learning/[course]/[lesson]" options={{ title: t('m.learning.lessonTitle') }} />
       <Stack.Screen name="referrals/invite" options={{ title: t('m.referrals.inviteTitle') }} />
       <Stack.Screen name="referrals/index" options={{ title: t('m.referrals.title') }} />
+      <Stack.Screen name="promises/index" options={{ title: t('m.promises.title') }} />
+      <Stack.Screen name="promises/[id]" options={{ title: t('m.promises.detailTitle') }} />
+      <Stack.Screen name="promises/scorecard" options={{ title: t('m.scorecards.title') }} />
+      <Stack.Screen name="support/index" options={{ title: t('m.support.title') }} />
+      <Stack.Screen name="support/request" options={{ title: t('m.support.requestTitle') }} />
+      <Stack.Screen name="support/[id]" options={{ title: t('m.support.detailTitle') }} />
+      <Stack.Screen name="town-halls/index" options={{ title: t('m.townHalls.title') }} />
+      <Stack.Screen name="town-halls/[id]" options={{ title: t('m.townHalls.sessionTitle') }} />
+      <Stack.Screen name="official/index" options={{ title: t('m.official.title') }} />
+      <Stack.Screen name="official/report" options={{ title: t('m.official.reportTitle') }} />
       <Stack.Screen name="staff" options={{ headerShown: false }} />
     </Stack>
   );

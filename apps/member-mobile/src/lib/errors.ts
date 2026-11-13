@@ -15,7 +15,16 @@ export class ImagePreparationError extends Error {
  * reads "can report a concern" on the issue screens but "can offer to help" on volunteering. Each
  * scope's words are m.<scope>.refusals; any other code uses the shared m.problems or m.errors.
  */
-export type RefusalScope = 'volunteer' | 'ideas' | 'surveys' | 'proposals' | 'referrals';
+export type RefusalScope =
+  | 'volunteer'
+  | 'ideas'
+  | 'surveys'
+  | 'proposals'
+  | 'referrals'
+  | 'promises'
+  | 'support'
+  | 'townHalls'
+  | 'official';
 
 /**
  * The member-facing message for a failed request: the API's error code when

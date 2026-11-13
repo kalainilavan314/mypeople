@@ -56,6 +56,15 @@ function targetRoute(item: NotificationItem): Href | null {
       return item.targetId
         ? { pathname: '/ideas/proposals/[id]', params: { id: item.targetId } }
         : { pathname: '/ideas', params: { tab: 'proposals' } };
+    case 'support_request':
+      return item.targetId ? { pathname: '/support/[id]', params: { id: item.targetId } } : '/support';
+    case 'townhall':
+      return item.targetId ? { pathname: '/town-halls/[id]', params: { id: item.targetId } } : '/town-halls';
+    case 'roster_assignment':
+    case 'roster_shift':
+      return '/volunteer/assignments';
+    case 'misinfo_report':
+      return '/official';
     default:
       return null;
   }

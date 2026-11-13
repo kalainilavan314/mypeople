@@ -113,6 +113,13 @@ function MyReportsRow() {
         hint={t('m.issues.myReportsHint')}
         onPress={() => router.push('/issues/mine')}
       />
+      <MenuRow
+        icon="stats-chart-outline"
+        tint="teal"
+        label={t('m.scorecards.title')}
+        hint={t('m.scorecards.linkHint')}
+        onPress={() => router.push('/promises/scorecard')}
+      />
     </SurfaceCard>
   );
 }

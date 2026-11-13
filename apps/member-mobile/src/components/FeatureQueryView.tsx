@@ -7,7 +7,20 @@ import { QueryView } from '@/components/QueryView';
 import { featureClosed } from '@/lib/errors';
 
 /** The Phase 2 modules with their own m.<feature>.notOpenTitle and notOpenBody words. */
-export type ClosableFeature = 'issues' | 'volunteer' | 'ideas' | 'surveys' | 'proposals' | 'learning' | 'referrals';
+export type ClosableFeature =
+  | 'issues'
+  | 'volunteer'
+  | 'ideas'
+  | 'surveys'
+  | 'proposals'
+  | 'learning'
+  | 'referrals'
+  | 'promises'
+  | 'scorecards'
+  | 'support'
+  | 'townHalls'
+  | 'election'
+  | 'official';
 
 /**
  * QueryView for a module the team can switch off. While it is off the API answers

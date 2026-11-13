@@ -28,6 +28,8 @@ export const FEATURE_ROUTES: Partial<Record<string, Href>> = {
   surveys: '/surveys',
   learning: '/learning',
   invite: '/referrals/invite',
+  promises: '/promises',
+  support: '/support',
 };
 
 export const FEATURE_ICONS: Record<string, IconName> = {
@@ -48,6 +50,8 @@ export const FEATURE_ICONS: Record<string, IconName> = {
   gallery: 'images-outline',
   profile: 'person-outline',
   help: 'help-buoy-outline',
+  promises: 'flag-outline',
+  support: 'heart-outline',
 };
 
 /** The tile colour of each feature, as in the reference recording. */
@@ -69,4 +73,6 @@ export const FEATURE_TINTS: Partial<Record<string, Tint>> = {
   card: 'brand',
   gallery: 'blue',
   profile: 'brand',
+  promises: 'teal',
+  support: 'rose',
 };

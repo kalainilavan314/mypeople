@@ -1,7 +1,8 @@
+import { router } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { AppText, Screen, SurfaceCard, useApiQuery } from '@my-people/mobile-ui';
+import { AppText, MenuRow, Screen, SurfaceCard, useApiQuery } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
 import { FeatureTile } from '@/features/home/FeatureTile';
@@ -33,6 +34,27 @@ export default function HubScreen() {
                 <FeatureTile key={feature.key} feature={feature} divided={index > 0} />
               ))}
             </SurfaceCard>
+            {/* Town halls (M21) and statement reports (M48) have no Home key of their own. */}
+            <AppText step="section" accessibilityRole="header">
+              {t('m.home.hubMore')}
+            </AppText>
+            <SurfaceCard style={styles.rows}>
+              <MenuRow
+                first
+                icon="mic-outline"
+                tint="purple"
+                label={t('m.townHalls.askTheLeader')}
+                hint={t('m.townHalls.linkHint')}
+                onPress={() => router.push('/town-halls')}
+              />
+              <MenuRow
+                icon="shield-checkmark-outline"
+                tint="blue"
+                label={t('m.official.title')}
+                hint={t('m.official.hubHint')}
+                onPress={() => router.push('/official')}
+              />
+            </SurfaceCard>
           </>
         )}
       </QueryView>
@@ -40,4 +62,7 @@ export default function HubScreen() {
   );
 }
 
-const styles = StyleSheet.create({ serviceList: { padding: 0, gap: 0, overflow: 'hidden' } });
+const styles = StyleSheet.create({
+  serviceList: { padding: 0, gap: 0, overflow: 'hidden' },
+  rows: { paddingVertical: 0 },
+});
