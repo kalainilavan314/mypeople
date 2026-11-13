@@ -43,7 +43,7 @@ export default function WelcomeScreen() {
           </AppText>
         </View>
         <Image
-          source={require('../../assets/images/icon.png')}
+          source={require('../../assets/brand/logo.png')}
           style={styles.logo}
           accessibilityIgnoresInvertColors
           accessible={false}

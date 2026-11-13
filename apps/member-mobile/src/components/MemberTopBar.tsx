@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -25,12 +25,20 @@ export function MemberTopBar() {
           accessibilityLabel={t('nav.profile')}
           hitSlop={4}
           style={({ pressed }) => [styles.action, pressed && styles.pressed]}>
-          <Ionicons name="person-outline" size={26} color={colors.text} />
+          <Ionicons name="person" size={34} color={colors.primaryDark} />
         </Pressable>
 
-        <AppText step="section" numberOfLines={1} style={styles.brand}>
-          {t('m.welcome.title')}
-        </AppText>
+        <View style={styles.brand} accessibilityRole="header">
+          <Image
+            source={require('../../assets/brand/logo.png')}
+            style={styles.brandLogo}
+            resizeMode="contain"
+            accessible={false}
+          />
+          <AppText step="section" numberOfLines={1} style={styles.brandName}>
+            {t('m.welcome.title')}
+          </AppText>
+        </View>
 
         <Pressable
           onPress={() => router.push('/notifications')}
@@ -42,7 +50,7 @@ export function MemberTopBar() {
           }
           hitSlop={4}
           style={({ pressed }) => [styles.action, pressed && styles.pressed]}>
-          <Ionicons name="notifications-outline" size={25} color={colors.text} />
+          <Ionicons name="notifications" size={34} color={colors.primaryDark} />
           {unread > 0 ? <View style={styles.unread} /> : null}
         </Pressable>
       </View>
@@ -51,7 +59,11 @@ export function MemberTopBar() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { backgroundColor: colors.card, borderBottomWidth: 1, borderBottomColor: colors.divider },
+  safeArea: {
+    backgroundColor: colors.brandYellow,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 0, 0, 0.06)',
+  },
   bar: {
     height: 64,
     paddingHorizontal: spacing.gutter,
@@ -65,8 +77,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: control.touchMin / 2,
   },
-  pressed: { backgroundColor: colors.surfaceVariant },
-  brand: { flex: 1, textAlign: 'center', color: colors.primary },
+  pressed: { backgroundColor: 'rgba(181, 18, 27, 0.08)' },
+  brand: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing[2] },
+  brandLogo: { width: 38, height: 38 },
+  brandName: { color: colors.primary },
   unread: {
     position: 'absolute',
     top: 8,
@@ -76,6 +90,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: colors.error,
     borderWidth: 2,
-    borderColor: colors.card,
+    borderColor: colors.brandYellow,
   },
 });
