@@ -35,6 +35,19 @@ FEATURES: dict[str, Feature] = {
         Feature("election_mode", "Election information mode (FR-ELX, subject to legal approval)", 2),
         Feature("households", "My Household (FR-HH-001, voluntary household module)", 2),
         Feature("community_finance", "Community Finance via Bank Transfer Slips (M1.4, FR-FUND)", 1),
+        Feature("community_issues", "My Area, issue reporting and case escalation (FR-RPT, FR-WEB-014 to 029)", 2),
+        Feature("volunteering", "Volunteer skills, opportunities and assignments (FR-VOL-001 to 008)", 2),
+        Feature("ideas_surveys", "Community ideas and surveys (FR-IDEA-001 to 004, FR-SRV-001 to 006)", 2),
+        Feature("development_proposals", "Our Development Ideas: development proposals (FR-DEV-001 to 008)", 2),
+        Feature("learning", "Learning and courses (FR-LRN-001 to 004)", 2),
+        Feature("invitations", "Invite a member and My referrals (FR-REF-001 to 006)", 2),
+        Feature("promises", "Promise Tracker (FR-PRM-001 to 010)", 2),
+        Feature("scorecards", "Public accountability scorecard (FR-ACS-001 to 008)", 2),
+        Feature("community_support", "Community Support, confidential assistance cases (FR-AST-001 to 013)", 2),
+        Feature("town_halls", "Ask the Leader / Live Town Hall (FR-THL-001 to 009)", 2),
+        Feature("field_visits", "Offline field visits (FR-FLD-001 to 009)", 2),
+        Feature("election_roster", "Election duty roster and shift check-in (FR-ELX-005 to 007, 009)", 2),
+        Feature("fact_checks", "Misinformation reports and the fact-check queue (FR-AUT-006 to 009)", 2),
     )
 }
 

@@ -2326,6 +2326,3222 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/issues/area": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Area
+         * @description H05: Updates, Issues and Projects published for the member's GN division.
+         */
+        get: operations["read_my_area_v1_issues_area_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/reporting": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Reporting Options
+         * @description H07: whether the member may report, and the controlled lists for the form.
+         */
+        get: operations["read_reporting_options_v1_issues_reporting_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Report Photo
+         * @description A photo for a report being written; location data is removed and it goes to the restricted
+         *     evidence store, never the gallery (FR-RPT-009). Attach it by id when the report is sent.
+         */
+        post: operations["upload_report_photo_v1_issues_photos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/addition-photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Addition Photo */
+        post: operations["upload_addition_photo_v1_issues_addition_photos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Report
+         * @description H08: send the report. The receipt exists only once the server has the case (FR-RPT-013).
+         */
+        post: operations["submit_report_v1_issues_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List My Reports */
+        get: operations["list_my_reports_v1_issues_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/{issue_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Issue
+         * @description H06 for anyone in the area; H09 with the reporter's own details for the reporter.
+         */
+        get: operations["read_issue_v1_issues__issue_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/{issue_id}/follow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Following
+         * @description FR-RPT-005: follow an issue to be told of each stage change.
+         */
+        put: operations["set_following_v1_issues__issue_id__follow_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/{issue_id}/information": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Information
+         * @description FR-RPT-006: held for moderation; the reporter's answer to a request for details reopens the GN stage.
+         */
+        post: operations["add_information_v1_issues__issue_id__information_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/issues/{issue_id}/closure-response": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Respond To Closure
+         * @description FR-RPT-016: rate a closure, or challenge it with a note within 30 days.
+         */
+        post: operations["respond_to_closure_v1_issues__issue_id__closure_response_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Cases
+         * @description Cases in the viewer's areas; overdue ones first (FR-WEB-022, 028).
+         */
+        get: operations["list_cases_v1_cases_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/manage/pending-moderation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Pending Moderation
+         * @description D12: public summaries to write (or update after closure) and added information to moderate, in the
+         *     moderator's areas, oldest first. Items the viewer reported or wrote are marked; another moderator decides them.
+         */
+        get: operations["list_pending_moderation_v1_cases_manage_pending_moderation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Case */
+        get: operations["read_case_v1_cases__case_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/owners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Owner Options
+         * @description People who may be named owner for the next step: deciding holders of that permission over the area.
+         */
+        get: operations["list_owner_options_v1_cases__case_id__owners_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/reporter-contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Reporter Contact
+         * @description PRM-13: only the assigned owner; every look is audited.
+         */
+        get: operations["read_reporter_contact_v1_cases__case_id__reporter_contact_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/photos/{photo_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Case Photo */
+        get: operations["read_case_photo_v1_cases__case_id__photos__photo_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Case Photo */
+        post: operations["upload_case_photo_v1_cases__case_id__photos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/facts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Fact
+         * @description W03: an observed fact and its source (FR-WEB-015).
+         */
+        post: operations["add_fact_v1_cases__case_id__facts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/findings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Finding
+         * @description W04: divisional findings by kind (FR-WEB-019); Tier 2B may add them too (FR-WEB-020).
+         */
+        post: operations["add_finding_v1_cases__case_id__findings_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Note */
+        post: operations["add_note_v1_cases__case_id__notes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Return For Details
+         * @description FR-WEB-016: ask the reporter for details instead of deleting the report.
+         */
+        post: operations["return_for_details_v1_cases__case_id__return_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Link To Parent
+         * @description FR-WEB-018: link a duplicate report to its parent case.
+         */
+        post: operations["link_to_parent_v1_cases__case_id__link_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/forward": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Forward To Ds
+         * @description FR-WEB-017: forward to the divisional owner after the completeness check.
+         */
+        post: operations["forward_to_ds_v1_cases__case_id__forward_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/ds-report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send Ds Report
+         * @description W04: the formal divisional report to the district (FR-WEB-019).
+         */
+        post: operations["send_ds_report_v1_cases__case_id__ds_report_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/district-decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide At District
+         * @description W05: act within delegated authority, or escalate (FR-WEB-021).
+         */
+        post: operations["decide_at_district_v1_cases__case_id__district_decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/regional-plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Regional Plan
+         * @description W06: the regional solution plan for Tier 5 (FR-WEB-023).
+         */
+        post: operations["submit_regional_plan_v1_cases__case_id__regional_plan_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/executive-decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Executive
+         * @description W07: approve with conditions, return for clarification, or decline (FR-WEB-024).
+         */
+        post: operations["decide_executive_v1_cases__case_id__executive_decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record Progress
+         * @description W08: a step and its progress evidence (FR-WEB-025).
+         */
+        post: operations["record_progress_v1_cases__case_id__progress_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Close Case
+         * @description W08: the closing report; Resolved only with evidence and a Tamil and English summary (FR-WEB-026).
+         *     The closing summary reaches the reporter; the public sees only the moderator's public summary (BR-032).
+         */
+        post: operations["close_case_v1_cases__case_id__close_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign
+         * @description A handoff within the stage, or taking an unassigned case (FR-WEB-029).
+         */
+        post: operations["assign_v1_cases__case_id__assign_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/challenge-decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Challenge
+         * @description FR-WEB-027: reopen on an accepted challenge, or reject it with a reason.
+         */
+        post: operations["decide_challenge_v1_cases__case_id__challenge_decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/public-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set Public Summary
+         * @description BR-032: publish a moderated public summary, or withhold it with a reason; also after closure, to
+         *     give the public the outcome.
+         */
+        post: operations["set_public_summary_v1_cases__case_id__public_summary_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/cases/{case_id}/additions/{addition_id}/moderation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Moderate Addition
+         * @description D12: approve (as written or as an edited version) or reject with a reason; never one's own (403 own_record).
+         */
+        post: operations["moderate_addition_v1_cases__case_id__additions__addition_id__moderation_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/moderation-appeals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Appeal
+         * @description The author of a rejected idea or added information appeals the decision, once.
+         */
+        post: operations["appeal_v1_moderation_appeals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/moderation-appeals/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Appeal
+         * @description The member's appeal on one of their own items, or none.
+         */
+        get: operations["read_my_appeal_v1_moderation_appeals_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/moderation-appeals/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Appeals
+         * @description D12: appeals in the moderator's areas, open ones first, oldest first.
+         */
+        get: operations["list_appeals_v1_moderation_appeals_manage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/moderation-appeals/manage/{appeal_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Appeal
+         * @description Decided by a moderator over the area who is neither the first moderator nor the author.
+         */
+        post: operations["decide_appeal_v1_moderation_appeals_manage__appeal_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/skills": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Skills
+         * @description H10: the skills list, the availability choices and the member's own profile.
+         */
+        get: operations["read_skills_v1_volunteering_skills_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save Profile
+         * @description FR-VOL-001 to 003: saved only with consent to share with authorised coordinators.
+         */
+        put: operations["save_profile_v1_volunteering_profile_put"];
+        post?: never;
+        /**
+         * Withdraw Profile
+         * @description Withdraw consent: the profile is deleted and coordinators no longer see it.
+         */
+        delete: operations["withdraw_profile_v1_volunteering_profile_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/opportunities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Opportunities
+         * @description Open opportunities in the member's area, soonest first.
+         */
+        get: operations["list_opportunities_v1_volunteering_opportunities_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/opportunities/{opportunity_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Opportunity
+         * @description H11: the briefing with time, place, role, what to bring and the coordinating team.
+         */
+        get: operations["read_opportunity_v1_volunteering_opportunities__opportunity_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/opportunities/{opportunity_id}/offer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Offer To Help
+         * @description FR-VOL-005: "Offer to help"; a receipt, awaiting the coordinator.
+         */
+        post: operations["offer_to_help_v1_volunteering_opportunities__opportunity_id__offer_post"];
+        /** Withdraw Offer */
+        delete: operations["withdraw_offer_v1_volunteering_opportunities__opportunity_id__offer_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/opportunities/{opportunity_id}/saved": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Saved
+         * @description "Save for later".
+         */
+        put: operations["set_saved_v1_volunteering_opportunities__opportunity_id__saved_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List My Assignments
+         * @description H12: offers and confirmed assignments with their history and messages.
+         */
+        get: operations["list_my_assignments_v1_volunteering_assignments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/offers/{offer_id}/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Contact Coordinator
+         * @description FR-VOL-007, 008: a message or change request to the coordinators, through the app.
+         */
+        post: operations["contact_coordinator_v1_volunteering_offers__offer_id__contact_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/manage/opportunities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Managed */
+        get: operations["list_managed_v1_volunteering_manage_opportunities_get"];
+        put?: never;
+        /**
+         * Create Opportunity
+         * @description A draft; it reaches members once opened.
+         */
+        post: operations["create_opportunity_v1_volunteering_manage_opportunities_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/manage/opportunities/{opportunity_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Managed */
+        get: operations["read_managed_v1_volunteering_manage_opportunities__opportunity_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Opportunity */
+        patch: operations["update_opportunity_v1_volunteering_manage_opportunities__opportunity_id__patch"];
+        trace?: never;
+    };
+    "/v1/volunteering/manage/opportunities/{opportunity_id}/state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Move Opportunity
+         * @description Open, close or cancel; cancelling tells everyone who offered, with the reason.
+         */
+        post: operations["move_opportunity_v1_volunteering_manage_opportunities__opportunity_id__state_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/manage/opportunities/{opportunity_id}/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Offers */
+        get: operations["list_offers_v1_volunteering_manage_opportunities__opportunity_id__offers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/manage/offers/{offer_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Offer
+         * @description S10: confirm with a role and meeting point, or decline with a reason.
+         */
+        post: operations["decide_offer_v1_volunteering_manage_offers__offer_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/manage/inbox": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Inbox
+         * @description Open messages and change requests from volunteers in the coordinator's areas, oldest first.
+         */
+        get: operations["list_inbox_v1_volunteering_manage_inbox_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/manage/inbox/{contact_id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Answer Contact */
+        post: operations["answer_contact_v1_volunteering_manage_inbox__contact_id__answer_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/volunteering/manage/volunteers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Volunteers
+         * @description Consented skills profiles in the coordinator's areas, by name; no phone numbers, no ranking.
+         */
+        get: operations["list_volunteers_v1_volunteering_manage_volunteers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ideas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Board
+         * @description H13: Local ideas (published in the member's area) and My ideas (every state).
+         */
+        get: operations["read_board_v1_ideas_get"];
+        put?: never;
+        /**
+         * Submit Idea
+         * @description FR-IDEA-002: a receipt; shown to others only after moderation.
+         */
+        post: operations["submit_idea_v1_ideas_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ideas/{idea_id}/support": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Support
+         * @description FR-IDEA-004: one support per member; it never changes the idea's status.
+         */
+        put: operations["set_support_v1_ideas__idea_id__support_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ideas/{idea_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw Idea */
+        post: operations["withdraw_idea_v1_ideas__idea_id__withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ideas/moderation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Pending
+         * @description D12: ideas waiting for moderation in the moderator's areas, oldest first.
+         */
+        get: operations["list_pending_v1_ideas_moderation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ideas/{idea_id}/moderation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Moderate Idea
+         * @description D12: publish as written, publish an edited (redacted) version, or reject with a reason.
+         *     Problems: reason_required, already_moderated, edits_only_when_publishing, edited_title_length,
+         *     edited_benefit_length.
+         */
+        post: operations["moderate_idea_v1_ideas__idea_id__moderation_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/surveys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Surveys
+         * @description Open surveys for the member's area, with their receipt where they have answered.
+         */
+        get: operations["list_surveys_v1_surveys_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/surveys/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Managed */
+        get: operations["list_managed_v1_surveys_manage_get"];
+        put?: never;
+        /** Create Survey */
+        post: operations["create_survey_v1_surveys_manage_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/surveys/manage/{survey_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Managed
+         * @description The whole survey, for its editor.
+         */
+        get: operations["read_managed_v1_surveys_manage__survey_id__get"];
+        /**
+         * Update Survey
+         * @description Drafts only; once open, a survey's questions never change under the people answering it.
+         */
+        put: operations["update_survey_v1_surveys_manage__survey_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/surveys/manage/{survey_id}/state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Move Survey */
+        post: operations["move_survey_v1_surveys_manage__survey_id__state_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/surveys/manage/{survey_id}/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Results
+         * @description Counts only; groups of 1 to 9 are hidden.
+         */
+        get: operations["read_results_v1_surveys_manage__survey_id__results_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/surveys/{survey_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Survey
+         * @description H14: the questions, audience and privacy statement; or the receipt once answered (H21).
+         */
+        get: operations["read_survey_v1_surveys__survey_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/surveys/{survey_id}/responses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Respond
+         * @description FR-SRV-005, 006: one response per member; the receipt and "What happens next" come back.
+         */
+        post: operations["respond_v1_surveys__survey_id__responses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Browse
+         * @description M15: proposals for my area and my own proposals; `q` matches words in Tamil or English.
+         */
+        get: operations["browse_v1_proposals_get"];
+        put?: never;
+        /**
+         * Submit
+         * @description M16: moderated before anyone else sees it.
+         */
+        post: operations["submit_v1_proposals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Staff Queue
+         * @description D15: proposals in the viewer's areas, newest activity first.
+         */
+        get: operations["staff_queue_v1_proposals_manage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/manage/needs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Regional Needs
+         * @description FR-DEV-008: published proposals by area and category; groups under 10 hidden or merged.
+         */
+        get: operations["regional_needs_v1_proposals_manage_needs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/manage/{proposal_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Staff Read */
+        get: operations["staff_read_v1_proposals_manage__proposal_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/manage/{proposal_id}/stage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Move
+         * @description FR-DEV-003, 006: moderate, or move a stage with the authority it needs; the author is told.
+         */
+        post: operations["move_v1_proposals_manage__proposal_id__stage_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/{proposal_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read
+         * @description M17: stage, decision reason and history.
+         */
+        get: operations["read_v1_proposals__proposal_id__get"];
+        /**
+         * Revise
+         * @description A rejected proposal, revised and sent back to moderation.
+         */
+        put: operations["revise_v1_proposals__proposal_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/{proposal_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw */
+        post: operations["withdraw_v1_proposals__proposal_id__withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/learning/courses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Catalogue
+         * @description H15: Available, My courses and completed history, with lessons and minutes.
+         */
+        get: operations["read_catalogue_v1_learning_courses_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/learning/manage/courses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Managed */
+        get: operations["list_managed_v1_learning_manage_courses_get"];
+        put?: never;
+        /** Create Course */
+        post: operations["create_course_v1_learning_manage_courses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/learning/manage/courses/{course_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Managed */
+        get: operations["read_managed_v1_learning_manage_courses__course_id__get"];
+        /** Update Course */
+        put: operations["update_course_v1_learning_manage_courses__course_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/learning/manage/courses/{course_id}/state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Move Course */
+        post: operations["move_course_v1_learning_manage_courses__course_id__state_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/learning/courses/{course_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Course
+         * @description H16: the lessons, which are complete, and the lesson to resume.
+         */
+        get: operations["read_course_v1_learning_courses__course_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/learning/courses/{course_id}/lessons/{lesson_id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Complete Lesson
+         * @description FR-LRN-002: progress is recorded only here.
+         */
+        post: operations["complete_lesson_v1_learning_courses__course_id__lessons__lesson_id__complete_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/learning/courses/{course_id}/save-exit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Save And Exit
+         * @description FR-LRN-003: remember the lesson to resume at; nothing is marked complete.
+         */
+        post: operations["save_and_exit_v1_learning_courses__course_id__save_exit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/invitations/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Preview Invitation
+         * @description H19 "preview, then share": the invitation text before sharing. Creates nothing, so a preview is
+         *     never listed under My referrals.
+         */
+        get: operations["preview_invitation_v1_invitations_preview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/invitations/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Referrals
+         * @description H20: invitations with the statuses Shared, Pending or Active only; never who joined.
+         */
+        get: operations["my_referrals_v1_invitations_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Invitation
+         * @description H19: a new invitation link and its text, made as the member shares through the phone's share
+         *     sheet; from now on it is listed as Shared.
+         */
+        post: operations["create_invitation_v1_invitations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/invitations/{number}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel Invitation
+         * @description The share sheet was closed without sharing: takes back the unused invitation made a few
+         *     minutes ago, so it is not listed as Shared.
+         */
+        post: operations["cancel_invitation_v1_invitations__number__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Promises
+         * @description M18: every published promise, filterable by status, theme and area (FR-PRM-007).
+         */
+        get: operations["list_promises_v1_promises_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Managed */
+        get: operations["list_managed_v1_promises_manage_get"];
+        put?: never;
+        /** Draft Promise */
+        post: operations["draft_promise_v1_promises_manage_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Pending Work
+         * @description Promises and updates waiting for a second person's approval, and feedback waiting for moderation.
+         */
+        get: operations["pending_work_v1_promises_manage_pending_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Progress Report
+         * @description FR-PRM-010: published promises by status, theme, office and area.
+         */
+        get: operations["progress_report_v1_promises_manage_report_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/{promise_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Managed */
+        get: operations["read_managed_v1_promises_manage__promise_id__get"];
+        /**
+         * Update Draft
+         * @description Drafts only; a published promise changes through dated updates.
+         */
+        put: operations["update_draft_v1_promises_manage__promise_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/{promise_id}/request-publication": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request Publication */
+        post: operations["request_publication_v1_promises_manage__promise_id__request_publication_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/{promise_id}/publication-decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Publication
+         * @description FR-PRM-003: a second authorised person approves; neither the drafter nor the person who asked may (403 own_draft).
+         */
+        post: operations["decide_publication_v1_promises_manage__promise_id__publication_decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/{promise_id}/updates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Draft Update
+         * @description A dated update with evidence, or a correction of an earlier one; applied once approved.
+         */
+        post: operations["draft_update_v1_promises_manage__promise_id__updates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/updates/{update_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide Update */
+        post: operations["decide_update_v1_promises_manage_updates__update_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/feedback/{feedback_id}/moderation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Moderate Feedback */
+        post: operations["moderate_feedback_v1_promises_manage_feedback__feedback_id__moderation_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/manage/feedback/{feedback_id}/reply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reply
+         * @description The responsible office's reply, shown under the feedback (FR-PRM-006).
+         */
+        post: operations["reply_v1_promises_manage_feedback__feedback_id__reply_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/{promise_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Promise
+         * @description M19: the promise with its milestones, approved updates (corrections beside the originals) and
+         *     moderated feedback with the office's replies.
+         */
+        get: operations["read_promise_v1_promises__promise_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/promises/{promise_id}/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Give Feedback
+         * @description Shown to others only after moderation.
+         */
+        post: operations["give_feedback_v1_promises__promise_id__feedback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/area": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Area
+         * @description M20: the member's GN, DS division and district for the last four published periods.
+         */
+        get: operations["my_area_v1_scorecards_area_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Versions */
+        get: operations["list_versions_v1_scorecards_manage_get"];
+        put?: never;
+        /**
+         * Draft
+         * @description Compute a draft for a finished quarter from the cases.
+         */
+        post: operations["draft_v1_scorecards_manage_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/manage/{scorecard_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read */
+        get: operations["read_v1_scorecards_manage__scorecard_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/manage/{scorecard_id}/share": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Share */
+        post: operations["share_v1_scorecards_manage__scorecard_id__share_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/manage/{scorecard_id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Set Note */
+        put: operations["set_note_v1_scorecards_manage__scorecard_id__notes_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/manage/{scorecard_id}/corrections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Correction
+         * @description The responsible tiers ask for a correction, with the reason.
+         */
+        post: operations["request_correction_v1_scorecards_manage__scorecard_id__corrections_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/manage/corrections/{correction_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide Correction */
+        post: operations["decide_correction_v1_scorecards_manage_corrections__correction_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scorecards/manage/{scorecard_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish
+         * @description FR-ACS-006: only with scorecard.publish, after the 10 working days.
+         */
+        post: operations["publish_v1_scorecards_manage__scorecard_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Support Home
+         * @description M11: emergency numbers first, the ten categories, and the member's own requests.
+         */
+        get: operations["support_home_v1_assistance_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Support
+         * @description M12: needs no membership; consent to collect the case information is required.
+         */
+        post: operations["request_support_v1_assistance_requests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/public-form": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Public Form
+         * @description S11 public web form, no account needed: the official emergency numbers first, then the categories.
+         */
+        get: operations["public_form_v1_assistance_public_form_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/public-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Support Publicly
+         * @description The public web form for people without an account: answers only the AS- reference.
+         */
+        post: operations["request_support_publicly_v1_assistance_public_requests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/statistics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Public Statistics
+         * @description D14, no account needed: requests by district and kind of help only; groups under 10 hidden (FR-AST-012).
+         */
+        get: operations["public_statistics_v1_assistance_statistics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/requests/{case_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Request
+         * @description M13: status, decisions with reasons, help delivered and appeals.
+         */
+        get: operations["read_my_request_v1_assistance_requests__case_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/requests/{case_id}/appeals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Appeal
+         * @description M14: one complaint or appeal per decision.
+         */
+        post: operations["appeal_v1_assistance_requests__case_id__appeals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/requests/{case_id}/referrals/{referral_id}/consent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Answer Referral
+         * @description M12: the applicant agrees that this partner may see the request (it is then sent), or refuses; once.
+         */
+        post: operations["answer_referral_v1_assistance_requests__case_id__referrals__referral_id__consent_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Staff Queue */
+        get: operations["staff_queue_v1_assistance_manage_cases_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/intake": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Intake
+         * @description S11: a hotline call or partner referral, without needing membership.
+         */
+        post: operations["intake_v1_assistance_manage_intake_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Case
+         * @description S12: the full file only for the assigned caseworker and decision-makers; intake staff get the summary of a
+         *     case waiting for screening (fullFile false). Every opening is audited.
+         */
+        get: operations["read_case_v1_assistance_manage_cases__case_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/caseworkers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Caseworkers */
+        get: operations["list_caseworkers_v1_assistance_manage_cases__case_id__caseworkers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign
+         * @description Intake staff route a case waiting for screening and get its summary back; decision-makers may reassign.
+         */
+        post: operations["assign_v1_assistance_manage_cases__case_id__assign_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Link */
+        post: operations["link_v1_assistance_manage_cases__case_id__link_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Note */
+        post: operations["add_note_v1_assistance_manage_cases__case_id__notes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide
+         * @description FR-AST-008: against the published criteria version, with reasons in both languages.
+         */
+        post: operations["decide_v1_assistance_manage_cases__case_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/deliveries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Delivery */
+        post: operations["record_delivery_v1_assistance_manage_cases__case_id__deliveries_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/referrals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refer
+         * @description M12: proposed to an applicant with an app account, who answers there; sent at once with the consent the
+         *     caseworker records for anyone else.
+         */
+        post: operations["refer_v1_assistance_manage_cases__case_id__referrals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/referrals/{referral_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Update Referral */
+        post: operations["update_referral_v1_assistance_manage_cases__case_id__referrals__referral_id__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Close */
+        post: operations["close_v1_assistance_manage_cases__case_id__close_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/appeals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Open Appeals */
+        get: operations["open_appeals_v1_assistance_manage_appeals_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/appeals/{appeal_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Appeal
+         * @description FR-AST-011: never by the person whose decision is appealed (403 original_decider).
+         */
+        post: operations["decide_appeal_v1_assistance_manage_appeals__appeal_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/programmes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Programmes
+         * @description Programmes with their current criteria version, for decisions and D14.
+         */
+        get: operations["list_programmes_v1_assistance_manage_programmes_get"];
+        put?: never;
+        /** Create Programme */
+        post: operations["create_programme_v1_assistance_manage_programmes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/programmes/{programme_id}/criteria": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish Criteria */
+        post: operations["publish_criteria_v1_assistance_manage_programmes__programme_id__criteria_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/programmes/{programme_id}/active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Set Programme Active */
+        post: operations["set_programme_active_v1_assistance_manage_programmes__programme_id__active_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/partners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Partners */
+        get: operations["list_partners_v1_assistance_manage_partners_get"];
+        put?: never;
+        /** Add Partner */
+        post: operations["add_partner_v1_assistance_manage_partners_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/statistics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Statistics
+         * @description FR-AST-012: counts only, minimum cell 10, also by subtraction.
+         */
+        get: operations["statistics_v1_assistance_manage_statistics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Sessions
+         * @description Upcoming, live and past sessions for the member's area.
+         */
+        get: operations["list_sessions_v1_town_halls_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Managed */
+        get: operations["list_managed_v1_town_halls_manage_get"];
+        put?: never;
+        /** Create */
+        post: operations["create_v1_town_halls_manage_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/manage/{townhall_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Managed */
+        get: operations["read_managed_v1_town_halls_manage__townhall_id__get"];
+        /** Update */
+        put: operations["update_v1_town_halls_manage__townhall_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/manage/{townhall_id}/state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Move
+         * @description Schedule, go live, end or cancel; refused in a silence window (409 silence_period, FR-THL-008).
+         */
+        post: operations["move_v1_town_halls_manage__townhall_id__state_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/manage/questions/{question_id}/moderation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Moderate */
+        post: operations["moderate_v1_town_halls_manage_questions__question_id__moderation_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/manage/questions/{question_id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Answer */
+        post: operations["answer_v1_town_halls_manage_questions__question_id__answer_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/manage/{townhall_id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Archive */
+        post: operations["archive_v1_town_halls_manage__townhall_id__archive_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/{townhall_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read
+         * @description M21 to M23: the session, approved questions with vote totals, and the member's own.
+         */
+        get: operations["read_v1_town_halls__townhall_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/{townhall_id}/questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ask */
+        post: operations["ask_v1_town_halls__townhall_id__questions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/questions/{question_id}/vote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Vote */
+        post: operations["vote_v1_town_halls_questions__question_id__vote_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/{townhall_id}/reminder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Reminder
+         * @description Remind me 24 hours and 15 minutes before (FR-THL-001).
+         */
+        put: operations["set_reminder_v1_town_halls__townhall_id__reminder_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/field/visits/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sync
+         * @description S07: send visits made offline; each comes back created, updated, unchanged, in conflict or refused.
+         */
+        post: operations["sync_v1_field_visits_sync_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/field/visits/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Visits
+         * @description The coordinator's own visits with the server's versions, to refresh the phone's copy.
+         */
+        get: operations["my_visits_v1_field_visits_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/field/manage/visits": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Supervised
+         * @description D24: visits and follow-ups in the supervisor's areas.
+         */
+        get: operations["supervised_v1_field_manage_visits_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/field/manage/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Counts */
+        get: operations["counts_v1_field_manage_counts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/field/manage/visits/{visit_id}/follow-up": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Set Follow Up */
+        post: operations["set_follow_up_v1_field_manage_visits__visit_id__follow_up_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Shifts */
+        get: operations["my_shifts_v1_election_roster_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/assignments/{assignment_id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Answer */
+        post: operations["answer_v1_election_roster_assignments__assignment_id__answer_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/assignments/{assignment_id}/check-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check In */
+        post: operations["check_in_v1_election_roster_assignments__assignment_id__check_in_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/assignments/{assignment_id}/check-out": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check Out */
+        post: operations["check_out_v1_election_roster_assignments__assignment_id__check_out_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/manage/periods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Periods
+         * @description Declared election periods covering the coordinator's areas, to schedule shifts in.
+         */
+        get: operations["list_periods_v1_election_roster_manage_periods_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/manage/shifts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Shifts */
+        get: operations["list_shifts_v1_election_roster_manage_shifts_get"];
+        put?: never;
+        /** Create Shift */
+        post: operations["create_shift_v1_election_roster_manage_shifts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/manage/shifts/{shift_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Shift */
+        get: operations["read_shift_v1_election_roster_manage_shifts__shift_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/manage/shifts/{shift_id}/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Offer */
+        post: operations["offer_v1_election_roster_manage_shifts__shift_id__offers_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/manage/shifts/{shift_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel */
+        post: operations["cancel_v1_election_roster_manage_shifts__shift_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/manage/shifts/{shift_id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Message
+         * @description FR-ELX-007: an operational message to the volunteers who accepted this shift.
+         */
+        post: operations["message_v1_election_roster_manage_shifts__shift_id__messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/periods/{period_id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Period Report
+         * @description FR-ELX-009: messages sent, roster changes and content published during the period, in its area.
+         */
+        get: operations["period_report_v1_election_roster_periods__period_id__report_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/periods/{period_id}/report/entries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Period Report Entries
+         * @description FR-ELX-009: the audit entries behind the report, newest first (at most 500): broadcasts, content
+         *     published and silence blocks in the period's time and area, and every roster change for its shifts.
+         */
+        get: operations["period_report_entries_v1_election_roster_periods__period_id__report_entries_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/screenshots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Screenshot
+         * @description Re-encoded without metadata and sealed; attach it to a report by id.
+         */
+        post: operations["upload_screenshot_v1_fact_checks_screenshots_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report
+         * @description M48: report suspected misinformation with a link or a screenshot.
+         */
+        post: operations["report_v1_fact_checks_reports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/reports/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Reports */
+        get: operations["my_reports_v1_fact_checks_reports_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/reports/{report_id}/appeal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Appeal */
+        post: operations["appeal_v1_fact_checks_reports__report_id__appeal_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Queue
+         * @description D12: reports waiting for a decision and appeals waiting for a second person, oldest first.
+         */
+        get: operations["queue_v1_fact_checks_manage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/manage/{report_id}/screenshot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Screenshot */
+        get: operations["read_screenshot_v1_fact_checks_manage__report_id__screenshot_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/manage/{report_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide */
+        post: operations["decide_v1_fact_checks_manage__report_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fact-checks/manage/{report_id}/appeal-decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Appeal
+         * @description Never by the first fact-checker (403 original_decider).
+         */
+        post: operations["decide_appeal_v1_fact_checks_manage__report_id__appeal_decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -3721,6 +6937,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/households/mine/log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Household Log
+         * @description M10: the household's change log for its confirmed adults: what changed, who, and when.
+         */
+        get: operations["read_household_log_v1_households_mine_log_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/mine/caseworker-consent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Give Caseworker Consent
+         * @description The head lets a caseworker in the household's area open its record.
+         */
+        post: operations["give_caseworker_consent_v1_households_mine_caseworker_consent_post"];
+        /**
+         * Withdraw Caseworker Consent
+         * @description Any confirmed adult withdraws caseworker access.
+         */
+        delete: operations["withdraw_caseworker_consent_v1_households_mine_caseworker_consent_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/households/invitations/mine": {
         parameters: {
             query?: never;
@@ -3789,6 +7049,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/households/members/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update My Details
+         * @description An adult's own age band and occupation category (OD-30).
+         */
+        patch: operations["update_my_details_v1_households_members_me_patch"];
+        trace?: never;
+    };
+    "/v1/households/members/{member_record_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Correct Relationship
+         * @description The head corrects an adult's relationship (M10).
+         */
+        patch: operations["correct_relationship_v1_households_members__member_record_id__patch"];
+        trace?: never;
+    };
     "/v1/households/members/{member_record_id}/remove": {
         parameters: {
             query?: never;
@@ -3804,6 +7104,44 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/v1/households/dependants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Dependant
+         * @description M07: a child's minimum record, added by a verified adult of the household as guardian.
+         */
+        post: operations["add_dependant_v1_households_dependants_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/dependants/{member_record_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove Dependant */
+        delete: operations["remove_dependant_v1_households_dependants__member_record_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Dependant */
+        patch: operations["update_dependant_v1_households_dependants__member_record_id__patch"];
         trace?: never;
     };
     "/v1/households/leave": {
@@ -3847,7 +7185,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Staff View Household */
+        /**
+         * Staff View Household
+         * @description D02 read-only: refused `outside_your_area` or `no_caseworker_consent` (both audited).
+         */
         get: operations["staff_view_household_v1_households_staff__target_member_id__get"];
         put?: never;
         post?: never;
@@ -4019,13 +7360,18 @@ export interface components {
             /** Passportcountry */
             passportCountry?: string | null;
         };
+        /** ActiveIn */
+        ActiveIn: {
+            /** Active */
+            active: boolean;
+        };
         /** ActivityItemOut */
         ActivityItemOut: {
             /**
              * Kind
              * @enum {string}
              */
-            kind: "identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request";
+            kind: "identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal" | "course";
             /** Reference */
             reference: string;
             /** Title */
@@ -4043,6 +7389,42 @@ export interface components {
              * @description What the item opens: the review, appeal, event, request or receipt
              */
             targetId: string;
+        };
+        /** AdditionIn */
+        AdditionIn: {
+            /** Body */
+            body: string;
+            /** Photoids */
+            photoIds?: string[];
+        };
+        /** AdditionModerationIn */
+        AdditionModerationIn: {
+            /** Approve */
+            approve: boolean;
+            /** Reason */
+            reason?: string | null;
+            /**
+             * Editedbody
+             * @description D12: an edited version to publish instead, e.g. with names or phone numbers taken out; used only when approving
+             */
+            editedBody?: string | null;
+        };
+        /** AdditionOut */
+        AdditionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** State */
+            state: string;
+            /** Isreply */
+            isReply: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** AggregateCellOut */
         AggregateCellOut: {
@@ -4212,6 +7594,24 @@ export interface components {
              */
             answer: "it_was_me" | "not_me";
         };
+        /** AnswerIn */
+        AnswerIn: {
+            /** Answer */
+            answer: string;
+        };
+        /** AppealDecisionIn */
+        AppealDecisionIn: {
+            /** Change */
+            change: boolean;
+            /** Reason */
+            reason: string;
+            /** Outcome */
+            outcome?: ("approved" | "partly_approved" | "not_eligible" | "referred") | null;
+            /** Criteriaversionid */
+            criteriaVersionId?: string | null;
+            /** Reasonta */
+            reasonTa?: string | null;
+        };
         /** AppealDecisionInput */
         AppealDecisionInput: {
             /**
@@ -4287,6 +7687,21 @@ export interface components {
             member: components["schemas"]["ReviewMemberOut"];
             /** Documents */
             documents: components["schemas"]["DocumentOut"][];
+        };
+        /** AppealIn */
+        AppealIn: {
+            /**
+             * Decisionid
+             * Format: uuid
+             */
+            decisionId: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "appeal" | "complaint";
+            /** Body */
+            body: string;
         };
         /** AppealInput */
         AppealInput: {
@@ -4373,6 +7788,17 @@ export interface components {
             /** Decidedat */
             decidedAt: string | null;
         };
+        /** ArchiveIn */
+        ArchiveIn: {
+            /** Recordingurl */
+            recordingUrl?: string | null;
+            /** Transcripten */
+            transcriptEn?: string | null;
+            /** Transcriptta */
+            transcriptTa?: string | null;
+            /** Outcomes */
+            outcomes?: components["schemas"]["OutcomeIn"][];
+        };
         /** AreaChangeIn */
         AreaChangeIn: {
             /** Gncode */
@@ -4421,6 +7847,16 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** AreaIn */
+        AreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "province" | "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+        };
         /**
          * AreaNameOut
          * @description An area key such as district:LK41 with its names. Tamil names leave out the level word
@@ -4438,6 +7874,26 @@ export interface components {
             /** Nameta */
             nameTa: string | null;
         };
+        /** AreaPeriodOut */
+        AreaPeriodOut: {
+            /** Period */
+            period: string;
+            /** Version */
+            version: number;
+            /** Publishedat */
+            publishedAt: string | null;
+            /**
+             * Figures
+             * @description {insufficient: true} under 10 accepted cases, else metrics with numerator and denominator
+             */
+            figures: {
+                [key: string]: unknown;
+            };
+            /** Noteen */
+            noteEn: string | null;
+            /** Noteta */
+            noteTa: string | null;
+        };
         /**
          * AreaRef
          * @description An area: the whole platform, or a province, district, DS division or GN division by code.
@@ -4450,6 +7906,53 @@ export interface components {
             level: "platform" | "province" | "district" | "ds" | "gn";
             /** Code */
             code?: string | null;
+        };
+        /** AreaScorecardOut */
+        AreaScorecardOut: {
+            /** Areakey */
+            areaKey: string;
+            /** Nameen */
+            nameEn: string | null;
+            /** Nameta */
+            nameTa: string | null;
+            /** Periods */
+            periods: components["schemas"]["AreaPeriodOut"][];
+        };
+        /** AreaUpdateOut */
+        AreaUpdateOut: {
+            /**
+             * Issueid
+             * Format: uuid
+             */
+            issueId: string;
+            /** Casenumber */
+            caseNumber: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Stage */
+            stage: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "received" | "needs_details" | "under_review" | "in_progress" | "resolved" | "declined";
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+        };
+        /** AssignIn */
+        AssignIn: {
+            /**
+             * Ownerid
+             * Format: uuid
+             */
+            ownerId: string;
+            /** Note */
+            note: string;
         };
         /** AssignmentEventOut */
         AssignmentEventOut: {
@@ -5004,6 +8507,96 @@ export interface components {
             lastScannedAt: string | null;
             publicCard: components["schemas"]["PublicCardOut"] | null;
         };
+        /** CaseActionOut */
+        CaseActionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Kind */
+            kind: string;
+            /** Actorname */
+            actorName: string | null;
+            /** Fromstage */
+            fromStage: string | null;
+            /** Tostage */
+            toStage: string | null;
+            /** Previousownername */
+            previousOwnerName: string | null;
+            /** Newownername */
+            newOwnerName: string | null;
+            /** Note */
+            note: string | null;
+            /** Details */
+            details: {
+                [key: string]: unknown;
+            };
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /**
+         * CaseAdditionOut
+         * @description Added information; the person is named only as the reporter or "a member" (data minimisation).
+         */
+        CaseAdditionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Body
+             * @description As the member wrote it
+             */
+            body: string;
+            /**
+             * Publishedbody
+             * @description The moderator's edited version shown to members, when one was made
+             */
+            publishedBody: string | null;
+            /** Fromreporter */
+            fromReporter: boolean;
+            /** Isreply */
+            isReply: boolean;
+            /** State */
+            state: string;
+            /** Moderationreason */
+            moderationReason: string | null;
+            /** Photos */
+            photos: number;
+            /**
+             * Mine
+             * @description The viewer wrote it, so another moderator decides it (BR-085)
+             */
+            mine: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** CaseCloseIn */
+        CaseCloseIn: {
+            /** Outcome */
+            outcome: string;
+            /** Evidencerefs */
+            evidenceRefs?: string[];
+            /** Photoids */
+            photoIds?: string[];
+            /** Limitations */
+            limitations?: string | null;
+            /**
+             * Summaryen
+             * @description Shown to the reporter only; others see the moderator's public summary (BR-032)
+             */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+        };
         /** CaseDecisionInput */
         CaseDecisionInput: {
             /**
@@ -5013,6 +8606,29 @@ export interface components {
             outcome: "not_duplicate" | "duplicate_confirmed";
             /** Reason */
             reason: string;
+        };
+        /** CaseEvidenceOut */
+        CaseEvidenceOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Purpose */
+            purpose: string;
+            /** Fromreporter */
+            fromReporter: boolean;
+            /** Actionid */
+            actionId: string | null;
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /**
          * CaseFileOut
@@ -5075,6 +8691,23 @@ export interface components {
             /** Documents */
             documents: components["schemas"]["DocumentOut"][];
         };
+        /** CaseNoteIn */
+        CaseNoteIn: {
+            /** Body */
+            body: string;
+        };
+        /** CasePhotoOut */
+        CasePhotoOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
+        };
         /**
          * CaseSummaryOut
          * @description One row of the D04 queue.
@@ -5111,6 +8744,16 @@ export interface components {
             /** Decidedat */
             decidedAt: string | null;
         };
+        /** CaseworkerOut */
+        CaseworkerOut: {
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Fullname */
+            fullName: string;
+        };
         /**
          * Catalogue
          * @description The tiers and the permission matrix, for building the W09 form.
@@ -5125,6 +8768,15 @@ export interface components {
                 };
             };
         };
+        /** CatalogueOut */
+        CatalogueOut: {
+            /** Available */
+            available: components["schemas"]["CourseCardOut"][];
+            /** Mine */
+            mine: components["schemas"]["CourseCardOut"][];
+            /** Completed */
+            completed: components["schemas"]["CourseCardOut"][];
+        };
         /** ChainCheckOut */
         ChainCheckOut: {
             /** Ok */
@@ -5133,6 +8785,29 @@ export interface components {
             checked: number;
             /** Firstbrokenid */
             firstBrokenId: number | null;
+        };
+        /** ChallengeDecisionIn */
+        ChallengeDecisionIn: {
+            /** Accept */
+            accept: boolean;
+            /** Reason */
+            reason: string;
+            /** Stage */
+            stage?: ("gn" | "ds" | "district" | "implementation") | null;
+            /** Ownerid */
+            ownerId?: string | null;
+            /** Duedate */
+            dueDate?: string | null;
+        };
+        /** ChallengeOut */
+        ChallengeOut: {
+            /** Note */
+            note: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /**
          * CheckInEventOut
@@ -5186,6 +8861,14 @@ export interface components {
              */
             canScan: boolean;
         };
+        /** CheckInIn */
+        CheckInIn: {
+            /**
+             * Siteconfirmed
+             * @description Optional; no location is ever recorded
+             */
+            siteConfirmed?: boolean | null;
+        };
         /** ChoicesIn */
         ChoicesIn: {
             /**
@@ -5225,6 +8908,29 @@ export interface components {
             action: "end" | "withdraw";
             /** Reason */
             reason: string;
+        };
+        /** ClosureResponseIn */
+        ClosureResponseIn: {
+            /**
+             * Resolved
+             * @description False challenges the closure (FR-RPT-016) and needs a note
+             */
+            resolved: boolean;
+            /** Rating */
+            rating?: number | null;
+            /** Note */
+            note?: string | null;
+        };
+        /** ClosureResponseOut */
+        ClosureResponseOut: {
+            /** Resolved */
+            resolved: boolean;
+            /** Rating */
+            rating: number | null;
+            /** State */
+            state: string;
+            /** Decisionreason */
+            decisionReason: string | null;
         };
         /**
          * CodeSentOut
@@ -5318,6 +9024,16 @@ export interface components {
              */
             totalActionable: number;
         };
+        /** CommunityUpdateOut */
+        CommunityUpdateOut: {
+            /** Body */
+            body: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** ConfigurationQueueCount */
         ConfigurationQueueCount: {
             /** Total */
@@ -5355,39 +9071,6 @@ export interface components {
             /** Noticeversion */
             noticeVersion: string;
         };
-        /** ConsentLogOut */
-        ConsentLogOut: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /**
-             * Householdid
-             * Format: uuid
-             */
-            householdId: string;
-            /** Action */
-            action: string;
-            /** Memberid */
-            memberId?: string | null;
-            /**
-             * Actorid
-             * Format: uuid
-             */
-            actorId: string;
-            /** Actorname */
-            actorName?: string | null;
-            /** Details */
-            details?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Createdat
-             * Format: date-time
-             */
-            createdAt: string;
-        };
         /** ConsentNoticeOut */
         ConsentNoticeOut: {
             /** Titleta */
@@ -5411,6 +9094,53 @@ export interface components {
             purposeLimitationTa: string;
             /** Purposelimitationen */
             purposeLimitationEn: string;
+        };
+        /** ContactIn */
+        ContactIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "message" | "change_request";
+            /**
+             * Body
+             * @description For a change request, the reason (FR-VOL-008)
+             */
+            body: string;
+            /**
+             * Confirmed
+             * @description The member confirmed sending; an accidental tap sends nothing
+             */
+            confirmed: boolean;
+        };
+        /** ContactOut */
+        ContactOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "message" | "change_request";
+            /** Body */
+            body: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "answered";
+            /** Answer */
+            answer: string | null;
+            /** Answeredat */
+            answeredAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** ContributionCreateRequest */
         ContributionCreateRequest: {
@@ -5541,6 +9271,173 @@ export interface components {
              * Format: date-time
              */
             recordedAt: string;
+        };
+        /** CorrectionDecisionIn */
+        CorrectionDecisionIn: {
+            /** Accept */
+            accept: boolean;
+            /** Note */
+            note: string;
+        };
+        /** CorrectionIn */
+        CorrectionIn: {
+            /** Areakey */
+            areaKey: string;
+            /** Metric */
+            metric: string;
+            /** Reason */
+            reason: string;
+        };
+        /** CorrectionOut */
+        CorrectionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Areakey */
+            areaKey: string;
+            /** Metric */
+            metric: string;
+            /** Reason */
+            reason: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "accepted" | "rejected";
+            /** Decisionnote */
+            decisionNote: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Decidedat */
+            decidedAt: string | null;
+        };
+        /** CourseCardOut */
+        CourseCardOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Courseref */
+            courseRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "movement" | "civic" | "app" | "skills";
+            /** Lessons */
+            lessons: number;
+            /** Minutes */
+            minutes: number;
+            /** Completedlessons */
+            completedLessons: number;
+            /** Resumeposition */
+            resumePosition: number | null;
+            /** Completedat */
+            completedAt: string | null;
+        };
+        /** CourseDetailOut */
+        CourseDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Courseref */
+            courseRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "movement" | "civic" | "app" | "skills";
+            /** Lessons */
+            lessons: number;
+            /** Minutes */
+            minutes: number;
+            /** Completedlessons */
+            completedLessons: number;
+            /** Resumeposition */
+            resumePosition: number | null;
+            /** Completedat */
+            completedAt: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "published" | "retired";
+            /** Lessonlist */
+            lessonList: components["schemas"]["LessonOut"][];
+        };
+        /** CourseIn */
+        CourseIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "movement" | "civic" | "app" | "skills";
+            /** Lessons */
+            lessons: components["schemas"]["LessonIn"][];
+        };
+        /** CourseStateIn */
+        CourseStateIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "published" | "retired";
+        };
+        /** CriteriaIn */
+        CriteriaIn: {
+            /** Criteriaen */
+            criteriaEn: string;
+            /** Criteriata */
+            criteriaTa: string;
+        };
+        /** DecisionIn */
+        DecisionIn: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "approved" | "partly_approved" | "not_eligible" | "referred";
+            /**
+             * Criteriaversionid
+             * Format: uuid
+             */
+            criteriaVersionId: string;
+            /** Reasonen */
+            reasonEn: string;
+            /** Reasonta */
+            reasonTa: string;
         };
         /** DecisionInput */
         DecisionInput: {
@@ -5680,6 +9577,66 @@ export interface components {
              */
             overlaps: string[];
         };
+        /** DeliveryIn */
+        DeliveryIn: {
+            /** Kind */
+            kind: string;
+            /**
+             * Amount
+             * @description Quantity or value
+             */
+            amount: string;
+            /**
+             * Deliveredon
+             * Format: date
+             */
+            deliveredOn: string;
+            /** Provider */
+            provider: string;
+            /** Evidence */
+            evidence: string;
+        };
+        /** DeliveryOut */
+        DeliveryOut: {
+            /** Kind */
+            kind: string;
+            /** Amount */
+            amount: string;
+            /**
+             * Deliveredon
+             * Format: date
+             */
+            deliveredOn: string;
+            /** Provider */
+            provider: string;
+            /** Evidence */
+            evidence: string;
+        };
+        /**
+         * DependantIn
+         * @description M07 child record: first name, relationship and birth year only. Unknown fields (an ID
+         *     number, a phone, a photo) are refused, never silently dropped.
+         */
+        DependantIn: {
+            /** Firstname */
+            firstName: string;
+            /**
+             * Relationship
+             * @enum {string}
+             */
+            relationship: "child" | "grandchild" | "sibling" | "other";
+            /** Birthyear */
+            birthYear: number;
+        };
+        /** DependantUpdateIn */
+        DependantUpdateIn: {
+            /** Firstname */
+            firstName?: string | null;
+            /** Relationship */
+            relationship?: ("child" | "grandchild" | "sibling" | "other") | null;
+            /** Birthyear */
+            birthYear?: number | null;
+        };
         /** DeviceIn */
         DeviceIn: {
             /** Token */
@@ -5720,6 +9677,35 @@ export interface components {
             /** Token */
             token: string;
         };
+        /** DistrictDecisionIn */
+        DistrictDecisionIn: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "act" | "escalate";
+            /** Authority */
+            authority?: string | null;
+            /** Resources */
+            resources?: string | null;
+            /** Office */
+            office?: string | null;
+            /** Ownerid */
+            ownerId?: string | null;
+            /** Duedate */
+            dueDate?: string | null;
+            /** Reason */
+            reason?: string | null;
+            /** Decisionrequired */
+            decisionRequired?: string | null;
+            /** Regionalownerid */
+            regionalOwnerId?: string | null;
+            /**
+             * Scope
+             * @description W08: the approved scope; needed to act
+             */
+            scope?: string | null;
+        };
         /**
          * DocumentOut
          * @description An identity image the server holds (BR-020). Never the image itself.
@@ -5757,6 +9743,20 @@ export interface components {
             rationale: string;
             /** Effectivefrom */
             effectiveFrom?: string | null;
+        };
+        /** DsReportIn */
+        DsReportIn: {
+            /** Summary */
+            summary: string;
+            /** Evidencerefs */
+            evidenceRefs?: string[];
+            /** Recommendation */
+            recommendation: string;
+            /**
+             * Districtownerid
+             * Format: uuid
+             */
+            districtOwnerId: string;
         };
         /**
          * DueGrantOut
@@ -5974,6 +9974,15 @@ export interface components {
             publishedAt: string;
             /** Withdrawnat */
             withdrawnAt: string | null;
+        };
+        /** EmergencyContactOut */
+        EmergencyContactOut: {
+            /** Number */
+            number: string;
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
         };
         /** EventCreateIn */
         EventCreateIn: {
@@ -6304,6 +10313,62 @@ export interface components {
              */
             role: "identity_reviewer";
         };
+        /** ExecutiveDecisionIn */
+        ExecutiveDecisionIn: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approve" | "return" | "decline";
+            /** Conditions */
+            conditions?: string | null;
+            /** Implementerid */
+            implementerId?: string | null;
+            /** Scope */
+            scope?: string | null;
+            /** Reportingduty */
+            reportingDuty?: string | null;
+            /** Duedate */
+            dueDate?: string | null;
+            /** Question */
+            question?: string | null;
+            /** Reason */
+            reason?: string | null;
+        };
+        /** FactCheckAppealDecisionIn */
+        FactCheckAppealDecisionIn: {
+            /** Change */
+            change: boolean;
+            /** Outcome */
+            outcome?: ("false" | "misleading" | "accurate" | "not_actionable") | null;
+            /** Reason */
+            reason: string;
+        };
+        /** FactCheckAppealIn */
+        FactCheckAppealIn: {
+            /** Body */
+            body: string;
+        };
+        /** FactCheckDecisionIn */
+        FactCheckDecisionIn: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "false" | "misleading" | "accurate" | "not_actionable";
+            /** Reason */
+            reason: string;
+        };
+        /** FactIn */
+        FactIn: {
+            /** Statement */
+            statement: string;
+            /**
+             * Source
+             * @description Who or what the fact comes from (FR-WEB-015)
+             */
+            source: string;
+        };
         /**
          * FeaturesOut
          * @description What the apps may show; a module that is off is hidden, never shown broken.
@@ -6311,6 +10376,110 @@ export interface components {
         FeaturesOut: {
             /** Enabled */
             enabled: string[];
+        };
+        /** FieldVisitIn */
+        FieldVisitIn: {
+            /**
+             * Clientid
+             * Format: uuid
+             * @description Made on the phone; the same visit always has the same id
+             */
+            clientId: string;
+            /**
+             * Baseversion
+             * @description The server version this edit started from; null for a new visit
+             */
+            baseVersion?: number | null;
+            /**
+             * Gncode
+             * @description Chosen by hand; location is never tracked. Give a GN, a DS or neither
+             */
+            gnCode?: string | null;
+            /**
+             * Dscode
+             * @description A DS division chosen by hand instead of a GN
+             */
+            dsCode?: string | null;
+            /**
+             * Visitedat
+             * Format: date-time
+             */
+            visitedAt: string;
+            /**
+             * Consent
+             * @enum {string}
+             */
+            consent: "given" | "declined";
+            /** Concerns */
+            concerns?: ("water" | "roads" | "health" | "education" | "livelihood" | "housing" | "electricity" | "waste" | "safety" | "elderly_care" | "disability" | "other")[];
+            /** Notes */
+            notes?: string | null;
+            /** Placetext */
+            placeText?: string | null;
+            /** Followup */
+            followUp?: string | null;
+            /** Casenumber */
+            caseNumber?: string | null;
+            /**
+             * Confirmednotpolitical
+             * @default false
+             */
+            confirmedNotPolitical: boolean;
+        };
+        /** FieldVisitOut */
+        FieldVisitOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Visitref */
+            visitRef: string;
+            /**
+             * Clientid
+             * Format: uuid
+             */
+            clientId: string;
+            /** Coordinatorname */
+            coordinatorName: string;
+            /** Gncode */
+            gnCode: string | null;
+            /** Dscode */
+            dsCode: string | null;
+            /**
+             * Areakey
+             * @description The visit's most specific area: its GN, its DS, or the coordinator's area when no place was given
+             */
+            areaKey: string;
+            /**
+             * Visitedat
+             * Format: date-time
+             */
+            visitedAt: string;
+            /**
+             * Consent
+             * @enum {string}
+             */
+            consent: "given" | "declined";
+            /** Concerns */
+            concerns: string[];
+            /** Notes */
+            notes: string | null;
+            /** Placetext */
+            placeText: string | null;
+            /** Followup */
+            followUp: string | null;
+            /** Followupdoneat */
+            followUpDoneAt: string | null;
+            /** Casenumber */
+            caseNumber: string | null;
+            /** Version */
+            version: number;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
         };
         /** FinanceProductionControlRequest */
         FinanceProductionControlRequest: {
@@ -6405,6 +10574,18 @@ export interface components {
             /** Detail */
             detail: string;
         };
+        /** FindingIn */
+        FindingIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "verified_fact" | "assumption" | "option" | "stakeholder" | "resource_need" | "open_question";
+            /** Statement */
+            statement: string;
+            /** Source */
+            source?: string | null;
+        };
         /** FlagOut */
         FlagOut: {
             /** Key */
@@ -6426,6 +10607,38 @@ export interface components {
             approvalRef: string | null;
             /** Gaterecordedat */
             gateRecordedAt: string | null;
+        };
+        /** FollowIn */
+        FollowIn: {
+            /** Follow */
+            follow: boolean;
+        };
+        /** FollowUpIn */
+        FollowUpIn: {
+            /** Done */
+            done: boolean;
+        };
+        /** ForwardIn */
+        ForwardIn: {
+            /** Locationconfirmed */
+            locationConfirmed: boolean;
+            /** Descriptionclear */
+            descriptionClear: boolean;
+            /** Evidencereviewed */
+            evidenceReviewed: boolean;
+            /**
+             * Ownerid
+             * Format: uuid
+             * @description The named DS owner (FR-WEB-017)
+             */
+            ownerId: string;
+            /** Note */
+            note: string;
+            /**
+             * Affectedarea
+             * @description W03: the area the problem affects, as confirmed
+             */
+            affectedArea: string;
         };
         /** FundConfigResponse */
         FundConfigResponse: {
@@ -6624,13 +10837,44 @@ export interface components {
              */
             tabs: components["schemas"]["HomeFeatureOut"][];
             hub: components["schemas"]["HomeHubOut"];
+            promises: components["schemas"]["HomePromisesOut"];
+        };
+        /** HomePromiseCountOut */
+        HomePromiseCountOut: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "not_started" | "in_progress" | "completed" | "delayed" | "blocked" | "withdrawn";
+            /** Count */
+            count: number;
+        };
+        /**
+         * HomePromisesOut
+         * @description M18 on Home: the Promise Tracker, with the published promises made for the member's GN, DS
+         *     division, district, province or the whole platform, counted by status.
+         */
+        HomePromisesOut: {
+            /** @description Open, or not open yet while the Promise Tracker is switched off */
+            feature: components["schemas"]["HomeFeatureOut"];
+            /** Total */
+            total: number;
+            /**
+             * Counts
+             * @description Statuses with at least one promise, in the tracker's order
+             */
+            counts: components["schemas"]["HomePromiseCountOut"][];
         };
         /** HouseholdCreateIn */
         HouseholdCreateIn: {
             /** Name */
             name?: string | null;
         };
-        /** HouseholdInvitationOut */
+        /**
+         * HouseholdInvitationOut
+         * @description An invitation. The invitee's name is never included: the inviter typed a member code, and a
+         *     name before the invitee accepts would let anyone look names up by code (M08).
+         */
         HouseholdInvitationOut: {
             /**
              * Id
@@ -6656,8 +10900,6 @@ export interface components {
              * Format: uuid
              */
             inviteeMemberId: string;
-            /** Inviteename */
-            inviteeName: string;
             /** Inviteecode */
             inviteeCode?: string | null;
             /** Relationship */
@@ -6680,6 +10922,60 @@ export interface components {
             /** Respondedat */
             respondedAt?: string | null;
         };
+        /**
+         * HouseholdInvitationSentOut
+         * @description The neutral answer to sending an invitation: nothing about the invitee.
+         */
+        HouseholdInvitationSentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Relationship
+             * @enum {string}
+             */
+            relationship: "spouse" | "parent" | "sibling" | "other";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending" | "accepted" | "declined" | "revoked" | "expired";
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+        };
+        /**
+         * HouseholdLogEntryOut
+         * @description One change in the household's log (M10): what, who and when; nothing else.
+         */
+        HouseholdLogEntryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "create_household" | "update_name" | "invite_adult" | "accept_invitation" | "decline_invitation" | "revoke_invitation" | "leave_household" | "remove_member" | "add_dependent" | "remove_dependent" | "dissolve_household" | "staff_view" | "update_member" | "caseworker_consent_given" | "caseworker_consent_withdrawn";
+            /**
+             * Actor
+             * @enum {string}
+             */
+            actor: "you" | "household_member" | "former_member" | "caseworker";
+            /** Actorname */
+            actorName?: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** HouseholdMemberOut */
         HouseholdMemberOut: {
             /**
@@ -6700,14 +10996,14 @@ export interface components {
              * Role
              * @enum {string}
              */
-            role: "head" | "adult";
+            role: "head" | "adult" | "dependent";
             /** Displayname */
             displayName: string;
             /**
              * Relationship
              * @enum {string}
              */
-            relationship: "head" | "spouse" | "parent" | "sibling" | "other";
+            relationship: "head" | "spouse" | "parent" | "sibling" | "child" | "grandchild" | "other";
             /**
              * Status
              * @enum {string}
@@ -6720,6 +11016,14 @@ export interface components {
             joinedAt: string;
             /** Removedat */
             removedAt?: string | null;
+            /** Ageband */
+            ageBand?: ("18_24" | "25_34" | "35_44" | "45_54" | "55_64" | "65_plus") | null;
+            /** Occupationcategory */
+            occupationCategory?: ("farming" | "fishing" | "daily_labour" | "trade" | "government" | "private_sector" | "self_employed" | "student" | "homemaker" | "retired" | "unemployed" | "other") | null;
+            /** Birthyear */
+            birthYear?: number | null;
+            /** Guardianmemberid */
+            guardianMemberId?: string | null;
         };
         /** HouseholdOut */
         HouseholdOut: {
@@ -6728,6 +11032,11 @@ export interface components {
              * Format: uuid
              */
             id: string;
+            /**
+             * Householdcode
+             * @description A short reference shown to the household, e.g. HH-1A2B3C4D
+             */
+            householdCode: string;
             /**
              * Createdby
              * Format: uuid
@@ -6748,6 +11057,16 @@ export interface components {
             /** Dissolvedat */
             dissolvedAt?: string | null;
             /**
+             * Places
+             * @description District, DS division and GN division
+             * @default []
+             */
+            places: components["schemas"]["HouseholdPlaceOut"][];
+            /** Caseworkerconsentat */
+            caseworkerConsentAt?: string | null;
+            /** Caseworkerconsentby */
+            caseworkerConsentBy?: string | null;
+            /**
              * Members
              * @default []
              */
@@ -6758,17 +11077,145 @@ export interface components {
              */
             pendingInvitations: components["schemas"]["HouseholdInvitationOut"][];
             /** Myrole */
-            myRole?: ("head" | "adult") | null;
+            myRole?: ("head" | "adult" | "dependent") | null;
+            /** Mymemberid */
+            myMemberId?: string | null;
             /**
              * Ishead
              * @default false
              */
             isHead: boolean;
         };
+        /** HouseholdPlaceOut */
+        HouseholdPlaceOut: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+            /** Nameen */
+            nameEn?: string | null;
+            /** Nameta */
+            nameTa?: string | null;
+        };
         /** HouseholdUpdateIn */
         HouseholdUpdateIn: {
             /** Name */
             name?: string | null;
+        };
+        /**
+         * IdeaAppealOut
+         * @description The author's one appeal of a moderation decision (D12) and, once decided, its outcome.
+         */
+        IdeaAppealOut: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "upheld" | "changed";
+            /**
+             * Reason
+             * @description The deciding moderator's reason, once decided
+             */
+            reason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Decidedat */
+            decidedAt: string | null;
+        };
+        /** IdeaBoardOut */
+        IdeaBoardOut: {
+            /** Local */
+            local: components["schemas"]["IdeaOut"][];
+            /** Mine */
+            mine: components["schemas"]["IdeaOut"][];
+        };
+        /** IdeaIn */
+        IdeaIn: {
+            /** Title */
+            title: string;
+            /**
+             * Benefit
+             * @description The local benefit
+             */
+            benefit: string;
+        };
+        /** IdeaModerationIn */
+        IdeaModerationIn: {
+            /** Publish */
+            publish: boolean;
+            /** Reason */
+            reason?: string | null;
+            /**
+             * Editedtitle
+             * @description D12: publish this redacted title instead of the author's
+             */
+            editedTitle?: string | null;
+            /**
+             * Editedbenefit
+             * @description D12: publish this redacted benefit instead of the author's
+             */
+            editedBenefit?: string | null;
+        };
+        /** IdeaOut */
+        IdeaOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Idearef */
+            ideaRef: string;
+            /**
+             * Title
+             * @description The author sees what they wrote; everyone else the published (possibly edited) version
+             */
+            title: string;
+            /** Benefit */
+            benefit: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "published" | "rejected" | "withdrawn";
+            /**
+             * Moderationreason
+             * @description Shown to the author when the idea was not published
+             */
+            moderationReason: string | null;
+            /**
+             * Editedbymoderator
+             * @description Author only: a moderator published an edited version (D12)
+             */
+            editedByModerator: boolean;
+            /**
+             * Publishedtitle
+             * @description Author only: the edited title others see, when it was edited
+             */
+            publishedTitle: string | null;
+            /**
+             * Publishedbenefit
+             * @description Author only: the edited benefit others see, when it was edited
+             */
+            publishedBenefit: string | null;
+            /** @description Author only: their one appeal of the moderation decision */
+            appeal: components["schemas"]["IdeaAppealOut"] | null;
+            /** Supports */
+            supports: number;
+            /** Supported */
+            supported: boolean;
+            /** Mine */
+            mine: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** IdentityDataItemOut */
         IdentityDataItemOut: {
@@ -6785,6 +11232,37 @@ export interface components {
             /** Retentionta */
             retentionTa: string;
         };
+        /** InboxItemOut */
+        InboxItemOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "message" | "change_request";
+            /** Body */
+            body: string;
+            /** Volunteername */
+            volunteerName: string;
+            /** Offerref */
+            offerRef: string;
+            /**
+             * Opportunityid
+             * Format: uuid
+             */
+            opportunityId: string;
+            /** Opportunitytitleen */
+            opportunityTitleEn: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** InboxOut */
         InboxOut: {
             /** Items */
@@ -6793,6 +11271,74 @@ export interface components {
             unread: number;
             /** Actionneeded */
             actionNeeded: number;
+        };
+        /** IntakeIn */
+        IntakeIn: {
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /** Summary */
+            summary: string;
+            /**
+             * Emergency
+             * @default false
+             */
+            emergency: boolean;
+            /**
+             * Consent
+             * @description Consent to collect the case information (FR-AST-004)
+             */
+            consent: boolean;
+            /** Fullname */
+            fullName: string;
+            /** Phone */
+            phone?: string | null;
+            /** Household */
+            household?: string | null;
+            area: components["schemas"]["SupportAreaIn"];
+            /**
+             * Channel
+             * @enum {string}
+             */
+            channel: "hotline" | "partner";
+            /** Partnerid */
+            partnerId?: string | null;
+        };
+        /** InvitationIn */
+        InvitationIn: {
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "ta" | "en";
+        };
+        /** InvitationOut */
+        InvitationOut: {
+            /**
+             * Number
+             * @description Shown as a neutral label, "Invitation 01" (OD-24)
+             */
+            number: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "shared" | "pending" | "active";
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** InvitationPreviewOut */
+        InvitationPreviewOut: {
+            /**
+             * Preview
+             * @description The full invitation text; its link's token is made only on sharing
+             */
+            preview: string;
         };
         /** InvitationRespondIn */
         InvitationRespondIn: {
@@ -6824,6 +11370,385 @@ export interface components {
              * @enum {string}
              */
             relationship: "spouse" | "parent" | "sibling" | "other";
+        };
+        /** IssueCaseFileOut */
+        IssueCaseFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Casenumber */
+            caseNumber: string;
+            /** Category */
+            category: string;
+            /** Title */
+            title: string;
+            /** Stage */
+            stage: string;
+            /** Ownerid */
+            ownerId: string | null;
+            /** Ownername */
+            ownerName: string | null;
+            /** Areapath */
+            areaPath: string[];
+            /** Gncode */
+            gnCode: string | null;
+            /** Dscode */
+            dsCode: string | null;
+            /** Districtcode */
+            districtCode: string | null;
+            /**
+             * Stageenteredat
+             * Format: date-time
+             */
+            stageEnteredAt: string;
+            /** Stagedueat */
+            stageDueAt: string | null;
+            /** Overdue */
+            overdue: boolean;
+            /** Visibility */
+            visibility: string;
+            /** Publicstate */
+            publicState: string;
+            /** Parentcasenumber */
+            parentCaseNumber: string | null;
+            /** Closedlevel */
+            closedLevel: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Description */
+            description: string;
+            /** Locationkind */
+            locationKind: string;
+            /** Locationtext */
+            locationText: string | null;
+            /**
+             * Affectedarea
+             * @description W03: the affected area the GN collector recorded when forwarding
+             */
+            affectedArea: string | null;
+            /** Publictitleen */
+            publicTitleEn: string | null;
+            /** Publictitleta */
+            publicTitleTa: string | null;
+            /** Publicsummaryen */
+            publicSummaryEn: string | null;
+            /** Publicsummaryta */
+            publicSummaryTa: string | null;
+            /** Implementationdueat */
+            implementationDueAt: string | null;
+            /** Closedat */
+            closedAt: string | null;
+            /** Closingsummaryen */
+            closingSummaryEn: string | null;
+            /** Closingsummaryta */
+            closingSummaryTa: string | null;
+            /** History */
+            history: components["schemas"]["CaseActionOut"][];
+            /** Evidence */
+            evidence: components["schemas"]["CaseEvidenceOut"][];
+            /** Additions */
+            additions: components["schemas"]["CaseAdditionOut"][];
+            /** Linkedreports */
+            linkedReports: components["schemas"]["LinkedReportOut"][];
+            openChallenge: components["schemas"]["ChallengeOut"] | null;
+            /**
+             * Allowedactions
+             * @description What the viewer may do now; the API checks again on every action
+             */
+            allowedActions: string[];
+        };
+        /** IssueCaseListOut */
+        IssueCaseListOut: {
+            /** Items */
+            items: components["schemas"]["IssueCaseOut"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /**
+             * Counts
+             * @description Cases in the viewer's areas by stage, plus 'overdue'
+             */
+            counts: {
+                [key: string]: number;
+            };
+        };
+        /** IssueCaseOut */
+        IssueCaseOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Casenumber */
+            caseNumber: string;
+            /** Category */
+            category: string;
+            /** Title */
+            title: string;
+            /** Stage */
+            stage: string;
+            /** Ownerid */
+            ownerId: string | null;
+            /** Ownername */
+            ownerName: string | null;
+            /** Areapath */
+            areaPath: string[];
+            /** Gncode */
+            gnCode: string | null;
+            /** Dscode */
+            dsCode: string | null;
+            /** Districtcode */
+            districtCode: string | null;
+            /**
+             * Stageenteredat
+             * Format: date-time
+             */
+            stageEnteredAt: string;
+            /** Stagedueat */
+            stageDueAt: string | null;
+            /** Overdue */
+            overdue: boolean;
+            /** Visibility */
+            visibility: string;
+            /** Publicstate */
+            publicState: string;
+            /** Parentcasenumber */
+            parentCaseNumber: string | null;
+            /** Closedlevel */
+            closedLevel: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /** IssueDetailOut */
+        IssueDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Casenumber */
+            caseNumber: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "road" | "water" | "waste" | "electricity" | "agriculture" | "environment" | "public_facility" | "other";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "received" | "needs_details" | "under_review" | "in_progress" | "resolved" | "declined";
+            /** Stage */
+            stage: number;
+            /** Responsibletier */
+            responsibleTier: ("gn_coordinator" | "divisional_coordinator" | "district_coordinator" | "regional_administrator" | "executive" | "execution_owner") | null;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Mine */
+            mine: boolean;
+            /** Following */
+            following: boolean;
+            /** Summaryen */
+            summaryEn: string | null;
+            /** Summaryta */
+            summaryTa: string | null;
+            /** Steps */
+            steps: components["schemas"]["IssueStepOut"][];
+            /** Canfollow */
+            canFollow: boolean;
+            /** Canaddinformation */
+            canAddInformation: boolean;
+            /** Communityupdates */
+            communityUpdates: components["schemas"]["CommunityUpdateOut"][];
+            /** Myadditions */
+            myAdditions: components["schemas"]["MyAdditionOut"][];
+            /**
+             * Closingsummaryen
+             * @description The closing report's member summary, for the reporter only (BR-032)
+             */
+            closingSummaryEn: string | null;
+            /** Closingsummaryta */
+            closingSummaryTa: string | null;
+            /** Closedat */
+            closedAt: string | null;
+            report: components["schemas"]["MyReportOut"] | null;
+        };
+        /** IssuePhotoOut */
+        IssuePhotoOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
+        };
+        /** IssueReportIn */
+        IssueReportIn: {
+            /**
+             * Clientreference
+             * Format: uuid
+             * @description Made once per draft by the app; a repeated submit returns the first receipt
+             */
+            clientReference: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "road" | "water" | "waste" | "electricity" | "agriculture" | "environment" | "public_facility" | "other";
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+            /**
+             * Locationkind
+             * @enum {string}
+             */
+            locationKind: "my_gn" | "landmark" | "text";
+            /** Locationtext */
+            locationText?: string | null;
+            /**
+             * Visibility
+             * @default team
+             * @enum {string}
+             */
+            visibility: "team" | "public";
+            /** Photoids */
+            photoIds?: string[];
+        };
+        /** IssueStepOut */
+        IssueStepOut: {
+            /**
+             * Stage
+             * @description 1 Reported, 2 Verified, 3 Decision, 4 Action and closure
+             */
+            stage: number;
+            /** Reachedat */
+            reachedAt: string | null;
+        };
+        /** IssueSummaryOut */
+        IssueSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Casenumber */
+            caseNumber: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "road" | "water" | "waste" | "electricity" | "agriculture" | "environment" | "public_facility" | "other";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "received" | "needs_details" | "under_review" | "in_progress" | "resolved" | "declined";
+            /** Stage */
+            stage: number;
+            /** Responsibletier */
+            responsibleTier: ("gn_coordinator" | "divisional_coordinator" | "district_coordinator" | "regional_administrator" | "executive" | "execution_owner") | null;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Mine */
+            mine: boolean;
+            /** Following */
+            following: boolean;
+        };
+        /** LessonIn */
+        LessonIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Minutes */
+            minutes: number;
+        };
+        /** LessonOut */
+        LessonOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Position */
+            position: number;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Minutes */
+            minutes: number;
+            /** Completed */
+            completed: boolean;
+        };
+        /** LinkIn */
+        LinkIn: {
+            /** Parentcasenumber */
+            parentCaseNumber: string;
+            /** Note */
+            note?: string | null;
+        };
+        /** LinkedReportOut */
+        LinkedReportOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Casenumber */
+            caseNumber: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** LockedFieldOut */
         LockedFieldOut: {
@@ -6891,6 +11816,68 @@ export interface components {
             state: "draft" | "submitted" | "published";
             /** Returnnote */
             returnNote: string | null;
+            /** Publishedat */
+            publishedAt: string | null;
+        };
+        /** ManagedCourseOut */
+        ManagedCourseOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Courseref */
+            courseRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "movement" | "civic" | "app" | "skills";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "published" | "retired";
+            /** Lessons */
+            lessons: components["schemas"]["LessonIn"][];
+            /** Publishedat */
+            publishedAt: string | null;
+        };
+        /** ManagedCourseSummaryOut */
+        ManagedCourseSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Courseref */
+            courseRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Topic
+             * @enum {string}
+             */
+            topic: "movement" | "civic" | "app" | "skills";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "published" | "retired";
+            /** Lessons */
+            lessons: number;
+            /** Minutes */
+            minutes: number;
             /** Publishedat */
             publishedAt: string | null;
         };
@@ -6984,6 +11971,162 @@ export interface components {
              */
             notified: number;
         };
+        /** ManagedOpportunityOut */
+        ManagedOpportunityOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Opportunityref */
+            opportunityRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Placeen */
+            placeEn: string;
+            /** Placeta */
+            placeTa: string;
+            /** Bringen */
+            bringEn: string;
+            /** Bringta */
+            bringTa: string;
+            /** Teamen */
+            teamEn: string;
+            /** Teamta */
+            teamTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Eventid */
+            eventId: string | null;
+            /** Skills */
+            skills: string[];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "open" | "closed" | "cancelled";
+            /** Places */
+            places: number;
+            /** Confirmed */
+            confirmed: number;
+            /** Waiting */
+            waiting: number;
+            /** Areakey */
+            areaKey: string;
+            /** Cancelreason */
+            cancelReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** ManagedSurveyFileOut */
+        ManagedSurveyFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Surveyref */
+            surveyRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "open" | "closed";
+            /** Anonymous */
+            anonymous: boolean;
+            /** Allowedits */
+            allowEdits: boolean;
+            /** Areakey */
+            areaKey: string;
+            /** Closesat */
+            closesAt: string | null;
+            /**
+             * Responses
+             * @description Hidden (null) while 1 to 9
+             */
+            responses: number | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Audienceen */
+            audienceEn: string;
+            /** Audienceta */
+            audienceTa: string;
+            /** Privacyen */
+            privacyEn: string;
+            /** Privacyta */
+            privacyTa: string;
+            /** Nextstepsen */
+            nextStepsEn: string;
+            /** Nextstepsta */
+            nextStepsTa: string;
+            /** Questions */
+            questions: components["schemas"]["SurveyQuestionOut"][];
+        };
+        /** ManagedSurveyOut */
+        ManagedSurveyOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Surveyref */
+            surveyRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "open" | "closed";
+            /** Anonymous */
+            anonymous: boolean;
+            /** Allowedits */
+            allowEdits: boolean;
+            /** Areakey */
+            areaKey: string;
+            /** Closesat */
+            closesAt: string | null;
+            /**
+             * Responses
+             * @description Hidden (null) while 1 to 9
+             */
+            responses: number | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** ManualCheckInIn */
         ManualCheckInIn: {
             /**
@@ -7069,6 +12212,62 @@ export interface components {
              */
             membershipState: "pending" | "active" | "suspended" | "inactive";
         };
+        /** MemberOpportunityOut */
+        MemberOpportunityOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Opportunityref */
+            opportunityRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Placeen */
+            placeEn: string;
+            /** Placeta */
+            placeTa: string;
+            /** Bringen */
+            bringEn: string;
+            /** Bringta */
+            bringTa: string;
+            /** Teamen */
+            teamEn: string;
+            /** Teamta */
+            teamTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Eventid */
+            eventId: string | null;
+            /** Skills */
+            skills: string[];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "open" | "closed" | "cancelled";
+            /** Saved */
+            saved: boolean;
+            myOffer: components["schemas"]["MyOfferOut"] | null;
+        };
         /**
          * MemberProfile
          * @description The signed-in member's own profile.
@@ -7119,6 +12318,14 @@ export interface components {
              * Format: date-time
              */
             joinedAt: string;
+        };
+        /** MemberRelationshipIn */
+        MemberRelationshipIn: {
+            /**
+             * Relationship
+             * @enum {string}
+             */
+            relationship: "spouse" | "parent" | "sibling" | "other";
         };
         /** MembershipChangeInput */
         MembershipChangeInput: {
@@ -7204,6 +12411,205 @@ export interface components {
             /** Sessionverified */
             sessionVerified: boolean;
         };
+        /** MilestoneModel */
+        MilestoneModel: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Duedate */
+            dueDate?: string | null;
+        };
+        /** MisinfoReportIn */
+        MisinfoReportIn: {
+            /** Link */
+            link?: string | null;
+            /** Description */
+            description: string;
+            /** Screenshotid */
+            screenshotId?: string | null;
+        };
+        /** MisinfoReportOut */
+        MisinfoReportOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Reportref */
+            reportRef: string;
+            /** Link */
+            link: string | null;
+            /** Description */
+            description: string;
+            /** Hasscreenshot */
+            hasScreenshot: boolean;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "decided";
+            /**
+             * Outcome
+             * @description Decided by a person; never an automatic score (BR-149)
+             */
+            outcome: ("false" | "misleading" | "accurate" | "not_actionable") | null;
+            /** Reason */
+            reason: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+            /**
+             * Appealstate
+             * @enum {string}
+             */
+            appealState: "none" | "open" | "upheld" | "changed";
+            /** Appealoutcome */
+            appealOutcome: ("false" | "misleading" | "accurate" | "not_actionable") | null;
+            /** Appealreason */
+            appealReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** ModerationAppealDecisionIn */
+        ModerationAppealDecisionIn: {
+            /**
+             * Change
+             * @description True publishes the idea or approves the added information; False upholds the rejection
+             */
+            change: boolean;
+            /**
+             * Reason
+             * @description Told to the author
+             */
+            reason: string;
+        };
+        /** ModerationAppealIn */
+        ModerationAppealIn: {
+            /**
+             * Itemkind
+             * @enum {string}
+             */
+            itemKind: "idea" | "addition";
+            /**
+             * Itemid
+             * Format: uuid
+             */
+            itemId: string;
+            /**
+             * Body
+             * @description Why the author thinks the decision was wrong
+             */
+            body: string;
+        };
+        /**
+         * ModerationAppealOut
+         * @description The author's own appeal; it never names a moderator.
+         */
+        ModerationAppealOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Itemkind
+             * @enum {string}
+             */
+            itemKind: "idea" | "addition";
+            /**
+             * Itemid
+             * Format: uuid
+             */
+            itemId: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "upheld" | "changed";
+            /** Body */
+            body: string;
+            /**
+             * Reason
+             * @description The deciding moderator's reason, once decided
+             */
+            reason: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** ModerationIn */
+        ModerationIn: {
+            /** Publish */
+            publish: boolean;
+            /** Reason */
+            reason?: string | null;
+        };
+        /**
+         * MyAdditionOut
+         * @description Information this member added to the issue, in every state, with the reason if it was rejected
+         *     and their one appeal against that (D12). Never shown to anyone else in this form.
+         */
+        MyAdditionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Body */
+            body: string;
+            /** State */
+            state: string;
+            /** Isreply */
+            isReply: boolean;
+            /** Moderationreason */
+            moderationReason: string | null;
+            /**
+             * Edited
+             * @description A moderator published an edited version; the member still sees their own words here
+             */
+            edited: boolean;
+            /** Canappeal */
+            canAppeal: boolean;
+            appeal: components["schemas"]["ModerationAppealOut"] | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** MyAreaOut */
+        MyAreaOut: {
+            /** Hasarea */
+            hasArea: boolean;
+            /** Gnnameen */
+            gnNameEn: string | null;
+            /** Gnnameta */
+            gnNameTa: string | null;
+            /** Updates */
+            updates: components["schemas"]["AreaUpdateOut"][];
+            /** Issues */
+            issues: components["schemas"]["IssueSummaryOut"][];
+            /** Projects */
+            projects: components["schemas"]["IssueSummaryOut"][];
+        };
+        /**
+         * MyHouseholdDetailsIn
+         * @description An adult's own entry (OD-30: each adult confirms their own). A field left out stays as it
+         *     is; a field sent as null is cleared.
+         */
+        MyHouseholdDetailsIn: {
+            /** Ageband */
+            ageBand?: ("18_24" | "25_34" | "35_44" | "45_54" | "55_64" | "65_plus") | null;
+            /** Occupationcategory */
+            occupationCategory?: ("farming" | "fishing" | "daily_labour" | "trade" | "government" | "private_sector" | "self_employed" | "student" | "homemaker" | "retired" | "unemployed" | "other") | null;
+        };
         /**
          * MyMembershipOut
          * @description The member's own membership state (A12, C06). The reason code is shown; staff notes are not.
@@ -7218,6 +12624,224 @@ export interface components {
             reasonCode: string | null;
             /** Changedat */
             changedAt: string | null;
+        };
+        /** MyModerationAppealOut */
+        MyModerationAppealOut: {
+            /** @description None when the member has not appealed this item */
+            appeal: components["schemas"]["ModerationAppealOut"] | null;
+        };
+        /** MyOfferOut */
+        MyOfferOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Offerref */
+            offerRef: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "offered" | "confirmed" | "declined" | "withdrawn" | "cancelled";
+            /** Roleen */
+            roleEn: string | null;
+            /** Roleta */
+            roleTa: string | null;
+            /** Meetingpointen */
+            meetingPointEn: string | null;
+            /** Meetingpointta */
+            meetingPointTa: string | null;
+            /** Decisionreason */
+            decisionReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /**
+         * MyReferralOut
+         * @description A partner referral as the applicant sees it: who, why and where it stands, never the
+         *     caseworker's notes on what the partner said.
+         */
+        MyReferralOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Partner */
+            partner: string;
+            /**
+             * Partnerkind
+             * @enum {string}
+             */
+            partnerKind: "ngo" | "public_service" | "hospital" | "other";
+            /** Purpose */
+            purpose: string | null;
+            /**
+             * State
+             * @description proposed: waits for the applicant's consent; nothing is shared until then
+             * @enum {string}
+             */
+            state: "proposed" | "consent_declined" | "sent" | "accepted" | "completed" | "declined";
+            /** Consentat */
+            consentAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** MyReferralsOut */
+        MyReferralsOut: {
+            /**
+             * Referralcode
+             * @description The member's own code, for one-tap copy (FR-REF-001)
+             */
+            referralCode: string;
+            /** Invitations */
+            invitations: components["schemas"]["InvitationOut"][];
+        };
+        /**
+         * MyReportOut
+         * @description Only for the reporter: what they sent and where it stands (H09).
+         */
+        MyReportOut: {
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+            /**
+             * Locationkind
+             * @enum {string}
+             */
+            locationKind: "my_gn" | "landmark" | "text";
+            /** Locationtext */
+            locationText: string | null;
+            /**
+             * Visibility
+             * @enum {string}
+             */
+            visibility: "team" | "public";
+            /** Publicstate */
+            publicState: string;
+            /** Photos */
+            photos: number;
+            /** Nextstep */
+            nextStep: string | null;
+            /** Returnedquestion */
+            returnedQuestion: string | null;
+            /**
+             * Linkedto
+             * @description The parent case number when the report was linked as a duplicate
+             */
+            linkedTo: string | null;
+            /** Canrespond */
+            canRespond: boolean;
+            /** Challengeuntil */
+            challengeUntil: string | null;
+            response: components["schemas"]["ClosureResponseOut"] | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** MyReportsOut */
+        MyReportsOut: {
+            /** Items */
+            items: components["schemas"]["IssueSummaryOut"][];
+        };
+        /**
+         * MyRequestOut
+         * @description M13: status and what happened; never internal notes or who handled it.
+         */
+        MyRequestOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Caseref
+             * @description AS- reference that reveals nothing about the person, place or category
+             */
+            caseRef: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "screening" | "assessment" | "decided" | "closed" | "withdrawn";
+            /** Emergency */
+            emergency: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Decisions */
+            decisions: components["schemas"]["SupportDecisionOut"][];
+            /** Deliveries */
+            deliveries: components["schemas"]["DeliveryOut"][];
+            /** Appeals */
+            appeals: components["schemas"]["SupportAppealOut"][];
+            /**
+             * Referrals
+             * @description M12: each partner referral; a proposed one waits for the applicant's answer
+             */
+            referrals: components["schemas"]["MyReferralOut"][];
+        };
+        /** MyRequestSummaryOut */
+        MyRequestSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Caseref
+             * @description AS- reference that reveals nothing about the person, place or category
+             */
+            caseRef: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "screening" | "assessment" | "decided" | "closed" | "withdrawn";
+            /** Emergency */
+            emergency: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
         };
         /**
          * MyReviewOut
@@ -7245,6 +12869,88 @@ export interface components {
             decidedAt: string | null;
             /** History */
             history: components["schemas"]["MemberDecisionOut"][];
+        };
+        /** MyScorecardsOut */
+        MyScorecardsOut: {
+            /** Slaversion */
+            slaVersion: string;
+            /** Areas */
+            areas: components["schemas"]["AreaScorecardOut"][];
+        };
+        /**
+         * MyShiftOut
+         * @description M30: a shift the member was offered, with their answer and check-in times.
+         */
+        MyShiftOut: {
+            /**
+             * Assignmentid
+             * Format: uuid
+             */
+            assignmentId: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "offered" | "accepted" | "declined" | "cancelled";
+            /** Checkedinat */
+            checkedInAt: string | null;
+            /** Checkedoutat */
+            checkedOutAt: string | null;
+            /** Siteconfirmed */
+            siteConfirmed: boolean | null;
+            shift: components["schemas"]["ShiftOut"];
+        };
+        /** NeedsCellOut */
+        NeedsCellOut: {
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "roads_transport" | "agriculture" | "fisheries" | "employment" | "education" | "drinking_water" | "healthcare" | "environment" | "waste_management" | "tourism_enterprise" | "digital_literacy" | "youth_skills" | "other";
+            /**
+             * Count
+             * @description Null means fewer than 10
+             */
+            count: number | null;
+        };
+        /** NeedsOut */
+        NeedsOut: {
+            /** Cells */
+            cells: components["schemas"]["NeedsCellOut"][];
+        };
+        /** NewInvitationOut */
+        NewInvitationOut: {
+            /** Number */
+            number: number;
+            /**
+             * Url
+             * @description Carries only the opaque token (FR-REF-004)
+             */
+            url: string;
+            /**
+             * Preview
+             * @description The full invitation text in the chosen language (FR-REF-003)
+             */
+            preview: string;
+        };
+        /** NoteIn */
+        NoteIn: {
+            /** Text */
+            text: string;
+        };
+        /** NoteOut */
+        NoteOut: {
+            /** Body */
+            body: string;
+            /** Author */
+            author: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** NoticeIn */
         NoticeIn: {
@@ -7319,6 +13025,79 @@ export interface components {
             /** Read */
             read: boolean;
         };
+        /**
+         * OfferCardOut
+         * @description A volunteer as a coordinator sees them: no phone number, skills only with consent.
+         */
+        OfferCardOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Offerref */
+            offerRef: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "offered" | "confirmed" | "declined" | "withdrawn" | "cancelled";
+            /** Volunteername */
+            volunteerName: string;
+            /** Membercode */
+            memberCode: string;
+            /** Skills */
+            skills: string[] | null;
+            /** Availability */
+            availability: string[] | null;
+            /** Travelarea */
+            travelArea: string | null;
+            /** Roleen */
+            roleEn: string | null;
+            /** Meetingpointen */
+            meetingPointEn: string | null;
+            /** Decisionreason */
+            decisionReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** OfferDecisionIn */
+        OfferDecisionIn: {
+            /** Confirm */
+            confirm: boolean;
+            /** Roleen */
+            roleEn?: string | null;
+            /** Roleta */
+            roleTa?: string | null;
+            /** Meetingpointen */
+            meetingPointEn?: string | null;
+            /** Meetingpointta */
+            meetingPointTa?: string | null;
+            /** Reason */
+            reason?: string | null;
+        };
+        /** OfferHistoryOut */
+        OfferHistoryOut: {
+            /** Fromstate */
+            fromState: string | null;
+            /** Tostate */
+            toState: string;
+            /** Reason */
+            reason: string | null;
+            /**
+             * Occurredat
+             * Format: date-time
+             */
+            occurredAt: string;
+        };
+        /** OfferIn */
+        OfferIn: {
+            /** Membercode */
+            memberCode: string;
+        };
         /** OfflineSyncIn */
         OfflineSyncIn: {
             /**
@@ -7338,6 +13117,32 @@ export interface components {
         OfflineSyncOut: {
             /** Outcomes */
             outcomes: components["schemas"]["ScanOutcomeOut"][];
+        };
+        /** OpenPeriodOut */
+        OpenPeriodOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Periodref */
+            periodRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
         };
         /** OperationalReadinessOut */
         OperationalReadinessOut: {
@@ -7436,6 +13241,208 @@ export interface components {
              */
             attendanceRate: number | null;
         };
+        /** OpportunityIn */
+        OpportunityIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Placeen */
+            placeEn: string;
+            /** Placeta */
+            placeTa: string;
+            /** Bringen */
+            bringEn: string;
+            /** Bringta */
+            bringTa: string;
+            /** Teamen */
+            teamEn: string;
+            /** Teamta */
+            teamTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Eventid */
+            eventId?: string | null;
+            /** Skills */
+            skills?: string[];
+            /** Places */
+            places: number;
+            area: components["schemas"]["AreaIn"];
+        };
+        /** OpportunityOut */
+        OpportunityOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Opportunityref */
+            opportunityRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Placeen */
+            placeEn: string;
+            /** Placeta */
+            placeTa: string;
+            /** Bringen */
+            bringEn: string;
+            /** Bringta */
+            bringTa: string;
+            /** Teamen */
+            teamEn: string;
+            /** Teamta */
+            teamTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Eventid */
+            eventId: string | null;
+            /** Skills */
+            skills: string[];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "open" | "closed" | "cancelled";
+        };
+        /** OpportunityStateIn */
+        OpportunityStateIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "closed" | "cancelled";
+            /** Reason */
+            reason?: string | null;
+        };
+        /** OpportunityUpdateIn */
+        OpportunityUpdateIn: {
+            /** Titleen */
+            titleEn?: string | null;
+            /** Titleta */
+            titleTa?: string | null;
+            /** Roleen */
+            roleEn?: string | null;
+            /** Roleta */
+            roleTa?: string | null;
+            /** Descriptionen */
+            descriptionEn?: string | null;
+            /** Descriptionta */
+            descriptionTa?: string | null;
+            /** Placeen */
+            placeEn?: string | null;
+            /** Placeta */
+            placeTa?: string | null;
+            /** Bringen */
+            bringEn?: string | null;
+            /** Bringta */
+            bringTa?: string | null;
+            /** Teamen */
+            teamEn?: string | null;
+            /** Teamta */
+            teamTa?: string | null;
+            /** Startsat */
+            startsAt?: string | null;
+            /** Endsat */
+            endsAt?: string | null;
+            /** Places */
+            places?: number | null;
+        };
+        /** OutcomeIn */
+        OutcomeIn: {
+            /** Texten */
+            textEn: string;
+            /** Textta */
+            textTa: string;
+            /**
+             * Promiseid
+             * @description A published promise
+             */
+            promiseId?: string | null;
+            /**
+             * Casenumber
+             * @description An existing case, e.g. CI-00012
+             */
+            caseNumber?: string | null;
+        };
+        /** OwnerOptionOut */
+        OwnerOptionOut: {
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Fullname */
+            fullName: string;
+            /** Tier */
+            tier: string;
+        };
+        /** OwnerOptionsOut */
+        OwnerOptionsOut: {
+            /** Items */
+            items: components["schemas"]["OwnerOptionOut"][];
+        };
+        /** PartnerIn */
+        PartnerIn: {
+            /** Name */
+            name: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "ngo" | "public_service" | "hospital" | "other";
+            /** Contact */
+            contact: string;
+        };
+        /** PartnerOut */
+        PartnerOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Kind */
+            kind: string;
+            /** Contact */
+            contact: string;
+            /** Active */
+            active: boolean;
+        };
         /** PassCodeOut */
         PassCodeOut: {
             /**
@@ -7485,6 +13492,160 @@ export interface components {
             resetToken: string;
             /** Newpassword */
             newPassword: string;
+        };
+        /**
+         * PendingAdditionOut
+         * @description Added information waiting for a moderator; the person is named only as the reporter or "a member".
+         */
+        PendingAdditionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Issueid
+             * Format: uuid
+             */
+            issueId: string;
+            /** Casenumber */
+            caseNumber: string;
+            /** Areapath */
+            areaPath: string[];
+            /** Body */
+            body: string;
+            /** Fromreporter */
+            fromReporter: boolean;
+            /** Isreply */
+            isReply: boolean;
+            /** Photos */
+            photos: number;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Mine
+             * @description The viewer wrote it or reported the case, so another moderator decides it
+             */
+            mine: boolean;
+        };
+        /** PendingIdeaOut */
+        PendingIdeaOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Idearef */
+            ideaRef: string;
+            /**
+             * Title
+             * @description As the author wrote it
+             */
+            title: string;
+            /** Benefit */
+            benefit: string;
+            /**
+             * Publishedtitle
+             * @description The moderator's edited title, when one was published
+             */
+            publishedTitle: string | null;
+            /**
+             * Publishedbenefit
+             * @description The moderator's edited benefit, when one was published
+             */
+            publishedBenefit: string | null;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** PendingModerationOut */
+        PendingModerationOut: {
+            /** Summaries */
+            summaries: components["schemas"]["PendingSummaryOut"][];
+            /** Additions */
+            additions: components["schemas"]["PendingAdditionOut"][];
+        };
+        /**
+         * PendingSummaryOut
+         * @description A public case whose public summary waits for a moderator (BR-032).
+         */
+        PendingSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Casenumber */
+            caseNumber: string;
+            /** Category */
+            category: string;
+            /** Stage */
+            stage: string;
+            /** Areapath */
+            areaPath: string[];
+            /** Gncode */
+            gnCode: string | null;
+            /** Dscode */
+            dsCode: string | null;
+            /** Districtcode */
+            districtCode: string | null;
+            /**
+             * Title
+             * @description The reporter's own title, for the moderator only
+             */
+            title: string;
+            /** Description */
+            description: string;
+            /** Publicstate */
+            publicState: string;
+            /** Publictitleen */
+            publicTitleEn: string | null;
+            /** Publictitleta */
+            publicTitleTa: string | null;
+            /** Publicsummaryen */
+            publicSummaryEn: string | null;
+            /** Publicsummaryta */
+            publicSummaryTa: string | null;
+            /** Closingsummaryen */
+            closingSummaryEn: string | null;
+            /** Closingsummaryta */
+            closingSummaryTa: string | null;
+            /** Closedat */
+            closedAt: string | null;
+            /**
+             * Needs
+             * @enum {string}
+             */
+            needs: "first_summary" | "update_after_closure";
+            /**
+             * Waitingsince
+             * Format: date-time
+             */
+            waitingSince: string;
+            /**
+             * Mine
+             * @description The viewer reported it, so another moderator writes the summary
+             */
+            mine: boolean;
+        };
+        /** PendingWorkOut */
+        PendingWorkOut: {
+            /**
+             * Publications
+             * @description Promises waiting for a second person to approve publication
+             */
+            publications: components["schemas"]["PromiseSummaryOut"][];
+            /** Updates */
+            updates: components["schemas"]["PromiseUpdateOut"][];
+            /** Feedback */
+            feedback: components["schemas"]["PromiseFeedbackOut"][];
         };
         /** PeriodFileOut */
         PeriodFileOut: {
@@ -7675,6 +13836,40 @@ export interface components {
             declaredAt: string;
             /** Closedat */
             closedAt: string | null;
+        };
+        /**
+         * PeriodReportEntryOut
+         * @description One audit entry behind the period report: what happened, to which record and when; ids only.
+         */
+        PeriodReportEntryOut: {
+            /** Action */
+            action: string;
+            /** Targettype */
+            targetType: string | null;
+            /** Targetid */
+            targetId: string | null;
+            /**
+             * Occurredat
+             * Format: date-time
+             */
+            occurredAt: string;
+        };
+        /** PeriodReportOut */
+        PeriodReportOut: {
+            /** Shifts */
+            shifts: number;
+            /** Rosterassignments */
+            rosterAssignments: number;
+            /** Rosterchanges */
+            rosterChanges: number;
+            /** Rostermessages */
+            rosterMessages: number;
+            /** Broadcastssent */
+            broadcastsSent: number;
+            /** Contentpublished */
+            contentPublished: number;
+            /** Silenceblocks */
+            silenceBlocks: number;
         };
         /** PhoneConfirmInput */
         PhoneConfirmInput: {
@@ -7971,6 +14166,56 @@ export interface components {
             /** Language */
             language?: ("ta" | "en") | null;
         };
+        /** ProgrammeIn */
+        ProgrammeIn: {
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Categories */
+            categories: ("food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood")[];
+        };
+        /** ProgrammeOut */
+        ProgrammeOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Categories */
+            categories: ("food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood")[];
+            /** Active */
+            active: boolean;
+            /** Criteriaversionid */
+            criteriaVersionId: string | null;
+            /** Criteriaversion */
+            criteriaVersion: number | null;
+            /** Criteriaen */
+            criteriaEn: string | null;
+            /** Criteriata */
+            criteriaTa: string | null;
+        };
+        /** ProgressIn */
+        ProgressIn: {
+            /** Step */
+            step: string;
+            /** Evidencerefs */
+            evidenceRefs?: string[];
+            /** Photoids */
+            photoIds?: string[];
+        };
         /** ProgressOut */
         ProgressOut: {
             /**
@@ -7985,6 +14230,458 @@ export interface components {
             /** Reviewstate */
             reviewState: string | null;
         };
+        /** PromiseAreaIn */
+        PromiseAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "platform" | "province" | "district" | "ds" | "gn";
+            /** Code */
+            code?: string | null;
+        };
+        /** PromiseDetailOut */
+        PromiseDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Promiseref */
+            promiseRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Kind
+             * @description Party commitment or government responsibility (FR-PRM-004)
+             * @enum {string}
+             */
+            kind: "party_commitment" | "government_responsibility";
+            /**
+             * Theme
+             * @enum {string}
+             */
+            theme: "roads_transport" | "drinking_water" | "health" | "education" | "employment" | "agriculture" | "fisheries" | "housing" | "environment" | "governance" | "other";
+            /** Areakey */
+            areaKey: string;
+            /** Officeen */
+            officeEn: string;
+            /** Officeta */
+            officeTa: string;
+            /**
+             * Duedate
+             * Format: date
+             */
+            dueDate: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "not_started" | "in_progress" | "completed" | "delayed" | "blocked" | "withdrawn";
+            /** Lastverifiedat */
+            lastVerifiedAt: string | null;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Sourcereference */
+            sourceReference: string;
+            /**
+             * Sourcepublishedon
+             * Format: date
+             */
+            sourcePublishedOn: string;
+            /**
+             * Plannedstart
+             * Format: date
+             */
+            plannedStart: string;
+            /** Targeten */
+            targetEn: string;
+            /** Targetta */
+            targetTa: string;
+            /** Blockersen */
+            blockersEn: string | null;
+            /** Blockersta */
+            blockersTa: string | null;
+            /**
+             * Statusreason
+             * @description The public reason for Withdrawn or Blocked, in English
+             */
+            statusReason: string | null;
+            /**
+             * Statusreasonta
+             * @description The same reason in Tamil
+             */
+            statusReasonTa: string | null;
+            /**
+             * Publication
+             * @enum {string}
+             */
+            publication: "draft" | "awaiting_approval" | "published";
+            /** Publishedat */
+            publishedAt: string | null;
+            /** Updatedueat */
+            updateDueAt: string | null;
+            /** Milestones */
+            milestones: components["schemas"]["MilestoneModel"][];
+            /** Updates */
+            updates: components["schemas"]["PromiseUpdateOut"][];
+            /** Feedback */
+            feedback: components["schemas"]["PromiseFeedbackOut"][];
+        };
+        /** PromiseFeedbackIn */
+        PromiseFeedbackIn: {
+            /** Body */
+            body: string;
+        };
+        /** PromiseFeedbackOut */
+        PromiseFeedbackOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Body */
+            body: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "published" | "rejected";
+            /** Replyen */
+            replyEn: string | null;
+            /** Replyta */
+            replyTa: string | null;
+            /** Repliedat */
+            repliedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** PromiseIn */
+        PromiseIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /**
+             * Sourcereference
+             * @description Where the promise was first published
+             */
+            sourceReference: string;
+            /**
+             * Sourcepublishedon
+             * Format: date
+             */
+            sourcePublishedOn: string;
+            /** Officeen */
+            officeEn: string;
+            /** Officeta */
+            officeTa: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "party_commitment" | "government_responsibility";
+            /**
+             * Theme
+             * @enum {string}
+             */
+            theme: "roads_transport" | "drinking_water" | "health" | "education" | "employment" | "agriculture" | "fisheries" | "housing" | "environment" | "governance" | "other";
+            /**
+             * Plannedstart
+             * Format: date
+             */
+            plannedStart: string;
+            /**
+             * Duedate
+             * Format: date
+             */
+            dueDate: string;
+            /**
+             * Targeten
+             * @description A measurable target
+             */
+            targetEn: string;
+            /** Targetta */
+            targetTa: string;
+            /** Blockersen */
+            blockersEn?: string | null;
+            /** Blockersta */
+            blockersTa?: string | null;
+            /** Milestones */
+            milestones: components["schemas"]["MilestoneModel"][];
+            /** @description Required when drafting; a promise's area never changes */
+            area?: components["schemas"]["PromiseAreaIn"] | null;
+        };
+        /** PromiseSummaryOut */
+        PromiseSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Promiseref */
+            promiseRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Kind
+             * @description Party commitment or government responsibility (FR-PRM-004)
+             * @enum {string}
+             */
+            kind: "party_commitment" | "government_responsibility";
+            /**
+             * Theme
+             * @enum {string}
+             */
+            theme: "roads_transport" | "drinking_water" | "health" | "education" | "employment" | "agriculture" | "fisheries" | "housing" | "environment" | "governance" | "other";
+            /** Areakey */
+            areaKey: string;
+            /** Officeen */
+            officeEn: string;
+            /** Officeta */
+            officeTa: string;
+            /**
+             * Duedate
+             * Format: date
+             */
+            dueDate: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "not_started" | "in_progress" | "completed" | "delayed" | "blocked" | "withdrawn";
+            /** Lastverifiedat */
+            lastVerifiedAt: string | null;
+        };
+        /** PromiseUpdateIn */
+        PromiseUpdateIn: {
+            /** Newstatus */
+            newStatus?: ("not_started" | "in_progress" | "completed" | "blocked" | "withdrawn") | null;
+            /** Noteen */
+            noteEn: string;
+            /** Noteta */
+            noteTa: string;
+            /** Evidencerefs */
+            evidenceRefs?: string[];
+            /** Correctsid */
+            correctsId?: string | null;
+        };
+        /** PromiseUpdateOut */
+        PromiseUpdateOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Newstatus */
+            newStatus: ("not_started" | "in_progress" | "completed" | "delayed" | "blocked" | "withdrawn") | null;
+            /** Noteen */
+            noteEn: string;
+            /** Noteta */
+            noteTa: string;
+            /** Evidencerefs */
+            evidenceRefs: string[];
+            /**
+             * Correctsid
+             * @description Set on a correction; the original stays visible (FR-PRM-005)
+             */
+            correctsId: string | null;
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "pending" | "approved" | "rejected" | "system";
+            /** Decisionreason */
+            decisionReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Decidedat */
+            decidedAt: string | null;
+        };
+        /** ProposalAreaIn */
+        ProposalAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+        };
+        /** ProposalBoardOut */
+        ProposalBoardOut: {
+            /** Area */
+            area: components["schemas"]["ProposalSummaryOut"][];
+            /** Mine */
+            mine: components["schemas"]["ProposalSummaryOut"][];
+        };
+        /** ProposalDetailOut */
+        ProposalDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Proposalref */
+            proposalRef: string;
+            /** Title */
+            title: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "roads_transport" | "agriculture" | "fisheries" | "employment" | "education" | "drinking_water" | "healthcare" | "environment" | "waste_management" | "tourism_enterprise" | "digital_literacy" | "youth_skills" | "other";
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "pending_moderation" | "rejected" | "review" | "approved_for_planning" | "funding_identified" | "implementation" | "not_taken_forward" | "withdrawn";
+            /** Mine */
+            mine: boolean;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Problem */
+            problem: string;
+            /** Solution */
+            solution: string;
+            /** Benefit */
+            benefit: string;
+            /** Costestimate */
+            costEstimate: string | null;
+            /** Evidence */
+            evidence: string | null;
+            /**
+             * Stagereason
+             * @description The decision reason shown to members (FR-DEV-007)
+             */
+            stageReason: string | null;
+            /** Revision */
+            revision: number;
+            /** Publishedat */
+            publishedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** History */
+            history: components["schemas"]["StageEventOut"][];
+        };
+        /** ProposalIn */
+        ProposalIn: {
+            /**
+             * Clientreference
+             * Format: uuid
+             * @description Made once per draft; sending a draft twice returns the first proposal
+             */
+            clientReference: string;
+            /** Title */
+            title: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "roads_transport" | "agriculture" | "fisheries" | "employment" | "education" | "drinking_water" | "healthcare" | "environment" | "waste_management" | "tourism_enterprise" | "digital_literacy" | "youth_skills" | "other";
+            area: components["schemas"]["ProposalAreaIn"];
+            /** Problem */
+            problem: string;
+            /** Solution */
+            solution: string;
+            /** Benefit */
+            benefit: string;
+            /**
+             * Costestimate
+             * @description Rupees, optional
+             */
+            costEstimate?: number | string | null;
+            /**
+             * Evidence
+             * @description Supporting evidence, optional
+             */
+            evidence?: string | null;
+        };
+        /** ProposalMoveIn */
+        ProposalMoveIn: {
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "review" | "rejected" | "approved_for_planning" | "funding_identified" | "implementation" | "not_taken_forward";
+            /** Reason */
+            reason?: string | null;
+        };
+        /** ProposalRevisionIn */
+        ProposalRevisionIn: {
+            /** Title */
+            title: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "roads_transport" | "agriculture" | "fisheries" | "employment" | "education" | "drinking_water" | "healthcare" | "environment" | "waste_management" | "tourism_enterprise" | "digital_literacy" | "youth_skills" | "other";
+            /** Problem */
+            problem: string;
+            /** Solution */
+            solution: string;
+            /** Benefit */
+            benefit: string;
+            /** Costestimate */
+            costEstimate?: number | string | null;
+            /** Evidence */
+            evidence?: string | null;
+        };
+        /** ProposalSummaryOut */
+        ProposalSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Proposalref */
+            proposalRef: string;
+            /** Title */
+            title: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "roads_transport" | "agriculture" | "fisheries" | "employment" | "education" | "drinking_water" | "healthcare" | "environment" | "waste_management" | "tourism_enterprise" | "digital_literacy" | "youth_skills" | "other";
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "pending_moderation" | "rejected" | "review" | "approved_for_planning" | "funding_identified" | "implementation" | "not_taken_forward" | "withdrawn";
+            /** Mine */
+            mine: boolean;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
         /**
          * PublicCardOut
          * @description What a shared public card may show (FR-CARD-012, BR-067): no QR, no identity numbers.
@@ -7998,6 +14695,11 @@ export interface components {
             districtName: string | null;
             /** Gnname */
             gnName: string | null;
+        };
+        /** PublicReceiptOut */
+        PublicReceiptOut: {
+            /** Caseref */
+            caseRef: string;
         };
         /**
          * PublicRemovalRequestIn
@@ -8024,6 +14726,69 @@ export interface components {
              */
             contact: string;
         };
+        /** PublicSummaryIn */
+        PublicSummaryIn: {
+            /** Publish */
+            publish: boolean;
+            /** Titleen */
+            titleEn?: string | null;
+            /** Titleta */
+            titleTa?: string | null;
+            /** Summaryen */
+            summaryEn?: string | null;
+            /** Summaryta */
+            summaryTa?: string | null;
+            /** Reason */
+            reason?: string | null;
+        };
+        /** PublicSupportCellOut */
+        PublicSupportCellOut: {
+            /**
+             * Areakey
+             * @description 'district:<code>', or 'platform' for requests that named no area
+             */
+            areaKey: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /**
+             * Count
+             * @description Requests received; null means fewer than 10
+             */
+            count: number | null;
+        };
+        /**
+         * PublicSupportFormOut
+         * @description The public web form without an account: the official emergency numbers first, then the categories.
+         */
+        PublicSupportFormOut: {
+            /** Emergencycontacts */
+            emergencyContacts: components["schemas"]["EmergencyContactOut"][];
+            /** Categories */
+            categories: ("food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood")[];
+        };
+        /**
+         * PublicSupportStatisticsOut
+         * @description D14: anonymised aggregates only (FR-AST-012).
+         */
+        PublicSupportStatisticsOut: {
+            /**
+             * Minimumgroup
+             * @description Groups smaller than this are hidden
+             */
+            minimumGroup: number;
+            /** Cells */
+            cells: components["schemas"]["PublicSupportCellOut"][];
+        };
+        /** PublicationDecisionIn */
+        PublicationDecisionIn: {
+            /** Approve */
+            approve: boolean;
+            /** Reason */
+            reason?: string | null;
+        };
         /**
          * QualityOut
          * @description M01 capture advice for the member (FR-IDV-001): never a decision, and the photo still counts as received.
@@ -8036,6 +14801,66 @@ export interface components {
             checked: boolean;
             /** Problems */
             problems: ("blurry" | "too_dark" | "glare" | "too_small")[];
+        };
+        /** QuestionIn */
+        QuestionIn: {
+            /** Body */
+            body: string;
+        };
+        /** QuestionOut */
+        QuestionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Body */
+            body: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "approved" | "rejected" | "merged";
+            /** Mine */
+            mine: boolean;
+            /**
+             * Moderationreason
+             * @description Shown to the author only
+             */
+            moderationReason: string | null;
+            /**
+             * Votes
+             * @description The total, on approved questions only
+             */
+            votes: number | null;
+            /** Voted */
+            voted: boolean;
+            /** Answermode */
+            answerMode: ("live" | "written") | null;
+            /** Answeredatsecond */
+            answeredAtSecond: number | null;
+            /** Answeren */
+            answerEn: string | null;
+            /** Answerta */
+            answerTa: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** QuestionResultOut */
+        QuestionResultOut: {
+            question: components["schemas"]["SurveyQuestionOut"];
+            /** Answered */
+            answered: number | null;
+            /**
+             * Counts
+             * @description Option key (or 1 to 5) to a count; null means 1 to 9
+             */
+            counts: {
+                [key: string]: number | null;
+            };
         };
         /** QueueCountsOut */
         QueueCountsOut: {
@@ -8189,6 +15014,11 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** ReasonIn */
+        ReasonIn: {
+            /** Reason */
+            reason: string;
+        };
         /** ReceiptResponse */
         ReceiptResponse: {
             /** Receiptcode */
@@ -8236,6 +15066,80 @@ export interface components {
             /** Phone */
             phone: string;
         };
+        /** ReferralConsentIn */
+        ReferralConsentIn: {
+            /**
+             * Consent
+             * @description True: this partner may see the request; False: it is not shared with them
+             */
+            consent: boolean;
+        };
+        /** ReferralIn */
+        ReferralIn: {
+            /**
+             * Partnerid
+             * Format: uuid
+             */
+            partnerId: string;
+            /**
+             * Purpose
+             * @description Why the case would go to this partner; the applicant sees it
+             */
+            purpose: string;
+            /**
+             * Consent
+             * @description Only for an applicant without an account: they agreed, to the caseworker, that this partner may see the case. A member answers in the app instead.
+             * @default false
+             */
+            consent: boolean;
+        };
+        /** ReferralOut */
+        ReferralOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Partner */
+            partner: string;
+            /** Kind */
+            kind: string;
+            /**
+             * Purpose
+             * @description Why the case would go to this partner; null on referrals made before 0043
+             */
+            purpose: string | null;
+            /**
+             * State
+             * @description proposed: waits for the applicant's consent in the app; consent_declined: refused
+             * @enum {string}
+             */
+            state: "proposed" | "consent_declined" | "sent" | "accepted" | "completed" | "declined";
+            /** Outcome */
+            outcome: string | null;
+            /** Consentat */
+            consentAt: string | null;
+            /**
+             * Consentrecordedby
+             * @description applicant: given in the app; caseworker: recorded for an applicant without an account
+             */
+            consentRecordedBy: ("applicant" | "caseworker") | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** ReferralUpdateIn */
+        ReferralUpdateIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "accepted" | "completed" | "declined";
+            /** Outcome */
+            outcome?: string | null;
+        };
         /**
          * RefreshIn
          * @description Mobile apps send the refresh token here; browsers send the mp_refresh cookie instead.
@@ -8243,6 +15147,22 @@ export interface components {
         RefreshIn: {
             /** Refreshtoken */
             refreshToken?: string | null;
+        };
+        /** RegionalPlanIn */
+        RegionalPlanIn: {
+            /** Solution */
+            solution: string;
+            /**
+             * Responsibletier
+             * @enum {string}
+             */
+            responsibleTier: "3A" | "3B" | "4" | "5";
+            /** Resources */
+            resources: string;
+            /** Expectedoutcome */
+            expectedOutcome: string;
+            /** Reportingplan */
+            reportingPlan: string;
         };
         /** RegisterEntryOut */
         RegisterEntryOut: {
@@ -8384,6 +15304,11 @@ export interface components {
              */
             referralAccepted: boolean | null;
         };
+        /** ReminderIn */
+        ReminderIn: {
+            /** Remind */
+            remind: boolean;
+        };
         /** RemovalDecisionIn */
         RemovalDecisionIn: {
             /**
@@ -8440,6 +15365,13 @@ export interface components {
              */
             note: string;
         };
+        /** ReplyIn */
+        ReplyIn: {
+            /** Replyen */
+            replyEn: string;
+            /** Replyta */
+            replyTa: string;
+        };
         /** ReportInput */
         ReportInput: {
             /**
@@ -8454,6 +15386,62 @@ export interface components {
             otherMemberId: string;
             /** Reason */
             reason: string;
+        };
+        /** ReportRowOut */
+        ReportRowOut: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "not_started" | "in_progress" | "completed" | "delayed" | "blocked" | "withdrawn";
+            /**
+             * Theme
+             * @enum {string}
+             */
+            theme: "roads_transport" | "drinking_water" | "health" | "education" | "employment" | "agriculture" | "fisheries" | "housing" | "environment" | "governance" | "other";
+            /** Officeen */
+            officeEn: string;
+            /** Areakey */
+            areaKey: string;
+            /** Count */
+            count: number;
+        };
+        /** ReporterContactOut */
+        ReporterContactOut: {
+            /** Fullname */
+            fullName: string;
+            /** Phone */
+            phone: string | null;
+            /** Membercode */
+            memberCode: string;
+        };
+        /** ReportingOptionsOut */
+        ReportingOptionsOut: {
+            /**
+             * Allowed
+             * @description Only Verified and Active members report (FR-RPT-017)
+             */
+            allowed: boolean;
+            /**
+             * Reason
+             * @description identity_not_verified or membership_not_active when not allowed
+             */
+            reason: string | null;
+            /**
+             * Hasarea
+             * @description The member's profile names a GN division, which every report needs (W03)
+             */
+            hasArea: boolean;
+            /** Gnnameen */
+            gnNameEn: string | null;
+            /** Gnnameta */
+            gnNameTa: string | null;
+            /** Categories */
+            categories: ("road" | "water" | "waste" | "electricity" | "agriculture" | "environment" | "public_facility" | "other")[];
+            /** Descriptionmin */
+            descriptionMin: number;
+            /** Maxphotos */
+            maxPhotos: number;
         };
         /** ResetTokenOut */
         ResetTokenOut: {
@@ -8472,6 +15460,14 @@ export interface components {
             keptEn: string;
             /** Keptta */
             keptTa: string;
+        };
+        /** ReturnIn */
+        ReturnIn: {
+            /**
+             * Question
+             * @description What the reporter is asked to add
+             */
+            question: string;
         };
         /**
          * ReviewFileOut
@@ -8703,6 +15699,31 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** RosterAssignmentOut */
+        RosterAssignmentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Volunteername */
+            volunteerName: string;
+            /** Membercode */
+            memberCode: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "offered" | "accepted" | "declined" | "cancelled";
+            /** Respondedat */
+            respondedAt: string | null;
+            /** Checkedinat */
+            checkedInAt: string | null;
+            /** Checkedoutat */
+            checkedOutAt: string | null;
+            /** Siteconfirmed */
+            siteConfirmed: boolean | null;
+        };
         /** RosterEntryOut */
         RosterEntryOut: {
             /**
@@ -8720,6 +15741,37 @@ export interface components {
             attendedAt: string | null;
             /** Checkinmethod */
             checkinMethod: ("scan" | "manual") | null;
+        };
+        /** RosterMessageIn */
+        RosterMessageIn: {
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+        };
+        /**
+         * RosterMessageOut
+         * @description S15: an operational message already sent to the volunteers rostered on a shift.
+         */
+        RosterMessageOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Sentbyname */
+            sentByName: string;
+            /** Recipients */
+            recipients: number;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** RosterOut */
         RosterOut: {
@@ -8770,6 +15822,19 @@ export interface components {
              * @enum {string}
              */
             response: "going" | "maybe" | "declined" | "waitlisted";
+        };
+        /** SaveExitIn */
+        SaveExitIn: {
+            /**
+             * Lessonid
+             * Format: uuid
+             */
+            lessonId: string;
+        };
+        /** SavedIn */
+        SavedIn: {
+            /** Saved */
+            saved: boolean;
         };
         /** ScanDecisionIn */
         ScanDecisionIn: {
@@ -8848,6 +15913,87 @@ export interface components {
             /** Membercode */
             memberCode?: string | null;
         };
+        /** ScorecardDraftIn */
+        ScorecardDraftIn: {
+            /** Period */
+            period: string;
+        };
+        /** ScorecardFileOut */
+        ScorecardFileOut: {
+            scorecard: components["schemas"]["ScorecardOut"];
+            /** Corrections */
+            corrections: components["schemas"]["CorrectionOut"][];
+        };
+        /** ScorecardNoteIn */
+        ScorecardNoteIn: {
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Noteen
+             * @default
+             */
+            noteEn: string;
+            /**
+             * Noteta
+             * @default
+             */
+            noteTa: string;
+        };
+        /** ScorecardOut */
+        ScorecardOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Period */
+            period: string;
+            /** Version */
+            version: number;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "shared" | "published" | "superseded";
+            /** Slaversion */
+            slaVersion: string;
+            /** Figures */
+            figures: {
+                [key: string]: unknown;
+            };
+            /** Notes */
+            notes: {
+                [key: string]: unknown;
+            };
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Sharedat */
+            sharedAt: string | null;
+            /**
+             * Publishableat
+             * @description Publishing is possible from here (10 working days after sharing)
+             */
+            publishableAt: string | null;
+            /** Publishedat */
+            publishedAt: string | null;
+            /** Correctionreason */
+            correctionReason: string | null;
+        };
+        /** ScreenshotOut */
+        ScreenshotOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
+        };
         /**
          * SecurityAlertOut
          * @description M50: a flagged sign-in or a reused refresh token. A coarse device label; never an address or a place.
@@ -8882,6 +16028,11 @@ export interface components {
             /** Sessionactive */
             sessionActive: boolean;
         };
+        /** SentOut */
+        SentOut: {
+            /** Recipients */
+            recipients: number;
+        };
         /** SessionOut */
         SessionOut: {
             /**
@@ -8903,6 +16054,149 @@ export interface components {
             lastSeenAt: string;
             /** Current */
             current: boolean;
+        };
+        /** ShiftAnswerIn */
+        ShiftAnswerIn: {
+            /** Accept */
+            accept: boolean;
+        };
+        /** ShiftAreaIn */
+        ShiftAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "province" | "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+        };
+        /** ShiftFileOut */
+        ShiftFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Periodid
+             * Format: uuid
+             */
+            periodId: string;
+            /** Periodref */
+            periodRef: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Siteen */
+            siteEn: string;
+            /** Siteta */
+            siteTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Places */
+            places: number;
+            /** Accepted */
+            accepted: number;
+            /** Offered */
+            offered: number;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "cancelled";
+            /** Assignments */
+            assignments: components["schemas"]["RosterAssignmentOut"][];
+            /**
+             * Messages
+             * @description Messages already sent to the shift, newest first
+             */
+            messages: components["schemas"]["RosterMessageOut"][];
+        };
+        /** ShiftIn */
+        ShiftIn: {
+            /**
+             * Periodid
+             * Format: uuid
+             */
+            periodId: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Siteen */
+            siteEn: string;
+            /** Siteta */
+            siteTa: string;
+            area: components["schemas"]["ShiftAreaIn"];
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Places */
+            places: number;
+        };
+        /** ShiftOut */
+        ShiftOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Periodid
+             * Format: uuid
+             */
+            periodId: string;
+            /** Periodref */
+            periodRef: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Siteen */
+            siteEn: string;
+            /** Siteta */
+            siteTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Places */
+            places: number;
+            /** Accepted */
+            accepted: number;
+            /** Offered */
+            offered: number;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "cancelled";
         };
         /**
          * SignInRequest
@@ -8941,6 +16235,15 @@ export interface components {
             /** Waiting */
             waiting: number;
         };
+        /** SkillOut */
+        SkillOut: {
+            /** Key */
+            key: string;
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+        };
         /** StaffApprovalDetail */
         StaffApprovalDetail: {
             /**
@@ -8972,6 +16275,110 @@ export interface components {
              * @default false
              */
             relatedPartyConflict: boolean;
+        };
+        /** StaffCaseFileOut */
+        StaffCaseFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Caseref */
+            caseRef: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /** Emergency */
+            emergency: boolean;
+            /** Channel */
+            channel: string;
+            /** State */
+            state: string;
+            /** Caseworkername */
+            caseworkerName: string | null;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Fullfile
+             * @description False: the summary only, for intake staff routing a case waiting for screening (S12); the person's details, the request and the record are then null or empty
+             */
+            fullFile: boolean;
+            /** Applicantname */
+            applicantName: string | null;
+            /** Applicantphone */
+            applicantPhone: string | null;
+            /** Household */
+            household: string | null;
+            /** Summary */
+            summary: string | null;
+            /** Linkedcaseref */
+            linkedCaseRef: string | null;
+            /** Notes */
+            notes: components["schemas"]["NoteOut"][];
+            /** Decisions */
+            decisions: components["schemas"]["SupportDecisionOut"][];
+            /** Deliveries */
+            deliveries: components["schemas"]["DeliveryOut"][];
+            /** Referrals */
+            referrals: components["schemas"]["ReferralOut"][];
+            /** Appeals */
+            appeals: components["schemas"]["SupportAppealOut"][];
+            /**
+             * Possibleduplicates
+             * @description Suggestions to link, never grounds to reject (FR-AST-006)
+             */
+            possibleDuplicates: components["schemas"]["StaffCaseSummaryOut"][];
+            /** Maydecide */
+            mayDecide: boolean;
+            /** Maywork */
+            mayWork: boolean;
+            /**
+             * Mayassign
+             * @description Decision-makers, or anyone who may open a case that has no caseworker yet
+             */
+            mayAssign: boolean;
+            /**
+             * Consentinapp
+             * @description True: the applicant answers each referral proposal in the app (M12); False: the caseworker records the consent the applicant gave them
+             */
+            consentInApp: boolean;
+        };
+        /** StaffCaseSummaryOut */
+        StaffCaseSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Caseref */
+            caseRef: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /** Emergency */
+            emergency: boolean;
+            /** Channel */
+            channel: string;
+            /** State */
+            state: string;
+            /** Caseworkername */
+            caseworkerName: string | null;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** StaffContributionDetail */
         StaffContributionDetail: {
@@ -9081,7 +16488,10 @@ export interface components {
             /** Offset */
             offset: number;
         };
-        /** StaffHouseholdViewOut */
+        /**
+         * StaffHouseholdViewOut
+         * @description D02 read-only caseworker view, only when the household has given caseworker consent.
+         */
         StaffHouseholdViewOut: {
             /**
              * Permitted
@@ -9097,12 +16507,126 @@ export interface components {
             targetMemberCode: string;
             /** Targetmembername */
             targetMemberName: string;
-            household?: components["schemas"]["HouseholdOut"] | null;
+            household: components["schemas"]["HouseholdOut"];
+        };
+        /** StaffMisinfoReportOut */
+        StaffMisinfoReportOut: {
             /**
-             * Consentlogs
-             * @default []
+             * Id
+             * Format: uuid
              */
-            consentLogs: components["schemas"]["ConsentLogOut"][];
+            id: string;
+            /** Reportref */
+            reportRef: string;
+            /** Link */
+            link: string | null;
+            /** Description */
+            description: string;
+            /** Hasscreenshot */
+            hasScreenshot: boolean;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "decided";
+            /**
+             * Outcome
+             * @description Decided by a person; never an automatic score (BR-149)
+             */
+            outcome: ("false" | "misleading" | "accurate" | "not_actionable") | null;
+            /** Reason */
+            reason: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+            /**
+             * Appealstate
+             * @enum {string}
+             */
+            appealState: "none" | "open" | "upheld" | "changed";
+            /** Appealoutcome */
+            appealOutcome: ("false" | "misleading" | "accurate" | "not_actionable") | null;
+            /** Appealreason */
+            appealReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Appealbody */
+            appealBody: string | null;
+        };
+        /**
+         * StaffModerationAppealOut
+         * @description What the deciding moderator reads: the item's words, the first decision and the appeal.
+         */
+        StaffModerationAppealOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Itemkind
+             * @enum {string}
+             */
+            itemKind: "idea" | "addition";
+            /**
+             * Itemid
+             * Format: uuid
+             */
+            itemId: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "upheld" | "changed";
+            /** Body */
+            body: string;
+            /**
+             * Reason
+             * @description The deciding moderator's reason, once decided
+             */
+            reason: string | null;
+            /** Decidedat */
+            decidedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Areapath */
+            areaPath: string[];
+            /**
+             * Itemtitle
+             * @description An idea's title; None for added information
+             */
+            itemTitle: string | null;
+            /**
+             * Itemtext
+             * @description An idea's benefit, or the added information as the member wrote it
+             */
+            itemText: string | null;
+            /** Itemstate */
+            itemState: string | null;
+            /**
+             * Originalreason
+             * @description The first moderator's reason for rejecting it
+             */
+            originalReason: string | null;
+            /** Originaldecidedat */
+            originalDecidedAt: string | null;
+            /**
+             * Issueid
+             * @description The case added information belongs to
+             */
+            issueId: string | null;
+            /** Casenumber */
+            caseNumber: string | null;
+            /**
+             * Candecide
+             * @description False for the first moderator, the author, a decided appeal or another area; the API checks again
+             */
+            canDecide: boolean;
         };
         /** StaffReconcileRequest */
         StaffReconcileRequest: {
@@ -9133,6 +16657,81 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** StaffSessionOut */
+        StaffSessionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Sessionref */
+            sessionRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "ta" | "en" | "both";
+            /** Speakersen */
+            speakersEn: string;
+            /** Speakersta */
+            speakersTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "scheduled" | "live" | "ended" | "cancelled";
+            /**
+             * Streamurl
+             * @description From the streaming provider (OD-44); null until it is set
+             */
+            streamUrl: string | null;
+            /**
+             * Audiourl
+             * @description Audio-only, 64 kbps or less (FR-THL-002)
+             */
+            audioUrl: string | null;
+            /** Captionsurl */
+            captionsUrl: string | null;
+            /** Recordingurl */
+            recordingUrl: string | null;
+            /** Transcripten */
+            transcriptEn: string | null;
+            /** Transcriptta */
+            transcriptTa: string | null;
+            /**
+             * Outcomes
+             * @description textEn, textTa, promiseId and caseNumber; members also get caseId, set only when they may open the case
+             */
+            outcomes: {
+                [key: string]: unknown;
+            }[];
+            /** Cancelreason */
+            cancelReason: string | null;
+            /** Legalreviewref */
+            legalReviewRef: string | null;
+            /** Questions */
+            questions: components["schemas"]["QuestionOut"][];
+        };
         /** StaffSlipViewTokenResponse */
         StaffSlipViewTokenResponse: {
             /** Token */
@@ -9161,6 +16760,50 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** StageEventOut */
+        StageEventOut: {
+            /** Fromstage */
+            fromStage: ("pending_moderation" | "rejected" | "review" | "approved_for_planning" | "funding_identified" | "implementation" | "not_taken_forward" | "withdrawn") | null;
+            /**
+             * Tostage
+             * @enum {string}
+             */
+            toStage: "pending_moderation" | "rejected" | "review" | "approved_for_planning" | "funding_identified" | "implementation" | "not_taken_forward" | "withdrawn";
+            /**
+             * Actortier
+             * @description The tier that recorded it; never the person's name
+             */
+            actorTier: string | null;
+            /** Reason */
+            reason: string | null;
+            /**
+             * Occurredat
+             * Format: date-time
+             */
+            occurredAt: string;
+        };
+        /** StatisticOut */
+        StatisticOut: {
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /** State */
+            state: string;
+            /**
+             * Count
+             * @description Null means fewer than 10
+             */
+            count: number | null;
+        };
+        /** StatisticsOut */
+        StatisticsOut: {
+            /** Cells */
+            cells: components["schemas"]["StatisticOut"][];
+        };
         /** StepOut */
         StepOut: {
             /** Name */
@@ -9186,6 +16829,155 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** SupportAppealOut */
+        SupportAppealOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Decisionid
+             * Format: uuid
+             */
+            decisionId: string;
+            /**
+             * Caseid
+             * Format: uuid
+             */
+            caseId: string;
+            /** Caseref */
+            caseRef: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "appeal" | "complaint";
+            /** Body */
+            body: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "upheld" | "changed";
+            /**
+             * Dueat
+             * Format: date-time
+             */
+            dueAt: string;
+            /** Reason */
+            reason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Decidedat */
+            decidedAt: string | null;
+        };
+        /** SupportAreaIn */
+        SupportAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+        };
+        /** SupportAssignIn */
+        SupportAssignIn: {
+            /**
+             * Caseworkerid
+             * Format: uuid
+             */
+            caseworkerId: string;
+        };
+        /** SupportCloseIn */
+        SupportCloseIn: {
+            /** Note */
+            note: string;
+        };
+        /** SupportDecisionOut */
+        SupportDecisionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "approved" | "partly_approved" | "not_eligible" | "referred";
+            /** Criteriaversion */
+            criteriaVersion: number;
+            /** Programmenameen */
+            programmeNameEn: string;
+            /** Reasonen */
+            reasonEn: string;
+            /** Reasonta */
+            reasonTa: string;
+            /** Replacesid */
+            replacesId: string | null;
+            /**
+             * Decidedat
+             * Format: date-time
+             */
+            decidedAt: string;
+        };
+        /**
+         * SupportHomeOut
+         * @description M11: the official emergency numbers first, the categories, and the member's own requests.
+         */
+        SupportHomeOut: {
+            /** Emergencycontacts */
+            emergencyContacts: components["schemas"]["EmergencyContactOut"][];
+            /** Categories */
+            categories: ("food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood")[];
+            /** Requests */
+            requests: components["schemas"]["MyRequestSummaryOut"][];
+        };
+        /** SupportIn */
+        SupportIn: {
+            /** Support */
+            support: boolean;
+        };
+        /** SupportLinkIn */
+        SupportLinkIn: {
+            /**
+             * Othercaseid
+             * Format: uuid
+             */
+            otherCaseId: string;
+        };
+        /** SupportRequestIn */
+        SupportRequestIn: {
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /** Summary */
+            summary: string;
+            /**
+             * Emergency
+             * @default false
+             */
+            emergency: boolean;
+            /**
+             * Consent
+             * @description Consent to collect the case information (FR-AST-004)
+             */
+            consent: boolean;
+            /** Fullname */
+            fullName: string;
+            /** Phone */
+            phone?: string | null;
+            /** Household */
+            household?: string | null;
+            area?: components["schemas"]["SupportAreaIn"] | null;
+        };
         /** SurveyAnswersIn */
         SurveyAnswersIn: {
             /**
@@ -9196,10 +16988,261 @@ export interface components {
                 [key: string]: string;
             };
         };
+        /** SurveyAreaIn */
+        SurveyAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "province" | "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+        };
+        /** SurveyDetailOut */
+        SurveyDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Surveyref */
+            surveyRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Audienceen */
+            audienceEn: string;
+            /** Audienceta */
+            audienceTa: string;
+            /**
+             * Anonymous
+             * @description True only when the answers are stored with no link to the member
+             */
+            anonymous: boolean;
+            /** Allowedits */
+            allowEdits: boolean;
+            /** Closesat */
+            closesAt: string | null;
+            receipt: components["schemas"]["SurveyReceiptOut"] | null;
+            /** Privacyen */
+            privacyEn: string;
+            /** Privacyta */
+            privacyTa: string;
+            /** Nextstepsen */
+            nextStepsEn: string;
+            /** Nextstepsta */
+            nextStepsTa: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "open" | "closed";
+            /** Questions */
+            questions: components["schemas"]["SurveyQuestionOut"][];
+            /**
+             * Myanswers
+             * @description The member's own answers, for an identified survey that allows edits
+             */
+            myAnswers: {
+                [key: string]: unknown;
+            } | null;
+            /** Cananswer */
+            canAnswer: boolean;
+        };
+        /** SurveyIn */
+        SurveyIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Audienceen */
+            audienceEn: string;
+            /** Audienceta */
+            audienceTa: string;
+            /** Privacyen */
+            privacyEn: string;
+            /** Privacyta */
+            privacyTa: string;
+            /** Nextstepsen */
+            nextStepsEn: string;
+            /** Nextstepsta */
+            nextStepsTa: string;
+            /**
+             * Anonymous
+             * @default false
+             */
+            anonymous: boolean;
+            /**
+             * Allowedits
+             * @default false
+             */
+            allowEdits: boolean;
+            /** Closesat */
+            closesAt?: string | null;
+            area: components["schemas"]["SurveyAreaIn"];
+            /** Questions */
+            questions: components["schemas"]["SurveyQuestionIn"][];
+        };
+        /** SurveyOptionModel */
+        SurveyOptionModel: {
+            /** Key */
+            key: string;
+            /** En */
+            en: string;
+            /** Ta */
+            ta: string;
+        };
+        /** SurveyQuestionIn */
+        SurveyQuestionIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "single" | "multiple" | "scale" | "text";
+            /** Prompten */
+            promptEn: string;
+            /** Promptta */
+            promptTa: string;
+            /** Options */
+            options?: components["schemas"]["SurveyOptionModel"][];
+            /**
+             * Sensitive
+             * @default false
+             */
+            sensitive: boolean;
+            /**
+             * Required
+             * @default true
+             */
+            required: boolean;
+        };
+        /** SurveyQuestionOut */
+        SurveyQuestionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Position */
+            position: number;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "single" | "multiple" | "scale" | "text";
+            /** Prompten */
+            promptEn: string;
+            /** Promptta */
+            promptTa: string;
+            /** Options */
+            options: components["schemas"]["SurveyOptionModel"][];
+            /**
+             * Sensitive
+             * @description Offers "Prefer not to say" (FR-SRV-004)
+             */
+            sensitive: boolean;
+            /** Required */
+            required: boolean;
+        };
+        /** SurveyReceiptOut */
+        SurveyReceiptOut: {
+            /** Receiptref */
+            receiptRef: string;
+            /**
+             * Submittedat
+             * Format: date-time
+             */
+            submittedAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /** SurveyResponseIn */
+        SurveyResponseIn: {
+            /**
+             * Answers
+             * @description Question id to an option key, a list of keys, 1 to 5, text, or prefer_not_to_say
+             */
+            answers: {
+                [key: string]: unknown;
+            };
+        };
+        /** SurveyResultsOut */
+        SurveyResultsOut: {
+            survey: components["schemas"]["ManagedSurveyOut"];
+            /** Responses */
+            responses: number | null;
+            /** Questions */
+            questions: components["schemas"]["QuestionResultOut"][];
+        };
+        /** SurveyStateIn */
+        SurveyStateIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "closed";
+        };
+        /** SurveySummaryOut */
+        SurveySummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Surveyref */
+            surveyRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Audienceen */
+            audienceEn: string;
+            /** Audienceta */
+            audienceTa: string;
+            /**
+             * Anonymous
+             * @description True only when the answers are stored with no link to the member
+             */
+            anonymous: boolean;
+            /** Allowedits */
+            allowEdits: boolean;
+            /** Closesat */
+            closesAt: string | null;
+            receipt: components["schemas"]["SurveyReceiptOut"] | null;
+        };
         /** SwitchIn */
         SwitchIn: {
             /** Reason */
             reason: string;
+        };
+        /** SyncIn */
+        SyncIn: {
+            /** Visits */
+            visits: components["schemas"]["FieldVisitIn"][];
+        };
+        /** SyncResultOut */
+        SyncResultOut: {
+            /**
+             * Clientid
+             * Format: uuid
+             */
+            clientId: string;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "created" | "updated" | "unchanged" | "conflict" | "refused";
+            /**
+             * Problems
+             * @description outside_your_area, place_required, one_place_only, concerns_required, political_profiling (always refused), political_content (refused until confirmed), not_your_visit
+             */
+            problems: string[];
+            /** @description The server's copy; on a conflict, the version to compare with; unchanged when the resend matches it */
+            visit: components["schemas"]["FieldVisitOut"] | null;
         };
         /** Tier5AssignmentOut */
         Tier5AssignmentOut: {
@@ -9402,6 +17445,240 @@ export interface components {
             /** Currentpassword */
             currentPassword: string;
         };
+        /** TownHallAnswerIn */
+        TownHallAnswerIn: {
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "live" | "written";
+            /** Atsecond */
+            atSecond?: number | null;
+            /** Answeren */
+            answerEn?: string | null;
+            /** Answerta */
+            answerTa?: string | null;
+        };
+        /** TownHallAreaIn */
+        TownHallAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "platform" | "province" | "district" | "ds" | "gn";
+            /** Code */
+            code?: string | null;
+        };
+        /** TownHallIn */
+        TownHallIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "ta" | "en" | "both";
+            /** Speakersen */
+            speakersEn: string;
+            /** Speakersta */
+            speakersTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Streamurl */
+            streamUrl?: string | null;
+            /** Audiourl */
+            audioUrl?: string | null;
+            /** Captionsurl */
+            captionsUrl?: string | null;
+            /**
+             * Legalreviewref
+             * @description Needed in an election period
+             */
+            legalReviewRef?: string | null;
+            area?: components["schemas"]["TownHallAreaIn"] | null;
+        };
+        /** TownHallModerationIn */
+        TownHallModerationIn: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approve" | "reject" | "merge";
+            /** Reason */
+            reason?: string | null;
+            /** Mergeinto */
+            mergeInto?: string | null;
+        };
+        /** TownHallOut */
+        TownHallOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Sessionref */
+            sessionRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "ta" | "en" | "both";
+            /** Speakersen */
+            speakersEn: string;
+            /** Speakersta */
+            speakersTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "scheduled" | "live" | "ended" | "cancelled";
+            /**
+             * Streamurl
+             * @description From the streaming provider (OD-44); null until it is set
+             */
+            streamUrl: string | null;
+            /**
+             * Audiourl
+             * @description Audio-only, 64 kbps or less (FR-THL-002)
+             */
+            audioUrl: string | null;
+            /** Captionsurl */
+            captionsUrl: string | null;
+            /** Recordingurl */
+            recordingUrl: string | null;
+            /** Transcripten */
+            transcriptEn: string | null;
+            /** Transcriptta */
+            transcriptTa: string | null;
+            /**
+             * Outcomes
+             * @description textEn, textTa, promiseId and caseNumber; members also get caseId, set only when they may open the case
+             */
+            outcomes: {
+                [key: string]: unknown;
+            }[];
+            /** Cancelreason */
+            cancelReason: string | null;
+        };
+        /** TownHallSessionOut */
+        TownHallSessionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Sessionref */
+            sessionRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "ta" | "en" | "both";
+            /** Speakersen */
+            speakersEn: string;
+            /** Speakersta */
+            speakersTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "scheduled" | "live" | "ended" | "cancelled";
+            /**
+             * Streamurl
+             * @description From the streaming provider (OD-44); null until it is set
+             */
+            streamUrl: string | null;
+            /**
+             * Audiourl
+             * @description Audio-only, 64 kbps or less (FR-THL-002)
+             */
+            audioUrl: string | null;
+            /** Captionsurl */
+            captionsUrl: string | null;
+            /** Recordingurl */
+            recordingUrl: string | null;
+            /** Transcripten */
+            transcriptEn: string | null;
+            /** Transcriptta */
+            transcriptTa: string | null;
+            /**
+             * Outcomes
+             * @description textEn, textTa, promiseId and caseNumber; members also get caseId, set only when they may open the case
+             */
+            outcomes: {
+                [key: string]: unknown;
+            }[];
+            /** Cancelreason */
+            cancelReason: string | null;
+            /** Questions */
+            questions: components["schemas"]["QuestionOut"][];
+            /** Reminded */
+            reminded: boolean;
+        };
+        /** TownHallStateIn */
+        TownHallStateIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "scheduled" | "live" | "ended" | "cancelled";
+            /** Reason */
+            reason?: string | null;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -9436,6 +17713,23 @@ export interface components {
              * Format: date-time
              */
             expiresAt: string;
+        };
+        /** VisitCountOut */
+        VisitCountOut: {
+            /**
+             * Areakey
+             * @description 'gn:...', 'ds:...', or a wider area for visits recorded without a place
+             */
+            areaKey: string;
+            /**
+             * Gncode
+             * @description The GN code when the count is for a GN division
+             */
+            gnCode: string | null;
+            /** Concern */
+            concern: string;
+            /** Visits */
+            visits: number;
         };
         /** VolunteerAggregateOut */
         VolunteerAggregateOut: {
@@ -9541,6 +17835,86 @@ export interface components {
              * Format: date-time
              */
             updatedAt: string;
+        };
+        /** VolunteerCardOut */
+        VolunteerCardOut: {
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Name */
+            name: string;
+            /** Membercode */
+            memberCode: string;
+            /** Skills */
+            skills: string[];
+            /** Availability */
+            availability: string[];
+            /** Travelarea */
+            travelArea: string;
+        };
+        /**
+         * VolunteerOfferItemOut
+         * @description H12: an offer or confirmed assignment with its opportunity, history and messages.
+         */
+        VolunteerOfferItemOut: {
+            offer: components["schemas"]["MyOfferOut"];
+            opportunity: components["schemas"]["OpportunityOut"];
+            /** History */
+            history: components["schemas"]["OfferHistoryOut"][];
+            /** Contacts */
+            contacts: components["schemas"]["ContactOut"][];
+        };
+        /** VolunteerProfileIn */
+        VolunteerProfileIn: {
+            /** Skills */
+            skills: string[];
+            /** Availability */
+            availability: ("weekday_mornings" | "weekday_afternoons" | "weekday_evenings" | "weekends" | "public_holidays")[];
+            /**
+             * Travelarea
+             * @enum {string}
+             */
+            travelArea: "my_gn" | "my_ds";
+            /**
+             * Consent
+             * @description Agreement to share these with authorised volunteer coordinators (FR-VOL-003)
+             */
+            consent: boolean;
+        };
+        /** VolunteerProfileOut */
+        VolunteerProfileOut: {
+            /** Skills */
+            skills: string[];
+            /** Availability */
+            availability: ("weekday_mornings" | "weekday_afternoons" | "weekday_evenings" | "weekends" | "public_holidays")[];
+            /**
+             * Travelarea
+             * @enum {string}
+             */
+            travelArea: "my_gn" | "my_ds";
+            /**
+             * Consentedat
+             * Format: date-time
+             */
+            consentedAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /**
+         * VolunteerSkillsOut
+         * @description H10: the configurable skills list, the availability choices, and the member's profile if any.
+         */
+        VolunteerSkillsOut: {
+            /** Skills */
+            skills: components["schemas"]["SkillOut"][];
+            /** Availability */
+            availability: ("weekday_mornings" | "weekday_afternoons" | "weekday_evenings" | "weekends" | "public_holidays")[];
+            profile: components["schemas"]["VolunteerProfileOut"] | null;
         };
         /**
          * WorkQueuesOut
@@ -14460,6 +22834,6442 @@ export interface operations {
             };
         };
     };
+    read_my_area_v1_issues_area_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyAreaOut"];
+                };
+            };
+        };
+    };
+    read_reporting_options_v1_issues_reporting_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportingOptionsOut"];
+                };
+            };
+        };
+    };
+    upload_report_photo_v1_issues_photos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssuePhotoOut"];
+                };
+            };
+            /** @description too_large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description unsupported_type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    upload_addition_photo_v1_issues_addition_photos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssuePhotoOut"];
+                };
+            };
+        };
+    };
+    submit_report_v1_issues_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IssueReportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_my_reports_v1_issues_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReportsOut"];
+                };
+            };
+        };
+    };
+    read_issue_v1_issues__issue_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                issue_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueDetailOut"];
+                };
+            };
+            /** @description not_found: no such issue, or not visible to this member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_following_v1_issues__issue_id__follow_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                issue_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FollowIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueDetailOut"];
+                };
+            };
+            /** @description not_found: no such issue, or not visible to this member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_information_v1_issues__issue_id__information_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                issue_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdditionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdditionOut"];
+                };
+            };
+            /** @description not_found: no such issue, or not visible to this member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    respond_to_closure_v1_issues__issue_id__closure_response_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                issue_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClosureResponseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueDetailOut"];
+                };
+            };
+            /** @description not_found: no such issue, or not visible to this member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_cases_v1_cases_get: {
+        parameters: {
+            query?: {
+                stage?: ("gn" | "returned" | "ds" | "district" | "regional" | "executive" | "implementation" | "resolved" | "declined" | "linked")[] | null;
+                mine?: boolean;
+                overdue?: boolean;
+                districtClosures?: boolean;
+                search?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseListOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_pending_moderation_v1_cases_manage_pending_moderation_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingModerationOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_case_v1_cases__case_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_owner_options_v1_cases__case_id__owners_get: {
+        parameters: {
+            query: {
+                permission: string;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnerOptionsOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_reporter_contact_v1_cases__case_id__reporter_contact_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReporterContactOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_case_photo_v1_cases__case_id__photos__photo_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+                photo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The photo, without metadata */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/webp": unknown;
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_case_photo_v1_cases__case_id__photos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CasePhotoOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_fact_v1_cases__case_id__facts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FactIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_finding_v1_cases__case_id__findings_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FindingIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_note_v1_cases__case_id__notes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NoteIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    return_for_details_v1_cases__case_id__return_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReturnIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    link_to_parent_v1_cases__case_id__link_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LinkIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    forward_to_ds_v1_cases__case_id__forward_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ForwardIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    send_ds_report_v1_cases__case_id__ds_report_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DsReportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_at_district_v1_cases__case_id__district_decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DistrictDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_regional_plan_v1_cases__case_id__regional_plan_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegionalPlanIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_executive_v1_cases__case_id__executive_decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExecutiveDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_progress_v1_cases__case_id__progress_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProgressIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    close_case_v1_cases__case_id__close_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CaseCloseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    assign_v1_cases__case_id__assign_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_challenge_v1_cases__case_id__challenge_decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChallengeDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_public_summary_v1_cases__case_id__public_summary_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublicSummaryIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    moderate_addition_v1_cases__case_id__additions__addition_id__moderation_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+                addition_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdditionModerationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IssueCaseFileOut"];
+                };
+            };
+            /** @description forbidden, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found: no such case, or outside the viewer's areas */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description case_refused with problems such as wrong_stage or owner_not_eligible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    appeal_v1_moderation_appeals_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ModerationAppealIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModerationAppealOut"];
+                };
+            };
+            /** @description forbidden, own_record, outside_your_area, original_moderator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found, or feature_unavailable while the item's module is off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description appeal_refused with problems: not_rejected, already_appealed, appeal_too_short, already_decided, reason_required */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_my_appeal_v1_moderation_appeals_mine_get: {
+        parameters: {
+            query: {
+                itemKind: "idea" | "addition";
+                itemId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyModerationAppealOut"];
+                };
+            };
+            /** @description forbidden, own_record, outside_your_area, original_moderator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found, or feature_unavailable while the item's module is off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description appeal_refused with problems: not_rejected, already_appealed, appeal_too_short, already_decided, reason_required */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_appeals_v1_moderation_appeals_manage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffModerationAppealOut"][];
+                };
+            };
+        };
+    };
+    decide_appeal_v1_moderation_appeals_manage__appeal_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appeal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ModerationAppealDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffModerationAppealOut"];
+                };
+            };
+            /** @description forbidden, own_record, outside_your_area, original_moderator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found, or feature_unavailable while the item's module is off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description appeal_refused with problems: not_rejected, already_appealed, appeal_too_short, already_decided, reason_required */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_skills_v1_volunteering_skills_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerSkillsOut"];
+                };
+            };
+        };
+    };
+    save_profile_v1_volunteering_profile_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VolunteerProfileIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerProfileOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    withdraw_profile_v1_volunteering_profile_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_opportunities_v1_volunteering_opportunities_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberOpportunityOut"][];
+                };
+            };
+        };
+    };
+    read_opportunity_v1_volunteering_opportunities__opportunity_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberOpportunityOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    offer_to_help_v1_volunteering_opportunities__opportunity_id__offer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyOfferOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    withdraw_offer_v1_volunteering_opportunities__opportunity_id__offer_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    set_saved_v1_volunteering_opportunities__opportunity_id__saved_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavedIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberOpportunityOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_my_assignments_v1_volunteering_assignments_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerOfferItemOut"][];
+                };
+            };
+        };
+    };
+    contact_coordinator_v1_volunteering_offers__offer_id__contact_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContactIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_managed_v1_volunteering_manage_opportunities_get: {
+        parameters: {
+            query?: {
+                state?: ("draft" | "open" | "closed" | "cancelled")[] | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedOpportunityOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_opportunity_v1_volunteering_manage_opportunities_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OpportunityIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedOpportunityOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_managed_v1_volunteering_manage_opportunities__opportunity_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedOpportunityOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_opportunity_v1_volunteering_manage_opportunities__opportunity_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OpportunityUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedOpportunityOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    move_opportunity_v1_volunteering_manage_opportunities__opportunity_id__state_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OpportunityStateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedOpportunityOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_offers_v1_volunteering_manage_opportunities__opportunity_id__offers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferCardOut"][];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    decide_offer_v1_volunteering_manage_offers__offer_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyOfferOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_inbox_v1_volunteering_manage_inbox_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InboxItemOut"][];
+                };
+            };
+        };
+    };
+    answer_contact_v1_volunteering_manage_inbox__contact_id__answer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                contact_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnswerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_volunteers_v1_volunteering_manage_volunteers_get: {
+        parameters: {
+            query?: {
+                skill?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerCardOut"][];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_board_v1_ideas_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdeaBoardOut"];
+                };
+            };
+        };
+    };
+    submit_idea_v1_ideas_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdeaIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdeaOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_support_v1_ideas__idea_id__support_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                idea_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdeaOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_idea_v1_ideas__idea_id__withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                idea_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdeaOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_pending_v1_ideas_moderation_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingIdeaOut"][];
+                };
+            };
+        };
+    };
+    moderate_idea_v1_ideas__idea_id__moderation_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                idea_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdeaModerationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingIdeaOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_surveys_v1_surveys_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SurveySummaryOut"][];
+                };
+            };
+        };
+    };
+    list_managed_v1_surveys_manage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedSurveyOut"][];
+                };
+            };
+        };
+    };
+    create_survey_v1_surveys_manage_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SurveyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedSurveyOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_managed_v1_surveys_manage__survey_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                survey_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedSurveyFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_survey_v1_surveys_manage__survey_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                survey_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SurveyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedSurveyOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    move_survey_v1_surveys_manage__survey_id__state_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                survey_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SurveyStateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedSurveyOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_results_v1_surveys_manage__survey_id__results_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                survey_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SurveyResultsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_survey_v1_surveys__survey_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                survey_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SurveyDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    respond_v1_surveys__survey_id__responses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                survey_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SurveyResponseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SurveyDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    browse_v1_proposals_get: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                category?: ("roads_transport" | "agriculture" | "fisheries" | "employment" | "education" | "drinking_water" | "healthcare" | "environment" | "waste_management" | "tourism_enterprise" | "digital_literacy" | "youth_skills" | "other") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalBoardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_v1_proposals_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProposalIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    staff_queue_v1_proposals_manage_get: {
+        parameters: {
+            query?: {
+                stage?: ("pending_moderation" | "rejected" | "review" | "approved_for_planning" | "funding_identified" | "implementation" | "not_taken_forward" | "withdrawn")[] | null;
+                q?: string | null;
+                category?: ("roads_transport" | "agriculture" | "fisheries" | "employment" | "education" | "drinking_water" | "healthcare" | "environment" | "waste_management" | "tourism_enterprise" | "digital_literacy" | "youth_skills" | "other") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    regional_needs_v1_proposals_manage_needs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NeedsOut"];
+                };
+            };
+        };
+    };
+    staff_read_v1_proposals_manage__proposal_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    move_v1_proposals_manage__proposal_id__stage_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProposalMoveIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_v1_proposals__proposal_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revise_v1_proposals__proposal_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProposalRevisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_v1_proposals__proposal_id__withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_catalogue_v1_learning_courses_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CatalogueOut"];
+                };
+            };
+        };
+    };
+    list_managed_v1_learning_manage_courses_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedCourseSummaryOut"][];
+                };
+            };
+        };
+    };
+    create_course_v1_learning_manage_courses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedCourseOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_managed_v1_learning_manage_courses__course_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedCourseOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_course_v1_learning_manage_courses__course_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedCourseOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    move_course_v1_learning_manage_courses__course_id__state_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseStateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedCourseOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_course_v1_learning_courses__course_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    complete_lesson_v1_learning_courses__course_id__lessons__lesson_id__complete_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+                lesson_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    save_and_exit_v1_learning_courses__course_id__save_exit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveExitIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_invitation_v1_invitations_preview_get: {
+        parameters: {
+            query: {
+                language: "ta" | "en";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationPreviewOut"];
+                };
+            };
+            /** @description membership_not_active */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    my_referrals_v1_invitations_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReferralsOut"];
+                };
+            };
+        };
+    };
+    create_invitation_v1_invitations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvitationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NewInvitationOut"];
+                };
+            };
+            /** @description membership_not_active, too_many_invitations_today */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    cancel_invitation_v1_invitations__number__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_promises_v1_promises_get: {
+        parameters: {
+            query?: {
+                status?: ("not_started" | "in_progress" | "completed" | "delayed" | "blocked" | "withdrawn") | null;
+                theme?: ("roads_transport" | "drinking_water" | "health" | "education" | "employment" | "agriculture" | "fisheries" | "housing" | "environment" | "governance" | "other") | null;
+                /** @description An area key such as district:LK41 */
+                area?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_managed_v1_promises_manage_get: {
+        parameters: {
+            query?: {
+                status?: ("not_started" | "in_progress" | "completed" | "delayed" | "blocked" | "withdrawn") | null;
+                theme?: ("roads_transport" | "drinking_water" | "health" | "education" | "employment" | "agriculture" | "fisheries" | "housing" | "environment" | "governance" | "other") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    draft_promise_v1_promises_manage_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PromiseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    pending_work_v1_promises_manage_pending_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingWorkOut"];
+                };
+            };
+        };
+    };
+    progress_report_v1_promises_manage_report_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportRowOut"][];
+                };
+            };
+        };
+    };
+    read_managed_v1_promises_manage__promise_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_draft_v1_promises_manage__promise_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PromiseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_publication_v1_promises_manage__promise_id__request_publication_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_publication_v1_promises_manage__promise_id__publication_decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublicationDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    draft_update_v1_promises_manage__promise_id__updates_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PromiseUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseUpdateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_update_v1_promises_manage_updates__update_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                update_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublicationDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseUpdateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    moderate_feedback_v1_promises_manage_feedback__feedback_id__moderation_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feedback_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ModerationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseFeedbackOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reply_v1_promises_manage_feedback__feedback_id__reply_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feedback_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseFeedbackOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_promise_v1_promises__promise_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    give_feedback_v1_promises__promise_id__feedback_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PromiseFeedbackIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromiseFeedbackOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_area_v1_scorecards_area_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyScorecardsOut"];
+                };
+            };
+        };
+    };
+    list_versions_v1_scorecards_manage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardOut"][];
+                };
+            };
+        };
+    };
+    draft_v1_scorecards_manage_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScorecardDraftIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_v1_scorecards_manage__scorecard_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scorecard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    share_v1_scorecards_manage__scorecard_id__share_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scorecard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_note_v1_scorecards_manage__scorecard_id__notes_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scorecard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScorecardNoteIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_correction_v1_scorecards_manage__scorecard_id__corrections_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scorecard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CorrectionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CorrectionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_correction_v1_scorecards_manage_corrections__correction_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                correction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CorrectionDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_v1_scorecards_manage__scorecard_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scorecard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    support_home_v1_assistance_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupportHomeOut"];
+                };
+            };
+        };
+    };
+    request_support_v1_assistance_requests_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportRequestIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyRequestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    public_form_v1_assistance_public_form_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicSupportFormOut"];
+                };
+            };
+        };
+    };
+    request_support_publicly_v1_assistance_public_requests_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportRequestIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicReceiptOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    public_statistics_v1_assistance_statistics_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicSupportStatisticsOut"];
+                };
+            };
+        };
+    };
+    read_my_request_v1_assistance_requests__case_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyRequestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    appeal_v1_assistance_requests__case_id__appeals_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppealIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupportAppealOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    answer_referral_v1_assistance_requests__case_id__referrals__referral_id__consent_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+                referral_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReferralConsentIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyRequestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    staff_queue_v1_assistance_manage_cases_get: {
+        parameters: {
+            query?: {
+                state?: ("screening" | "assessment" | "decided" | "closed" | "withdrawn")[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    intake_v1_assistance_manage_intake_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IntakeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseSummaryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_case_v1_assistance_manage_cases__case_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_caseworkers_v1_assistance_manage_cases__case_id__caseworkers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseworkerOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    assign_v1_assistance_manage_cases__case_id__assign_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportAssignIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    link_v1_assistance_manage_cases__case_id__link_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportLinkIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_note_v1_assistance_manage_cases__case_id__notes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CaseNoteIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_v1_assistance_manage_cases__case_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_delivery_v1_assistance_manage_cases__case_id__deliveries_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeliveryIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    refer_v1_assistance_manage_cases__case_id__referrals_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReferralIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_referral_v1_assistance_manage_cases__case_id__referrals__referral_id__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+                referral_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReferralUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    close_v1_assistance_manage_cases__case_id__close_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportCloseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    open_appeals_v1_assistance_manage_appeals_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupportAppealOut"][];
+                };
+            };
+        };
+    };
+    decide_appeal_v1_assistance_manage_appeals__appeal_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appeal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppealDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_programmes_v1_assistance_manage_programmes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgrammeOut"][];
+                };
+            };
+        };
+    };
+    create_programme_v1_assistance_manage_programmes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProgrammeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgrammeOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_criteria_v1_assistance_manage_programmes__programme_id__criteria_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                programme_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CriteriaIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgrammeOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_programme_active_v1_assistance_manage_programmes__programme_id__active_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                programme_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActiveIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_partners_v1_assistance_manage_partners_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnerOut"][];
+                };
+            };
+        };
+    };
+    add_partner_v1_assistance_manage_partners_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartnerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnerOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    statistics_v1_assistance_manage_statistics_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatisticsOut"];
+                };
+            };
+        };
+    };
+    list_sessions_v1_town_halls_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallOut"][];
+                };
+            };
+        };
+    };
+    list_managed_v1_town_halls_manage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallOut"][];
+                };
+            };
+        };
+    };
+    create_v1_town_halls_manage_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TownHallIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_managed_v1_town_halls_manage__townhall_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                townhall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffSessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_v1_town_halls_manage__townhall_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                townhall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TownHallIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    move_v1_town_halls_manage__townhall_id__state_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                townhall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TownHallStateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    moderate_v1_town_halls_manage_questions__question_id__moderation_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                question_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TownHallModerationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    answer_v1_town_halls_manage_questions__question_id__answer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                question_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TownHallAnswerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    archive_v1_town_halls_manage__townhall_id__archive_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                townhall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ArchiveIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_v1_town_halls__townhall_id__get: {
+        parameters: {
+            query?: {
+                /** @description Search the question history (FR-THL-007) */
+                q?: string | null;
+            };
+            header?: never;
+            path: {
+                townhall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallSessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ask_v1_town_halls__townhall_id__questions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                townhall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QuestionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    vote_v1_town_halls_questions__question_id__vote_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                question_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_reminder_v1_town_halls__townhall_id__reminder_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                townhall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReminderIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallSessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sync_v1_field_visits_sync_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SyncIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SyncResultOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_visits_v1_field_visits_mine_get: {
+        parameters: {
+            query?: {
+                since?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FieldVisitOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    supervised_v1_field_manage_visits_get: {
+        parameters: {
+            query?: {
+                openFollowUps?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FieldVisitOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    counts_v1_field_manage_counts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitCountOut"][];
+                };
+            };
+        };
+    };
+    set_follow_up_v1_field_manage_visits__visit_id__follow_up_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                visit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FollowUpIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FieldVisitOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_shifts_v1_election_roster_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyShiftOut"][];
+                };
+            };
+        };
+    };
+    answer_v1_election_roster_assignments__assignment_id__answer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assignment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShiftAnswerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyShiftOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    check_in_v1_election_roster_assignments__assignment_id__check_in_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assignment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckInIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyShiftOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    check_out_v1_election_roster_assignments__assignment_id__check_out_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assignment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyShiftOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_periods_v1_election_roster_manage_periods_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpenPeriodOut"][];
+                };
+            };
+        };
+    };
+    list_shifts_v1_election_roster_manage_shifts_get: {
+        parameters: {
+            query?: {
+                period_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_shift_v1_election_roster_manage_shifts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShiftIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_shift_v1_election_roster_manage_shifts__shift_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    offer_v1_election_roster_manage_shifts__shift_id__offers_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_v1_election_roster_manage_shifts__shift_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    message_v1_election_roster_manage_shifts__shift_id__messages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RosterMessageIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    period_report_v1_election_roster_periods__period_id__report_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                period_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PeriodReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    period_report_entries_v1_election_roster_periods__period_id__report_entries_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                period_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PeriodReportEntryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_screenshot_v1_fact_checks_screenshots_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScreenshotOut"];
+                };
+            };
+        };
+    };
+    report_v1_fact_checks_reports_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MisinfoReportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MisinfoReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_reports_v1_fact_checks_reports_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MisinfoReportOut"][];
+                };
+            };
+        };
+    };
+    appeal_v1_fact_checks_reports__report_id__appeal_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FactCheckAppealIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MisinfoReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    queue_v1_fact_checks_manage_get: {
+        parameters: {
+            query?: {
+                open_only?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffMisinfoReportOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_screenshot_v1_fact_checks_manage__report_id__screenshot_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The screenshot, without metadata */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/webp": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_v1_fact_checks_manage__report_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FactCheckDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffMisinfoReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_appeal_v1_fact_checks_manage__report_id__appeal_decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FactCheckAppealDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffMisinfoReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     read_home_v1_home_get: {
         parameters: {
             query?: never;
@@ -14536,7 +29346,7 @@ export interface operations {
     list_activity_v1_profile_activity_get: {
         parameters: {
             query?: {
-                kind?: ("identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request") | null;
+                kind?: ("identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal" | "course") | null;
                 limit?: number;
             };
             header?: never;
@@ -17287,6 +32097,66 @@ export interface operations {
             };
         };
     };
+    read_household_log_v1_households_mine_log_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdLogEntryOut"][];
+                };
+            };
+        };
+    };
+    give_caseworker_consent_v1_households_mine_caseworker_consent_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
+            };
+        };
+    };
+    withdraw_caseworker_consent_v1_households_mine_caseworker_consent_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
+            };
+        };
+    };
     list_my_invitations_v1_households_invitations_mine_get: {
         parameters: {
             query?: never;
@@ -17326,7 +32196,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HouseholdInvitationOut"];
+                    "application/json": components["schemas"]["HouseholdInvitationSentOut"];
                 };
             };
             /** @description Validation Error */
@@ -17404,6 +32274,74 @@ export interface operations {
             };
         };
     };
+    update_my_details_v1_households_members_me_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MyHouseholdDetailsIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    correct_relationship_v1_households_members__member_record_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                member_record_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MemberRelationshipIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     remove_member_v1_households_members__member_record_id__remove_post: {
         parameters: {
             query?: never;
@@ -17421,6 +32359,103 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_dependant_v1_households_dependants_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DependantIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_dependant_v1_households_dependants__member_record_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                member_record_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_dependant_v1_households_dependants__member_record_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                member_record_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DependantUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
             };
             /** @description Validation Error */
             422: {

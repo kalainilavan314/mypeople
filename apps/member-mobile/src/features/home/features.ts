@@ -12,13 +12,24 @@ type IconName = ComponentProps<typeof Ionicons>['name'];
  * screen that pretends to work.
  */
 export const FEATURE_ROUTES: Partial<Record<string, Href>> = {
-  my_area: '/profile/area',
+  report_issue: '/issues/report',
+  my_area: '/issues',
+  local_reports: { pathname: '/issues', params: { segment: 'issues' } },
+  area_projects: { pathname: '/issues', params: { segment: 'projects' } },
   community: '/hub',
   events: '/events',
   card: '/card',
   gallery: '/gallery',
   profile: '/profile',
   party_fund: '/fund' as unknown as Href,
+  volunteer: '/volunteer',
+  volunteering: '/volunteer',
+  ideas: '/ideas',
+  surveys: '/surveys',
+  learning: '/learning',
+  invite: '/referrals/invite',
+  promises: '/promises',
+  support: '/support',
 };
 
 export const FEATURE_ICONS: Record<string, IconName> = {
@@ -39,6 +50,8 @@ export const FEATURE_ICONS: Record<string, IconName> = {
   gallery: 'images-outline',
   profile: 'person-outline',
   help: 'help-buoy-outline',
+  promises: 'flag-outline',
+  support: 'heart-outline',
 };
 
 /** The tile colour of each feature, as in the reference recording. */
@@ -60,4 +73,6 @@ export const FEATURE_TINTS: Partial<Record<string, Tint>> = {
   card: 'brand',
   gallery: 'blue',
   profile: 'brand',
+  promises: 'teal',
+  support: 'rose',
 };

@@ -1,4 +1,5 @@
-import { StyleSheet, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { colors, spacing } from '@my-people/design-tokens/mobile';
@@ -16,7 +17,53 @@ const STATE_KEYS: Record<string, string> = {
   removal_request: 'm.gallery.state_',
   area_change: 'm.profile.areaState_',
   privacy_request: 'm.profile.requestState_',
+  volunteer_offer: 'm.profile.activityState_volunteer_offer_',
+  idea: 'm.profile.activityState_idea_',
+  survey_response: 'm.profile.activityState_survey_response_',
+  proposal: 'm.profile.activityState_proposal_',
+  course: 'm.profile.activityState_course_',
 };
+
+// An issue report's state is its case stage; the member sees the same words as on the report.
+const ISSUE_STATUS: Record<string, string> = {
+  gn: 'received',
+  returned: 'needs_details',
+  ds: 'under_review',
+  district: 'under_review',
+  regional: 'under_review',
+  executive: 'under_review',
+  implementation: 'in_progress',
+  resolved: 'resolved',
+  declined: 'declined',
+};
+
+function stateKey(kind: string, state: string): string {
+  if (kind === 'issue_report') {
+    const status = ISSUE_STATUS[state];
+    return status ? `m.issues.status_${status}` : `m.profile.activityState_issue_report_${state}`;
+  }
+  return `${STATE_KEYS[kind] ?? ''}${state}`;
+}
+
+/** Receipts that have a screen open it; the others are records only. */
+function opener(kind: string, targetId: string): (() => void) | undefined {
+  switch (kind) {
+    case 'issue_report':
+      return () => router.push({ pathname: '/issues/[id]', params: { id: targetId } });
+    case 'volunteer_offer':
+      return () => router.push('/volunteer/assignments');
+    case 'idea':
+      return () => router.push('/ideas');
+    case 'survey_response': // the target is the survey: its receipt, or the form while answers can change
+      return () => router.push({ pathname: '/surveys/[id]', params: { id: targetId } });
+    case 'proposal':
+      return () => router.push({ pathname: '/ideas/proposals/[id]', params: { id: targetId } });
+    case 'course':
+      return () => router.push({ pathname: '/learning/[course]', params: { course: targetId } });
+    default:
+      return undefined;
+  }
+}
 
 /** P03 My Activity: receipts for what the member has asked for or taken part in, newest first. */
 export default function ActivityScreen() {
@@ -37,10 +84,15 @@ export default function ActivityScreen() {
             </AppText>
           ) : (
             <SurfaceCard style={styles.list}>
-              {items.map((item, index) => (
-                <View
+              {items.map((item, index) => {
+                const open = opener(item.kind, item.targetId);
+                return (
+                <Pressable
                   key={`${item.kind}-${item.reference}-${item.at}`}
-                  style={[styles.item, index > 0 && styles.itemDivider]}>
+                  onPress={open}
+                  disabled={!open}
+                  accessibilityRole={open ? 'link' : 'text'}
+                  style={({ pressed }) => [styles.item, index > 0 && styles.itemDivider, pressed && styles.pressed]}>
                   <AppText step="caption" tone="primary">
                     {t(`m.profile.activity_${item.kind}`)}
                   </AppText>
@@ -49,13 +101,14 @@ export default function ActivityScreen() {
                     {item.reference}
                   </AppText>
                   <AppText step="secondary" tone="secondary">
-                    {t(`${STATE_KEYS[item.kind] ?? ''}${item.state}`, { defaultValue: item.state.replace(/_/g, ' ') })}
+                    {t(stateKey(item.kind, item.state), { defaultValue: item.state.replace(/_/g, ' ') })}
                   </AppText>
                   <AppText step="caption" tone="muted">
                     {formatDateTime(item.at, language)}
                   </AppText>
-                </View>
-              ))}
+                </Pressable>
+                );
+              })}
             </SurfaceCard>
           )
         }
@@ -68,4 +121,5 @@ const styles = StyleSheet.create({
   list: { padding: 0, gap: 0, overflow: 'hidden' },
   item: { gap: spacing[1], padding: spacing[3] },
   itemDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
+  pressed: { backgroundColor: colors.surfaceVariant },
 });

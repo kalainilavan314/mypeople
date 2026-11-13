@@ -6,7 +6,10 @@ Run once every minute from a systemd timer (mypeople-notifications.timer):
 Jobs performed per cycle:
 1. Send due staff broadcasts (with election silence holds and audit trails).
 2. Escalate overdue photo removal requests (> 18h) to Tier 5 reviewers.
-3. Dispatch pending push notifications respecting quiet hours and preferences.
+3. Alert the next tier once about each case stage past its time limit (FR-WEB-028), mark
+   published promises past their due date Delayed (FR-PRM-009), and tell the publishers once when
+   a Delayed promise's 10 working days for an update pass without one.
+4. Dispatch pending push notifications respecting quiet hours and preferences.
 
 Concurrency & Safety:
 - Database queries use row locking with SKIP LOCKED. Multiple simultaneous
@@ -30,6 +33,10 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings
 from app.db.session import create_database_engine
 from app.integrations.push import NoPush, PushSender, build_push
+from app.modules.community.issues import breaches as case_breaches
+from app.modules.community.promises import service as promises
+from app.modules.community.townhalls import service as townhalls
+from app.modules.engagement.field import service as field_visits
 from app.modules.content.gallery import service as gallery
 from app.modules.messaging.broadcasts import service as broadcasts
 from app.modules.messaging.notifications import service as notifications
@@ -51,8 +58,22 @@ def run_once(db: Session, push: PushSender, now: datetime | None = None) -> dict
     moment = now or datetime.now(UTC)
     sent_broadcasts = broadcasts.send_due(db, moment)
     escalated = gallery.escalate_overdue(db)
+    cases_alerted = case_breaches.alert_breaches(db, moment)
+    promises_delayed = promises.mark_delayed(db, moment)
+    promise_updates_missed = promises.escalate_missed_updates(db, moment)
+    townhall_reminders = townhalls.remind(db, moment)
+    field_visits_purged = field_visits.purge(db, moment)
     pushed = notifications.dispatch(db, push, moment)
-    return {"broadcastsSent": sent_broadcasts, "removalsEscalated": escalated, **asdict(pushed)}
+    return {
+        "broadcastsSent": sent_broadcasts,
+        "removalsEscalated": escalated,
+        "caseBreachesAlerted": cases_alerted,
+        "promisesDelayed": promises_delayed,
+        "promiseUpdatesMissed": promise_updates_missed,
+        "townHallReminders": townhall_reminders,
+        "fieldVisitsPurged": field_visits_purged,
+        **asdict(pushed),
+    }
 
 
 def dry_run(db: Session, now: datetime | None = None) -> dict[str, Any]:

@@ -56,6 +56,37 @@ export default function MemberLayout() {
       <Stack.Screen name="household/privacy" options={{ title: t('m.household.privacyConsent') }} />
       <Stack.Screen name="fund/index" options={{ title: t('m.fund.title') }} />
       <Stack.Screen name="fund/receipt/[id]" options={{ title: t('m.fund.receiptTitle') }} />
+      <Stack.Screen name="issues/index" options={{ title: t('m.issues.title') }} />
+      <Stack.Screen name="issues/report" options={{ title: t('m.issues.reportTitle') }} />
+      <Stack.Screen name="issues/review" options={{ title: t('m.issues.reviewTitle') }} />
+      <Stack.Screen name="issues/mine" options={{ title: t('m.issues.mineTitle') }} />
+      <Stack.Screen name="issues/[id]" options={{ title: t('m.issues.detailTitle') }} />
+      <Stack.Screen name="volunteer/index" options={{ title: t('m.volunteer.title') }} />
+      <Stack.Screen name="volunteer/[id]" options={{ title: t('m.volunteer.briefingTitle') }} />
+      <Stack.Screen name="volunteer/skills" options={{ title: t('m.volunteer.mySkills') }} />
+      <Stack.Screen name="volunteer/assignments" options={{ title: t('m.volunteer.myAssignments') }} />
+      <Stack.Screen name="ideas/index" options={{ title: t('m.ideas.title') }} />
+      <Stack.Screen name="ideas/new" options={{ title: t('m.ideas.newTitle') }} />
+      <Stack.Screen name="ideas/proposals/new" options={{ title: t('m.proposals.newTitle') }} />
+      <Stack.Screen name="ideas/proposals/[id]" options={{ title: t('m.proposals.detailTitle') }} />
+      <Stack.Screen name="surveys/index" options={{ title: t('m.surveys.title') }} />
+      <Stack.Screen name="surveys/[id]" options={{ title: t('m.surveys.surveyTitle') }} />
+      <Stack.Screen name="surveys/[id]/done" options={{ title: t('m.surveys.doneTitle') }} />
+      <Stack.Screen name="learning/index" options={{ title: t('m.learning.title') }} />
+      <Stack.Screen name="learning/[course]" options={{ title: t('m.learning.courseTitle') }} />
+      <Stack.Screen name="learning/[course]/[lesson]" options={{ title: t('m.learning.lessonTitle') }} />
+      <Stack.Screen name="referrals/invite" options={{ title: t('m.referrals.inviteTitle') }} />
+      <Stack.Screen name="referrals/index" options={{ title: t('m.referrals.title') }} />
+      <Stack.Screen name="promises/index" options={{ title: t('m.promises.title') }} />
+      <Stack.Screen name="promises/[id]" options={{ title: t('m.promises.detailTitle') }} />
+      <Stack.Screen name="promises/scorecard" options={{ title: t('m.scorecards.title') }} />
+      <Stack.Screen name="support/index" options={{ title: t('m.support.title') }} />
+      <Stack.Screen name="support/request" options={{ title: t('m.support.requestTitle') }} />
+      <Stack.Screen name="support/[id]" options={{ title: t('m.support.detailTitle') }} />
+      <Stack.Screen name="town-halls/index" options={{ title: t('m.townHalls.title') }} />
+      <Stack.Screen name="town-halls/[id]" options={{ title: t('m.townHalls.sessionTitle') }} />
+      <Stack.Screen name="official/index" options={{ title: t('m.official.title') }} />
+      <Stack.Screen name="official/report" options={{ title: t('m.official.reportTitle') }} />
       <Stack.Screen name="staff" options={{ headerShown: false }} />
     </Stack>
   );

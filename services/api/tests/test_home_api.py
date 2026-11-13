@@ -55,7 +55,8 @@ def test_a_new_member_sees_the_awaiting_review_home_with_locks_explained(client,
     assert home["nextStep"]["kind"] == "submit_identity"
     actions = {a["key"]: a for a in home["quickActions"]}
     assert list(actions) == ["report_issue", "volunteer", "my_area", "community"]
-    assert actions["report_issue"]["available"] is True
+    assert (actions["report_issue"]["available"], actions["report_issue"]["reason"]) == (False, "identity_not_verified")
+    assert actions["my_area"]["available"] is True
     assert (actions["volunteer"]["reason"], actions["volunteer"]["nextStep"]) == ("identity_not_verified", "view_verification")
     services = [s["key"] for s in home["hub"]["services"]]
     assert services.index("party_fund") == 3 and home["hub"]["gnLabel"] == home["gnName"]
@@ -115,9 +116,11 @@ def test_a_service_behind_an_off_module_switch_shows_as_not_open(database_settin
     member = create_member(verified=True, active=True)
     db_session.execute(text("UPDATE ops.feature_flag SET enabled = false WHERE key = 'community_finance'"))
 
-    hub = {item["key"]: item for item in enforced.get("/v1/home", headers=auth(member)).json()["hub"]["services"]}
+    home = enforced.get("/v1/home", headers=auth(member)).json()
+    hub = {item["key"]: item for item in home["hub"]["services"]}
     assert (hub["party_fund"]["available"], hub["party_fund"]["reason"]) == (False, "not_open")
-    assert hub["learning"]["available"] is True  # services without a switch are unchanged
+    # Features without a switch are unchanged (every hub service now has one).
+    assert {a["key"]: a["available"] for a in home["quickActions"]}["community"] is True
 
     db_session.execute(
         # A switch can only be on once its phase gate is recorded (feature_flag_enabled_needs_gate).
@@ -126,3 +129,86 @@ def test_a_service_behind_an_off_module_switch_shows_as_not_open(database_settin
     )
     hub = {item["key"]: item for item in enforced.get("/v1/home", headers=auth(member)).json()["hub"]["services"]}
     assert hub["party_fund"]["available"] is True
+
+
+def test_issue_reporting_tiles_are_not_open_while_their_module_is_off(database_settings, db_session, auth, create_member):
+    from app.db.session import get_db
+    from app.main import create_app
+
+    app = create_app(database_settings.model_copy(update={"enforce_feature_flags": True}))
+    app.dependency_overrides[get_db] = lambda: db_session
+    enforced = TestClient(app)
+    member = create_member(verified=True, active=True)
+    db_session.execute(text("UPDATE ops.feature_flag SET enabled = false WHERE key = 'community_issues'"))
+
+    home = enforced.get("/v1/home", headers=auth(member)).json()
+    actions = {item["key"]: item for item in home["quickActions"]}
+    hub = {item["key"]: item for item in home["hub"]["services"]}
+    for tile in (actions["report_issue"], actions["my_area"], hub["local_reports"], hub["area_projects"]):
+        assert (tile["available"], tile["reason"]) == (False, "not_open")
+    assert enforced.get("/v1/issues/area", headers=auth(member)).status_code == 404
+
+
+def add_promise(db_session, drafter: Row, area_key: str, area_path: list[str], status: str = "not_started",
+                publication: str = "published") -> None:
+    db_session.execute(
+        text(
+            """
+            INSERT INTO community.promise (title_en, title_ta, description_en, description_ta, source_reference,
+                                           source_published_on, office_en, office_ta, kind, theme, area_key, area_path,
+                                           planned_start, due_date, target_en, target_ta, drafted_by, publication, status)
+            VALUES ('Repair the coast road', 'கரையோர வீதியைச் சீரமைத்தல்', 'Resurface the damaged coast road.',
+                    'சேதமடைந்த கரையோர வீதியை மீள அமைத்தல்.', 'Manifesto 2026', current_date, 'Roads Office',
+                    'வீதி அலுவலகம்', 'party_commitment', 'roads_transport', :key, :path, current_date,
+                    current_date + 90, '12 km resurfaced', '12 கி.மீ. மீள அமைக்கப்படும்', :by, :publication, :status)
+            """
+        ),
+        {"key": area_key, "path": area_path, "by": drafter.id, "publication": publication, "status": status},
+    )
+
+
+def test_home_counts_the_promises_made_for_the_members_area(client, db_session, auth, member_in, area):
+    # M18: the Promise Tracker is on Home too, with the promises that cover where the member lives.
+    member = member_in(area, verified=True, active=True)
+    district = ["platform", f"province:{area.province}", f"district:{area.district}"]
+    gn = [*district, f"ds:{area.ds}", f"gn:{area.gn}"]
+    other = db_session.scalar(
+        text("SELECT district_code FROM geo.district WHERE district_code <> :d ORDER BY district_code LIMIT 1"),
+        {"d": area.district},
+    )
+    before = client.get("/v1/home", headers=auth(member)).json()["promises"]
+    add_promise(db_session, member, f"district:{area.district}", district, status="in_progress")
+    add_promise(db_session, member, f"gn:{area.gn}", gn)
+    add_promise(db_session, member, f"district:{other}", ["platform", f"province:{area.province}", f"district:{other}"])
+    add_promise(db_session, member, f"district:{area.district}", district, publication="draft")
+
+    after = client.get("/v1/home", headers=auth(member)).json()["promises"]
+
+    assert (after["feature"]["key"], after["feature"]["available"]) == ("promises", True)
+    assert after["total"] == before["total"] + 2
+    counts = {item["status"]: item["count"] for item in after["counts"]}
+    earlier = {item["status"]: item["count"] for item in before["counts"]}
+    assert counts["in_progress"] == earlier.get("in_progress", 0) + 1
+    assert counts["not_started"] == earlier.get("not_started", 0) + 1
+    assert [item["status"] for item in after["counts"]] == [
+        s for s in ("not_started", "in_progress", "completed", "delayed", "blocked", "withdrawn") if s in counts
+    ]
+
+
+def test_the_promise_tracker_on_home_is_not_open_while_its_switch_is_off(database_settings, db_session, auth, member_in,
+                                                                         area):
+    from app.db.session import get_db
+    from app.main import create_app
+
+    app = create_app(database_settings.model_copy(update={"enforce_feature_flags": True}))
+    app.dependency_overrides[get_db] = lambda: db_session
+    enforced = TestClient(app)
+    member = member_in(area, verified=True, active=True)
+    add_promise(db_session, member, f"district:{area.district}",
+                ["platform", f"province:{area.province}", f"district:{area.district}"])
+    db_session.execute(text("UPDATE ops.feature_flag SET enabled = false WHERE key = 'promises'"))
+
+    promises = enforced.get("/v1/home", headers=auth(member)).json()["promises"]
+
+    assert (promises["feature"]["available"], promises["feature"]["reason"]) == (False, "not_open")
+    assert (promises["total"], promises["counts"]) == (0, [])

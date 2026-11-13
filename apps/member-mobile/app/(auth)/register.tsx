@@ -1,3 +1,4 @@
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -51,6 +52,8 @@ export default function RegisterScreen() {
   const { t } = useTranslation();
   const language = useLanguage();
   const { start } = useSession();
+  // An invitation link (/join/<token>) opens this screen with its token as the referral code.
+  const { referral: invited } = useLocalSearchParams<{ referral?: string }>();
   const [step, setStep] = useState(1);
   const [id, setId] = useState<IdNumber>({ route: 'nic', number: '', country: '' });
   const [fullName, setFullName] = useState('');
@@ -59,7 +62,7 @@ export default function RegisterScreen() {
   const [area, setArea] = useState<AreaChoice>(NO_AREA);
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [referral, setReferral] = useState('');
+  const [referral, setReferral] = useState(typeof invited === 'string' ? invited : '');
   const [accepted, setAccepted] = useState(false);
   const [idFormatError, setIdFormatError] = useState(false);
 

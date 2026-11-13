@@ -5,8 +5,9 @@ from typing import Literal
 from pydantic import Field
 
 from app.core.schemas import CamelModel
+from app.modules.community.promises.rules import STATUSES, Status
 from app.modules.events.schemas import EventSummaryOut
-from app.modules.home.service import Home, Lock
+from app.modules.home.service import Home, Lock, PromiseSummary
 
 IdentityState = Literal["not_submitted", "submitted", "in_review", "needs_update", "verified", "unable_to_verify"]
 
@@ -45,6 +46,28 @@ class HomeHubOut(CamelModel):
     services: list[HomeFeatureOut] = Field(description="Eight services in this order; the party fund never comes first")
 
 
+class HomePromiseCountOut(CamelModel):
+    status: Status
+    count: int
+
+
+class HomePromisesOut(CamelModel):
+    """M18 on Home: the Promise Tracker, with the published promises made for the member's GN, DS
+    division, district, province or the whole platform, counted by status."""
+
+    feature: HomeFeatureOut = Field(description="Open, or not open yet while the Promise Tracker is switched off")
+    total: int
+    counts: list[HomePromiseCountOut] = Field(description="Statuses with at least one promise, in the tracker's order")
+
+    @classmethod
+    def build(cls, summary: PromiseSummary) -> "HomePromisesOut":
+        return cls(
+            feature=HomeFeatureOut.build(summary.lock),
+            total=sum(summary.counts.values()),
+            counts=[HomePromiseCountOut(status=s, count=summary.counts[s]) for s in STATUSES if summary.counts.get(s)],
+        )
+
+
 class HomeOut(CamelModel):
     layout: Literal["active", "awaiting_review"] = Field(
         description="H01 only when identity is Verified and membership Active (FR-HOME-001)"
@@ -60,6 +83,7 @@ class HomeOut(CamelModel):
     quick_actions: list[HomeFeatureOut] = Field(description="Report issue, Volunteer, My area, Community (FR-HOME-004)")
     tabs: list[HomeFeatureOut] = Field(description="Events, Card and Gallery, open or locked")
     hub: HomeHubOut
+    promises: HomePromisesOut
 
     @classmethod
     def build(cls, home: Home) -> "HomeOut":
@@ -89,4 +113,5 @@ class HomeOut(CamelModel):
             quick_actions=[HomeFeatureOut.build(lock) for lock in actions],
             tabs=[HomeFeatureOut.build(lock) for lock in tabs],
             hub=HomeHubOut(gn_label=home.gn_name, services=[HomeFeatureOut.build(lock) for lock in home.hub]),
+            promises=HomePromisesOut.build(home.promises),
         )

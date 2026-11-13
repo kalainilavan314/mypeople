@@ -98,6 +98,13 @@ export default function WelcomeScreen() {
           disabled={state.status === 'not_configured'}
           onPress={() => router.push('/register')}
         />
+        {/* S11: Community Support needs no account; the public form is open to anyone. */}
+        <Button
+          label={t('m.support.welcomeLink')}
+          variant="quiet"
+          disabled={state.status === 'not_configured'}
+          onPress={() => router.push('/help/support')}
+        />
       </View>
     </Screen>
   );

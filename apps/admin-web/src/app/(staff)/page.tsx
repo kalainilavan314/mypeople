@@ -6,7 +6,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { ConsoleLoading } from '@/components/ConsoleLoading';
 import { DashboardRefresh } from '@/components/DashboardRefresh';
 import { SystemStatus } from '@/components/SystemStatus';
-import { getAdminLocale } from '@/lib/i18n';
+import { getAdminLocale, type Locale } from '@/lib/i18n';
 import { builtModules, plannedModules } from '@/lib/modules';
 import { staffApi } from '@/lib/session';
 import { isRefusal, requireStaff } from '@/lib/staff';
@@ -78,6 +78,17 @@ async function StatusSection() {
   );
 }
 
+// D30 is built only when the signing keys exist (INT-24, keys held in KMS); a bare phase would
+// suggest it is merely scheduled.
+const WAITING_ON: Readonly<Record<string, { ta: string; en: string }>> = {
+  'Official publishing and signing': { ta: 'கையொப்ப விசைகளுக்காகக் காத்திருக்கிறது (INT-24)', en: 'Waits on signing keys (INT-24)' },
+};
+
+function waitingLabel(name: string, locale: Locale): string {
+  const waiting = WAITING_ON[name];
+  return waiting ? waiting[locale] : 'Phase 2 / 3';
+}
+
 async function PlannedModulesSection() {
   const staff = await requireStaff();
   const locale = await getAdminLocale(staff.member.language);
@@ -96,7 +107,9 @@ async function PlannedModulesSection() {
               </span>
               <span className="mt-0.5 block text-xs text-muted">{module.desc}</span>
             </span>
-            <span className="rounded-md bg-surface px-2 py-1 text-[11px] font-medium text-muted">Phase 2 / 3</span>
+            <span lang={locale} className="rounded-md bg-surface px-2 py-1 text-[11px] font-medium text-muted">
+              {waitingLabel(module.name, locale)}
+            </span>
           </li>
         ))}
       </ul>

@@ -43,7 +43,15 @@ export default function StaffHomeScreen() {
 
   const scans = permissions.has('events.checkin_scan') || permissions.has('events.manage');
   const looksUp = permissions.has('members.view_profile');
-  const nothing = !permissions.has('members.verify') && !approvesAnything(permissions) && !scans && !looksUp;
+  const coordinatesVolunteers = permissions.has('volunteers.manage');
+  const collectsVisits = permissions.has('field.collect');
+  const nothing =
+    !permissions.has('members.verify') &&
+    !approvesAnything(permissions) &&
+    !scans &&
+    !looksUp &&
+    !coordinatesVolunteers &&
+    !collectsVisits;
 
   return (
     <Screen edges={[]} onRefresh={reload} refreshing={reviews.loading || approvals.loading}>
@@ -90,6 +98,24 @@ export default function StaffHomeScreen() {
           <AppText step="section">{t('s.assignments.title')}</AppText>
           <AppText step="body" tone="secondary">
             {t('s.assignments.summary', { count: volunteerAssignments.data.length })}
+          </AppText>
+        </SurfaceCard>
+      ) : null}
+
+      {collectsVisits ? (
+        <SurfaceCard onPress={() => router.push('/staff/field-visits')} accessibilityLabel={t('s.fieldVisits.title')}>
+          <AppText step="section">{t('s.fieldVisits.title')}</AppText>
+          <AppText step="body" tone="secondary">
+            {t('s.fieldVisits.homeBody')}
+          </AppText>
+        </SurfaceCard>
+      ) : null}
+
+      {coordinatesVolunteers ? (
+        <SurfaceCard onPress={() => router.push('/staff/volunteers')} accessibilityLabel={t('s.volunteers.title')}>
+          <AppText step="section">{t('s.volunteers.title')}</AppText>
+          <AppText step="body" tone="secondary">
+            {t('s.volunteers.homeBody')}
           </AppText>
         </SurfaceCard>
       ) : null}

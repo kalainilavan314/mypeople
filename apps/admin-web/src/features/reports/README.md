@@ -7,3 +7,5 @@ The English-only administration console shows actionable counts, a bounded and s
 Aggregate dashboard refreshes are intentionally not audited because they run every minute. Identifiable list and record views are audited. A report outside the staff member's effective `reports.view` geography returns `404`, avoiding record-existence disclosure.
 
 The snapshot trigger covers all future inserts, including the frozen Express producer. Moving a member after submission cannot reroute an existing report.
+
+Reports sent from the member app are community cases, worked in `/cases` (W03 to W08, `src/features/cases`); this console keeps the reports from the older member web app.

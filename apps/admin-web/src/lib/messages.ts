@@ -262,12 +262,121 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     ta: 'இக்கோரிக்கை ஏற்கனவே மூடப்பட்டுவிட்டது.',
     en: 'This request has already been closed.',
   },
+  // Moderation appeals (D12).
+  appeal_refused: {
+    ta: 'மேன்முறையீடு பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணத்தைப் பார்க்கவும்.',
+    en: 'The appeal was not recorded. See the reason below.',
+  },
+  original_moderator: {
+    ta: 'முதல் நடுவர் முடிவை நீங்களே எடுத்ததால் இந்த மேன்முறையீட்டை வேறொரு நடுவர் தீர்மானிக்க வேண்டும்.',
+    en: 'You made the first moderation decision, so another moderator must decide this appeal.',
+  },
+  // Community cases (W03 to W08).
+  case_refused: {
+    ta: 'இந்த நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The action was not recorded. Fix the points below and try again.',
+  },
+  unsupported_type: {
+    ta: 'JPEG, PNG அல்லது WebP புகைப்படத்தை மட்டும் பயன்படுத்தவும்.',
+    en: 'Use a JPEG, PNG or WebP photo.',
+  },
+  too_large: {
+    ta: 'புகைப்படம் மிகப் பெரியது.',
+    en: 'The photo is too large.',
+  },
+  empty_file: {
+    ta: 'தெரிவுசெய்த கோப்பு வெறுமையாக உள்ளது.',
+    en: 'The chosen file is empty.',
+  },
+  evidence_unreadable: {
+    ta: 'இப்புகைப்படத்தைத் திறக்க முடியவில்லை.',
+    en: 'The photo could not be read.',
+  },
+  // Volunteering, ideas, development proposals, surveys and learning (Phase 2 staff pages).
+  volunteer_refused: {
+    ta: 'இது பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'This was not recorded. Fix the points below and try again.',
+  },
+  idea_refused: {
+    ta: 'யோசனை தொடர்பான முடிவு பதிவுசெய்யப்படவில்லை.',
+    en: 'The decision on the idea was not recorded.',
+  },
+  proposal_refused: {
+    ta: 'முன்மொழிவின் இப்படி பதிவுசெய்யப்படவில்லை.',
+    en: 'This step on the proposal was not recorded.',
+  },
+  survey_refused: {
+    ta: 'கருத்துக்கணிப்பு சேமிக்கப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The survey was not saved. Fix the points below and try again.',
+  },
+  learning_refused: {
+    ta: 'பாடநெறி சேமிக்கப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The course was not saved. Fix the points below and try again.',
+  },
+  tier_cannot_record: {
+    ta: 'உங்கள் நிலையால் இப்படியைப் பதிவுசெய்ய முடியாது.',
+    en: 'Your tier cannot record this step.',
+  },
+  // Promise tracker, scorecards, community support, town halls, roster and fact-checking (round 2).
+  promise_refused: {
+    ta: 'வாக்குறுதி பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The promise was not saved. Fix the points below and try again.',
+  },
+  scorecard_refused: {
+    ta: 'மதிப்பீட்டு அட்டை தொடர்பான நடவடிக்கை பதிவுசெய்யப்படவில்லை.',
+    en: 'The scorecard action was not recorded.',
+  },
+  support_refused: {
+    ta: 'உதவி விவகார நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The support action was not recorded. Fix the points below and try again.',
+  },
+  townhall_refused: {
+    ta: 'மக்கள் மன்ற நடவடிக்கை பதிவுசெய்யப்படவில்லை.',
+    en: 'The town hall action was not recorded.',
+  },
+  roster_refused: {
+    ta: 'பணிப் பட்டியல் நடவடிக்கை பதிவுசெய்யப்படவில்லை.',
+    en: 'The roster action was not recorded.',
+  },
+  factcheck_refused: {
+    ta: 'உண்மைச் சரிபார்ப்பு முடிவு பதிவுசெய்யப்படவில்லை.',
+    en: 'The fact-check decision was not recorded.',
+  },
+  own_draft: {
+    ta: 'இதை நீங்களே வரைந்ததால் அல்லது அங்கீகாரம் கோரியதால் இதை நீங்கள் அங்கீகரிக்க முடியாது; வெளியிடும் அனுமதியுள்ள வேறொருவர் அங்கீகரிக்க வேண்டும்.',
+    en: 'You drafted this or asked for it to be approved, so you cannot approve it; another person with promise publishing must approve it.',
+  },
+  not_assigned: {
+    ta: 'இந்த உதவி விவகாரம் ஒதுக்கப்பட்ட பணியாளருக்கும் முடிவெடுப்பவர்களுக்கும் மட்டுமே திறக்கும். இம்முயற்சி தணிக்கைப் பதிவில் சேர்க்கப்பட்டது.',
+    en: 'This support case opens only for its assigned caseworker and the decision-makers. The attempt has been recorded in the audit log.',
+  },
+  original_decider: {
+    ta: 'முதல் முடிவை நீங்களே எடுத்ததால் மேன்முறையீட்டை வேறொருவர் தீர்மானிக்க வேண்டும்.',
+    en: 'You made the first decision, so someone else must decide the appeal.',
+  },
+  townhall_silence_period: {
+    ta: 'இப்பகுதியிலும் இந்நேரத்திலும் தேர்தல் அமைதிக்காலம் நடைமுறையில் உள்ளது.',
+    en: 'An election silence period covers this area and time.',
+  },
 };
 
 const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
   reason_required: {
     ta: 'காரணத்தைத் தெரிவுசெய்யவும் அல்லது உள்ளிடவும்.',
     en: 'Choose or provide a reason.',
+  },
+  // D12: an idea published in an edited (redacted) version.
+  edited_title_length: {
+    ta: 'திருத்திய தலைப்பு 5 முதல் 80 எழுத்துகளுக்குள் இருக்க வேண்டும்.',
+    en: 'The edited title must be 5 to 80 characters.',
+  },
+  edited_benefit_length: {
+    ta: 'திருத்திய பயன் 10 முதல் 1000 எழுத்துகளுக்குள் இருக்க வேண்டும்.',
+    en: 'The edited benefit must be 10 to 1000 characters.',
+  },
+  edits_only_when_publishing: {
+    ta: 'திருத்திய பதிப்பை வெளியிடும்போது மட்டுமே பயன்படுத்த முடியும். நிராகரிக்க, திருத்தங்களை நீக்கவும்.',
+    en: 'An edited version is used only when publishing. Clear the edits to reject.',
   },
   tamil_caption_missing: {
     ta: 'சமர்ப்பிப்பதற்கு முன் ஒவ்வொரு படத்திற்கும் தமிழ்க் குறிப்பு அவசியமாகும்.',
@@ -483,6 +592,632 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'உறுப்பினருக்கான குறிப்பை எழுதவும் (3 முதல் 2,000 எழுத்துகள்).',
     en: 'Write a note for the member (3 to 2,000 characters).',
   },
+  // Community cases (W03 to W08): the API's case_refused problems, then the dashboard's own checks.
+  wrong_stage: {
+    ta: 'இந்த விவகாரம் இப்போது வேறு கட்டத்தில் உள்ளது. பக்கத்தைப் புதுப்பித்துப் பார்க்கவும்.',
+    en: 'The case is at a different stage now. Reload the page to see it.',
+  },
+  facts_required: {
+    ta: 'முன்னனுப்புவதற்கு முன் குறைந்தது ஒரு அவதானிக்கப்பட்ட உண்மையைப் பதிவுசெய்யவும்.',
+    en: 'Record at least one observed fact before forwarding.',
+  },
+  completeness_check_incomplete: {
+    ta: 'முழுமைச் சரிபார்ப்பின் மூன்று பெட்டிகளையும் தெரிவுசெய்யவும்.',
+    en: 'Tick all three completeness checks.',
+  },
+  owner_not_eligible: {
+    ta: 'தெரிவுசெய்த நபர் இந்தப் பகுதியில் இந்தப் படிக்குப் பொறுப்பேற்க முடியாது.',
+    en: 'The person chosen cannot own this step in this area.',
+  },
+  owner_required: {
+    ta: 'அடுத்த படிக்குப் பொறுப்பானவரைத் தெரிவுசெய்யவும்.',
+    en: 'Choose who owns the next step.',
+  },
+  district_owner_required: {
+    ta: 'மாவட்டப் பொறுப்பாளரைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the district owner.',
+  },
+  regional_owner_required: {
+    ta: 'பிராந்தியப் பொறுப்பாளரைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the regional owner.',
+  },
+  recommendation_required: {
+    ta: 'பரிந்துரையை எழுதவும்.',
+    en: 'Write the recommendation.',
+  },
+  authority_required: {
+    ta: 'பயன்படுத்தப்படும் ஒப்படைக்கப்பட்ட அதிகாரத்தைக் குறிப்பிடவும்.',
+    en: 'Name the delegated authority used.',
+  },
+  resources_required: {
+    ta: 'தேவையான வளங்களைக் குறிப்பிடவும்.',
+    en: 'Name the resources.',
+  },
+  office_required: {
+    ta: 'பொறுப்பான அலுவலகத்தைக் குறிப்பிடவும்.',
+    en: 'Name the responsible office.',
+  },
+  due_date_required: {
+    ta: 'நிறைவு திகதியை உள்ளிடவும்.',
+    en: 'Enter the due date.',
+  },
+  due_date_in_past: {
+    ta: 'நிறைவு திகதி இன்றோ அதற்குப் பின்னரோ இருக்க வேண்டும்.',
+    en: 'The due date must be today or later.',
+  },
+  reason_and_decision_required: {
+    ta: 'மேலனுப்புவதற்கான காரணத்தையும் தேவையான முடிவையும் எழுதவும்.',
+    en: 'Write the reason for escalating and the decision required.',
+  },
+  conditions_and_implementer_required: {
+    ta: 'நிபந்தனைகளை எழுதி, நடைமுறைப்படுத்துபவரைத் தெரிவுசெய்யவும்.',
+    en: 'Write the conditions and choose the implementer.',
+  },
+  scope_and_due_date_required: {
+    ta: 'அனுமதிக்கப்பட்ட வரம்பையும் நிறைவு திகதியையும் உள்ளிடவும்.',
+    en: 'Enter the approved scope and the due date.',
+  },
+  reporting_duty_required: {
+    ta: 'அறிக்கையிடல் கடமையை எழுதவும்.',
+    en: 'Write the reporting duty.',
+  },
+  question_required: {
+    ta: 'கேள்வியை எழுதவும்.',
+    en: 'Write the question.',
+  },
+  evidence_required: {
+    ta: 'குறைந்தது ஒரு சான்றுக் குறிப்பையோ புகைப்படத்தையோ சேர்க்கவும்.',
+    en: 'Add at least one evidence reference or photo.',
+  },
+  bilingual_summary_required: {
+    ta: 'சுருக்கத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the summary in both Tamil and English.',
+  },
+  already_owner: {
+    ta: 'இவர் ஏற்கனவே இந்த விவகாரத்தின் பொறுப்பாளர்.',
+    en: 'This person already owns the case.',
+  },
+  stage_required: {
+    ta: 'விவகாரம் மீண்டும் திறக்கப்பட வேண்டிய கட்டத்தைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the stage to reopen the case at.',
+  },
+  parent_not_found: {
+    ta: 'அந்த விவகார இலக்கம் உங்கள் பகுதிகளில் காணப்படவில்லை.',
+    en: 'No case with that ID was found in your areas.',
+  },
+  parent_not_open: {
+    ta: 'அந்த விவகாரம் திறந்த நிலையில் இல்லை, அல்லது அதுவே இன்னொன்றுடன் இணைக்கப்பட்டுள்ளது.',
+    en: 'That case is not open, or is itself linked to another case.',
+  },
+  cannot_link_to_itself: {
+    ta: 'ஒரு விவகாரத்தை அதனுடனேயே இணைக்க முடியாது.',
+    en: 'A case cannot be linked to itself.',
+  },
+  already_moderated: {
+    ta: 'இத்தகவல் ஏற்கனவே மதிப்பாய்வு செய்யப்பட்டுவிட்டது.',
+    en: 'This information has already been moderated.',
+  },
+  affected_area_required: {
+    ta: 'பாதிக்கப்பட்ட பகுதியை எழுதவும் (3 முதல் 300 எழுத்துகள்).',
+    en: 'Write the affected area (3 to 300 characters).',
+  },
+  scope_required: {
+    ta: 'அனுமதிக்கப்பட்ட வேலை வரம்பை எழுதவும்.',
+    en: 'Write the approved scope of the work.',
+  },
+  edited_body_too_short: {
+    ta: 'திருத்திய பதிப்பு குறைந்தது 5 எழுத்துகள் இருக்க வேண்டும்; அப்படியே வெளியிட வெறுமையாக விடவும்.',
+    en: 'The edited version needs at least 5 characters; leave it empty to publish the text as written.',
+  },
+  appeal_too_short: {
+    ta: 'மேன்முறையீட்டுக்குக் குறைந்தது 10 எழுத்துகள் எழுதவும்.',
+    en: 'Write at least 10 characters for the appeal.',
+  },
+  not_rejected: {
+    ta: 'நிராகரிக்கப்பட்ட முடிவுக்கு மட்டுமே மேன்முறையீடு செய்யலாம்.',
+    en: 'Only a rejection can be appealed.',
+  },
+  already_appealed: {
+    ta: 'இந்த முடிவுக்கு ஏற்கனவே மேன்முறையீடு செய்யப்பட்டுள்ளது.',
+    en: 'This decision has already been appealed.',
+  },
+  photo_not_found: {
+    ta: 'சேர்த்த புகைப்படங்களில் ஒன்று காணப்படவில்லை. மீண்டும் தெரிவுசெய்யவும்.',
+    en: 'One of the photos was not found. Choose it again.',
+  },
+  no_open_challenge: {
+    ta: 'இந்த விவகாரத்தில் திறந்த மறுப்பு எதுவும் இல்லை.',
+    en: 'There is no open challenge on this case.',
+  },
+  source_required: {
+    ta: 'சரிபார்க்கப்பட்ட உண்மைக்கு அதன் மூலத்தைக் குறிப்பிடவும்.',
+    en: 'A verified fact needs its source.',
+  },
+  finding_kind_required: {
+    ta: 'கண்டறிதலின் வகையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the kind of finding.',
+  },
+  responsible_tier_required: {
+    ta: 'பொறுப்பான நிலையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the responsible tier.',
+  },
+  too_many_photos: {
+    ta: 'அதிகபட்சம் 6 புகைப்படங்களைச் சேர்க்கவும்.',
+    en: 'Attach at most 6 photos.',
+  },
+  unsupported_type: {
+    ta: 'JPEG, PNG அல்லது WebP புகைப்படத்தை மட்டும் பயன்படுத்தவும்.',
+    en: 'Use a JPEG, PNG or WebP photo.',
+  },
+  too_many_pixels: {
+    ta: 'புகைப்படத்தின் பிக்சல் அளவு மிக அதிகம்.',
+    en: 'The photo has too many pixels.',
+  },
+  evidence_unreadable: {
+    ta: 'இப்புகைப்படத்தைத் திறக்க முடியவில்லை.',
+    en: 'The photo could not be read.',
+  },
+  unknown_permission: {
+    ta: 'அறியப்படாத அனுமதி.',
+    en: 'Unknown permission.',
+  },
+  // Volunteering (S10).
+  title_required: {
+    ta: 'தலைப்பைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the title in Tamil and English.',
+  },
+  role_required: {
+    ta: 'பணியைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the role in Tamil and English.',
+  },
+  description_required: {
+    ta: 'விளக்கத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the description in Tamil and English.',
+  },
+  place_required: {
+    ta: 'இடத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the place in Tamil and English.',
+  },
+  bring_required: {
+    ta: 'கொண்டுவர வேண்டியவற்றைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write what to bring in Tamil and English.',
+  },
+  team_required: {
+    ta: 'அணியைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the team in Tamil and English.',
+  },
+  places_required: {
+    ta: 'இடங்களின் எண்ணிக்கையை 1 முதல் 500 வரை உள்ளிடவும்.',
+    en: 'Enter the number of places, from 1 to 500.',
+  },
+  area_required: {
+    ta: 'பகுதியைத் தெரிவுசெய்யவும் அல்லது அதன் குறியீட்டை உள்ளிடவும்.',
+    en: 'Choose the area, or enter its code.',
+  },
+  unknown_skill: {
+    ta: 'தெரிவுசெய்த திறன்களில் ஒன்று திறன் பட்டியலில் இல்லை.',
+    en: 'One of the chosen skills is not on the skills list.',
+  },
+  too_many_skills: {
+    ta: 'அதிகபட்சம் 10 திறன்களைத் தெரிவுசெய்யவும்.',
+    en: 'Choose at most 10 skills.',
+  },
+  meeting_point_required: {
+    ta: 'சந்திக்கும் இடத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the meeting point in Tamil and English.',
+  },
+  places_filled: {
+    ta: 'எல்லா இடங்களும் நிரம்பிவிட்டன. மேலும் ஒருவரை உறுதிசெய்ய முன் இடங்களைக் கூட்டவும்.',
+    en: 'Every place is filled. Add places before confirming anyone else.',
+  },
+  not_awaiting_decision: {
+    ta: 'இந்த முன்வருகை ஏற்கனவே தீர்மானிக்கப்பட்டுள்ளது அல்லது மீளப்பெறப்பட்டுள்ளது.',
+    en: 'This offer has already been decided or withdrawn.',
+  },
+  already_answered: {
+    ta: 'இச்செய்திக்கு ஏற்கனவே பதிலளிக்கப்பட்டுள்ளது.',
+    en: 'This message has already been answered.',
+  },
+  answer_required: {
+    ta: 'பதிலை எழுதவும் (குறைந்தது 3 எழுத்துகள்).',
+    en: 'Write the answer (at least 3 characters).',
+  },
+  // Surveys.
+  audience_required: {
+    ta: 'யாருக்கானது என்பதைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write who the survey is for, in Tamil and English.',
+  },
+  privacy_required: {
+    ta: 'பதில்கள் எவ்வாறு பயன்படுத்தப்பட்டுப் பேணப்படும் என்பதைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write how the answers are used and kept, in Tamil and English.',
+  },
+  next_steps_required: {
+    ta: 'அடுத்து என்ன நடக்கும் என்பதைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write what happens next, in Tamil and English.',
+  },
+  closes_at_invalid: {
+    ta: 'முடிவு நேரத்தைச் சரியாக உள்ளிடவும், அல்லது வெறுமையாக விடவும்.',
+    en: 'Enter a valid closing time, or leave it empty.',
+  },
+  anonymous_surveys_cannot_be_edited: {
+    ta: 'அநாமதேயக் கருத்துக்கணிப்பின் பதில்களை மாற்ற அனுமதிக்க முடியாது.',
+    en: 'An anonymous survey cannot let members change their answers.',
+  },
+  questions_required: {
+    ta: 'குறைந்தது ஒரு கேள்வியைச் சேர்க்கவும்.',
+    en: 'Add at least one question.',
+  },
+  too_many_questions: {
+    ta: 'அதிகபட்சம் 50 கேள்விகளைச் சேர்க்கவும்.',
+    en: 'Add at most 50 questions.',
+  },
+  only_drafts_change: {
+    ta: 'வரைவுகளை மட்டுமே மாற்ற முடியும்.',
+    en: 'Only a draft can be changed.',
+  },
+  // Learning courses.
+  summary_required: {
+    ta: 'சுருக்கத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the summary in Tamil and English.',
+  },
+  topic_required: {
+    ta: 'பாடப் பிரிவைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the topic.',
+  },
+  lessons_required: {
+    ta: 'வெளியிடுவதற்கு முன் குறைந்தது ஒரு பாடத்தைச் சேர்த்துச் சேமிக்கவும்.',
+    en: 'Add and save at least one lesson before publishing.',
+  },
+  too_many_lessons: {
+    ta: 'அதிகபட்சம் 50 பாடங்களைச் சேர்க்கவும்.',
+    en: 'Add at most 50 lessons.',
+  },
+  target_required: {
+    ta: 'அளவிடக்கூடிய இலக்கைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the measurable target in Tamil and English.',
+  },
+  promise_source_required: {
+    ta: 'வாக்குறுதி முதலில் வெளியான இடத்தையும் திகதியையும் குறிப்பிடவும்.',
+    en: 'Give where the promise was first published and the date.',
+  },
+  kind_required: {
+    ta: 'வகையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the kind.',
+  },
+  theme_required: {
+    ta: 'கருப்பொருளைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the theme.',
+  },
+  planned_start_required: {
+    ta: 'திட்டமிட்ட ஆரம்பத் திகதியை உள்ளிடவும்.',
+    en: 'Enter the planned start date.',
+  },
+  due_before_start: {
+    ta: 'நிறைவு திகதி திட்டமிட்ட ஆரம்பத்துக்குப் பின்னரே அமைய வேண்டும்.',
+    en: 'The due date must not be before the planned start.',
+  },
+  milestones_required: {
+    ta: 'வெளியிடுவதற்கு குறைந்தது ஒரு மைல்கல் தேவை.',
+    en: 'Publication needs at least one milestone.',
+  },
+  too_many_milestones: {
+    ta: 'அதிகபட்சம் 30 மைல்கற்களைச் சேர்க்கவும்.',
+    en: 'Add at most 30 milestones.',
+  },
+  update_note_required: {
+    ta: 'புதுப்பிப்பைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 5 எழுத்துகள்).',
+    en: 'Write the update in Tamil and English (at least 5 characters).',
+  },
+  reply_required: {
+    ta: 'பதிலைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the reply in Tamil and English.',
+  },
+  delayed_is_set_by_due_date: {
+    ta: '"தாமதமானது" நிலை நிறைவு திகதியால் தானாக அமையும்; அதைத் தெரிவுசெய்ய முடியாது.',
+    en: 'Delayed is set by the due date; it cannot be chosen.',
+  },
+  published_promises_change_by_update: {
+    ta: 'வெளியிடப்பட்ட வாக்குறுதி அங்கீகரிக்கப்பட்ட புதுப்பிப்புகள் மூலம் மட்டுமே மாறும்.',
+    en: 'A published promise changes only through approved updates.',
+  },
+  not_published: {
+    ta: 'வாக்குறுதி இன்னும் வெளியிடப்படவில்லை.',
+    en: 'The promise is not published yet.',
+  },
+  already_decided: {
+    ta: 'இது ஏற்கனவே தீர்மானிக்கப்பட்டுவிட்டது.',
+    en: 'This has already been decided.',
+  },
+  feedback_not_published: {
+    ta: 'வெளியிடப்பட்ட கருத்துக்கு மட்டுமே பதிலளிக்க முடியும்.',
+    en: 'Only published feedback can be answered.',
+  },
+  period_invalid: {
+    ta: 'காலாண்டை 2026-Q3 போன்ற வடிவில் உள்ளிடவும்.',
+    en: 'Enter the quarter like 2026-Q3.',
+  },
+  period_not_finished: {
+    ta: 'அந்தக் காலாண்டு இன்னும் முடிவடையவில்லை.',
+    en: 'That quarter has not finished yet.',
+  },
+  draft_exists: {
+    ta: 'அந்தக் காலாண்டுக்கு ஏற்கனவே ஒரு வரைவு உள்ளது.',
+    en: 'There is already a draft for that quarter.',
+  },
+  review_period_running: {
+    ta: 'பகிர்ந்த பின் 10 வேலை நாள் மீளாய்வுக் காலம் இன்னும் முடியவில்லை.',
+    en: 'The 10 working-day review period after sharing has not ended yet.',
+  },
+  unknown_metric: {
+    ta: 'திருத்தப்பட வேண்டிய எண்ணிக்கையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the figure to correct.',
+  },
+  // Promise Tracker: past the due date a promise stays Delayed until it is finished.
+  overdue_stays_delayed: {
+    ta: 'இறுதித் திகதி கடந்துவிட்டதால் இந்த வாக்குறுதி தாமதமானது என்றே இருக்கும். சான்றுடன் நிறைவேற்றப்பட்டது, காரணத்துடன் மீளப்பெறப்பட்டது, அல்லது நிலையை மாற்றாத குறிப்பு மட்டுமே ஏற்கப்படும்.',
+    en: 'The due date has passed, so this promise stays Delayed. Only Completed (with evidence), Withdrawn (with the reason) or a note without a change of status is accepted.',
+  },
+  // Scorecards: a correction names one of the card's own areas.
+  area_not_on_scorecard: {
+    ta: 'இந்தப் பகுதி இந்த மதிப்பீட்டு அட்டையில் இல்லை. அட்டையில் உள்ள பகுதிகளில் ஒன்றைத் தெரிவுசெய்யவும்.',
+    en: 'This area is not on this scorecard. Choose one of the areas it shows.',
+  },
+  area_key_required: {
+    ta: 'பகுதியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the area.',
+  },
+  decision_note_required: {
+    ta: 'முடிவை விளக்கும் குறிப்பை எழுதவும்.',
+    en: 'Write the note explaining the decision.',
+  },
+  note_text_required: {
+    ta: 'குறிப்பைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும், அல்லது இரண்டையும் வெறுமையாக விடவும்.',
+    en: 'Write the note in both Tamil and English, or leave both empty to remove it.',
+  },
+  consent_required: {
+    ta: 'விவரங்களைப் பதிவுசெய்ய அழைப்பாளர் ஒப்புக்கொண்டதை உறுதிப்படுத்தவும்.',
+    en: 'Confirm that the caller agreed to the details being recorded.',
+  },
+  category_required: {
+    ta: 'தேவைப்படும் உதவியின் வகையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the kind of help.',
+  },
+  case_summary_required: {
+    ta: 'தேவைப்படும் உதவியை விவரிக்கவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Describe the help needed (at least 10 characters).',
+  },
+  full_name_required: {
+    ta: 'விண்ணப்பதாரரின் பெயரை உள்ளிடவும்.',
+    en: 'Enter the applicant\u2019s name.',
+  },
+  phone_invalid: {
+    ta: 'தொலைபேசி இலக்கம் 9 முதல் 15 இலக்கங்களாக இருக்க வேண்டும்.',
+    en: 'The phone number must have 9 to 15 digits.',
+  },
+  channel_required: {
+    ta: 'கோரிக்கை வந்த வழியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose how the request came in.',
+  },
+  partner_required: {
+    ta: 'பங்காளர் நிறுவனத்தைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the partner organisation.',
+  },
+  partner_not_found: {
+    ta: 'அந்தப் பங்காளர் நிறுவனம் செயலில் இல்லை.',
+    en: 'That partner is not active.',
+  },
+  partner_consent_required: {
+    ta: 'இப்பங்காளர் விவகாரத்தைப் பார்க்க விண்ணப்பதாரர் ஒப்புக்கொண்டதை உறுதிப்படுத்தவும்.',
+    en: 'Confirm that the applicant agreed to this partner seeing the case.',
+  },
+  caseworker_required: {
+    ta: 'பணியாளரைத் தெரிவுசெய்யவும்.',
+    en: 'Choose a caseworker.',
+  },
+  caseworker_not_eligible: {
+    ta: 'இவர் இப்பகுதியில் உதவிப் பணி அனுமதி கொண்டவர் அல்லர்.',
+    en: 'This person does not hold casework in this area.',
+  },
+  not_a_suggested_duplicate: {
+    ta: 'அந்த விவகாரம் ஒத்த கோரிக்கையாகப் பரிந்துரைக்கப்படவில்லை.',
+    en: 'That case is not a suggested duplicate.',
+  },
+  case_note_required: {
+    ta: 'குறிப்பை எழுதவும் (குறைந்தது 3 எழுத்துகள்).',
+    en: 'Write the note (at least 3 characters).',
+  },
+  criteria_version_required: {
+    ta: 'வெளியிடப்பட்ட நிபந்தனைப் பதிப்பைத் தெரிவுசெய்யவும்.',
+    en: 'Choose a published criteria version.',
+  },
+  criteria_not_current: {
+    ta: 'இந்த உதவி வகையை உள்ளடக்கும் செயலிலுள்ள திட்டமொன்றின் தற்போதைய நிபந்தனைப் பதிப்பைத் தெரிவுசெய்யவும். முந்தைய பதிப்புகளும் நிறுத்தப்பட்ட திட்டங்களும் ஏற்கப்படாது.',
+    en: 'Choose the current criteria of an active programme that covers this kind of help. Earlier versions and retired programmes are not accepted.',
+  },
+  delivery_incomplete: {
+    ta: 'வழங்கியது, அளவு, திகதி, வழங்கியவர், சான்று அனைத்தையும் உள்ளிடவும்.',
+    en: 'Enter what was given, how much, the date, who gave it and the evidence.',
+  },
+  close_note_required: {
+    ta: 'மூடும் குறிப்பை எழுதவும் (குறைந்தது 5 எழுத்துகள்).',
+    en: 'Write the closing note (at least 5 characters).',
+  },
+  new_decision_required: {
+    ta: 'முடிவை மாற்ற புதிய முடிவு, நிபந்தனைப் பதிப்பு, தமிழ்க் காரணம் தேவை.',
+    en: 'Changing the decision needs the new outcome, the criteria version and the reason in Tamil.',
+  },
+  appeal_reason_required: {
+    ta: 'காரணத்தை எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write the reason (at least 10 characters).',
+  },
+  programme_text_required: {
+    ta: 'திட்டத்தின் பெயரையும் விளக்கத்தையும் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the programme name and description in Tamil and English.',
+  },
+  categories_required: {
+    ta: 'குறைந்தது ஒரு உதவி வகையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose at least one kind of help.',
+  },
+  criteria_text_required: {
+    ta: 'நிபந்தனைகளைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write the criteria in Tamil and English (at least 10 characters).',
+  },
+  partner_details_required: {
+    ta: 'பெயர், வகை, அலுவலகத் தொடர்பு ஆகியவற்றை உள்ளிடவும்.',
+    en: 'Enter the name, kind and office contact.',
+  },
+  referral_state_required: {
+    ta: 'பங்காளர் கூறியதைத் தெரிவுசெய்யவும்.',
+    en: 'Choose what the partner said.',
+  },
+  purpose_required: {
+    ta: 'இப்பங்காளருக்குப் பரிந்துரைப்பதற்கான காரணத்தை எழுதவும் (3 முதல் 500 எழுத்துகள்). விண்ணப்பதாரர் இதைப் பார்ப்பார்.',
+    en: 'Write why the case would go to this partner (3 to 500 characters). The applicant sees it.',
+  },
+  referral_not_shared: {
+    ta: 'இப்பரிந்துரை பங்காளருடன் பகிரப்படவில்லை: விண்ணப்பதாரர் இன்னும் ஒப்புக்கொள்ளவில்லை, அல்லது மறுத்துவிட்டார்.',
+    en: 'This referral was not shared with the partner: the applicant has not consented yet, or declined.',
+  },
+  speakers_required: {
+    ta: 'பேச்சாளர்களைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the speakers in Tamil and English.',
+  },
+  language_required: {
+    ta: 'அமர்வின் மொழியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the language of the session.',
+  },
+  https_link_required: {
+    ta: 'இணைப்புகள் https:// என்று தொடங்க வேண்டும்.',
+    en: 'Links must start with https://.',
+  },
+  recording_link_https: {
+    ta: 'ஒளிப்பதிவு இணைப்பு https:// என்று தொடங்க வேண்டும்.',
+    en: 'The recording link must start with https://.',
+  },
+  legal_review_required: {
+    ta: 'தேர்தல் காலப்பகுதியில் சட்ட மீளாய்வுக் குறிப்பு தேவை. அமர்வின் விவரங்களில் அதைச் சேர்த்து மீண்டும் முயற்சிக்கவும்.',
+    en: 'A legal review reference is needed in an election period. Add it to the session details, then try again.',
+  },
+  merge_target_required: {
+    ta: 'இணைக்க வேண்டிய அங்கீகரிக்கப்பட்ட கேள்வியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the approved question to merge into.',
+  },
+  merge_target_not_approved: {
+    ta: 'அங்கீகரிக்கப்பட்ட கேள்வியுடன் மட்டுமே இணைக்க முடியும்.',
+    en: 'A question can only be merged into an approved one.',
+  },
+  question_not_approved: {
+    ta: 'அங்கீகரிக்கப்பட்ட கேள்விகளுக்கு மட்டுமே பதிலளிக்க முடியும்.',
+    en: 'Only approved questions can be answered.',
+  },
+  time_required: {
+    ta: 'பதில் ஒளிப்பதிவில் எந்த வினாடியில் உள்ளது என்பதை உள்ளிடவும்.',
+    en: 'Enter the second of the recording where it was answered.',
+  },
+  bilingual_answer_required: {
+    ta: 'பதிலைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the answer in Tamil and English.',
+  },
+  site_required: {
+    ta: 'இடத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the site in Tamil and English.',
+  },
+  shift_places_required: {
+    ta: 'இடங்களின் எண்ணிக்கையை 1 முதல் 200 வரை உள்ளிடவும்.',
+    en: 'Enter the number of places, from 1 to 200.',
+  },
+  message_required: {
+    ta: 'செய்தியைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the message in Tamil and English.',
+  },
+  period_not_declared: {
+    ta: 'அறிவிக்கப்பட்ட தேர்தல் காலப்பகுதியில் மட்டுமே பணி நேரங்களை உருவாக்க முடியும்.',
+    en: 'Shifts can be made only in a declared election period.',
+  },
+  outside_the_election_area: {
+    ta: 'அப்பகுதி இத்தேர்தலின் பகுதிக்கு வெளியே உள்ளது.',
+    en: 'That area is outside this election\u2019s area.',
+  },
+  shift_cancelled: {
+    ta: 'இப்பணி நேரம் இரத்து செய்யப்பட்டுள்ளது.',
+    en: 'This shift is cancelled.',
+  },
+  member_outside_shift_area: {
+    ta: 'இவ்வுறுப்பினர் இப்பணி நேரத்தின் பகுதிக்கு வெளியே உள்ளார்.',
+    en: 'This member is outside the shift\u2019s area.',
+  },
+  already_offered: {
+    ta: 'இவருக்கு ஏற்கனவே இப்பணி நேரம் வழங்கப்பட்டுள்ளது.',
+    en: 'This member has already been offered this shift.',
+  },
+  factcheck_reason_required: {
+    ta: 'காரணத்தை எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write the reason (at least 10 characters).',
+  },
+  new_outcome_required: {
+    ta: 'புதிய முடிவைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the new outcome.',
+  },
+  no_open_appeal: {
+    ta: 'இந்த முறைப்பாட்டில் திறந்த மேன்முறையீடு இல்லை.',
+    en: 'There is no open appeal on this report.',
+  },
+  not_decided: {
+    ta: 'இந்த முறைப்பாடு இன்னும் தீர்மானிக்கப்படவில்லை.',
+    en: 'This report has not been decided yet.',
+  },
+};
+
+/** Problems that name a question or lesson by its number, e.g. "options_required:2". */
+const NUMBERED_PROBLEMS: Record<string, (n: string) => BilingualText> = {
+  options_required: (n) => ({
+    ta: `கேள்வி ${n} இற்குக் குறைந்தது இரண்டு தெரிவுகள் தேவை.`,
+    en: `Question ${n} needs at least two options.`,
+  }),
+  option_keys_invalid: (n) => ({
+    ta: `கேள்வி ${n}: தெரிவுக் குறியீடுகள் ஒன்றுக்கொன்று வேறுபட்டவையாகவும் சிறிய ஆங்கில எழுத்துகள், இலக்கங்கள், _ மட்டும் கொண்டவையாகவும் இருக்க வேண்டும் (prefer_not_to_say தவிர).`,
+    en: `Question ${n}: option keys must differ from each other and use only lowercase letters, digits and _ (not prefer_not_to_say).`,
+  }),
+  option_text_required: (n) => ({
+    ta: `கேள்வி ${n}: ஒவ்வொரு தெரிவையும் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.`,
+    en: `Question ${n}: write every option in Tamil and English.`,
+  }),
+  prompt_required: (n) => ({
+    ta: `கேள்வி ${n} ஐத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.`,
+    en: `Write question ${n} in Tamil and English.`,
+  }),
+  lesson_text_required: (n) => ({
+    ta: `பாடம் ${n} இன் தலைப்பையும் உரையையும் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.`,
+    en: `Lesson ${n} needs its title and text in Tamil and English.`,
+  }),
+  lesson_minutes_invalid: (n) => ({
+    ta: `பாடம் ${n} இற்கு 1 முதல் 120 வரையான நிமிடங்களை உள்ளிடவும்.`,
+    en: `Give lesson ${n} between 1 and 120 minutes.`,
+  }),
+  milestone_text_required: (n) => ({
+    ta: `மைல்கல் ${n} ஐத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 3 எழுத்துகள்).`,
+    en: `Write milestone ${n} in Tamil and English (at least 3 characters).`,
+  }),
+  outcome_text_required: (n) => ({
+    ta: `விளைவு ${n} ஐத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 3 எழுத்துகள்).`,
+    en: `Write outcome ${n} in Tamil and English (at least 3 characters).`,
+  }),
+  outcome_promise_id_invalid: (n) => ({
+    ta: `விளைவு ${n}: வாக்குறுதி அடையாள இலக்கம் சரியில்லை. வாக்குறுதிக் கண்காணிப்பிலிருந்து அதைப் படியெடுக்கவும்.`,
+    en: `Outcome ${n}: the promise id is not valid. Copy it from the promise tracker.`,
+  }),
+  outcome_promise_not_published: (n) => ({
+    ta: `விளைவு ${n}: இந்த வாக்குறுதி இல்லை அல்லது இன்னும் வெளியிடப்படவில்லை. வெளியிடப்பட்ட வாக்குறுதியுடன் மட்டுமே இணைக்கலாம்.`,
+    en: `Outcome ${n}: this promise does not exist or is not published yet. Link only a published promise.`,
+  }),
+  outcome_case_number_invalid: (n) => ({
+    ta: `விளைவு ${n}: விவகார இலக்கம் CI-00012 போன்ற வடிவில் இருக்க வேண்டும்.`,
+    en: `Outcome ${n}: a case number looks like CI-00012.`,
+  }),
+  outcome_case_not_found: (n) => ({
+    ta: `விளைவு ${n}: இந்த இலக்கத்தில் விவகாரம் எதுவும் இல்லை.`,
+    en: `Outcome ${n}: there is no case with this number.`,
+  }),
 };
 
 export const PROBLEM_FIELD_MAP: Record<string, string> = {
@@ -632,6 +1367,430 @@ const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
     ta: 'கோரிக்கை நிராகரிக்கப்பட்டது. உறுப்பினருக்குக் காரணத்துடன் அறிவிக்கப்படும்.',
     en: 'Request refused. The member is notified with your note.',
   },
+  // Community cases (W03 to W08).
+  fact_added: {
+    ta: 'உண்மை பதிவுசெய்யப்பட்டது.',
+    en: 'Fact recorded.',
+  },
+  finding_added: {
+    ta: 'கண்டறிதல் பதிவுசெய்யப்பட்டது.',
+    en: 'Finding recorded.',
+  },
+  note_added: {
+    ta: 'குறிப்பு சேர்க்கப்பட்டது.',
+    en: 'Note added.',
+  },
+  case_returned: {
+    ta: 'விவரங்களுக்காக அறிவித்தவருக்குத் திருப்பியனுப்பப்பட்டது.',
+    en: 'Returned to the reporter for details.',
+  },
+  case_linked: {
+    ta: 'திறந்த விவகாரத்துடன் இணைக்கப்பட்டது.',
+    en: 'Linked to the open case.',
+  },
+  case_forwarded: {
+    ta: 'பிரதேச ஆய்வுக்கு முன்னனுப்பப்பட்டது.',
+    en: 'Forwarded to divisional research.',
+  },
+  ds_report_sent: {
+    ta: 'பிரதேச அறிக்கை மாவட்டத்துக்கு அனுப்பப்பட்டது.',
+    en: 'Divisional report sent to the district.',
+  },
+  district_acted: {
+    ta: 'மாவட்ட நடவடிக்கை பதிவுசெய்யப்பட்டது; விவகாரம் நடைமுறைப்படுத்தலுக்குச் சென்றது.',
+    en: 'District action recorded; the case moved to implementation.',
+  },
+  case_escalated: {
+    ta: 'பிராந்தியத் திட்டத்துக்கு மேலனுப்பப்பட்டது.',
+    en: 'Escalated to a regional plan.',
+  },
+  regional_plan_sent: {
+    ta: 'பிராந்தியத் திட்டம் நிறைவேற்று அனுமதிக்கு அனுப்பப்பட்டது.',
+    en: 'Regional plan sent for executive approval.',
+  },
+  executive_approved: {
+    ta: 'நிபந்தனைகளுடன் அனுமதிக்கப்பட்டது; விவகாரம் நடைமுறைப்படுத்தலுக்குச் சென்றது.',
+    en: 'Approved with conditions; the case moved to implementation.',
+  },
+  executive_returned: {
+    ta: 'தெளிவுபடுத்தலுக்காகத் திருப்பியனுப்பப்பட்டது.',
+    en: 'Returned for clarification.',
+  },
+  executive_declined: {
+    ta: 'விவகாரம் நிராகரிக்கப்பட்டது.',
+    en: 'Case declined.',
+  },
+  progress_recorded: {
+    ta: 'முன்னேற்றம் பதிவுசெய்யப்பட்டது.',
+    en: 'Progress recorded.',
+  },
+  case_closed: {
+    ta: 'நிறைவு அறிக்கை சமர்ப்பிக்கப்பட்டது; விவகாரம் தீர்க்கப்பட்டது.',
+    en: 'Closing report submitted; the case is resolved.',
+  },
+  case_assigned: {
+    ta: 'விவகாரம் ஒப்படைக்கப்பட்டது.',
+    en: 'Case handed over.',
+  },
+  case_taken: {
+    ta: 'இந்த விவகாரம் இப்போது உங்கள் பொறுப்பில் உள்ளது.',
+    en: 'You now own this case.',
+  },
+  challenge_accepted: {
+    ta: 'மறுப்பு ஏற்கப்பட்டது; விவகாரம் மீண்டும் திறக்கப்பட்டது.',
+    en: 'Challenge accepted; the case is reopened.',
+  },
+  challenge_rejected: {
+    ta: 'மறுப்பு நிராகரிக்கப்பட்டது; அறிவித்தவருக்கு அறிவிக்கப்படும்.',
+    en: 'Challenge rejected; the reporter is notified.',
+  },
+  summary_published: {
+    ta: 'பொதுச் சுருக்கம் வெளியிடப்பட்டது.',
+    en: 'Public summary published.',
+  },
+  summary_withheld: {
+    ta: 'பொதுச் சுருக்கம் நிறுத்திவைக்கப்பட்டது.',
+    en: 'Public summary withheld.',
+  },
+  addition_approved: {
+    ta: 'சேர்க்கப்பட்ட தகவல் அங்கீகரிக்கப்பட்டது.',
+    en: 'Added information approved.',
+  },
+  addition_rejected: {
+    ta: 'சேர்க்கப்பட்ட தகவல் நிராகரிக்கப்பட்டது.',
+    en: 'Added information rejected.',
+  },
+  addition_redacted: {
+    ta: 'திருத்திய வடிவம் அங்கீகரிக்கப்பட்டு வெளியிடப்பட்டது.',
+    en: 'Edited version approved and published.',
+  },
+  moderation_appeal_changed: {
+    ta: 'மேன்முறையீடு ஏற்கப்பட்டது; விடயம் வெளியிடப்பட்டது. எழுதியவருக்குக் காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'Appeal accepted; the item is published. The author is told your reason.',
+  },
+  moderation_appeal_upheld: {
+    ta: 'முதல் முடிவு உறுதிசெய்யப்பட்டது. எழுதியவருக்குக் காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'First decision upheld. The author is told your reason.',
+  },
+  // Volunteering (S10).
+  opportunity_created: {
+    ta: 'வாய்ப்பு வரைவாகச் சேமிக்கப்பட்டது. திறக்கும் வரை உறுப்பினர்கள் இதைக் காணமாட்டார்கள்.',
+    en: 'Opportunity saved as a draft. Members see it once you open it.',
+  },
+  opportunity_saved: {
+    ta: 'மாற்றங்கள் சேமிக்கப்பட்டன.',
+    en: 'Changes saved.',
+  },
+  opportunity_open: {
+    ta: 'வாய்ப்பு திறக்கப்பட்டது. பகுதியிலுள்ள உறுப்பினர்கள் உதவ முன்வரலாம்.',
+    en: 'Opportunity opened. Members in the area can offer to help.',
+  },
+  opportunity_closed: {
+    ta: 'வாய்ப்பு புதிய முன்வருகைகளுக்கு மூடப்பட்டது.',
+    en: 'Opportunity closed to new offers.',
+  },
+  opportunity_cancelled: {
+    ta: 'வாய்ப்பு இரத்து செய்யப்பட்டது. முன்வந்த அனைவருக்கும் காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'Opportunity cancelled. Everyone who offered is told, with your reason.',
+  },
+  offer_confirmed: {
+    ta: 'தன்னார்வலர் உறுதிசெய்யப்பட்டார்; அவருக்கு அறிவிக்கப்படும்.',
+    en: 'Volunteer confirmed; they are told.',
+  },
+  offer_declined: {
+    ta: 'முன்வருகை நிராகரிக்கப்பட்டது; காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'Offer declined; the volunteer is told with your reason.',
+  },
+  contact_answered: {
+    ta: 'பதில் அனுப்பப்பட்டது; தன்னார்வலருக்கு அறிவிக்கப்படும்.',
+    en: 'Answer sent; the volunteer is told.',
+  },
+  // Moderation and development proposals (D12, D15).
+  idea_published: {
+    ta: 'யோசனை வெளியிடப்பட்டது.',
+    en: 'Idea published.',
+  },
+  idea_rejected: {
+    ta: 'யோசனை நிராகரிக்கப்பட்டது; ஆசிரியருக்குக் காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'Idea rejected; the author is told with your reason.',
+  },
+  proposal_review: {
+    ta: 'முன்மொழிவு மீளாய்வுக்கு வெளியிடப்பட்டது.',
+    en: 'Proposal published for review.',
+  },
+  proposal_rejected: {
+    ta: 'முன்மொழிவு நிராகரிக்கப்பட்டது; ஆசிரியருக்குக் காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'Proposal rejected; the author is told with your reason.',
+  },
+  proposal_not_taken_forward: {
+    ta: 'முன்மொழிவு முன்னெடுக்கப்படவில்லை எனப் பதிவுசெய்யப்பட்டது; ஆசிரியருக்கு அறிவிக்கப்படும்.',
+    en: 'Recorded as not taken forward; the author is told.',
+  },
+  proposal_approved_for_planning: {
+    ta: 'திட்டமிடலுக்கு அங்கீகரிக்கப்பட்டது. இது நிதியை ஒதுக்குவதில்லை.',
+    en: 'Approved for planning. This does not commit funds.',
+  },
+  proposal_funding_identified: {
+    ta: 'நிதி அடையாளம் காணப்பட்டதாகப் பதிவுசெய்யப்பட்டது.',
+    en: 'Funding identified recorded.',
+  },
+  proposal_implementation: {
+    ta: 'முன்மொழிவு நடைமுறைப்படுத்தலுக்கு நகர்த்தப்பட்டது.',
+    en: 'Proposal moved to implementation.',
+  },
+  // Surveys and learning courses.
+  survey_created: {
+    ta: 'கருத்துக்கணிப்பு வரைவாகச் சேமிக்கப்பட்டது.',
+    en: 'Survey saved as a draft.',
+  },
+  survey_saved: {
+    ta: 'வரைவு சேமிக்கப்பட்டது.',
+    en: 'Draft saved.',
+  },
+  survey_open: {
+    ta: 'கருத்துக்கணிப்பு திறக்கப்பட்டது. இனி அதை மாற்ற முடியாது.',
+    en: 'Survey opened. It can no longer change.',
+  },
+  survey_closed: {
+    ta: 'கருத்துக்கணிப்பு மூடப்பட்டது.',
+    en: 'Survey closed.',
+  },
+  course_created: {
+    ta: 'பாடநெறி வரைவாகச் சேமிக்கப்பட்டது.',
+    en: 'Course saved as a draft.',
+  },
+  course_saved: {
+    ta: 'வரைவு சேமிக்கப்பட்டது.',
+    en: 'Draft saved.',
+  },
+  course_published: {
+    ta: 'பாடநெறி வெளியிடப்பட்டது.',
+    en: 'Course published.',
+  },
+  course_retired: {
+    ta: 'பாடநெறி ஓய்வுபெற்றது. உறுப்பினர்கள் இனி அதைத் தொடங்க முடியாது.',
+    en: 'Course retired. Members can no longer start it.',
+  },
+  promise_drafted: {
+    ta: 'வாக்குறுதி வரைவாகச் சேமிக்கப்பட்டது.',
+    en: 'Promise saved as a draft.',
+  },
+  promise_saved: {
+    ta: 'வரைவு சேமிக்கப்பட்டது.',
+    en: 'Draft saved.',
+  },
+  promise_publication_requested: {
+    ta: 'வெளியீட்டுக்கான அங்கீகாரம் கோரப்பட்டது.',
+    en: 'Approval for publication requested.',
+  },
+  promise_published: {
+    ta: 'வாக்குறுதி வெளியிடப்பட்டது.',
+    en: 'Promise published.',
+  },
+  promise_returned: {
+    ta: 'காரணத்துடன் திருப்பியனுப்பப்பட்டது.',
+    en: 'Returned with your reason.',
+  },
+  promise_update_drafted: {
+    ta: 'புதுப்பிப்பு அங்கீகாரத்துக்காகச் சேமிக்கப்பட்டது.',
+    en: 'Update saved for approval.',
+  },
+  promise_update_approved: {
+    ta: 'புதுப்பிப்பு அங்கீகரிக்கப்பட்டு வெளியிடப்பட்டது.',
+    en: 'Update approved and published.',
+  },
+  promise_update_rejected: {
+    ta: 'புதுப்பிப்பு காரணத்துடன் திருப்பியனுப்பப்பட்டது.',
+    en: 'Update returned with your reason.',
+  },
+  feedback_published: {
+    ta: 'கருத்து வெளியிடப்பட்டது.',
+    en: 'Feedback published.',
+  },
+  feedback_rejected: {
+    ta: 'கருத்து நிராகரிக்கப்பட்டது; உறுப்பினருக்குக் காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'Feedback rejected; the member is told your reason.',
+  },
+  feedback_replied: {
+    ta: 'அலுவலகப் பதில் வெளியிடப்பட்டது.',
+    en: 'Office reply published.',
+  },
+  scorecard_drafted: {
+    ta: 'மதிப்பீட்டு அட்டை வரைவாக உருவாக்கப்பட்டது.',
+    en: 'Scorecard drafted.',
+  },
+  scorecard_shared: {
+    ta: 'பொறுப்பான நிலைகளுடன் பகிரப்பட்டது; 10 வேலை நாள் மீளாய்வு தொடங்கியது.',
+    en: 'Shared with the responsible tiers; the 10 working-day review has started.',
+  },
+  scorecard_published: {
+    ta: 'மதிப்பீட்டு அட்டை வெளியிடப்பட்டது.',
+    en: 'Scorecard published.',
+  },
+  scorecard_note_saved: {
+    ta: 'சூழல் குறிப்பு சேமிக்கப்பட்டது.',
+    en: 'Context note saved.',
+  },
+  scorecard_correction_requested: {
+    ta: 'திருத்தக் கோரிக்கை அனுப்பப்பட்டது.',
+    en: 'Correction request sent.',
+  },
+  scorecard_correction_accepted: {
+    ta: 'திருத்தம் ஏற்கப்பட்டு எண்ணிக்கைகள் மீளக் கணிக்கப்பட்டன.',
+    en: 'Correction accepted; the figures were recomputed.',
+  },
+  scorecard_correction_rejected: {
+    ta: 'திருத்தக் கோரிக்கை நிராகரிக்கப்பட்டது.',
+    en: 'Correction rejected.',
+  },
+  scorecard_new_version: {
+    ta: 'திருத்தம் ஏற்கப்பட்டது; புதிய பதிப்பு வெளியிடப்பட்டது. முந்தைய பதிப்பு தொடர்ந்து காணக்கிடைக்கும்.',
+    en: 'Correction accepted; a new version is published. The earlier version stays readable.',
+  },
+  support_intake_recorded: {
+    ta: 'உதவிக் கோரிக்கை பதிவுசெய்யப்பட்டது.',
+    en: 'Support request recorded.',
+  },
+  support_assigned: {
+    ta: 'பணியாளர் ஒதுக்கப்பட்டார்.',
+    en: 'Caseworker assigned.',
+  },
+  support_linked: {
+    ta: 'ஒத்த கோரிக்கை இணைக்கப்பட்டது.',
+    en: 'Possible duplicate linked.',
+  },
+  support_decided: {
+    ta: 'முடிவு பதிவுசெய்யப்பட்டது; விண்ணப்பதாரருக்கு அறிவிக்கப்படும்.',
+    en: 'Decision recorded; the applicant is told.',
+  },
+  support_delivered: {
+    ta: 'வழங்கல் பதிவுசெய்யப்பட்டது.',
+    en: 'Delivery recorded.',
+  },
+  support_referred: {
+    ta: 'பங்காளருக்குப் பரிந்துரைக்கப்பட்டது.',
+    en: 'Referred to the partner.',
+  },
+  support_referral_proposed: {
+    ta: 'பரிந்துரை முன்மொழியப்பட்டது. விண்ணப்பதாரர் செயலியில் ஒப்புக்கொண்ட பின்னரே அது பங்காளருக்கு அனுப்பப்படும்.',
+    en: 'Referral proposed. It goes to the partner only after the applicant consents in the app.',
+  },
+  support_referral_updated: {
+    ta: 'பரிந்துரை புதுப்பிக்கப்பட்டது.',
+    en: 'Referral updated.',
+  },
+  support_closed: {
+    ta: 'விவகாரம் மூடப்பட்டது.',
+    en: 'Case closed.',
+  },
+  support_appeal_upheld: {
+    ta: 'முடிவு உறுதிசெய்யப்பட்டது; விண்ணப்பதாரருக்கு அறிவிக்கப்படும்.',
+    en: 'Decision upheld; the applicant is told.',
+  },
+  support_appeal_changed: {
+    ta: 'முடிவு மாற்றப்பட்டது; முந்தைய முடிவு பதிவில் தொடர்ந்து இருக்கும்.',
+    en: 'Decision changed; the earlier one stays in the record.',
+  },
+  support_programme_created: {
+    ta: 'திட்டம் உருவாக்கப்பட்டது.',
+    en: 'Programme created.',
+  },
+  support_criteria_published: {
+    ta: 'புதிய நிபந்தனைப் பதிப்பு வெளியிடப்பட்டது.',
+    en: 'New criteria version published.',
+  },
+  support_programme_activated: {
+    ta: 'திட்டம் செயற்படுத்தப்பட்டது.',
+    en: 'Programme activated.',
+  },
+  support_programme_retired: {
+    ta: 'திட்டம் ஓய்வுபெற்றது.',
+    en: 'Programme retired.',
+  },
+  support_partner_added: {
+    ta: 'பங்காளர் சேர்க்கப்பட்டார்.',
+    en: 'Partner added.',
+  },
+  townhall_created: {
+    ta: 'அமர்வு வரைவாகச் சேமிக்கப்பட்டது.',
+    en: 'Session saved as a draft.',
+  },
+  townhall_saved: {
+    ta: 'மாற்றங்கள் சேமிக்கப்பட்டன.',
+    en: 'Changes saved.',
+  },
+  townhall_scheduled: {
+    ta: 'அமர்வு திட்டமிடப்பட்டது; உறுப்பினர்கள் காணலாம்.',
+    en: 'Session scheduled; members can see it.',
+  },
+  townhall_live: {
+    ta: 'அமர்வு நேரலையில் உள்ளது.',
+    en: 'The session is live.',
+  },
+  townhall_ended: {
+    ta: 'அமர்வு நிறைவுற்றது.',
+    en: 'Session ended.',
+  },
+  townhall_cancelled: {
+    ta: 'அமர்வு இரத்து செய்யப்பட்டது.',
+    en: 'Session cancelled.',
+  },
+  townhall_archived: {
+    ta: 'காப்பகம் சேமிக்கப்பட்டது.',
+    en: 'Archive saved.',
+  },
+  question_approve: {
+    ta: 'கேள்வி அங்கீகரிக்கப்பட்டது.',
+    en: 'Question approved.',
+  },
+  question_reject: {
+    ta: 'கேள்வி நிராகரிக்கப்பட்டது; கேட்டவருக்குக் காரணம் காட்டப்படும்.',
+    en: 'Question rejected; the person who asked sees your reason.',
+  },
+  question_merge: {
+    ta: 'கேள்வி இணைக்கப்பட்டது.',
+    en: 'Question merged.',
+  },
+  question_answered: {
+    ta: 'பதில் பதிவுசெய்யப்பட்டது; கேட்டவருக்கு அறிவிக்கப்படும்.',
+    en: 'Answer recorded; the person who asked is told.',
+  },
+  follow_up_done: {
+    ta: 'தொடர் நடவடிக்கை நிறைவுற்றதாகக் குறிக்கப்பட்டது.',
+    en: 'Follow-up marked done.',
+  },
+  follow_up_reopened: {
+    ta: 'தொடர் நடவடிக்கை மீண்டும் திறக்கப்பட்டது.',
+    en: 'Follow-up reopened.',
+  },
+  roster_shift_created: {
+    ta: 'பணி நேரம் உருவாக்கப்பட்டது.',
+    en: 'Shift created.',
+  },
+  roster_offered: {
+    ta: 'பணி நேரம் வழங்கப்பட்டது; உறுப்பினர் செயலியில் பதிலளிப்பார்.',
+    en: 'Shift offered; the member answers in the app.',
+  },
+  roster_shift_cancelled: {
+    ta: 'பணி நேரம் இரத்து செய்யப்பட்டது; சம்பந்தப்பட்டோருக்கு அறிவிக்கப்படும்.',
+    en: 'Shift cancelled; everyone on it is told.',
+  },
+  roster_message_sent: {
+    ta: 'செய்தி அனுப்பப்பட்டது.',
+    en: 'Message sent.',
+  },
+  misinfo_decided: {
+    ta: 'முடிவு பதிவுசெய்யப்பட்டது; முறைப்பாடு செய்தவருக்குக் காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'Decision recorded; the person who reported it is told your reason.',
+  },
+  misinfo_appeal_upheld: {
+    ta: 'முதல் முடிவு உறுதிசெய்யப்பட்டது.',
+    en: 'First decision upheld.',
+  },
+  misinfo_appeal_changed: {
+    ta: 'முடிவு மாற்றப்பட்டது.',
+    en: 'Outcome changed.',
+  },
 };
 
 export function bilingualMessageFor(code: string): BilingualText {
@@ -683,6 +1842,7 @@ export function bilingualProblemText(problem: string): BilingualText {
       en: `${code.replace(/_/g, ' ')}: ${detail}`,
     };
   }
+  if (detail && NUMBERED_PROBLEMS[code]) return NUMBERED_PROBLEMS[code](detail);
   if (BILINGUAL_PROBLEMS[code]) return BILINGUAL_PROBLEMS[code];
   const readable = problem.replace(/_/g, ' ');
   return { ta: readable, en: readable };

@@ -3,28 +3,35 @@ import { StyleSheet, View } from 'react-native';
 
 import { colors, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, formatDate, Screen, SurfaceCard, useApiQuery, useLanguage, useMember } from '@my-people/mobile-ui';
+import type { ActivityKind } from '@my-people/api-client';
 import { QueryView } from '@/components/QueryView';
 import { api } from '@/lib/api';
+
+/** The milestone an activity item marks, if any: completing a course is one (H15, FR-LRN-004). */
+const MILESTONES: Partial<Record<ActivityKind, { state: string; title: string }>> = {
+  event: { state: 'attended', title: 'm.card.milestoneAttended' },
+  identity_review: { state: 'verified', title: 'm.card.milestoneVerified' },
+  course: { state: 'completed', title: 'm.card.milestoneCourse' },
+};
 
 /** C05: only confirmed personal milestones, ordered by date; no score or comparison. */
 export default function CardProgressScreen() {
   const { t } = useTranslation();
   const language = useLanguage();
   const member = useMember();
-  const activity = useApiQuery(() => api().listMyActivity({ limit: 50 }));
+  // The API's largest page, so an older course or event is not left out by newer activity.
+  const activity = useApiQuery(() => api().listMyActivity({ limit: 200 }));
 
   return (
     <Screen edges={['bottom']} maxContentWidth={640} title={t('m.card.progressTitle')} subtitle={t('m.card.progressHint')} onRefresh={activity.reload}>
       <QueryView query={activity}>{(items) => {
         const milestones = [
           { key: 'joined', at: member.joinedAt, title: t('m.card.milestoneJoined'), detail: member.memberCode },
-          ...items.filter((item) => (item.kind === 'event' && item.state === 'attended') ||
-            (item.kind === 'identity_review' && item.state === 'verified')).map((item) => ({
-            key: `${item.kind}-${item.reference}`,
-            at: item.at,
-            title: item.kind === 'event' ? t('m.card.milestoneAttended') : t('m.card.milestoneVerified'),
-            detail: item.title ?? item.reference,
-          })),
+          ...items.flatMap((item) => {
+            const milestone = MILESTONES[item.kind];
+            if (!milestone || milestone.state !== item.state) return [];
+            return [{ key: `${item.kind}-${item.reference}`, at: item.at, title: t(milestone.title), detail: item.title ?? item.reference }];
+          }),
         ].sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
         return milestones.length > 0 ? (
           <SurfaceCard>

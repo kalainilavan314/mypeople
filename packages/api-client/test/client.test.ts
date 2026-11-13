@@ -571,6 +571,14 @@ test('household endpoints call their routes with correct payload', async () => {
   await client.respondInvitation('inv-1', { action: 'accept' });
   await client.revokeInvitation('inv-1');
   await client.removeHouseholdMember('rec-1');
+  await client.updateMyHouseholdDetails({ ageBand: '35_44', occupationCategory: null });
+  await client.correctHouseholdRelationship('rec-2', { relationship: 'parent' });
+  await client.addHouseholdDependant({ firstName: 'Nila', relationship: 'child', birthYear: 2020 });
+  await client.updateHouseholdDependant('rec-3', { birthYear: 2019 });
+  await client.removeHouseholdDependant('rec-3');
+  await client.getHouseholdLog();
+  await client.giveCaseworkerConsent();
+  await client.withdrawCaseworkerConsent();
   await client.leaveHousehold();
   await client.getHouseholdPrivacyNotice();
   await client.staffViewHousehold('target-1');
@@ -586,6 +594,14 @@ test('household endpoints call their routes with correct payload', async () => {
       ['POST', '/v1/households/invitations/inv-1/respond', '{"action":"accept"}'],
       ['POST', '/v1/households/invitations/inv-1/revoke', undefined],
       ['POST', '/v1/households/members/rec-1/remove', undefined],
+      ['PATCH', '/v1/households/members/me', '{"ageBand":"35_44","occupationCategory":null}'],
+      ['PATCH', '/v1/households/members/rec-2', '{"relationship":"parent"}'],
+      ['POST', '/v1/households/dependants', '{"firstName":"Nila","relationship":"child","birthYear":2020}'],
+      ['PATCH', '/v1/households/dependants/rec-3', '{"birthYear":2019}'],
+      ['DELETE', '/v1/households/dependants/rec-3', undefined],
+      ['GET', '/v1/households/mine/log', undefined],
+      ['POST', '/v1/households/mine/caseworker-consent', undefined],
+      ['DELETE', '/v1/households/mine/caseworker-consent', undefined],
       ['POST', '/v1/households/leave', undefined],
       ['GET', '/v1/households/privacy', undefined],
       ['GET', '/v1/households/staff/target-1', undefined],

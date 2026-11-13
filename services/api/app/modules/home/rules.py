@@ -26,7 +26,8 @@ EVENT_SOON = timedelta(hours=48)
 # FR-HOME-004: exactly these four, none duplicating a bottom tab.
 QUICK_ACTIONS = ("report_issue", "volunteer", "my_area", "community")
 
-# FR-HOME-012, 013: the eight services in this order. The party fund follows ideas, surveys and
+# FR-HOME-012, 013: the services in this order (the Promise Tracker, FR-PRM-007, and Community
+# Support, M11, follow the eight of Phase 1). The party fund follows ideas, surveys and
 # learning and is never styled more prominently (BR-048).
 HUB_SERVICES = (
     "ideas",
@@ -37,19 +38,40 @@ HUB_SERVICES = (
     "volunteering",
     "local_reports",
     "area_projects",
+    "promises",
+    "support",
 )
 
 # Services whose routes sit behind a v1.1 module switch (FR-ARCH-011). While the switch is off the
 # routes answer 404, so Home must show the service as not open yet instead of opening a page that
 # cannot load (the party fund's page was empty on production on 12 November 2026).
-GATED_BY_MODULE = {"party_fund": "community_finance"}
+GATED_BY_MODULE = {
+    "party_fund": "community_finance",
+    "report_issue": "community_issues",
+    "my_area": "community_issues",
+    "local_reports": "community_issues",
+    "area_projects": "community_issues",
+    "volunteer": "volunteering",
+    "volunteering": "volunteering",
+    "ideas": "ideas_surveys",
+    "surveys": "ideas_surveys",
+    "learning": "learning",
+    "invite": "invitations",
+    "promises": "promises",
+    "support": "community_support",
+}
+
+# M18: the Promise Tracker is also shown on Home itself, with a count of the promises made for the
+# member's area by status, as well as in the Community Hub. It follows the same switch and policy.
+PROMISE_TRACKER = "promises"
 
 # FR-HOME-007 [ASSUMPTION, policy for sponsor confirmation]: what a member who is not yet
-# Verified and Active may use. Reading, reporting a local issue and events stay open to
-# everyone; taking part in decisions, volunteering, inviting and contributing wait for an
-# Active membership. The card itself is open: it explains why it is not official yet.
+# Verified and Active may use. Reading and events stay open to everyone; reporting a local
+# issue (FR-RPT-017, BR-026), taking part in decisions, volunteering, inviting and contributing
+# wait for a Verified identity and an Active membership. The card itself is open: it explains
+# why it is not official yet.
 OPEN_TO_EVERYONE = frozenset(
-    {"report_issue", "my_area", "events", "card", "gallery", "learning", "local_reports", "area_projects"}
+    {"my_area", "events", "card", "gallery", "learning", "local_reports", "area_projects", "promises", "support"}
 )
 
 
