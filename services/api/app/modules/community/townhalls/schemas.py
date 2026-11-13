@@ -138,4 +138,5 @@ class ArchiveIn(CamelModel):
 
 
 class StaffSessionOut(TownHallOut):
+    legal_review_ref: str | None
     questions: list[QuestionOut]

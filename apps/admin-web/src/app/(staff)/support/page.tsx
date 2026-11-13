@@ -149,6 +149,9 @@ async function OpenAppeals() {
             <li key={appeal.id} className="flex flex-col gap-2 rounded-lg border border-line p-3 text-sm">
               <p className="flex flex-wrap items-center gap-2">
                 <BilingualTag label={appeal.kind === 'appeal' ? { ta: 'மேன்முறையீடு', en: 'Appeal' } : { ta: 'முறைப்பாடு', en: 'Complaint' }} tone="waiting" />
+                <Link href={`/support/${appeal.caseId}`} className={`font-mono text-xs font-semibold text-primary underline ${FOCUS_RING}`}>
+                  {appeal.caseRef}
+                </Link>
                 <span className="text-xs tabular-nums text-muted">sent {formatDateTime(appeal.createdAt)} · due {formatDateTime(appeal.dueAt)}</span>
               </p>
               <p className="whitespace-pre-wrap text-text">{appeal.body}</p>

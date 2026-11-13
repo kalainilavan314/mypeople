@@ -281,6 +281,7 @@ export type RosterShift = Schemas['ShiftOut'];
 export type RosterShiftFile = Schemas['ShiftFileOut'];
 export type RosterShiftInput = Schemas['ShiftIn'];
 export type MyRosterShift = Schemas['MyShiftOut'];
+export type RosterPeriod = Schemas['OpenPeriodOut'];
 export type ElectionPeriodReport = Schemas['PeriodReportOut'];
 export type ManagedSurveyFile = Schemas['ManagedSurveyFileOut'];
 // Fact-checks (M48 reporting part, D12).
@@ -1619,6 +1620,8 @@ export function createApiClient({
       ),
     checkOutRosterShift: (assignmentId: string) =>
       request<MyRosterShift>('POST', `/v1/election/roster/assignments/${encodeURIComponent(assignmentId)}/check-out`),
+    /** Declared election periods covering the coordinator's areas, to schedule shifts in. */
+    listRosterPeriods: () => request<RosterPeriod[]>('GET', '/v1/election/roster/manage/periods'),
     listRosterShifts: (periodId?: string) =>
       request<RosterShift[]>(
         'GET',

@@ -43,7 +43,11 @@ async function Roster({ params, searchParams }: Pick<PageProps<'/elections/[id]/
   const query = await searchParams;
   const header = (
     <>
-      <BackLink href={UUID.test(id) ? `/elections/${id}` : '/elections'}>Back to the election period</BackLink>
+      {staff.permissions.has('election.mode.manage') ? (
+        <BackLink href={UUID.test(id) ? `/elections/${id}` : '/elections'}>Back to the election period</BackLink>
+      ) : (
+        <BackLink href="/roster">Back to the election periods</BackLink>
+      )}
       <PageHeader ta="தேர்தல் பணிப் பட்டியல்" en="Election duty roster" />
     </>
   );

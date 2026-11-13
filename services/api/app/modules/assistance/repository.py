@@ -368,6 +368,7 @@ class Appeal:
     id: uuid.UUID
     decision_id: uuid.UUID
     case_id: uuid.UUID
+    case_ref: str
     kind: str
     body: str
     state: str
@@ -377,23 +378,24 @@ class Appeal:
     decided_at: datetime | None
 
 
-_APPEAL = """SELECT id, decision_id, case_id, kind, body, state, due_at, reason, created_at, decided_at FROM assistance.appeal"""
+_APPEAL = """SELECT a.id, a.decision_id, a.case_id, c.case_ref, a.kind, a.body, a.state, a.due_at, a.reason, a.created_at,
+                     a.decided_at FROM assistance.appeal a JOIN assistance.case c ON c.id = a.case_id"""
 
 
 def appeals(db: Session, case_id: uuid.UUID) -> list[Appeal]:
     _open(db)
-    return [Appeal(**row) for row in db.execute(text(f"{_APPEAL} WHERE case_id = :c ORDER BY created_at"), {"c": case_id}).mappings()]
+    return [Appeal(**row) for row in db.execute(text(f"{_APPEAL} WHERE a.case_id = :c ORDER BY a.created_at"), {"c": case_id}).mappings()]
 
 
 def find_appeal(db: Session, appeal_id: uuid.UUID) -> Appeal | None:
     _open(db)
-    row = db.execute(text(f"{_APPEAL} WHERE id = :id"), {"id": appeal_id}).mappings().one_or_none()
+    row = db.execute(text(f"{_APPEAL} WHERE a.id = :id"), {"id": appeal_id}).mappings().one_or_none()
     return Appeal(**row) if row else None
 
 
 def appeal_for(db: Session, decision_id: uuid.UUID) -> Appeal | None:
     _open(db)
-    row = db.execute(text(f"{_APPEAL} WHERE decision_id = :d"), {"d": decision_id}).mappings().one_or_none()
+    row = db.execute(text(f"{_APPEAL} WHERE a.decision_id = :d"), {"d": decision_id}).mappings().one_or_none()
     return Appeal(**row) if row else None
 
 
@@ -417,11 +419,11 @@ def decide_appeal(db: Session, appeal_id: uuid.UUID, state: str, decided_by: uui
 
 def open_appeals(db: Session, areas: list[str] | None) -> list[Appeal]:
     _open(db)
-    condition, params = "state = 'open'", {}
+    condition, params = "a.state = 'open'", {}
     if areas is not None:
-        condition += " AND case_id IN (SELECT id FROM assistance.case WHERE area_path && CAST(:areas AS text[]))"
+        condition += " AND c.area_path && CAST(:areas AS text[])"
         params["areas"] = areas or ["none"]
-    return [Appeal(**row) for row in db.execute(text(f"{_APPEAL} WHERE {condition} ORDER BY due_at"), params).mappings()]
+    return [Appeal(**row) for row in db.execute(text(f"{_APPEAL} WHERE {condition} ORDER BY a.due_at"), params).mappings()]
 
 
 def statistics(db: Session, areas: list[str] | None) -> list[tuple[str | None, str | None, str, str, int]]:

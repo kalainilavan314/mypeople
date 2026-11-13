@@ -5022,6 +5022,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/election/roster/manage/periods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Periods
+         * @description Declared election periods covering the coordinator's areas, to schedule shifts in.
+         */
+        get: operations["list_periods_v1_election_roster_manage_periods_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/election/roster/manage/shifts": {
         parameters: {
             query?: never;
@@ -12338,6 +12358,32 @@ export interface components {
             /** Outcomes */
             outcomes: components["schemas"]["ScanOutcomeOut"][];
         };
+        /** OpenPeriodOut */
+        OpenPeriodOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Periodref */
+            periodRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+        };
         /** OperationalReadinessOut */
         OperationalReadinessOut: {
             /** Items */
@@ -15580,6 +15626,8 @@ export interface components {
             }[];
             /** Cancelreason */
             cancelReason: string | null;
+            /** Legalreviewref */
+            legalReviewRef: string | null;
             /** Questions */
             questions: components["schemas"]["QuestionOut"][];
         };
@@ -15692,6 +15740,13 @@ export interface components {
              * Format: uuid
              */
             decisionId: string;
+            /**
+             * Caseid
+             * Format: uuid
+             */
+            caseId: string;
+            /** Caseref */
+            caseRef: string;
             /**
              * Kind
              * @enum {string}
@@ -27236,6 +27291,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_periods_v1_election_roster_manage_periods_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpenPeriodOut"][];
                 };
             };
         };

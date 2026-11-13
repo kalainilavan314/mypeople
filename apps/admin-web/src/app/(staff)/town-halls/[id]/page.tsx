@@ -139,6 +139,7 @@ async function SessionView({ params, searchParams }: Pick<PageProps<'/town-halls
     streamUrl: session.streamUrl ?? '',
     audioUrl: session.audioUrl ?? '',
     captionsUrl: session.captionsUrl ?? '',
+    legalReviewRef: session.legalReviewRef ?? '',
   };
   const archive: Record<string, string> = {
     recordingUrl: session.recordingUrl ?? '',

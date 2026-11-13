@@ -182,6 +182,24 @@ def check_out(assignment_id: uuid.UUID, member: CurrentMember, request: Request,
         return MyShiftOut.build(service.check_out(db, member.id, assignment_id, client_ip(request)))
 
 
+class OpenPeriodOut(CamelModel):
+    id: uuid.UUID
+    period_ref: str
+    title_en: str
+    title_ta: str
+    area_key: str
+    starts_at: datetime
+    ends_at: datetime
+
+
+@router.get("/manage/periods", response_model=list[OpenPeriodOut])
+def list_periods(staff: Coordinator, db: Db) -> list[OpenPeriodOut]:
+    """Declared election periods covering the coordinator's areas, to schedule shifts in."""
+    with _answers():
+        return [OpenPeriodOut(id=p.id, period_ref=p.period_ref, title_en=p.title_en, title_ta=p.title_ta,
+                              area_key=p.area_key, starts_at=p.starts_at, ends_at=p.ends_at) for p in service.periods(db, staff)]
+
+
 @router.get("/manage/shifts", response_model=list[ShiftOut])
 def list_shifts(staff: Coordinator, db: Db, period_id: uuid.UUID | None = None) -> list[ShiftOut]:
     with _answers():

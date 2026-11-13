@@ -86,7 +86,7 @@ def create(body: TownHallIn, staff: Producer, request: Request, db: Db) -> TownH
 def read_managed(townhall_id: uuid.UUID, staff: TownHallStaff, request: Request, db: Db) -> StaffSessionOut:
     with _answers():
         found, questions = service.staff_questions(db, staff, townhall_id, client_ip(request))
-    return StaffSessionOut(**TownHallOut.build(found).model_dump(),
+    return StaffSessionOut(**TownHallOut.build(found).model_dump(), legal_review_ref=found.legal_review_ref,
                            questions=[QuestionOut.build(q, staff.member_id, staff=True) for q in questions])
 
 

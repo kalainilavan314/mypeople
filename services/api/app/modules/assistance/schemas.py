@@ -91,6 +91,8 @@ class DeliveryOut(CamelModel):
 class SupportAppealOut(CamelModel):
     id: uuid.UUID
     decision_id: uuid.UUID
+    case_id: uuid.UUID
+    case_ref: str
     kind: Literal["appeal", "complaint"]
     body: str
     state: Literal["open", "upheld", "changed"]
@@ -101,7 +103,7 @@ class SupportAppealOut(CamelModel):
 
     @classmethod
     def build(cls, a: Appeal) -> "SupportAppealOut":
-        return cls(id=a.id, decision_id=a.decision_id, kind=a.kind, body=a.body, state=a.state,  # type: ignore[arg-type]
+        return cls(id=a.id, decision_id=a.decision_id, case_id=a.case_id, case_ref=a.case_ref, kind=a.kind, body=a.body, state=a.state,  # type: ignore[arg-type]
                    due_at=a.due_at, reason=a.reason, created_at=a.created_at, decided_at=a.decided_at)
 
 

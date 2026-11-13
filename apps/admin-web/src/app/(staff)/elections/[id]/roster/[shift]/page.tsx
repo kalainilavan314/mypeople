@@ -42,7 +42,7 @@ async function ShiftView({ params, searchParams }: Pick<PageProps<'/elections/[i
   const locale = await getAdminLocale(staff.member.language);
   const { id, shift: shiftId } = await params;
   const query = await searchParams;
-  const backLink = <BackLink href={UUID.test(id) ? `/elections/${id}/roster` : '/elections'}>Back to the duty roster</BackLink>;
+  const backLink = <BackLink href={UUID.test(id) ? `/elections/${id}/roster` : '/roster'}>Back to the duty roster</BackLink>;
   if (!UUID.test(id) || !UUID.test(shiftId)) {
     return (
       <>

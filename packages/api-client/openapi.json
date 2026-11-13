@@ -15736,6 +15736,40 @@
         }
       }
     },
+    "/v1/election/roster/manage/periods": {
+      "get": {
+        "tags": [
+          "election-roster"
+        ],
+        "summary": "List Periods",
+        "description": "Declared election periods covering the coordinator's areas, to schedule shifts in.",
+        "operationId": "list_periods_v1_election_roster_manage_periods_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OpenPeriodOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Periods V1 Election Roster Manage Periods Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/v1/election/roster/manage/shifts": {
       "get": {
         "tags": [
@@ -36173,6 +36207,52 @@
         ],
         "title": "OfflineSyncOut"
       },
+      "OpenPeriodOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "periodRef": {
+            "type": "string",
+            "title": "Periodref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "periodRef",
+          "titleEn",
+          "titleTa",
+          "areaKey",
+          "startsAt",
+          "endsAt"
+        ],
+        "title": "OpenPeriodOut"
+      },
       "OperationalReadinessOut": {
         "properties": {
           "items": {
@@ -44605,6 +44685,17 @@
             ],
             "title": "Cancelreason"
           },
+          "legalReviewRef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legalreviewref"
+          },
           "questions": {
             "items": {
               "$ref": "#/components/schemas/QuestionOut"
@@ -44636,6 +44727,7 @@
           "transcriptTa",
           "outcomes",
           "cancelReason",
+          "legalReviewRef",
           "questions"
         ],
         "title": "StaffSessionOut"
@@ -44912,6 +45004,15 @@
             "format": "uuid",
             "title": "Decisionid"
           },
+          "caseId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Caseid"
+          },
+          "caseRef": {
+            "type": "string",
+            "title": "Caseref"
+          },
           "kind": {
             "type": "string",
             "enum": [
@@ -44971,6 +45072,8 @@
         "required": [
           "id",
           "decisionId",
+          "caseId",
+          "caseRef",
           "kind",
           "body",
           "state",

@@ -157,3 +157,18 @@ def test_a_shift_must_sit_inside_its_election_area(client, auth, coordinator, ar
         "startsAt": datetime.now(UTC).isoformat(), "endsAt": (datetime.now(UTC) + timedelta(hours=2)).isoformat(), "places": 1,
     }, headers=auth(coordinator))
     assert refused.json()["detail"]["problems"] == ["outside_the_election_area"]
+
+
+def test_a_coordinator_sees_the_declared_periods_covering_their_area_only(client, auth, coordinator, create_member, assign,
+                                                                          area, super_admin, db_session):
+    period_id = declared_period(db_session, area, super_admin)
+    elsewhere = create_member(verified=True)
+    other = db_session.scalar(text("SELECT district_code FROM geo.district WHERE district_code <> :d ORDER BY district_code LIMIT 1"),
+                              {"d": area.district})
+    assign(elsewhere, "3A", "district", other, ["election.roster.manage"], granted_by=super_admin)
+
+    mine = client.get("/v1/election/roster/manage/periods", headers=auth(coordinator)).json()
+    theirs = client.get("/v1/election/roster/manage/periods", headers=auth(elsewhere)).json()
+
+    assert period_id in [p["id"] for p in mine]  # a district period covers the GN coordinator
+    assert period_id not in [p["id"] for p in theirs]

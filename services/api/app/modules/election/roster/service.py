@@ -56,6 +56,45 @@ def shifts(db: Session, staff: Staff, period_id: uuid.UUID | None) -> list[Shift
     return repository.shifts(db, visible_areas(staff, PERMISSION), period_id)
 
 
+@dataclass(frozen=True)
+class OpenPeriod:
+    id: uuid.UUID
+    period_ref: str
+    title_en: str
+    title_ta: str
+    area_key: str
+    starts_at: datetime
+    ends_at: datetime
+    polling_day: Any
+
+
+def periods(db: Session, staff: Staff) -> list[OpenPeriod]:
+    """Declared periods that cover, or lie inside, an area where the coordinator manages the roster.
+
+    A GN coordinator sees a district-wide period (it covers their GN); a district coordinator sees a
+    period declared for one of their GNs.
+    """
+    if not access_rules.holds(staff.rule_assignments(), PERMISSION):
+        raise AccessRefused("forbidden")
+    inside = visible_areas(staff, PERMISSION)
+    covering: list[str] = []
+    for assignment in staff.assignments:
+        if PERMISSION in assignment.permissions:
+            path = access_repository.area_path(db, assignment.area)
+            covering.extend(a.key for a in path or [])
+    rows = db.execute(
+        text(
+            """SELECT id, period_ref, title_en, title_ta, area_key, starts_at, ends_at, polling_day FROM election.period
+               WHERE state = 'declared' AND ends_at > now()
+                 AND (CAST(:inside AS text[]) IS NULL OR area_path && CAST(:inside AS text[])
+                      OR area_key = ANY(CAST(:covering AS text[])))
+               ORDER BY starts_at"""
+        ),
+        {"inside": inside, "covering": covering},
+    ).mappings()
+    return [OpenPeriod(**row) for row in rows]
+
+
 def create_shift(db: Session, staff: Staff, period_id: uuid.UUID, area: Area, values: dict[str, Any], ip: str) -> Shift:
     period = db.execute(
         text("SELECT state, area_path, ends_at FROM election.period WHERE id = :id"), {"id": period_id}

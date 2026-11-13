@@ -137,7 +137,7 @@ def test_decisions_cite_criteria_and_an_appeal_is_decided_by_someone_else(client
     assert (same_person.status_code, same_person.json()["detail"]) == (403, "original_decider")
     assert changed.status_code == 204
     assert [d["outcome"] for d in mine["decisions"]] == ["not_eligible", "approved"]
-    assert mine["appeals"][0]["state"] == "changed"
+    assert mine["appeals"][0]["state"] == "changed" and mine["appeals"][0]["caseRef"] == mine["caseRef"]
 
 
 def test_delivery_and_partner_referral_need_the_right_steps(client, auth, member_in, area, staff):

@@ -106,8 +106,14 @@ def test_no_session_in_a_silence_window_and_a_legal_review_in_an_election_period
     no_review = client.post(f"/v1/town-halls/manage/{later.json()['id']}/state", json={"state": "scheduled"},
                             headers=auth(producer))
 
+    reviewed = client.put(f"/v1/town-halls/manage/{later.json()['id']}",
+                          json={**session_body(area, starts_in=timedelta(days=5)), "legalReviewRef": "LR-2026-014"},
+                          headers=auth(producer))
+    staff_view = client.get(f"/v1/town-halls/manage/{later.json()['id']}", headers=auth(producer)).json()
+
     assert (scheduled_try.status_code, scheduled_try.json()["detail"]["code"]) == (409, "silence_period")
     assert no_review.json()["detail"]["problems"] == ["legal_review_required"]
+    assert reviewed.status_code == 200 and staff_view["legalReviewRef"] == "LR-2026-014"
 
 
 def test_answers_are_live_with_a_time_or_written_in_both_languages_and_reminders_go_once(

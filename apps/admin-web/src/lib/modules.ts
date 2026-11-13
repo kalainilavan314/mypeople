@@ -77,6 +77,7 @@ export const builtModules: readonly AdminModule[] = [
   },
   { href: '/members', ta: 'உறுப்பினர்களும் குடும்பங்களும்', en: 'Members and households', permission: 'household.view_for_case' },
   { href: '/elections', ta: 'தேர்தல் பயன்முறை', en: 'Election mode', permission: 'election.mode.manage' },
+  { href: '/roster', ta: 'தேர்தல் பணிப் பட்டியல்', en: 'Election duty roster', permission: 'election.roster.manage' },
   { href: '/privacy', ta: 'தனியுரிமைக் கோரிக்கைகள்', en: 'Privacy requests', permission: 'privacy.requests.handle' },
   { href: '/analytics', ta: 'பகுப்பாய்வு', en: 'Analytics', permission: 'analytics.view' },
   {
