@@ -22,6 +22,12 @@ export const FEATURE_ROUTES: Partial<Record<string, Href>> = {
   gallery: '/gallery',
   profile: '/profile',
   party_fund: '/fund' as unknown as Href,
+  volunteer: '/volunteer',
+  volunteering: '/volunteer',
+  ideas: '/ideas',
+  surveys: '/surveys',
+  learning: '/learning',
+  invite: '/referrals/invite',
 };
 
 export const FEATURE_ICONS: Record<string, IconName> = {

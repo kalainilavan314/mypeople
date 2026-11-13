@@ -46,6 +46,16 @@ function targetRoute(item: NotificationItem): Href | null {
       return '/gallery';
     case 'issue':
       return item.targetId ? { pathname: '/issues/[id]', params: { id: item.targetId } } : '/issues';
+    case 'volunteer_offer':
+      return '/volunteer/assignments';
+    case 'volunteer_contact':
+      return '/staff/volunteers';
+    case 'idea':
+      return '/ideas';
+    case 'proposal':
+      return item.targetId
+        ? { pathname: '/ideas/proposals/[id]', params: { id: item.targetId } }
+        : { pathname: '/ideas', params: { tab: 'proposals' } };
     default:
       return null;
   }

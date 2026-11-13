@@ -61,6 +61,22 @@ export default function MemberLayout() {
       <Stack.Screen name="issues/review" options={{ title: t('m.issues.reviewTitle') }} />
       <Stack.Screen name="issues/mine" options={{ title: t('m.issues.mineTitle') }} />
       <Stack.Screen name="issues/[id]" options={{ title: t('m.issues.detailTitle') }} />
+      <Stack.Screen name="volunteer/index" options={{ title: t('m.volunteer.title') }} />
+      <Stack.Screen name="volunteer/[id]" options={{ title: t('m.volunteer.briefingTitle') }} />
+      <Stack.Screen name="volunteer/skills" options={{ title: t('m.volunteer.mySkills') }} />
+      <Stack.Screen name="volunteer/assignments" options={{ title: t('m.volunteer.myAssignments') }} />
+      <Stack.Screen name="ideas/index" options={{ title: t('m.ideas.title') }} />
+      <Stack.Screen name="ideas/new" options={{ title: t('m.ideas.newTitle') }} />
+      <Stack.Screen name="ideas/proposals/new" options={{ title: t('m.proposals.newTitle') }} />
+      <Stack.Screen name="ideas/proposals/[id]" options={{ title: t('m.proposals.detailTitle') }} />
+      <Stack.Screen name="surveys/index" options={{ title: t('m.surveys.title') }} />
+      <Stack.Screen name="surveys/[id]" options={{ title: t('m.surveys.surveyTitle') }} />
+      <Stack.Screen name="surveys/[id]/done" options={{ title: t('m.surveys.doneTitle') }} />
+      <Stack.Screen name="learning/index" options={{ title: t('m.learning.title') }} />
+      <Stack.Screen name="learning/[course]" options={{ title: t('m.learning.courseTitle') }} />
+      <Stack.Screen name="learning/[course]/[lesson]" options={{ title: t('m.learning.lessonTitle') }} />
+      <Stack.Screen name="referrals/invite" options={{ title: t('m.referrals.inviteTitle') }} />
+      <Stack.Screen name="referrals/index" options={{ title: t('m.referrals.title') }} />
       <Stack.Screen name="staff" options={{ headerShown: false }} />
     </Stack>
   );

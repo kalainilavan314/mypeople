@@ -14,10 +14,7 @@ export class DraftPhotoError extends Error {
   }
 }
 
-/** The community_issues module is switched off: a calm "not open yet", not an error. */
-export function featureClosed(error: unknown): boolean {
-  return error instanceof ApiError && error.status === 404 && error.code === 'feature_unavailable';
-}
+export { featureClosed } from '@/lib/errors';
 
 /**
  * The app's message, with the words that differ for issue photos: the evidence store's 503

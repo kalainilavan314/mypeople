@@ -46,9 +46,23 @@ function stateKey(kind: string, state: string): string {
 }
 
 /** Receipts that have a screen open it; the others are records only. */
-function issueStatus(kind: string, targetId: string): (() => void) | undefined {
-  if (kind === 'issue_report') return () => router.push({ pathname: '/issues/[id]', params: { id: targetId } });
-  return undefined;
+function opener(kind: string, targetId: string): (() => void) | undefined {
+  switch (kind) {
+    case 'issue_report':
+      return () => router.push({ pathname: '/issues/[id]', params: { id: targetId } });
+    case 'volunteer_offer':
+      return () => router.push('/volunteer/assignments');
+    case 'idea':
+      return () => router.push('/ideas');
+    case 'survey_response': // the target is the survey: its receipt, or the form while answers can change
+      return () => router.push({ pathname: '/surveys/[id]', params: { id: targetId } });
+    case 'proposal':
+      return () => router.push({ pathname: '/ideas/proposals/[id]', params: { id: targetId } });
+    case 'course':
+      return () => router.push({ pathname: '/learning/[course]', params: { course: targetId } });
+    default:
+      return undefined;
+  }
 }
 
 /** P03 My Activity: receipts for what the member has asked for or taken part in, newest first. */
@@ -70,12 +84,14 @@ export default function ActivityScreen() {
             </AppText>
           ) : (
             <SurfaceCard style={styles.list}>
-              {items.map((item, index) => (
+              {items.map((item, index) => {
+                const open = opener(item.kind, item.targetId);
+                return (
                 <Pressable
                   key={`${item.kind}-${item.reference}-${item.at}`}
-                  onPress={issueStatus(item.kind, item.targetId)}
-                  disabled={!issueStatus(item.kind, item.targetId)}
-                  accessibilityRole={issueStatus(item.kind, item.targetId) ? 'link' : 'text'}
+                  onPress={open}
+                  disabled={!open}
+                  accessibilityRole={open ? 'link' : 'text'}
                   style={({ pressed }) => [styles.item, index > 0 && styles.itemDivider, pressed && styles.pressed]}>
                   <AppText step="caption" tone="primary">
                     {t(`m.profile.activity_${item.kind}`)}
@@ -91,7 +107,8 @@ export default function ActivityScreen() {
                     {formatDateTime(item.at, language)}
                   </AppText>
                 </Pressable>
-              ))}
+                );
+              })}
             </SurfaceCard>
           )
         }
