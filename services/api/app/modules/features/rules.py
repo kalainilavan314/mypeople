@@ -43,6 +43,7 @@ FEATURES: dict[str, Feature] = {
         Feature("invitations", "Invite a member and My referrals (FR-REF-001 to 006)", 2),
         Feature("promises", "Promise Tracker (FR-PRM-001 to 010)", 2),
         Feature("scorecards", "Public accountability scorecard (FR-ACS-001 to 008)", 2),
+        Feature("community_support", "Community Support, confidential assistance cases (FR-AST-001 to 013)", 2),
     )
 }
 

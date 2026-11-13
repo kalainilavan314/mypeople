@@ -9,6 +9,8 @@ Approval for planning never commits funds (BR-109).
 
 from typing import Literal
 
+from app.core import small_numbers
+
 Category = Literal[
     "roads_transport", "agriculture", "fisheries", "employment", "education", "drinking_water", "healthcare",
     "environment", "waste_management", "tourism_enterprise", "digital_literacy", "youth_skills", "other",
@@ -54,22 +56,5 @@ def check_move(current: str, target: str, reason: str | None) -> tuple[str | Non
 
 
 def needs_table(rows: list[tuple[str, str | None, str, int]]) -> list[tuple[str, str, int | None]]:
-    """FR-DEV-008: proposals by area and category from (district, DS division or None, category, count).
-    Every district total is shown, as None ("fewer than 10") when under 10. A DS division appears only
-    where its own count is 10 or more, and only if what is left of the district figure is 0 or 10 or
-    more, so that a small group cannot be found by subtraction either."""
-    totals: dict[tuple[str, str], int] = {}
-    shown: dict[tuple[str, str], list[tuple[str, int]]] = {}
-    for district, ds, category, count in rows:
-        totals[(district, category)] = totals.get((district, category), 0) + count
-        if ds is not None and count >= SMALL_GROUP:
-            shown.setdefault((district, category), []).append((ds, count))
-    table: list[tuple[str, str, int | None]] = []
-    divisions: list[tuple[str, str, int | None]] = []
-    for (district, category), total in sorted(totals.items()):
-        table.append((f"district:{district}", category, total if total >= SMALL_GROUP else None))
-        cells = shown.get((district, category), [])
-        remainder = total - sum(count for _, count in cells)
-        if remainder == 0 or remainder >= SMALL_GROUP:
-            divisions += [(f"ds:{ds}", category, count) for ds, count in cells]
-    return table + sorted(divisions)
+    """FR-DEV-008: proposals by area and category, with small groups hidden (app.core.small_numbers)."""
+    return small_numbers.area_table(rows)

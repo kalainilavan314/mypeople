@@ -243,6 +243,27 @@ export type AreaScorecard = Schemas['AreaScorecardOut'];
 export type Scorecard = Schemas['ScorecardOut'];
 export type ScorecardFile = Schemas['ScorecardFileOut'];
 export type ScorecardCorrection = Schemas['CorrectionOut'];
+// Community Support (M11 to M14, S11, S12, D13, D14).
+export type SupportHome = Schemas['SupportHomeOut'];
+export type SupportCategory = Schemas['SupportRequestIn']['category'];
+export type SupportRequestInput = Schemas['SupportRequestIn'];
+export type MySupportRequestSummary = Schemas['MyRequestSummaryOut'];
+export type MySupportRequest = Schemas['MyRequestOut'];
+export type SupportDecision = Schemas['SupportDecisionOut'];
+export type SupportAppeal = Schemas['SupportAppealOut'];
+export type SupportAppealInput = Schemas['AppealIn'];
+export type SupportIntakeInput = Schemas['IntakeIn'];
+export type SupportCaseSummary = Schemas['StaffCaseSummaryOut'];
+export type SupportCaseFile = Schemas['StaffCaseFileOut'];
+export type SupportCaseworker = Schemas['CaseworkerOut'];
+export type SupportDecisionInput = Schemas['DecisionIn'];
+export type SupportDeliveryInput = Schemas['DeliveryIn'];
+export type SupportAppealDecisionInput = Schemas['AppealDecisionIn'];
+export type SupportProgramme = Schemas['ProgrammeOut'];
+export type SupportProgrammeInput = Schemas['ProgrammeIn'];
+export type SupportPartner = Schemas['PartnerOut'];
+export type SupportPartnerInput = Schemas['PartnerIn'];
+export type SupportStatistics = Schemas['StatisticsOut'];
 export type CaseListFilters = {
   stage?: CaseStage[];
   mine?: boolean;
@@ -1446,6 +1467,74 @@ export function createApiClient({
     /** After the 10 working days ("review_period_running" before). */
     publishScorecard: (scorecardId: string) =>
       request<Scorecard>('POST', `/v1/scorecards/manage/${encodeURIComponent(scorecardId)}/publish`),
+    // Community Support (M11 to M14). Routes answer 404 "feature_unavailable" while community_support
+    // is off. Help never depends on membership; refusals are "support_refused" (422) with `problems`.
+    /** M11: emergency numbers first, the ten categories and the member's own requests. */
+    getSupportHome: () => request<SupportHome>('GET', '/v1/assistance'),
+    /** M12: problems consent_required, unknown_area. */
+    requestSupport: (input: SupportRequestInput) => request<MySupportRequest>('POST', '/v1/assistance/requests', input),
+    getMySupportRequest: (caseId: string) =>
+      request<MySupportRequest>('GET', `/v1/assistance/requests/${encodeURIComponent(caseId)}`),
+    /** M14: one complaint or appeal per decision ("already_appealed"). */
+    appealSupportDecision: (caseId: string, input: SupportAppealInput) =>
+      request<SupportAppeal>('POST', `/v1/assistance/requests/${encodeURIComponent(caseId)}/appeals`, input),
+    listSupportCases: (states: string[] = []) => {
+      const q = new URLSearchParams();
+      for (const state of states) q.append('state', state);
+      const qs = q.toString();
+      return request<SupportCaseSummary[]>('GET', `/v1/assistance/manage/cases${qs ? `?${qs}` : ''}`);
+    },
+    recordSupportIntake: (input: SupportIntakeInput) =>
+      request<SupportCaseSummary>('POST', '/v1/assistance/manage/intake', input),
+    /** S12: only the assigned caseworker and decision-makers (403 "not_assigned"); audited. */
+    getSupportCase: (caseId: string) =>
+      request<SupportCaseFile>('GET', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}`),
+    listSupportCaseworkers: (caseId: string) =>
+      request<SupportCaseworker[]>('GET', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/caseworkers`),
+    assignSupportCase: (caseId: string, caseworkerId: string) =>
+      request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/assign`, { caseworkerId }),
+    linkSupportCase: (caseId: string, otherCaseId: string) =>
+      request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/link`, { otherCaseId }),
+    addSupportCaseNote: (caseId: string, body: string) =>
+      request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/notes`, { body }),
+    decideSupportCase: (caseId: string, input: SupportDecisionInput) =>
+      request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/decision`, input),
+    recordSupportDelivery: (caseId: string, input: SupportDeliveryInput) =>
+      request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/deliveries`, input),
+    /** Consent for this partner is required ("partner_consent_required"). */
+    referSupportCase: (caseId: string, partnerId: string, consent: boolean) =>
+      request<SupportCaseFile>(
+        'POST',
+        `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/referrals`,
+        { partnerId, consent },
+      ),
+    updateSupportReferral: (caseId: string, referralId: string, state: 'accepted' | 'completed' | 'declined', outcome?: string) =>
+      request<SupportCaseFile>(
+        'POST',
+        `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/referrals/${encodeURIComponent(referralId)}`,
+        { state, outcome },
+      ),
+    closeSupportCase: (caseId: string, note: string) =>
+      request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/close`, { note }),
+    listSupportAppeals: () => request<SupportAppeal[]>('GET', '/v1/assistance/manage/appeals'),
+    /** Never the original decision-maker (403 "original_decider"). */
+    decideSupportAppeal: (appealId: string, input: SupportAppealDecisionInput) =>
+      request<void>('POST', `/v1/assistance/manage/appeals/${encodeURIComponent(appealId)}/decision`, input),
+    listSupportProgrammes: () => request<SupportProgramme[]>('GET', '/v1/assistance/manage/programmes'),
+    createSupportProgramme: (input: SupportProgrammeInput) =>
+      request<SupportProgramme>('POST', '/v1/assistance/manage/programmes', input),
+    publishSupportCriteria: (programmeId: string, criteriaEn: string, criteriaTa: string) =>
+      request<SupportProgramme>(
+        'POST',
+        `/v1/assistance/manage/programmes/${encodeURIComponent(programmeId)}/criteria`,
+        { criteriaEn, criteriaTa },
+      ),
+    setSupportProgrammeActive: (programmeId: string, active: boolean) =>
+      request<void>('POST', `/v1/assistance/manage/programmes/${encodeURIComponent(programmeId)}/active`, { active }),
+    listSupportPartners: () => request<SupportPartner[]>('GET', '/v1/assistance/manage/partners'),
+    addSupportPartner: (input: SupportPartnerInput) => request<SupportPartner>('POST', '/v1/assistance/manage/partners', input),
+    /** Counts only; null means fewer than 10. */
+    getSupportStatistics: () => request<SupportStatistics>('GET', '/v1/assistance/manage/statistics'),
     // Community Finance endpoints (Milestone 1.4)
     getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),
     createContribution: (body: ContributionCreateInput, idempotencyKey?: string) =>

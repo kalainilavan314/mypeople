@@ -50,6 +50,7 @@ from app.modules.operations import router as operations
 from app.modules.profile import router as profile
 from app.modules.profile.area_changes import router as area_changes
 from app.modules.analytics import router as analytics
+from app.modules.assistance import router as assistance
 from app.modules.auth import router as auth
 from app.modules.events.offline import router as events_offline
 from app.modules.identity.appeals import router as identity_appeals
@@ -129,6 +130,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(member_invitations.router)
     app.include_router(community_promises.router)
     app.include_router(community_scorecards.router)
+    app.include_router(assistance.router)
     app.include_router(home.router)
     app.include_router(profile.router)
     app.include_router(area_changes.router)

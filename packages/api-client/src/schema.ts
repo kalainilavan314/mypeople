@@ -4211,6 +4211,449 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/assistance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Support Home
+         * @description M11: emergency numbers first, the ten categories, and the member's own requests.
+         */
+        get: operations["support_home_v1_assistance_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Support
+         * @description M12: needs no membership; consent to collect the case information is required.
+         */
+        post: operations["request_support_v1_assistance_requests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/public-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Support Publicly
+         * @description The public web form for people without an account: answers only the AS- reference.
+         */
+        post: operations["request_support_publicly_v1_assistance_public_requests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/requests/{case_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Request
+         * @description M13: status, decisions with reasons, help delivered and appeals.
+         */
+        get: operations["read_my_request_v1_assistance_requests__case_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/requests/{case_id}/appeals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Appeal
+         * @description M14: one complaint or appeal per decision.
+         */
+        post: operations["appeal_v1_assistance_requests__case_id__appeals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Staff Queue */
+        get: operations["staff_queue_v1_assistance_manage_cases_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/intake": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Intake
+         * @description S11: a hotline call or partner referral, without needing membership.
+         */
+        post: operations["intake_v1_assistance_manage_intake_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Case
+         * @description S12: only the assigned caseworker and decision-makers; every opening is audited.
+         */
+        get: operations["read_case_v1_assistance_manage_cases__case_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/caseworkers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Caseworkers */
+        get: operations["list_caseworkers_v1_assistance_manage_cases__case_id__caseworkers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Assign */
+        post: operations["assign_v1_assistance_manage_cases__case_id__assign_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Link */
+        post: operations["link_v1_assistance_manage_cases__case_id__link_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Note */
+        post: operations["add_note_v1_assistance_manage_cases__case_id__notes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide
+         * @description FR-AST-008: against the published criteria version, with reasons in both languages.
+         */
+        post: operations["decide_v1_assistance_manage_cases__case_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/deliveries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Delivery */
+        post: operations["record_delivery_v1_assistance_manage_cases__case_id__deliveries_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/referrals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Refer */
+        post: operations["refer_v1_assistance_manage_cases__case_id__referrals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/referrals/{referral_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Update Referral */
+        post: operations["update_referral_v1_assistance_manage_cases__case_id__referrals__referral_id__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/cases/{case_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Close */
+        post: operations["close_v1_assistance_manage_cases__case_id__close_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/appeals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Open Appeals */
+        get: operations["open_appeals_v1_assistance_manage_appeals_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/appeals/{appeal_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Appeal
+         * @description FR-AST-011: never by the person whose decision is appealed (403 original_decider).
+         */
+        post: operations["decide_appeal_v1_assistance_manage_appeals__appeal_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/programmes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Programmes
+         * @description Programmes with their current criteria version, for decisions and D14.
+         */
+        get: operations["list_programmes_v1_assistance_manage_programmes_get"];
+        put?: never;
+        /** Create Programme */
+        post: operations["create_programme_v1_assistance_manage_programmes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/programmes/{programme_id}/criteria": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish Criteria */
+        post: operations["publish_criteria_v1_assistance_manage_programmes__programme_id__criteria_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/programmes/{programme_id}/active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Set Programme Active */
+        post: operations["set_programme_active_v1_assistance_manage_programmes__programme_id__active_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/partners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Partners */
+        get: operations["list_partners_v1_assistance_manage_partners_get"];
+        put?: never;
+        /** Add Partner */
+        post: operations["add_partner_v1_assistance_manage_partners_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistance/manage/statistics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Statistics
+         * @description FR-AST-012: counts only, minimum cell 10, also by subtraction.
+         */
+        get: operations["statistics_v1_assistance_manage_statistics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -5904,6 +6347,11 @@ export interface components {
             /** Passportcountry */
             passportCountry?: string | null;
         };
+        /** ActiveIn */
+        ActiveIn: {
+            /** Active */
+            active: boolean;
+        };
         /** ActivityItemOut */
         ActivityItemOut: {
             /**
@@ -6133,6 +6581,19 @@ export interface components {
             /** Answer */
             answer: string;
         };
+        /** AppealDecisionIn */
+        AppealDecisionIn: {
+            /** Change */
+            change: boolean;
+            /** Reason */
+            reason: string;
+            /** Outcome */
+            outcome?: ("approved" | "partly_approved" | "not_eligible" | "referred") | null;
+            /** Criteriaversionid */
+            criteriaVersionId?: string | null;
+            /** Reasonta */
+            reasonTa?: string | null;
+        };
         /** AppealDecisionInput */
         AppealDecisionInput: {
             /**
@@ -6208,6 +6669,21 @@ export interface components {
             member: components["schemas"]["ReviewMemberOut"];
             /** Documents */
             documents: components["schemas"]["DocumentOut"][];
+        };
+        /** AppealIn */
+        AppealIn: {
+            /**
+             * Decisionid
+             * Format: uuid
+             */
+            decisionId: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "appeal" | "complaint";
+            /** Body */
+            body: string;
         };
         /** AppealInput */
         AppealInput: {
@@ -7173,6 +7649,11 @@ export interface components {
             /** Documents */
             documents: components["schemas"]["DocumentOut"][];
         };
+        /** CaseNoteIn */
+        CaseNoteIn: {
+            /** Body */
+            body: string;
+        };
         /** CasePhotoOut */
         CasePhotoOut: {
             /**
@@ -7220,6 +7701,16 @@ export interface components {
             claimedByName: string | null;
             /** Decidedat */
             decidedAt: string | null;
+        };
+        /** CaseworkerOut */
+        CaseworkerOut: {
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Fullname */
+            fullName: string;
         };
         /**
          * Catalogue
@@ -7907,6 +8398,30 @@ export interface components {
              */
             state: "published" | "retired";
         };
+        /** CriteriaIn */
+        CriteriaIn: {
+            /** Criteriaen */
+            criteriaEn: string;
+            /** Criteriata */
+            criteriaTa: string;
+        };
+        /** DecisionIn */
+        DecisionIn: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "approved" | "partly_approved" | "not_eligible" | "referred";
+            /**
+             * Criteriaversionid
+             * Format: uuid
+             */
+            criteriaVersionId: string;
+            /** Reasonen */
+            reasonEn: string;
+            /** Reasonta */
+            reasonTa: string;
+        };
         /** DecisionInput */
         DecisionInput: {
             /**
@@ -8044,6 +8559,41 @@ export interface components {
              * @description Other declared periods for the same time and area (a warning, D22)
              */
             overlaps: string[];
+        };
+        /** DeliveryIn */
+        DeliveryIn: {
+            /** Kind */
+            kind: string;
+            /**
+             * Amount
+             * @description Quantity or value
+             */
+            amount: string;
+            /**
+             * Deliveredon
+             * Format: date
+             */
+            deliveredOn: string;
+            /** Provider */
+            provider: string;
+            /** Evidence */
+            evidence: string;
+        };
+        /** DeliveryOut */
+        DeliveryOut: {
+            /** Kind */
+            kind: string;
+            /** Amount */
+            amount: string;
+            /**
+             * Deliveredon
+             * Format: date
+             */
+            deliveredOn: string;
+            /** Provider */
+            provider: string;
+            /** Evidence */
+            evidence: string;
         };
         /** DeviceIn */
         DeviceIn: {
@@ -8377,6 +8927,15 @@ export interface components {
             publishedAt: string;
             /** Withdrawnat */
             withdrawnAt: string | null;
+        };
+        /** EmergencyContactOut */
+        EmergencyContactOut: {
+            /** Number */
+            number: string;
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
         };
         /** EventCreateIn */
         EventCreateIn: {
@@ -9352,6 +9911,40 @@ export interface components {
             unread: number;
             /** Actionneeded */
             actionNeeded: number;
+        };
+        /** IntakeIn */
+        IntakeIn: {
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /** Summary */
+            summary: string;
+            /**
+             * Emergency
+             * @default false
+             */
+            emergency: boolean;
+            /**
+             * Consent
+             * @description Consent to collect the case information (FR-AST-004)
+             */
+            consent: boolean;
+            /** Fullname */
+            fullName: string;
+            /** Phone */
+            phone?: string | null;
+            /** Household */
+            household?: string | null;
+            area: components["schemas"]["SupportAreaIn"];
+            /**
+             * Channel
+             * @enum {string}
+             */
+            channel: "hotline" | "partner";
+            /** Partnerid */
+            partnerId?: string | null;
         };
         /** InvitationIn */
         InvitationIn: {
@@ -10523,6 +11116,85 @@ export interface components {
             items: components["schemas"]["IssueSummaryOut"][];
         };
         /**
+         * MyRequestOut
+         * @description M13: status and what happened; never internal notes or who handled it.
+         */
+        MyRequestOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Caseref
+             * @description AS- reference that reveals nothing about the person, place or category
+             */
+            caseRef: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "screening" | "assessment" | "decided" | "closed" | "withdrawn";
+            /** Emergency */
+            emergency: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Decisions */
+            decisions: components["schemas"]["SupportDecisionOut"][];
+            /** Deliveries */
+            deliveries: components["schemas"]["DeliveryOut"][];
+            /** Appeals */
+            appeals: components["schemas"]["SupportAppealOut"][];
+        };
+        /** MyRequestSummaryOut */
+        MyRequestSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Caseref
+             * @description AS- reference that reveals nothing about the person, place or category
+             */
+            caseRef: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "screening" | "assessment" | "decided" | "closed" | "withdrawn";
+            /** Emergency */
+            emergency: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /**
          * MyReviewOut
          * @description A10, A11, C06: the review reference and state, and what to correct when a correction is asked for.
          */
@@ -10595,6 +11267,18 @@ export interface components {
         NoteIn: {
             /** Text */
             text: string;
+        };
+        /** NoteOut */
+        NoteOut: {
+            /** Body */
+            body: string;
+            /** Author */
+            author: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /** NoticeIn */
         NoticeIn: {
@@ -11010,6 +11694,34 @@ export interface components {
         OwnerOptionsOut: {
             /** Items */
             items: components["schemas"]["OwnerOptionOut"][];
+        };
+        /** PartnerIn */
+        PartnerIn: {
+            /** Name */
+            name: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "ngo" | "public_service" | "hospital" | "other";
+            /** Contact */
+            contact: string;
+        };
+        /** PartnerOut */
+        PartnerOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Kind */
+            kind: string;
+            /** Contact */
+            contact: string;
+            /** Active */
+            active: boolean;
         };
         /** PassCodeOut */
         PassCodeOut: {
@@ -11574,6 +12286,47 @@ export interface components {
             /** Language */
             language?: ("ta" | "en") | null;
         };
+        /** ProgrammeIn */
+        ProgrammeIn: {
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Categories */
+            categories: ("food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood")[];
+        };
+        /** ProgrammeOut */
+        ProgrammeOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Categories */
+            categories: ("food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood")[];
+            /** Active */
+            active: boolean;
+            /** Criteriaversionid */
+            criteriaVersionId: string | null;
+            /** Criteriaversion */
+            criteriaVersion: number | null;
+            /** Criteriaen */
+            criteriaEn: string | null;
+            /** Criteriata */
+            criteriaTa: string | null;
+        };
         /** ProgressIn */
         ProgressIn: {
             /** Step */
@@ -12055,6 +12808,11 @@ export interface components {
             /** Gnname */
             gnName: string | null;
         };
+        /** PublicReceiptOut */
+        PublicReceiptOut: {
+            /** Caseref */
+            caseRef: string;
+        };
         /**
          * PublicRemovalRequestIn
          * @description FR-GAL-007, for someone who is not a member: the album reference (AL-…) and the photo's number.
@@ -12326,6 +13084,55 @@ export interface components {
         RecoveryContactOut: {
             /** Phone */
             phone: string;
+        };
+        /** ReferralIn */
+        ReferralIn: {
+            /**
+             * Partnerid
+             * Format: uuid
+             */
+            partnerId: string;
+            /**
+             * Consent
+             * @description The applicant agreed to this partner seeing the case
+             */
+            consent: boolean;
+        };
+        /** ReferralOut */
+        ReferralOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Partner */
+            partner: string;
+            /** Kind */
+            kind: string;
+            /** State */
+            state: string;
+            /** Outcome */
+            outcome: string | null;
+            /**
+             * Consentat
+             * Format: date-time
+             */
+            consentAt: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** ReferralUpdateIn */
+        ReferralUpdateIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "accepted" | "completed" | "declined";
+            /** Outcome */
+            outcome?: string | null;
         };
         /**
          * RefreshIn
@@ -13242,6 +14049,95 @@ export interface components {
              */
             relatedPartyConflict: boolean;
         };
+        /** StaffCaseFileOut */
+        StaffCaseFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Caseref */
+            caseRef: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /** Emergency */
+            emergency: boolean;
+            /** Channel */
+            channel: string;
+            /** State */
+            state: string;
+            /** Caseworkername */
+            caseworkerName: string | null;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Applicantname */
+            applicantName: string;
+            /** Applicantphone */
+            applicantPhone: string | null;
+            /** Household */
+            household: string | null;
+            /** Summary */
+            summary: string;
+            /** Linkedcaseref */
+            linkedCaseRef: string | null;
+            /** Notes */
+            notes: components["schemas"]["NoteOut"][];
+            /** Decisions */
+            decisions: components["schemas"]["SupportDecisionOut"][];
+            /** Deliveries */
+            deliveries: components["schemas"]["DeliveryOut"][];
+            /** Referrals */
+            referrals: components["schemas"]["ReferralOut"][];
+            /** Appeals */
+            appeals: components["schemas"]["SupportAppealOut"][];
+            /**
+             * Possibleduplicates
+             * @description Suggestions to link, never grounds to reject (FR-AST-006)
+             */
+            possibleDuplicates: components["schemas"]["StaffCaseSummaryOut"][];
+            /** Maydecide */
+            mayDecide: boolean;
+            /** Maywork */
+            mayWork: boolean;
+        };
+        /** StaffCaseSummaryOut */
+        StaffCaseSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Caseref */
+            caseRef: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /** Emergency */
+            emergency: boolean;
+            /** Channel */
+            channel: string;
+            /** State */
+            state: string;
+            /** Caseworkername */
+            caseworkerName: string | null;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** StaffContributionDetail */
         StaffContributionDetail: {
             /**
@@ -13452,6 +14348,28 @@ export interface components {
              */
             occurredAt: string;
         };
+        /** StatisticOut */
+        StatisticOut: {
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /** State */
+            state: string;
+            /**
+             * Count
+             * @description Null means fewer than 10
+             */
+            count: number | null;
+        };
+        /** StatisticsOut */
+        StatisticsOut: {
+            /** Cells */
+            cells: components["schemas"]["StatisticOut"][];
+        };
         /** StepOut */
         StepOut: {
             /** Name */
@@ -13477,10 +14395,147 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** SupportAppealOut */
+        SupportAppealOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Decisionid
+             * Format: uuid
+             */
+            decisionId: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "appeal" | "complaint";
+            /** Body */
+            body: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "upheld" | "changed";
+            /**
+             * Dueat
+             * Format: date-time
+             */
+            dueAt: string;
+            /** Reason */
+            reason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Decidedat */
+            decidedAt: string | null;
+        };
+        /** SupportAreaIn */
+        SupportAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+        };
+        /** SupportAssignIn */
+        SupportAssignIn: {
+            /**
+             * Caseworkerid
+             * Format: uuid
+             */
+            caseworkerId: string;
+        };
+        /** SupportCloseIn */
+        SupportCloseIn: {
+            /** Note */
+            note: string;
+        };
+        /** SupportDecisionOut */
+        SupportDecisionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "approved" | "partly_approved" | "not_eligible" | "referred";
+            /** Criteriaversion */
+            criteriaVersion: number;
+            /** Programmenameen */
+            programmeNameEn: string;
+            /** Reasonen */
+            reasonEn: string;
+            /** Reasonta */
+            reasonTa: string;
+            /** Replacesid */
+            replacesId: string | null;
+            /**
+             * Decidedat
+             * Format: date-time
+             */
+            decidedAt: string;
+        };
+        /**
+         * SupportHomeOut
+         * @description M11: the official emergency numbers first, the categories, and the member's own requests.
+         */
+        SupportHomeOut: {
+            /** Emergencycontacts */
+            emergencyContacts: components["schemas"]["EmergencyContactOut"][];
+            /** Categories */
+            categories: ("food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood")[];
+            /** Requests */
+            requests: components["schemas"]["MyRequestSummaryOut"][];
+        };
         /** SupportIn */
         SupportIn: {
             /** Support */
             support: boolean;
+        };
+        /** SupportLinkIn */
+        SupportLinkIn: {
+            /**
+             * Othercaseid
+             * Format: uuid
+             */
+            otherCaseId: string;
+        };
+        /** SupportRequestIn */
+        SupportRequestIn: {
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "food" | "low_income" | "unemployment" | "education" | "disability_access" | "elderly_care" | "housing" | "emergency_needs" | "vocational_training" | "livelihood";
+            /** Summary */
+            summary: string;
+            /**
+             * Emergency
+             * @default false
+             */
+            emergency: boolean;
+            /**
+             * Consent
+             * @description Consent to collect the case information (FR-AST-004)
+             */
+            consent: boolean;
+            /** Fullname */
+            fullName: string;
+            /** Phone */
+            phone?: string | null;
+            /** Household */
+            household?: string | null;
+            area?: components["schemas"]["SupportAreaIn"] | null;
         };
         /** SurveyAnswersIn */
         SurveyAnswersIn: {
@@ -23069,6 +24124,812 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    support_home_v1_assistance_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupportHomeOut"];
+                };
+            };
+        };
+    };
+    request_support_v1_assistance_requests_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportRequestIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyRequestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_support_publicly_v1_assistance_public_requests_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportRequestIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicReceiptOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_my_request_v1_assistance_requests__case_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyRequestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    appeal_v1_assistance_requests__case_id__appeals_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppealIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupportAppealOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    staff_queue_v1_assistance_manage_cases_get: {
+        parameters: {
+            query?: {
+                state?: ("screening" | "assessment" | "decided" | "closed" | "withdrawn")[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    intake_v1_assistance_manage_intake_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IntakeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseSummaryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_case_v1_assistance_manage_cases__case_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_caseworkers_v1_assistance_manage_cases__case_id__caseworkers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseworkerOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    assign_v1_assistance_manage_cases__case_id__assign_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportAssignIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    link_v1_assistance_manage_cases__case_id__link_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportLinkIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_note_v1_assistance_manage_cases__case_id__notes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CaseNoteIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_v1_assistance_manage_cases__case_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_delivery_v1_assistance_manage_cases__case_id__deliveries_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeliveryIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    refer_v1_assistance_manage_cases__case_id__referrals_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReferralIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_referral_v1_assistance_manage_cases__case_id__referrals__referral_id__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+                referral_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReferralUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    close_v1_assistance_manage_cases__case_id__close_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportCloseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffCaseFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    open_appeals_v1_assistance_manage_appeals_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupportAppealOut"][];
+                };
+            };
+        };
+    };
+    decide_appeal_v1_assistance_manage_appeals__appeal_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appeal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppealDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_programmes_v1_assistance_manage_programmes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgrammeOut"][];
+                };
+            };
+        };
+    };
+    create_programme_v1_assistance_manage_programmes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProgrammeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgrammeOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_criteria_v1_assistance_manage_programmes__programme_id__criteria_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                programme_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CriteriaIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgrammeOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_programme_active_v1_assistance_manage_programmes__programme_id__active_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                programme_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActiveIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_partners_v1_assistance_manage_partners_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnerOut"][];
+                };
+            };
+        };
+    };
+    add_partner_v1_assistance_manage_partners_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartnerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnerOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    statistics_v1_assistance_manage_statistics_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatisticsOut"];
                 };
             };
         };

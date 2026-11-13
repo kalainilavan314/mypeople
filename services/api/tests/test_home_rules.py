@@ -19,7 +19,7 @@ def test_four_quick_actions_and_none_duplicates_a_tab():
 
 def test_the_party_fund_never_comes_before_civic_participation():
     services = rules.HUB_SERVICES
-    assert len(services) == 8
+    assert len(services) == 10 and services[-2:] == ("promises", "support")
     assert services.index("party_fund") > max(services.index(s) for s in ("ideas", "surveys", "learning"))
 
 

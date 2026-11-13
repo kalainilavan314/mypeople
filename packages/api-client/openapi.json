@@ -13094,6 +13094,1363 @@
         }
       }
     },
+    "/v1/assistance": {
+      "get": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Support Home",
+        "description": "M11: emergency numbers first, the ten categories, and the member's own requests.",
+        "operationId": "support_home_v1_assistance_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupportHomeOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/assistance/requests": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Request Support",
+        "description": "M12: needs no membership; consent to collect the case information is required.",
+        "operationId": "request_support_v1_assistance_requests_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportRequestIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyRequestOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/assistance/public-requests": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Request Support Publicly",
+        "description": "The public web form for people without an account: answers only the AS- reference.",
+        "operationId": "request_support_publicly_v1_assistance_public_requests_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportRequestIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicReceiptOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/requests/{case_id}": {
+      "get": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Read My Request",
+        "description": "M13: status, decisions with reasons, help delivered and appeals.",
+        "operationId": "read_my_request_v1_assistance_requests__case_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyRequestOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/requests/{case_id}/appeals": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Appeal",
+        "description": "M14: one complaint or appeal per decision.",
+        "operationId": "appeal_v1_assistance_requests__case_id__appeals_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppealIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupportAppealOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/cases": {
+      "get": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Staff Queue",
+        "operationId": "staff_queue_v1_assistance_manage_cases_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "screening",
+                      "assessment",
+                      "decided",
+                      "closed",
+                      "withdrawn"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffCaseSummaryOut"
+                  },
+                  "title": "Response Staff Queue V1 Assistance Manage Cases Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/intake": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Intake",
+        "description": "S11: a hotline call or partner referral, without needing membership.",
+        "operationId": "intake_v1_assistance_manage_intake_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntakeIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffCaseSummaryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/assistance/manage/cases/{case_id}": {
+      "get": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Read Case",
+        "description": "S12: only the assigned caseworker and decision-makers; every opening is audited.",
+        "operationId": "read_case_v1_assistance_manage_cases__case_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffCaseFileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/cases/{case_id}/caseworkers": {
+      "get": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "List Caseworkers",
+        "operationId": "list_caseworkers_v1_assistance_manage_cases__case_id__caseworkers_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CaseworkerOut"
+                  },
+                  "title": "Response List Caseworkers V1 Assistance Manage Cases  Case Id  Caseworkers Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/cases/{case_id}/assign": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Assign",
+        "operationId": "assign_v1_assistance_manage_cases__case_id__assign_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportAssignIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffCaseFileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/cases/{case_id}/link": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Link",
+        "operationId": "link_v1_assistance_manage_cases__case_id__link_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportLinkIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffCaseFileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/cases/{case_id}/notes": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Add Note",
+        "operationId": "add_note_v1_assistance_manage_cases__case_id__notes_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaseNoteIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffCaseFileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/cases/{case_id}/decision": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Decide",
+        "description": "FR-AST-008: against the published criteria version, with reasons in both languages.",
+        "operationId": "decide_v1_assistance_manage_cases__case_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffCaseFileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/cases/{case_id}/deliveries": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Record Delivery",
+        "operationId": "record_delivery_v1_assistance_manage_cases__case_id__deliveries_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeliveryIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffCaseFileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/cases/{case_id}/referrals": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Refer",
+        "operationId": "refer_v1_assistance_manage_cases__case_id__referrals_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReferralIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffCaseFileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/cases/{case_id}/referrals/{referral_id}": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Update Referral",
+        "operationId": "update_referral_v1_assistance_manage_cases__case_id__referrals__referral_id__post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "referral_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Referral Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReferralUpdateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffCaseFileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/cases/{case_id}/close": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Close",
+        "operationId": "close_v1_assistance_manage_cases__case_id__close_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportCloseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffCaseFileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/appeals": {
+      "get": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Open Appeals",
+        "operationId": "open_appeals_v1_assistance_manage_appeals_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SupportAppealOut"
+                  },
+                  "type": "array",
+                  "title": "Response Open Appeals V1 Assistance Manage Appeals Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/assistance/manage/appeals/{appeal_id}/decision": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Decide Appeal",
+        "description": "FR-AST-011: never by the person whose decision is appealed (403 original_decider).",
+        "operationId": "decide_appeal_v1_assistance_manage_appeals__appeal_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "appeal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Appeal Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppealDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/programmes": {
+      "get": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "List Programmes",
+        "description": "Programmes with their current criteria version, for decisions and D14.",
+        "operationId": "list_programmes_v1_assistance_manage_programmes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProgrammeOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Programmes V1 Assistance Manage Programmes Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Create Programme",
+        "operationId": "create_programme_v1_assistance_manage_programmes_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgrammeIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgrammeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/assistance/manage/programmes/{programme_id}/criteria": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Publish Criteria",
+        "operationId": "publish_criteria_v1_assistance_manage_programmes__programme_id__criteria_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "programme_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Programme Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CriteriaIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgrammeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/programmes/{programme_id}/active": {
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Set Programme Active",
+        "operationId": "set_programme_active_v1_assistance_manage_programmes__programme_id__active_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "programme_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Programme Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActiveIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistance/manage/partners": {
+      "get": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "List Partners",
+        "operationId": "list_partners_v1_assistance_manage_partners_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PartnerOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Partners V1 Assistance Manage Partners Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Add Partner",
+        "operationId": "add_partner_v1_assistance_manage_partners_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PartnerIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/assistance/manage/statistics": {
+      "get": {
+        "tags": [
+          "assistance"
+        ],
+        "summary": "Statistics",
+        "description": "FR-AST-012: counts only, minimum cell 10, also by subtraction.",
+        "operationId": "statistics_v1_assistance_manage_statistics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatisticsOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/v1/home": {
       "get": {
         "tags": [
@@ -18414,6 +19771,19 @@
         "title": "AccountNumber",
         "description": "The ID number the account registered with: nic, or passportNumber with passportCountry."
       },
+      "ActiveIn": {
+        "properties": {
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "active"
+        ],
+        "title": "ActiveIn"
+      },
       "ActivityItemOut": {
         "properties": {
           "kind": {
@@ -19033,6 +20403,67 @@
         ],
         "title": "AnswerIn"
       },
+      "AppealDecisionIn": {
+        "properties": {
+          "change": {
+            "type": "boolean",
+            "title": "Change"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Reason"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "approved",
+                  "partly_approved",
+                  "not_eligible",
+                  "referred"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "criteriaVersionId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Criteriaversionid"
+          },
+          "reasonTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 3000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reasonta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "change",
+          "reason"
+        ],
+        "title": "AppealDecisionIn"
+      },
       "AppealDecisionInput": {
         "properties": {
           "outcome": {
@@ -19248,6 +20679,36 @@
         ],
         "title": "AppealFileOut",
         "description": "D05: the appeal, the decision under appeal, the review and the member's image records."
+      },
+      "AppealIn": {
+        "properties": {
+          "decisionId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Decisionid"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "appeal",
+              "complaint"
+            ],
+            "title": "Kind"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Body"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decisionId",
+          "kind",
+          "body"
+        ],
+        "title": "AppealIn"
       },
       "AppealInput": {
         "properties": {
@@ -22028,6 +23489,21 @@
         ],
         "title": "CaseMemberOut"
       },
+      "CaseNoteIn": {
+        "properties": {
+          "body": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 3,
+            "title": "Body"
+          }
+        },
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "title": "CaseNoteIn"
+      },
       "CasePhotoOut": {
         "properties": {
           "id": {
@@ -22144,6 +23620,25 @@
         ],
         "title": "CaseSummaryOut",
         "description": "One row of the D04 queue."
+      },
+      "CaseworkerOut": {
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberId",
+          "fullName"
+        ],
+        "title": "CaseworkerOut"
       },
       "Catalogue": {
         "properties": {
@@ -23777,6 +25272,67 @@
         ],
         "title": "CourseStateIn"
       },
+      "CriteriaIn": {
+        "properties": {
+          "criteriaEn": {
+            "type": "string",
+            "maxLength": 6000,
+            "minLength": 10,
+            "title": "Criteriaen"
+          },
+          "criteriaTa": {
+            "type": "string",
+            "maxLength": 9000,
+            "minLength": 10,
+            "title": "Criteriata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "criteriaEn",
+          "criteriaTa"
+        ],
+        "title": "CriteriaIn"
+      },
+      "DecisionIn": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "partly_approved",
+              "not_eligible",
+              "referred"
+            ],
+            "title": "Outcome"
+          },
+          "criteriaVersionId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Criteriaversionid"
+          },
+          "reasonEn": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Reasonen"
+          },
+          "reasonTa": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Reasonta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcome",
+          "criteriaVersionId",
+          "reasonEn",
+          "reasonTa"
+        ],
+        "title": "DecisionIn"
+      },
       "DecisionInput": {
         "properties": {
           "decision": {
@@ -24076,6 +25632,83 @@
           "overlaps"
         ],
         "title": "DeclaredOut"
+      },
+      "DeliveryIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Kind"
+          },
+          "amount": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Amount",
+            "description": "Quantity or value"
+          },
+          "deliveredOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Deliveredon"
+          },
+          "provider": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 2,
+            "title": "Provider"
+          },
+          "evidence": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "amount",
+          "deliveredOn",
+          "provider",
+          "evidence"
+        ],
+        "title": "DeliveryIn"
+      },
+      "DeliveryOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "deliveredOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Deliveredon"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "evidence": {
+            "type": "string",
+            "title": "Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "amount",
+          "deliveredOn",
+          "provider",
+          "evidence"
+        ],
+        "title": "DeliveryOut"
       },
       "DeviceIn": {
         "properties": {
@@ -24914,6 +26547,29 @@
           "withdrawnAt"
         ],
         "title": "ElectionNoticeOut"
+      },
+      "EmergencyContactOut": {
+        "properties": {
+          "number": {
+            "type": "string",
+            "title": "Number"
+          },
+          "nameEn": {
+            "type": "string",
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "title": "Nameta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "number",
+          "nameEn",
+          "nameTa"
+        ],
+        "title": "EmergencyContactOut"
       },
       "EventCreateIn": {
         "properties": {
@@ -27405,6 +29061,105 @@
           "actionNeeded"
         ],
         "title": "InboxOut"
+      },
+      "IntakeIn": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "food",
+              "low_income",
+              "unemployment",
+              "education",
+              "disability_access",
+              "elderly_care",
+              "housing",
+              "emergency_needs",
+              "vocational_training",
+              "livelihood"
+            ],
+            "title": "Category"
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Summary"
+          },
+          "emergency": {
+            "type": "boolean",
+            "title": "Emergency",
+            "default": false
+          },
+          "consent": {
+            "type": "boolean",
+            "title": "Consent",
+            "description": "Consent to collect the case information (FR-AST-004)"
+          },
+          "fullName": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Fullname"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\+?[0-9 ]{9,15}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "household": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Household"
+          },
+          "area": {
+            "$ref": "#/components/schemas/SupportAreaIn"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "hotline",
+              "partner"
+            ],
+            "title": "Channel"
+          },
+          "partnerId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Partnerid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "summary",
+          "consent",
+          "fullName",
+          "area",
+          "channel"
+        ],
+        "title": "IntakeIn"
       },
       "InvitationIn": {
         "properties": {
@@ -30685,6 +32440,163 @@
         ],
         "title": "MyReportsOut"
       },
+      "MyRequestOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "caseRef": {
+            "type": "string",
+            "title": "Caseref",
+            "description": "AS- reference that reveals nothing about the person, place or category"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "food",
+              "low_income",
+              "unemployment",
+              "education",
+              "disability_access",
+              "elderly_care",
+              "housing",
+              "emergency_needs",
+              "vocational_training",
+              "livelihood"
+            ],
+            "title": "Category"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "screening",
+              "assessment",
+              "decided",
+              "closed",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "emergency": {
+            "type": "boolean",
+            "title": "Emergency"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "decisions": {
+            "items": {
+              "$ref": "#/components/schemas/SupportDecisionOut"
+            },
+            "type": "array",
+            "title": "Decisions"
+          },
+          "deliveries": {
+            "items": {
+              "$ref": "#/components/schemas/DeliveryOut"
+            },
+            "type": "array",
+            "title": "Deliveries"
+          },
+          "appeals": {
+            "items": {
+              "$ref": "#/components/schemas/SupportAppealOut"
+            },
+            "type": "array",
+            "title": "Appeals"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caseRef",
+          "category",
+          "state",
+          "emergency",
+          "createdAt",
+          "updatedAt",
+          "decisions",
+          "deliveries",
+          "appeals"
+        ],
+        "title": "MyRequestOut",
+        "description": "M13: status and what happened; never internal notes or who handled it."
+      },
+      "MyRequestSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "caseRef": {
+            "type": "string",
+            "title": "Caseref",
+            "description": "AS- reference that reveals nothing about the person, place or category"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "food",
+              "low_income",
+              "unemployment",
+              "education",
+              "disability_access",
+              "elderly_care",
+              "housing",
+              "emergency_needs",
+              "vocational_training",
+              "livelihood"
+            ],
+            "title": "Category"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "screening",
+              "assessment",
+              "decided",
+              "closed",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "emergency": {
+            "type": "boolean",
+            "title": "Emergency"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caseRef",
+          "category",
+          "state",
+          "emergency",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "MyRequestSummaryOut"
+      },
       "MyReviewOut": {
         "properties": {
           "reviewRef": {
@@ -30869,6 +32781,30 @@
           "text"
         ],
         "title": "NoteIn"
+      },
+      "NoteOut": {
+        "properties": {
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "author": {
+            "type": "string",
+            "title": "Author"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "body",
+          "author",
+          "createdAt"
+        ],
+        "title": "NoteOut"
       },
       "NoticeIn": {
         "properties": {
@@ -32106,6 +34042,73 @@
           "items"
         ],
         "title": "OwnerOptionsOut"
+      },
+      "PartnerIn": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "ngo",
+              "public_service",
+              "hospital",
+              "other"
+            ],
+            "title": "Kind"
+          },
+          "contact": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Contact"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "kind",
+          "contact"
+        ],
+        "title": "PartnerIn"
+      },
+      "PartnerOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "contact": {
+            "type": "string",
+            "title": "Contact"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "contact",
+          "active"
+        ],
+        "title": "PartnerOut"
       },
       "PassCodeOut": {
         "properties": {
@@ -33429,6 +35432,171 @@
         "type": "object",
         "title": "ProfileUpdateIn",
         "description": "Only these; anything else is refused by the schema. An empty display name greets by the legal name."
+      },
+      "ProgrammeIn": {
+        "properties": {
+          "nameEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "maxLength": 220,
+            "minLength": 3,
+            "title": "Nameta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "maxLength": 4500,
+            "minLength": 10,
+            "title": "Descriptionta"
+          },
+          "categories": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "food",
+                "low_income",
+                "unemployment",
+                "education",
+                "disability_access",
+                "elderly_care",
+                "housing",
+                "emergency_needs",
+                "vocational_training",
+                "livelihood"
+              ]
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Categories"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nameEn",
+          "nameTa",
+          "descriptionEn",
+          "descriptionTa",
+          "categories"
+        ],
+        "title": "ProgrammeIn"
+      },
+      "ProgrammeOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "nameEn": {
+            "type": "string",
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "title": "Nameta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          },
+          "categories": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "food",
+                "low_income",
+                "unemployment",
+                "education",
+                "disability_access",
+                "elderly_care",
+                "housing",
+                "emergency_needs",
+                "vocational_training",
+                "livelihood"
+              ]
+            },
+            "type": "array",
+            "title": "Categories"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "criteriaVersionId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Criteriaversionid"
+          },
+          "criteriaVersion": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Criteriaversion"
+          },
+          "criteriaEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Criteriaen"
+          },
+          "criteriaTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Criteriata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "nameEn",
+          "nameTa",
+          "descriptionEn",
+          "descriptionTa",
+          "categories",
+          "active",
+          "criteriaVersionId",
+          "criteriaVersion",
+          "criteriaEn",
+          "criteriaTa"
+        ],
+        "title": "ProgrammeOut"
       },
       "ProgressIn": {
         "properties": {
@@ -34841,6 +37009,19 @@
         "title": "PublicCardOut",
         "description": "What a shared public card may show (FR-CARD-012, BR-067): no QR, no identity numbers."
       },
+      "PublicReceiptOut": {
+        "properties": {
+          "caseRef": {
+            "type": "string",
+            "title": "Caseref"
+          }
+        },
+        "type": "object",
+        "required": [
+          "caseRef"
+        ],
+        "title": "PublicReceiptOut"
+      },
       "PublicRemovalRequestIn": {
         "properties": {
           "reason": {
@@ -35534,6 +37715,109 @@
           "phone"
         ],
         "title": "RecoveryContactOut"
+      },
+      "ReferralIn": {
+        "properties": {
+          "partnerId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Partnerid"
+          },
+          "consent": {
+            "type": "boolean",
+            "title": "Consent",
+            "description": "The applicant agreed to this partner seeing the case"
+          }
+        },
+        "type": "object",
+        "required": [
+          "partnerId",
+          "consent"
+        ],
+        "title": "ReferralIn"
+      },
+      "ReferralOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "partner": {
+            "type": "string",
+            "title": "Partner"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "consentAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Consentat"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "partner",
+          "kind",
+          "state",
+          "outcome",
+          "consentAt",
+          "createdAt"
+        ],
+        "title": "ReferralOut"
+      },
+      "ReferralUpdateIn": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "completed",
+              "declined"
+            ],
+            "title": "State"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          }
+        },
+        "type": "object",
+        "required": [
+          "state"
+        ],
+        "title": "ReferralUpdateIn"
       },
       "RefreshIn": {
         "properties": {
@@ -37779,6 +40063,259 @@
         ],
         "title": "StaffApproveRequest"
       },
+      "StaffCaseFileOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "caseRef": {
+            "type": "string",
+            "title": "Caseref"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "food",
+              "low_income",
+              "unemployment",
+              "education",
+              "disability_access",
+              "elderly_care",
+              "housing",
+              "emergency_needs",
+              "vocational_training",
+              "livelihood"
+            ],
+            "title": "Category"
+          },
+          "emergency": {
+            "type": "boolean",
+            "title": "Emergency"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "caseworkerName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caseworkername"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "applicantName": {
+            "type": "string",
+            "title": "Applicantname"
+          },
+          "applicantPhone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applicantphone"
+          },
+          "household": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Household"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "linkedCaseRef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linkedcaseref"
+          },
+          "notes": {
+            "items": {
+              "$ref": "#/components/schemas/NoteOut"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "decisions": {
+            "items": {
+              "$ref": "#/components/schemas/SupportDecisionOut"
+            },
+            "type": "array",
+            "title": "Decisions"
+          },
+          "deliveries": {
+            "items": {
+              "$ref": "#/components/schemas/DeliveryOut"
+            },
+            "type": "array",
+            "title": "Deliveries"
+          },
+          "referrals": {
+            "items": {
+              "$ref": "#/components/schemas/ReferralOut"
+            },
+            "type": "array",
+            "title": "Referrals"
+          },
+          "appeals": {
+            "items": {
+              "$ref": "#/components/schemas/SupportAppealOut"
+            },
+            "type": "array",
+            "title": "Appeals"
+          },
+          "possibleDuplicates": {
+            "items": {
+              "$ref": "#/components/schemas/StaffCaseSummaryOut"
+            },
+            "type": "array",
+            "title": "Possibleduplicates",
+            "description": "Suggestions to link, never grounds to reject (FR-AST-006)"
+          },
+          "mayDecide": {
+            "type": "boolean",
+            "title": "Maydecide"
+          },
+          "mayWork": {
+            "type": "boolean",
+            "title": "Maywork"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caseRef",
+          "category",
+          "emergency",
+          "channel",
+          "state",
+          "caseworkerName",
+          "areaKey",
+          "createdAt",
+          "applicantName",
+          "applicantPhone",
+          "household",
+          "summary",
+          "linkedCaseRef",
+          "notes",
+          "decisions",
+          "deliveries",
+          "referrals",
+          "appeals",
+          "possibleDuplicates",
+          "mayDecide",
+          "mayWork"
+        ],
+        "title": "StaffCaseFileOut"
+      },
+      "StaffCaseSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "caseRef": {
+            "type": "string",
+            "title": "Caseref"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "food",
+              "low_income",
+              "unemployment",
+              "education",
+              "disability_access",
+              "elderly_care",
+              "housing",
+              "emergency_needs",
+              "vocational_training",
+              "livelihood"
+            ],
+            "title": "Category"
+          },
+          "emergency": {
+            "type": "boolean",
+            "title": "Emergency"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "caseworkerName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caseworkername"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caseRef",
+          "category",
+          "emergency",
+          "channel",
+          "state",
+          "caseworkerName",
+          "areaKey",
+          "createdAt"
+        ],
+        "title": "StaffCaseSummaryOut"
+      },
       "StaffContributionDetail": {
         "properties": {
           "id": {
@@ -38330,6 +40867,70 @@
         ],
         "title": "StageEventOut"
       },
+      "StatisticOut": {
+        "properties": {
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "food",
+              "low_income",
+              "unemployment",
+              "education",
+              "disability_access",
+              "elderly_care",
+              "housing",
+              "emergency_needs",
+              "vocational_training",
+              "livelihood"
+            ],
+            "title": "Category"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Count",
+            "description": "Null means fewer than 10"
+          }
+        },
+        "type": "object",
+        "required": [
+          "areaKey",
+          "category",
+          "state",
+          "count"
+        ],
+        "title": "StatisticOut"
+      },
+      "StatisticsOut": {
+        "properties": {
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/StatisticOut"
+            },
+            "type": "array",
+            "title": "Cells"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cells"
+        ],
+        "title": "StatisticsOut"
+      },
       "StepOut": {
         "properties": {
           "name": {
@@ -38386,6 +40987,250 @@
         ],
         "title": "SubmitIn"
       },
+      "SupportAppealOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "decisionId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Decisionid"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "appeal",
+              "complaint"
+            ],
+            "title": "Kind"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "upheld",
+              "changed"
+            ],
+            "title": "State"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Dueat"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "decisionId",
+          "kind",
+          "body",
+          "state",
+          "dueAt",
+          "reason",
+          "createdAt",
+          "decidedAt"
+        ],
+        "title": "SupportAppealOut"
+      },
+      "SupportAreaIn": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "district",
+              "ds",
+              "gn"
+            ],
+            "title": "Level"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 2,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "code"
+        ],
+        "title": "SupportAreaIn"
+      },
+      "SupportAssignIn": {
+        "properties": {
+          "caseworkerId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Caseworkerid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "caseworkerId"
+        ],
+        "title": "SupportAssignIn"
+      },
+      "SupportCloseIn": {
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 5,
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "note"
+        ],
+        "title": "SupportCloseIn"
+      },
+      "SupportDecisionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "partly_approved",
+              "not_eligible",
+              "referred"
+            ],
+            "title": "Outcome"
+          },
+          "criteriaVersion": {
+            "type": "integer",
+            "title": "Criteriaversion"
+          },
+          "programmeNameEn": {
+            "type": "string",
+            "title": "Programmenameen"
+          },
+          "reasonEn": {
+            "type": "string",
+            "title": "Reasonen"
+          },
+          "reasonTa": {
+            "type": "string",
+            "title": "Reasonta"
+          },
+          "replacesId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replacesid"
+          },
+          "decidedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Decidedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "outcome",
+          "criteriaVersion",
+          "programmeNameEn",
+          "reasonEn",
+          "reasonTa",
+          "replacesId",
+          "decidedAt"
+        ],
+        "title": "SupportDecisionOut"
+      },
+      "SupportHomeOut": {
+        "properties": {
+          "emergencyContacts": {
+            "items": {
+              "$ref": "#/components/schemas/EmergencyContactOut"
+            },
+            "type": "array",
+            "title": "Emergencycontacts"
+          },
+          "categories": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "food",
+                "low_income",
+                "unemployment",
+                "education",
+                "disability_access",
+                "elderly_care",
+                "housing",
+                "emergency_needs",
+                "vocational_training",
+                "livelihood"
+              ]
+            },
+            "type": "array",
+            "title": "Categories"
+          },
+          "requests": {
+            "items": {
+              "$ref": "#/components/schemas/MyRequestSummaryOut"
+            },
+            "type": "array",
+            "title": "Requests"
+          }
+        },
+        "type": "object",
+        "required": [
+          "emergencyContacts",
+          "categories",
+          "requests"
+        ],
+        "title": "SupportHomeOut",
+        "description": "M11: the official emergency numbers first, the categories, and the member's own requests."
+      },
       "SupportIn": {
         "properties": {
           "support": {
@@ -38398,6 +41243,104 @@
           "support"
         ],
         "title": "SupportIn"
+      },
+      "SupportLinkIn": {
+        "properties": {
+          "otherCaseId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Othercaseid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "otherCaseId"
+        ],
+        "title": "SupportLinkIn"
+      },
+      "SupportRequestIn": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "food",
+              "low_income",
+              "unemployment",
+              "education",
+              "disability_access",
+              "elderly_care",
+              "housing",
+              "emergency_needs",
+              "vocational_training",
+              "livelihood"
+            ],
+            "title": "Category"
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Summary"
+          },
+          "emergency": {
+            "type": "boolean",
+            "title": "Emergency",
+            "default": false
+          },
+          "consent": {
+            "type": "boolean",
+            "title": "Consent",
+            "description": "Consent to collect the case information (FR-AST-004)"
+          },
+          "fullName": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Fullname"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\+?[0-9 ]{9,15}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "household": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Household"
+          },
+          "area": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SupportAreaIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "summary",
+          "consent",
+          "fullName"
+        ],
+        "title": "SupportRequestIn"
       },
       "SurveyAnswersIn": {
         "properties": {

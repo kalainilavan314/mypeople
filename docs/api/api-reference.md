@@ -227,6 +227,22 @@ Behind the `promises` and `scorecards` switches (phase 2). Refusals are `422 {co
 | `POST /v1/scorecards/manage` `{period}`, `.../{id}/share`, `PUT .../{id}/notes`, `.../{id}/publish` | `scorecard.publish` | compute a finished quarter, share for 10 working days, context notes, publish | `422 period_not_finished`, `draft_exists`, `review_period_running` |
 | `POST /v1/scorecards/manage/{id}/corrections`, `.../corrections/{id}/decision` | a case permission to ask; `scorecard.publish` to decide | an accepted correction recomputes the figures; on a published scorecard it publishes the next version and keeps the earlier one | `422 unknown_metric`, `already_decided` |
 
+### Community Support (`/v1/assistance`)
+
+Behind the `community_support` switch (phase 2). Help never depends on membership, verification, donations or political support, and no response carries any of them (FR-AST-009). The `assistance` schema has row-level security: its rows are invisible unless the module opens them for its own transaction. Refusals are `422 {code: "support_refused", problems}`.
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /` | a session | `200 {emergencyContacts, categories, requests}` (M11): the official numbers first | `401` |
+| `POST /requests` body `{category, summary, emergency, consent, fullName, phone?, household?, area?}` | any session (no membership needed) | `201` with a random `AS-` reference that encodes nothing; emergencies alert intake staff at once | `422 consent_required`, `unknown_area` |
+| `POST /public-requests` (same body) | none | `201 {caseRef}` | `422 phone_required`, `too_many_requests` (5 an hour per address) |
+| `GET /requests/{id}`, `POST .../appeals` `{decisionId, kind: appeal \| complaint, body}` | the applicant | status, decisions with reasons, help delivered, appeals (M13, M14) | `404`, `422 already_appealed` |
+| `GET /manage/cases?state`, `POST /manage/intake` | `assistance.intake`, `casework` or `decide` | the queue: decision-makers see their areas, others unassigned screening cases and their own; S11 hotline and partner intake | `403` |
+| `GET /manage/cases/{id}` and the actions under it (`assign`, `link`, `notes`, `decision`, `deliveries`, `referrals`, `close`) | the assigned caseworker, or `assistance.decide` over the area; intake only while unassigned in screening | the case file with duplicate suggestions (FR-AST-006); every opening audited; decisions cite a criteria version with reasons in both languages; deliveries only after a decision; each referral needs that partner's consent | `403 not_assigned` (audited); `422 criteria_version_required`, `reason_required`, `partner_consent_required`, `not_a_suggested_duplicate` |
+| `GET /manage/appeals`, `POST /manage/appeals/{id}/decision` `{change, reason, outcome?, criteriaVersionId?, reasonTa?}` | `assistance.decide` | uphold, or record a new decision that replaces the earlier one | `403 original_decider` |
+| `GET/POST /manage/programmes`, `POST .../{id}/criteria`, `.../{id}/active`, `GET/POST /manage/partners` | `assistance.programme.manage` to change | programmes with versioned criteria (D14) and partners | `403` |
+| `GET /manage/statistics` | `assistance.decide` or `assistance.programme.manage` | counts by area, category and state; under 10 hidden, also by subtraction | `403` |
+
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 
 | Endpoint | Needs | Success | Errors |
