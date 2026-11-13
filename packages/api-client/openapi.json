@@ -14451,6 +14451,720 @@
         ]
       }
     },
+    "/v1/town-halls": {
+      "get": {
+        "tags": [
+          "town-halls"
+        ],
+        "summary": "List Sessions",
+        "description": "Upcoming, live and past sessions for the member's area.",
+        "operationId": "list_sessions_v1_town_halls_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TownHallOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Sessions V1 Town Halls Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/town-halls/manage": {
+      "get": {
+        "tags": [
+          "town-halls"
+        ],
+        "summary": "List Managed",
+        "operationId": "list_managed_v1_town_halls_manage_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TownHallOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Managed V1 Town Halls Manage Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "town-halls"
+        ],
+        "summary": "Create",
+        "operationId": "create_v1_town_halls_manage_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TownHallIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TownHallOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/town-halls/manage/{townhall_id}": {
+      "get": {
+        "tags": [
+          "town-halls"
+        ],
+        "summary": "Read Managed",
+        "operationId": "read_managed_v1_town_halls_manage__townhall_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "townhall_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Townhall Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffSessionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "town-halls"
+        ],
+        "summary": "Update",
+        "operationId": "update_v1_town_halls_manage__townhall_id__put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "townhall_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Townhall Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TownHallIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TownHallOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/town-halls/manage/{townhall_id}/state": {
+      "post": {
+        "tags": [
+          "town-halls"
+        ],
+        "summary": "Move",
+        "description": "Schedule, go live, end or cancel; refused in a silence window (409 silence_period, FR-THL-008).",
+        "operationId": "move_v1_town_halls_manage__townhall_id__state_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "townhall_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Townhall Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TownHallStateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TownHallOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/town-halls/manage/questions/{question_id}/moderation": {
+      "post": {
+        "tags": [
+          "town-halls"
+        ],
+        "summary": "Moderate",
+        "operationId": "moderate_v1_town_halls_manage_questions__question_id__moderation_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "question_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Question Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TownHallModerationIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/town-halls/manage/questions/{question_id}/answer": {
+      "post": {
+        "tags": [
+          "town-halls"
+        ],
+        "summary": "Answer",
+        "operationId": "answer_v1_town_halls_manage_questions__question_id__answer_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "question_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Question Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TownHallAnswerIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/town-halls/manage/{townhall_id}/archive": {
+      "post": {
+        "tags": [
+          "town-halls"
+        ],
+        "summary": "Archive",
+        "operationId": "archive_v1_town_halls_manage__townhall_id__archive_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "townhall_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Townhall Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArchiveIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TownHallOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/town-halls/{townhall_id}": {
+      "get": {
+        "tags": [
+          "town-halls"
+        ],
+        "summary": "Read",
+        "description": "M21 to M23: the session, approved questions with vote totals, and the member's own.",
+        "operationId": "read_v1_town_halls__townhall_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "townhall_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Townhall Id"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Search the question history (FR-THL-007)",
+              "title": "Q"
+            },
+            "description": "Search the question history (FR-THL-007)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TownHallSessionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/town-halls/{townhall_id}/questions": {
+      "post": {
+        "tags": [
+          "town-halls"
+        ],
+        "summary": "Ask",
+        "operationId": "ask_v1_town_halls__townhall_id__questions_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "townhall_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Townhall Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/town-halls/questions/{question_id}/vote": {
+      "post": {
+        "tags": [
+          "town-halls"
+        ],
+        "summary": "Vote",
+        "operationId": "vote_v1_town_halls_questions__question_id__vote_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "question_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Question Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/town-halls/{townhall_id}/reminder": {
+      "put": {
+        "tags": [
+          "town-halls"
+        ],
+        "summary": "Set Reminder",
+        "description": "Remind me 24 hours and 15 minutes before (FR-THL-001).",
+        "operationId": "set_reminder_v1_town_halls__townhall_id__reminder_put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "townhall_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Townhall Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReminderIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TownHallSessionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/home": {
       "get": {
         "tags": [
@@ -20927,6 +21641,57 @@
         ],
         "title": "AppealSummaryOut",
         "description": "One row of the D05 queue."
+      },
+      "ArchiveIn": {
+        "properties": {
+          "recordingUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "pattern": "^https://"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recordingurl"
+          },
+          "transcriptEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transcripten"
+          },
+          "transcriptTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transcriptta"
+          },
+          "outcomes": {
+            "items": {
+              "$ref": "#/components/schemas/OutcomeIn"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Outcomes"
+          }
+        },
+        "type": "object",
+        "title": "ArchiveIn"
       },
       "AreaChangeIn": {
         "properties": {
@@ -34003,6 +34768,52 @@
         "type": "object",
         "title": "OpportunityUpdateIn"
       },
+      "OutcomeIn": {
+        "properties": {
+          "textEn": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Texten"
+          },
+          "textTa": {
+            "type": "string",
+            "maxLength": 800,
+            "minLength": 3,
+            "title": "Textta"
+          },
+          "promiseId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Promiseid"
+          },
+          "caseNumber": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Casenumber"
+          }
+        },
+        "type": "object",
+        "required": [
+          "textEn",
+          "textTa"
+        ],
+        "title": "OutcomeIn"
+      },
       "OwnerOptionOut": {
         "properties": {
           "memberId": {
@@ -37201,6 +38012,145 @@
         "title": "QualityOut",
         "description": "M01 capture advice for the member (FR-IDV-001): never a decision, and the photo still counts as received."
       },
+      "QuestionIn": {
+        "properties": {
+          "body": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Body"
+          }
+        },
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "title": "QuestionIn"
+      },
+      "QuestionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "approved",
+              "rejected",
+              "merged"
+            ],
+            "title": "State"
+          },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine"
+          },
+          "moderationReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moderationreason",
+            "description": "Shown to the author only"
+          },
+          "votes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Votes",
+            "description": "The total, on approved questions only"
+          },
+          "voted": {
+            "type": "boolean",
+            "title": "Voted"
+          },
+          "answerMode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "live",
+                  "written"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answermode"
+          },
+          "answeredAtSecond": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answeredatsecond"
+          },
+          "answerEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answeren"
+          },
+          "answerTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answerta"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "body",
+          "state",
+          "mine",
+          "moderationReason",
+          "votes",
+          "voted",
+          "answerMode",
+          "answeredAtSecond",
+          "answerEn",
+          "answerTa",
+          "createdAt"
+        ],
+        "title": "QuestionOut"
+      },
       "QuestionResultOut": {
         "properties": {
           "question": {
@@ -38231,6 +39181,19 @@
         ],
         "title": "RegistrationOut",
         "description": "The tokens are returned for mobile apps; browsers use the HttpOnly cookies."
+      },
+      "ReminderIn": {
+        "properties": {
+          "remind": {
+            "type": "boolean",
+            "title": "Remind"
+          }
+        },
+        "type": "object",
+        "required": [
+          "remind"
+        ],
+        "title": "ReminderIn"
       },
       "RemovalDecisionIn": {
         "properties": {
@@ -40727,6 +41690,197 @@
         ],
         "title": "StaffReconciliationDetail"
       },
+      "StaffSessionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "sessionRef": {
+            "type": "string",
+            "title": "Sessionref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "ta",
+              "en",
+              "both"
+            ],
+            "title": "Language"
+          },
+          "speakersEn": {
+            "type": "string",
+            "title": "Speakersen"
+          },
+          "speakersTa": {
+            "type": "string",
+            "title": "Speakersta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "scheduled",
+              "live",
+              "ended",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "streamUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Streamurl",
+            "description": "From the streaming provider (OD-44); null until it is set"
+          },
+          "audioUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiourl",
+            "description": "Audio-only, 64 kbps or less (FR-THL-002)"
+          },
+          "captionsUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Captionsurl"
+          },
+          "recordingUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recordingurl"
+          },
+          "transcriptEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transcripten"
+          },
+          "transcriptTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transcriptta"
+          },
+          "outcomes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Outcomes"
+          },
+          "cancelReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelreason"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionOut"
+            },
+            "type": "array",
+            "title": "Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "sessionRef",
+          "titleEn",
+          "titleTa",
+          "descriptionEn",
+          "descriptionTa",
+          "language",
+          "speakersEn",
+          "speakersTa",
+          "areaKey",
+          "startsAt",
+          "endsAt",
+          "state",
+          "streamUrl",
+          "audioUrl",
+          "captionsUrl",
+          "recordingUrl",
+          "transcriptEn",
+          "transcriptTa",
+          "outcomes",
+          "cancelReason",
+          "questions"
+        ],
+        "title": "StaffSessionOut"
+      },
       "StaffSlipViewTokenResponse": {
         "properties": {
           "token": {
@@ -42342,6 +43496,677 @@
           "currentPassword"
         ],
         "title": "TotpStartInput"
+      },
+      "TownHallAnswerIn": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "live",
+              "written"
+            ],
+            "title": "Mode"
+          },
+          "atSecond": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Atsecond"
+          },
+          "answerEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answeren"
+          },
+          "answerTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 6000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answerta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode"
+        ],
+        "title": "TownHallAnswerIn"
+      },
+      "TownHallAreaIn": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "platform",
+              "province",
+              "district",
+              "ds",
+              "gn"
+            ],
+            "title": "Level"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level"
+        ],
+        "title": "TownHallAreaIn"
+      },
+      "TownHallIn": {
+        "properties": {
+          "titleEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 5,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 220,
+            "minLength": 5,
+            "title": "Titleta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Descriptionta"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "ta",
+              "en",
+              "both"
+            ],
+            "title": "Language"
+          },
+          "speakersEn": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Speakersen"
+          },
+          "speakersTa": {
+            "type": "string",
+            "maxLength": 700,
+            "minLength": 3,
+            "title": "Speakersta"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "streamUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "pattern": "^https://"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Streamurl"
+          },
+          "audioUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "pattern": "^https://"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiourl"
+          },
+          "captionsUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "pattern": "^https://"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Captionsurl"
+          },
+          "legalReviewRef": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legalreviewref",
+            "description": "Needed in an election period"
+          },
+          "area": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TownHallAreaIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "titleEn",
+          "titleTa",
+          "descriptionEn",
+          "descriptionTa",
+          "language",
+          "speakersEn",
+          "speakersTa",
+          "startsAt",
+          "endsAt"
+        ],
+        "title": "TownHallIn"
+      },
+      "TownHallModerationIn": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "reject",
+              "merge"
+            ],
+            "title": "Decision"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "mergeInto": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mergeinto"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "TownHallModerationIn"
+      },
+      "TownHallOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "sessionRef": {
+            "type": "string",
+            "title": "Sessionref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "ta",
+              "en",
+              "both"
+            ],
+            "title": "Language"
+          },
+          "speakersEn": {
+            "type": "string",
+            "title": "Speakersen"
+          },
+          "speakersTa": {
+            "type": "string",
+            "title": "Speakersta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "scheduled",
+              "live",
+              "ended",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "streamUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Streamurl",
+            "description": "From the streaming provider (OD-44); null until it is set"
+          },
+          "audioUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiourl",
+            "description": "Audio-only, 64 kbps or less (FR-THL-002)"
+          },
+          "captionsUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Captionsurl"
+          },
+          "recordingUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recordingurl"
+          },
+          "transcriptEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transcripten"
+          },
+          "transcriptTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transcriptta"
+          },
+          "outcomes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Outcomes"
+          },
+          "cancelReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelreason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "sessionRef",
+          "titleEn",
+          "titleTa",
+          "descriptionEn",
+          "descriptionTa",
+          "language",
+          "speakersEn",
+          "speakersTa",
+          "areaKey",
+          "startsAt",
+          "endsAt",
+          "state",
+          "streamUrl",
+          "audioUrl",
+          "captionsUrl",
+          "recordingUrl",
+          "transcriptEn",
+          "transcriptTa",
+          "outcomes",
+          "cancelReason"
+        ],
+        "title": "TownHallOut"
+      },
+      "TownHallSessionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "sessionRef": {
+            "type": "string",
+            "title": "Sessionref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "ta",
+              "en",
+              "both"
+            ],
+            "title": "Language"
+          },
+          "speakersEn": {
+            "type": "string",
+            "title": "Speakersen"
+          },
+          "speakersTa": {
+            "type": "string",
+            "title": "Speakersta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "scheduled",
+              "live",
+              "ended",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "streamUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Streamurl",
+            "description": "From the streaming provider (OD-44); null until it is set"
+          },
+          "audioUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiourl",
+            "description": "Audio-only, 64 kbps or less (FR-THL-002)"
+          },
+          "captionsUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Captionsurl"
+          },
+          "recordingUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recordingurl"
+          },
+          "transcriptEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transcripten"
+          },
+          "transcriptTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transcriptta"
+          },
+          "outcomes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Outcomes"
+          },
+          "cancelReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelreason"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionOut"
+            },
+            "type": "array",
+            "title": "Questions"
+          },
+          "reminded": {
+            "type": "boolean",
+            "title": "Reminded"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "sessionRef",
+          "titleEn",
+          "titleTa",
+          "descriptionEn",
+          "descriptionTa",
+          "language",
+          "speakersEn",
+          "speakersTa",
+          "areaKey",
+          "startsAt",
+          "endsAt",
+          "state",
+          "streamUrl",
+          "audioUrl",
+          "captionsUrl",
+          "recordingUrl",
+          "transcriptEn",
+          "transcriptTa",
+          "outcomes",
+          "cancelReason",
+          "questions",
+          "reminded"
+        ],
+        "title": "TownHallSessionOut"
+      },
+      "TownHallStateIn": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "live",
+              "ended",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "state"
+        ],
+        "title": "TownHallStateIn"
       },
       "ValidationError": {
         "properties": {

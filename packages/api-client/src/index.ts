@@ -264,6 +264,13 @@ export type SupportProgrammeInput = Schemas['ProgrammeIn'];
 export type SupportPartner = Schemas['PartnerOut'];
 export type SupportPartnerInput = Schemas['PartnerIn'];
 export type SupportStatistics = Schemas['StatisticsOut'];
+// Town halls (M21 to M23, D18).
+export type TownHall = Schemas['TownHallOut'];
+export type TownHallSession = Schemas['TownHallSessionOut'];
+export type TownHallQuestion = Schemas['QuestionOut'];
+export type TownHallInput = Schemas['TownHallIn'];
+export type TownHallStaffSession = Schemas['StaffSessionOut'];
+export type TownHallArchiveInput = Schemas['ArchiveIn'];
 export type CaseListFilters = {
   stage?: CaseStage[];
   mine?: boolean;
@@ -1535,6 +1542,43 @@ export function createApiClient({
     addSupportPartner: (input: SupportPartnerInput) => request<SupportPartner>('POST', '/v1/assistance/manage/partners', input),
     /** Counts only; null means fewer than 10. */
     getSupportStatistics: () => request<SupportStatistics>('GET', '/v1/assistance/manage/statistics'),
+    // Town halls (M21 to M23, D18). Routes answer 404 "feature_unavailable" while town_halls is off.
+    listTownHalls: () => request<TownHall[]>('GET', '/v1/town-halls'),
+    /** Approved questions with vote totals and the member's own; `q` searches the question history. */
+    getTownHall: (townhallId: string, q?: string) =>
+      request<TownHallSession>(
+        'GET',
+        `/v1/town-halls/${encodeURIComponent(townhallId)}${q ? `?q=${encodeURIComponent(q)}` : ''}`,
+      ),
+    /** Shown to others only after moderation. Problems: session_closed, too_many_questions, membership_not_active. */
+    askTownHallQuestion: (townhallId: string, body: string) =>
+      request<TownHallQuestion>('POST', `/v1/town-halls/${encodeURIComponent(townhallId)}/questions`, { body }),
+    /** One vote per member per approved question; a second is ignored. */
+    voteTownHallQuestion: (questionId: string) =>
+      request<TownHallQuestion>('POST', `/v1/town-halls/questions/${encodeURIComponent(questionId)}/vote`),
+    setTownHallReminder: (townhallId: string, remind: boolean) =>
+      request<TownHallSession>('PUT', `/v1/town-halls/${encodeURIComponent(townhallId)}/reminder`, { remind }),
+    listManagedTownHalls: () => request<TownHall[]>('GET', '/v1/town-halls/manage'),
+    createTownHall: (input: TownHallInput) => request<TownHall>('POST', '/v1/town-halls/manage', input),
+    getManagedTownHall: (townhallId: string) =>
+      request<TownHallStaffSession>('GET', `/v1/town-halls/manage/${encodeURIComponent(townhallId)}`),
+    updateTownHall: (townhallId: string, input: TownHallInput) =>
+      request<TownHall>('PUT', `/v1/town-halls/manage/${encodeURIComponent(townhallId)}`, input),
+    /** Throws "silence_period" (409) inside an election silence window; "legal_review_required" in an election period. */
+    moveTownHall: (townhallId: string, state: 'scheduled' | 'live' | 'ended' | 'cancelled', reason?: string) =>
+      request<TownHall>('POST', `/v1/town-halls/manage/${encodeURIComponent(townhallId)}/state`, { state, reason }),
+    moderateTownHallQuestion: (questionId: string, decision: 'approve' | 'reject' | 'merge', reason?: string, mergeInto?: string) =>
+      request<TownHallQuestion>(
+        'POST',
+        `/v1/town-halls/manage/questions/${encodeURIComponent(questionId)}/moderation`,
+        { decision, reason, mergeInto },
+      ),
+    answerTownHallQuestion: (
+      questionId: string,
+      input: { mode: 'live' | 'written'; atSecond?: number; answerEn?: string; answerTa?: string },
+    ) => request<TownHallQuestion>('POST', `/v1/town-halls/manage/questions/${encodeURIComponent(questionId)}/answer`, input),
+    archiveTownHall: (townhallId: string, input: TownHallArchiveInput) =>
+      request<TownHall>('POST', `/v1/town-halls/manage/${encodeURIComponent(townhallId)}/archive`, input),
     // Community Finance endpoints (Milestone 1.4)
     getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),
     createContribution: (body: ContributionCreateInput, idempotencyKey?: string) =>

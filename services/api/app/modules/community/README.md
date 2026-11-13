@@ -13,6 +13,7 @@ Issues and cases, ideas and proposals, promises, scorecards, surveys and learnin
 | `learning/` | Learning and courses (H15, H16, FR-LRN-001 to 004): `/v1/learning`; progress only on "Complete lesson" | Built, behind `learning` |
 | `promises/` | Promise Tracker (M18, M19, D16, FR-PRM-001 to 010): `/v1/promises`; second-person approval, append-only updates, automatic Delayed | Built, behind `promises` |
 | `scorecards/` | Accountability scorecard (M20, D17, FR-ACS-001 to 008): `/v1/scorecards`; computed from cases, "Insufficient data" under 10, versioned | Built, behind `scorecards` |
+| `townhalls/` | Ask the Leader / Live Town Hall (M21 to M23, D18, FR-THL-001 to 009): `/v1/town-halls`; no session in a silence window | Built, behind `town_halls`; the stream waits for OD-44 |
 
 Not built yet: AI suggestions and semantic search for proposals wait for OD-42.
 

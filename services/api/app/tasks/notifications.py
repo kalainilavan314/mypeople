@@ -34,6 +34,7 @@ from app.db.session import create_database_engine
 from app.integrations.push import NoPush, PushSender, build_push
 from app.modules.community.issues import breaches as case_breaches
 from app.modules.community.promises import service as promises
+from app.modules.community.townhalls import service as townhalls
 from app.modules.content.gallery import service as gallery
 from app.modules.messaging.broadcasts import service as broadcasts
 from app.modules.messaging.notifications import service as notifications
@@ -57,12 +58,14 @@ def run_once(db: Session, push: PushSender, now: datetime | None = None) -> dict
     escalated = gallery.escalate_overdue(db)
     cases_alerted = case_breaches.alert_breaches(db, moment)
     promises_delayed = promises.mark_delayed(db, moment)
+    townhall_reminders = townhalls.remind(db, moment)
     pushed = notifications.dispatch(db, push, moment)
     return {
         "broadcastsSent": sent_broadcasts,
         "removalsEscalated": escalated,
         "caseBreachesAlerted": cases_alerted,
         "promisesDelayed": promises_delayed,
+        "townHallReminders": townhall_reminders,
         **asdict(pushed),
     }
 

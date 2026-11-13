@@ -22,6 +22,7 @@ def test_run_once_coordinates_all_four_subsystems():
         patch("app.modules.content.gallery.service.escalate_overdue", return_value=1) as mock_escalate,
         patch("app.modules.community.issues.breaches.alert_breaches", return_value=2) as mock_breaches,
         patch("app.modules.community.promises.service.mark_delayed", return_value=1),
+        patch("app.modules.community.townhalls.service.remind", return_value=4),
         patch(
             "app.modules.messaging.notifications.service.dispatch",
             return_value=Dispatched(sent=5, skipped=2, waiting=0),
@@ -38,6 +39,7 @@ def test_run_once_coordinates_all_four_subsystems():
             "removalsEscalated": 1,
             "caseBreachesAlerted": 2,
             "promisesDelayed": 1,
+            "townHallReminders": 4,
             "sent": 5,
             "skipped": 2,
             "waiting": 0,

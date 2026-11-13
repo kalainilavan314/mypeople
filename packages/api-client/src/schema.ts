@@ -4654,6 +4654,207 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/town-halls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Sessions
+         * @description Upcoming, live and past sessions for the member's area.
+         */
+        get: operations["list_sessions_v1_town_halls_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Managed */
+        get: operations["list_managed_v1_town_halls_manage_get"];
+        put?: never;
+        /** Create */
+        post: operations["create_v1_town_halls_manage_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/manage/{townhall_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Managed */
+        get: operations["read_managed_v1_town_halls_manage__townhall_id__get"];
+        /** Update */
+        put: operations["update_v1_town_halls_manage__townhall_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/manage/{townhall_id}/state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Move
+         * @description Schedule, go live, end or cancel; refused in a silence window (409 silence_period, FR-THL-008).
+         */
+        post: operations["move_v1_town_halls_manage__townhall_id__state_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/manage/questions/{question_id}/moderation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Moderate */
+        post: operations["moderate_v1_town_halls_manage_questions__question_id__moderation_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/manage/questions/{question_id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Answer */
+        post: operations["answer_v1_town_halls_manage_questions__question_id__answer_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/manage/{townhall_id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Archive */
+        post: operations["archive_v1_town_halls_manage__townhall_id__archive_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/{townhall_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read
+         * @description M21 to M23: the session, approved questions with vote totals, and the member's own.
+         */
+        get: operations["read_v1_town_halls__townhall_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/{townhall_id}/questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ask */
+        post: operations["ask_v1_town_halls__townhall_id__questions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/questions/{question_id}/vote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Vote */
+        post: operations["vote_v1_town_halls_questions__question_id__vote_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/town-halls/{townhall_id}/reminder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Reminder
+         * @description Remind me 24 hours and 15 minutes before (FR-THL-001).
+         */
+        put: operations["set_reminder_v1_town_halls__townhall_id__reminder_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -6769,6 +6970,17 @@ export interface components {
             claimedAt: string | null;
             /** Decidedat */
             decidedAt: string | null;
+        };
+        /** ArchiveIn */
+        ArchiveIn: {
+            /** Recordingurl */
+            recordingUrl?: string | null;
+            /** Transcripten */
+            transcriptEn?: string | null;
+            /** Transcriptta */
+            transcriptTa?: string | null;
+            /** Outcomes */
+            outcomes?: components["schemas"]["OutcomeIn"][];
         };
         /** AreaChangeIn */
         AreaChangeIn: {
@@ -11678,6 +11890,17 @@ export interface components {
             /** Places */
             places?: number | null;
         };
+        /** OutcomeIn */
+        OutcomeIn: {
+            /** Texten */
+            textEn: string;
+            /** Textta */
+            textTa: string;
+            /** Promiseid */
+            promiseId?: string | null;
+            /** Casenumber */
+            caseNumber?: string | null;
+        };
         /** OwnerOptionOut */
         OwnerOptionOut: {
             /**
@@ -12873,6 +13096,53 @@ export interface components {
             /** Problems */
             problems: ("blurry" | "too_dark" | "glare" | "too_small")[];
         };
+        /** QuestionIn */
+        QuestionIn: {
+            /** Body */
+            body: string;
+        };
+        /** QuestionOut */
+        QuestionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Body */
+            body: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "approved" | "rejected" | "merged";
+            /** Mine */
+            mine: boolean;
+            /**
+             * Moderationreason
+             * @description Shown to the author only
+             */
+            moderationReason: string | null;
+            /**
+             * Votes
+             * @description The total, on approved questions only
+             */
+            votes: number | null;
+            /** Voted */
+            voted: boolean;
+            /** Answermode */
+            answerMode: ("live" | "written") | null;
+            /** Answeredatsecond */
+            answeredAtSecond: number | null;
+            /** Answeren */
+            answerEn: string | null;
+            /** Answerta */
+            answerTa: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** QuestionResultOut */
         QuestionResultOut: {
             question: components["schemas"]["SurveyQuestionOut"];
@@ -13297,6 +13567,11 @@ export interface components {
              * @description null when no referral code was given (FR-REG-031)
              */
             referralAccepted: boolean | null;
+        };
+        /** ReminderIn */
+        ReminderIn: {
+            /** Remind */
+            remind: boolean;
         };
         /** RemovalDecisionIn */
         RemovalDecisionIn: {
@@ -14298,6 +14573,76 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** StaffSessionOut */
+        StaffSessionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Sessionref */
+            sessionRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "ta" | "en" | "both";
+            /** Speakersen */
+            speakersEn: string;
+            /** Speakersta */
+            speakersTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "scheduled" | "live" | "ended" | "cancelled";
+            /**
+             * Streamurl
+             * @description From the streaming provider (OD-44); null until it is set
+             */
+            streamUrl: string | null;
+            /**
+             * Audiourl
+             * @description Audio-only, 64 kbps or less (FR-THL-002)
+             */
+            audioUrl: string | null;
+            /** Captionsurl */
+            captionsUrl: string | null;
+            /** Recordingurl */
+            recordingUrl: string | null;
+            /** Transcripten */
+            transcriptEn: string | null;
+            /** Transcriptta */
+            transcriptTa: string | null;
+            /** Outcomes */
+            outcomes: {
+                [key: string]: unknown;
+            }[];
+            /** Cancelreason */
+            cancelReason: string | null;
+            /** Questions */
+            questions: components["schemas"]["QuestionOut"][];
+        };
         /** StaffSlipViewTokenResponse */
         StaffSlipViewTokenResponse: {
             /** Token */
@@ -14978,6 +15323,234 @@ export interface components {
         TotpStartInput: {
             /** Currentpassword */
             currentPassword: string;
+        };
+        /** TownHallAnswerIn */
+        TownHallAnswerIn: {
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "live" | "written";
+            /** Atsecond */
+            atSecond?: number | null;
+            /** Answeren */
+            answerEn?: string | null;
+            /** Answerta */
+            answerTa?: string | null;
+        };
+        /** TownHallAreaIn */
+        TownHallAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "platform" | "province" | "district" | "ds" | "gn";
+            /** Code */
+            code?: string | null;
+        };
+        /** TownHallIn */
+        TownHallIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "ta" | "en" | "both";
+            /** Speakersen */
+            speakersEn: string;
+            /** Speakersta */
+            speakersTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Streamurl */
+            streamUrl?: string | null;
+            /** Audiourl */
+            audioUrl?: string | null;
+            /** Captionsurl */
+            captionsUrl?: string | null;
+            /**
+             * Legalreviewref
+             * @description Needed in an election period
+             */
+            legalReviewRef?: string | null;
+            area?: components["schemas"]["TownHallAreaIn"] | null;
+        };
+        /** TownHallModerationIn */
+        TownHallModerationIn: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approve" | "reject" | "merge";
+            /** Reason */
+            reason?: string | null;
+            /** Mergeinto */
+            mergeInto?: string | null;
+        };
+        /** TownHallOut */
+        TownHallOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Sessionref */
+            sessionRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "ta" | "en" | "both";
+            /** Speakersen */
+            speakersEn: string;
+            /** Speakersta */
+            speakersTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "scheduled" | "live" | "ended" | "cancelled";
+            /**
+             * Streamurl
+             * @description From the streaming provider (OD-44); null until it is set
+             */
+            streamUrl: string | null;
+            /**
+             * Audiourl
+             * @description Audio-only, 64 kbps or less (FR-THL-002)
+             */
+            audioUrl: string | null;
+            /** Captionsurl */
+            captionsUrl: string | null;
+            /** Recordingurl */
+            recordingUrl: string | null;
+            /** Transcripten */
+            transcriptEn: string | null;
+            /** Transcriptta */
+            transcriptTa: string | null;
+            /** Outcomes */
+            outcomes: {
+                [key: string]: unknown;
+            }[];
+            /** Cancelreason */
+            cancelReason: string | null;
+        };
+        /** TownHallSessionOut */
+        TownHallSessionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Sessionref */
+            sessionRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "ta" | "en" | "both";
+            /** Speakersen */
+            speakersEn: string;
+            /** Speakersta */
+            speakersTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "scheduled" | "live" | "ended" | "cancelled";
+            /**
+             * Streamurl
+             * @description From the streaming provider (OD-44); null until it is set
+             */
+            streamUrl: string | null;
+            /**
+             * Audiourl
+             * @description Audio-only, 64 kbps or less (FR-THL-002)
+             */
+            audioUrl: string | null;
+            /** Captionsurl */
+            captionsUrl: string | null;
+            /** Recordingurl */
+            recordingUrl: string | null;
+            /** Transcripten */
+            transcriptEn: string | null;
+            /** Transcriptta */
+            transcriptTa: string | null;
+            /** Outcomes */
+            outcomes: {
+                [key: string]: unknown;
+            }[];
+            /** Cancelreason */
+            cancelReason: string | null;
+            /** Questions */
+            questions: components["schemas"]["QuestionOut"][];
+            /** Reminded */
+            reminded: boolean;
+        };
+        /** TownHallStateIn */
+        TownHallStateIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "scheduled" | "live" | "ended" | "cancelled";
+            /** Reason */
+            reason?: string | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -24930,6 +25503,420 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StatisticsOut"];
+                };
+            };
+        };
+    };
+    list_sessions_v1_town_halls_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallOut"][];
+                };
+            };
+        };
+    };
+    list_managed_v1_town_halls_manage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallOut"][];
+                };
+            };
+        };
+    };
+    create_v1_town_halls_manage_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TownHallIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_managed_v1_town_halls_manage__townhall_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                townhall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffSessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_v1_town_halls_manage__townhall_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                townhall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TownHallIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    move_v1_town_halls_manage__townhall_id__state_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                townhall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TownHallStateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    moderate_v1_town_halls_manage_questions__question_id__moderation_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                question_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TownHallModerationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    answer_v1_town_halls_manage_questions__question_id__answer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                question_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TownHallAnswerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    archive_v1_town_halls_manage__townhall_id__archive_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                townhall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ArchiveIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_v1_town_halls__townhall_id__get: {
+        parameters: {
+            query?: {
+                /** @description Search the question history (FR-THL-007) */
+                q?: string | null;
+            };
+            header?: never;
+            path: {
+                townhall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallSessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ask_v1_town_halls__townhall_id__questions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                townhall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QuestionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    vote_v1_town_halls_questions__question_id__vote_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                question_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_reminder_v1_town_halls__townhall_id__reminder_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                townhall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReminderIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TownHallSessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

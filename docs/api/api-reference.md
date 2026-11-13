@@ -243,6 +243,18 @@ Behind the `community_support` switch (phase 2). Help never depends on membershi
 | `GET/POST /manage/programmes`, `POST .../{id}/criteria`, `.../{id}/active`, `GET/POST /manage/partners` | `assistance.programme.manage` to change | programmes with versioned criteria (D14) and partners | `403` |
 | `GET /manage/statistics` | `assistance.decide` or `assistance.programme.manage` | counts by area, category and state; under 10 hidden, also by subtraction | `403` |
 
+### Town halls (`/v1/town-halls`)
+
+Behind the `town_halls` switch (phase 2). The streaming provider is not chosen (OD-44, DEP-20): a session keeps the provider's stream, audio-only and caption links once known. Voice questions wait for Tamil speech-to-text (OD-42).
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /`, `GET /{id}?q` | a session, in the session's area | sessions; approved questions with vote totals and the member's own (with the moderator's reason) | `404` |
+| `POST /{id}/questions` `{body}`, `POST /questions/{id}/vote`, `PUT /{id}/reminder` `{remind}` | Verified and Active to ask | held for moderation; one vote per approved question; reminders 24 hours and 15 minutes before | `422 session_closed`, `too_many_questions`, `own_question` |
+| `GET/POST /manage`, `GET/PUT /manage/{id}`, `POST /manage/{id}/state` `{state, reason?}` | `townhall.produce` (and `townhall.moderate` to read) | draft, schedule, go live, end or cancel | `409 silence_period`; `422 legal_review_required`, `not_allowed_from:<state>` |
+| `POST /manage/questions/{id}/moderation` `{decision, reason?, mergeInto?}` | `townhall.moderate` | approve, merge or reject with a reason; the author is told | `422 reason_required`, `merge_target_not_approved` |
+| `POST /manage/questions/{id}/answer` `{mode, atSecond?, answerEn?, answerTa?}`, `POST /manage/{id}/archive` | `townhall.produce` | live answers with the time, written answers in both languages; recording, transcripts and outcomes linked to promises or cases | `422 time_required`, `bilingual_answer_required` |
+
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 
 | Endpoint | Needs | Success | Errors |

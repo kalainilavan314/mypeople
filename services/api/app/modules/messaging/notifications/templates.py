@@ -414,4 +414,38 @@ TEMPLATES: dict[str, Template] = {
         "முடிவையும் காரணத்தையும் காண உங்கள் கோரிக்கையைத் திறக்கவும்.",
         "support_request",
     ),
+    # Town halls (FR-THL-001, 005, 006).
+    "townhall_tomorrow": Template(
+        "events",
+        "A town hall you asked about starts within a day",
+        "நீங்கள் நினைவூட்டக் கேட்ட மக்கள் சந்திப்பு ஒரு நாளுக்குள் ஆரம்பமாகும்",
+        "Open it to read the details or send a question.",
+        "விவரங்களைப் படிக்க அல்லது கேள்வி அனுப்ப அதைத் திறக்கவும்.",
+        "townhall",
+    ),
+    "townhall_soon": Template(
+        "events",
+        "A town hall starts in fifteen minutes",
+        "மக்கள் சந்திப்பு பதினைந்து நிமிடங்களில் ஆரம்பமாகும்",
+        "Open it to join.",
+        "இணைய அதைத் திறக்கவும்.",
+        "townhall",
+        urgent=True,
+    ),
+    "townhall_question_not_shown": Template(
+        "events",
+        "Your town hall question was not shown",
+        "உங்கள் மக்கள் சந்திப்புக் கேள்வி காட்டப்படவில்லை",
+        "Open the session to see the moderator's reason.",
+        "நடுவரின் காரணத்தைக் காண அமர்வைத் திறக்கவும்.",
+        "townhall",
+    ),
+    "townhall_question_answered": Template(
+        "events",
+        "Your town hall question has been answered",
+        "உங்கள் மக்கள் சந்திப்புக் கேள்விக்குப் பதில் அளிக்கப்பட்டது",
+        "Open the session to read or watch the answer.",
+        "பதிலைப் படிக்க அல்லது பார்க்க அமர்வைத் திறக்கவும்.",
+        "townhall",
+    ),
 }
