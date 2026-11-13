@@ -123,6 +123,15 @@ def create(db: Session, staff: Staff, values: dict[str, Any], questions: list[di
     return found
 
 
+def managed_survey(db: Session, staff: Staff, survey_id: uuid.UUID, ip: str) -> tuple[Survey, list[dict[str, Any]]]:
+    """The survey with every text and question, for its editor."""
+    survey = repository.find(db, survey_id)
+    if survey is None:
+        raise SurveyNotFound()
+    _require(db, staff, survey.area_path, ip, str(survey_id))
+    return survey, repository.questions(db, survey_id)
+
+
 def update_draft(db: Session, staff: Staff, survey_id: uuid.UUID, values: dict[str, Any], questions: list[dict[str, Any]],
                  ip: str) -> Survey:
     survey = repository.find(db, survey_id, lock=True)

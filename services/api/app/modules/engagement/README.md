@@ -9,3 +9,5 @@ Offline attendance remains fail-closed until an exact replay duration is recorde
 BRD v1.1: FR-PBG-001 to 010, FR-COM-001 to 009, FR-VOL-001 to 008, FR-FLD-001 to 009, FR-BLD-001 to 008; `/v1/pb`, `/v1/committees`, `/v1/field`, `/v1/donors`.
 
 `volunteering/` (Alembic 0034, behind the `volunteering` switch): H10 skills profiles kept only with consent, H11 opportunities with their briefing, "Offer to help" and "Save for later", H12 offers and confirmed assignments with their append-only history, and messages and change requests to coordinators through the app (no phone numbers shown). Coordinators (volunteers.manage over the opportunity's area) publish opportunities, confirm offers with a role and meeting point, and answer messages: `/v1/volunteering`.
+
+`field/` (Alembic 0040, behind `field_visits`): offline field visits for field.collect holders, synchronised by device id with server versions and conflicts; consent first, no political fields, a guard against political notes, visits deleted after 12 months [OD-38] leaving monthly counts: `/v1/field`.

@@ -255,6 +255,18 @@ Behind the `town_halls` switch (phase 2). The streaming provider is not chosen (
 | `POST /manage/questions/{id}/moderation` `{decision, reason?, mergeInto?}` | `townhall.moderate` | approve, merge or reject with a reason; the author is told | `422 reason_required`, `merge_target_not_approved` |
 | `POST /manage/questions/{id}/answer` `{mode, atSecond?, answerEn?, answerTa?}`, `POST /manage/{id}/archive` | `townhall.produce` | live answers with the time, written answers in both languages; recording, transcripts and outcomes linked to promises or cases | `422 time_required`, `bilingual_answer_required` |
 
+### Field visits and the election duty roster (`/v1/field`, `/v1/election/roster`)
+
+Behind the `field_visits` and `election_roster` switches (phase 2). Neither records a vote choice, intention, preference or proof of voting, and field visits have no field for political classification.
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `POST /v1/field/visits/sync` `{visits: [{clientId, baseVersion?, gnCode, visitedAt, consent, concerns, notes?, placeText?, followUp?, caseNumber?, confirmedNotPolitical?}]}` | `field.collect` | one result per visit: `created`, `updated`, `conflict` (with the server copy) or `refused` with `problems` (`outside_your_area`, `concerns_required`, `political_content`, `not_your_visit`); a declined visit keeps no text | `403` |
+| `GET /v1/field/visits/mine?since`, `GET /v1/field/manage/visits?openFollowUps`, `GET /v1/field/manage/counts`, `POST /v1/field/manage/visits/{id}/follow-up` | `field.collect` over the area | the coordinator's visits, the supervisor's area (D24), counts kept after the 12-month deletion | `403` |
+| `GET /v1/election/roster/mine`, `POST .../assignments/{id}/answer` `{accept}`, `.../check-in` `{siteConfirmed?}`, `.../check-out` | the volunteer | M30 shifts; check-in from an hour before the shift to its end, never a location | `422 not_accepted`, `outside_shift_time`, `already_checked_in` |
+| `GET/POST /v1/election/roster/manage/shifts`, `GET .../{id}`, `POST .../{id}/offers` `{memberCode}`, `.../cancel`, `.../messages` | `election.roster.manage` over the area | shifts in a declared period's area, offers to Verified and Active members in the shift's area, operational messages to the people on the shift | `422 period_not_declared`, `outside_the_election_area`, `places_filled`, `member_outside_shift_area` |
+| `GET /v1/election/roster/periods/{id}/report` | `election.mode.manage` | FR-ELX-009 counts: shifts, roster changes and messages, broadcasts sent, content published, silence blocks | `403`, `404` |
+
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 
 | Endpoint | Needs | Success | Errors |

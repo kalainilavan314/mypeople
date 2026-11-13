@@ -226,3 +226,11 @@ def test_an_offer_appears_in_my_activity(client, auth, member_in, area, coordina
     activity = client.get("/v1/profile/activity?kind=volunteer_offer", headers=auth(member)).json()
 
     assert [(a["reference"], a["state"]) for a in activity] == [(offer["offerRef"], "offered")]
+
+
+def test_a_coordinator_reads_one_opportunity(client, auth, area, coordinator):
+    opportunity = open_opportunity(client, auth, coordinator, area)
+
+    found = client.get(f"/v1/volunteering/manage/opportunities/{opportunity['id']}", headers=auth(coordinator)).json()
+
+    assert (found["id"], found["places"], found["state"]) == (opportunity["id"], 1, "open")

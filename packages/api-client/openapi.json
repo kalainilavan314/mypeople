@@ -9545,6 +9545,54 @@
       }
     },
     "/v1/volunteering/manage/opportunities/{opportunity_id}": {
+      "get": {
+        "tags": [
+          "volunteering"
+        ],
+        "summary": "Read Managed",
+        "operationId": "read_managed_v1_volunteering_manage_opportunities__opportunity_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "opportunity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Opportunity Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedOpportunityOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, outside_your_area, own_record"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "volunteer_refused with problems"
+          }
+        }
+      },
       "patch": {
         "tags": [
           "volunteering"
@@ -10349,6 +10397,56 @@
       }
     },
     "/v1/surveys/manage/{survey_id}": {
+      "get": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Read Managed",
+        "description": "The whole survey, for its editor.",
+        "operationId": "read_managed_v1_surveys_manage__survey_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedSurveyFileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
       "put": {
         "tags": [
           "surveys"
@@ -15148,6 +15246,875 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TownHallSessionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/field/visits/sync": {
+      "post": {
+        "tags": [
+          "field"
+        ],
+        "summary": "Sync",
+        "description": "S07: send visits made offline; each comes back created, updated, in conflict or refused.",
+        "operationId": "sync_v1_field_visits_sync_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SyncResultOut"
+                  },
+                  "type": "array",
+                  "title": "Response Sync V1 Field Visits Sync Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/field/visits/mine": {
+      "get": {
+        "tags": [
+          "field"
+        ],
+        "summary": "My Visits",
+        "description": "The coordinator's own visits with the server's versions, to refresh the phone's copy.",
+        "operationId": "my_visits_v1_field_visits_mine_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "since",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FieldVisitOut"
+                  },
+                  "title": "Response My Visits V1 Field Visits Mine Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/field/manage/visits": {
+      "get": {
+        "tags": [
+          "field"
+        ],
+        "summary": "Supervised",
+        "description": "D24: visits and follow-ups in the supervisor's areas.",
+        "operationId": "supervised_v1_field_manage_visits_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "openFollowUps",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Openfollowups"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FieldVisitOut"
+                  },
+                  "title": "Response Supervised V1 Field Manage Visits Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/field/manage/counts": {
+      "get": {
+        "tags": [
+          "field"
+        ],
+        "summary": "Counts",
+        "operationId": "counts_v1_field_manage_counts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VisitCountOut"
+                  },
+                  "type": "array",
+                  "title": "Response Counts V1 Field Manage Counts Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/field/manage/visits/{visit_id}/follow-up": {
+      "post": {
+        "tags": [
+          "field"
+        ],
+        "summary": "Set Follow Up",
+        "operationId": "set_follow_up_v1_field_manage_visits__visit_id__follow_up_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "visit_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Visit Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FollowUpIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FieldVisitOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/election/roster/mine": {
+      "get": {
+        "tags": [
+          "election-roster"
+        ],
+        "summary": "My Shifts",
+        "operationId": "my_shifts_v1_election_roster_mine_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MyShiftOut"
+                  },
+                  "type": "array",
+                  "title": "Response My Shifts V1 Election Roster Mine Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/election/roster/assignments/{assignment_id}/answer": {
+      "post": {
+        "tags": [
+          "election-roster"
+        ],
+        "summary": "Answer",
+        "operationId": "answer_v1_election_roster_assignments__assignment_id__answer_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assignment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Assignment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShiftAnswerIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyShiftOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/election/roster/assignments/{assignment_id}/check-in": {
+      "post": {
+        "tags": [
+          "election-roster"
+        ],
+        "summary": "Check In",
+        "operationId": "check_in_v1_election_roster_assignments__assignment_id__check_in_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assignment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Assignment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckInIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyShiftOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/election/roster/assignments/{assignment_id}/check-out": {
+      "post": {
+        "tags": [
+          "election-roster"
+        ],
+        "summary": "Check Out",
+        "operationId": "check_out_v1_election_roster_assignments__assignment_id__check_out_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assignment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Assignment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyShiftOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/election/roster/manage/shifts": {
+      "get": {
+        "tags": [
+          "election-roster"
+        ],
+        "summary": "List Shifts",
+        "operationId": "list_shifts_v1_election_roster_manage_shifts_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "period_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Period Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ShiftOut"
+                  },
+                  "title": "Response List Shifts V1 Election Roster Manage Shifts Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "election-roster"
+        ],
+        "summary": "Create Shift",
+        "operationId": "create_shift_v1_election_roster_manage_shifts_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShiftIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShiftOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/election/roster/manage/shifts/{shift_id}": {
+      "get": {
+        "tags": [
+          "election-roster"
+        ],
+        "summary": "Read Shift",
+        "operationId": "read_shift_v1_election_roster_manage_shifts__shift_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "shift_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Shift Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShiftFileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/election/roster/manage/shifts/{shift_id}/offers": {
+      "post": {
+        "tags": [
+          "election-roster"
+        ],
+        "summary": "Offer",
+        "operationId": "offer_v1_election_roster_manage_shifts__shift_id__offers_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "shift_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Shift Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfferIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShiftFileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/election/roster/manage/shifts/{shift_id}/cancel": {
+      "post": {
+        "tags": [
+          "election-roster"
+        ],
+        "summary": "Cancel",
+        "operationId": "cancel_v1_election_roster_manage_shifts__shift_id__cancel_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "shift_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Shift Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReasonIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShiftFileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/election/roster/manage/shifts/{shift_id}/messages": {
+      "post": {
+        "tags": [
+          "election-roster"
+        ],
+        "summary": "Message",
+        "description": "FR-ELX-007: an operational message to the people on this shift.",
+        "operationId": "message_v1_election_roster_manage_shifts__shift_id__messages_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "shift_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Shift Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RosterMessageIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/election/roster/periods/{period_id}/report": {
+      "get": {
+        "tags": [
+          "election-roster"
+        ],
+        "summary": "Period Report",
+        "description": "FR-ELX-009: messages sent, roster changes and content published during the period.",
+        "operationId": "period_report_v1_election_roster_periods__period_id__report_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "period_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Period Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodReportOut"
                 }
               }
             }
@@ -24701,6 +25668,24 @@
         "title": "CheckInEventOut",
         "description": "S08: an event the staff member may scan at or read the roster of."
       },
+      "CheckInIn": {
+        "properties": {
+          "siteConfirmed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Siteconfirmed",
+            "description": "Optional; no location is ever recorded"
+          }
+        },
+        "type": "object",
+        "title": "CheckInIn"
+      },
       "ChoicesIn": {
         "properties": {
           "topics": {
@@ -28274,6 +29259,261 @@
         "title": "FeaturesOut",
         "description": "What the apps may show; a module that is off is hidden, never shown broken."
       },
+      "FieldVisitIn": {
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Clientid",
+            "description": "Made on the phone; the same visit always has the same id"
+          },
+          "baseVersion": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseversion",
+            "description": "The server version this edit started from; null for a new visit"
+          },
+          "gnCode": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 3,
+            "title": "Gncode",
+            "description": "Chosen by hand; location is never tracked"
+          },
+          "visitedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Visitedat"
+          },
+          "consent": {
+            "type": "string",
+            "enum": [
+              "given",
+              "declined"
+            ],
+            "title": "Consent"
+          },
+          "concerns": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "water",
+                "roads",
+                "health",
+                "education",
+                "livelihood",
+                "housing",
+                "electricity",
+                "waste",
+                "safety",
+                "elderly_care",
+                "disability",
+                "other"
+              ]
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Concerns"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "placeText": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placetext"
+          },
+          "followUp": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Followup"
+          },
+          "caseNumber": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^CI-[0-9]{5,}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Casenumber"
+          },
+          "confirmedNotPolitical": {
+            "type": "boolean",
+            "title": "Confirmednotpolitical",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "clientId",
+          "gnCode",
+          "visitedAt",
+          "consent"
+        ],
+        "title": "FieldVisitIn"
+      },
+      "FieldVisitOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "visitRef": {
+            "type": "string",
+            "title": "Visitref"
+          },
+          "clientId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Clientid"
+          },
+          "coordinatorName": {
+            "type": "string",
+            "title": "Coordinatorname"
+          },
+          "gnCode": {
+            "type": "string",
+            "title": "Gncode"
+          },
+          "visitedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Visitedat"
+          },
+          "consent": {
+            "type": "string",
+            "enum": [
+              "given",
+              "declined"
+            ],
+            "title": "Consent"
+          },
+          "concerns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Concerns"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "placeText": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placetext"
+          },
+          "followUp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Followup"
+          },
+          "followUpDoneAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Followupdoneat"
+          },
+          "caseNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Casenumber"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "visitRef",
+          "clientId",
+          "coordinatorName",
+          "gnCode",
+          "visitedAt",
+          "consent",
+          "concerns",
+          "notes",
+          "placeText",
+          "followUp",
+          "followUpDoneAt",
+          "caseNumber",
+          "version",
+          "updatedAt"
+        ],
+        "title": "FieldVisitOut"
+      },
       "FinanceProductionControlRequest": {
         "properties": {
           "controlKey": {
@@ -28637,6 +29877,19 @@
           "follow"
         ],
         "title": "FollowIn"
+      },
+      "FollowUpIn": {
+        "properties": {
+          "done": {
+            "type": "boolean",
+            "title": "Done"
+          }
+        },
+        "type": "object",
+        "required": [
+          "done"
+        ],
+        "title": "FollowUpIn"
       },
       "ForwardIn": {
         "properties": {
@@ -31915,6 +33168,130 @@
         ],
         "title": "ManagedOpportunityOut"
       },
+      "ManagedSurveyFileOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "surveyRef": {
+            "type": "string",
+            "title": "Surveyref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "open",
+              "closed"
+            ],
+            "title": "State"
+          },
+          "anonymous": {
+            "type": "boolean",
+            "title": "Anonymous"
+          },
+          "allowEdits": {
+            "type": "boolean",
+            "title": "Allowedits"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "closesAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closesat"
+          },
+          "responses": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Responses",
+            "description": "Hidden (null) while 1 to 9"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "audienceEn": {
+            "type": "string",
+            "title": "Audienceen"
+          },
+          "audienceTa": {
+            "type": "string",
+            "title": "Audienceta"
+          },
+          "privacyEn": {
+            "type": "string",
+            "title": "Privacyen"
+          },
+          "privacyTa": {
+            "type": "string",
+            "title": "Privacyta"
+          },
+          "nextStepsEn": {
+            "type": "string",
+            "title": "Nextstepsen"
+          },
+          "nextStepsTa": {
+            "type": "string",
+            "title": "Nextstepsta"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/SurveyQuestionOut"
+            },
+            "type": "array",
+            "title": "Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "surveyRef",
+          "titleEn",
+          "titleTa",
+          "state",
+          "anonymous",
+          "allowEdits",
+          "areaKey",
+          "closesAt",
+          "responses",
+          "createdAt",
+          "audienceEn",
+          "audienceTa",
+          "privacyEn",
+          "privacyTa",
+          "nextStepsEn",
+          "nextStepsTa",
+          "questions"
+        ],
+        "title": "ManagedSurveyFileOut"
+      },
       "ManagedSurveyOut": {
         "properties": {
           "id": {
@@ -33445,6 +34822,74 @@
         ],
         "title": "MyScorecardsOut"
       },
+      "MyShiftOut": {
+        "properties": {
+          "assignmentId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assignmentid"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "offered",
+              "accepted",
+              "declined",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "checkedInAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkedinat"
+          },
+          "checkedOutAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkedoutat"
+          },
+          "siteConfirmed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Siteconfirmed"
+          },
+          "shift": {
+            "$ref": "#/components/schemas/ShiftOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "assignmentId",
+          "state",
+          "checkedInAt",
+          "checkedOutAt",
+          "siteConfirmed",
+          "shift"
+        ],
+        "title": "MyShiftOut",
+        "description": "M30: a shift the member was offered, with their answer and check-in times."
+      },
       "NeedsCellOut": {
         "properties": {
           "areaKey": {
@@ -34005,6 +35450,21 @@
           "occurredAt"
         ],
         "title": "OfferHistoryOut"
+      },
+      "OfferIn": {
+        "properties": {
+          "memberCode": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 3,
+            "title": "Membercode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberCode"
+        ],
+        "title": "OfferIn"
       },
       "OfflineSyncIn": {
         "properties": {
@@ -35456,6 +36916,49 @@
           "closedAt"
         ],
         "title": "PeriodOut"
+      },
+      "PeriodReportOut": {
+        "properties": {
+          "shifts": {
+            "type": "integer",
+            "title": "Shifts"
+          },
+          "rosterAssignments": {
+            "type": "integer",
+            "title": "Rosterassignments"
+          },
+          "rosterChanges": {
+            "type": "integer",
+            "title": "Rosterchanges"
+          },
+          "rosterMessages": {
+            "type": "integer",
+            "title": "Rostermessages"
+          },
+          "broadcastsSent": {
+            "type": "integer",
+            "title": "Broadcastssent"
+          },
+          "contentPublished": {
+            "type": "integer",
+            "title": "Contentpublished"
+          },
+          "silenceBlocks": {
+            "type": "integer",
+            "title": "Silenceblocks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "shifts",
+          "rosterAssignments",
+          "rosterChanges",
+          "rosterMessages",
+          "broadcastsSent",
+          "contentPublished",
+          "silenceBlocks"
+        ],
+        "title": "PeriodReportOut"
       },
       "PhoneConfirmInput": {
         "properties": {
@@ -38550,6 +40053,21 @@
         ],
         "title": "ReadinessItem"
       },
+      "ReasonIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "ReasonIn"
+      },
       "ReceiptResponse": {
         "properties": {
           "receiptCode": {
@@ -40187,6 +41705,92 @@
         ],
         "title": "RevokeInput"
       },
+      "RosterAssignmentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "volunteerName": {
+            "type": "string",
+            "title": "Volunteername"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "offered",
+              "accepted",
+              "declined",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "respondedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Respondedat"
+          },
+          "checkedInAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkedinat"
+          },
+          "checkedOutAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkedoutat"
+          },
+          "siteConfirmed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Siteconfirmed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "volunteerName",
+          "memberCode",
+          "state",
+          "respondedAt",
+          "checkedInAt",
+          "checkedOutAt",
+          "siteConfirmed"
+        ],
+        "title": "RosterAssignmentOut"
+      },
       "RosterEntryOut": {
         "properties": {
           "memberId": {
@@ -40257,6 +41861,28 @@
           "checkinMethod"
         ],
         "title": "RosterEntryOut"
+      },
+      "RosterMessageIn": {
+        "properties": {
+          "bodyEn": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "maxLength": 800,
+            "minLength": 3,
+            "title": "Bodyta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bodyEn",
+          "bodyTa"
+        ],
+        "title": "RosterMessageIn"
       },
       "RosterOut": {
         "properties": {
@@ -40814,6 +42440,19 @@
         "title": "SecurityAlertOut",
         "description": "M50: a flagged sign-in or a reused refresh token. A coarse device label; never an address or a place."
       },
+      "SentOut": {
+        "properties": {
+          "recipients": {
+            "type": "integer",
+            "title": "Recipients"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recipients"
+        ],
+        "title": "SentOut"
+      },
       "SessionOut": {
         "properties": {
           "id": {
@@ -40849,6 +42488,290 @@
           "current"
         ],
         "title": "SessionOut"
+      },
+      "ShiftAnswerIn": {
+        "properties": {
+          "accept": {
+            "type": "boolean",
+            "title": "Accept"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accept"
+        ],
+        "title": "ShiftAnswerIn"
+      },
+      "ShiftAreaIn": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "province",
+              "district",
+              "ds",
+              "gn"
+            ],
+            "title": "Level"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 2,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "code"
+        ],
+        "title": "ShiftAreaIn"
+      },
+      "ShiftFileOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "periodId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Periodid"
+          },
+          "periodRef": {
+            "type": "string",
+            "title": "Periodref"
+          },
+          "roleEn": {
+            "type": "string",
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "type": "string",
+            "title": "Roleta"
+          },
+          "siteEn": {
+            "type": "string",
+            "title": "Siteen"
+          },
+          "siteTa": {
+            "type": "string",
+            "title": "Siteta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "places": {
+            "type": "integer",
+            "title": "Places"
+          },
+          "accepted": {
+            "type": "integer",
+            "title": "Accepted"
+          },
+          "offered": {
+            "type": "integer",
+            "title": "Offered"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "assignments": {
+            "items": {
+              "$ref": "#/components/schemas/RosterAssignmentOut"
+            },
+            "type": "array",
+            "title": "Assignments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "periodId",
+          "periodRef",
+          "roleEn",
+          "roleTa",
+          "siteEn",
+          "siteTa",
+          "areaKey",
+          "startsAt",
+          "endsAt",
+          "places",
+          "accepted",
+          "offered",
+          "state",
+          "assignments"
+        ],
+        "title": "ShiftFileOut"
+      },
+      "ShiftIn": {
+        "properties": {
+          "periodId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Periodid"
+          },
+          "roleEn": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Roleta"
+          },
+          "siteEn": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Siteen"
+          },
+          "siteTa": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Siteta"
+          },
+          "area": {
+            "$ref": "#/components/schemas/ShiftAreaIn"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "places": {
+            "type": "integer",
+            "maximum": 200.0,
+            "minimum": 1.0,
+            "title": "Places"
+          }
+        },
+        "type": "object",
+        "required": [
+          "periodId",
+          "roleEn",
+          "roleTa",
+          "siteEn",
+          "siteTa",
+          "area",
+          "startsAt",
+          "endsAt",
+          "places"
+        ],
+        "title": "ShiftIn"
+      },
+      "ShiftOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "periodId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Periodid"
+          },
+          "periodRef": {
+            "type": "string",
+            "title": "Periodref"
+          },
+          "roleEn": {
+            "type": "string",
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "type": "string",
+            "title": "Roleta"
+          },
+          "siteEn": {
+            "type": "string",
+            "title": "Siteen"
+          },
+          "siteTa": {
+            "type": "string",
+            "title": "Siteta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "places": {
+            "type": "integer",
+            "title": "Places"
+          },
+          "accepted": {
+            "type": "integer",
+            "title": "Accepted"
+          },
+          "offered": {
+            "type": "integer",
+            "title": "Offered"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "cancelled"
+            ],
+            "title": "State"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "periodId",
+          "periodRef",
+          "roleEn",
+          "roleTa",
+          "siteEn",
+          "siteTa",
+          "areaKey",
+          "startsAt",
+          "endsAt",
+          "places",
+          "accepted",
+          "offered",
+          "state"
+        ],
+        "title": "ShiftOut"
       },
       "SignInRequest": {
         "properties": {
@@ -43090,6 +45013,70 @@
         ],
         "title": "SwitchIn"
       },
+      "SyncIn": {
+        "properties": {
+          "visits": {
+            "items": {
+              "$ref": "#/components/schemas/FieldVisitIn"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "title": "Visits"
+          }
+        },
+        "type": "object",
+        "required": [
+          "visits"
+        ],
+        "title": "SyncIn"
+      },
+      "SyncResultOut": {
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Clientid"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "created",
+              "updated",
+              "unchanged",
+              "conflict",
+              "refused"
+            ],
+            "title": "Outcome"
+          },
+          "problems": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Problems",
+            "description": "outside_your_area, concerns_required, political_content, ..."
+          },
+          "visit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FieldVisitOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The server's copy; on a conflict, the version to compare with"
+          }
+        },
+        "type": "object",
+        "required": [
+          "clientId",
+          "outcome",
+          "problems",
+          "visit"
+        ],
+        "title": "SyncResultOut"
+      },
       "Tier5AssignmentOut": {
         "properties": {
           "assignmentId": {
@@ -44250,6 +46237,29 @@
         ],
         "title": "ViewLinkOut",
         "description": "A path on this API that shows one image to the reviewer it was issued to, until expiresAt."
+      },
+      "VisitCountOut": {
+        "properties": {
+          "gnCode": {
+            "type": "string",
+            "title": "Gncode"
+          },
+          "concern": {
+            "type": "string",
+            "title": "Concern"
+          },
+          "visits": {
+            "type": "integer",
+            "title": "Visits"
+          }
+        },
+        "type": "object",
+        "required": [
+          "gnCode",
+          "concern",
+          "visits"
+        ],
+        "title": "VisitCountOut"
       },
       "VolunteerAggregateOut": {
         "properties": {

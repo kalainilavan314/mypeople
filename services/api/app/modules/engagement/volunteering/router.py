@@ -170,6 +170,12 @@ def create_opportunity(body: OpportunityIn, staff: Coordinator, request: Request
     return ManagedOpportunityOut.build(found)
 
 
+@router.get("/manage/opportunities/{opportunity_id}", response_model=ManagedOpportunityOut, responses=REFUSED)
+def read_managed(opportunity_id: uuid.UUID, staff: Coordinator, request: Request, db: Db) -> ManagedOpportunityOut:
+    with _answers():
+        return ManagedOpportunityOut.build(service.managed_opportunity(db, staff, opportunity_id, client_ip(request)))
+
+
 @router.patch("/manage/opportunities/{opportunity_id}", response_model=ManagedOpportunityOut, responses=REFUSED)
 def update_opportunity(
     opportunity_id: uuid.UUID, body: OpportunityUpdateIn, staff: Coordinator, request: Request, db: Db

@@ -255,3 +255,12 @@ def test_regional_needs_hide_small_groups_even_by_subtraction():
     assert ("ds:A", "fisheries", 12) not in table  # 18 - 12 = 6 would expose division B
     assert ("district:D1", "education", None) in table
     assert ("ds:C", "water", 10) in table and ("district:D2", "water", 10) in table
+
+
+def test_a_survey_editor_reads_the_whole_draft(client, auth, area, survey_manager):
+    created = client.post("/v1/surveys/manage", json=survey_body(area), headers=auth(survey_manager)).json()
+
+    draft = client.get(f"/v1/surveys/manage/{created['id']}", headers=auth(survey_manager)).json()
+
+    assert draft["privacyEn"].startswith("Results are reported") and len(draft["questions"]) == 3
+    assert draft["questions"][2]["sensitive"] is True

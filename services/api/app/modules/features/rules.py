@@ -45,6 +45,8 @@ FEATURES: dict[str, Feature] = {
         Feature("scorecards", "Public accountability scorecard (FR-ACS-001 to 008)", 2),
         Feature("community_support", "Community Support, confidential assistance cases (FR-AST-001 to 013)", 2),
         Feature("town_halls", "Ask the Leader / Live Town Hall (FR-THL-001 to 009)", 2),
+        Feature("field_visits", "Offline field visits (FR-FLD-001 to 009)", 2),
+        Feature("election_roster", "Election duty roster and shift check-in (FR-ELX-005 to 007, 009)", 2),
     )
 }
 

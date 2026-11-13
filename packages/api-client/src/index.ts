@@ -271,6 +271,18 @@ export type TownHallQuestion = Schemas['QuestionOut'];
 export type TownHallInput = Schemas['TownHallIn'];
 export type TownHallStaffSession = Schemas['StaffSessionOut'];
 export type TownHallArchiveInput = Schemas['ArchiveIn'];
+// Field visits (S05 to S07, D24), the election duty roster (M30, S15) and staff reads.
+export type FieldVisitInput = Schemas['FieldVisitIn'];
+export type FieldVisit = Schemas['FieldVisitOut'];
+export type FieldVisitConcern = NonNullable<Schemas['FieldVisitIn']['concerns']>[number];
+export type FieldSyncResult = Schemas['SyncResultOut'];
+export type FieldVisitCount = Schemas['VisitCountOut'];
+export type RosterShift = Schemas['ShiftOut'];
+export type RosterShiftFile = Schemas['ShiftFileOut'];
+export type RosterShiftInput = Schemas['ShiftIn'];
+export type MyRosterShift = Schemas['MyShiftOut'];
+export type ElectionPeriodReport = Schemas['PeriodReportOut'];
+export type ManagedSurveyFile = Schemas['ManagedSurveyFileOut'];
 export type CaseListFilters = {
   stage?: CaseStage[];
   mine?: boolean;
@@ -1579,6 +1591,59 @@ export function createApiClient({
     ) => request<TownHallQuestion>('POST', `/v1/town-halls/manage/questions/${encodeURIComponent(questionId)}/answer`, input),
     archiveTownHall: (townhallId: string, input: TownHallArchiveInput) =>
       request<TownHall>('POST', `/v1/town-halls/manage/${encodeURIComponent(townhallId)}/archive`, input),
+    // Field visits (S05 to S07, D24). Needs field.collect; 404 "feature_unavailable" while field_visits is off.
+    /** S07: each visit comes back created, updated, conflict (with the server copy) or refused with `problems`. */
+    syncFieldVisits: (visits: FieldVisitInput[]) =>
+      request<FieldSyncResult[]>('POST', '/v1/field/visits/sync', { visits }),
+    listMyFieldVisits: (since?: string) =>
+      request<FieldVisit[]>('GET', `/v1/field/visits/mine${since ? `?since=${encodeURIComponent(since)}` : ''}`),
+    listSupervisedFieldVisits: (openFollowUps = false) =>
+      request<FieldVisit[]>('GET', `/v1/field/manage/visits${openFollowUps ? '?openFollowUps=true' : ''}`),
+    getFieldVisitCounts: () => request<FieldVisitCount[]>('GET', '/v1/field/manage/counts'),
+    setFieldFollowUp: (visitId: string, done: boolean) =>
+      request<FieldVisit>('POST', `/v1/field/manage/visits/${encodeURIComponent(visitId)}/follow-up`, { done }),
+    // Election duty roster (M30, S15). 404 while election_roster is off.
+    listMyRosterShifts: () => request<MyRosterShift[]>('GET', '/v1/election/roster/mine'),
+    answerRosterShift: (assignmentId: string, accept: boolean) =>
+      request<MyRosterShift>('POST', `/v1/election/roster/assignments/${encodeURIComponent(assignmentId)}/answer`, { accept }),
+    /** A time and an optional site confirmation; no location is recorded. */
+    checkInRosterShift: (assignmentId: string, siteConfirmed?: boolean) =>
+      request<MyRosterShift>(
+        'POST',
+        `/v1/election/roster/assignments/${encodeURIComponent(assignmentId)}/check-in`,
+        { siteConfirmed },
+      ),
+    checkOutRosterShift: (assignmentId: string) =>
+      request<MyRosterShift>('POST', `/v1/election/roster/assignments/${encodeURIComponent(assignmentId)}/check-out`),
+    listRosterShifts: (periodId?: string) =>
+      request<RosterShift[]>(
+        'GET',
+        `/v1/election/roster/manage/shifts${periodId ? `?period_id=${encodeURIComponent(periodId)}` : ''}`,
+      ),
+    createRosterShift: (input: RosterShiftInput) => request<RosterShift>('POST', '/v1/election/roster/manage/shifts', input),
+    getRosterShift: (shiftId: string) =>
+      request<RosterShiftFile>('GET', `/v1/election/roster/manage/shifts/${encodeURIComponent(shiftId)}`),
+    offerRosterShift: (shiftId: string, memberCode: string) =>
+      request<RosterShiftFile>('POST', `/v1/election/roster/manage/shifts/${encodeURIComponent(shiftId)}/offers`, { memberCode }),
+    cancelRosterShift: (shiftId: string, reason: string) =>
+      request<RosterShiftFile>('POST', `/v1/election/roster/manage/shifts/${encodeURIComponent(shiftId)}/cancel`, { reason }),
+    messageRosterShift: (shiftId: string, bodyEn: string, bodyTa: string) =>
+      request<{ recipients: number }>(
+        'POST',
+        `/v1/election/roster/manage/shifts/${encodeURIComponent(shiftId)}/messages`,
+        { bodyEn, bodyTa },
+      ),
+    /** FR-ELX-009, Tier 5 (election.mode.manage). */
+    getElectionPeriodReport: (periodId: string) =>
+      request<ElectionPeriodReport>('GET', `/v1/election/roster/periods/${encodeURIComponent(periodId)}/report`),
+    /** The whole survey (texts and questions), for its editor. */
+    getManagedSurvey: (surveyId: string) =>
+      request<ManagedSurveyFile>('GET', `/v1/surveys/manage/${encodeURIComponent(surveyId)}`),
+    getManagedVolunteerOpportunity: (opportunityId: string) =>
+      request<ManagedVolunteerOpportunity>(
+        'GET',
+        `/v1/volunteering/manage/opportunities/${encodeURIComponent(opportunityId)}`,
+      ),
     // Community Finance endpoints (Milestone 1.4)
     getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),
     createContribution: (body: ContributionCreateInput, idempotencyKey?: string) =>

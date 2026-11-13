@@ -147,6 +147,24 @@ class ManagedSurveyOut(CamelModel):
         )
 
 
+class ManagedSurveyFileOut(ManagedSurveyOut):
+    audience_en: str
+    audience_ta: str
+    privacy_en: str
+    privacy_ta: str
+    next_steps_en: str
+    next_steps_ta: str
+    questions: list[SurveyQuestionOut]
+
+    @classmethod
+    def from_parts(cls, s: Survey, questions: list[dict[str, Any]]) -> "ManagedSurveyFileOut":
+        return cls(
+            **ManagedSurveyOut.build(s).model_dump(), audience_en=s.audience_en, audience_ta=s.audience_ta,
+            privacy_en=s.privacy_en, privacy_ta=s.privacy_ta, next_steps_en=s.next_steps_en, next_steps_ta=s.next_steps_ta,
+            questions=[SurveyQuestionOut.build(q) for q in questions],
+        )
+
+
 class SurveyStateIn(CamelModel):
     state: Literal["open", "closed"]
 

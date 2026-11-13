@@ -448,4 +448,30 @@ TEMPLATES: dict[str, Template] = {
         "பதிலைப் படிக்க அல்லது பார்க்க அமர்வைத் திறக்கவும்.",
         "townhall",
     ),
+    # Election duty roster (FR-ELX-005, 007).
+    "roster_offered": Template(
+        "events",
+        "You have been offered a duty shift",
+        "உங்களுக்கு ஒரு கடமை நேரம் வழங்கப்பட்டுள்ளது",
+        "Open My duties to accept or decline it.",
+        "ஏற்க அல்லது மறுக்க எனது கடமைகளைத் திறக்கவும்.",
+        "roster_assignment",
+        action_required=True,
+    ),
+    "roster_cancelled": Template(
+        "events",
+        "A duty shift you were on was cancelled",
+        "நீங்கள் இருந்த கடமை நேரம் இரத்துச் செய்யப்பட்டது",
+        "Open My duties for details.",
+        "விவரங்களுக்கு எனது கடமைகளைத் திறக்கவும்.",
+        "roster_shift",
+    ),
+    "roster_message": Template(
+        "events",
+        "A message from your duty coordinator",
+        "உங்கள் கடமை ஒருங்கிணைப்பாளரிடமிருந்து ஒரு செய்தி",
+        "Open My duties to read it.",
+        "படிக்க எனது கடமைகளைத் திறக்கவும்.",
+        "roster_shift",
+    ),
 }

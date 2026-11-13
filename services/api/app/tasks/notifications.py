@@ -35,6 +35,7 @@ from app.integrations.push import NoPush, PushSender, build_push
 from app.modules.community.issues import breaches as case_breaches
 from app.modules.community.promises import service as promises
 from app.modules.community.townhalls import service as townhalls
+from app.modules.engagement.field import service as field_visits
 from app.modules.content.gallery import service as gallery
 from app.modules.messaging.broadcasts import service as broadcasts
 from app.modules.messaging.notifications import service as notifications
@@ -59,6 +60,7 @@ def run_once(db: Session, push: PushSender, now: datetime | None = None) -> dict
     cases_alerted = case_breaches.alert_breaches(db, moment)
     promises_delayed = promises.mark_delayed(db, moment)
     townhall_reminders = townhalls.remind(db, moment)
+    field_visits_purged = field_visits.purge(db, moment)
     pushed = notifications.dispatch(db, push, moment)
     return {
         "broadcastsSent": sent_broadcasts,
@@ -66,6 +68,7 @@ def run_once(db: Session, push: PushSender, now: datetime | None = None) -> dict
         "caseBreachesAlerted": cases_alerted,
         "promisesDelayed": promises_delayed,
         "townHallReminders": townhall_reminders,
+        "fieldVisitsPurged": field_visits_purged,
         **asdict(pushed),
     }
 

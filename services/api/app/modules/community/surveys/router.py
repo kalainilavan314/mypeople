@@ -16,6 +16,7 @@ from app.modules.access.service import AccessRefused, Staff
 from app.modules.auth.dependencies import CurrentMember
 from app.modules.community.surveys import rules, service
 from app.modules.community.surveys.schemas import (
+    ManagedSurveyFileOut,
     ManagedSurveyOut,
     SurveyResponseIn,
     SurveyDetailOut,
@@ -70,6 +71,14 @@ def create_survey(body: SurveyIn, staff: Manager, request: Request, db: Db) -> M
         return ManagedSurveyOut.build(
             service.create(db, staff, values, questions, Area(body.area.level, body.area.code), client_ip(request))
         )
+
+
+@router.get("/manage/{survey_id}", response_model=ManagedSurveyFileOut)
+def read_managed(survey_id: uuid.UUID, staff: Manager, request: Request, db: Db) -> ManagedSurveyFileOut:
+    """The whole survey, for its editor."""
+    with _answers():
+        survey, questions = service.managed_survey(db, staff, survey_id, client_ip(request))
+    return ManagedSurveyFileOut.from_parts(survey, questions)
 
 
 @router.put("/manage/{survey_id}", response_model=ManagedSurveyOut)

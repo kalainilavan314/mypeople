@@ -224,6 +224,10 @@ def _managed_opportunity(db: Session, staff: Staff, opportunity_id: uuid.UUID, i
     return found
 
 
+def managed_opportunity(db: Session, staff: Staff, opportunity_id: uuid.UUID, ip: str) -> Opportunity:
+    return _managed_opportunity(db, staff, opportunity_id, ip)
+
+
 def update_opportunity(db: Session, staff: Staff, opportunity_id: uuid.UUID, values: dict[str, Any], ip: str) -> Opportunity:
     found = _managed_opportunity(db, staff, opportunity_id, ip, lock=True)
     if found.state == "cancelled":

@@ -3139,7 +3139,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Read Managed */
+        get: operations["read_managed_v1_volunteering_manage_opportunities__opportunity_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3406,7 +3407,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Read Managed
+         * @description The whole survey, for its editor.
+         */
+        get: operations["read_managed_v1_surveys_manage__survey_id__get"];
         /**
          * Update Survey
          * @description Drafts only; once open, a survey's questions never change under the people answering it.
@@ -4848,6 +4853,277 @@ export interface paths {
          * @description Remind me 24 hours and 15 minutes before (FR-THL-001).
          */
         put: operations["set_reminder_v1_town_halls__townhall_id__reminder_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/field/visits/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sync
+         * @description S07: send visits made offline; each comes back created, updated, in conflict or refused.
+         */
+        post: operations["sync_v1_field_visits_sync_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/field/visits/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Visits
+         * @description The coordinator's own visits with the server's versions, to refresh the phone's copy.
+         */
+        get: operations["my_visits_v1_field_visits_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/field/manage/visits": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Supervised
+         * @description D24: visits and follow-ups in the supervisor's areas.
+         */
+        get: operations["supervised_v1_field_manage_visits_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/field/manage/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Counts */
+        get: operations["counts_v1_field_manage_counts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/field/manage/visits/{visit_id}/follow-up": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Set Follow Up */
+        post: operations["set_follow_up_v1_field_manage_visits__visit_id__follow_up_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Shifts */
+        get: operations["my_shifts_v1_election_roster_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/assignments/{assignment_id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Answer */
+        post: operations["answer_v1_election_roster_assignments__assignment_id__answer_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/assignments/{assignment_id}/check-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check In */
+        post: operations["check_in_v1_election_roster_assignments__assignment_id__check_in_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/assignments/{assignment_id}/check-out": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check Out */
+        post: operations["check_out_v1_election_roster_assignments__assignment_id__check_out_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/manage/shifts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Shifts */
+        get: operations["list_shifts_v1_election_roster_manage_shifts_get"];
+        put?: never;
+        /** Create Shift */
+        post: operations["create_shift_v1_election_roster_manage_shifts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/manage/shifts/{shift_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Shift */
+        get: operations["read_shift_v1_election_roster_manage_shifts__shift_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/manage/shifts/{shift_id}/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Offer */
+        post: operations["offer_v1_election_roster_manage_shifts__shift_id__offers_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/manage/shifts/{shift_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel */
+        post: operations["cancel_v1_election_roster_manage_shifts__shift_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/manage/shifts/{shift_id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Message
+         * @description FR-ELX-007: an operational message to the people on this shift.
+         */
+        post: operations["message_v1_election_roster_manage_shifts__shift_id__messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/roster/periods/{period_id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Period Report
+         * @description FR-ELX-009: messages sent, roster changes and content published during the period.
+         */
+        get: operations["period_report_v1_election_roster_periods__period_id__report_get"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -8031,6 +8307,14 @@ export interface components {
              */
             canScan: boolean;
         };
+        /** CheckInIn */
+        CheckInIn: {
+            /**
+             * Siteconfirmed
+             * @description Optional; no location is ever recorded
+             */
+            siteConfirmed?: boolean | null;
+        };
         /** ChoicesIn */
         ChoicesIn: {
             /**
@@ -9518,6 +9802,98 @@ export interface components {
             /** Enabled */
             enabled: string[];
         };
+        /** FieldVisitIn */
+        FieldVisitIn: {
+            /**
+             * Clientid
+             * Format: uuid
+             * @description Made on the phone; the same visit always has the same id
+             */
+            clientId: string;
+            /**
+             * Baseversion
+             * @description The server version this edit started from; null for a new visit
+             */
+            baseVersion?: number | null;
+            /**
+             * Gncode
+             * @description Chosen by hand; location is never tracked
+             */
+            gnCode: string;
+            /**
+             * Visitedat
+             * Format: date-time
+             */
+            visitedAt: string;
+            /**
+             * Consent
+             * @enum {string}
+             */
+            consent: "given" | "declined";
+            /** Concerns */
+            concerns?: ("water" | "roads" | "health" | "education" | "livelihood" | "housing" | "electricity" | "waste" | "safety" | "elderly_care" | "disability" | "other")[];
+            /** Notes */
+            notes?: string | null;
+            /** Placetext */
+            placeText?: string | null;
+            /** Followup */
+            followUp?: string | null;
+            /** Casenumber */
+            caseNumber?: string | null;
+            /**
+             * Confirmednotpolitical
+             * @default false
+             */
+            confirmedNotPolitical: boolean;
+        };
+        /** FieldVisitOut */
+        FieldVisitOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Visitref */
+            visitRef: string;
+            /**
+             * Clientid
+             * Format: uuid
+             */
+            clientId: string;
+            /** Coordinatorname */
+            coordinatorName: string;
+            /** Gncode */
+            gnCode: string;
+            /**
+             * Visitedat
+             * Format: date-time
+             */
+            visitedAt: string;
+            /**
+             * Consent
+             * @enum {string}
+             */
+            consent: "given" | "declined";
+            /** Concerns */
+            concerns: string[];
+            /** Notes */
+            notes: string | null;
+            /** Placetext */
+            placeText: string | null;
+            /** Followup */
+            followUp: string | null;
+            /** Followupdoneat */
+            followUpDoneAt: string | null;
+            /** Casenumber */
+            caseNumber: string | null;
+            /** Version */
+            version: number;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
         /** FinanceProductionControlRequest */
         FinanceProductionControlRequest: {
             /**
@@ -9649,6 +10025,11 @@ export interface components {
         FollowIn: {
             /** Follow */
             follow: boolean;
+        };
+        /** FollowUpIn */
+        FollowUpIn: {
+            /** Done */
+            done: boolean;
         };
         /** ForwardIn */
         ForwardIn: {
@@ -10873,6 +11254,57 @@ export interface components {
              */
             createdAt: string;
         };
+        /** ManagedSurveyFileOut */
+        ManagedSurveyFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Surveyref */
+            surveyRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "open" | "closed";
+            /** Anonymous */
+            anonymous: boolean;
+            /** Allowedits */
+            allowEdits: boolean;
+            /** Areakey */
+            areaKey: string;
+            /** Closesat */
+            closesAt: string | null;
+            /**
+             * Responses
+             * @description Hidden (null) while 1 to 9
+             */
+            responses: number | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Audienceen */
+            audienceEn: string;
+            /** Audienceta */
+            audienceTa: string;
+            /** Privacyen */
+            privacyEn: string;
+            /** Privacyta */
+            privacyTa: string;
+            /** Nextstepsen */
+            nextStepsEn: string;
+            /** Nextstepsta */
+            nextStepsTa: string;
+            /** Questions */
+            questions: components["schemas"]["SurveyQuestionOut"][];
+        };
         /** ManagedSurveyOut */
         ManagedSurveyOut: {
             /**
@@ -11440,6 +11872,29 @@ export interface components {
             /** Areas */
             areas: components["schemas"]["AreaScorecardOut"][];
         };
+        /**
+         * MyShiftOut
+         * @description M30: a shift the member was offered, with their answer and check-in times.
+         */
+        MyShiftOut: {
+            /**
+             * Assignmentid
+             * Format: uuid
+             */
+            assignmentId: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "offered" | "accepted" | "declined" | "cancelled";
+            /** Checkedinat */
+            checkedInAt: string | null;
+            /** Checkedoutat */
+            checkedOutAt: string | null;
+            /** Siteconfirmed */
+            siteConfirmed: boolean | null;
+            shift: components["schemas"]["ShiftOut"];
+        };
         /** NeedsCellOut */
         NeedsCellOut: {
             /** Areakey */
@@ -11632,6 +12087,11 @@ export interface components {
              * Format: date-time
              */
             occurredAt: string;
+        };
+        /** OfferIn */
+        OfferIn: {
+            /** Membercode */
+            memberCode: string;
         };
         /** OfflineSyncIn */
         OfflineSyncIn: {
@@ -12213,6 +12673,23 @@ export interface components {
             declaredAt: string;
             /** Closedat */
             closedAt: string | null;
+        };
+        /** PeriodReportOut */
+        PeriodReportOut: {
+            /** Shifts */
+            shifts: number;
+            /** Rosterassignments */
+            rosterAssignments: number;
+            /** Rosterchanges */
+            rosterChanges: number;
+            /** Rostermessages */
+            rosterMessages: number;
+            /** Broadcastssent */
+            broadcastsSent: number;
+            /** Contentpublished */
+            contentPublished: number;
+            /** Silenceblocks */
+            silenceBlocks: number;
         };
         /** PhoneConfirmInput */
         PhoneConfirmInput: {
@@ -13308,6 +13785,11 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** ReasonIn */
+        ReasonIn: {
+            /** Reason */
+            reason: string;
+        };
         /** ReceiptResponse */
         ReceiptResponse: {
             /** Receiptcode */
@@ -13963,6 +14445,31 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** RosterAssignmentOut */
+        RosterAssignmentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Volunteername */
+            volunteerName: string;
+            /** Membercode */
+            memberCode: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "offered" | "accepted" | "declined" | "cancelled";
+            /** Respondedat */
+            respondedAt: string | null;
+            /** Checkedinat */
+            checkedInAt: string | null;
+            /** Checkedoutat */
+            checkedOutAt: string | null;
+            /** Siteconfirmed */
+            siteConfirmed: boolean | null;
+        };
         /** RosterEntryOut */
         RosterEntryOut: {
             /**
@@ -13980,6 +14487,13 @@ export interface components {
             attendedAt: string | null;
             /** Checkinmethod */
             checkinMethod: ("scan" | "manual") | null;
+        };
+        /** RosterMessageIn */
+        RosterMessageIn: {
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
         };
         /** RosterOut */
         RosterOut: {
@@ -14224,6 +14738,11 @@ export interface components {
             /** Sessionactive */
             sessionActive: boolean;
         };
+        /** SentOut */
+        SentOut: {
+            /** Recipients */
+            recipients: number;
+        };
         /** SessionOut */
         SessionOut: {
             /**
@@ -14245,6 +14764,144 @@ export interface components {
             lastSeenAt: string;
             /** Current */
             current: boolean;
+        };
+        /** ShiftAnswerIn */
+        ShiftAnswerIn: {
+            /** Accept */
+            accept: boolean;
+        };
+        /** ShiftAreaIn */
+        ShiftAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "province" | "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+        };
+        /** ShiftFileOut */
+        ShiftFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Periodid
+             * Format: uuid
+             */
+            periodId: string;
+            /** Periodref */
+            periodRef: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Siteen */
+            siteEn: string;
+            /** Siteta */
+            siteTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Places */
+            places: number;
+            /** Accepted */
+            accepted: number;
+            /** Offered */
+            offered: number;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "cancelled";
+            /** Assignments */
+            assignments: components["schemas"]["RosterAssignmentOut"][];
+        };
+        /** ShiftIn */
+        ShiftIn: {
+            /**
+             * Periodid
+             * Format: uuid
+             */
+            periodId: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Siteen */
+            siteEn: string;
+            /** Siteta */
+            siteTa: string;
+            area: components["schemas"]["ShiftAreaIn"];
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Places */
+            places: number;
+        };
+        /** ShiftOut */
+        ShiftOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Periodid
+             * Format: uuid
+             */
+            periodId: string;
+            /** Periodref */
+            periodRef: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Siteen */
+            siteEn: string;
+            /** Siteta */
+            siteTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Places */
+            places: number;
+            /** Accepted */
+            accepted: number;
+            /** Offered */
+            offered: number;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "cancelled";
         };
         /**
          * SignInRequest
@@ -15123,6 +15780,31 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** SyncIn */
+        SyncIn: {
+            /** Visits */
+            visits: components["schemas"]["FieldVisitIn"][];
+        };
+        /** SyncResultOut */
+        SyncResultOut: {
+            /**
+             * Clientid
+             * Format: uuid
+             */
+            clientId: string;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "created" | "updated" | "unchanged" | "conflict" | "refused";
+            /**
+             * Problems
+             * @description outside_your_area, concerns_required, political_content, ...
+             */
+            problems: string[];
+            /** @description The server's copy; on a conflict, the version to compare with */
+            visit: components["schemas"]["FieldVisitOut"] | null;
+        };
         /** Tier5AssignmentOut */
         Tier5AssignmentOut: {
             /**
@@ -15586,6 +16268,15 @@ export interface components {
              * Format: date-time
              */
             expiresAt: string;
+        };
+        /** VisitCountOut */
+        VisitCountOut: {
+            /** Gncode */
+            gnCode: string;
+            /** Concern */
+            concern: string;
+            /** Visits */
+            visits: number;
         };
         /** VolunteerAggregateOut */
         VolunteerAggregateOut: {
@@ -22640,6 +23331,49 @@ export interface operations {
             };
         };
     };
+    read_managed_v1_volunteering_manage_opportunities__opportunity_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opportunity_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedOpportunityOut"];
+                };
+            };
+            /** @description forbidden, outside_your_area, own_record */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description volunteer_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     update_opportunity_v1_volunteering_manage_opportunities__opportunity_id__patch: {
         parameters: {
             query?: never;
@@ -23169,6 +23903,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ManagedSurveyOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_managed_v1_surveys_manage__survey_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                survey_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedSurveyFileOut"];
                 };
             };
             /** @description Validation Error */
@@ -25908,6 +26673,508 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TownHallSessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sync_v1_field_visits_sync_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SyncIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SyncResultOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_visits_v1_field_visits_mine_get: {
+        parameters: {
+            query?: {
+                since?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FieldVisitOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    supervised_v1_field_manage_visits_get: {
+        parameters: {
+            query?: {
+                openFollowUps?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FieldVisitOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    counts_v1_field_manage_counts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitCountOut"][];
+                };
+            };
+        };
+    };
+    set_follow_up_v1_field_manage_visits__visit_id__follow_up_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                visit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FollowUpIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FieldVisitOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_shifts_v1_election_roster_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyShiftOut"][];
+                };
+            };
+        };
+    };
+    answer_v1_election_roster_assignments__assignment_id__answer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assignment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShiftAnswerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyShiftOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    check_in_v1_election_roster_assignments__assignment_id__check_in_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assignment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckInIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyShiftOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    check_out_v1_election_roster_assignments__assignment_id__check_out_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assignment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyShiftOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_shifts_v1_election_roster_manage_shifts_get: {
+        parameters: {
+            query?: {
+                period_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_shift_v1_election_roster_manage_shifts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShiftIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_shift_v1_election_roster_manage_shifts__shift_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    offer_v1_election_roster_manage_shifts__shift_id__offers_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_v1_election_roster_manage_shifts__shift_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftFileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    message_v1_election_roster_manage_shifts__shift_id__messages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RosterMessageIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    period_report_v1_election_roster_periods__period_id__report_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                period_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PeriodReportOut"];
                 };
             };
             /** @description Validation Error */
