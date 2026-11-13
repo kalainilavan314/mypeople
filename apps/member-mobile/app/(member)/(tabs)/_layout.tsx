@@ -1,34 +1,45 @@
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors } from '@my-people/design-tokens';
+import { colors, comfortableTypeScale } from '@my-people/design-tokens';
 import { fontFamilyFor, tabIcon } from '@my-people/mobile-ui';
 
-// The member app's five permanent tabs (BRD §15A.4). New features open from
-// Home, Events, Card and Profile; the tab bar itself does not grow.
+import { MemberTopBar } from '@/components/MemberTopBar';
+
+// Four frequent destinations stay in thumb reach. Account and notifications
+// live in the stable top bar instead of competing with primary navigation.
 export default function TabLayout() {
   const { t, i18n } = useTranslation();
   const language = i18n.language;
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
-        tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.border },
-        tabBarLabelStyle: { fontFamily: fontFamilyFor(language, 600) },
+        tabBarStyle: {
+          height: 70 + insets.bottom,
+          paddingTop: 7,
+          paddingBottom: Math.max(insets.bottom, 7),
+          backgroundColor: colors.card,
+          borderTopColor: colors.border,
+        },
+        tabBarItemStyle: { minHeight: 56 },
+        tabBarLabelStyle: {
+          fontFamily: fontFamilyFor(language, 600),
+          fontSize: comfortableTypeScale.nav.size,
+          lineHeight: comfortableTypeScale.nav.lineHeight,
+        },
         tabBarHideOnKeyboard: true,
-        headerStyle: { backgroundColor: colors.page },
-        headerTitleStyle: { fontFamily: fontFamilyFor(language, 700), color: colors.text },
-        headerShadowVisible: false,
+        header: () => <MemberTopBar />,
         sceneStyle: { backgroundColor: colors.page },
       }}>
-      {/* Home owns its product and member context header. */}
-      <Tabs.Screen name="index" options={{ title: t('nav.home'), headerShown: false, tabBarIcon: tabIcon('home-outline') }} />
-      <Tabs.Screen name="events" options={{ title: t('nav.events'), tabBarIcon: tabIcon('calendar-outline') }} />
-      <Tabs.Screen name="card" options={{ title: t('nav.card'), tabBarIcon: tabIcon('card-outline') }} />
-      <Tabs.Screen name="gallery" options={{ title: t('nav.gallery'), tabBarIcon: tabIcon('images-outline') }} />
-      <Tabs.Screen name="profile" options={{ title: t('nav.profile'), tabBarIcon: tabIcon('person-outline') }} />
+      <Tabs.Screen name="index" options={{ title: t('nav.home'), tabBarIcon: tabIcon('home-outline', 26) }} />
+      <Tabs.Screen name="events" options={{ title: t('nav.events'), tabBarIcon: tabIcon('calendar-outline', 26) }} />
+      <Tabs.Screen name="card" options={{ title: t('nav.card'), tabBarIcon: tabIcon('card-outline', 26) }} />
+      <Tabs.Screen name="gallery" options={{ title: t('nav.gallery'), tabBarIcon: tabIcon('images-outline', 26) }} />
     </Tabs>
   );
 }

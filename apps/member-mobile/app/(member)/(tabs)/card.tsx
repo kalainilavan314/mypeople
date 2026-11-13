@@ -59,7 +59,7 @@ export default function CardScreen() {
     return () => { active = false; };
   }, [card.error, member.id]);
   return (
-    <Screen edges={[]} maxContentWidth={640} onRefresh={card.reload} refreshing={card.loading && card.data !== undefined}>
+    <Screen title={t('m.card.title')} edges={[]} maxContentWidth={640} onRefresh={card.reload} refreshing={card.loading && card.data !== undefined}>
       {card.error && !(card.error instanceof ApiError) && offline ? (
         <>
           <OfflineCard preview={offline} />

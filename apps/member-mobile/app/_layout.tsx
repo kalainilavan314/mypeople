@@ -7,7 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 
 import { colors } from '@my-people/design-tokens';
-import { lockedFonts, SessionProvider, useSession } from '@my-people/mobile-ui';
+import { AppTypographyProvider, lockedFonts, SessionProvider, useSession } from '@my-people/mobile-ui';
 
 import { API_URL } from '@/lib/api';
 import { restoreLanguage } from '@/lib/i18n';
@@ -28,10 +28,12 @@ export default function RootLayout() {
   if (!(fontsLoaded || fontError !== null) || !languageReady) return null;
 
   return (
-    <SessionProvider baseUrl={API_URL}>
-      <StatusBar style="dark" />
-      <Routes />
-    </SessionProvider>
+    <AppTypographyProvider scale="comfortable">
+      <SessionProvider baseUrl={API_URL}>
+        <StatusBar style="dark" />
+        <Routes />
+      </SessionProvider>
+    </AppTypographyProvider>
   );
 }
 

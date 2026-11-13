@@ -102,6 +102,24 @@ export const typeScale = {
   nav: { size: 10, lineHeight: 15, weight: 600 },
 } as const;
 
+/**
+ * Roomier native-app typography for member-facing journeys.
+ *
+ * The canonical families stay locked; this scale only improves readability on
+ * small phone screens. Apps opt in explicitly so the production PWA and the
+ * denser staff application keep their existing scale.
+ */
+export const comfortableTypeScale = {
+  page: { size: 24, lineHeight: 33, weight: 700 },
+  section: { size: 18, lineHeight: 27, weight: 700 },
+  card: { size: 15, lineHeight: 22, weight: 600 },
+  body: { size: 16, lineHeight: 24, weight: 400 },
+  label: { size: 14, lineHeight: 21, weight: 600 },
+  secondary: { size: 14, lineHeight: 21, weight: 400 },
+  caption: { size: 12, lineHeight: 18, weight: 600 },
+  nav: { size: 12, lineHeight: 18, weight: 600 },
+} as const;
+
 /** Tamil script needs more line height than Latin text. */
 export const lineHeightRatio = {
   latin: 1.5,

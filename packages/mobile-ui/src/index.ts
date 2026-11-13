@@ -1,10 +1,11 @@
 // Shared by the member and staff apps: the locked fonts, the screen components
 // from the design specification (design/mobile/production-design-specification.md
 // §3), the stored session, and the hooks that load data through the API client.
-export { fontFamilyFor, lockedFonts, monoFontFamily, textStyle } from './fonts';
+export { fontFamilyFor, lockedFonts, monoFontFamily, textStyle, type TypographyScale } from './fonts';
 export { tabIcon } from './tabIcon';
 
 export { AppText } from './components/AppText';
+export { AppTypographyProvider } from './components/AppTypographyProvider';
 export { AuthorizedImage } from './components/AuthorizedImage';
 export { Button } from './components/Button';
 export { Checkbox } from './components/Checkbox';

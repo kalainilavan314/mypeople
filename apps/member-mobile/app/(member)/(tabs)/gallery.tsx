@@ -21,13 +21,12 @@ export default function GalleryScreen() {
   const albums = useApiQuery(() => api().listAlbums({ category: category === 'all' ? undefined : category }), [category]);
   return (
     <Screen
+      title={t('m.gallery.title')}
+      subtitle={t('m.gallery.subtitle')}
       edges={[]}
       maxContentWidth={720}
       onRefresh={albums.reload}
       refreshing={albums.loading && albums.data !== undefined}>
-      <AppText step="secondary" tone="muted">
-        {t('m.gallery.subtitle')}
-      </AppText>
       <ChipRow
         label={t('m.gallery.title')}
         selected={category}

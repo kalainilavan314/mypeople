@@ -3,6 +3,7 @@ import { Text, type StyleProp, type TextProps, type TextStyle } from 'react-nati
 
 import { colors, typeScale } from '@my-people/design-tokens';
 import { monoFontFamily, textStyle } from '../fonts';
+import { useTypographyScale } from './AppTypographyProvider';
 
 import { useLanguage } from '../hooks/useLanguage';
 
@@ -30,7 +31,8 @@ type Props = Omit<TextProps, 'style'> & {
 /** Text in the locked font for the member's language, on the shared type scale. */
 export function AppText({ step = 'body', tone = 'default', mono = false, style, children, ...rest }: Props) {
   const language = useLanguage();
-  const base = textStyle(language, step);
+  const scale = useTypographyScale();
+  const base = textStyle(language, step, scale);
   return (
     <Text
       {...rest}

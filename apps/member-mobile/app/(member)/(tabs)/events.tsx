@@ -36,10 +36,13 @@ export default function EventsScreen() {
   useReloadOnFocus(events.reload);
 
   return (
-    <Screen edges={[]} maxContentWidth={720} onRefresh={events.reload} refreshing={events.loading && events.data !== undefined}>
-      <AppText step="secondary" tone="muted">
-        {t('m.events.subtitle')}
-      </AppText>
+    <Screen
+      title={t('m.events.title')}
+      subtitle={t('m.events.subtitle')}
+      edges={[]}
+      maxContentWidth={720}
+      onRefresh={events.reload}
+      refreshing={events.loading && events.data !== undefined}>
       <TextField
         label={t('m.events.search')}
         value={search}

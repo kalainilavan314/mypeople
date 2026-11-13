@@ -21,7 +21,7 @@ export default function MemberLayout() {
     });
   }, []);
   return (
-    <Stack screenOptions={headerOptions(language)}>
+    <Stack screenOptions={headerOptions(language, 'comfortable')}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="verify" options={{ title: t('m.verify.title') }} />
       <Stack.Screen name="verify/appeal" options={{ title: t('m.verify.appealTitle') }} />
@@ -36,6 +36,7 @@ export default function MemberLayout() {
       <Stack.Screen name="events/[id]/pass" options={{ title: t('m.events.passTitle') }} />
       <Stack.Screen name="gallery/[id]" options={{ title: t('m.gallery.title') }} />
       <Stack.Screen name="gallery/photo" options={{ title: t('m.gallery.title') }} />
+      <Stack.Screen name="profile/index" options={{ title: t('m.profile.title') }} />
       <Stack.Screen name="profile/edit" options={{ title: t('m.profile.editProfile') }} />
       <Stack.Screen name="profile/activity" options={{ title: t('m.profile.myActivity') }} />
       <Stack.Screen name="profile/area" options={{ title: t('m.profile.myArea') }} />

@@ -9,7 +9,7 @@ import {
   NotoSansTamil_600SemiBold,
   NotoSansTamil_700Bold,
 } from '@expo-google-fonts/noto-sans-tamil';
-import { lineHeightRatio, typeScale } from '@my-people/design-tokens';
+import { comfortableTypeScale, lineHeightRatio, typeScale } from '@my-people/design-tokens';
 
 export const lockedFonts = {
   Inter_400Regular,
@@ -25,6 +25,7 @@ export const lockedFonts = {
 export const monoFontFamily = 'JetBrainsMono_400Regular';
 
 type Weight = 400 | 600 | 700;
+export type TypographyScale = 'default' | 'comfortable';
 
 /** The loaded font for a language and weight. Native apps cannot fall back per glyph, so Tamil gets its own font. */
 export function fontFamilyFor(language: string, weight: Weight): string {
@@ -33,8 +34,9 @@ export function fontFamilyFor(language: string, weight: Weight): string {
 }
 
 /** Font, size and line height for a step of the type scale. */
-export function textStyle(language: string, step: keyof typeof typeScale) {
-  const { size, lineHeight, weight } = typeScale[step];
+export function textStyle(language: string, step: keyof typeof typeScale, scale: TypographyScale = 'default') {
+  const selectedScale = scale === 'comfortable' ? comfortableTypeScale : typeScale;
+  const { size, lineHeight, weight } = selectedScale[step];
   // Text must remain readable when system font scaling expands Tamil glyphs.
   // Keep every shared text step above the 1.4 accessibility baseline; Tamil
   // still gets its larger script-specific leading.

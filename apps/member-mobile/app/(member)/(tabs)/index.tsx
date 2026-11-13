@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, spacing } from '@my-people/design-tokens';
+import { colors, spacing } from '@my-people/design-tokens';
 
 import {
   AppText,
@@ -45,22 +45,20 @@ function nextStepRoute(step: NextStep): Href {
 /** H01 for Verified and Active members, H02 while identity or membership is pending; the server decides which. */
 export default function HomeScreen() {
   const home = useApiQuery(() => api().getHome());
-  const inbox = useApiQuery(() => api().getNotifications({ limit: 1 }));
 
   const reload = useCallback(() => {
     home.reload();
-    inbox.reload();
-  }, [home.reload, inbox.reload]);
+  }, [home.reload]);
   useReloadOnFocus(reload);
 
   return (
-    <Screen maxContentWidth={720} onRefresh={reload} refreshing={home.loading && home.data !== undefined}>
-      <QueryView query={home}>{(data) => <HomeBody data={data} unread={inbox.data?.unread ?? 0} />}</QueryView>
+    <Screen edges={[]} maxContentWidth={720} onRefresh={reload} refreshing={home.loading && home.data !== undefined}>
+      <QueryView query={home}>{(data) => <HomeBody data={data} />}</QueryView>
     </Screen>
   );
 }
 
-function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
+function HomeBody({ data }: { data: HomeView }) {
   const { t } = useTranslation();
   const language = useLanguage();
   const localized = useLocalized();
@@ -73,9 +71,6 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
     <>
       <View style={styles.header}>
         <View style={styles.headerText}>
-          <AppText step="label" tone="primary">
-            {t('m.welcome.title')}
-          </AppText>
           <AppText step="page" accessibilityRole="header">
             {t('nav.home')}
           </AppText>
@@ -89,14 +84,6 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
             </View>
           ) : null}
         </View>
-        <Pressable
-          onPress={() => router.push('/notifications')}
-          accessibilityRole="button"
-          accessibilityLabel={unread > 0 ? `${t('m.home.notifications')}, ${t('m.home.unread', { count: unread })}` : t('m.home.notifications')}
-          style={styles.bell}>
-          <Ionicons name="notifications-outline" size={22} color={colors.primary} />
-          {unread > 0 ? <View style={styles.dot} /> : null}
-        </Pressable>
       </View>
 
       <StatusTag
@@ -171,13 +158,6 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3] },
   headerText: { flex: 1, gap: spacing[1] },
   place: { flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
-  bell: {
-    width: control.touchMin,
-    height: control.touchMin,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dot: { position: 'absolute', top: 10, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.error },
   nextAction: { backgroundColor: colors.primaryContainer, borderColor: colors.primaryContainer },
   actionList: { padding: 0, gap: 0, overflow: 'hidden' },
   sectionRow: { flexDirection: 'row', alignItems: 'center' },
