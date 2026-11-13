@@ -20,6 +20,8 @@ type Props = {
   edges?: Edge[];
   /** Keeps phone-first flows readable when the Expo app is opened in a wide browser. */
   maxContentWidth?: number;
+  /** Art drawn behind the whole page, under the status bar; it stays still while the content scrolls. */
+  background?: ReactNode;
 };
 
 /** One vertical scroll container with the 20 px gutter and safe-area insets; the title is the large page title. */
@@ -32,9 +34,11 @@ export function Screen({
   refreshing = false,
   edges = ['top'],
   maxContentWidth,
+  background,
 }: Props) {
   return (
     <SafeAreaView style={styles.page} edges={edges}>
+      {background ? <View style={styles.background}>{background}</View> : null}
       <ScrollView
         contentContainerStyle={[
           styles.content,
@@ -65,6 +69,8 @@ export function Screen({
 
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.page },
+  // Absolute, so it also covers the safe-area padding under the status bar; never takes touches.
+  background: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, overflow: 'hidden', pointerEvents: 'none' },
   content: { padding: spacing.gutter, paddingBottom: spacing[10], gap: spacing[4] },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[3], paddingTop: spacing[2], paddingBottom: spacing[2] },
   titleText: { flex: 1, gap: spacing[1] },
