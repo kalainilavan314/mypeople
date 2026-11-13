@@ -283,6 +283,31 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     ta: 'இப்புகைப்படத்தைத் திறக்க முடியவில்லை.',
     en: 'The photo could not be read.',
   },
+  // Volunteering, ideas, development proposals, surveys and learning (Phase 2 staff pages).
+  volunteer_refused: {
+    ta: 'இது பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'This was not recorded. Fix the points below and try again.',
+  },
+  idea_refused: {
+    ta: 'யோசனை தொடர்பான முடிவு பதிவுசெய்யப்படவில்லை.',
+    en: 'The decision on the idea was not recorded.',
+  },
+  proposal_refused: {
+    ta: 'முன்மொழிவின் இப்படி பதிவுசெய்யப்படவில்லை.',
+    en: 'This step on the proposal was not recorded.',
+  },
+  survey_refused: {
+    ta: 'கருத்துக்கணிப்பு சேமிக்கப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The survey was not saved. Fix the points below and try again.',
+  },
+  learning_refused: {
+    ta: 'பாடநெறி சேமிக்கப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The course was not saved. Fix the points below and try again.',
+  },
+  tier_cannot_record: {
+    ta: 'உங்கள் நிலையால் இப்படியைப் பதிவுசெய்ய முடியாது.',
+    en: 'Your tier cannot record this step.',
+  },
 };
 
 const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
@@ -649,6 +674,145 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'அறியப்படாத அனுமதி.',
     en: 'Unknown permission.',
   },
+  // Volunteering (S10).
+  title_required: {
+    ta: 'தலைப்பைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the title in Tamil and English.',
+  },
+  role_required: {
+    ta: 'பணியைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the role in Tamil and English.',
+  },
+  description_required: {
+    ta: 'விளக்கத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the description in Tamil and English.',
+  },
+  place_required: {
+    ta: 'இடத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the place in Tamil and English.',
+  },
+  bring_required: {
+    ta: 'கொண்டுவர வேண்டியவற்றைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write what to bring in Tamil and English.',
+  },
+  team_required: {
+    ta: 'அணியைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the team in Tamil and English.',
+  },
+  places_required: {
+    ta: 'இடங்களின் எண்ணிக்கையை 1 முதல் 500 வரை உள்ளிடவும்.',
+    en: 'Enter the number of places, from 1 to 500.',
+  },
+  area_required: {
+    ta: 'பகுதியைத் தெரிவுசெய்யவும் அல்லது அதன் குறியீட்டை உள்ளிடவும்.',
+    en: 'Choose the area, or enter its code.',
+  },
+  unknown_skill: {
+    ta: 'தெரிவுசெய்த திறன்களில் ஒன்று திறன் பட்டியலில் இல்லை.',
+    en: 'One of the chosen skills is not on the skills list.',
+  },
+  too_many_skills: {
+    ta: 'அதிகபட்சம் 10 திறன்களைத் தெரிவுசெய்யவும்.',
+    en: 'Choose at most 10 skills.',
+  },
+  meeting_point_required: {
+    ta: 'சந்திக்கும் இடத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the meeting point in Tamil and English.',
+  },
+  places_filled: {
+    ta: 'எல்லா இடங்களும் நிரம்பிவிட்டன. மேலும் ஒருவரை உறுதிசெய்ய முன் இடங்களைக் கூட்டவும்.',
+    en: 'Every place is filled. Add places before confirming anyone else.',
+  },
+  not_awaiting_decision: {
+    ta: 'இந்த முன்வருகை ஏற்கனவே தீர்மானிக்கப்பட்டுள்ளது அல்லது மீளப்பெறப்பட்டுள்ளது.',
+    en: 'This offer has already been decided or withdrawn.',
+  },
+  already_answered: {
+    ta: 'இச்செய்திக்கு ஏற்கனவே பதிலளிக்கப்பட்டுள்ளது.',
+    en: 'This message has already been answered.',
+  },
+  answer_required: {
+    ta: 'பதிலை எழுதவும் (குறைந்தது 3 எழுத்துகள்).',
+    en: 'Write the answer (at least 3 characters).',
+  },
+  // Surveys.
+  audience_required: {
+    ta: 'யாருக்கானது என்பதைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write who the survey is for, in Tamil and English.',
+  },
+  privacy_required: {
+    ta: 'பதில்கள் எவ்வாறு பயன்படுத்தப்பட்டுப் பேணப்படும் என்பதைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write how the answers are used and kept, in Tamil and English.',
+  },
+  next_steps_required: {
+    ta: 'அடுத்து என்ன நடக்கும் என்பதைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write what happens next, in Tamil and English.',
+  },
+  closes_at_invalid: {
+    ta: 'முடிவு நேரத்தைச் சரியாக உள்ளிடவும், அல்லது வெறுமையாக விடவும்.',
+    en: 'Enter a valid closing time, or leave it empty.',
+  },
+  anonymous_surveys_cannot_be_edited: {
+    ta: 'அநாமதேயக் கருத்துக்கணிப்பின் பதில்களை மாற்ற அனுமதிக்க முடியாது.',
+    en: 'An anonymous survey cannot let members change their answers.',
+  },
+  questions_required: {
+    ta: 'குறைந்தது ஒரு கேள்வியைச் சேர்க்கவும்.',
+    en: 'Add at least one question.',
+  },
+  too_many_questions: {
+    ta: 'அதிகபட்சம் 50 கேள்விகளைச் சேர்க்கவும்.',
+    en: 'Add at most 50 questions.',
+  },
+  only_drafts_change: {
+    ta: 'வரைவுகளை மட்டுமே மாற்ற முடியும்.',
+    en: 'Only a draft can be changed.',
+  },
+  // Learning courses.
+  summary_required: {
+    ta: 'சுருக்கத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the summary in Tamil and English.',
+  },
+  topic_required: {
+    ta: 'பாடப் பிரிவைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the topic.',
+  },
+  lessons_required: {
+    ta: 'வெளியிடுவதற்கு முன் குறைந்தது ஒரு பாடத்தைச் சேர்த்துச் சேமிக்கவும்.',
+    en: 'Add and save at least one lesson before publishing.',
+  },
+  too_many_lessons: {
+    ta: 'அதிகபட்சம் 50 பாடங்களைச் சேர்க்கவும்.',
+    en: 'Add at most 50 lessons.',
+  },
+};
+
+/** Problems that name a question or lesson by its number, e.g. "options_required:2". */
+const NUMBERED_PROBLEMS: Record<string, (n: string) => BilingualText> = {
+  options_required: (n) => ({
+    ta: `கேள்வி ${n} இற்குக் குறைந்தது இரண்டு தெரிவுகள் தேவை.`,
+    en: `Question ${n} needs at least two options.`,
+  }),
+  option_keys_invalid: (n) => ({
+    ta: `கேள்வி ${n}: தெரிவுக் குறியீடுகள் ஒன்றுக்கொன்று வேறுபட்டவையாகவும் சிறிய ஆங்கில எழுத்துகள், இலக்கங்கள், _ மட்டும் கொண்டவையாகவும் இருக்க வேண்டும் (prefer_not_to_say தவிர).`,
+    en: `Question ${n}: option keys must differ from each other and use only lowercase letters, digits and _ (not prefer_not_to_say).`,
+  }),
+  option_text_required: (n) => ({
+    ta: `கேள்வி ${n}: ஒவ்வொரு தெரிவையும் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.`,
+    en: `Question ${n}: write every option in Tamil and English.`,
+  }),
+  prompt_required: (n) => ({
+    ta: `கேள்வி ${n} ஐத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.`,
+    en: `Write question ${n} in Tamil and English.`,
+  }),
+  lesson_text_required: (n) => ({
+    ta: `பாடம் ${n} இன் தலைப்பையும் உரையையும் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.`,
+    en: `Lesson ${n} needs its title and text in Tamil and English.`,
+  }),
+  lesson_minutes_invalid: (n) => ({
+    ta: `பாடம் ${n} இற்கு 1 முதல் 120 வரையான நிமிடங்களை உள்ளிடவும்.`,
+    en: `Give lesson ${n} between 1 and 120 minutes.`,
+  }),
 };
 
 export const PROBLEM_FIELD_MAP: Record<string, string> = {
@@ -891,6 +1055,105 @@ const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
     ta: 'சேர்க்கப்பட்ட தகவல் நிராகரிக்கப்பட்டது.',
     en: 'Added information rejected.',
   },
+  // Volunteering (S10).
+  opportunity_created: {
+    ta: 'வாய்ப்பு வரைவாகச் சேமிக்கப்பட்டது. திறக்கும் வரை உறுப்பினர்கள் இதைக் காணமாட்டார்கள்.',
+    en: 'Opportunity saved as a draft. Members see it once you open it.',
+  },
+  opportunity_saved: {
+    ta: 'மாற்றங்கள் சேமிக்கப்பட்டன.',
+    en: 'Changes saved.',
+  },
+  opportunity_open: {
+    ta: 'வாய்ப்பு திறக்கப்பட்டது. பகுதியிலுள்ள உறுப்பினர்கள் உதவ முன்வரலாம்.',
+    en: 'Opportunity opened. Members in the area can offer to help.',
+  },
+  opportunity_closed: {
+    ta: 'வாய்ப்பு புதிய முன்வருகைகளுக்கு மூடப்பட்டது.',
+    en: 'Opportunity closed to new offers.',
+  },
+  opportunity_cancelled: {
+    ta: 'வாய்ப்பு இரத்து செய்யப்பட்டது. முன்வந்த அனைவருக்கும் காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'Opportunity cancelled. Everyone who offered is told, with your reason.',
+  },
+  offer_confirmed: {
+    ta: 'தன்னார்வலர் உறுதிசெய்யப்பட்டார்; அவருக்கு அறிவிக்கப்படும்.',
+    en: 'Volunteer confirmed; they are told.',
+  },
+  offer_declined: {
+    ta: 'முன்வருகை நிராகரிக்கப்பட்டது; காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'Offer declined; the volunteer is told with your reason.',
+  },
+  contact_answered: {
+    ta: 'பதில் அனுப்பப்பட்டது; தன்னார்வலருக்கு அறிவிக்கப்படும்.',
+    en: 'Answer sent; the volunteer is told.',
+  },
+  // Moderation and development proposals (D12, D15).
+  idea_published: {
+    ta: 'யோசனை வெளியிடப்பட்டது.',
+    en: 'Idea published.',
+  },
+  idea_rejected: {
+    ta: 'யோசனை நிராகரிக்கப்பட்டது; ஆசிரியருக்குக் காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'Idea rejected; the author is told with your reason.',
+  },
+  proposal_review: {
+    ta: 'முன்மொழிவு மீளாய்வுக்கு வெளியிடப்பட்டது.',
+    en: 'Proposal published for review.',
+  },
+  proposal_rejected: {
+    ta: 'முன்மொழிவு நிராகரிக்கப்பட்டது; ஆசிரியருக்குக் காரணத்துடன் அறிவிக்கப்படும்.',
+    en: 'Proposal rejected; the author is told with your reason.',
+  },
+  proposal_not_taken_forward: {
+    ta: 'முன்மொழிவு முன்னெடுக்கப்படவில்லை எனப் பதிவுசெய்யப்பட்டது; ஆசிரியருக்கு அறிவிக்கப்படும்.',
+    en: 'Recorded as not taken forward; the author is told.',
+  },
+  proposal_approved_for_planning: {
+    ta: 'திட்டமிடலுக்கு அங்கீகரிக்கப்பட்டது. இது நிதியை ஒதுக்குவதில்லை.',
+    en: 'Approved for planning. This does not commit funds.',
+  },
+  proposal_funding_identified: {
+    ta: 'நிதி அடையாளம் காணப்பட்டதாகப் பதிவுசெய்யப்பட்டது.',
+    en: 'Funding identified recorded.',
+  },
+  proposal_implementation: {
+    ta: 'முன்மொழிவு நடைமுறைப்படுத்தலுக்கு நகர்த்தப்பட்டது.',
+    en: 'Proposal moved to implementation.',
+  },
+  // Surveys and learning courses.
+  survey_created: {
+    ta: 'கருத்துக்கணிப்பு வரைவாகச் சேமிக்கப்பட்டது.',
+    en: 'Survey saved as a draft.',
+  },
+  survey_saved: {
+    ta: 'வரைவு சேமிக்கப்பட்டது.',
+    en: 'Draft saved.',
+  },
+  survey_open: {
+    ta: 'கருத்துக்கணிப்பு திறக்கப்பட்டது. இனி அதை மாற்ற முடியாது.',
+    en: 'Survey opened. It can no longer change.',
+  },
+  survey_closed: {
+    ta: 'கருத்துக்கணிப்பு மூடப்பட்டது.',
+    en: 'Survey closed.',
+  },
+  course_created: {
+    ta: 'பாடநெறி வரைவாகச் சேமிக்கப்பட்டது.',
+    en: 'Course saved as a draft.',
+  },
+  course_saved: {
+    ta: 'வரைவு சேமிக்கப்பட்டது.',
+    en: 'Draft saved.',
+  },
+  course_published: {
+    ta: 'பாடநெறி வெளியிடப்பட்டது.',
+    en: 'Course published.',
+  },
+  course_retired: {
+    ta: 'பாடநெறி ஓய்வுபெற்றது. உறுப்பினர்கள் இனி அதைத் தொடங்க முடியாது.',
+    en: 'Course retired. Members can no longer start it.',
+  },
 };
 
 export function bilingualMessageFor(code: string): BilingualText {
@@ -942,6 +1205,7 @@ export function bilingualProblemText(problem: string): BilingualText {
       en: `${code.replace(/_/g, ' ')}: ${detail}`,
     };
   }
+  if (detail && NUMBERED_PROBLEMS[code]) return NUMBERED_PROBLEMS[code](detail);
   if (BILINGUAL_PROBLEMS[code]) return BILINGUAL_PROBLEMS[code];
   const readable = problem.replace(/_/g, ' ');
   return { ta: readable, en: readable };
