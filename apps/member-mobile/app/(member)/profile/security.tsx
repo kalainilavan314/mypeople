@@ -1,9 +1,10 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
-import { Alert, Platform, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import type { SecurityAlert, SecurityAlertAnswer } from '@my-people/api-client';
-import { colors, spacing } from '@my-people/design-tokens';
+import { colors, control, radius, spacing } from '@my-people/design-tokens';
 
 import {
   AppText,
@@ -79,7 +80,7 @@ export default function SecurityScreen() {
         {(list) => <SecurityAlerts alerts={list} busy={answer.busy} onAnswer={(id, reply) => void answer.run(id, reply)} />}
       </QueryView>
       {answer.error ? <Notice tone="error">{errorMessage(t, answer.error)}</Notice> : null}
-      <AppText step="section" accessibilityRole="header">
+      <AppText step="section" accessibilityRole="header" style={styles.sectionTitle}>
         {t('m.profile.sessions')}
       </AppText>
       <QueryView query={sessions}>
@@ -89,18 +90,39 @@ export default function SecurityScreen() {
               <SurfaceCard style={styles.sessionsCard}>
                 {list.map((session, index) => (
                   <View key={session.id} style={[styles.session, index > 0 && styles.sessionDivider]}>
-                    <View style={styles.row}>
-                      <AppText step="card" style={styles.flex}>
+                    <View style={styles.deviceIcon}>
+                      <Ionicons
+                        name="phone-portrait-outline"
+                        size={29}
+                        color={colors.primary}
+                        accessibilityElementsHidden
+                        importantForAccessibility="no"
+                      />
+                    </View>
+                    <View style={styles.sessionCopy}>
+                      <AppText step="card" style={styles.sessionTitle}>
                         {session.deviceLabel}
                       </AppText>
-                      {session.current ? <StatusTag tone="verified" label={t('m.profile.thisDevice')} /> : null}
+                      <AppText step="secondary" tone="muted">
+                        {t('m.profile.lastUsed', { time: formatDateTime(session.lastSeenAt, language) })}
+                      </AppText>
                     </View>
-                    <AppText step="secondary" tone="muted">
-                      {t('m.profile.lastUsed', { time: formatDateTime(session.lastSeenAt, language) })}
-                    </AppText>
-                    {!session.current ? (
-                      <Button label={t('m.profile.signOutDevice')} variant="secondary" busy={revoke.busy} onPress={() => confirmRevoke(session.id, session.deviceLabel)} />
-                    ) : null}
+                    {session.current ? (
+                      <StatusTag tone="verified" label={t('m.profile.thisDevice')} />
+                    ) : (
+                      <Pressable
+                        onPress={() => confirmRevoke(session.id, session.deviceLabel)}
+                        disabled={revoke.busy}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${t('m.profile.signOutDevice')}: ${session.deviceLabel}`}
+                        style={({ pressed }) => [styles.compactAction, pressed && styles.pressed, revoke.busy && styles.disabled]}>
+                        {revoke.busy ? (
+                          <ActivityIndicator size="small" color={colors.primary} />
+                        ) : (
+                          <AppText step="label" tone="primary">{t('m.profile.signOutDevice')}</AppText>
+                        )}
+                      </Pressable>
+                    )}
                   </View>
                 ))}
               </SurfaceCard>
@@ -110,7 +132,13 @@ export default function SecurityScreen() {
               </AppText>
             )}
             {list.some((session) => !session.current) ? (
-              <Button label={t('m.profile.signOutOthers')} variant="danger" busy={revokeOthers.busy} onPress={confirmOthers} />
+              <Button
+                label={t('m.profile.signOutOthers')}
+                variant="danger"
+                icon="log-out-outline"
+                busy={revokeOthers.busy}
+                onPress={confirmOthers}
+              />
             ) : null}
           </>
         )}
@@ -146,21 +174,43 @@ function SecurityAlerts({ alerts, busy, onAnswer }: AlertsProps) {
   if (alerts.length === 0) return null;
   return (
     <>
-      <AppText step="section" accessibilityRole="header">
+      <AppText step="section" accessibilityRole="header" style={styles.sectionTitle}>
         {t('m.profile.securityAlerts')}
       </AppText>
       {open.map((alert) => (
-        <SurfaceCard key={alert.id}>
-          <AlertSummary alert={alert} />
-          {alert.signals.map((signal) => (
-            <AppText key={signal} step="secondary">
-              {`• ${t(`m.profile.alertSignal_${signal}`, { defaultValue: signal })}`}
-            </AppText>
-          ))}
+        <SurfaceCard key={alert.id} style={styles.alertCard}>
+          <View style={styles.cardAccent} />
+          <View style={styles.alertHeader}>
+            <View style={styles.alertIcon}>
+              <Ionicons
+                name="shield-checkmark-outline"
+                size={31}
+                color={colors.primary}
+                accessibilityElementsHidden
+                importantForAccessibility="no"
+              />
+            </View>
+            <View style={styles.flex}>
+              <AlertSummary alert={alert} />
+              {alert.signals.map((signal) => (
+                <View key={signal} style={styles.signalRow}>
+                  <View style={styles.signalDot} />
+                  <AppText step="secondary" tone="secondary" style={styles.flex}>
+                    {t(`m.profile.alertSignal_${signal}`, { defaultValue: signal })}
+                  </AppText>
+                </View>
+              ))}
+            </View>
+          </View>
+          <View style={styles.alertDivider} />
           <AppText step="body">{t('m.profile.alertQuestion')}</AppText>
           <View style={styles.actions}>
-            <Button label={t('m.profile.alertItWasMe')} variant="secondary" busy={busy} onPress={() => onAnswer(alert.id, 'it_was_me')} />
-            <Button label={t('m.profile.alertNotMe')} variant="danger" busy={busy} onPress={() => onAnswer(alert.id, 'not_me')} />
+            <View style={styles.flex}>
+              <Button label={t('m.profile.alertItWasMe')} variant="secondary" busy={busy} onPress={() => onAnswer(alert.id, 'it_was_me')} />
+            </View>
+            <View style={styles.flex}>
+              <Button label={t('m.profile.alertNotMe')} variant="primary" busy={busy} onPress={() => onAnswer(alert.id, 'not_me')} />
+            </View>
           </View>
         </SurfaceCard>
       ))}
@@ -171,7 +221,14 @@ function SecurityAlerts({ alerts, busy, onAnswer }: AlertsProps) {
       ) : null}
       {answered.map((alert) => (
         <SurfaceCard key={alert.id}>
-          <AlertSummary alert={alert} />
+          <View style={styles.alertHeader}>
+            <View style={styles.alertIcon}>
+              <Ionicons name="shield-checkmark-outline" size={31} color={colors.primary} />
+            </View>
+            <View style={styles.flex}>
+              <AlertSummary alert={alert} />
+            </View>
+          </View>
           <StatusTag
             tone={alert.answer === 'not_me' ? 'error' : 'neutral'}
             label={t(`m.profile.alertAnswered_${alert.answer}`)}
@@ -187,7 +244,7 @@ function AlertSummary({ alert }: { alert: SecurityAlert }) {
   const language = useLanguage();
   return (
     <>
-      <AppText step="card">{t(`m.profile.alertKind_${alert.kind}`)}</AppText>
+      <AppText step="card" style={styles.alertTitle}>{t(`m.profile.alertKind_${alert.kind}`)}</AppText>
       <AppText step="secondary" tone="muted">
         {t('m.profile.alertWhen', { device: alert.deviceLabel, time: formatDateTime(alert.createdAt, language) })}
       </AppText>
@@ -207,37 +264,92 @@ function PasswordChange() {
   });
   const problem = problemsOf(change.error)[0];
   return (
-    <SurfaceCard>
-      <AppText step="section" accessibilityRole="header">
+    <>
+      <AppText step="section" accessibilityRole="header" style={styles.sectionTitle}>
         {t('m.profile.changePassword')}
       </AppText>
-      <TextField label={t('m.profile.currentPassword')} value={current} onChangeText={setCurrent} secret autoComplete="current-password" />
-      <TextField
-        label={t('m.profile.newPassword')}
-        hint={t('m.register.passwordHint')}
-        value={next}
-        onChangeText={setNext}
-        secret
-        autoComplete="new-password"
-        error={problem ? t(`m.problems.${problem}`, { defaultValue: t('m.errors.password_refused') }) : null}
-      />
-      {change.error && !problem ? <Notice tone="error">{errorMessage(t, change.error)}</Notice> : null}
-      <Button
-        label={t('m.profile.changePassword')}
-        busy={change.busy}
-        busyLabel={t('m.common.saving')}
-        disabled={current === '' || next.length < 10}
-        onPress={() => void change.run()}
-      />
-    </SurfaceCard>
+      <SurfaceCard style={styles.passwordCard}>
+        <TextField label={t('m.profile.currentPassword')} value={current} onChangeText={setCurrent} secret autoComplete="current-password" />
+        <TextField
+          label={t('m.profile.newPassword')}
+          hint={t('m.register.passwordHint')}
+          value={next}
+          onChangeText={setNext}
+          secret
+          autoComplete="new-password"
+          error={problem ? t(`m.problems.${problem}`, { defaultValue: t('m.errors.password_refused') }) : null}
+        />
+        {change.error && !problem ? <Notice tone="error">{errorMessage(t, change.error)}</Notice> : null}
+        <Button
+          label={t('m.profile.changePassword')}
+          busy={change.busy}
+          busyLabel={t('m.common.saving')}
+          disabled={current === '' || next.length < 10}
+          onPress={() => void change.run()}
+        />
+      </SurfaceCard>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
-  actions: { gap: spacing[2] },
+  sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
+  alertCard: { position: 'relative', overflow: 'hidden' },
+  cardAccent: {
+    position: 'absolute',
+    width: 92,
+    height: 64,
+    right: -18,
+    top: 72,
+    borderTopLeftRadius: 64,
+    backgroundColor: 'rgba(255, 211, 42, 0.42)',
+  },
+  alertHeader: { zIndex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3] },
+  alertIcon: {
+    width: 58,
+    height: 58,
+    borderRadius: radius.card,
+    backgroundColor: colors.primaryContainer,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  alertTitle: { fontSize: 18, lineHeight: 25, fontWeight: '700' },
+  signalRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], marginTop: spacing[2] },
+  signalDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.primary },
+  alertDivider: { height: 1, backgroundColor: colors.divider, marginVertical: spacing[1] },
+  actions: { flexDirection: 'row', gap: spacing[3] },
   flex: { flex: 1 },
   sessionsCard: { padding: 0, gap: 0, overflow: 'hidden' },
-  session: { gap: spacing[2], padding: spacing[3] },
+  session: {
+    minHeight: 84,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[3],
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
+  },
   sessionDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
+  deviceIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: radius.card,
+    backgroundColor: colors.primaryContainer,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sessionCopy: { flex: 1, gap: 1 },
+  sessionTitle: { fontSize: 17, lineHeight: 24, fontWeight: '700' },
+  compactAction: {
+    minWidth: 82,
+    minHeight: control.touchMin,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: radius.control,
+    paddingHorizontal: spacing[3],
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  passwordCard: { gap: spacing[4] },
+  pressed: { opacity: 0.78 },
+  disabled: { opacity: 0.5 },
 });
