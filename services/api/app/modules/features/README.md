@@ -12,3 +12,7 @@ Each v1.1 module stays off in production until a Tier 5 holder of `system.config
 - `dependencies.py`: `require_feature("<key>")`, added to a module's router.
 
 Gated today: `identity_appeals` (G1), `duplicate_investigations` (G1), `election_mode` (G2, what members see of elections). A new v1.1 module adds its key to `FEATURES` and gates its router.
+
+## Opening modules in one step (server command)
+
+On the owner's decision of 16 November 2026, `python -m app.modules.features.open_modules "<approval reference>" [key ...]` (run on the server from `services/api`, like the Tier 5 grant) records each module's own gate and turns it on as the one active Super Administrator, through the same service as the dashboard, so every step is in the flag history and the audit log. Without keys it opens every module; a module still refused (the party fund needs its finance policy decisions FIN-01, 02, 03 and 05) stays off and is reported. Turning a module off is still done in Settings.
