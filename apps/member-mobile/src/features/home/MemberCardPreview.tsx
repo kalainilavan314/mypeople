@@ -28,7 +28,7 @@ export function MemberCardPreview({ name, memberCode, place, active }: Props) {
       accessibilityLabel={`${t('m.home.memberCard')}, ${name}, ${memberCode ?? ''}, ${state}`}
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
       <Image
-        source={require('../../../assets/images/icon.png')}
+        source={require('../../../assets/brand/logo.png')}
         style={styles.watermark}
         accessible={false}
         importantForAccessibility="no"

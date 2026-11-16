@@ -4,6 +4,7 @@ import { Text, type StyleProp, type TextProps, type TextStyle } from 'react-nati
 import { colors, typeScale, type FontWeight } from '@my-people/design-tokens/mobile';
 import { useTextScale } from '../display/DisplayPreferences';
 import { fontFamilyFor, monoFontFamily, scaledTextStyle } from '../fonts';
+import { useTypographyScale } from './AppTypographyProvider';
 
 import { useLanguage } from '../hooks/useLanguage';
 
@@ -40,7 +41,8 @@ type Props = Omit<TextProps, 'style'> & {
 export function AppText({ step = 'body', tone = 'default', mono = false, weight, style, children, ...rest }: Props) {
   const language = useLanguage();
   const scale = useTextScale();
-  const base = scaledTextStyle(language, step, scale);
+  const typography = useTypographyScale();
+  const base = scaledTextStyle(language, step, scale, typography);
   return (
     <Text
       {...rest}
