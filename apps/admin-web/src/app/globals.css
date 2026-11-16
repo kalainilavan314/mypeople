@@ -6,6 +6,9 @@
 @theme inline {
   --color-primary: var(--mp-primary);
   --color-on-primary: var(--mp-on-primary);
+  --color-brand-yellow: var(--mp-brand-yellow);
+  --color-brand-gold: var(--mp-brand-gold);
+  --color-on-brand-accent: var(--mp-on-brand-accent);
   --color-page: var(--mp-page);
   --color-card: var(--mp-card);
   --color-surface: var(--mp-surface-variant);

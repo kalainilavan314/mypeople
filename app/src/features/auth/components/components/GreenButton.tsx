@@ -25,7 +25,7 @@ export function GreenButton({
         height: 52,
         borderRadius: radius.pill,
         border: 'none',
-        background: off ? '#94A3B8' : '#14263D',
+        background: off ? '#94A3B8' : 'var(--primary)',
         color: '#ffffff',
         font: `700 15.5px/1 var(--font-ui, sans-serif)`,
         letterSpacing: 'normal',

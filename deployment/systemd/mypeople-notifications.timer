@@ -1,0 +1,10 @@
+[Unit]
+Description=Run the My People notification dispatcher every minute
+
+[Timer]
+OnCalendar=*:0/1:00
+AccuracySec=5s
+Persistent=true
+
+[Install]
+WantedBy=timers.target

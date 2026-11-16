@@ -1,4 +1,5 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -41,9 +42,13 @@ export function Scanner({ onScan, paused }: Props) {
       />
       {paused ? (
         <View style={styles.pausedCover}>
-          <AppText step="label" tone="inverse">
-            ✓
-          </AppText>
+          <Ionicons
+            name="checkmark-circle"
+            size={44}
+            color={colors.onPrimary}
+            accessibilityElementsHidden
+            importantForAccessibility="no-hide-descendants"
+          />
         </View>
       ) : null}
     </View>

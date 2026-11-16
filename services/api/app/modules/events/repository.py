@@ -219,16 +219,16 @@ def next_going_event(db: Session, member_id: uuid.UUID, now: datetime, within: t
 
 
 def managed_events(
-    db: Session, *, visible_areas: list[str] | None, states: list[str], limit: int
+    db: Session, *, visible_areas: list[str] | None, states: list[str], limit: int, offset: int = 0
 ) -> list[StoredEvent]:
     """Events in the manager's areas, soonest first. visible_areas=None means every area."""
     conditions = ["e.state = ANY(CAST(:states AS text[]))"]
-    params: dict[str, Any] = {"states": states, "limit": limit}
+    params: dict[str, Any] = {"states": states, "limit": limit, "offset": offset}
     if visible_areas is not None:
         conditions.append("e.area_path && CAST(:areas AS text[])")
         params["areas"] = visible_areas
     rows = db.execute(
-        text(f"{_SELECT} WHERE {' AND '.join(conditions)} ORDER BY e.starts_at, e.event_ref LIMIT :limit"), params
+        text(f"{_SELECT} WHERE {' AND '.join(conditions)} ORDER BY e.starts_at, e.event_ref LIMIT :limit OFFSET :offset"), params
     ).mappings()
     return [_event(row) for row in rows]
 

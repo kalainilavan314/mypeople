@@ -1,7 +1,12 @@
-# My Household screens
+# My Household Screens
 
-The member's voluntary household record: create, invite adults, confirm, children's minimum data.
+The member's voluntary household screens in the Expo mobile app (Phase 2.5a SC-22).
 
-**Status: not built yet.**
+**Status: Built (Phase 2.5a — SC-22)**
 
-BRD v1.1: FR-HH-001 to 010; screens M06 to M10; BR-098 to BR-101 (never a condition of any service).
+## Screens
+- **M06** (`index.tsx`): My Household overview — voluntary participation notice (BR-098), active member list, creation flow, leave/dissolve actions.
+- **M07** (`add.tsx`): Add member — invite an adult member, who must accept independently before joining.
+- **M08** (`invite.tsx`): Invite adult member — invite by member code and relationship with mutual consent enforcement (BR-099).
+- **M09** (`invitations.tsx`): Household invitations — review and accept/decline received invitations; view and revoke sent invitations.
+- **M10** (`privacy.tsx`): Household privacy & consent — voluntary participation, consent, purpose limitation, and withdrawal.

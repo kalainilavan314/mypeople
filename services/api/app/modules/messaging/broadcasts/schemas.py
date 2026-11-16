@@ -4,6 +4,7 @@ from typing import Literal
 
 from pydantic import AwareDatetime, Field
 
+from app.core.permissions import Tier
 from app.core.schemas import CamelModel
 from app.modules.access.schemas import AreaRef
 from app.modules.messaging.broadcasts.repository import StoredBroadcast
@@ -20,6 +21,7 @@ class BroadcastOut(CamelModel):
     body_ta: str
     area_level: str
     area_key: str
+    audience_tiers: list[Tier] | None
     state: Literal["draft", "pending_approval", "scheduled", "sent", "cancelled"]
     send_at: datetime | None
     sent_at: datetime | None
@@ -38,6 +40,7 @@ class BroadcastOut(CamelModel):
             body_ta=broadcast.body_ta,
             area_level=broadcast.area_level,
             area_key=broadcast.area_key,
+            audience_tiers=broadcast.audience_tiers,  # type: ignore[arg-type]
             state=broadcast.state,  # type: ignore[arg-type]
             send_at=broadcast.send_at,
             sent_at=broadcast.sent_at,
@@ -73,6 +76,16 @@ class BroadcastIn(CamelModel):
 
 class BroadcastCreateIn(BroadcastIn):
     area: AreaRef
+    audience_tiers: list[Tier] | None = Field(default=None, min_length=1)
+
+
+class AudienceReachIn(CamelModel):
+    area: AreaRef
+    audience_tiers: list[Tier] | None = Field(default=None, min_length=1)
+
+
+class AudienceReachOut(CamelModel):
+    reaches: int
 
 
 class BroadcastUpdateIn(CamelModel):
@@ -81,6 +94,7 @@ class BroadcastUpdateIn(CamelModel):
     title_ta: str | None = Field(default=None, min_length=1, max_length=80)
     body_en: str | None = Field(default=None, min_length=1, max_length=1000)
     body_ta: str | None = Field(default=None, min_length=1, max_length=1000)
+    audience_tiers: list[Tier] | None = Field(default=None, min_length=1)
 
 
 class BroadcastSubmitIn(CamelModel):

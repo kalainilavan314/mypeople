@@ -24,7 +24,7 @@ export function ProfileSetupDiv({ navigate, t, cont, ready }: Props) {
       <h1
         style={{
           font: `800 17px/1.2 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
-          color: '#14263D',
+          color: 'var(--primary)',
           margin: 0,
           letterSpacing: 'normal',
         }}
@@ -41,7 +41,7 @@ export function ProfileSetupDiv({ navigate, t, cont, ready }: Props) {
           padding: '6px 8px',
           cursor: ready ? 'pointer' : 'default',
           font: `700 14.5px/1 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
-          color: ready ? '#14263D' : '#94A3B8',
+          color: ready ? 'var(--primary)' : '#94A3B8',
           letterSpacing: 'normal',
         }}
       >

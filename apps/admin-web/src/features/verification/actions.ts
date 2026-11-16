@@ -40,9 +40,15 @@ export async function claimOrRelease(formData: FormData): Promise<void> {
 /** W02: exactly one of three decisions, with the checklist, items and reason the rules ask for (FR-WEB-007 to 011). */
 export async function decide(formData: FormData): Promise<void> {
   const reviewId = reviewIdOf(formData);
-  const decision = String(formData.get('decision')) as ReviewDecisionInput['decision'];
+  const decision = String(formData.get('decision') ?? '') as ReviewDecisionInput['decision'];
   const reason = String(formData.get(`reason_${decision}`) ?? '');
   const note = String(formData.get('note') ?? '').trim();
+  const confirmed = formData.get('confirmInspection') === '1';
+
+  if (!confirmed) {
+    back(reviewId, 'error=confirmation_required');
+  }
+
   const input: ReviewDecisionInput = {
     decision,
     checklist: formData.getAll('checklist').map(String),

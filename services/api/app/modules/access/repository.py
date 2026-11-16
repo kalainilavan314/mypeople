@@ -303,3 +303,151 @@ def find_member_status(db: Session, member_id: uuid.UUID) -> MemberStatus | None
         identity_verified=row.verification_status == "identity_confirmed",
         membership_state=row.membership_state,
     )
+
+
+@dataclass(frozen=True)
+class StoredAssignmentPreview:
+    id: uuid.UUID
+    created_by: uuid.UUID
+    member_id: uuid.UUID
+    tier: Tier
+    area: Area
+    permissions: frozenset[str]
+    note: str | None
+    review_due_at: datetime | None
+    created_at: datetime
+    expires_at: datetime
+    status: str
+    consumed_at: datetime | None
+    cancelled_at: datetime | None
+
+
+_PREVIEW_SELECT = """
+    SELECT id, created_by, member_id, tier, area_level, area_code, permissions, note,
+           review_due_at, created_at, expires_at, status, consumed_at, cancelled_at
+    FROM access.assignment_preview
+"""
+
+
+def to_preview(row) -> StoredAssignmentPreview:
+    return StoredAssignmentPreview(
+        id=row.id,
+        created_by=row.created_by,
+        member_id=row.member_id,
+        tier=row.tier,
+        area=Area(row.area_level, row.area_code),
+        permissions=frozenset(row.permissions),
+        note=row.note,
+        review_due_at=row.review_due_at,
+        created_at=row.created_at,
+        expires_at=row.expires_at,
+        status=row.status,
+        consumed_at=row.consumed_at,
+        cancelled_at=row.cancelled_at,
+    )
+
+
+def insert_assignment_preview(
+    db: Session,
+    *,
+    created_by: uuid.UUID,
+    member_id: uuid.UUID,
+    tier: Tier,
+    area: Area,
+    permissions: frozenset[str],
+    note: str | None,
+    review_due_at: datetime | None,
+    expires_at: datetime,
+) -> StoredAssignmentPreview:
+    row = db.execute(
+        text(
+            """
+            INSERT INTO access.assignment_preview
+                (created_by, member_id, tier, area_level, area_code, permissions, note, review_due_at, expires_at)
+            VALUES (:created_by, :member_id, :tier, :area_level, :area_code, :permissions, :note, :review_due_at, :expires_at)
+            RETURNING id
+            """
+        ),
+        {
+            "created_by": created_by,
+            "member_id": member_id,
+            "tier": tier,
+            "area_level": area.level,
+            "area_code": area.code,
+            "permissions": sorted(permissions),
+            "note": note,
+            "review_due_at": review_due_at,
+            "expires_at": expires_at,
+        },
+    ).one()
+    stored = find_assignment_preview(db, row.id)
+    assert stored is not None
+    return stored
+
+
+def find_assignment_preview(
+    db: Session, preview_id: uuid.UUID, *, for_update: bool = False
+) -> StoredAssignmentPreview | None:
+    lock = " FOR UPDATE" if for_update else ""
+    row = db.execute(text(f"{_PREVIEW_SELECT} WHERE id = :id{lock}"), {"id": preview_id}).one_or_none()
+    return to_preview(row) if row else None
+
+
+def consume_assignment_preview(db: Session, preview_id: uuid.UUID) -> None:
+    db.execute(
+        text(
+            """
+            UPDATE access.assignment_preview
+            SET status = 'consumed', consumed_at = now()
+            WHERE id = :id AND status = 'active'
+            """
+        ),
+        {"id": preview_id},
+    )
+
+
+def cancel_assignment_preview(db: Session, preview_id: uuid.UUID) -> None:
+    db.execute(
+        text(
+            """
+            UPDATE access.assignment_preview
+            SET status = 'cancelled', cancelled_at = now()
+            WHERE id = :id AND status = 'active'
+            """
+        ),
+        {"id": preview_id},
+    )
+
+
+def cleanup_expired_previews(db: Session, *, older_than_hours: int = 1) -> int:
+    result = db.execute(
+        text(
+            """
+            DELETE FROM access.assignment_preview
+            WHERE expires_at < now() - (CAST(:hours AS text) || ' hours')::interval
+               OR (status IN ('consumed', 'cancelled') AND created_at < now() - (CAST(:hours AS text) || ' hours')::interval)
+            """
+        ),
+        {"hours": older_than_hours},
+    )
+    return result.rowcount
+
+
+def resolve_member_by_code(db: Session, member_code: str) -> tuple[uuid.UUID, str, str] | None:
+    row = db.execute(
+        text("SELECT id, member_code, full_name FROM npm.member WHERE member_code IN (:code, upper(:code)) AND deleted_at IS NULL"),
+        {"code": member_code.strip()},
+    ).one_or_none()
+    if row is None:
+        return None
+    return row.id, row.member_code, row.full_name
+
+
+def member_code_and_name(db: Session, member_id: uuid.UUID) -> tuple[str, str] | None:
+    row = db.execute(
+        text("SELECT member_code, full_name FROM npm.member WHERE id = :id AND deleted_at IS NULL"),
+        {"id": member_id},
+    ).one_or_none()
+    if row is None:
+        return None
+    return row.member_code, row.full_name

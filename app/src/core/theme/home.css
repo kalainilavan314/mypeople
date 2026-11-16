@@ -1,10 +1,10 @@
 .home-screen {
-  --home-page: #f4f6fa;
-  --home-ink: #172439;
-  --home-muted: #596a81;
-  --home-line: #e7ecf3;
-  --home-accent: #0b2443;
-  --home-blue: #e1ebfd;
+  --home-page: var(--page);
+  --home-ink: var(--ink);
+  --home-muted: var(--ink-3);
+  --home-line: var(--hairline);
+  --home-accent: var(--primary);
+  --home-blue: var(--primary-container);
   background: var(--home-page);
   color: var(--home-ink);
   min-height: 100%;
@@ -32,7 +32,7 @@
   border-radius: 0 0 22px 22px;
   background: var(--primary);
   color: #fff;
-  box-shadow: 0 4px 16px rgba(15, 41, 66, 0.16);
+  box-shadow: 0 4px 16px rgba(141, 10, 18, 0.16);
 }
 .home-appbar-side {
   display: flex;
@@ -207,7 +207,7 @@
   overflow: hidden;
   border-radius: 22px;
   min-height: 168px;
-  background: linear-gradient(115deg, #061a33, #132b48);
+  background: var(--primary-dark);
   color: #fff;
 }
 .home-hero-copy {
@@ -272,7 +272,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, #061a33f5 0%, #061a33eb 35%, #061a338f 65%, #061a3324 100%);
+  background: linear-gradient(90deg, #211e1bf5 0%, #211e1beb 35%, #211e1b8f 65%, #211e1b24 100%); /* taste-skill-ignore: neutral photo scrim keeps caption readable */
 }
 .home-community-photo figcaption {
   position: absolute;
@@ -290,7 +290,7 @@
   padding: 8px 14px 14px;
   border: 1px solid #dfe8f7;
   border-radius: 20px;
-  background: linear-gradient(115deg, #dbe7fc, #eef3fb);
+  background: var(--surface-variant);
 }
 .home-section-heading {
   display: flex;
@@ -484,7 +484,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #061a3300 12%, #061a3355 42%, #061a33ed 100%);
+  background: linear-gradient(180deg, #211e1b00 12%, #211e1b55 42%, #211e1bed 100%); /* taste-skill-ignore: neutral photo scrim keeps service text readable */
 }
 .home-service-photo .home-service-copy small {
   color: #deebfa;
@@ -497,18 +497,18 @@
   align-items: center;
   min-height: 84px;
   padding-left: 58px;
-  background: #0b2443;
-  color: #fff;
+  background: var(--primary-dark);
+  color: var(--on-primary);
   border: 0;
 }
 .home-service-fund .home-service-icon {
   top: 50%;
   transform: translateY(-50%);
   background: #ffffff12;
-  color: #dce9fb;
+  color: var(--on-primary);
 }
 .home-service-fund .home-service-copy small {
-  color: #c5d6ec;
+  color: var(--on-primary);
 }
 .home-service-fund .home-service-arrow {
   width: 32px;

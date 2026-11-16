@@ -33,6 +33,8 @@ FEATURES: dict[str, Feature] = {
         Feature("identity_appeals", "Identity verification appeals (FR-IDV-013)", 1),
         Feature("duplicate_investigations", "Duplicate account investigations (FR-IDV-010)", 1),
         Feature("election_mode", "Election information mode (FR-ELX, subject to legal approval)", 2),
+        Feature("households", "My Household (FR-HH-001, voluntary household module)", 2),
+        Feature("community_finance", "Community Finance via Bank Transfer Slips (M1.4, FR-FUND)", 1),
     )
 }
 

@@ -27,7 +27,7 @@ export function PartyFund() {
     <div className="fade-up" style={{ background: c.page, minHeight: '100%' }}>
       <div
         style={{
-          background: `linear-gradient(135deg, ${c.primaryContainer} 0%, ${c.page} 70%)`,
+          background: c.primaryContainer,
           padding: '10px 16px 14px',
           position: 'relative',
           overflow: 'hidden',

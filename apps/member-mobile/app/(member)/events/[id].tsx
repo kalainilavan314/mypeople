@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens';
+import { colors, spacing } from '@my-people/design-tokens';
 
 import {
   AppText,
@@ -32,7 +32,7 @@ export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const event = useApiQuery(() => api().getEvent(id), [id]);
   return (
-    <Screen edges={['bottom']} onRefresh={event.reload} refreshing={event.loading && event.data !== undefined}>
+    <Screen edges={['bottom']} maxContentWidth={720} onRefresh={event.reload} refreshing={event.loading && event.data !== undefined}>
       <QueryView query={event}>{(data) => <EventBody event={data} reload={event.reload} />}</QueryView>
     </Screen>
   );
@@ -63,6 +63,8 @@ function EventBody({ event, reload }: { event: EventDetail; reload: () => void }
   const cancelled = event.state === 'cancelled';
   const over = new Date(event.endsAt).getTime() < Date.now();
   const answer = event.myResponse === 'waitlisted' ? 'going' : event.myResponse;
+  const description = localized(event.descriptionEn, event.descriptionTa);
+  const hasDetails = Boolean(description || event.agenda || event.accessibility || event.contactRoute);
 
   return (
     <>
@@ -82,7 +84,7 @@ function EventBody({ event, reload }: { event: EventDetail; reload: () => void }
         <StatusTag tone="verified" label={t('m.events.attended', { time: formatDateTime(event.attendedAt, language) })} />
       ) : null}
 
-      <SurfaceCard>
+      <SurfaceCard style={styles.summary}>
         <Detail label={t('m.events.when')} value={`${formatDate(event.startsAt, language)} · ${formatSpan(event.startsAt, event.endsAt, language)}`} />
         <Detail label={t('m.events.where')} value={event.venue} />
         <Detail label={t('m.events.meetingPoint')} value={event.meetingPoint} />
@@ -91,13 +93,6 @@ function EventBody({ event, reload }: { event: EventDetail; reload: () => void }
             {event.placesLeft > 0 ? t('m.events.placesLeft', { count: event.placesLeft }) : t('m.events.full')}
           </AppText>
         ) : null}
-      </SurfaceCard>
-
-      <SurfaceCard>
-        <Detail label={t('m.events.details')} value={localized(event.descriptionEn, event.descriptionTa)} />
-        <Detail label={t('m.events.agenda')} value={event.agenda} />
-        <Detail label={t('m.events.accessibility')} value={event.accessibility} />
-        <Detail label={t('m.events.contact')} value={event.contactRoute} />
       </SurfaceCard>
 
       {!cancelled && !over ? (
@@ -129,18 +124,32 @@ function EventBody({ event, reload }: { event: EventDetail; reload: () => void }
           {respond.error ? (
             <Notice tone="error">{`${errorMessage(t, respond.error)} ${t('m.common.notSaved')}`}</Notice>
           ) : null}
+          {event.myResponse === 'going' || saved === 'going' ? (
+            <Button
+              label={t('m.events.showPass')}
+              icon="qr-code-outline"
+              onPress={() => router.push({ pathname: '/events/[id]/pass', params: { id: event.id } })}
+            />
+          ) : null}
         </SurfaceCard>
       ) : null}
 
-      {event.myResponse === 'going' && !cancelled && !over ? (
-        <Button
-          label={t('m.events.showPass')}
-          icon="qr-code-outline"
-          onPress={() => router.push({ pathname: '/events/[id]/pass', params: { id: event.id } })}
-        />
+      {hasDetails ? (
+        <>
+          <AppText step="section" accessibilityRole="header">{t('m.events.details')}</AppText>
+          <SurfaceCard>
+            {description ? <AppText step="body" tone="secondary">{description}</AppText> : null}
+            <Detail label={t('m.events.agenda')} value={event.agenda} />
+            <Detail label={t('m.events.accessibility')} value={event.accessibility} />
+            <Detail label={t('m.events.contact')} value={event.contactRoute} />
+          </SurfaceCard>
+        </>
       ) : null}
     </>
   );
 }
 
-const styles = StyleSheet.create({ detail: { gap: 2, paddingVertical: spacing[1] } });
+const styles = StyleSheet.create({
+  summary: { backgroundColor: colors.primaryContainer, borderColor: colors.primaryContainer },
+  detail: { gap: 2, paddingVertical: spacing[1] },
+});

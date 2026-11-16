@@ -24,7 +24,7 @@ export function ProfileSection({ navigate, t, me, name, code, lang, tier, verifi
       <button type="button" className="profile-account-avatar"
         onClick={() => navigate('/profile/edit')} aria-label={t('profile.editProfile', 'Edit profile')}>
         <NetImage src={me.avatarUrl ?? undefined} alt={name} width="100%" height="100%"
-          radius="50%" fallbackIcon="user" fallbackGrad="#0F2942" />
+          radius="50%" fallbackIcon="user" fallbackGrad="var(--primary)" />
       </button>
       <h2>{name}</h2>
       <p className="profile-account-code">{code}</p>

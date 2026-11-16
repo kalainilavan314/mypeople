@@ -64,7 +64,7 @@ export function QuestionsQuestionCardContainer({
               padding: '6px 8px',
               cursor: busy ? 'default' : 'pointer',
               font: `700 15px/1.2 ${font.ui}`,
-              color: '#14263D',
+              color: 'var(--primary)',
               textDecoration: 'underline',
               textUnderlineOffset: 3,
             }}
@@ -86,10 +86,10 @@ export function QuestionsQuestionCardContainer({
               border: '1px solid #BFDBFE',
               borderRadius: radius.pill,
               font: `700 13px/1.2 ${font.ui}`,
-              color: '#1D4ED8',
+              color: 'var(--primary)',
             }}
           >
-            <Icon name="users" size={14} color="#1D4ED8" strokeWidth={2.4} />
+            <Icon name="users" size={14} color="var(--primary)" strokeWidth={2.4} />
             <span>{t('survey.joiningSurvey')}</span>
           </span>
         </div>
@@ -97,7 +97,7 @@ export function QuestionsQuestionCardContainer({
         <h1
           style={{
             font: `800 24px/1.3 ${font.ui}`,
-            color: '#14263D',
+            color: 'var(--primary)',
             margin: '0 0 10px',
           }}
         >

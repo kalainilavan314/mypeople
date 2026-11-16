@@ -1,4 +1,4 @@
-import type { ManualCheckIn, PassScan } from '@my-people/api-client';
+import { ApiError, type ManualCheckIn, type PassScan } from '@my-people/api-client';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,10 +17,11 @@ import {
 
 import { ResultBanner } from '@/features/scan/ResultBanner';
 import { Scanner } from '@/features/scan/Scanner';
+import { offlineAttendanceReady, prepareOfflineAttendance, queueAttendance } from '@/features/scan/offlineQueue';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 
-type Result = PassScan | ManualCheckIn;
+type Result = PassScan | ManualCheckIn | { result: 'queued'; fullName?: undefined; memberCode?: undefined };
 
 const RECORDED = new Set(['checked_in', 'already_checked_in']);
 
@@ -37,8 +38,21 @@ export default function EventCheckInScreen() {
   const [result, setResult] = useState<Result | null>(null);
   const [memberCode, setMemberCode] = useState('');
   const [reason, setReason] = useState('');
+  const [offlineReady, setOfflineReady] = useState(false);
 
-  const scan = useApiAction(async (code: string) => setResult(await api().scanEventPass(id, code)));
+  const prepare = useApiAction(async () => {
+    await prepareOfflineAttendance();
+    setOfflineReady(await offlineAttendanceReady());
+  });
+  const scan = useApiAction(async (code: string) => {
+    try {
+      setResult(await api().scanEventPass(id, code));
+    } catch (error) {
+      if (error instanceof ApiError || !await offlineAttendanceReady()) throw error;
+      await queueAttendance(id, code);
+      setResult({ result: 'queued' });
+    }
+  });
   const manual = useApiAction(async () => {
     setResult(await api().checkInManually(id, memberCode.trim(), reason.trim()));
     setMemberCode('');
@@ -53,6 +67,14 @@ export default function EventCheckInScreen() {
         </AppText>
       ) : null}
       <Scanner paused={result !== null || scan.busy} onScan={(code) => void scan.run(code)} />
+      <Notice tone="warning">{t('s.checkIn.offlineProvisional')}</Notice>
+      <Button
+        label={offlineReady ? t('s.checkIn.offlineReady') : t('s.checkIn.prepareOffline')}
+        variant="secondary"
+        busy={prepare.busy}
+        disabled={offlineReady}
+        onPress={() => void prepare.run()}
+      />
       {result ? (
         <>
           <ResultBanner

@@ -1,4 +1,5 @@
 import { StyleSheet, View } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { colors, radius, spacing } from '@my-people/design-tokens';
 import { AppText } from '@my-people/mobile-ui';
@@ -15,9 +16,16 @@ export function ResultBanner({ ok, title, name, memberCode }: Props) {
       style={[styles.banner, ok ? styles.ok : styles.refused]}
       accessibilityRole={ok ? undefined : 'alert'}
       accessibilityLiveRegion="assertive">
-      <AppText step="page" tone={ok ? 'success' : 'error'}>
-        {`${ok ? '✓' : '!'} ${title}`}
-      </AppText>
+      <View style={styles.titleRow}>
+        <Ionicons
+          name={ok ? 'checkmark-circle' : 'alert-circle'}
+          size={28}
+          color={ok ? colors.success : colors.error}
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        />
+        <AppText step="page" tone={ok ? 'success' : 'error'}>{title}</AppText>
+      </View>
       {name ? <AppText step="section">{name}</AppText> : null}
       {memberCode ? (
         <AppText step="body" tone="secondary" mono>
@@ -30,6 +38,7 @@ export function ResultBanner({ ok, title, name, memberCode }: Props) {
 
 const styles = StyleSheet.create({
   banner: { borderRadius: radius.card, borderWidth: 2, padding: spacing[4], gap: spacing[1] },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
   ok: { borderColor: colors.success, backgroundColor: colors.successBackground },
   refused: { borderColor: colors.error, backgroundColor: colors.errorBackground },
 });

@@ -1,58 +1,69 @@
-import Link from 'next/link';
 import { Suspense } from 'react';
 
-import { signOut } from '@/app/sign-in/actions';
+import { StaffSidebar } from '@/components/StaffSidebar';
+import { getAdminLocale } from '@/lib/i18n';
 import { builtModules } from '@/lib/modules';
 import { requireStaff } from '@/lib/staff';
 
 /** Every page here needs a staff session with the second factor given; the API checks it again on each call. */
 export default function StaffLayout({ children }: LayoutProps<'/'>) {
   return (
-    <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-6 md:flex-row">
-      <nav aria-label="Dashboard" className="flex flex-col gap-3 md:w-56 md:shrink-0">
-        <Link href="/" className="flex flex-col">
-          <span lang="ta" className="text-sm text-muted">
-            என் மக்கள்
-          </span>
-          <span className="font-bold">My People · Administration</span>
-        </Link>
-        <Suspense fallback={<p className="text-sm text-muted">… Checking your session</p>}>
-          <StaffMenu />
-        </Suspense>
-      </nav>
-      <main className="flex min-w-0 flex-1 flex-col gap-6">{children}</main>
+    <div className="flex min-h-screen w-full flex-col bg-page md:flex-row">
+      <Suspense fallback={<SidebarSkeleton />}>
+        <StaffSidebarSection />
+      </Suspense>
+      <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">{children}</div>
+      </main>
     </div>
   );
 }
 
-async function StaffMenu() {
+async function StaffSidebarSection() {
   const staff = await requireStaff();
-  const allowed = builtModules.filter((module) => staff.permissions.has(module.permission));
+  const locale = await getAdminLocale(staff.member.language);
+
+  const allowed = builtModules.filter((module) =>
+    Array.isArray(module.permission)
+      ? module.permission.some((p) => staff.permissions.has(p))
+      : staff.permissions.has(module.permission as string),
+  );
+
   return (
-    <>
-      <div className="rounded-xl border border-line bg-card px-3 py-2 text-sm">
-        <p className="font-semibold">{staff.member.fullName}</p>
-        <p className="font-mono text-xs text-muted">{staff.member.memberCode}</p>
-        {staff.assignments.map((assignment) => (
-          <p key={assignment.id} className="text-xs text-muted">
-            Tier {assignment.tier} · {assignment.area.level === 'platform' ? 'platform' : `${assignment.area.level} ${assignment.area.code}`}
-          </p>
-        ))}
+    <StaffSidebar
+      staff={{
+        fullName: staff.member.fullName,
+        memberCode: staff.member.memberCode,
+        assignments: staff.assignments.map((a) => ({
+          id: a.id,
+          tier: a.tier,
+          area: { level: a.area.level, code: a.area.code },
+        })),
+      }}
+      allowedModules={allowed.map((m) => ({
+        href: m.href,
+        ta: m.ta,
+        en: m.en,
+      }))}
+      serverLocale={locale}
+    />
+  );
+}
+
+function SidebarSkeleton() {
+  return (
+    <aside className="sticky top-0 hidden h-screen w-60 shrink-0 self-start overflow-hidden border-r border-line bg-page p-6 md:flex md:flex-col">
+      <div className="flex flex-col gap-3">
+        <div className="h-6 w-36 animate-pulse rounded bg-surface" />
+        <div className="h-8 w-24 animate-pulse rounded bg-surface" />
+        <div className="h-20 w-full animate-pulse rounded-xl bg-surface" />
       </div>
-      <ul className="flex flex-col">
-        {allowed.map((module) => (
-          <li key={module.href}>
-            <Link href={module.href} className="flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold hover:bg-surface">
-              {module.en}
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <form action={signOut}>
-        <button type="submit" className="min-h-11 w-full rounded-lg border border-line px-3 text-left text-sm text-error hover:bg-error-bg">
-          Sign out
-        </button>
-      </form>
-    </>
+      <div className="flex flex-col gap-2">
+        <div className="h-10 w-full animate-pulse rounded-lg bg-surface" />
+        <div className="h-10 w-full animate-pulse rounded-lg bg-surface" />
+        <div className="h-10 w-full animate-pulse rounded-lg bg-surface" />
+        <div className="h-10 w-full animate-pulse rounded-lg bg-surface" />
+      </div>
+    </aside>
   );
 }

@@ -25,6 +25,9 @@ export function TextField({ label, hint, error, secret = false, optional = false
   const text = stringsFor(language);
   const [hidden, setHidden] = useState(true);
   const [focused, setFocused] = useState(false);
+  const isInvalid = Boolean(error);
+  const isDisabled = input.editable === false;
+
   return (
     <View style={styles.field}>
       <AppText step="label">
@@ -41,13 +44,18 @@ export function TextField({ label, hint, error, secret = false, optional = false
           styles.box,
           multiline && styles.multiline,
           focused && styles.focused,
-          error ? styles.invalid : null,
+          isInvalid ? styles.invalid : null,
         ]}>
         <TextInput
           {...input}
           multiline={multiline}
+          accessible
           accessibilityLabel={label}
           accessibilityHint={hint}
+          accessibilityState={{ disabled: isDisabled }}
+          aria-disabled={isDisabled}
+          aria-invalid={isInvalid}
+          aria-required={!optional}
           secureTextEntry={secret && hidden}
           onFocus={(event) => {
             setFocused(true);
@@ -59,13 +67,20 @@ export function TextField({ label, hint, error, secret = false, optional = false
           }}
           placeholderTextColor={colors.textMuted}
           // 16 px or more, so phones do not zoom into the field.
-          style={[textStyle(language, 'body'), styles.input, { fontSize: Math.max(16, textStyle(language, 'body').fontSize) }]}
+          style={[
+            textStyle(language, 'body'),
+            styles.input,
+            { fontSize: Math.max(16, textStyle(language, 'body').fontSize) },
+          ]}
         />
         {secret ? (
           <Pressable
             onPress={() => setHidden((value) => !value)}
+            accessible
             accessibilityRole="button"
             accessibilityLabel={hidden ? text.showPassword : text.hidePassword}
+            accessibilityState={{ checked: !hidden }}
+            aria-label={hidden ? text.showPassword : text.hidePassword}
             hitSlop={8}
             style={styles.reveal}>
             <Ionicons name={hidden ? 'eye-outline' : 'eye-off-outline'} size={20} color={colors.textMuted} />
@@ -96,5 +111,5 @@ const styles = StyleSheet.create({
   focused: { borderColor: colors.focusRing, borderWidth: 2 },
   invalid: { borderColor: colors.error },
   input: { flex: 1, paddingHorizontal: spacing[3], paddingVertical: spacing[2], color: colors.text },
-  reveal: { width: control.touchMin, height: control.touchMin, alignItems: 'center', justifyContent: 'center' },
+  reveal: { width: control.height, height: control.height, alignItems: 'center', justifyContent: 'center' },
 });

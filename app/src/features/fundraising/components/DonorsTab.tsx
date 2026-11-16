@@ -35,9 +35,7 @@ export function DonorsTab() {
                       padding: '11px 14px',
                     }}
                   >
-                    <span style={{ fontSize: 17, lineHeight: 1 }}>
-                      {d.method === 'card' ? '💳' : '🧾'}
-                    </span>
+                    <Icon name={d.method === 'card' ? 'card' : 'fileText'} size={18} color={c.ink2} />
                     <span style={{ flex: 1, font: `600 13.5px/1.3 ${font.ui}`, color: c.ink }}>
                       {fmtLKR(d.amount)}
                     </span>
@@ -128,7 +126,7 @@ export function DonorsTab() {
                       }}
                     >
                       {d.districtName ? `${d.districtName} · ` : ''}
-                      {fmtDate(d.createdAt)} · {d.method === 'card' ? '💳' : '🧾'}
+                      {fmtDate(d.createdAt)} · {d.method === 'card' ? t('fund.methodCard') : t('fund.methodSlip')}
                     </span>
                   </span>
                   <span style={{ flex: 'none', font: `800 15px/1 ${font.head}`, color: c.primary }}>

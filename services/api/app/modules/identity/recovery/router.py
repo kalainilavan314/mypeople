@@ -106,16 +106,22 @@ def request_phone_confirmation(body: PhoneInput, member: CurrentMember, request:
 
 @router.post(
     "/v1/identity/me/phone/confirm",
-    responses={401: {"description": "invalid_code or too_many_attempts"}, 409: {"description": "phone_unavailable"}},
+    responses={401: {"description": "invalid_code, too_many_attempts or wrong_password"}, 409: {"description": "phone_unavailable"}, **LIMITED},
 )
 def confirm_phone(body: PhoneConfirmInput, member: CurrentMember, request: Request, db: Db) -> RecoveryContactOut:
-    """Enter the code: the number becomes the recovery contact. A previous number is told of the change."""
+    """Enter the code; replacing a confirmed number also needs the current password."""
     try:
-        phone = service.confirm_phone(db, _sms(request), member.id, body.phone, body.code, client_ip(request), _secret(request))
+        phone = service.confirm_phone(
+            db, _sms(request), member.id, body.phone, body.code, client_ip(request), _secret(request), body.current_password
+        )
     except service.InvalidPhone:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="invalid_phone") from None
     except service.CodeRefused as error:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=error.reason) from None
+    except service.WrongPassword:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="wrong_password") from None
+    except service.TooManyRequests as error:
+        raise _too_many(error) from None
     except service.PhoneUnavailable:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="phone_unavailable") from None
     return RecoveryContactOut(phone=phone)

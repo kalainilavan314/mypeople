@@ -15,6 +15,7 @@ from app.modules.audit import service as audit
 from app.modules.features import repository, rules
 from app.modules.features.repository import StoredFlag
 from app.modules.features.rules import FEATURES, Feature
+from app.modules.policy_decisions import service as policy_decisions
 
 
 class UnknownFeature(Exception):
@@ -85,6 +86,10 @@ def set_enabled(db: Session, staff: Staff, key: str, enabled: bool, reason: str,
         if problem:
             db.commit()
             raise FlagRefused(problem)
+        missing = policy_decisions.missing_feature_decisions(db, key)
+        if missing:
+            db.commit()
+            raise FlagRefused(f"policy_decisions_required:{','.join(missing)}")
     repository.set_enabled(db, key, enabled, staff.member_id)
     _change(db, staff, key, "enabled" if enabled else "disabled", flag.gate, reason, ip)
     db.commit()

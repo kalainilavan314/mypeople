@@ -464,7 +464,7 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   width: 54px;
   height: 54px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+  background: var(--primary);
   display: grid;
   place-items: center;
   box-shadow: 0 8px 18px -4px rgba(15, 41, 66, 0.45);
@@ -598,7 +598,7 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   gap: 12px;
   padding: 12px 12px 12px 16px;
   border-radius: var(--r-lg);
-  background: #14263d;
+  background: var(--primary-dark);
   box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.5);
 }
 .update-toast-btn {
@@ -608,7 +608,7 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   border-radius: var(--r-sm);
   border: 0;
   background: #fff;
-  color: #14263d;
+  color: var(--primary-dark);
   font: 600 14px/1 var(--font-ui);
   cursor: pointer;
 }
@@ -687,14 +687,14 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
 .home-hero-overlay-redesign {
   position: absolute;
   inset: 0;
-  background: linear-gradient(110deg, rgba(240, 246, 254, 0.96) 0%, rgba(240, 246, 254, 0.88) 45%, rgba(240, 246, 254, 0.3) 75%, rgba(240, 246, 254, 0) 100%);
+  background: linear-gradient(110deg, rgba(255, 251, 245, 0.96) 0%, rgba(255, 251, 245, 0.88) 45%, rgba(255, 251, 245, 0.3) 75%, rgba(255, 251, 245, 0) 100%); /* taste-skill-ignore: neutral photo scrim keeps hero copy readable */
 }
 :root[data-theme='dark'] .home-hero-redesign {
   background-color: #0f1c2e;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
 }
 :root[data-theme='dark'] .home-hero-overlay-redesign {
-  background: linear-gradient(110deg, rgba(13, 20, 30, 0.96) 0%, rgba(13, 20, 30, 0.88) 48%, rgba(13, 20, 30, 0.35) 75%, rgba(13, 20, 30, 0) 100%);
+  background: linear-gradient(110deg, rgba(33, 30, 27, 0.96) 0%, rgba(33, 30, 27, 0.88) 48%, rgba(33, 30, 27, 0.35) 75%, rgba(33, 30, 27, 0) 100%); /* taste-skill-ignore: neutral photo scrim keeps hero copy readable */
 }
 .home-hero-content {
   position: relative;
@@ -1206,11 +1206,8 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
 /* ---- Membership ID card (fixed 680×428, scaled to fit via container units) ---- */
 .idcard-wrap { width: 100%; aspect-ratio: 680 / 428; overflow: hidden; border-radius: 18px; }
 .idcard { position: relative; width: 680px; height: 428px; transform-origin: top left; border-radius: 18px; overflow: hidden; background: #eef3f9; border: 1px solid #d7deea; box-shadow: 0 12px 32px -12px rgba(11,20,36,.55); }
-.idcard-guilloche { position: absolute; inset: 0; opacity: .7;
-  background:
-    radial-gradient(circle at 78% 62%, rgba(20,38,61,.06) 0, transparent 38%),
-    repeating-radial-gradient(circle at 50% 46%, rgba(20,38,61,.028) 0, rgba(20,38,61,.028) 1px, transparent 1px, transparent 11px); }
-.idcard-band { position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: linear-gradient(100deg, #0f1f33 0%, #1c3a5e 100%); }
+.idcard-guilloche { position: absolute; inset: 0; opacity: .7; background: var(--surface-variant); }
+.idcard-band { position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: var(--primary-dark); }
 .idcard-band-top { top: 0; height: 34px; }
 .idcard-band-bottom { bottom: 0; height: 30px; }
 .idcard-body { position: absolute; top: 34px; bottom: 30px; left: 0; right: 0; display: flex; gap: 14px; padding: 15px 18px; }
@@ -1228,13 +1225,13 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   padding: calc(14px + var(--safe-top, 0px)) 16px 54px;
   border-radius: 0 0 24px 24px;
   color: #ffffff;
-  background: #102D55 url('/profile-hero.webp') center 28% / cover no-repeat;
+  background: var(--primary-dark) url('/profile-hero.webp') center 28% / cover no-repeat;
   box-shadow: 0 8px 24px rgba(16, 45, 85, 0.12);
 }
 .pf-hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(16, 45, 85, 0.72) 0%, rgba(16, 45, 85, 0.32) 42%, rgba(16, 45, 85, 0.78) 100%);
+  background: linear-gradient(180deg, rgba(33, 30, 27, 0.72) 0%, rgba(33, 30, 27, 0.32) 42%, rgba(33, 30, 27, 0.78) 100%); /* taste-skill-ignore: neutral photo scrim keeps finance content readable */
 }
 .pf-hero-top {
   position: relative;
@@ -1305,7 +1302,7 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #102D55;
+  background: var(--primary-dark);
   border: 2px solid #ffffff;
   display: grid;
   place-items: center;
@@ -1674,21 +1671,21 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   min-height: 200px;
   display: flex;
   justify-content: space-between;
-  background: #0f2c52 url('/hero-north.webp') center right / cover no-repeat;
+  background: var(--primary-dark) url('/hero-north.webp') center right / cover no-repeat;
   box-shadow: 0 6px 22px rgba(16, 45, 85, 0.12);
   margin-bottom: 24px;
 }
 .cm-hero-banner-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(110deg, rgba(15, 44, 82, 0.96) 0%, rgba(15, 44, 82, 0.88) 48%, rgba(15, 44, 82, 0.35) 75%, rgba(15, 44, 82, 0) 100%);
+  background: linear-gradient(110deg, rgba(33, 30, 27, 0.96) 0%, rgba(33, 30, 27, 0.88) 48%, rgba(33, 30, 27, 0.35) 75%, rgba(33, 30, 27, 0) 100%); /* taste-skill-ignore: neutral photo scrim keeps community copy readable */
 }
 :root[data-theme='dark'] .cm-hero-banner {
   background-color: #0b1a2b;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
 }
 :root[data-theme='dark'] .cm-hero-banner-overlay {
-  background: linear-gradient(110deg, rgba(11, 22, 35, 0.96) 0%, rgba(11, 22, 35, 0.88) 48%, rgba(11, 22, 35, 0.35) 75%, rgba(11, 22, 35, 0) 100%);
+  background: linear-gradient(110deg, rgba(33, 30, 27, 0.96) 0%, rgba(33, 30, 27, 0.88) 48%, rgba(33, 30, 27, 0.35) 75%, rgba(33, 30, 27, 0) 100%); /* taste-skill-ignore: neutral photo scrim keeps community copy readable */
 }
 .cm-hero-left {
   position: relative;
@@ -2339,8 +2336,8 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   transition: all 140ms ease;
 }
 .profile-chip.active {
-  background: var(--navy-900, #14263D);
-  border-color: var(--navy-900, #14263D);
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
   color: #FFFFFF;
   box-shadow: 0 4px 12px rgba(20, 38, 61, 0.22);
 }
@@ -2360,8 +2357,8 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   transition: all 140ms ease;
 }
 .profile-gender-pill.active {
-  background: var(--navy-900, #14263D);
-  border-color: var(--navy-900, #14263D);
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
   color: #FFFFFF;
   box-shadow: 0 4px 12px rgba(20, 38, 61, 0.22);
 }
@@ -2385,13 +2382,14 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   border-color: #BFDBFE;
 }
 
-/* Shimmer Loader Skeleton Styles */
-@keyframes nuSkeletonSweep {
+/* Quiet loading pulse; avoids decorative shimmer. */
+@keyframes nuSkeletonPulse {
   0% {
-    transform: translateX(-100%);
+    opacity: .58;
   }
+  50% { opacity: 1; }
   100% {
-    transform: translateX(100%);
+    opacity: .58;
   }
 }
 
@@ -2403,8 +2401,5 @@ input[type='number'], input[inputmode='decimal'], input[inputmode='numeric'] {
   background-color: #1E293B;
 }
 
-:root[data-theme='dark'] .nu-skeleton-shimmer {
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%) !important;
-}
 /* Report form: required sections say so in words, not only by a mark. */
 .cr-required { margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: var(--surface-variant); color: var(--ink-2, #475569); font-size: 0.75rem; font-weight: 600; vertical-align: middle; }

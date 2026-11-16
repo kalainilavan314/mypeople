@@ -12,6 +12,8 @@ from app.modules.access.service import AccessRefused, Staff
 from app.modules.messaging.broadcasts import service
 from app.modules.messaging.broadcasts.rules import SEND
 from app.modules.messaging.broadcasts.schemas import (
+    AudienceReachIn,
+    AudienceReachOut,
     BroadcastCreateIn,
     BroadcastOut,
     BroadcastPreviewOut,
@@ -49,10 +51,27 @@ def list_broadcasts(
     db: Db,
     state: Annotated[list[Literal["draft", "pending_approval", "scheduled", "sent", "cancelled"]] | None, Query()] = None,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
+    offset: Annotated[int, Query(ge=0, le=100000)] = 0,
 ) -> list[BroadcastOut]:
     """Broadcasts in the caller's areas, newest first."""
     states = list(state) if state else ["draft", "pending_approval", "scheduled"]
-    return [BroadcastOut.build(b) for b in service.managed(db, staff, states, limit)]
+    return [BroadcastOut.build(b) for b in service.managed(db, staff, states, limit, offset)]
+
+
+@router.post("/reach", responses=REFUSED)
+def estimate_reach(body: AudienceReachIn, staff: CanSend, request: Request, db: Db) -> AudienceReachOut:
+    """Area-scoped estimate for the composer; submit computes recipients again."""
+    try:
+        count = service.audience_reach(
+            db,
+            staff,
+            Area(body.area.level, body.area.code),
+            list(body.audience_tiers) if body.audience_tiers else None,
+            client_ip(request),
+        )
+    except HANDLED as error:
+        raise _errors(error) from None
+    return AudienceReachOut(reaches=count)
 
 
 @router.post("", status_code=status.HTTP_201_CREATED, responses={**REFUSED, 422: {"description": "broadcast_invalid"}})

@@ -132,7 +132,7 @@ test('signOut accepts the empty 204 response', async () => {
   assert.equal(sent[0].url, 'https://api.example/v1/auth/sign-out');
 });
 
-test('a refused assignment carries the reasons', async () => {
+test('a refused assignment preview carries the reasons', async () => {
   const { fetch } = fakeFetch(403, { detail: { code: 'assignment_refused', problems: ['tier_not_below_yours'] } });
   const input = {
     memberId: '3f1c2a9e-5b7d-4e8a-9c0f-1a2b3c4d5e6f',
@@ -141,7 +141,7 @@ test('a refused assignment carries the reasons', async () => {
     permissions: ['cases.decide_district'],
   };
 
-  await assert.rejects(createApiClient({ baseUrl: 'https://api.example', fetch }).createAssignment(input), (error) => {
+  await assert.rejects(createApiClient({ baseUrl: 'https://api.example', fetch }).createAssignmentPreview(input), (error) => {
     assert.ok(error instanceof ApiError);
     assert.equal(error.code, 'assignment_refused');
     assert.deepEqual(error.problems, ['tier_not_below_yours']);
@@ -185,6 +185,92 @@ test('an identity image is sent as it is, with its own media type', async () => 
   assert.equal(sent[0].method, 'PUT');
   assert.equal(sent[0].headers['Content-Type'], 'image/jpeg');
   assert.equal(sent[0].body as unknown, image);
+});
+
+test('identity upload reports transmitted bytes and keeps the authenticated request', async () => {
+  const document = { id: 'd2', kind: 'selfie', version: 1 };
+  const progress: Array<[number, number]> = [];
+  const headers: Record<string, string> = {};
+  let sentBody: Document | Blob | ArrayBuffer | null = null;
+  class FakeXhr {
+    upload = { onprogress: null as ((event: ProgressEvent) => void) | null };
+    onload: (() => void) | null = null;
+    onerror: (() => void) | null = null;
+    ontimeout: (() => void) | null = null;
+    onabort: (() => void) | null = null;
+    timeout = 0;
+    withCredentials = false;
+    status = 201;
+    responseText = JSON.stringify(document);
+    open(method: string, url: string) {
+      assert.equal(method, 'PUT');
+      assert.equal(url, 'https://api.example/v1/identity/me/documents/selfie');
+    }
+    setRequestHeader(name: string, value: string) { headers[name] = value; }
+    getResponseHeader(name: string) { return name === 'Content-Type' ? 'application/json' : null; }
+    send(body: Document | Blob | ArrayBuffer | null) {
+      sentBody = body;
+      this.upload.onprogress?.({ loaded: 2 } as ProgressEvent);
+      this.onload?.();
+    }
+  }
+  const image = new Blob([new Uint8Array([1, 2, 3, 4])], { type: 'image/jpeg' });
+  const result = await createApiClient({
+    baseUrl: 'https://api.example',
+    getToken: () => 'member-token',
+    xhrFactory: () => new FakeXhr() as unknown as XMLHttpRequest,
+  }).uploadIdentityDocument('selfie', image, 'image/jpeg', (sent, total) => progress.push([sent, total]));
+
+  assert.deepEqual(result, document);
+  assert.equal(sentBody, image);
+  assert.equal(headers.Authorization, 'Bearer member-token');
+  assert.equal(headers['Content-Type'], 'image/jpeg');
+  assert.deepEqual(progress, [[2, 4], [4, 4]]);
+});
+
+test('identity upload retries once with a renewed token after expiry', async () => {
+  const attempts: string[] = [];
+  let renewals = 0;
+  const progress: Array<[number, number]> = [];
+  const payloads = [
+    { status: 401, body: { detail: 'token_expired' } },
+    { status: 201, body: { id: 'd3', kind: 'nic_front' } },
+  ];
+  class FakeXhr {
+    upload = { onprogress: null as ((event: ProgressEvent) => void) | null };
+    onload: (() => void) | null = null;
+    onerror: (() => void) | null = null;
+    ontimeout: (() => void) | null = null;
+    onabort: (() => void) | null = null;
+    timeout = 0;
+    withCredentials = false;
+    status = 0;
+    responseText = '';
+    open() { /* The path is covered by the normal upload test. */ }
+    setRequestHeader(name: string, value: string) {
+      if (name === 'Authorization') attempts.push(value);
+    }
+    getResponseHeader(name: string) { return name === 'Content-Type' ? 'application/json' : null; }
+    send() {
+      const response = payloads.shift();
+      assert.ok(response);
+      this.status = response.status;
+      this.responseText = JSON.stringify(response.body);
+      this.onload?.();
+    }
+  }
+  const image = new Blob([new Uint8Array([1, 2])], { type: 'image/jpeg' });
+  const client = createApiClient({
+    baseUrl: 'https://api.example',
+    getToken: () => 'expired-token',
+    refresh: async () => { renewals += 1; return 'renewed-token'; },
+    xhrFactory: () => new FakeXhr() as unknown as XMLHttpRequest,
+  });
+  const result = await client.uploadIdentityDocument('nic_front', image, 'image/jpeg', (sent, total) => progress.push([sent, total]));
+  assert.deepEqual(result, { id: 'd3', kind: 'nic_front' });
+  assert.deepEqual(attempts, ['Bearer expired-token', 'Bearer renewed-token']);
+  assert.equal(renewals, 1);
+  assert.deepEqual(progress, [[0, 2], [2, 2]]);
 });
 
 test('openEvidence returns an absolute link on the API', async () => {
@@ -253,6 +339,42 @@ test('duplicate cases are listed with the same state filters as appeals', async 
   assert.equal(sent[0].url, 'https://api.example/v1/identity/duplicates?state=open&mine=true');
 });
 
+test('admin console list requests carry a scoped page offset', async () => {
+  const { fetch, sent } = fakeFetch(200, []);
+  const client = createApiClient({ baseUrl: 'https://api.example', fetch });
+
+  await client.listManagedEvents({ states: ['draft'], limit: 26, offset: 25 });
+  await client.listManagedAlbums({ states: ['submitted'], limit: 26, offset: 25 });
+  await client.listRemovalRequests({ states: ['open'], limit: 26, offset: 25 });
+  await client.listBroadcasts({ states: ['scheduled'], limit: 26, offset: 25 });
+  await client.listIdentityReviews({ states: ['submitted'], limit: 26, offset: 25 });
+  await client.listIdentityAppeals({ states: ['submitted'], limit: 26, offset: 25 });
+  await client.listDuplicateCases({ states: ['open'], limit: 26, offset: 25 });
+
+  assert.deepEqual(sent.map((request) => request.url.replace('https://api.example', '')), [
+    '/v1/events/manage?state=draft&limit=26&offset=25',
+    '/v1/content/albums/manage?state=submitted&limit=26&offset=25',
+    '/v1/content/removal-requests?state=open&limit=26&offset=25',
+    '/v1/notifications/broadcasts?state=scheduled&limit=26&offset=25',
+    '/v1/identity/reviews?state=submitted&limit=26&offset=25',
+    '/v1/identity/appeals?state=submitted&limit=26&offset=25',
+    '/v1/identity/duplicates?state=open&limit=26&offset=25',
+  ]);
+});
+
+test('broadcast audience estimate defaults to all active members in the selected area', async () => {
+  const { fetch, sent } = fakeFetch(200, { reaches: 42 });
+  const result = await createApiClient({ baseUrl: 'https://api.example', fetch })
+    .estimateBroadcastReach({ level: 'district', code: 'LK11' });
+
+  assert.deepEqual(result, { reaches: 42 });
+  assert.equal(sent[0].url, 'https://api.example/v1/notifications/broadcasts/reach');
+  assert.deepEqual(JSON.parse(sent[0].body ?? ''), {
+    area: { level: 'district', code: 'LK11' },
+    audienceTiers: null,
+  });
+});
+
 test('passport sign-in sends the number and country, not a NIC', async () => {
   const { fetch, sent } = fakeFetch(200, { token: 't', member: profile });
 
@@ -267,6 +389,24 @@ test('consent accepts the empty 204 response', async () => {
   await createApiClient({ baseUrl: 'https://api.example', fetch }).giveIdentityConsent('draft-2026-10');
 
   assert.equal(sent[0].url, 'https://api.example/v1/identity/me/consent');
+});
+
+test('replacing a recovery number sends the current password with its six-digit code', async () => {
+  const { fetch, sent } = fakeFetch(200, { phone: '+94771234567' });
+  await createApiClient({ baseUrl: 'https://api.example', fetch }).confirmPhone('0771234567', '123456', 'current secret');
+
+  assert.equal(sent[0].url, 'https://api.example/v1/identity/me/phone/confirm');
+  assert.deepEqual(JSON.parse(sent[0].body ?? ''), {
+    phone: '0771234567', code: '123456', currentPassword: 'current secret',
+  });
+});
+
+test('authenticator enrolment sends the current password', async () => {
+  const { fetch, sent } = fakeFetch(200, { secret: 'ABC', otpauthUri: 'otpauth://totp/example' });
+  await createApiClient({ baseUrl: 'https://api.example', fetch }).startTotpEnrolment('current secret');
+
+  assert.equal(sent[0].url, 'https://api.example/v1/auth/mfa/totp');
+  assert.deepEqual(JSON.parse(sent[0].body ?? ''), { currentPassword: 'current secret' });
 });
 
 test('recovery verification sends the account number with the code', async () => {
@@ -417,4 +557,139 @@ test('refresh tokens, security alerts and access reviews go to their endpoints',
       ['POST', '/v1/access/reviews/g1', '{"decision":"revoked","reason":"Left the district office"}'],
     ],
   );
+});
+
+test('household endpoints call their routes with correct payload', async () => {
+  const { fetch, sent } = fakeFetch(200, {});
+  const client = createApiClient({ baseUrl: 'https://api.example', fetch });
+
+  await client.getMyHousehold();
+  await client.createHousehold({ name: 'Our Home' });
+  await client.updateHousehold({ name: 'Renamed Home' });
+  await client.getMyInvitations();
+  await client.inviteAdult({ memberCode: 'NPM-1234', relationship: 'spouse' });
+  await client.respondInvitation('inv-1', { action: 'accept' });
+  await client.revokeInvitation('inv-1');
+  await client.removeHouseholdMember('rec-1');
+  await client.leaveHousehold();
+  await client.getHouseholdPrivacyNotice();
+  await client.staffViewHousehold('target-1');
+
+  assert.deepEqual(
+    sent.map((request) => [request.method, request.url.replace('https://api.example', ''), request.body]),
+    [
+      ['GET', '/v1/households/mine', undefined],
+      ['POST', '/v1/households', '{"name":"Our Home"}'],
+      ['PATCH', '/v1/households/mine', '{"name":"Renamed Home"}'],
+      ['GET', '/v1/households/invitations/mine', undefined],
+      ['POST', '/v1/households/invitations', '{"memberCode":"NPM-1234","relationship":"spouse"}'],
+      ['POST', '/v1/households/invitations/inv-1/respond', '{"action":"accept"}'],
+      ['POST', '/v1/households/invitations/inv-1/revoke', undefined],
+      ['POST', '/v1/households/members/rec-1/remove', undefined],
+      ['POST', '/v1/households/leave', undefined],
+      ['GET', '/v1/households/privacy', undefined],
+      ['GET', '/v1/households/staff/target-1', undefined],
+    ],
+  );
+});
+
+test('community report endpoints call their routes with correct parameters', async () => {
+  const { fetch, sent } = fakeFetch(200, {});
+  const client = createApiClient({ baseUrl: 'https://api.example', fetch });
+
+  await client.getCommunityReportCounts();
+  await client.listCommunityReports({ status: 'submitted', limit: 25, offset: 50 });
+  await client.getCommunityReport('report 1');
+
+  assert.deepEqual(
+    sent.map((request) => [request.method, request.url.replace('https://api.example', ''), request.body]),
+    [
+      ['GET', '/v1/community/reports/counts', undefined],
+      ['GET', '/v1/community/reports?status=submitted&limit=25&offset=50', undefined],
+      ['GET', '/v1/community/reports/report%201', undefined],
+    ],
+  );
+});
+
+test('broadcast reach sends an optional effective staff tier filter', async () => {
+  const { fetch, sent } = fakeFetch(200, { reaches: 1 });
+  const client = createApiClient({ baseUrl: 'https://api.example', fetch });
+
+  await client.estimateBroadcastReach({ level: 'district', code: 'LK-11' });
+  await client.estimateBroadcastReach({ level: 'district', code: 'LK-11' }, ['2A']);
+
+  assert.deepEqual(sent.map((request) => JSON.parse(request.body ?? '{}')), [
+    { area: { level: 'district', code: 'LK-11' }, audienceTiers: null },
+    { area: { level: 'district', code: 'LK-11' }, audienceTiers: ['2A'] },
+  ]);
+});
+
+test('community finance fund and staff endpoints call their routes with correct parameters', async () => {
+  const { fetch, sent } = fakeFetch(200, {});
+  const client = createApiClient({ baseUrl: 'https://api.example', fetch });
+
+  await client.getFundConfig();
+  await client.createContribution(
+    {
+      amountMinor: 250000,
+      transferDate: '2026-11-09',
+      bankReference: 'TXN123456789',
+      noPrivilegeAcknowledged: true,
+      informationAccurateAcknowledged: true,
+      payingForSelf: true,
+    },
+    'idem-key-1',
+  );
+  await client.uploadContributionSlip('c-1', new Uint8Array([1, 2, 3]), 'image/jpeg');
+  await client.submitContribution('c-1');
+  await client.getMyContributions(10, 0);
+  await client.getMyContribution('c-1');
+  await client.getMyContributionReceipt('c-1');
+
+  await client.listFinanceContributions({ status: 'SUBMITTED', month: '2026-11', riskFlag: 'duplicate_bank_reference', limit: 50 });
+  await client.getFinanceContribution('c-1');
+  await client.claimFinanceContribution('c-1');
+  await client.getFinanceSlipViewToken('c-1');
+  await client.reconcileFinanceContribution('c-1', {
+    action: 'matched',
+    statementReference: 'STMT-99',
+    reason: 'Matched with bank statement',
+  });
+  await client.approveFinanceContribution('c-1', {
+    action: 'approve',
+    reason: 'Second person verified',
+    relatedPartyConflict: false,
+  });
+
+  assert.deepEqual(
+    sent.map((request) => [request.method, request.url.replace('https://api.example', ''), request.body]),
+    [
+      ['GET', '/v1/fund/config', undefined],
+      [
+        'POST',
+        '/v1/fund/contributions',
+        '{"currency":"LKR","declarationVersion":"v1","amountMinor":250000,"transferDate":"2026-11-09","bankReference":"TXN123456789","noPrivilegeAcknowledged":true,"informationAccurateAcknowledged":true,"payingForSelf":true}',
+      ],
+      ['PUT', '/v1/fund/contributions/c-1/slip', new Uint8Array([1, 2, 3])],
+      ['POST', '/v1/fund/contributions/c-1/submit', undefined],
+      ['GET', '/v1/fund/contributions/mine?limit=10&offset=0', undefined],
+      ['GET', '/v1/fund/contributions/c-1', undefined],
+      ['GET', '/v1/fund/contributions/c-1/receipt', undefined],
+      ['GET', '/v1/finance/contributions?status=SUBMITTED&month=2026-11&risk_flag=duplicate_bank_reference&limit=50', undefined],
+      ['GET', '/v1/finance/contributions/c-1', undefined],
+      ['POST', '/v1/finance/contributions/c-1/claim', undefined],
+      ['POST', '/v1/finance/contributions/c-1/slip-view', undefined],
+      [
+        'POST',
+        '/v1/finance/contributions/c-1/reconcile',
+        '{"action":"matched","statementReference":"STMT-99","reason":"Matched with bank statement"}',
+      ],
+      [
+        'POST',
+        '/v1/finance/contributions/c-1/approve',
+        '{"action":"approve","reason":"Second person verified","relatedPartyConflict":false}',
+      ],
+    ],
+  );
+  assert.equal(sent[1].headers['Idempotency-Key'], 'idem-key-1');
 });

@@ -186,7 +186,7 @@ def _load_for_reviewer(db: Session, staff: Staff, review_id: uuid.UUID, ip: str,
 
 
 def queue(
-    db: Session, staff: Staff, *, states: list[str], mine: bool, review_ref: str | None, limit: int
+    db: Session, staff: Staff, *, states: list[str], mine: bool, review_ref: str | None, limit: int, offset: int = 0
 ) -> list[StoredReview]:
     """W01: reviews in the areas where the person holds members.verify (FR-WEB-001, 002)."""
     return repository.queue(
@@ -196,6 +196,7 @@ def queue(
         claimed_by=staff.member_id if mine else None,
         review_ref=review_ref,
         limit=limit,
+        offset=offset,
     )
 
 

@@ -2,12 +2,14 @@
 
 import { useActionState } from 'react';
 
-import { messageFor } from '@/lib/messages';
+import { useLocale } from '@/lib/i18n/context';
+import { bilingualMessageFor } from '@/lib/messages';
 
 import { startEnrolment, type Enrolment as EnrolmentState } from './actions';
 
 /** Shows the new authenticator secret and its QR code, kept only in this page's memory. */
 export function Enrolment() {
+  const locale = useLocale();
   const [state, start, pending] = useActionState<EnrolmentState, FormData>(startEnrolment, null);
 
   if (state && 'secret' in state) {
@@ -18,27 +20,44 @@ export function Enrolment() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={`data:image/svg+xml;utf8,${encodeURIComponent(state.qrSvg)}`}
-          alt="Authenticator set-up code"
+          alt={locale === 'ta' ? 'அங்கீகார அமைவுக் குறியீடு' : 'Authenticator set-up code'}
           width={220}
           height={220}
         />
-        <p className="text-sm font-semibold">Key</p>
+        <p className="flex flex-col items-center">
+          <span lang={locale} className="text-sm font-semibold text-text">
+            {locale === 'ta' ? 'இரகசிய விசை' : 'Secret key'}
+          </span>
+        </p>
         <p className="select-all break-all font-mono text-base">{state.secret}</p>
       </div>
     );
   }
   return (
     <form action={start} className="flex flex-col gap-2">
+      <label className="flex flex-col gap-1 text-sm font-semibold text-text">
+        <span>Current password</span>
+        <input name="currentPassword" type="password" required autoComplete="current-password"
+          className="min-h-11 rounded-lg border border-line px-3 text-base" />
+      </label>
       {state && 'error' in state ? (
         <p role="alert" className="text-sm text-error">
-          ! {messageFor(state.error)}
+          ! {locale === 'ta' ? bilingualMessageFor(state.error).ta : bilingualMessageFor(state.error).en}
         </p>
       ) : null}
       <button
         type="submit"
         disabled={pending}
         className="min-h-11 rounded-lg bg-primary px-4 text-sm font-semibold text-on-primary disabled:opacity-60">
-        {pending ? 'Working…' : 'Set up an authenticator'}
+        <span lang={locale}>
+          {locale === 'ta'
+            ? pending
+              ? 'செயற்படுகிறது…'
+              : 'அங்கீகாரச் செயலியை அமைத்தல்'
+            : pending
+              ? 'Working…'
+              : 'Set up an authenticator'}
+        </span>
       </button>
     </form>
   );

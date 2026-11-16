@@ -162,13 +162,14 @@ def _load_for_investigator(db: Session, staff: Staff, case_id: uuid.UUID, ip: st
     return case
 
 
-def queue(db: Session, staff: Staff, *, states: list[str], mine: bool, limit: int) -> list[StoredCase]:
+def queue(db: Session, staff: Staff, *, states: list[str], mine: bool, limit: int, offset: int = 0) -> list[StoredCase]:
     return repository.queue(
         db,
         visible_areas=access.visible_areas(staff, INVESTIGATE),
         states=states,
         claimed_by=staff.member_id if mine else None,
         limit=limit,
+        offset=offset,
     )
 
 

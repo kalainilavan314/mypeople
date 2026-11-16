@@ -1,24 +1,34 @@
+'use client';
+
 import type { ReactNode } from 'react';
 
+import { useLocale } from '@/lib/i18n/context';
+import type { Locale } from '@/lib/i18n/types';
+
 type Props = {
-  /** Tamil first, English under it, as everywhere in the product (CLAUDE.md). */
+  /** Tamil title */
   ta: string;
+  /** English title */
   en: string;
-  brd?: string;
+  /** Optional override for locale */
+  locale?: Locale;
   children?: ReactNode;
 };
 
-/** The page's one h1, with the screen's BRD reference and an optional action area. */
-export function PageHeader({ ta, en, brd, children }: Props) {
+/**
+ * The page's one h1, rendered cleanly in the active language (Priority 1 / Milestone 1).
+ * Eliminates noisy stacked duplication while preserving type safety and accessibility.
+ */
+export function PageHeader({ ta, en, locale: propLocale, children }: Props) {
+  const contextLocale = useLocale();
+  const locale = propLocale ?? contextLocale;
+  const title = locale === 'ta' ? ta : en;
+
   return (
-    <header className="flex flex-wrap items-end justify-between gap-3">
-      <div className="flex flex-col gap-0.5">
-        <p lang="ta" className="text-sm font-semibold text-muted">
-          {ta}
-        </p>
-        <h1 className="text-2xl font-bold">{en}</h1>
-        {brd ? <p className="text-xs text-muted">BRD {brd}</p> : null}
-      </div>
+    <header className="flex min-h-10 flex-wrap items-end justify-between gap-4">
+      <h1 lang={locale} className="text-2xl font-semibold tracking-tight text-text">
+        {title}
+      </h1>
       {children}
     </header>
   );

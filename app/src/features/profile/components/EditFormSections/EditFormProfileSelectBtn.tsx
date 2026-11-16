@@ -28,7 +28,7 @@ export function EditFormProfileSelectBtn({ district, setDsSheetOpen, t, ds }: Pr
           flexShrink: 0,
         }}
       >
-        <Icon name="landmark" size={18} color="#14263D" />
+        <Icon name="landmark" size={18} color="var(--primary)" />
       </span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ font: `700 13px/1.2 ${font.ta}`, color: '#1E293B' }}>
@@ -37,7 +37,7 @@ export function EditFormProfileSelectBtn({ district, setDsSheetOpen, t, ds }: Pr
         <div
           style={{
             font: `500 13px/1.3 ${font.ta}`,
-            color: ds ? '#14263D' : '#64748B',
+            color: ds ? 'var(--primary)' : '#64748B',
             marginTop: 3,
             overflow: 'hidden',
             textOverflow: 'ellipsis',

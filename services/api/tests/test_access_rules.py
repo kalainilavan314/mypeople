@@ -68,7 +68,7 @@ def test_every_permission_names_real_tiers():
         ("roles.assign", "3A", None),
         ("cases.collect", "1", "default"),
         ("finance.review", "3B", "explicit"),  # PRM-14: only District Operations / Finance
-        ("finance.review", "5", None),
+        ("finance.review", "5", "explicit"),  # Finance authority is explicit, never inherited from Tier 5
         ("assistance.decide", "3A", "explicit"),
         ("analytics.view", "2B", "default"),
     ],

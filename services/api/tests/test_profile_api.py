@@ -51,6 +51,27 @@ def test_the_profile_shows_locks_a_masked_number_and_takes_only_display_name_and
     assert cleared["displayName"] is None
 
 
+def test_profile_language_preference_read_and_update(client, db_session, auth, member_in, area):
+    member = member_in(area)
+
+    initial = client.get("/v1/profile", headers=auth(member)).json()
+    assert initial["language"] in ("ta", "en")
+
+    res_en = client.patch("/v1/profile", json={"language": "en"}, headers=auth(member))
+    assert res_en.status_code == 200
+    assert res_en.json()["language"] == "en"
+
+    db_lang = db_session.scalar(text("SELECT language FROM npm.member WHERE id = :id"), {"id": member.id})
+    assert db_lang == "en"
+
+    res_ta = client.patch("/v1/profile", json={"language": "ta"}, headers=auth(member))
+    assert res_ta.status_code == 200
+    assert res_ta.json()["language"] == "ta"
+
+    res_invalid = client.patch("/v1/profile", json={"language": "fr"}, headers=auth(member))
+    assert res_invalid.status_code == 422
+
+
 def test_my_activity_lists_receipts_newest_first_with_a_filter(client, auth, member_in, area):
     member = member_in(area)
     client.post("/v1/privacy/requests", json={"kind": "copy"}, headers=auth(member))

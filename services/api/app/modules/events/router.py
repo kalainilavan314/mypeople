@@ -1,8 +1,10 @@
+import csv
+import io
 import uuid
 from datetime import UTC, datetime
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, Response, status
 from sqlalchemy.orm import Session
 
 from app.core.request_info import client_ip
@@ -38,6 +40,7 @@ router = APIRouter(prefix="/v1/events", tags=["events"])
 Db = Annotated[Session, Depends(get_db)]
 CanManage = Annotated[Staff, Depends(require_permission(MANAGE))]
 CanScan = Annotated[Staff, Depends(require_permission(SCAN))]
+CanViewRoster = Annotated[Staff, Depends(require_permission(MANAGE, SCAN))]
 
 NOT_FOUND = {404: {"description": "not_found"}}
 REFUSED = {403: {"description": "forbidden or outside_your_area"}, **NOT_FOUND}
@@ -81,10 +84,11 @@ def list_managed_events(
     db: Db,
     state: Annotated[list[Literal["draft", "published", "cancelled"]] | None, Query()] = None,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
+    offset: Annotated[int, Query(ge=0, le=100000)] = 0,
 ) -> list[ManagedEventOut]:
     """Events in the areas where the caller holds events.manage, drafts included, soonest first."""
     states = list(state) if state else ["draft", "published"]
-    return [ManagedEventOut.managed(event) for event in service.managed_events(db, staff, states, limit)]
+    return [ManagedEventOut.managed(event) for event in service.managed_events(db, staff, states, limit, offset)]
 
 
 @router.get("/manage/{event_id}", responses=REFUSED)
@@ -96,6 +100,38 @@ def read_managed_event(event_id: uuid.UUID, staff: CanManage, request: Request, 
     except AccessRefused as error:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.code) from None
     return ManagedEventOut.managed(event)
+
+
+@router.get("/manage/{event_id}/attendance.csv", responses=REFUSED)
+def export_managed_attendance(event_id: uuid.UUID, staff: CanManage, request: Request, db: Db) -> Response:
+    """D07: audited, area-scoped UTF-8 RSVP roster for an event manager."""
+    try:
+        roster = service.export_attendance_roster(db, staff, event_id, client_ip(request))
+    except service.EventNotFound:
+        raise _not_found() from None
+    except AccessRefused as error:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.code) from None
+
+    def safe_cell(value: str) -> str:
+        # Spreadsheet applications can execute formulas in a member-entered name.
+        return "'" + value if value.lstrip().startswith(("=", "+", "-", "@")) else value
+
+    output = io.StringIO(newline="")
+    writer = csv.writer(output)
+    writer.writerow(["Member code", "Full name", "RSVP", "Attended at (UTC)", "Check-in method"])
+    for entry in roster.entries:
+        writer.writerow([
+            safe_cell(entry.member_code), safe_cell(entry.full_name), entry.response,
+            entry.attended_at.isoformat() if entry.attended_at else "", entry.checkin_method or "",
+        ])
+    return Response(
+        content="\ufeff" + output.getvalue(), media_type="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": f'attachment; filename="{roster.event.event_ref}-attendance.csv"',
+            "Cache-Control": "no-store, private",
+            "X-Content-Type-Options": "nosniff",
+        },
+    )
 
 
 @router.post(
@@ -216,7 +252,7 @@ def check_in_manually(
 
 
 @router.get("/{event_id}/attendance", responses=REFUSED)
-def read_attendance(event_id: uuid.UUID, staff: CanScan, request: Request, db: Db) -> RosterOut:
+def read_attendance(event_id: uuid.UUID, staff: CanViewRoster, request: Request, db: Db) -> RosterOut:
     """S09: who is expected and who has attended, for an event in the caller's scope (FR-STF-006)."""
     try:
         roster = service.attendance_roster(db, staff, event_id, client_ip(request))

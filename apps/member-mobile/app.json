@@ -4,28 +4,29 @@
     "slug": "my-people-member",
     "version": "0.1.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/brand/app-icon.png",
     "scheme": "mypeople",
     "userInterfaceStyle": "light",
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#0f2942",
-        "foregroundImage": "./assets/images/adaptive-icon.png"
+        "backgroundColor": "#fffbf5",
+        "foregroundImage": "./assets/brand/adaptive-icon.png"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "single",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/brand/favicon.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#ffffff",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 160
+          "backgroundColor": "#fffbf5",
+          "image": "./assets/brand/splash-logo.png",
+          "imageWidth": 200,
+          "resizeMode": "contain"
         }
       ],
       "expo-secure-store",
@@ -36,7 +37,8 @@
           "photosPermission": "My People lets you choose a photo of your ID or proof of residence when you cannot use the camera.",
           "microphonePermission": false
         }
-      ]
+      ],
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,

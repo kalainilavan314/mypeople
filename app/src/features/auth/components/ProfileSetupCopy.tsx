@@ -7,7 +7,7 @@ export function ProfileSetupIntroduction() {
       <h2
         style={{
           font: `900 22px/1.3 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
-          color: '#14263D',
+          color: 'var(--primary)',
           margin: 0,
           letterSpacing: 'normal',
           maxWidth: 320,

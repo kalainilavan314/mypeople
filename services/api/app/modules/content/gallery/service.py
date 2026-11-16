@@ -327,8 +327,8 @@ def return_album(db: Session, staff: Staff, album_id: uuid.UUID, note: str, ip: 
     return returned
 
 
-def managed_albums(db: Session, staff: Staff, states: list[str], limit: int) -> list[StoredAlbum]:
-    return repository.managed_albums(db, visible_areas=access.visible_areas(staff, PUBLISH), states=states, limit=limit)
+def managed_albums(db: Session, staff: Staff, states: list[str], limit: int, offset: int = 0) -> list[StoredAlbum]:
+    return repository.managed_albums(db, visible_areas=access.visible_areas(staff, PUBLISH), states=states, limit=limit, offset=offset)
 
 
 def managed_album(db: Session, staff: Staff, album_id: uuid.UUID, ip: str) -> AlbumDetail:
@@ -348,9 +348,9 @@ class QueuedRequest:
     escalated: bool  # open 18 hours or more
 
 
-def removal_queue(db: Session, staff: Staff, states: list[str], limit: int) -> list[QueuedRequest]:
+def removal_queue(db: Session, staff: Staff, states: list[str], limit: int, offset: int = 0) -> list[QueuedRequest]:
     now = datetime.now(UTC)
-    requests = repository.queue(db, visible_areas=access.visible_areas(staff, TAKEDOWN), states=states, limit=limit)
+    requests = repository.queue(db, visible_areas=access.visible_areas(staff, TAKEDOWN), states=states, limit=limit, offset=offset)
     return [QueuedRequest(r, r.state == "open" and rules.escalated(r.created_at, now)) for r in requests]
 
 

@@ -1,11 +1,11 @@
 .profile-page {
-  --profile-ink: #172439;
-  --profile-muted: #596a81;
-  --profile-accent: #0f2942;
-  --profile-group: #f3f5f7;
-  --profile-line: #dfe5ec;
+  --profile-ink: var(--ink);
+  --profile-muted: var(--ink-3);
+  --profile-accent: var(--primary);
+  --profile-group: var(--surface-variant);
+  --profile-line: var(--hairline);
   min-height: 100%;
-  background: #ffffff;
+  background: var(--card);
   color: var(--profile-ink);
   font-family: var(--font-ui);
   -webkit-font-smoothing: antialiased;
@@ -150,12 +150,12 @@
   outline-offset: 3px;
 }
 :root[data-theme='dark'] .profile-page {
-  --profile-ink: #e6edf5;
-  --profile-muted: #aab9cb;
-  --profile-accent: #bdd9f5;
-  --profile-group: #1c2837;
-  --profile-line: #344659;
-  background: #0d141e;
+  --profile-ink: var(--ink);
+  --profile-muted: var(--ink-3);
+  --profile-accent: var(--primary);
+  --profile-group: var(--surface-variant);
+  --profile-line: var(--hairline);
+  background: var(--page);
 }
 @media (min-width: 600px) {
   .profile-page { padding-inline: 24px; }

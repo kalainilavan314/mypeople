@@ -11,6 +11,7 @@ import {
   Button,
   ChipRow,
   formatDateTime,
+  Notice,
   Screen,
   StatusTag,
   SurfaceCard,
@@ -70,7 +71,11 @@ export default function NotificationsScreen() {
   };
 
   return (
-    <Screen edges={['bottom']} onRefresh={inbox.reload} refreshing={inbox.loading && inbox.data !== undefined}>
+    <Screen
+      edges={['bottom']}
+      maxContentWidth={720}
+      onRefresh={inbox.reload}
+      refreshing={inbox.loading && inbox.data !== undefined}>
       <ChipRow
         label={t('m.inbox.title')}
         selected={view}
@@ -86,21 +91,25 @@ export default function NotificationsScreen() {
             {data.unread > 0 ? (
               <Button label={t('m.inbox.markAllRead')} variant="quiet" busy={readAll.busy} onPress={() => void readAll.run()} />
             ) : null}
+            {readAll.error ? <Notice tone="error">{t('m.inbox.markAllReadFailed')}</Notice> : null}
             {data.items.length === 0 ? (
               <AppText step="secondary" tone="muted">
                 {view === 'all' ? t('m.inbox.empty') : t('m.inbox.emptyAction')}
               </AppText>
             ) : null}
-            {data.items.map((item) => (
-              <SurfaceCard
+            {data.items.length > 0 ? <SurfaceCard style={styles.inboxList}>
+              {data.items.map((item, index) => {
+                const route = targetRoute(item);
+                const title = localized(item.titleEn, item.titleTa);
+                return <SurfaceCard
                 key={item.id}
                 onPress={() => void open(item)}
-                accessibilityLabel={localized(item.titleEn, item.titleTa)}
-                style={!item.read && styles.unread}>
+                accessibilityLabel={`${!item.read ? `${t('m.inbox.unread')}. ` : ''}${title}${route ? `. ${t('m.inbox.opensDetail')}` : ''}`}
+                style={[styles.item, index > 0 && styles.itemDivider, !item.read && styles.unread]}>
                 <View style={styles.titleRow}>
                   {!item.read ? <View style={styles.dot} accessibilityElementsHidden /> : null}
                   <AppText step="card" style={styles.flex}>
-                    {localized(item.titleEn, item.titleTa)}
+                    {title}
                   </AppText>
                 </View>
                 <AppText step="secondary" tone="secondary">
@@ -112,8 +121,9 @@ export default function NotificationsScreen() {
                   </AppText>
                   {item.actionNeeded ? <StatusTag tone="pending" label={t('m.inbox.actionTag')} /> : null}
                 </View>
-              </SurfaceCard>
-            ))}
+              </SurfaceCard>;
+              })}
+            </SurfaceCard> : null}
           </View>
         )}
       </QueryView>
@@ -123,7 +133,10 @@ export default function NotificationsScreen() {
 
 const styles = StyleSheet.create({
   list: { gap: spacing[3] },
-  unread: { borderColor: colors.primaryLight },
+  inboxList: { padding: 0, gap: 0, overflow: 'hidden' },
+  item: { borderWidth: 0, borderRadius: 0, padding: spacing[3] },
+  itemDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
+  unread: { backgroundColor: colors.primaryContainer },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary },
   meta: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },

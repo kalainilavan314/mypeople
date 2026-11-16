@@ -240,10 +240,11 @@ def queue(
     claimed_by: uuid.UUID | None,
     review_ref: str | None,
     limit: int,
+    offset: int = 0,
 ) -> list[StoredReview]:
     """Oldest waiting first (W01). visible_areas=None means every area."""
     conditions = ["r.state = ANY(CAST(:states AS text[]))"]
-    params: dict[str, Any] = {"states": states, "limit": limit}
+    params: dict[str, Any] = {"states": states, "limit": limit, "offset": offset}
     if visible_areas is not None:
         conditions.append("r.area_path && CAST(:areas AS text[])")
         params["areas"] = visible_areas
@@ -256,7 +257,7 @@ def queue(
     rows = db.execute(
         text(
             f"""{_SELECT_REVIEW} WHERE {" AND ".join(conditions)}
-            ORDER BY COALESCE(r.resubmitted_at, r.submitted_at), r.review_ref LIMIT :limit"""
+            ORDER BY COALESCE(r.resubmitted_at, r.submitted_at), r.review_ref LIMIT :limit OFFSET :offset"""
         ),
         params,
     ).mappings()

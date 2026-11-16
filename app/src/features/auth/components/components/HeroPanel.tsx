@@ -24,15 +24,7 @@ export function HeroPanel({
         style={{
           position: 'absolute',
           inset: 0,
-          background:
-            'linear-gradient(180deg, #F6BE72 0%, #E39457 22%, #B06A55 44%, #5C4A63 66%, #22284A 88%, #0B1020 100%)',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'radial-gradient(60% 34% at 72% 18%, rgba(255,214,150,.5), transparent 62%)',
+          background: 'var(--primary-dark)',
         }}
       />
       <PalmSilhouette style={{ position: 'absolute', left: 20, bottom: '30%' }} />
@@ -73,8 +65,7 @@ export function HeroPanel({
           right: 0,
           bottom: 0,
           height: 150,
-          background:
-            'linear-gradient(to top, rgba(15,22,38,.62) 0%, rgba(15,22,38,.28) 40%, transparent 100%)',
+          background: 'linear-gradient(to top, rgba(33,30,27,.62) 0%, rgba(33,30,27,.28) 40%, transparent 100%)', // taste-skill-ignore: neutral photo scrim keeps overlay content readable
         }}
       />
       {children && (

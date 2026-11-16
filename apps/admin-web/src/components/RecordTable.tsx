@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-type Column<T> = { header: string; cell: (row: T) => ReactNode };
+import type { Locale } from '@/lib/i18n/types';
+
+export type Column<T> = { header: ReactNode; cell: (row: T) => ReactNode };
 
 type Props<T> = {
   caption: string;
@@ -11,12 +13,24 @@ type Props<T> = {
   href: (row: T) => string;
   linkText: (row: T) => string;
   rowKey: (row: T) => string;
-  empty: string;
+  empty: ReactNode | string;
+  refHeader?: ReactNode;
+  locale: Locale;
 };
 
-/** A queue table: the reference links to the record; nothing is decided from the list (FR-WEB-003). */
-export function RecordTable<T>({ caption, rows, columns, href, linkText, rowKey, empty }: Props<T>) {
-  if (rows.length === 0) return <p className="text-sm text-muted">{empty}</p>;
+/** A queue table: the reference links to the record; nothing is decided from the list. */
+export function RecordTable<T>({ caption, rows, columns, href, linkText, rowKey, empty, refHeader, locale }: Props<T>) {
+
+  if (rows.length === 0) {
+    if (typeof empty === 'string') {
+      return (
+        <div className="flex flex-col items-center justify-center rounded-xl border border-line bg-card p-8 text-center text-muted">
+          <p className="text-sm font-medium">{empty}</p>
+        </div>
+      );
+    }
+    return <div className="rounded-xl border border-line bg-card p-8">{empty}</div>;
+  }
   return (
     <div className="overflow-x-auto rounded-xl border border-line bg-card">
       <table className="w-full text-left text-sm">
@@ -24,10 +38,14 @@ export function RecordTable<T>({ caption, rows, columns, href, linkText, rowKey,
         <thead className="border-b border-line text-xs text-muted">
           <tr>
             <th scope="col" className="px-3 py-2">
-              Reference
+              {refHeader ?? (
+                <span lang={locale} className="font-semibold text-text">
+                  {locale === 'ta' ? 'குறிப்பு எண்' : 'Reference'}
+                </span>
+              )}
             </th>
-            {columns.map((column) => (
-              <th key={column.header} scope="col" className="px-3 py-2">
+            {columns.map((column, idx) => (
+              <th key={idx} scope="col" className="px-3 py-2 font-semibold text-text">
                 {column.header}
               </th>
             ))}
@@ -41,8 +59,8 @@ export function RecordTable<T>({ caption, rows, columns, href, linkText, rowKey,
                   {linkText(row)}
                 </Link>
               </td>
-              {columns.map((column) => (
-                <td key={column.header} className="px-3 py-2">
+              {columns.map((column, idx) => (
+                <td key={idx} className="px-3 py-2">
                   {column.cell(row)}
                 </td>
               ))}

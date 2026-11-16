@@ -1,5 +1,5 @@
 import { DISTRICTS } from '@/core/api/divisions';
-import { font } from '@/core/theme/tokens';
+import { c, font } from '@/core/theme/tokens';
 import { Icon } from '@/shared/components/Icon';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -72,7 +72,7 @@ export function DsSheet({
               margin: '0 auto 14px',
             }}
           />
-          <div style={{ font: `800 17px/1.2 ${font.ta}`, color: '#14263D', marginBottom: 12 }}>
+          <div style={{ font: `800 17px/1.2 ${font.ta}`, color: c.primary, marginBottom: 12 }}>
             {district.name_en} · {t('profileSetup.ds', 'DS பிரிவு')}
           </div>
           <div
@@ -99,7 +99,7 @@ export function DsSheet({
                 outline: 'none',
                 background: 'transparent',
                 font: `500 14px/1 ${font.ta}`,
-                color: '#14263D',
+                color: c.primary,
               }}
             />
           </div>
@@ -131,13 +131,13 @@ export function DsSheet({
                   <div
                     style={{
                       font: `700 15px/1.2 ${font.ui}`,
-                      color: active ? '#1D4ED8' : '#14263D',
+                      color: active ? c.primary : c.ink,
                     }}
                   >
                     {ds.name_en}
                   </div>
                 </div>
-                {active && <Icon name="check" size={18} color="#1D4ED8" strokeWidth={2.8} />}
+                {active && <Icon name="check" size={18} color={c.primary} strokeWidth={2.8} />}
               </button>
             );
           })}

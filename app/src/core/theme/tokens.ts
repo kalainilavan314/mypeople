@@ -81,51 +81,51 @@ export const font = {
 } as const;
 
 export const green = {
-  50: '#F4F8FC',
-  100: '#E8EDF3',
-  200: '#C6D3E0',
-  300: '#8CA0B6',
-  bright: '#1B3A57',
-  400: '#2563EB',
-  base: '#0F2942',
-  500: '#0F2942',
-  deep: '#091D30',
-  600: '#091D30',
-  700: '#061320',
+  50: '#FFF5F5',
+  100: '#FBE9EA',
+  200: '#F2C4C7',
+  300: '#E58E93',
+  bright: '#C51A23',
+  400: '#D9585F',
+  base: '#B5121B',
+  500: '#B5121B',
+  deep: '#8D0A12',
+  600: '#8D0A12',
+  700: '#65070D',
   ink: '#FFFFFF',
 } as const;
 
-export const greenGradient = '#0F2942';
+export const greenGradient = '#B5121B';
 
 export const authC = {
-  bg: '#F8FAFC',
-  bgDeep: '#EEF3F9',
+  bg: '#FFFBF5',
+  bgDeep: '#F7F0E6',
   surface: '#FFFFFF',
-  surface2: '#F1F5F9',
-  field: '#F8FAFC', // input fill
-  fieldBorder: '#CBD5E1', // spec input border
-  fieldFocus: '#0F2942',
-  line: '#E2E8F0',
+  surface2: '#F7F0E6',
+  field: '#FFFBF5', // input fill
+  fieldBorder: '#CDBFAE', // spec input border
+  fieldFocus: '#B5121B',
+  line: '#EADFCF',
   glass: 'rgba(255,255,255,.85)',
   glassBorder: 'rgba(255,255,255,.7)',
 
-  green: '#0F2942',
-  greenBright: '#1B3A57',
-  greenDeep: '#091D30',
-  greenSoft: '#E8EDF3',
+  green: '#B5121B',
+  greenBright: '#C51A23',
+  greenDeep: '#8D0A12',
+  greenSoft: '#FBE9EA',
   greenGrad: greenGradient,
-  greenGradPressed: '#091D30',
-  greenGlow: '0 8px 24px -6px rgba(15,41,66,.38)',
+  greenGradPressed: '#8D0A12',
+  greenGlow: '0 8px 24px -6px rgba(141,10,18,.38)',
 
-  purple: '#2563EB',
-  lavender: '#2563EB',
+  purple: '#B5121B',
+  lavender: '#B5121B',
 
-  text: '#0F172A',
-  text2: '#334155',
-  text3: '#475569', // muted / placeholder
+  text: '#211E1B',
+  text2: '#514A43',
+  text3: '#665E56', // muted / placeholder
   onGreen: '#FFFFFF',
 
-  error: '#DC2626',
+  error: '#B91C1C',
   errorSoft: '#FEF2F2',
   success: '#059669',
 } as const;

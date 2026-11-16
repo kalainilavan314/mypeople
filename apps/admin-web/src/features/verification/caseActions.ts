@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { failure } from '@/lib/messages';
 import { staffApi } from '@/lib/session';
 
-// Appeals (D05) and duplicate investigations (D04) share one shape: claim,
+// Appeals and duplicate investigations share one shape: claim,
 // release, then one final decision with a reason. The API decides who may.
 
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -36,11 +36,22 @@ export async function claimOrReleaseCase(formData: FormData): Promise<void> {
   redirect(`/${kind}/${id}?done=${release ? 'released' : 'claimed'}`);
 }
 
-/** D05: uphold or overturn with a reason the member sees. D04: duplicate or not, with a reason (BR-094). */
+/** Record final outcome with a recorded justification and required confirmation. */
 export async function decideCase(formData: FormData): Promise<void> {
   const { kind, id } = target(formData);
+  const confirmed = formData.get('confirmOutcome') === '1';
   const outcome = String(formData.get('outcome') ?? '');
   const reason = String(formData.get('reason') ?? '').trim();
+  if (!outcome) {
+    redirect(`/${kind}/${id}?error=outcome_required`);
+  }
+  if (!reason) {
+    redirect(`/${kind}/${id}?error=reason_required`);
+  }
+  if (!confirmed) {
+    redirect(`/${kind}/${id}?error=confirmation_required`);
+  }
+
   try {
     const api = await staffApi();
     if (kind === 'appeals') await api.decideIdentityAppeal(id, { outcome: outcome as 'uphold' | 'overturn', reason });

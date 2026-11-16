@@ -67,6 +67,10 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Accessibility lint for mobile apps
+        run: |
+          npm run lint -w @my-people/member-mobile
+          npm run lint -w @my-people/staff-mobile
       - name: Typecheck, check Expo versions, bundle for Android and web
         env:
           EXPO_PUBLIC_API_URL: http://localhost:8000
@@ -90,7 +94,16 @@ jobs:
       - run: npm ci
       - run: npm run typecheck --workspace @my-people/admin-web
       - run: npm run lint --workspace @my-people/admin-web
+      - run: npm test --workspace @my-people/admin-web
       - run: npm run build --workspace @my-people/admin-web
+      - name: Rendered admin accessibility and contrast sweep
+        env:
+          A11Y_BASE_URL: http://127.0.0.1:3000
+        run: |
+          npm run start --workspace @my-people/admin-web -- --port 3000 > admin-a11y.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true; cat admin-a11y.log' EXIT
+          node scripts/browser/admin-rendered-dom.mjs
 
   api:
     name: API tests
@@ -151,3 +164,25 @@ jobs:
           -e JWT_SECRET=ci-only-jwt-secret-not-used-anywhere-else
           -e NIC_PEPPER=ci-only-nic-pepper-not-used-anywhere-else
           my-people-api python -c "from app.main import create_app; print(len(create_app().routes), 'routes')"
+
+  infrastructure-templates:
+    name: Candidate reverse proxy syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate the FastAPI Nginx drop-in in an isolated server block
+        run: >-
+          docker run --rm
+          -v "$PWD/deployment/nginx/ci-nginx.conf:/etc/nginx/nginx.conf:ro"
+          -v "$PWD/deployment/nginx/fastapi-v1-snippet.conf.example:/etc/nginx/snippets/mypeople-fastapi-v1.conf:ro"
+          nginx:1.27-alpine nginx -t
+
+  gate-g1-validator:
+    name: Gate G1 evidence validation tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m unittest discover -s deployment/tests -p 'test_gate_g1.py'

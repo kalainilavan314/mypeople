@@ -2,40 +2,49 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens';
-
 import { AppText, Screen, useApiQuery } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
-import { FeatureTile } from '@/features/home/FeatureTile';
+import { CommunityServiceTile } from '@/features/home/CommunityServiceTile';
+import { MemberWelcomeCard } from '@/features/home/MemberWelcomeCard';
 import { api } from '@/lib/api';
+import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 
 /** H04: the community hub, a destination inside Home rather than a sixth tab (BRD §15A.4). */
 export default function HubScreen() {
   const { t } = useTranslation();
   const home = useApiQuery(() => api().getHome());
+  const { largeText } = useResponsiveLayout();
   return (
-    <Screen edges={['bottom']} onRefresh={home.reload} refreshing={home.loading && home.data !== undefined}>
+    <Screen
+      edges={['bottom']}
+      maxContentWidth={720}
+      onRefresh={home.reload}
+      refreshing={home.loading && home.data !== undefined}>
       <QueryView query={home}>
-        {(data) => (
-          <>
-            {data.hub.gnLabel ? (
-              <AppText step="secondary" tone="muted">
-                {data.hub.gnLabel}
+        {(data) => {
+          const place = data.hub.gnLabel ?? [data.districtName, data.gnName].filter(Boolean).join(' / ');
+          return (
+            <>
+              <MemberWelcomeCard place={place} membershipState={data.membershipState} />
+              <AppText step="section" accessibilityRole="header" style={[styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
+              {t('m.home.hubServices')}
               </AppText>
-            ) : null}
-            <View style={styles.grid}>
+              <View style={styles.serviceGrid}>
               {data.hub.services.map((feature) => (
-                <FeatureTile key={feature.key} feature={feature} />
+                <CommunityServiceTile key={feature.key} feature={feature} />
               ))}
-            </View>
-            <AppText step="caption" tone="muted">
-              {t('m.common.notBuiltDetail')}
-            </AppText>
-          </>
-        )}
+              </View>
+            </>
+          );
+        }}
       </QueryView>
     </Screen>
   );
 }
 
-const styles = StyleSheet.create({ grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] } });
+const styles = StyleSheet.create({
+  sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
+  responsiveSectionTitle: { fontSize: 20, lineHeight: 30 },
+  serviceGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
+});

@@ -36,6 +36,10 @@ def set_gender(db: Session, member_id: uuid.UUID, gender: str | None) -> None:
     db.execute(text("UPDATE npm.member SET gender = :gender WHERE id = :id"), {"id": member_id, "gender": gender})
 
 
+def set_language(db: Session, member_id: uuid.UUID, language: str) -> None:
+    db.execute(text("UPDATE npm.member SET language = :language WHERE id = :id"), {"id": member_id, "language": language})
+
+
 def survey_answers(db: Session, member_id: uuid.UUID) -> dict[str, str]:
     rows = db.execute(
         text("SELECT question_id, answer FROM npm.onboarding_answer WHERE member_id = :id ORDER BY question_id"),

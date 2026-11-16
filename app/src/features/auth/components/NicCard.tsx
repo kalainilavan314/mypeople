@@ -32,11 +32,11 @@ export function NicCard({ info }: { info: ReturnType<typeof parseNic> }) {
           borderBottom: `1px solid #E2E8F0`,
         }}
       >
-        <Icon name="idCard" size={20} color="#14263D" />
+        <Icon name="idCard" size={20} color="var(--primary)" />
         <span
           style={{
             font: `700 14px/1 var(--font-ta, 'Noto Sans Tamil', sans-serif)`,
-            color: '#14263D',
+            color: 'var(--primary)',
             letterSpacing: 'normal',
           }}
         >
@@ -65,7 +65,7 @@ export function NicCard({ info }: { info: ReturnType<typeof parseNic> }) {
               {k}
             </span>
             <span
-              style={{ font: `600 13px/1.3 ${font.mono}`, color: '#14263D', textAlign: 'right' }}
+              style={{ font: `600 13px/1.3 ${font.mono}`, color: 'var(--primary)', textAlign: 'right' }}
             >
               {v}
             </span>

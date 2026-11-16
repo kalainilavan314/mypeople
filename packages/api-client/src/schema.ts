@@ -236,7 +236,7 @@ export interface paths {
         put?: never;
         /**
          * Start Totp
-         * @description Start adding an authenticator app: the secret to type or the URI to scan as a QR code.
+         * @description Re-enter the account password before issuing a secret or QR for an authenticator app.
          */
         post: operations["start_totp_v1_auth_mfa_totp_post"];
         delete?: never;
@@ -494,6 +494,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/access/work-queues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Work Queues
+         * @description Audit-safe aggregate-only work queue counts for the signed-in staff member's visible areas and permissions (D01).
+         */
+        get: operations["read_work_queues_v1_access_work_queues_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/access/catalogue": {
         parameters: {
             query?: never;
@@ -527,11 +547,7 @@ export interface paths {
          */
         get: operations["list_assignments_v1_access_assignments_get"];
         put?: never;
-        /**
-         * Create Assignment
-         * @description Assign a tier, an area and explicit permissions to a verified member (W09, RB-02, RB-03).
-         */
-        post: operations["create_assignment_v1_access_assignments_post"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -552,6 +568,86 @@ export interface paths {
          * @description Check an assignment without saving it (RB-06, FR-WEB-031).
          */
         post: operations["preview_assignment_v1_access_assignments_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignment-previews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Assignment Preview
+         * @description Create a durable, single-use, 10-minute preview record after rule validation.
+         */
+        post: operations["create_assignment_preview_v1_access_assignment_previews_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignment-previews/{preview_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Assignment Preview
+         * @description Retrieve an active preview for display. Returns 404 for missing, expired, consumed, or other-user previews.
+         */
+        get: operations["get_assignment_preview_v1_access_assignment_previews__preview_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignment-previews/{preview_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm Assignment Preview
+         * @description Atomic confirmation with row lock, revalidation, assignment creation, and audit logging.
+         */
+        post: operations["confirm_assignment_preview_v1_access_assignment_previews__preview_id__confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/access/assignment-previews/{preview_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel Assignment Preview
+         * @description Cancel an active preview belonging to the caller.
+         */
+        post: operations["cancel_assignment_preview_v1_access_assignment_previews__preview_id__cancel_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1286,7 +1382,7 @@ export interface paths {
         put?: never;
         /**
          * Confirm Phone
-         * @description Enter the code: the number becomes the recovery contact. A previous number is told of the change.
+         * @description Enter the code; replacing a confirmed number also needs the current password.
          */
         post: operations["confirm_phone_v1_identity_me_phone_confirm_post"];
         delete?: never;
@@ -1520,6 +1616,26 @@ export interface paths {
         };
         /** Read Managed Event */
         get: operations["read_managed_event_v1_events_manage__event_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/events/manage/{event_id}/attendance.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Managed Attendance
+         * @description D07: audited, area-scoped UTF-8 RSVP roster for an event manager.
+         */
+        get: operations["export_managed_attendance_v1_events_manage__event_id__attendance_csv_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2045,6 +2161,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/community/reports/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Report Counts
+         * @description Lightweight aggregate actionable report counts for D01 operational work queues.
+         */
+        get: operations["get_report_counts_v1_community_reports_counts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/community/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Reports
+         * @description Bounded, paginated list of area-scoped community reports.
+         */
+        get: operations["list_reports_v1_community_reports_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/community/reports/{report_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Report
+         * @description One area-scoped report, audited without returning reporter identity or contact data.
+         */
+        get: operations["get_report_v1_community_reports__report_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -2085,8 +2261,8 @@ export interface paths {
         head?: never;
         /**
          * Update Profile
-         * @description Display name and gender only (FR-PROF-003). The legal name, date of birth and ID number are
-         *     not fields here at all.
+         * @description Display name, gender and language preference (FR-PROF-003, FR-PROF-011). The legal name,
+         *     date of birth and ID number are not fields here at all.
          */
         patch: operations["update_profile_v1_profile_patch"];
         trace?: never;
@@ -2360,6 +2536,26 @@ export interface paths {
          * @description A bilingual draft for an area inside the caller's own scope (FR-ADM-007, BR-083).
          */
         post: operations["create_broadcast_v1_notifications_broadcasts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notifications/broadcasts/reach": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Estimate Reach
+         * @description Area-scoped estimate for the composer; submit computes recipients again.
+         */
+        post: operations["estimate_reach_v1_notifications_broadcasts_reach_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2681,6 +2877,898 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/policy-decisions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Policy Decisions
+         * @description The fixed Phase 1 decision catalogue with current approval evidence.
+         */
+        get: operations["list_policy_decisions_v1_policy_decisions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/policy-decisions/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Policy Decision */
+        get: operations["get_policy_decision_v1_policy_decisions__key__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/policy-decisions/{key}/revisions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Revision */
+        post: operations["create_revision_v1_policy_decisions__key__revisions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/policy-decisions/{key}/revisions/{revision_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Revision */
+        patch: operations["update_revision_v1_policy_decisions__key__revisions__revision_id__patch"];
+        trace?: never;
+    };
+    "/v1/policy-decisions/{key}/revisions/{revision_id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit Revision */
+        post: operations["submit_revision_v1_policy_decisions__key__revisions__revision_id__submit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/policy-decisions/{key}/revisions/{revision_id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Review */
+        post: operations["record_review_v1_policy_decisions__key__revisions__revision_id__reviews_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/readiness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Operational Readiness */
+        get: operations["operational_readiness_v1_operations_readiness_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/controls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Control */
+        post: operations["record_control_v1_operations_controls_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/volunteer-assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Volunteer Assignments */
+        get: operations["list_volunteer_assignments_v1_operations_volunteer_assignments_get"];
+        put?: never;
+        /** Create Volunteer Assignment */
+        post: operations["create_volunteer_assignment_v1_operations_volunteer_assignments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/volunteer-assignment-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Volunteer Assignment Events */
+        get: operations["list_volunteer_assignment_events_v1_operations_volunteer_assignment_events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/me/volunteer-assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Volunteer Assignments */
+        get: operations["my_volunteer_assignments_v1_operations_me_volunteer_assignments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/me/volunteer-assignments/{assignment_id}/response": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Respond To Assignment */
+        post: operations["respond_to_assignment_v1_operations_me_volunteer_assignments__assignment_id__response_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/volunteer-assignments/{assignment_id}/transition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Transition Volunteer Assignment */
+        post: operations["transition_volunteer_assignment_v1_operations_volunteer_assignments__assignment_id__transition_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/devices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Registered Devices */
+        get: operations["list_registered_devices_v1_operations_devices_get"];
+        put?: never;
+        /** Register Device */
+        post: operations["register_device_v1_operations_devices_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/devices/{device_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Revoke Device */
+        delete: operations["revoke_device_v1_operations_devices__device_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/offline-scans/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sync Offline Scans */
+        post: operations["sync_offline_scans_v1_operations_offline_scans_sync_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/policies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Policy Versions */
+        get: operations["list_policy_versions_v1_operations_policies_get"];
+        put?: never;
+        /** Publish Policy */
+        post: operations["publish_policy_v1_operations_policies_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/me/policies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Current Member Policies */
+        get: operations["current_member_policies_v1_operations_me_policies_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/me/policies/{policy_version_id}/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Member Policy Action */
+        post: operations["record_member_policy_action_v1_operations_me_policies__policy_version_id__actions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/tier5-assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Tier5 Assignments */
+        get: operations["list_tier5_assignments_v1_operations_tier5_assignments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/tier5-certifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Tier5 Certifications */
+        get: operations["list_tier5_certifications_v1_operations_tier5_certifications_get"];
+        put?: never;
+        /** Record Tier5 Certification */
+        post: operations["record_tier5_certification_v1_operations_tier5_certifications_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/operations/aggregates/volunteers/{event_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Volunteer Aggregate */
+        get: operations["volunteer_aggregate_v1_operations_aggregates_volunteers__event_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance-readiness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Finance Readiness
+         * @description Return fail-closed finance launch checks without exposing secrets or bank numbers.
+         */
+        get: operations["get_finance_readiness_v1_finance_readiness_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance-readiness/controls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Finance Control
+         * @description Record an immutable machine control for the exact approved decision revision.
+         */
+        post: operations["create_finance_control_v1_finance_readiness_controls_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fund/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Fund Config
+         * @description Return approved official bank-transfer configuration and contribution rules.
+         */
+        get: operations["get_fund_config_v1_fund_config_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fund/contributions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Contribution
+         * @description Idempotently create or retrieve a contribution draft.
+         */
+        post: operations["create_contribution_v1_fund_contributions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fund/contributions/{id}/slip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Upload Slip
+         * @description Upload, scan, encrypt, and store a contribution transfer slip.
+         */
+        put: operations["upload_slip_v1_fund_contributions__id__slip_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fund/contributions/{id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Contribution
+         * @description Transition contribution from DRAFT/NEEDS_CORRECTION to SUBMITTED.
+         */
+        post: operations["submit_contribution_v1_fund_contributions__id__submit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fund/contributions/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List My Contributions
+         * @description List current member's contribution records.
+         */
+        get: operations["list_my_contributions_v1_fund_contributions_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fund/contributions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get My Contribution
+         * @description Get single contribution details and safe timeline history.
+         */
+        get: operations["get_my_contribution_v1_fund_contributions__id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/fund/contributions/{id}/receipt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get My Receipt
+         * @description Get official contribution receipt (only available once verified).
+         */
+        get: operations["get_my_receipt_v1_fund_contributions__id__receipt_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/contributions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Finance Contributions
+         * @description Operational queue for staff with explicit finance review or approval grants.
+         */
+        get: operations["list_finance_contributions_v1_finance_contributions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/contributions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Finance Contribution
+         * @description Get contribution detail, status history, declarations, and review state.
+         */
+        get: operations["get_finance_contribution_v1_finance_contributions__id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/contributions/{id}/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Claim Contribution
+         * @description Reviewer claims contribution for reconciliation review.
+         */
+        post: operations["claim_contribution_v1_finance_contributions__id__claim_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/contributions/{id}/slip-view": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get Slip View Token
+         * @description Issue a short-lived (5-minute) viewer-bound token to inspect encrypted slip.
+         */
+        post: operations["get_slip_view_token_v1_finance_contributions__id__slip_view_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/slips/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stream Slip
+         * @description Unseal and stream the slip image bytes with no-store caching.
+         */
+        get: operations["stream_slip_v1_finance_slips__token__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/contributions/{id}/reconcile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reconcile Contribution
+         * @description Reviewer matches to bank statement, requests correction, rejects, or places on hold.
+         */
+        post: operations["reconcile_contribution_v1_finance_contributions__id__reconcile_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/contributions/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve Contribution
+         * @description Independent second-person approver issues official CN receipt, rejects, or places on hold.
+         */
+        post: operations["approve_contribution_v1_finance_contributions__id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/finance/ledger.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Ledger Csv
+         * @description Monthly CSV ledger export for audited contributions.
+         */
+        get: operations["export_ledger_csv_v1_finance_ledger_csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read My Household */
+        get: operations["read_my_household_v1_households_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Household */
+        patch: operations["update_household_v1_households_mine_patch"];
+        trace?: never;
+    };
+    "/v1/households": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Household */
+        post: operations["create_household_v1_households_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/invitations/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List My Invitations */
+        get: operations["list_my_invitations_v1_households_invitations_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Invite Adult */
+        post: operations["invite_adult_v1_households_invitations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/invitations/{invitation_id}/respond": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Respond Invitation */
+        post: operations["respond_invitation_v1_households_invitations__invitation_id__respond_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/invitations/{invitation_id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke Invitation */
+        post: operations["revoke_invitation_v1_households_invitations__invitation_id__revoke_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/members/{member_record_id}/remove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Remove Member */
+        post: operations["remove_member_v1_households_members__member_record_id__remove_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Leave Household */
+        post: operations["leave_household_v1_households_leave_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/privacy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Privacy Notice */
+        get: operations["read_privacy_notice_v1_households_privacy_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/households/staff/{target_member_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Staff View Household */
+        get: operations["staff_view_household_v1_households_staff__target_member_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/election/periods": {
         parameters: {
             query?: never;
@@ -2846,6 +3934,15 @@ export interface components {
              * @description What the item opens: the review, appeal, event, request or receipt
              */
             targetId: string;
+        };
+        /** AggregateCellOut */
+        AggregateCellOut: {
+            /** Key */
+            key: string;
+            /** Count */
+            count: number | null;
+            /** Suppressed */
+            suppressed: boolean;
         };
         /** AlbumCreateIn */
         AlbumCreateIn: {
@@ -3228,6 +4325,34 @@ export interface components {
             /** Code */
             code?: string | null;
         };
+        /** AssignmentEventOut */
+        AssignmentEventOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Eventref */
+            eventRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Areakey */
+            areaKey: string;
+            /** State */
+            state: string;
+        };
         /** AssignmentInput */
         AssignmentInput: {
             /**
@@ -3327,6 +4452,99 @@ export interface components {
             /** Endedat */
             endedAt: string | null;
         };
+        /**
+         * AssignmentPreviewCreateInput
+         * @description Input for creating a durable shared assignment preview.
+         */
+        AssignmentPreviewCreateInput: {
+            /** Membercode */
+            memberCode?: string | null;
+            /** Memberid */
+            memberId?: string | null;
+            /**
+             * Tier
+             * @enum {string}
+             */
+            tier: "1" | "2A" | "2B" | "3A" | "3B" | "4" | "5";
+            area: components["schemas"]["AreaRef"];
+            /** Permissions */
+            permissions: string[];
+            /** Note */
+            note?: string | null;
+        };
+        /**
+         * AssignmentPreviewCreatedOut
+         * @description Opaque preview token returned to the caller.
+         */
+        AssignmentPreviewCreatedOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+        };
+        /**
+         * AssignmentPreviewOut
+         * @description Details of a durable preview retrieved for confirmation display.
+         */
+        AssignmentPreviewOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Membercode */
+            memberCode: string;
+            /** Fullname */
+            fullName: string;
+            /**
+             * Tier
+             * @enum {string}
+             */
+            tier: "1" | "2A" | "2B" | "3A" | "3B" | "4" | "5";
+            area: components["schemas"]["AreaRef"];
+            /** Permissions */
+            permissions: string[];
+            /** Note */
+            note: string | null;
+            /** Reviewdueat */
+            reviewDueAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "consumed" | "cancelled";
+        };
+        /** AssignmentTransitionIn */
+        AssignmentTransitionIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "accepted" | "declined" | "cancelled" | "completed";
+            /** Reason */
+            reason: string;
+        };
         /** AssistedRecoveryInput */
         AssistedRecoveryInput: {
             /** Nic */
@@ -3402,6 +4620,17 @@ export interface components {
             /** Note */
             note: string;
         };
+        /** AudienceReachIn */
+        AudienceReachIn: {
+            area: components["schemas"]["AreaRef"];
+            /** Audiencetiers */
+            audienceTiers?: ("1" | "2A" | "2B" | "3A" | "3B" | "4" | "5")[] | null;
+        };
+        /** AudienceReachOut */
+        AudienceReachOut: {
+            /** Reaches */
+            reaches: number;
+        };
         /** AuditEntryOut */
         AuditEntryOut: {
             /** Id */
@@ -3462,6 +4691,8 @@ export interface components {
             /** Bodyta */
             bodyTa: string;
             area: components["schemas"]["AreaRef"];
+            /** Audiencetiers */
+            audienceTiers?: ("1" | "2A" | "2B" | "3A" | "3B" | "4" | "5")[] | null;
         };
         /** BroadcastOut */
         BroadcastOut: {
@@ -3489,6 +4720,8 @@ export interface components {
             areaLevel: string;
             /** Areakey */
             areaKey: string;
+            /** Audiencetiers */
+            audienceTiers: ("1" | "2A" | "2B" | "3A" | "3B" | "4" | "5")[] | null;
             /**
              * State
              * @enum {string}
@@ -3535,6 +4768,8 @@ export interface components {
             areaLevel: string;
             /** Areakey */
             areaKey: string;
+            /** Audiencetiers */
+            audienceTiers: ("1" | "2A" | "2B" | "3A" | "3B" | "4" | "5")[] | null;
             /**
              * State
              * @enum {string}
@@ -3584,6 +4819,15 @@ export interface components {
             bodyEn?: string | null;
             /** Bodyta */
             bodyTa?: string | null;
+            /** Audiencetiers */
+            audienceTiers?: ("1" | "2A" | "2B" | "3A" | "3B" | "4" | "5")[] | null;
+        };
+        /** BroadcastsQueueCount */
+        BroadcastsQueueCount: {
+            /** Drafts */
+            drafts: number;
+            /** Pendingapproval */
+            pendingApproval: number;
         };
         /** CancelIn */
         CancelIn: {
@@ -3814,10 +5058,311 @@ export interface components {
             /** Devcode */
             devCode?: string | null;
         };
+        /**
+         * CommunityReportListOut
+         * @description Bounded, paginated list of area-scoped community reports.
+         */
+        CommunityReportListOut: {
+            /** Items */
+            items: components["schemas"]["CommunityReportSummaryOut"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+        };
+        /**
+         * CommunityReportSummaryOut
+         * @description Operational report summary without reporter contact data or identity disclosure.
+         */
+        CommunityReportSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Category */
+            category: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+            /** Districtcode */
+            districtCode?: string | null;
+            /** Dscode */
+            dsCode?: string | null;
+            /** Gscode */
+            gsCode?: string | null;
+            /** Areapath */
+            areaPath?: string[];
+            /** Priority */
+            priority: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "submitted" | "under_review" | "in_progress" | "resolved";
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /**
+         * CommunityReportsQueueCount
+         * @description Aggregate actionable report counts for D01 operational work queues.
+         */
+        CommunityReportsQueueCount: {
+            /**
+             * Submitted
+             * @default 0
+             */
+            submitted: number;
+            /**
+             * Underreview
+             * @default 0
+             */
+            underReview: number;
+            /**
+             * Inprogress
+             * @default 0
+             */
+            inProgress: number;
+            /**
+             * Totalactionable
+             * @default 0
+             */
+            totalActionable: number;
+        };
+        /** ConfigurationQueueCount */
+        ConfigurationQueueCount: {
+            /** Total */
+            total: number;
+            /** Enabled */
+            enabled: number;
+        };
+        /** ConsentActionIn */
+        ConsentActionIn: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "acknowledged" | "granted" | "withdrawn";
+            /** Legalbasis */
+            legalBasis: string;
+        };
+        /** ConsentActionOut */
+        ConsentActionOut: {
+            /**
+             * Policyversionid
+             * Format: uuid
+             */
+            policyVersionId: string;
+            /** Action */
+            action: string;
+            /**
+             * Occurredat
+             * Format: date-time
+             */
+            occurredAt: string;
+        };
         /** ConsentInput */
         ConsentInput: {
             /** Noticeversion */
             noticeVersion: string;
+        };
+        /** ConsentLogOut */
+        ConsentLogOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Householdid
+             * Format: uuid
+             */
+            householdId: string;
+            /** Action */
+            action: string;
+            /** Memberid */
+            memberId?: string | null;
+            /**
+             * Actorid
+             * Format: uuid
+             */
+            actorId: string;
+            /** Actorname */
+            actorName?: string | null;
+            /** Details */
+            details?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** ConsentNoticeOut */
+        ConsentNoticeOut: {
+            /** Titleta */
+            titleTa: string;
+            /** Titleen */
+            titleEn: string;
+            /** Noticeta */
+            noticeTa: string;
+            /** Noticeen */
+            noticeEn: string;
+            /** Voluntaryclauseta */
+            voluntaryClauseTa: string;
+            /** Voluntaryclauseen */
+            voluntaryClauseEn: string;
+            /**
+             * Isvoluntary
+             * @default true
+             */
+            isVoluntary: boolean;
+            /** Purposelimitationta */
+            purposeLimitationTa: string;
+            /** Purposelimitationen */
+            purposeLimitationEn: string;
+        };
+        /** ContributionCreateRequest */
+        ContributionCreateRequest: {
+            /** Amountminor */
+            amountMinor: number;
+            /**
+             * Currency
+             * @default LKR
+             * @constant
+             */
+            currency: "LKR";
+            /**
+             * Transferdate
+             * Format: date
+             */
+            transferDate: string;
+            /** Bankreference */
+            bankReference: string;
+            /** Idempotencykey */
+            idempotencyKey?: string | null;
+            /**
+             * Declarationversion
+             * @default v1
+             */
+            declarationVersion: string;
+            /** Noprivilegeacknowledged */
+            noPrivilegeAcknowledged: boolean;
+            /** Informationaccurateacknowledged */
+            informationAccurateAcknowledged: boolean;
+            /**
+             * Payingforself
+             * @default true
+             */
+            payingForSelf: boolean;
+        };
+        /** ContributionDetailResponse */
+        ContributionDetailResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Contributionref */
+            contributionRef: string;
+            /** Amountminor */
+            amountMinor: number;
+            /**
+             * Currency
+             * @default LKR
+             */
+            currency: string;
+            /**
+             * Transferdate
+             * Format: date
+             */
+            transferDate: string;
+            /** Bankreference */
+            bankReference: string;
+            /** Status */
+            status: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Hasslip */
+            hasSlip: boolean;
+            receipt?: components["schemas"]["ReceiptResponse"] | null;
+            /** Timeline */
+            timeline: components["schemas"]["TimelineEventResponse"][];
+        };
+        /** ControlIn */
+        ControlIn: {
+            /**
+             * Controlkey
+             * @enum {string}
+             */
+            controlKey: "offline_attendance_replay_hours" | "aggregate_minimum_group_size";
+            /** Integervalue */
+            integerValue: number;
+            /**
+             * Decisionrevisionid
+             * Format: uuid
+             */
+            decisionRevisionId: string;
+            /** Reason */
+            reason: string;
+            /** Confirmapprovedbasis */
+            confirmApprovedBasis: boolean;
+        };
+        /** ControlOut */
+        ControlOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Controlkey
+             * @enum {string}
+             */
+            controlKey: "offline_attendance_replay_hours" | "aggregate_minimum_group_size";
+            /** Integervalue */
+            integerValue: number;
+            /** Decisionkey */
+            decisionKey: string;
+            /** Decisionrevision */
+            decisionRevision: number;
+            /**
+             * Decisionrevisionid
+             * Format: uuid
+             */
+            decisionRevisionId: string;
+            /** Reason */
+            reason: string;
+            /**
+             * Recordedby
+             * Format: uuid
+             */
+            recordedBy: string;
+            /**
+             * Recordedat
+             * Format: date-time
+             */
+            recordedAt: string;
         };
         /** DecisionInput */
         DecisionInput: {
@@ -3967,6 +5512,31 @@ export interface components {
              */
             platform: "android" | "ios" | "web";
         };
+        /** DeviceRegisterIn */
+        DeviceRegisterIn: {
+            /** Label */
+            label: string;
+        };
+        /** DeviceRegisteredOut */
+        DeviceRegisteredOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Label */
+            label: string;
+            /**
+             * Devicetoken
+             * @description Shown once. Store only in the operating system secure store.
+             */
+            deviceToken: string;
+            /**
+             * Registeredat
+             * Format: date-time
+             */
+            registeredAt: string;
+        };
         /** DeviceTokenIn */
         DeviceTokenIn: {
             /** Token */
@@ -3998,6 +5568,15 @@ export interface components {
              * Format: date-time
              */
             serverAckAt: string;
+        };
+        /** DraftIn */
+        DraftIn: {
+            /** Decisiontext */
+            decisionText: string;
+            /** Rationale */
+            rationale: string;
+            /** Effectivefrom */
+            effectiveFrom?: string | null;
         };
         /**
          * DueGrantOut
@@ -4080,6 +5659,52 @@ export interface components {
              * Format: uuid
              */
             otherMemberId: string;
+        };
+        /** DuplicateQueueCount */
+        DuplicateQueueCount: {
+            /** Open */
+            open: number;
+        };
+        /** EffectivePolicyOut */
+        EffectivePolicyOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Policykey */
+            policyKey: string;
+            /** Policytype */
+            policyType: string;
+            /** Version */
+            version: string;
+            /** Locale */
+            locale: string;
+            /** Contentsha256 */
+            contentSha256: string;
+            /** Approvalreference */
+            approvalReference: string | null;
+            /**
+             * Approvedat
+             * Format: date-time
+             */
+            approvedAt: string;
+            /**
+             * Effectivefrom
+             * Format: date-time
+             */
+            effectiveFrom: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Contenttext */
+            contentText: string;
+            /** Myaction */
+            myAction: string | null;
+            /** Myactionat */
+            myActionAt: string | null;
         };
         /**
          * ElectionBannerOut
@@ -4461,6 +6086,15 @@ export interface components {
             /** Admitspending */
             admitsPending?: boolean | null;
         };
+        /** EventsQueueCount */
+        EventsQueueCount: {
+            /** Drafts */
+            drafts: number;
+            /** Published */
+            published: number;
+            /** Total */
+            total: number;
+        };
         /** EvidenceVersion */
         EvidenceVersion: {
             /**
@@ -4498,6 +6132,99 @@ export interface components {
             /** Enabled */
             enabled: string[];
         };
+        /** FinanceProductionControlRequest */
+        FinanceProductionControlRequest: {
+            /**
+             * Controlkey
+             * @enum {string}
+             */
+            controlKey: "enhanced_review_threshold_minor" | "statutory_reporting_mode" | "slip_retention_days" | "third_party_payment_mode" | "pilot_currency";
+            /**
+             * Decisionrevisionid
+             * Format: uuid
+             */
+            decisionRevisionId: string;
+            /** Integervalue */
+            integerValue?: number | null;
+            /** Textvalue */
+            textValue?: string | null;
+            /** Evidenceref */
+            evidenceRef: string;
+            /** Reason */
+            reason: string;
+        };
+        /** FinanceProductionControlResponse */
+        FinanceProductionControlResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Controlkey */
+            controlKey: string;
+            /** Decisionkey */
+            decisionKey: string;
+            /**
+             * Decisionrevisionid
+             * Format: uuid
+             */
+            decisionRevisionId: string;
+            /** Decisionrevision */
+            decisionRevision: number;
+            /** Integervalue */
+            integerValue?: number | null;
+            /** Textvalue */
+            textValue?: string | null;
+            /** Evidenceref */
+            evidenceRef: string;
+            /** Reason */
+            reason: string;
+            /**
+             * Recordedat
+             * Format: date-time
+             */
+            recordedAt: string;
+        };
+        /** FinanceProductionReadinessResponse */
+        FinanceProductionReadinessResponse: {
+            /** Ready */
+            ready: boolean;
+            /** Checks */
+            checks: components["schemas"]["FinanceReadinessCheck"][];
+            /** Controls */
+            controls: components["schemas"]["FinanceProductionControlResponse"][];
+            /** Reviewercount */
+            reviewerCount: number;
+            /** Approvercount */
+            approverCount: number;
+            /** Distinctfinancestaffcount */
+            distinctFinanceStaffCount: number;
+            /** Receiptlastnumber */
+            receiptLastNumber: number;
+            /** Receiptremaining */
+            receiptRemaining: number;
+            /**
+             * Cardpaymentsenabled
+             * @default false
+             */
+            cardPaymentsEnabled: boolean;
+            /**
+             * Automatedevidencedeletionenabled
+             * @default false
+             */
+            automatedEvidenceDeletionEnabled: boolean;
+        };
+        /** FinanceReadinessCheck */
+        FinanceReadinessCheck: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Ready */
+            ready: boolean;
+            /** Detail */
+            detail: string;
+        };
         /** FlagOut */
         FlagOut: {
             /** Key */
@@ -4519,6 +6246,47 @@ export interface components {
             approvalRef: string | null;
             /** Gaterecordedat */
             gateRecordedAt: string | null;
+        };
+        /** FundConfigResponse */
+        FundConfigResponse: {
+            /**
+             * Currency
+             * @default LKR
+             */
+            currency: string;
+            /** Amountpresets */
+            amountPresets: number[];
+            /** Bankname */
+            bankName?: string | null;
+            /** Accountname */
+            accountName?: string | null;
+            /** Accountnumber */
+            accountNumber?: string | null;
+            /** Accountnumbermasked */
+            accountNumberMasked?: string | null;
+            /** Branchname */
+            branchName?: string | null;
+            /** Transferinstructionsen */
+            transferInstructionsEn?: string | null;
+            /** Transferinstructionsta */
+            transferInstructionsTa?: string | null;
+            /** Disclaimeren */
+            disclaimerEn: string;
+            /** Disclaimerta */
+            disclaimerTa: string;
+            /** Norewardstatementen */
+            noRewardStatementEn: string;
+            /** Norewardstatementta */
+            noRewardStatementTa: string;
+            /** Intakeavailable */
+            intakeAvailable: boolean;
+        };
+        /** GalleryAlbumsQueueCount */
+        GalleryAlbumsQueueCount: {
+            /** Drafts */
+            drafts: number;
+            /** Submitted */
+            submitted: number;
         };
         /**
          * GalleryPhotoOut
@@ -4546,6 +6314,13 @@ export interface components {
             height: number;
             /** Blurred */
             blurred: boolean;
+        };
+        /** GalleryRemovalsQueueCount */
+        GalleryRemovalsQueueCount: {
+            /** Open */
+            open: number;
+            /** Escalated18H */
+            escalated18H: number;
         };
         /** GateIn */
         GateIn: {
@@ -4670,6 +6445,151 @@ export interface components {
             tabs: components["schemas"]["HomeFeatureOut"][];
             hub: components["schemas"]["HomeHubOut"];
         };
+        /** HouseholdCreateIn */
+        HouseholdCreateIn: {
+            /** Name */
+            name?: string | null;
+        };
+        /** HouseholdInvitationOut */
+        HouseholdInvitationOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Householdid
+             * Format: uuid
+             */
+            householdId: string;
+            /** Householdname */
+            householdName?: string | null;
+            /**
+             * Invitermemberid
+             * Format: uuid
+             */
+            inviterMemberId: string;
+            /** Invitername */
+            inviterName: string;
+            /**
+             * Inviteememberid
+             * Format: uuid
+             */
+            inviteeMemberId: string;
+            /** Inviteename */
+            inviteeName: string;
+            /** Inviteecode */
+            inviteeCode?: string | null;
+            /** Relationship */
+            relationship: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending" | "accepted" | "declined" | "revoked" | "expired";
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+            /** Respondedat */
+            respondedAt?: string | null;
+        };
+        /** HouseholdMemberOut */
+        HouseholdMemberOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Householdid
+             * Format: uuid
+             */
+            householdId: string;
+            /** Memberid */
+            memberId?: string | null;
+            /** Membercode */
+            memberCode?: string | null;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "head" | "adult";
+            /** Displayname */
+            displayName: string;
+            /**
+             * Relationship
+             * @enum {string}
+             */
+            relationship: "head" | "spouse" | "parent" | "sibling" | "other";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "removed";
+            /**
+             * Joinedat
+             * Format: date-time
+             */
+            joinedAt: string;
+            /** Removedat */
+            removedAt?: string | null;
+        };
+        /** HouseholdOut */
+        HouseholdOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Createdby
+             * Format: uuid
+             */
+            createdBy: string;
+            /** Name */
+            name?: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Dissolvedat */
+            dissolvedAt?: string | null;
+            /**
+             * Members
+             * @default []
+             */
+            members: components["schemas"]["HouseholdMemberOut"][];
+            /**
+             * Pendinginvitations
+             * @default []
+             */
+            pendingInvitations: components["schemas"]["HouseholdInvitationOut"][];
+            /** Myrole */
+            myRole?: ("head" | "adult") | null;
+            /**
+             * Ishead
+             * @default false
+             */
+            isHead: boolean;
+        };
+        /** HouseholdUpdateIn */
+        HouseholdUpdateIn: {
+            /** Name */
+            name?: string | null;
+        };
         /** IdentityDataItemOut */
         IdentityDataItemOut: {
             /** Dataen */
@@ -4693,6 +6613,37 @@ export interface components {
             unread: number;
             /** Actionneeded */
             actionNeeded: number;
+        };
+        /** InvitationRespondIn */
+        InvitationRespondIn: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "accept" | "decline";
+        };
+        /** InvitationsListOut */
+        InvitationsListOut: {
+            /**
+             * Received
+             * @default []
+             */
+            received: components["schemas"]["HouseholdInvitationOut"][];
+            /**
+             * Sent
+             * @default []
+             */
+            sent: components["schemas"]["HouseholdInvitationOut"][];
+        };
+        /** InviteAdultIn */
+        InviteAdultIn: {
+            /** Membercode */
+            memberCode: string;
+            /**
+             * Relationship
+             * @enum {string}
+             */
+            relationship: "spouse" | "parent" | "sibling" | "other";
         };
         /** LockedFieldOut */
         LockedFieldOut: {
@@ -5054,6 +7005,11 @@ export interface components {
             /** History */
             history: components["schemas"]["MembershipChangeOut"][];
         };
+        /** MembershipQueueCount */
+        MembershipQueueCount: {
+            /** Awaitingactivation */
+            awaitingActivation: number;
+        };
         /** MfaCodeInput */
         MfaCodeInput: {
             /** Code */
@@ -5182,6 +7138,79 @@ export interface components {
             createdAt: string;
             /** Read */
             read: boolean;
+        };
+        /** OfflineScanIn */
+        OfflineScanIn: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Idempotencykey
+             * Format: uuid
+             */
+            idempotencyKey: string;
+            /**
+             * Eventid
+             * Format: uuid
+             */
+            eventId: string;
+            /** Passcode */
+            passCode: string;
+            /**
+             * Clientscanat
+             * Format: date-time
+             */
+            clientScanAt: string;
+            /** Localoutcome */
+            localOutcome: string;
+        };
+        /** OfflineScanOut */
+        OfflineScanOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Idempotencykey
+             * Format: uuid
+             */
+            idempotencyKey: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "ACCEPTED" | "DUPLICATE" | "REJECTED" | "NEEDS_REVIEW" | "EXPIRED_QUEUE";
+            /** Reason */
+            reason: string | null;
+        };
+        /** OfflineSyncIn */
+        OfflineSyncIn: {
+            /**
+             * Deviceid
+             * Format: uuid
+             */
+            deviceId: string;
+            /** Devicetoken */
+            deviceToken: string;
+            /** Scans */
+            scans: components["schemas"]["OfflineScanIn"][];
+        };
+        /** OfflineSyncOut */
+        OfflineSyncOut: {
+            /** Results */
+            results: components["schemas"]["OfflineScanOut"][];
+        };
+        /** OperationalReadinessOut */
+        OperationalReadinessOut: {
+            /** Items */
+            items: components["schemas"]["ReadinessItem"][];
+            /** Tier5Assignments */
+            tier5Assignments: number;
+            /** Tier5Certified */
+            tier5Certified: number;
         };
         /** PassCodeOut */
         PassCodeOut: {
@@ -5432,6 +7461,11 @@ export interface components {
             phone: string;
             /** Code */
             code: string;
+            /**
+             * Currentpassword
+             * @description Required when replacing an existing recovery number
+             */
+            currentPassword?: string | null;
         };
         /** PhoneInput */
         PhoneInput: {
@@ -5458,6 +7492,96 @@ export interface components {
             nameTa: string | null;
             /** Namesi */
             nameSi: string | null;
+        };
+        /** PolicyDecisionOut */
+        PolicyDecisionOut: {
+            /** Key */
+            key: string;
+            /** Workstream */
+            workstream: string;
+            /** Title */
+            title: string;
+            /** Question */
+            question: string;
+            /** Proposeddefault */
+            proposedDefault: string;
+            /** Releaseeffect */
+            releaseEffect: string;
+            /** Requiredroles */
+            requiredRoles: string[];
+            /** Approvedroles */
+            approvedRoles: string[];
+            /** Missingroles */
+            missingRoles: string[];
+            current: components["schemas"]["RevisionOut"] | null;
+        };
+        /** PolicyPublishIn */
+        PolicyPublishIn: {
+            /** Policykey */
+            policyKey: string;
+            /**
+             * Policytype
+             * @enum {string}
+             */
+            policyType: "privacy_notice" | "terms" | "optional_consent" | "election_rule";
+            /** Version */
+            version: string;
+            /**
+             * Locale
+             * @enum {string}
+             */
+            locale: "en" | "ta";
+            /** Contenttext */
+            contentText: string;
+            /** Approvalreference */
+            approvalReference: string;
+            /**
+             * Approvedat
+             * Format: date-time
+             */
+            approvedAt: string;
+            /**
+             * Effectivefrom
+             * Format: date-time
+             */
+            effectiveFrom: string;
+            /** Confirmimmutablepublication */
+            confirmImmutablePublication: boolean;
+        };
+        /** PolicyVersionOut */
+        PolicyVersionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Policykey */
+            policyKey: string;
+            /** Policytype */
+            policyType: string;
+            /** Version */
+            version: string;
+            /** Locale */
+            locale: string;
+            /** Contentsha256 */
+            contentSha256: string;
+            /** Approvalreference */
+            approvalReference: string | null;
+            /**
+             * Approvedat
+             * Format: date-time
+             */
+            approvedAt: string;
+            /**
+             * Effectivefrom
+             * Format: date-time
+             */
+            effectiveFrom: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
         };
         /**
          * PreviewOut
@@ -5569,6 +7693,12 @@ export interface components {
             /** Gender */
             gender: ("male" | "female" | "other") | null;
             /**
+             * Language
+             * @default ta
+             * @enum {string}
+             */
+            language: "ta" | "en";
+            /**
              * Tier
              * @description As assigned; there is no way to change it here (FR-PROF-002)
              */
@@ -5614,6 +7744,8 @@ export interface components {
             displayName?: string | null;
             /** Gender */
             gender?: ("male" | "female" | "other") | null;
+            /** Language */
+            language?: ("ta" | "en") | null;
         };
         /** ProgressOut */
         ProgressOut: {
@@ -5782,6 +7914,50 @@ export interface components {
              */
             escalated: boolean;
         };
+        /** ReadinessItem */
+        ReadinessItem: {
+            /** Key */
+            key: string;
+            /** Ready */
+            ready: boolean;
+            /** Decisionkey */
+            decisionKey?: string | null;
+            /** Value */
+            value?: number | null;
+            /** Reason */
+            reason: string;
+        };
+        /** ReceiptResponse */
+        ReceiptResponse: {
+            /** Receiptcode */
+            receiptCode: string;
+            /** Contributionref */
+            contributionRef: string;
+            /** Amountminor */
+            amountMinor: number;
+            /**
+             * Currency
+             * @default LKR
+             */
+            currency: string;
+            /**
+             * Transferdate
+             * Format: date
+             */
+            transferDate: string;
+            /**
+             * Issuedat
+             * Format: date-time
+             */
+            issuedAt: string;
+            /**
+             * Status
+             * @default VERIFIED
+             */
+            status: string;
+            /** Sharepayload */
+            sharePayload: string;
+        };
         /** RecoveryCodeInput */
         RecoveryCodeInput: {
             /** Nic */
@@ -5856,6 +8032,25 @@ export interface components {
             memberCode: string;
             /** Note */
             note: string;
+        };
+        /** RegisteredDeviceOut */
+        RegisteredDeviceOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Label */
+            label: string;
+            /**
+             * Registeredat
+             * Format: date-time
+             */
+            registeredAt: string;
+            /** Lastseenat */
+            lastSeenAt: string | null;
+            /** Revokedat */
+            revokedAt: string | null;
         };
         /**
          * RegistrationInput
@@ -6074,6 +8269,29 @@ export interface components {
             /** Duplicateflags */
             duplicateFlags: components["schemas"]["DuplicateFlagOut"][];
         };
+        /** ReviewIn */
+        ReviewIn: {
+            /** Role */
+            role: string;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "approve" | "reject";
+            /** Reviewername */
+            reviewerName: string;
+            /** Reviewertitle */
+            reviewerTitle: string;
+            /** Evidenceref */
+            evidenceRef: string;
+            /** Comment */
+            comment: string;
+            /**
+             * Reviewedat
+             * Format: date
+             */
+            reviewedAt: string;
+        };
         /** ReviewInput */
         ReviewInput: {
             /**
@@ -6101,6 +8319,34 @@ export interface components {
             dsCode: string | null;
             /** Gscode */
             gsCode: string | null;
+        };
+        /** ReviewOut */
+        ReviewOut: {
+            /** Role */
+            role: string;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "approve" | "reject";
+            /** Reviewername */
+            reviewerName: string;
+            /** Reviewertitle */
+            reviewerTitle: string;
+            /** Evidenceref */
+            evidenceRef: string;
+            /** Comment */
+            comment: string;
+            /**
+             * Reviewedat
+             * Format: date
+             */
+            reviewedAt: string;
+            /**
+             * Recordedat
+             * Format: date-time
+             */
+            recordedAt: string;
         };
         /**
          * ReviewSummaryOut
@@ -6152,6 +8398,43 @@ export interface components {
             claimedAt: string | null;
             /** Decidedat */
             decidedAt: string | null;
+        };
+        /** RevisionOut */
+        RevisionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Revision */
+            revision: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "in_review" | "approved" | "rejected";
+            /** Decisiontext */
+            decisionText: string;
+            /** Rationale */
+            rationale: string;
+            /** Effectivefrom */
+            effectiveFrom: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Submittedat */
+            submittedAt: string | null;
+            /** Resolvedat */
+            resolvedAt: string | null;
+            /** Reviews */
+            reviews: components["schemas"]["ReviewOut"][];
         };
         /** RevokeInput */
         RevokeInput: {
@@ -6331,6 +8614,231 @@ export interface components {
             refreshToken: string;
             member: components["schemas"]["MemberProfile"];
         };
+        /** SimpleQueueCount */
+        SimpleQueueCount: {
+            /** Waiting */
+            waiting: number;
+        };
+        /** StaffApprovalDetail */
+        StaffApprovalDetail: {
+            /**
+             * Approvedby
+             * Format: uuid
+             */
+            approvedBy: string;
+            /**
+             * Approvedat
+             * Format: date-time
+             */
+            approvedAt: string;
+            /** Reason */
+            reason: string;
+            /** Relatedpartyconflict */
+            relatedPartyConflict: boolean;
+        };
+        /** StaffApproveRequest */
+        StaffApproveRequest: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "approve" | "reject" | "hold";
+            /** Reason */
+            reason: string;
+            /**
+             * Relatedpartyconflict
+             * @default false
+             */
+            relatedPartyConflict: boolean;
+        };
+        /** StaffContributionDetail */
+        StaffContributionDetail: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Contributionref */
+            contributionRef: string;
+            /** Donormembercode */
+            donorMemberCode: string;
+            /**
+             * Donormemberid
+             * Format: uuid
+             */
+            donorMemberId: string;
+            /** Amountminor */
+            amountMinor: number;
+            /**
+             * Currency
+             * @default LKR
+             */
+            currency: string;
+            /**
+             * Transferdate
+             * Format: date
+             */
+            transferDate: string;
+            /** Bankreference */
+            bankReference: string;
+            /** Status */
+            status: string;
+            /** Riskflags */
+            riskFlags: string[];
+            /** Claimedby */
+            claimedBy?: string | null;
+            /** Claimedbyname */
+            claimedByName?: string | null;
+            /** Claimedat */
+            claimedAt?: string | null;
+            /** Declarationversion */
+            declarationVersion: string;
+            /** Noprivilegeacknowledged */
+            noPrivilegeAcknowledged: boolean;
+            /** Informationaccurateacknowledged */
+            informationAccurateAcknowledged: boolean;
+            /** Payingforself */
+            payingForSelf: boolean;
+            /** Hasslip */
+            hasSlip: boolean;
+            /** Slipversion */
+            slipVersion?: number | null;
+            reconciliation?: components["schemas"]["StaffReconciliationDetail"] | null;
+            approval?: components["schemas"]["StaffApprovalDetail"] | null;
+            receipt?: components["schemas"]["ReceiptResponse"] | null;
+            /** Timeline */
+            timeline: components["schemas"]["StaffTimelineEvent"][];
+        };
+        /** StaffContributionSummary */
+        StaffContributionSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Contributionref */
+            contributionRef: string;
+            /** Donormembercode */
+            donorMemberCode: string;
+            /** Amountminor */
+            amountMinor: number;
+            /**
+             * Currency
+             * @default LKR
+             */
+            currency: string;
+            /**
+             * Transferdate
+             * Format: date
+             */
+            transferDate: string;
+            /** Status */
+            status: string;
+            /** Riskflags */
+            riskFlags: string[];
+            /** Claimedby */
+            claimedBy?: string | null;
+            /** Claimedbyname */
+            claimedByName?: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Receiptcode */
+            receiptCode?: string | null;
+        };
+        /** StaffContributionsListResponse */
+        StaffContributionsListResponse: {
+            /** Items */
+            items: components["schemas"]["StaffContributionSummary"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+        };
+        /** StaffHouseholdViewOut */
+        StaffHouseholdViewOut: {
+            /**
+             * Permitted
+             * @default true
+             */
+            permitted: boolean;
+            /**
+             * Targetmemberid
+             * Format: uuid
+             */
+            targetMemberId: string;
+            /** Targetmembercode */
+            targetMemberCode: string;
+            /** Targetmembername */
+            targetMemberName: string;
+            household?: components["schemas"]["HouseholdOut"] | null;
+            /**
+             * Consentlogs
+             * @default []
+             */
+            consentLogs: components["schemas"]["ConsentLogOut"][];
+        };
+        /** StaffReconcileRequest */
+        StaffReconcileRequest: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "matched" | "needs_correction" | "reject" | "hold";
+            /** Statementreference */
+            statementReference?: string | null;
+            /** Reason */
+            reason: string;
+        };
+        /** StaffReconciliationDetail */
+        StaffReconciliationDetail: {
+            /** Statementreference */
+            statementReference: string;
+            /**
+             * Reviewedby
+             * Format: uuid
+             */
+            reviewedBy: string;
+            /**
+             * Reviewedat
+             * Format: date-time
+             */
+            reviewedAt: string;
+            /** Reason */
+            reason: string;
+        };
+        /** StaffSlipViewTokenResponse */
+        StaffSlipViewTokenResponse: {
+            /** Token */
+            token: string;
+            /**
+             * Expiresat
+             * Format: date-time
+             */
+            expiresAt: string;
+            /** Viewurl */
+            viewUrl: string;
+        };
+        /** StaffTimelineEvent */
+        StaffTimelineEvent: {
+            /** Id */
+            id: number;
+            /** Fromstatus */
+            fromStatus?: string | null;
+            /** Tostatus */
+            toStatus: string;
+            /**
+             * Occurredat
+             * Format: date-time
+             */
+            occurredAt: string;
+            /** Reason */
+            reason: string;
+        };
         /** StepOut */
         StepOut: {
             /** Name */
@@ -6351,6 +8859,11 @@ export interface components {
              */
             declaration: true;
         };
+        /** SubmitIn */
+        SubmitIn: {
+            /** Reason */
+            reason: string;
+        };
         /** SurveyAnswersIn */
         SurveyAnswersIn: {
             /**
@@ -6366,6 +8879,127 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** Tier5AssignmentOut */
+        Tier5AssignmentOut: {
+            /**
+             * Assignmentid
+             * Format: uuid
+             */
+            assignmentId: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Fullname */
+            fullName: string;
+            /** Membercode */
+            memberCode: string;
+            /** State */
+            state: string;
+            /**
+             * Grantedat
+             * Format: date-time
+             */
+            grantedAt: string;
+            /** Endedat */
+            endedAt: string | null;
+        };
+        /** Tier5CertificationIn */
+        Tier5CertificationIn: {
+            /**
+             * Assignmentid
+             * Format: uuid
+             */
+            assignmentId: string;
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "certified" | "revoked_required";
+            /**
+             * Periodstart
+             * Format: date
+             */
+            periodStart: string;
+            /**
+             * Periodend
+             * Format: date
+             */
+            periodEnd: string;
+            /** Reviewername */
+            reviewerName: string;
+            /** Reviewertitle */
+            reviewerTitle: string;
+            /** Evidenceref */
+            evidenceRef: string;
+            /** Reason */
+            reason: string;
+            /**
+             * Certifiedat
+             * Format: date
+             */
+            certifiedAt: string;
+            /** Confirmexternalreview */
+            confirmExternalReview: boolean;
+        };
+        /** Tier5CertificationOut */
+        Tier5CertificationOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Assignmentid
+             * Format: uuid
+             */
+            assignmentId: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Fullname */
+            fullName: string;
+            /** Membercode */
+            memberCode: string;
+            /** Decision */
+            decision: string;
+            /**
+             * Periodstart
+             * Format: date
+             */
+            periodStart: string;
+            /**
+             * Periodend
+             * Format: date
+             */
+            periodEnd: string;
+            /** Reviewername */
+            reviewerName: string;
+            /** Reviewertitle */
+            reviewerTitle: string;
+            /** Evidenceref */
+            evidenceRef: string;
+            /** Reason */
+            reason: string;
+            /**
+             * Certifiedat
+             * Format: date
+             */
+            certifiedAt: string;
+            /**
+             * Recordedby
+             * Format: uuid
+             */
+            recordedBy: string;
+            /**
+             * Recordedat
+             * Format: date-time
+             */
+            recordedAt: string;
+        };
         /** TierInfo */
         TierInfo: {
             /**
@@ -6380,6 +9014,20 @@ export interface components {
             areaLevel: "platform" | "province" | "district" | "ds" | "gn";
             /** Defaultpermissions */
             defaultPermissions: string[];
+        };
+        /** TimelineEventResponse */
+        TimelineEventResponse: {
+            /** Status */
+            status: string;
+            /**
+             * Occurredat
+             * Format: date-time
+             */
+            occurredAt: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
         };
         /** TokensOut */
         TokensOut: {
@@ -6427,6 +9075,11 @@ export interface components {
             /** Otpauthuri */
             otpauthUri: string;
         };
+        /** TotpStartInput */
+        TotpStartInput: {
+            /** Currentpassword */
+            currentPassword: string;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -6440,6 +9093,15 @@ export interface components {
             /** Context */
             ctx?: Record<string, never>;
         };
+        /** VerificationQueueCount */
+        VerificationQueueCount: {
+            /** Awaitingreview */
+            awaitingReview: number;
+            /** Needsupdate */
+            needsUpdate: number;
+            /** Assignedtome */
+            assignedToMe: number;
+        };
         /**
          * ViewLinkOut
          * @description A path on this API that shows one image to the reviewer it was issued to, until expiresAt.
@@ -6452,6 +9114,129 @@ export interface components {
              * Format: date-time
              */
             expiresAt: string;
+        };
+        /** VolunteerAggregateOut */
+        VolunteerAggregateOut: {
+            /**
+             * Eventid
+             * Format: uuid
+             */
+            eventId: string;
+            /** Minimumgroupsize */
+            minimumGroupSize: number;
+            /** Total */
+            total: number | null;
+            /** Cells */
+            cells: components["schemas"]["AggregateCellOut"][];
+        };
+        /** VolunteerAssignmentIn */
+        VolunteerAssignmentIn: {
+            /** Membercode */
+            memberCode: string;
+            /**
+             * Eventid
+             * Format: uuid
+             */
+            eventId: string;
+            /** Consentversion */
+            consentVersion: string;
+            /**
+             * Dutytype
+             * @enum {string}
+             */
+            dutyType: "registration" | "scanning" | "member_assistance" | "accessibility_support" | "logistics" | "coordination" | "administration";
+            /**
+             * Shiftstart
+             * Format: date-time
+             */
+            shiftStart: string;
+            /**
+             * Shiftend
+             * Format: date-time
+             */
+            shiftEnd: string;
+        };
+        /** VolunteerAssignmentOut */
+        VolunteerAssignmentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Membername */
+            memberName: string;
+            /** Membercode */
+            memberCode: string;
+            /**
+             * Eventid
+             * Format: uuid
+             */
+            eventId: string;
+            /** Eventref */
+            eventRef: string;
+            /** Eventtitleen */
+            eventTitleEn: string;
+            /** Eventtitleta */
+            eventTitleTa: string;
+            /** Consentversion */
+            consentVersion: string;
+            /**
+             * Dutytype
+             * @enum {string}
+             */
+            dutyType: "registration" | "scanning" | "member_assistance" | "accessibility_support" | "logistics" | "coordination" | "administration";
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Shiftstart
+             * Format: date-time
+             */
+            shiftStart: string;
+            /**
+             * Shiftend
+             * Format: date-time
+             */
+            shiftEnd: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "offered" | "accepted" | "declined" | "cancelled" | "completed";
+            /** Acknowledgedat */
+            acknowledgedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /**
+         * WorkQueuesOut
+         * @description Aggregate work queue counts for the caller's permitted areas (D01). Null for unheld permissions.
+         */
+        WorkQueuesOut: {
+            verification?: components["schemas"]["VerificationQueueCount"] | null;
+            appeals?: components["schemas"]["SimpleQueueCount"] | null;
+            duplicates?: components["schemas"]["DuplicateQueueCount"] | null;
+            membership?: components["schemas"]["MembershipQueueCount"] | null;
+            events?: components["schemas"]["EventsQueueCount"] | null;
+            galleryRemovals?: components["schemas"]["GalleryRemovalsQueueCount"] | null;
+            galleryAlbums?: components["schemas"]["GalleryAlbumsQueueCount"] | null;
+            messaging?: components["schemas"]["BroadcastsQueueCount"] | null;
+            configuration?: components["schemas"]["ConfigurationQueueCount"] | null;
+            reports?: components["schemas"]["CommunityReportsQueueCount"] | null;
+            /** Unavailable */
+            unavailable?: string[];
         };
     };
     responses: never;
@@ -6777,7 +9562,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TotpStartInput"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -6788,8 +9577,31 @@ export interface operations {
                     "application/json": components["schemas"]["TotpEnrolmentOut"];
                 };
             };
+            /** @description wrong_password */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description already_enabled */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_attempts */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7209,6 +10021,26 @@ export interface operations {
             };
         };
     };
+    read_work_queues_v1_access_work_queues_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkQueuesOut"];
+                };
+            };
+        };
+    };
     read_catalogue_v1_access_catalogue_get: {
         parameters: {
             query?: never;
@@ -7261,7 +10093,7 @@ export interface operations {
             };
         };
     };
-    create_assignment_v1_access_assignments_post: {
+    preview_assignment_v1_access_assignments_preview_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -7273,6 +10105,108 @@ export interface operations {
                 "application/json": components["schemas"]["AssignmentInput"];
             };
         };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_assignment_preview_v1_access_assignment_previews_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentPreviewCreateInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentPreviewCreatedOut"];
+                };
+            };
+            /** @description forbidden, or {"code": "assignment_refused", "problems": [...]} */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_assignment_preview_v1_access_assignment_previews__preview_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                preview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentPreviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    confirm_assignment_preview_v1_access_assignment_previews__preview_id__confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                preview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             201: {
@@ -7301,18 +10235,16 @@ export interface operations {
             };
         };
     };
-    preview_assignment_v1_access_assignments_preview_post: {
+    cancel_assignment_preview_v1_access_assignment_previews__preview_id__cancel_post: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                preview_id: string;
+            };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AssignmentInput"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -7320,7 +10252,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PreviewOut"];
+                    "application/json": {
+                        [key: string]: string;
+                    };
                 };
             };
             /** @description Validation Error */
@@ -7863,6 +10797,7 @@ export interface operations {
                 /** @description A review reference, e.g. VR-00421 */
                 ref?: string | null;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -8166,6 +11101,7 @@ export interface operations {
                 state?: ("submitted" | "in_review" | "upheld" | "overturned")[] | null;
                 mine?: boolean;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -8411,6 +11347,7 @@ export interface operations {
                 state?: ("open" | "in_review" | "not_duplicate" | "duplicate_confirmed")[] | null;
                 mine?: boolean;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -8912,7 +11849,7 @@ export interface operations {
                     "application/json": components["schemas"]["RecoveryContactOut"];
                 };
             };
-            /** @description invalid_code or too_many_attempts */
+            /** @description invalid_code, too_many_attempts or wrong_password */
             401: {
                 headers: {
                     [name: string]: unknown;
@@ -8934,6 +11871,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+            /** @description too_many_requests, with Retry-After */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -9324,6 +12268,7 @@ export interface operations {
             query?: {
                 state?: ("draft" | "published" | "cancelled")[] | null;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -9369,6 +12314,51 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ManagedEventOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_managed_attendance_v1_events_manage__event_id__attendance_csv_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description forbidden or outside_your_area */
@@ -9969,6 +12959,7 @@ export interface operations {
             query?: {
                 state?: ("draft" | "submitted" | "published")[] | null;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -10643,6 +13634,7 @@ export interface operations {
             query?: {
                 state?: ("open" | "removed" | "blurred" | "kept")[] | null;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -10801,6 +13793,97 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RemovalReceiptOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_report_counts_v1_community_reports_counts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunityReportsQueueCount"];
+                };
+            };
+        };
+    };
+    list_reports_v1_community_reports_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunityReportListOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_report_v1_community_reports__report_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunityReportSummaryOut"];
                 };
             };
             /** @description not_found */
@@ -11541,6 +14624,7 @@ export interface operations {
             query?: {
                 state?: ("draft" | "pending_approval" | "scheduled" | "sent" | "cancelled")[] | null;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -11610,6 +14694,53 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    estimate_reach_v1_notifications_broadcasts_reach_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AudienceReachIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AudienceReachOut"];
+                };
+            };
+            /** @description forbidden or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
@@ -12155,7 +15286,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description gate_must_be:<gate> or gate_not_recorded */
+            /** @description gate_must_be:<gate>, gate_not_recorded, or policy_decisions_required:<keys> */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -12204,7 +15335,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description gate_must_be:<gate> or gate_not_recorded */
+            /** @description gate_must_be:<gate>, gate_not_recorded, or policy_decisions_required:<keys> */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -12253,12 +15384,1582 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description gate_must_be:<gate> or gate_not_recorded */
+            /** @description gate_must_be:<gate>, gate_not_recorded, or policy_decisions_required:<keys> */
             409: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_policy_decisions_v1_policy_decisions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDecisionOut"][];
+                };
+            };
+        };
+    };
+    get_policy_decision_v1_policy_decisions__key__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDecisionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_revision_v1_policy_decisions__key__revisions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DraftIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDecisionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_revision_v1_policy_decisions__key__revisions__revision_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+                revision_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DraftIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDecisionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_revision_v1_policy_decisions__key__revisions__revision_id__submit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+                revision_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDecisionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_review_v1_policy_decisions__key__revisions__revision_id__reviews_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+                revision_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDecisionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    operational_readiness_v1_operations_readiness_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OperationalReadinessOut"];
+                };
+            };
+        };
+    };
+    record_control_v1_operations_controls_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ControlIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ControlOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_volunteer_assignments_v1_operations_volunteer_assignments_get: {
+        parameters: {
+            query?: {
+                event_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerAssignmentOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_volunteer_assignment_v1_operations_volunteer_assignments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VolunteerAssignmentIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerAssignmentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_volunteer_assignment_events_v1_operations_volunteer_assignment_events_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentEventOut"][];
+                };
+            };
+        };
+    };
+    my_volunteer_assignments_v1_operations_me_volunteer_assignments_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerAssignmentOut"][];
+                };
+            };
+        };
+    };
+    respond_to_assignment_v1_operations_me_volunteer_assignments__assignment_id__response_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assignment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentTransitionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerAssignmentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    transition_volunteer_assignment_v1_operations_volunteer_assignments__assignment_id__transition_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assignment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentTransitionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerAssignmentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_registered_devices_v1_operations_devices_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisteredDeviceOut"][];
+                };
+            };
+        };
+    };
+    register_device_v1_operations_devices_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeviceRegisterIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceRegisteredOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_device_v1_operations_devices__device_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                device_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sync_offline_scans_v1_operations_offline_scans_sync_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfflineSyncIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfflineSyncOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_policy_versions_v1_operations_policies_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyVersionOut"][];
+                };
+            };
+        };
+    };
+    publish_policy_v1_operations_policies_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PolicyPublishIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyVersionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    current_member_policies_v1_operations_me_policies_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EffectivePolicyOut"][];
+                };
+            };
+        };
+    };
+    record_member_policy_action_v1_operations_me_policies__policy_version_id__actions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                policy_version_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsentActionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentActionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_tier5_assignments_v1_operations_tier5_assignments_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tier5AssignmentOut"][];
+                };
+            };
+        };
+    };
+    list_tier5_certifications_v1_operations_tier5_certifications_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tier5CertificationOut"][];
+                };
+            };
+        };
+    };
+    record_tier5_certification_v1_operations_tier5_certifications_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Tier5CertificationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tier5CertificationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    volunteer_aggregate_v1_operations_aggregates_volunteers__event_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VolunteerAggregateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_finance_readiness_v1_finance_readiness_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceProductionReadinessResponse"];
+                };
+            };
+        };
+    };
+    create_finance_control_v1_finance_readiness_controls_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FinanceProductionControlRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceProductionControlResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_fund_config_v1_fund_config_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FundConfigResponse"];
+                };
+            };
+        };
+    };
+    create_contribution_v1_fund_contributions_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+                "X-Idempotency-Key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContributionCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContributionDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_slip_v1_fund_contributions__id__slip_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_contribution_v1_fund_contributions__id__submit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContributionDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_my_contributions_v1_fund_contributions_mine_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContributionDetailResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_my_contribution_v1_fund_contributions__id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContributionDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_my_receipt_v1_fund_contributions__id__receipt_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReceiptResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_finance_contributions_v1_finance_contributions_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                month?: string | null;
+                riskFlag?: string | null;
+                reference?: string | null;
+                claimedByMe?: boolean;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffContributionsListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_finance_contribution_v1_finance_contributions__id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffContributionDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    claim_contribution_v1_finance_contributions__id__claim_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_slip_view_token_v1_finance_contributions__id__slip_view_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffSlipViewTokenResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stream_slip_v1_finance_slips__token__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reconcile_contribution_v1_finance_contributions__id__reconcile_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffReconcileRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_contribution_v1_finance_contributions__id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffApproveRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReceiptResponse"] | null;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_ledger_csv_v1_finance_ledger_csv_get: {
+        parameters: {
+            query: {
+                month: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_my_household_v1_households_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"] | null;
+                };
+            };
+        };
+    };
+    update_household_v1_households_mine_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HouseholdUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_household_v1_households_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HouseholdCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_my_invitations_v1_households_invitations_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationsListOut"];
+                };
+            };
+        };
+    };
+    invite_adult_v1_households_invitations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InviteAdultIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdInvitationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    respond_invitation_v1_households_invitations__invitation_id__respond_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvitationRespondIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdOut"] | null;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_invitation_v1_households_invitations__invitation_id__revoke_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_member_v1_households_members__member_record_id__remove_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                member_record_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    leave_household_v1_households_leave_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_privacy_notice_v1_households_privacy_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentNoticeOut"];
+                };
+            };
+        };
+    };
+    staff_view_household_v1_households_staff__target_member_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                target_member_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffHouseholdViewOut"];
+                };
             };
             /** @description Validation Error */
             422: {

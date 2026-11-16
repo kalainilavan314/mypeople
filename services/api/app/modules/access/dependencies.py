@@ -28,12 +28,16 @@ from app.modules.auth import service as auth_service
 from app.modules.auth.dependencies import CurrentMember
 
 
-def require_permission(permission: str) -> Callable[..., Staff]:
+def require_permission(*permissions: str) -> Callable[..., Staff]:
+    """Require one listed permission; multiple permissions allow either role for a shared read."""
+    if not permissions:
+        raise ValueError("at least one staff permission is required")
+
     def check(request: Request, member: CurrentMember, db: Annotated[Session, Depends(get_db)]) -> Staff:
         staff = load_staff(db, member.id)
         settings = request.app.state.settings
         reason = None
-        if not rules.holds(staff.rule_assignments(), permission):
+        if not any(rules.holds(staff.rule_assignments(), permission) for permission in permissions):
             reason = "forbidden"
         elif settings.staff_mfa_required and not member.mfa_verified:
             # NFR-SEC-04: staff give a second factor in each session before acting as staff.
@@ -43,7 +47,7 @@ def require_permission(permission: str) -> Callable[..., Staff]:
             record_denial(
                 db,
                 actor_id=member.id,
-                permission=permission,
+                permission="/".join(permissions),
                 reason=reason,
                 ip=client_ip(request),
                 details={"method": request.method, "path": request.url.path},

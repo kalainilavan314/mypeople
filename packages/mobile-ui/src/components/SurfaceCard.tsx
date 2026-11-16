@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { colors, radius, spacing } from '@my-people/design-tokens';
+import { colors, control, radius, spacing } from '@my-people/design-tokens';
 
 type Props = {
   children: ReactNode;
@@ -10,18 +10,22 @@ type Props = {
   /** Makes the whole card one pressable; it must then hold no other buttons. */
   onPress?: () => void;
   accessibilityLabel?: string;
+  accessibilityHint?: string;
   style?: StyleProp<ViewStyle>;
 };
 
-/** White card, 1 px border, 12 px radius and padding (spec §3, SurfaceCard). */
-export function SurfaceCard({ children, accent = false, onPress, accessibilityLabel, style }: Props) {
+/** Flat white card, separated from the page by one quiet border. */
+export function SurfaceCard({ children, accent = false, onPress, accessibilityLabel, accessibilityHint, style }: Props) {
   const cardStyle = [styles.card, accent && styles.accent, style];
+  // Non-interactive cards must NOT have accessible={true}, so child elements remain directly accessible.
   if (!onPress) return <View style={cardStyle}>{children}</View>;
   return (
     <Pressable
       onPress={onPress}
+      accessible
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       style={({ pressed }) => [cardStyle, pressed && styles.pressed]}>
       {children}
     </Pressable>
@@ -30,17 +34,13 @@ export function SurfaceCard({ children, accent = false, onPress, accessibilityLa
 
 const styles = StyleSheet.create({
   card: {
+    minHeight: control.height,
     backgroundColor: colors.card,
     borderColor: colors.border,
     borderWidth: 1,
     borderRadius: radius.card,
     padding: spacing[3],
     gap: spacing[2],
-    shadowColor: colors.text,
-    shadowOpacity: 0.04,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 1,
   },
   accent: { borderLeftWidth: 4, borderLeftColor: colors.primary },
   pressed: { backgroundColor: colors.surfaceVariant },

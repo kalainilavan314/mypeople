@@ -13,10 +13,9 @@ export type Enrolment = { secret: string; qrSvg: string } | { error: string } | 
  * answer only, never in the address, a log or a cookie; the API keeps it
  * encrypted and enables it once a correct code confirms it.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- useActionState passes the previous state first
-export async function startEnrolment(_previous: Enrolment): Promise<Enrolment> {
+export async function startEnrolment(_previous: Enrolment, formData: FormData): Promise<Enrolment> {
   try {
-    const enrolment = await (await staffApi()).startTotpEnrolment();
+    const enrolment = await (await staffApi()).startTotpEnrolment(String(formData.get('currentPassword') ?? ''));
     return { secret: enrolment.secret, qrSvg: await QRCode.toString(enrolment.otpauthUri, { type: 'svg', margin: 4 }) };
   } catch (error) {
     return { error: failure(error).code };
@@ -31,6 +30,7 @@ export async function giveCode(formData: FormData): Promise<void> {
     const api = await staffApi();
     if (enrolling) await api.confirmTotp(code);
     else await api.verifyMfa(code);
+
   } catch (error) {
     redirect(`/mfa?error=${failure(error).code}`);
   }

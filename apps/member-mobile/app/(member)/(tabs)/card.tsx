@@ -1,10 +1,11 @@
-import type { MemberCard } from '@my-people/api-client';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ApiError, type MemberCard } from '@my-people/api-client';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { router, type Href } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens';
+import { colors, control, radius, spacing } from '@my-people/design-tokens';
 
 import {
   AppText,
@@ -12,17 +13,20 @@ import {
   formatDate,
   formatDateTime,
   Notice,
-  QrCode,
   Screen,
-  StatusTag,
   SurfaceCard,
+  clearOfflineCard,
+  readOfflineCard,
+  saveOfflineCard,
+  type OfflineCardPreview,
   useApiQuery,
   useLanguage,
+  useMember,
   useReloadOnFocus,
-  useRotatingCode,
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
+import { OfflineCard } from '@/features/membership/OfflineCard';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 
@@ -32,11 +36,41 @@ import { errorMessage } from '@/lib/errors';
  * shows the NIC or passport number; the QR is a 60-second opaque code.
  */
 export default function CardScreen() {
-  const card = useApiQuery(() => api().getMyCard());
+  const { t } = useTranslation();
+  const member = useMember();
+  const [offline, setOffline] = useState<OfflineCardPreview | null>(null);
+  const card = useApiQuery(async () => {
+    const current = await api().getMyCard();
+    try {
+      if (current.available) await saveOfflineCard(member.id, current);
+      else await clearOfflineCard();
+    } catch {
+      // A storage failure must not hide a card the server just confirmed.
+    }
+    return current;
+  }, [member.id]);
   useReloadOnFocus(card.reload);
+  useEffect(() => {
+    if (!card.error || card.error instanceof ApiError) return;
+    let active = true;
+    void readOfflineCard().then((saved) => {
+      if (active) setOffline(saved?.memberId === member.id ? saved : null);
+    });
+    return () => { active = false; };
+  }, [card.error, member.id]);
   return (
-    <Screen edges={[]} onRefresh={card.reload} refreshing={card.loading && card.data !== undefined}>
-      <QueryView query={card}>{(data) => (data.available ? <AvailableCard card={data} /> : <Unavailable card={data} />)}</QueryView>
+    <Screen title={t('m.card.title')} edges={[]} maxContentWidth={640} onRefresh={card.reload} refreshing={card.loading && card.data !== undefined}>
+      {card.error && !(card.error instanceof ApiError) && offline ? (
+        <>
+          <OfflineCard preview={offline} />
+          <Button label={t('m.common.retry')} variant="secondary" onPress={card.reload} />
+        </>
+      ) : card.error ? (
+        <>
+          <Notice tone="error">{errorMessage(t, card.error)}</Notice>
+          <Button label={t('m.common.retry')} variant="secondary" onPress={card.reload} />
+        </>
+      ) : <QueryView query={card}>{(data) => (data.available ? <AvailableCard card={data} /> : <Unavailable card={data} />)}</QueryView>}
     </Screen>
   );
 }
@@ -45,7 +79,7 @@ function Field({ label, value, mono = false }: { label: string; value: string | 
   if (!value) return null;
   return (
     <View style={styles.field}>
-      <AppText step="caption" tone="inverse" style={styles.fieldLabel}>
+      <AppText step="caption" tone="inverse">
         {label}
       </AppText>
       <AppText step="body" tone="inverse" mono={mono}>
@@ -55,11 +89,28 @@ function Field({ label, value, mono = false }: { label: string; value: string | 
   );
 }
 
+function CardAction({ label, icon, divided = false, onPress }: {
+  label: string;
+  icon: 'share-outline' | 'time-outline';
+  divided?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={({ pressed }) => [styles.action, divided && styles.actionDivider, pressed && styles.actionPressed]}>
+      <Ionicons name={icon} size={20} color={colors.textSecondary} />
+      <AppText step="label" style={styles.actionLabel}>{label}</AppText>
+      <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+    </Pressable>
+  );
+}
+
 function AvailableCard({ card }: { card: MemberCard }) {
   const { t } = useTranslation();
   const language = useLanguage();
-  const [showCode, setShowCode] = useState(false);
-  const code = useRotatingCode(() => api().getMyCardCode(), showCode);
 
   return (
     <>
@@ -68,7 +119,7 @@ function AvailableCard({ card }: { card: MemberCard }) {
           <AppText step="label" tone="inverse">
             என் மக்கள் · My People
           </AppText>
-          <AppText step="caption" tone="inverse" style={styles.fieldLabel}>
+          <AppText step="caption" tone="inverse">
             {card.designation ? t('m.card.tier', { tier: card.designation }) : t('m.card.member')}
           </AppText>
         </View>
@@ -82,33 +133,27 @@ function AvailableCard({ card }: { card: MemberCard }) {
         </View>
         <Field label={t('m.card.since')} value={card.memberSince ? formatDate(card.memberSince, language) : null} />
         <View style={styles.verified}>
-          <StatusTag tone="verified" label={t('m.card.identityVerified')} />
+          <View style={styles.verifiedItem}>
+            <Ionicons name="checkmark-circle" size={18} color={colors.onPrimary} />
+            <AppText step="caption" tone="inverse">{t('m.card.identityVerified')}</AppText>
+          </View>
+          <View style={styles.verifiedItem}>
+            <Ionicons name="checkmark-circle" size={18} color={colors.onPrimary} />
+            <AppText step="caption" tone="inverse">{t('m.card.membershipActive')}</AppText>
+          </View>
         </View>
       </View>
 
       <Button
-        label={showCode ? t('m.card.hideCode') : t('m.card.showCode')}
+        label={t('m.card.showCode')}
         icon="qr-code-outline"
-        variant={showCode ? 'secondary' : 'primary'}
-        onPress={() => setShowCode(!showCode)}
+        onPress={() => router.push('/card/code')}
       />
-      {showCode ? (
-        <SurfaceCard>
-          <View style={styles.qr}>
-            {code.data ? (
-              <QrCode value={code.data.code} size={240} label={t('m.card.showCode')} />
-            ) : (
-              <AppText step="secondary" tone="muted">
-                {t('m.events.passRefreshing')}
-              </AppText>
-            )}
-          </View>
-          <AppText step="secondary" tone="secondary" style={styles.center}>
-            {t('m.card.codeHint')}
-          </AppText>
-          {code.error ? <Notice tone="error">{errorMessage(t, code.error)}</Notice> : null}
-        </SurfaceCard>
-      ) : null}
+      <AppText step="section" accessibilityRole="header">{t('m.card.optionsTitle')}</AppText>
+      <SurfaceCard style={styles.actionList}>
+        <CardAction label={t('m.card.progressTitle')} icon="time-outline" onPress={() => router.push('/card/progress')} />
+        <CardAction label={t('m.card.shareTitle')} icon="share-outline" divided onPress={() => router.push('/card/share' as Href)} />
+      </SurfaceCard>
 
       {card.lastScannedAt ? (
         <AppText step="secondary" tone="muted">{`${t('m.card.lastScan')}: ${formatDateTime(card.lastScannedAt, language)}`}</AppText>
@@ -144,9 +189,12 @@ const styles = StyleSheet.create({
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing[2] },
   field: { gap: 2, flex: 1 },
-  fieldLabel: { color: colors.inputBorder }, // #CBD5E1 on navy, the spec's metadata colour (§2)
   row: { flexDirection: 'row', gap: spacing[3] },
-  verified: { flexDirection: 'row' },
-  qr: { alignItems: 'center', justifyContent: 'center', minHeight: 256 },
-  center: { textAlign: 'center' },
+  verified: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
+  verifiedItem: { flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
+  actionList: { padding: 0, gap: 0, overflow: 'hidden' },
+  action: { minHeight: control.touchMin + spacing[3], flexDirection: 'row', alignItems: 'center', gap: spacing[3], padding: spacing[3] },
+  actionDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
+  actionPressed: { backgroundColor: colors.surfaceVariant },
+  actionLabel: { flex: 1 },
 });

@@ -154,14 +154,16 @@ def test_staff_enrol_an_authenticator_before_acting_as_staff(client, db_session,
     assert denied.details["reason"] == "mfa_enrolment_required"
     assert client.get("/v1/auth/mfa", headers=session).json() == {"enrolled": False, "enabled": False, "sessionVerified": False}
 
-    enrolment = client.post("/v1/auth/mfa/totp", headers=session).json()
+    refused_start = client.post("/v1/auth/mfa/totp", json={"currentPassword": "wrong"}, headers=session)
+    assert (refused_start.status_code, refused_start.json()) == (401, {"detail": "wrong_password"})
+    enrolment = client.post("/v1/auth/mfa/totp", json={"currentPassword": PASSWORD}, headers=session).json()
     assert enrolment["otpauthUri"].startswith("otpauth://totp/")
     wrong = client.post("/v1/auth/mfa/totp/confirm", json={"code": "000000"}, headers=session)
     right = client.post("/v1/auth/mfa/totp/confirm", json={"code": code_now(enrolment["secret"])}, headers=session)
 
     assert wrong.status_code == 401 and right.status_code == 204
     assert client.get("/v1/identity/reviews", headers=session).status_code == 200
-    again = client.post("/v1/auth/mfa/totp", headers=session)
+    again = client.post("/v1/auth/mfa/totp", json={"currentPassword": PASSWORD}, headers=session)
     assert (again.status_code, again.json()) == (409, {"detail": "already_enabled"})
 
     # A new session asks for the code again; a code already used is refused.
@@ -179,7 +181,7 @@ def enrolled(client, staff) -> tuple[str, str]:
     """A staff member with an enabled authenticator: (their NIC, its secret)."""
     _, nic = staff
     session = sign_in(client, nic, ANDROID)
-    secret = client.post("/v1/auth/mfa/totp", headers=session).json()["secret"]
+    secret = client.post("/v1/auth/mfa/totp", json={"currentPassword": PASSWORD}, headers=session).json()["secret"]
     assert client.post("/v1/auth/mfa/totp/confirm", json={"code": code_now(secret)}, headers=session).status_code == 204
     return nic, secret
 

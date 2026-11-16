@@ -79,10 +79,11 @@ def list_managed_albums(
     db: Db,
     state: Annotated[list[Literal["draft", "submitted", "published"]] | None, Query()] = None,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
+    offset: Annotated[int, Query(ge=0, le=100000)] = 0,
 ) -> list[AlbumSummaryOut]:
     """Albums in the caller's areas, newest first: drafts and submitted ones unless asked otherwise."""
     states = list(state) if state else ["draft", "submitted"]
-    return [AlbumSummaryOut.build(album) for album in service.managed_albums(db, staff, states, limit)]
+    return [AlbumSummaryOut.build(album) for album in service.managed_albums(db, staff, states, limit, offset)]
 
 
 @router.get("/albums/manage/{album_id}", responses=REFUSED)
@@ -283,10 +284,11 @@ def list_removal_requests(
     db: Db,
     state: Annotated[list[Literal["open", "removed", "blurred", "kept"]] | None, Query()] = None,
     limit: Annotated[int, Query(ge=1, le=200)] = 100,
+    offset: Annotated[int, Query(ge=0, le=100000)] = 0,
 ) -> list[QueuedRemovalOut]:
     """The queue in the caller's areas, soonest due first, with the 18-hour escalation flag."""
     states = list(state) if state else ["open"]
-    return [QueuedRemovalOut.queued(item) for item in service.removal_queue(db, staff, states, limit)]
+    return [QueuedRemovalOut.queued(item) for item in service.removal_queue(db, staff, states, limit, offset)]
 
 
 @router.post(

@@ -77,9 +77,10 @@ def list_appeals(
     state: Annotated[list[AppealState] | None, Query()] = None,
     mine: bool = False,
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    offset: Annotated[int, Query(ge=0, le=100000)] = 0,
 ) -> list[AppealSummaryOut]:
     """D05: appeals in the caller's areas, oldest first. Open appeals unless states are given."""
-    appeals = service.queue(db, staff, states=list(state or OPEN_STATES), mine=mine, limit=limit)
+    appeals = service.queue(db, staff, states=list(state or OPEN_STATES), mine=mine, limit=limit, offset=offset)
     return [AppealSummaryOut.from_stored(appeal) for appeal in appeals]
 
 

@@ -1,9 +1,9 @@
 import type { AreaChange, ProfileView } from '@my-people/api-client';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, Platform, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { spacing } from '@my-people/design-tokens';
+import { colors, spacing } from '@my-people/design-tokens';
 
 import {
   AppText,
@@ -31,7 +31,11 @@ import { errorMessage } from '@/lib/errors';
 export default function AreaScreen() {
   const profile = useApiQuery(() => api().getProfile());
   return (
-    <Screen edges={['bottom']} onRefresh={profile.reload} refreshing={profile.loading && profile.data !== undefined}>
+    <Screen
+      edges={['bottom']}
+      maxContentWidth={640}
+      onRefresh={profile.reload}
+      refreshing={profile.loading && profile.data !== undefined}>
       <QueryView query={profile}>{(data) => <AreaBody profile={data} reload={profile.reload} />}</QueryView>
     </Screen>
   );
@@ -51,8 +55,8 @@ function AreaBody({ profile, reload }: { profile: ProfileView; reload: () => voi
         <AppText step="section" accessibilityRole="header">
           {t('m.profile.areaCurrent')}
         </AppText>
-        {lines.map(([label, value]) => (
-          <View key={label} style={styles.line}>
+        {lines.map(([label, value], index) => (
+          <View key={label} style={[styles.line, index > 0 && styles.lineDivider]}>
             <AppText step="label">{label}</AppText>
             <AppText step="body" tone="secondary">
               {value}
@@ -81,6 +85,18 @@ function OpenChange({ change, reload }: { change: AreaChange; reload: () => void
     await api().withdrawAreaChange(change.id);
     reload();
   });
+  const confirmWithdraw = () => {
+    const title = t('m.profile.areaWithdraw');
+    const message = t('m.profile.areaWithdrawConfirm');
+    if (Platform.OS === 'web') {
+      if (globalThis.confirm(`${title}\n\n${message}`)) void withdraw.run();
+      return;
+    }
+    Alert.alert(title, message, [
+      { text: t('m.common.cancel'), style: 'cancel' },
+      { text: title, style: 'destructive', onPress: () => void withdraw.run() },
+    ]);
+  };
   return (
     <SurfaceCard accent>
       <AppText step="card">{`${t('m.profile.areaChange')}: ${change.toGnName}`}</AppText>
@@ -96,7 +112,7 @@ function OpenChange({ change, reload }: { change: AreaChange; reload: () => void
       ) : null}
       {proof.error ? <Notice tone="error">{errorMessage(t, proof.error)}</Notice> : null}
       {withdraw.error ? <Notice tone="error">{errorMessage(t, withdraw.error)}</Notice> : null}
-      <Button label={t('m.profile.areaWithdraw')} variant="danger" busy={withdraw.busy} onPress={() => void withdraw.run()} />
+      <Button label={t('m.profile.areaWithdraw')} variant="danger" busy={withdraw.busy} onPress={confirmWithdraw} />
     </SurfaceCard>
   );
 }
@@ -127,4 +143,7 @@ function NewChange({ onCreated }: { onCreated: () => void }) {
   );
 }
 
-const styles = StyleSheet.create({ line: { gap: 2, paddingVertical: spacing[1] } });
+const styles = StyleSheet.create({
+  line: { gap: 2, paddingVertical: spacing[2] },
+  lineDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
+});

@@ -36,7 +36,7 @@ export default function EventPassScreen() {
   const code = useRotatingCode(() => api().getEventPassCode(id), pass.data !== undefined && !pass.data.attendedAt, [id]);
 
   return (
-    <Screen edges={['bottom']}>
+    <Screen edges={['bottom']} maxContentWidth={640}>
       <QueryView query={pass}>
         {(data) => (
           <>

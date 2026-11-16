@@ -146,10 +146,10 @@ def decide(db: Session, case_id: uuid.UUID, *, outcome: str, decided_by: uuid.UU
 
 
 def queue(
-    db: Session, *, visible_areas: list[str] | None, states: list[str], claimed_by: uuid.UUID | None, limit: int
+    db: Session, *, visible_areas: list[str] | None, states: list[str], claimed_by: uuid.UUID | None, limit: int, offset: int = 0
 ) -> list[StoredCase]:
     conditions = ["c.state = ANY(CAST(:states AS text[]))"]
-    params: dict[str, Any] = {"states": states, "limit": limit}
+    params: dict[str, Any] = {"states": states, "limit": limit, "offset": offset}
     if visible_areas is not None:
         conditions.append("c.area_path && CAST(:areas AS text[])")
         params["areas"] = visible_areas
@@ -157,7 +157,7 @@ def queue(
         conditions.append("c.claimed_by = :claimed_by")
         params["claimed_by"] = claimed_by
     rows = db.execute(
-        text(f"{_SELECT} WHERE {' AND '.join(conditions)} ORDER BY c.opened_at, c.case_ref LIMIT :limit"), params
+        text(f"{_SELECT} WHERE {' AND '.join(conditions)} ORDER BY c.opened_at, c.case_ref LIMIT :limit OFFSET :offset"), params
     ).mappings()
     return [StoredCase(**row) for row in rows]
 

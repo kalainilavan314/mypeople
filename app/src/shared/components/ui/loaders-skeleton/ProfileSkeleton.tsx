@@ -6,7 +6,7 @@ export function ProfileSkeleton() {
       <div
         style={{
           borderRadius: 24,
-          background: 'linear-gradient(135deg, #14263D 0%, #1B3050 100%)',
+          background: 'var(--primary)',
           padding: '24px 20px',
           display: 'flex',
           flexDirection: 'column',

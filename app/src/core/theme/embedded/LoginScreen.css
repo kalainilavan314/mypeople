@@ -28,8 +28,6 @@
           object-fit: cover;
           object-position: right top;
           opacity: 0.92;
-          mask-image: radial-gradient(ellipse 95% 100% at 100% 0%, rgba(0, 0, 0, 1) 30%, rgba(0, 0, 0, 0.7) 55%, rgba(0, 0, 0, 0.2) 75%, transparent 100%);
-          -webkit-mask-image: radial-gradient(ellipse 95% 100% at 100% 0%, rgba(0, 0, 0, 1) 30%, rgba(0, 0, 0, 0.7) 55%, rgba(0, 0, 0, 0.2) 75%, transparent 100%);
         }
         .login-tab-pill {
           flex: 1;
@@ -46,7 +44,7 @@
           transition: all 180ms ease;
         }
         .login-tab-pill.active {
-          background: #14263D;
+          background: var(--primary);
           color: #ffffff;
           box-shadow: 0 4px 14px rgba(20, 38, 61, 0.28);
         }
@@ -63,7 +61,7 @@
         }
         .login-input-box:focus-within {
           background: #ffffff;
-          border-color: #2563EB;
+          border-color: var(--focus-ring);
           box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
         }
         .login-input-box.error {
@@ -88,7 +86,7 @@
           height: 52px;
           border-radius: 999px;
           border: none;
-          background: #14263D;
+          background: var(--primary);
           color: #ffffff;
           font: 700 15.5px/1 var(--font-ui, 'Inter', sans-serif);
           letter-spacing: 0.01em;

@@ -31,10 +31,12 @@ export default function StaffHomeScreen() {
     async () => (approvesAnything(permissions) ? approvalCount(await loadApprovals(permissions)) : null),
     [permissions],
   );
+  const volunteerAssignments = useApiQuery(() => api().listMyVolunteerAssignments(), []);
   const reload = useCallback(() => {
     reviews.reload();
     approvals.reload();
-  }, [reviews.reload, approvals.reload]);
+    volunteerAssignments.reload();
+  }, [reviews.reload, approvals.reload, volunteerAssignments.reload]);
   useReloadOnFocus(reload);
 
   const scans = permissions.has('events.checkin_scan') || permissions.has('events.manage');
@@ -77,6 +79,15 @@ export default function StaffHomeScreen() {
           <AppText step="section">{t('s.home.events')}</AppText>
           <AppText step="body" tone="secondary">
             {t('s.home.eventsBody')}
+          </AppText>
+        </SurfaceCard>
+      ) : null}
+
+      {volunteerAssignments.data?.length ? (
+        <SurfaceCard onPress={() => router.push('/assignments' as never)} accessibilityLabel={t('s.assignments.title')}>
+          <AppText step="section">{t('s.assignments.title')}</AppText>
+          <AppText step="body" tone="secondary">
+            {t('s.assignments.summary', { count: volunteerAssignments.data.length })}
           </AppText>
         </SurfaceCard>
       ) : null}

@@ -32,6 +32,7 @@ class PhoneInput(CamelModel):
 
 class PhoneConfirmInput(PhoneInput):
     code: Code
+    current_password: str | None = Field(default=None, max_length=256, description="Required when replacing an existing recovery number")
 
 
 class CodeSentOut(CamelModel):

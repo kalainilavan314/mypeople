@@ -8,8 +8,8 @@ Built screens are in the Expo member and staff apps and the Next.js dashboard; n
 |---|---|---|
 | Member app | 112 | 38 |
 | Staff app | 18 | 7 |
-| Dashboard | 44 | 9 |
-| **All** | **174** | **54** |
+| Dashboard | 44 | 14 |
+| **All** | **174** | **59** |
 
 Status: **Built**; **API ready** (the endpoint exists and is tested, only the screen is missing); **To build**; **Blocked** (waits on the decision or integration named).
 
@@ -32,10 +32,10 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | A12 | Identity approved | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/app/(member)/verify.tsx` |  |
 | A13 | Basic profile | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/app/(auth)/register.tsx (date of birth, gender; mobile in profile/recovery-number.tsx)` |  |
 | A14 | Your area | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/app/(auth)/register.tsx (district, DS, GN, referral)` |  |
-| A15 | Optional joining survey | Identity verification (SC-02) | 1 | API ready (/v1/profile/survey-answers) | `apps/member-mobile/app/(member)/setup/survey.tsx` |  |
+| A15 | Optional joining survey | Identity verification (SC-02) | 1 | Built (DPO question-purpose approval pending) | `apps/member-mobile/app/(member)/setup/survey.tsx` | Optional fields; Skip remains available even when loading fails. |
 | A16 | Recover access | Sign-in and account (SC-01) | 1 | Built | `apps/member-mobile/app/(auth)/recover.tsx, assisted-recovery.tsx` |  |
-| A17 | Upload interrupted | Identity verification (SC-02) | 1 | API ready (/v1/identity/me/documents) | `apps/member-mobile/app/(member)/verify.tsx (upload-interrupted state)` |  |
-| A18 | Resume setup | Identity verification (SC-02) | 1 | API ready (/v1/identity/me/progress) | `apps/member-mobile/app/(member)/setup/index.tsx` |  |
+| A17 | Upload interrupted | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/src/features/identity/PhotoRow.tsx` | Per-file byte progress and retry; server-acknowledged files remain received. |
+| A18 | Resume setup | Identity verification (SC-02) | 1 | Built | `apps/member-mobile/app/(member)/setup/index.tsx` | Server-derived next step; completed steps link to review status and correction requests. Consent remains before document upload. |
 | H01 | Home — active member | Home and inbox (SC-03) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/index.tsx` |  |
 | H02 | Home — awaiting review | Home and inbox (SC-03) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/index.tsx` |  |
 | H03 | Notifications | Home and inbox (SC-03) | 1 | Built | `apps/member-mobile/app/(member)/notifications.tsx` |  |
@@ -52,8 +52,8 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | H14 | Take a survey | Ideas and surveys (SC-07) | 2 | To build | `apps/member-mobile/app/(member)/surveys/[id].tsx` |  |
 | H15 | Learning and courses | Learning (SC-08) | 2 | To build | `apps/member-mobile/app/(member)/learning/` |  |
 | H16 | Course lesson | Learning (SC-08) | 2 | To build | `apps/member-mobile/app/(member)/learning/[lesson].tsx` |  |
-| H17 | Party fund contribution | Party fund (SC-09) | 2 | To build | `apps/member-mobile/app/(member)/fund/` |  |
-| H18 | Contribution receipt | Party fund (SC-09) | 2 | To build | `apps/member-mobile/app/(member)/fund/receipt/[id].tsx` |  |
+| H17 | Party fund contribution | Party fund (SC-09) | 2 | Built | `apps/member-mobile/app/(member)/fund/` | M1.4 bank slip intake |
+| H18 | Contribution receipt | Party fund (SC-09) | 2 | Built | `apps/member-mobile/app/(member)/fund/receipt/[id].tsx` | M1.4 verified receipt card |
 | H19 | Invite a member | Referrals (SC-10) | 2 | To build | `apps/member-mobile/app/(member)/referrals/invite.tsx` |  |
 | H20 | My referrals | Referrals (SC-10) | 2 | To build | `apps/member-mobile/app/(member)/referrals/` |  |
 | H21 | Survey submitted | Ideas and surveys (SC-07) | 2 | To build | `apps/member-mobile/app/(member)/surveys/[id]/done.tsx` |  |
@@ -64,10 +64,10 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | E05 | Your RSVP | Events (SC-11) | 1 | Built | `apps/member-mobile/app/(member)/events/[id].tsx` |  |
 | E06 | Event pass | Events (SC-11) | 1 | Built | `apps/member-mobile/app/(member)/events/[id]/pass.tsx` |  |
 | C01 | My member card | Membership card (SC-12) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/card.tsx` |  |
-| C02 | Show secure code | Membership card (SC-12) | 1 | API ready (/v1/membership/me/card/code) | `apps/member-mobile/app/(member)/card/code.tsx` |  |
-| C03 | Card while offline | Membership card (SC-12) | 1 | API ready (card code and card) | `apps/member-mobile/app/(member)/(tabs)/card.tsx (offline state)` |  |
-| C04 | Wallet and share | Membership card (SC-12) | 1 | Blocked: INT-03 for wallet passes (share can be built) | `apps/member-mobile/app/(member)/card/share.tsx` |  |
-| C05 | My progress | Membership card (SC-12) | 1 | To build | `apps/member-mobile/app/(member)/card/progress.tsx` |  |
+| C02 | Show secure code | Membership card (SC-12) | 1 | Built | `apps/member-mobile/app/(member)/card/code.tsx` | Live 60-second signed QR, circular timer, temporary brightness. |
+| C03 | Card while offline | Membership card (SC-12) | 1 | Built (display only) | `apps/member-mobile/app/(member)/(tabs)/card.tsx`, `apps/member-mobile/app/(auth)/welcome.tsx` | Encrypted saved copy with sync age; no offline QR or proof of current status. Offline scanning awaits OD-08. |
+| C04 | Wallet and share | Membership card (SC-12) | 1 | Share built; wallet blocked: INT-03 | `apps/member-mobile/app/(member)/card/share.tsx` | Public text and image export; no live QR or ID image; wallet pass pending. |
+| C05 | My progress | Membership card (SC-12) | 1 | Built (confirmed records) | `apps/member-mobile/app/(member)/card/progress.tsx` | Join, verified identity and attended events; training completion awaits a verified source. No ranking or points. |
 | C06 | Card not available | Membership card (SC-12) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/card.tsx` |  |
 | G01 | Gallery albums | Gallery (SC-13) | 1 | Built | `apps/member-mobile/app/(member)/(tabs)/gallery.tsx` |  |
 | G02 | Album detail | Gallery (SC-13) | 1 | Built | `apps/member-mobile/app/(member)/gallery/[id].tsx` |  |
@@ -81,13 +81,13 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | M01 | Document capture assistant | AI-assisted identity screening (SC-21) | 1–2 | To build | `apps/member-mobile/app/(member)/verify/` |  |
 | M02 | Confirm extracted NIC number | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-42 (OCR provider) | `apps/member-mobile/app/(member)/verify/` |  |
 | M03 | Guided liveness capture | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-28, OD-29 (biometrics) | `apps/member-mobile/app/(member)/verify/` |  |
-| M04 | Verification appeal | AI-assisted identity screening (SC-21) | 1–2 | API ready (/v1/identity/me/appeal) | `apps/member-mobile/app/(member)/verify/` |  |
+| M04 | Verification appeal | AI-assisted identity screening (SC-21) | 1–2 | Built (feature-gated) | `apps/member-mobile/app/(member)/verify/appeal.tsx` | Uses `/v1/identity/me/review/appeal`; shows decision reasons and 10-working-day target. |
 | M05 | Assisted verification request | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-04 (assisted verification) | `apps/member-mobile/app/(member)/verify/` |  |
-| M06 | My Household / எனது குடும்பம் | My Household (SC-22) | 2 | To build | `apps/member-mobile/app/(member)/household/` |  |
-| M07 | Add household member | My Household (SC-22) | 2 | To build | `apps/member-mobile/app/(member)/household/` |  |
-| M08 | Invite adult member | My Household (SC-22) | 2 | To build | `apps/member-mobile/app/(member)/household/` |  |
-| M09 | Household invitation response | My Household (SC-22) | 2 | To build | `apps/member-mobile/app/(member)/household/` |  |
-| M10 | Household privacy and consent | My Household (SC-22) | 2 | To build | `apps/member-mobile/app/(member)/household/` |  |
+| M06 | My Household / எனது குடும்பம் | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
+| M07 | Add household member | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
+| M08 | Invite adult member | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
+| M09 | Household invitation response | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
+| M10 | Household privacy and consent | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` |  |
 | M11 | Community Support / சமூக உதவி | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/assistance/` |  |
 | M12 | Request support | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/assistance/` |  |
 | M13 | Support case status | Community Support (SC-23) | 2 | To build | `apps/member-mobile/app/(member)/assistance/` |  |
@@ -122,11 +122,11 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | M42 | Book or manage appointment | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/representatives/` |  |
 | M43 | Voice report | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Blocked: Voice is Phase 3 | `apps/member-mobile/app/(member)/issues/new (voice mode of H07)` | Decided: a voice option inside H07, not a second report screen |
 | M44 | Accessibility and data saver | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | To build | `apps/member-mobile/app/(member)/profile/accessibility.tsx` |  |
-| M45 | Messages and channels | SMS and WhatsApp (SC-39) | 1 SMS, 2 WhatsApp | API ready (/v1/notifications/choices (SMS part)) | `apps/member-mobile/app/(member)/profile/settings.tsx (channels, with P05)` | Decided: extends the P05 settings screen; no second preferences screen |
+| M45 | Messages and channels | SMS and WhatsApp (SC-39) | 1 SMS, 2 WhatsApp | Preferences built; push delivery awaits INT-02 | `apps/member-mobile/app/(member)/profile/settings.tsx (channels, with P05)` | Independent push/SMS toggles per category; no second preferences screen. |
 | M46 | Diaspora participation | Diaspora (SC-40) | 3 | To build | `apps/member-mobile/app/(member)/diaspora.tsx` |  |
 | M47 | Official updates | Official content and fact-checks (SC-41) | 2 | Blocked: INT-24 | `apps/member-mobile/app/(member)/official/` |  |
 | M48 | Check or report a statement | Official content and fact-checks (SC-41) | 2 | To build | `apps/member-mobile/app/(member)/official/` |  |
-| M49 | Devices and sessions | Account and device security (SC-42) | 1 | Built | `apps/member-mobile/app/(member)/profile/security.tsx` | Built together with M50 |
+| M49 | Devices and sessions | Account and device security (SC-42) | 1 | Built (remote revocation) | `apps/member-mobile/app/(member)/profile/security.tsx` | Confirmed session termination; device file wipe and passkeys await INT-02/INT-09. |
 | M50 | Security alerts | Account and device security (SC-42) | 1 | Built | `apps/member-mobile/app/(member)/profile/security.tsx` |  |
 | M51 | Card payment handoff | Payment gateway (SC-43) | 3, subject to OD-27 | Blocked: OD-27, OD-40 (payments) | `apps/member-mobile/app/(member)/fund/payment/` |  |
 | M52 | Payment result and receipt | Payment gateway (SC-43) | 3, subject to OD-27 | Blocked: OD-27, OD-40 | `apps/member-mobile/app/(member)/fund/payment/` |  |
@@ -158,7 +158,7 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 
 | Screen | Name | Module | Phase | Status | Place | Note |
 |---|---|---|---|---|---|---|
-| W01 | Verification queue | Verification and roles (SC-15) | 1 | Built | `apps/admin-web/src/app/(staff)/verification/page.tsx` |  |
+| W01 | Verification queue | Verification and roles (SC-15) | 1 | Built | `apps/admin-web/src/app/(staff)/verification/page.tsx` | Scoped, filtered and paginated review queue |
 | W02 | Identity decision | Verification and roles (SC-15) | 1 | Built | `apps/admin-web/src/app/(staff)/verification/[id]/page.tsx` |  |
 | W03 | GN case file | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
 | W04 | DS research | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
@@ -167,16 +167,16 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | W07 | Final approval | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
 | W08 | Implementation and closure | Case workspaces (SC-16) | 2 | To build | `apps/admin-web/src/app/(staff)/cases/` |  |
 | W09 | Role, area and permission assignment | Verification and roles (SC-15) | 1 | Built | `apps/admin-web/src/app/(staff)/access/page.tsx` |  |
-| D01 | Admin home and work queues | Administration (SC-17, SC-20) | 1–3 | To build | `apps/admin-web/src/app/(staff)/page.tsx (add queue counts)` | Extends the existing dashboard home |
-| D02 | Member and household administration | My Household (SC-22) | 2 | To build | `apps/admin-web/src/app/(staff)/members/` |  |
+| D01 | Admin home and work queues | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/page.tsx` | Area-scoped queues refresh each minute; community reports have filtered pagination, record detail, audited access and an immutable submission-area snapshot. |
+| D02 | Member and household administration | My Household (SC-22) | 2 | Built | `apps/admin-web/src/app/(staff)/members/` |  |
 | D03 | Identity screening panel | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/verification/[id]/page.tsx` | Shown on the W02 review page |
-| D04 | Duplicate investigation workspace | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/duplicates/` |  |
-| D05 | Verification appeals queue | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/appeals/` |  |
+| D04 | Duplicate investigation workspace | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/duplicates/` | Paginated investigations and case decisions |
+| D05 | Verification appeals queue | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/appeals/` | Paginated appeals and decision records |
 | D06 | Membership activation console (GAP-02) | Membership activation (§9, BR-097) | 1 | Built | `apps/admin-web/src/app/(staff)/membership/` |  |
-| D07 | Event console (GAP-03) | Administration (SC-17, SC-20) | 1–3 | API ready (/v1/events/manage) | `apps/admin-web/src/app/(staff)/events/` |  |
-| D08 | Gallery console and removal queue (GAP-04) | Administration (SC-17, SC-20) | 1–3 | API ready (/v1/content/albums, removal requests) | `apps/admin-web/src/app/(staff)/gallery/` |  |
-| D09 | Notification and messaging composer (GAP-05) | Administration (SC-17, SC-20) | 1–3 | API ready (/v1/notifications/broadcasts) | `apps/admin-web/src/app/(staff)/messages/` |  |
-| D10 | Finance queue and ledger (GAP-06) | Administration (SC-17, SC-20) | 1–3 | To build | `apps/admin-web/src/app/(staff)/finance/` |  |
+| D07 | Event console (GAP-03) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/events/` | Paginated list, create, edit, audited roster CSV, cancellation |
+| D08 | Gallery console and removal queue (GAP-04) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/gallery/` | Paginated album and 24h removal queues, protected display-size preview |
+| D09 | Notification and messaging composer (GAP-05) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/messages/` | Paginated bilingual broadcasts with area and effective staff-authorization-tier targeting, live reach, final reach recalculation, approval and audited dispatch. No member ranking. |
+| D10 | Finance queue and ledger (GAP-06) | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/finance/` | M1.4 two-person reconciliation queue and ledger; P3 readiness at `/finance-readiness` |
 | D11 | Payment reconciliation | Payment gateway (SC-43) | 3, subject to OD-27 | Blocked: OD-27, OD-40 | `apps/admin-web/src/app/(staff)/finance/payments/` |  |
 | D12 | Moderation and fact-check queue (GAP-07) | Official content and fact-checks (SC-41) | 2 | To build | `apps/admin-web/src/app/(staff)/moderation/` |  |
 | D13 | Assistance case management | Community Support (SC-23) | 2 | To build | `apps/admin-web/src/app/(staff)/assistance/` |  |
@@ -200,5 +200,5 @@ Status: **Built**; **API ready** (the endpoint exists and is tested, only the sc
 | D31 | Security centre | Account and device security (SC-42) | 1 | Built | `apps/admin-web/src/app/(staff)/access-reviews/page.tsx` |  |
 | D32 | Analytics dashboards | Administration (SC-17, SC-20) | 1–3 | To build | `apps/admin-web/src/app/(staff)/analytics/` |  |
 | D33 | Audit log viewer | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/audit/page.tsx` |  |
-| D34 | Geography and configuration | Administration (SC-17, SC-20) | 1–3 | API ready (/v1/features (flags only)) | `apps/admin-web/src/app/(staff)/settings/` |  |
+| D34 | Geography and configuration | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/settings/` | Feature flags and read-only district → DS → GN registry |
 | D35 | Policy and consent register | Administration (SC-17, SC-20) | 1–3 | API ready (/v1/privacy register (requests only)) | `apps/admin-web/src/app/(staff)/privacy/` |  |
