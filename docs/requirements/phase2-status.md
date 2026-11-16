@@ -2,7 +2,7 @@
 
 What exists for Phase 2, *Community Service and Accountability*, against the Phase 2 Feature and Function List (MP-FEA-002 v1.0). Built 12 to 13 November 2026. Every screen and rule was then checked against MP-FEA-002 in the code and the gaps fixed: see **`docs/requirements/phase2-checklist.md`** for the item-by-item result.
 
-**Nothing here is live for members yet.** Every Phase 2 module sits behind its own switch, off in production until a Tier 5 records Gate G2 and turns it on (`/v1/features`, FR-ARCH-011). Home shows each switched-off service as "not open yet". The decisions in the last section still apply before any of them goes live.
+**Open to members since 16 November 2026, about 15:20 UTC.** On the owner's decision, every Phase 2 module (and the two Phase 1 identity modules) was switched on before the full Gate G2 sign-off, with the approval reference *"Owner decision, 16 Nov 2026: open every module before the full Gate G2 sign-off"* (`python -m app.modules.features.open_modules`, PR #29). The party fund (`community_finance`) stays off until its finance policy decisions FIN-01, 02, 03 and 05 are recorded and its bank details are in place. Several modules need staff appointed in their areas before member requests are handled (GN collectors and district deciders for issue reports, volunteer coordinators, Community Support caseworkers and deciders, field staff), and the decisions in the last section still stand: the BRD recommends piloting Community Support in one district with partner NGOs, and publishing scorecards internally for one quarter first. A module is turned off again in the dashboard (Settings).
 
 ## By feature area
 

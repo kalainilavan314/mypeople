@@ -11,7 +11,7 @@ Each v1.1 module stays off in production until a Tier 5 holder of `system.config
 - `service.py`, `router.py`, `schemas.py`: `/v1/features` (public list of modules that are on) and the registry, gate, enable and disable endpoints.
 - `dependencies.py`: `require_feature("<key>")`, added to a module's router.
 
-Gated today: `identity_appeals` (G1), `duplicate_investigations` (G1), `election_mode` (G2, what members see of elections). A new v1.1 module adds its key to `FEATURES` and gates its router.
+Every v1.1 module in `FEATURES` is gated (`rules.py`). On production all are on since 16 November 2026 (owner's decision) except `community_finance`, which waits for its finance policy decisions. A new v1.1 module adds its key to `FEATURES` and gates its router.
 
 ## Opening modules in one step (server command)
 
