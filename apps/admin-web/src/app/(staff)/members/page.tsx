@@ -40,8 +40,8 @@ async function MembersSearchContent({ searchParams }: { searchParams: PageProps<
       <div className="flex flex-col gap-1 text-sm text-muted">
         <p lang={locale}>
           {locale === 'ta'
-            ? 'விவகார மேலாண்மைக்கான குடும்பத் தகவல்கள் (SC-22, PRM-33). உங்கள் ஆளுகைப் பகுதிக்குட்பட்ட உறுப்பினரின் குடும்பக் கோப்பைத் திறக்க உறுப்பினர் அடையாளக் குறியீட்டை உள்ளிடவும்.'
-            : 'Household records for casework operations (SC-22, PRM-33). Enter a member ID code to open their household file within your permitted area.'}
+            ? 'விவகார மேலாண்மைக்கான குடும்பத் தகவல்கள் (SC-22, PRM-33). உங்கள் ஆளுகைப் பகுதிக்குட்பட்ட உறுப்பினரின் குடும்பக் கோப்பைத் திறக்க உறுப்பினர் அடையாளக் குறியீட்டை உள்ளிடவும். குடும்பம் சமூகப் பணியாளர் அணுகலை அனுமதித்திருந்தால் மட்டுமே கோப்பு திறக்கும்; ஒவ்வொரு திறப்பும் குடும்பத்தின் வரலாற்றிலும் தணிக்கைப் பதிவிலும் பதியப்படும். இப்பக்கம் பார்வைக்கு மட்டுமே.'
+            : 'Household records for casework operations (SC-22, PRM-33). Enter a member ID code to open their household file within your permitted area. A file opens only if the household has allowed caseworker access; every opening is recorded in the household’s history and the audit log. This view is read-only.'}
         </p>
       </div>
 

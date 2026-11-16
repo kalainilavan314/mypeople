@@ -2,10 +2,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import type { HomeView } from '@my-people/api-client';
 import { router, type Href } from 'expo-router';
 import { useCallback } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, spacing } from '@my-people/design-tokens/mobile';
+import { colors, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
@@ -13,7 +13,6 @@ import {
   formatDateTime,
   Notice,
   Screen,
-  StatusTag,
   SurfaceCard,
   useApiQuery,
   useLanguage,
@@ -23,7 +22,9 @@ import {
 
 import { QueryView } from '@/components/QueryView';
 import { EventRow } from '@/features/events/EventRow';
-import { FeatureTile } from '@/features/home/FeatureTile';
+import { HomeActionTile } from '@/features/home/HomeActionTile';
+import { MemberWelcomeCard } from '@/features/home/MemberWelcomeCard';
+import { PromiseTrackerCard } from '@/features/home/PromiseTrackerCard';
 import { StaffRoleTags } from '@/features/staff/StaffRoleTags';
 import { useMyStaffRoles } from '@/features/staff/useMyStaffRoles';
 import { api } from '@/lib/api';
@@ -47,66 +48,32 @@ function nextStepRoute(step: NextStep): Href {
 /** H01 for Verified and Active members, H02 while identity or membership is pending; the server decides which. */
 export default function HomeScreen() {
   const home = useApiQuery(() => api().getHome());
-  const inbox = useApiQuery(() => api().getNotifications({ limit: 1 }));
 
   const reload = useCallback(() => {
     home.reload();
-    inbox.reload();
-  }, [home.reload, inbox.reload]);
+  }, [home.reload]);
   useReloadOnFocus(reload);
 
   return (
-    <Screen maxContentWidth={720} onRefresh={reload} refreshing={home.loading && home.data !== undefined}>
-      <QueryView query={home}>{(data) => <HomeBody data={data} unread={inbox.data?.unread ?? 0} />}</QueryView>
+    <Screen edges={[]} maxContentWidth={720} onRefresh={reload} refreshing={home.loading && home.data !== undefined}>
+      <QueryView query={home}>{(data) => <HomeBody data={data} />}</QueryView>
     </Screen>
   );
 }
 
-function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
+function HomeBody({ data }: { data: HomeView }) {
   const { t } = useTranslation();
   const language = useLanguage();
   const localized = useLocalized();
   const place = [data.districtName, data.gnName].filter(Boolean).join(' / ');
   const next = data.nextStep;
   const showComingUp = next?.kind !== 'event_soon';
-  const membershipTone = data.membershipState === 'active' ? 'verified' : data.membershipState === 'pending' ? 'pending' : 'error';
   const roles = useMyStaffRoles();
   const staff = roles.assignments.length > 0;
 
   return (
     <>
-      <View style={styles.header}>
-        <View style={styles.headerText}>
-          <AppText step="label" tone="primary">
-            {t('m.welcome.title')}
-          </AppText>
-          <AppText step="page" accessibilityRole="header">
-            {t('nav.home')}
-          </AppText>
-          <AppText step="body">{data.displayName}</AppText>
-          {place ? (
-            <View style={styles.place}>
-              <Ionicons name="location-outline" size={16} color={colors.textMuted} />
-              <AppText step="secondary" tone="muted">
-                {place}
-              </AppText>
-            </View>
-          ) : null}
-        </View>
-        <Pressable
-          onPress={() => router.push('/notifications')}
-          accessibilityRole="button"
-          accessibilityLabel={unread > 0 ? `${t('m.home.notifications')}, ${t('m.home.unread', { count: unread })}` : t('m.home.notifications')}
-          style={styles.bell}>
-          <Ionicons name="notifications-outline" size={22} color={colors.primary} />
-          {unread > 0 ? <View style={styles.dot} /> : null}
-        </Pressable>
-      </View>
-
-      <StatusTag
-        tone={membershipTone}
-        label={`${t('m.profile.membership')}: ${t(`m.home.membership_${data.membershipState}`)}`}
-      />
+      <MemberWelcomeCard place={place} membershipState={data.membershipState} />
 
       {data.layout === 'awaiting_review' && !next ? (
         <Notice tone="warning" title={t('m.home.awaitingTitle')}>
@@ -152,19 +119,19 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
         </SurfaceCard>
       ) : null}
 
-      <AppText step="section" accessibilityRole="header">
+      <AppText step="section" accessibilityRole="header" style={styles.sectionTitle}>
         {t('m.home.quickActions')}
       </AppText>
-      <SurfaceCard style={styles.actionList}>
+      <View style={styles.actionGrid}>
         {data.quickActions.map((feature, index) => (
-          <FeatureTile key={feature.key} feature={feature} divided={index > 0} />
+          <HomeActionTile key={feature.key} feature={feature} tone={index === 0 || index === 3 ? 'red' : 'yellow'} />
         ))}
-      </SurfaceCard>
+      </View>
 
       {showComingUp ? (
         <>
           <View style={styles.sectionRow}>
-            <AppText step="section" accessibilityRole="header" style={styles.flex}>
+            <AppText step="section" accessibilityRole="header" style={[styles.flex, styles.sectionTitle]}>
               {t('m.home.comingUp')}
             </AppText>
             <Button label={t('m.common.seeAll')} variant="quiet" onPress={() => router.push('/events')} />
@@ -172,13 +139,32 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
           {data.comingUp ? (
             <EventRow event={data.comingUp} />
           ) : (
-            <SurfaceCard>
-              <AppText step="secondary" tone="muted">
-                {t('m.home.noEvents')}
-              </AppText>
+            <SurfaceCard style={styles.emptyEvents}>
+              <View style={styles.emptyEventCopy}>
+                <Ionicons name="calendar-outline" size={34} color={colors.primary} />
+                <AppText step="body" tone="secondary" style={styles.flex}>
+                  {t('m.home.noEvents')}
+                </AppText>
+              </View>
               <Button label={t('m.home.browseEvents')} variant="secondary" onPress={() => router.push('/events')} />
             </SurfaceCard>
           )}
+        </>
+      ) : null}
+
+      {/* M18: the Promise Tracker is on Home as well as in the Community Hub. An API from before
+          this addition sends no summary, so the section is left out rather than failing. */}
+      {data.promises ? (
+        <>
+          <View style={styles.sectionRow}>
+            <AppText step="section" accessibilityRole="header" style={[styles.flex, styles.sectionTitle]}>
+              {t('m.home.feature_promises')}
+            </AppText>
+            {data.promises.feature.available ? (
+              <Button label={t('m.common.seeAll')} variant="quiet" onPress={() => router.push('/promises')} />
+            ) : null}
+          </View>
+          <PromiseTrackerCard summary={data.promises} />
         </>
       ) : null}
     </>
@@ -186,19 +172,12 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3] },
-  headerText: { flex: 1, gap: spacing[1] },
-  place: { flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
-  bell: {
-    width: control.touchMin,
-    height: control.touchMin,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dot: { position: 'absolute', top: 10, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.error },
   nextAction: { backgroundColor: colors.primaryContainer, borderColor: colors.primaryContainer },
-  actionList: { padding: 0, gap: 0, overflow: 'hidden' },
+  sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
+  actionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
   sectionRow: { flexDirection: 'row', alignItems: 'center' },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
+  emptyEvents: { gap: spacing[4] },
+  emptyEventCopy: { flexDirection: 'row', alignItems: 'center', gap: spacing[3] },
   flex: { flex: 1 },
 });

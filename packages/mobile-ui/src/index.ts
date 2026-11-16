@@ -1,7 +1,7 @@
 // Shared by the member and staff apps: the app fonts, the screen components
 // from the design specification (design/mobile/production-design-specification.md
 // §3), the stored session, and the hooks that load data through the API client.
-export { fontFamilyFor, appFonts, monoFontFamily, scaledTextStyle, textStyle } from './fonts';
+export { fontFamilyFor, appFonts, monoFontFamily, scaledTextStyle, textStyle, type TypographyScale } from './fonts';
 export {
   DisplayPreferencesProvider,
   TEXT_SCALE,
@@ -13,6 +13,7 @@ export { tabIcon } from './tabIcon';
 
 export { ActionTile } from './components/ActionTile';
 export { AppText } from './components/AppText';
+export { AppTypographyProvider } from './components/AppTypographyProvider';
 export { AuthorizedImage } from './components/AuthorizedImage';
 export { Button } from './components/Button';
 export { Checkbox } from './components/Checkbox';

@@ -95,6 +95,33 @@ _ACTIVITY = {
         SELECT 'privacy_request' AS kind, p.request_ref AS reference, p.kind AS title, p.state,
                COALESCE(p.closed_at, p.created_at) AS at, p.id AS target_id
         FROM privacy.request p WHERE p.member_id = :member""",
+    "issue_report": """
+        SELECT 'issue_report' AS kind, i.case_number AS reference, i.title AS title, i.stage AS state,
+               i.updated_at AS at, i.id AS target_id
+        FROM community.issue i WHERE i.reporter_id = :member""",
+    "volunteer_offer": """
+        SELECT 'volunteer_offer' AS kind, f.offer_ref AS reference, o.title_en AS title, f.state,
+               f.updated_at AS at, f.id AS target_id
+        FROM engagement.volunteer_offer f JOIN engagement.volunteer_opportunity o ON o.id = f.opportunity_id
+        WHERE f.member_id = :member""",
+    "idea": """
+        SELECT 'idea' AS kind, i.idea_ref AS reference, i.title, i.state, i.updated_at AS at, i.id AS target_id
+        FROM community.idea i WHERE i.author_id = :member""",
+    "survey_response": """
+        SELECT 'survey_response' AS kind, p.receipt_ref AS reference, s.title_en AS title, 'submitted' AS state,
+               p.updated_at AS at, s.id AS target_id
+        FROM community.survey_participation p JOIN community.survey s ON s.id = p.survey_id
+        WHERE p.member_id = :member""",
+    "proposal": """
+        SELECT 'proposal' AS kind, d.proposal_ref AS reference, d.title, d.stage AS state, d.updated_at AS at,
+               d.id AS target_id
+        FROM community.proposal d WHERE d.author_id = :member""",
+    "course": """
+        SELECT 'course' AS kind, c.course_ref AS reference, c.title_en AS title,
+               CASE WHEN p.completed_at IS NULL THEN 'in_progress' ELSE 'completed' END AS state,
+               COALESCE(p.completed_at, p.updated_at) AS at, c.id AS target_id
+        FROM community.course_progress p JOIN community.course c ON c.id = p.course_id
+        WHERE p.member_id = :member""",
 }
 
 

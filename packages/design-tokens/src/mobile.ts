@@ -73,6 +73,23 @@ export const typeScale = {
   nav: { size: 10, lineHeight: 15, weight: 600 },
 } as const satisfies Record<string, { size: number; lineHeight: number; weight: FontWeight }>;
 
+/**
+ * The roomier scale for member-facing native screens (Puvi, 13 November 2026), on the same steps;
+ * fonts stay locked. Apps opt in with AppTypographyProvider; the default scale stays the PWA's.
+ */
+export const comfortableTypeScale = {
+  display: brand.comfortableTypeScale.page,
+  page: brand.comfortableTypeScale.page,
+  title: brand.comfortableTypeScale.section,
+  section: brand.comfortableTypeScale.section,
+  card: brand.comfortableTypeScale.card,
+  body: brand.comfortableTypeScale.body,
+  label: brand.comfortableTypeScale.label,
+  secondary: brand.comfortableTypeScale.secondary,
+  caption: brand.comfortableTypeScale.caption,
+  nav: brand.comfortableTypeScale.nav,
+} as const satisfies Record<keyof typeof typeScale, { size: number; lineHeight: number; weight: FontWeight }>;
+
 /** Tamil script needs more line height than Latin text. */
 export const lineHeightRatio = brand.lineHeightRatio;
 

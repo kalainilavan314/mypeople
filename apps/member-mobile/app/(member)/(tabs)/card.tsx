@@ -71,7 +71,7 @@ export default function CardScreen() {
     return () => { active = false; };
   }, [unanswered, member.id]);
   return (
-    <Screen edges={[]} maxContentWidth={640} onRefresh={card.reload} refreshing={card.loading && card.data !== undefined}>
+    <Screen title={t('m.card.title')} edges={[]} maxContentWidth={640} onRefresh={card.reload} refreshing={card.loading && card.data !== undefined}>
       {unanswered && offline ? (
         <>
           <OfflineCard preview={offline} />

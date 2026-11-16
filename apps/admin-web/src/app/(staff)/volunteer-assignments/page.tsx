@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Suspense } from 'react';
 
 import { ConsoleLoading } from '@/components/ConsoleLoading';
@@ -19,6 +20,10 @@ const one = (value: string | string[] | undefined) => Array.isArray(value) ? val
 export default function VolunteerAssignmentsPage(props: PageProps<'/volunteer-assignments'>) {
   return <>
     <PageHeader ta="Volunteer assignments" en="Volunteer assignments" locale="en" />
+    <p className="text-sm text-muted">
+      Event duty shifts offered to a named member. Opportunities members offer to help with, their offers and the volunteer inbox are in{' '}
+      <Link href="/volunteering" className="font-semibold text-primary underline">Volunteering opportunities</Link>.
+    </p>
     <Suspense fallback={<ConsoleLoading />}><AssignmentsConsole searchParams={props.searchParams} /></Suspense>
   </>;
 }

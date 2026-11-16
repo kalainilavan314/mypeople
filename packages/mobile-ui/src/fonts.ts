@@ -11,7 +11,7 @@ import { Outfit_400Regular } from '@expo-google-fonts/outfit/400Regular';
 import { Outfit_500Medium } from '@expo-google-fonts/outfit/500Medium';
 import { Outfit_600SemiBold } from '@expo-google-fonts/outfit/600SemiBold';
 import { Outfit_700Bold } from '@expo-google-fonts/outfit/700Bold';
-import { lineHeightRatio, typeScale, type FontWeight } from '@my-people/design-tokens/mobile';
+import { comfortableTypeScale, lineHeightRatio, typeScale, type FontWeight } from '@my-people/design-tokens/mobile';
 
 export const appFonts = {
   Outfit_300Light,
@@ -24,6 +24,9 @@ export const appFonts = {
   NotoSansTamil_700Bold,
   JetBrainsMono_400Regular,
 };
+
+/** The default scale, or the roomier one member-facing native screens opt into (AppTypographyProvider). */
+export type TypographyScale = 'default' | 'comfortable';
 
 /** The loaded monospace font, for member IDs and reference numbers. */
 export const monoFontFamily = 'JetBrainsMono_400Regular';
@@ -51,21 +54,27 @@ export function fontFamilyFor(language: string, weight: FontWeight): string {
 }
 
 /** textStyle with the size and line height multiplied by the member's in-app text size (M44). */
-export function scaledTextStyle(language: string, step: keyof typeof typeScale, scale: number) {
-  const base = textStyle(language, step);
+export function scaledTextStyle(
+  language: string,
+  step: keyof typeof typeScale,
+  scale: number,
+  typography: TypographyScale = 'default',
+) {
+  const base = textStyle(language, step, typography);
   return { ...base, fontSize: Math.round(base.fontSize * scale), lineHeight: Math.ceil(base.lineHeight * scale) };
 }
 
 /** Font, size and line height for a step of the type scale. */
-export function textStyle(language: string, step: keyof typeof typeScale) {
-  const { size: latinSize, lineHeight, weight } = typeScale[step];
+export function textStyle(language: string, step: keyof typeof typeScale, typography: TypographyScale = 'default') {
+  const steps = typography === 'comfortable' ? comfortableTypeScale : typeScale;
+  const { size: latinSize, lineHeight, weight } = steps[step];
   const tamil = language === 'ta';
   // Puvi's type scale is the PWA's, small enough that Tamil keeps the English sizes; it only
   // gets more line height (lineHeightRatio.tamil).
   const size = latinSize;
   // Text must remain readable when system font scaling expands Tamil glyphs: every step keeps
-  // above the 1.4 accessibility baseline, and Tamil gets its larger script-specific leading.
-  const accessibleLineHeight = Math.ceil(size * 1.4);
+  // above a 1.45 line-height baseline, and Tamil gets its larger script-specific leading.
+  const accessibleLineHeight = Math.ceil(size * 1.45);
   const tamilLineHeight = Math.ceil(size * lineHeightRatio.tamil);
   return {
     fontFamily: fontFamilyFor(language, weight),

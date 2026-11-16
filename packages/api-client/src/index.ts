@@ -128,15 +128,211 @@ export type CommunityReportsQueueCount = Schemas['CommunityReportsQueueCount'];
 export type CommunityReportSummary = Schemas['CommunityReportSummaryOut'];
 export type CommunityReportList = Schemas['CommunityReportListOut'];
 export type CommunityReportStatus = Schemas['CommunityReportSummaryOut']['status'];
+// Community issues (H05 to H09) and the case workflow (W03 to W08).
+export type MyArea = Schemas['MyAreaOut'];
+export type AreaUpdate = Schemas['AreaUpdateOut'];
+export type IssueSummary = Schemas['IssueSummaryOut'];
+export type IssueDetail = Schemas['IssueDetailOut'];
+export type IssueStep = Schemas['IssueStepOut'];
+export type MyIssueReport = Schemas['MyReportOut'];
+export type IssueReportingOptions = Schemas['ReportingOptionsOut'];
+export type IssueReportInput = Schemas['IssueReportIn'];
+export type IssueCategory = Schemas['IssueReportIn']['category'];
+export type IssueLocationKind = Schemas['IssueReportIn']['locationKind'];
+export type IssueVisibility = NonNullable<Schemas['IssueReportIn']['visibility']>;
+export type IssueStatus = Schemas['IssueSummaryOut']['status'];
+export type IssueResponsibleTier = NonNullable<Schemas['IssueSummaryOut']['responsibleTier']>;
+export type IssuePhoto = Schemas['IssuePhotoOut'];
+export type IssueAddition = Schemas['AdditionOut'];
+export type MyIssueAddition = Schemas['MyAdditionOut'];
+export type ClosureResponseInput = Schemas['ClosureResponseIn'];
+export type CaseSummary = Schemas['IssueCaseOut'];
+export type CaseList = Schemas['IssueCaseListOut'];
+export type CaseFile = Schemas['IssueCaseFileOut'];
+export type CaseAction = Schemas['CaseActionOut'];
+export type CaseEvidence = Schemas['CaseEvidenceOut'];
+export type CaseAddition = Schemas['CaseAdditionOut'];
+export type CaseOwnerOption = Schemas['OwnerOptionOut'];
+export type CaseReporterContact = Schemas['ReporterContactOut'];
+export type CasePhoto = Schemas['CasePhotoOut'];
+export type CaseStage = Schemas['IssueCaseOut']['stage'];
+export type CaseFactInput = Schemas['FactIn'];
+export type CaseFindingInput = Schemas['FindingIn'];
+export type CaseFindingKind = Schemas['FindingIn']['kind'];
+export type CaseForwardInput = Schemas['ForwardIn'];
+export type CaseDsReportInput = Schemas['DsReportIn'];
+export type CaseDistrictDecisionInput = Schemas['DistrictDecisionIn'];
+export type CaseRegionalPlanInput = Schemas['RegionalPlanIn'];
+export type CaseExecutiveDecisionInput = Schemas['ExecutiveDecisionIn'];
+export type CaseProgressInput = Schemas['ProgressIn'];
+export type CaseCloseInput = Schemas['CaseCloseIn'];
+export type CaseAssignInput = Schemas['AssignIn'];
+export type CaseChallengeDecisionInput = Schemas['ChallengeDecisionIn'];
+export type CasePublicSummaryInput = Schemas['PublicSummaryIn'];
+export type PendingModeration = Schemas['PendingModerationOut'];
+export type PendingCaseSummary = Schemas['PendingSummaryOut'];
+export type PendingCaseAddition = Schemas['PendingAdditionOut'];
+// One appeal against a moderation decision on an idea or added information (D12).
+export type ModerationAppeal = Schemas['ModerationAppealOut'];
+export type ModerationAppealItemKind = Schemas['ModerationAppealIn']['itemKind'];
+export type ModerationAppealState = Schemas['ModerationAppealOut']['state'];
+export type StaffModerationAppeal = Schemas['StaffModerationAppealOut'];
+export type ModerationAppealDecisionInput = Schemas['ModerationAppealDecisionIn'];
+// Volunteering (H10 to H12, S10).
+export type VolunteerSkills = Schemas['VolunteerSkillsOut'];
+export type VolunteerSkill = Schemas['SkillOut'];
+export type VolunteerProfile = Schemas['VolunteerProfileOut'];
+export type VolunteerProfileInput = Schemas['VolunteerProfileIn'];
+export type VolunteerAvailability = Schemas['VolunteerProfileIn']['availability'][number];
+export type VolunteerTravelArea = Schemas['VolunteerProfileIn']['travelArea'];
+export type VolunteerOpportunity = Schemas['MemberOpportunityOut'];
+export type VolunteerOffer = Schemas['MyOfferOut'];
+export type VolunteerOfferState = Schemas['MyOfferOut']['state'];
+export type VolunteerOfferItem = Schemas['VolunteerOfferItemOut'];
+export type VolunteerContact = Schemas['ContactOut'];
+export type VolunteerContactInput = Schemas['ContactIn'];
+export type ManagedVolunteerOpportunity = Schemas['ManagedOpportunityOut'];
+export type VolunteerOpportunityInput = Schemas['OpportunityIn'];
+export type VolunteerOpportunityUpdate = Schemas['OpportunityUpdateIn'];
+export type VolunteerOpportunityState = Schemas['ManagedOpportunityOut']['state'];
+export type VolunteerOfferCard = Schemas['OfferCardOut'];
+export type VolunteerOfferDecision = Schemas['OfferDecisionIn'];
+export type VolunteerInboxItem = Schemas['InboxItemOut'];
+export type VolunteerCard = Schemas['VolunteerCardOut'];
+// Ideas (H13), surveys (H14, H21) and development proposals (M15 to M17, D15).
+export type IdeaBoard = Schemas['IdeaBoardOut'];
+export type Idea = Schemas['IdeaOut'];
+export type IdeaAppeal = Schemas['IdeaAppealOut'];
+/** D12: the moderator's edited (redacted) version; an omitted field keeps the author's text. */
+export type IdeaEdits = Pick<Schemas['IdeaModerationIn'], 'editedTitle' | 'editedBenefit'>;
+export type IdeaInput = Schemas['IdeaIn'];
+export type PendingIdea = Schemas['PendingIdeaOut'];
+export type SurveySummary = Schemas['SurveySummaryOut'];
+export type SurveyDetail = Schemas['SurveyDetailOut'];
+export type SurveyQuestion = Schemas['SurveyQuestionOut'];
+export type SurveyQuestionKind = Schemas['SurveyQuestionOut']['kind'];
+export type SurveyReceipt = Schemas['SurveyReceiptOut'];
+export type SurveyAnswerValue = string | string[] | number;
+export type SurveyInput = Schemas['SurveyIn'];
+export type SurveyQuestionInput = Schemas['SurveyQuestionIn'];
+export type ManagedSurvey = Schemas['ManagedSurveyOut'];
+export type SurveyResults = Schemas['SurveyResultsOut'];
+export type ProposalBoard = Schemas['ProposalBoardOut'];
+export type ProposalSummary = Schemas['ProposalSummaryOut'];
+export type ProposalDetail = Schemas['ProposalDetailOut'];
+export type ProposalInput = Schemas['ProposalIn'];
+export type ProposalRevisionInput = Schemas['ProposalRevisionIn'];
+export type ProposalCategory = Schemas['ProposalIn']['category'];
+export type ProposalStage = Schemas['ProposalSummaryOut']['stage'];
+export type ProposalMoveInput = Schemas['ProposalMoveIn'];
+export type ProposalNeeds = Schemas['NeedsOut'];
+// Learning (H15, H16) and invitations (H19, H20).
+export type CourseCatalogue = Schemas['CatalogueOut'];
+export type CourseCard = Schemas['CourseCardOut'];
+export type CourseDetail = Schemas['CourseDetailOut'];
+export type CourseLesson = Schemas['LessonOut'];
+export type CourseTopic = Schemas['CourseIn']['topic'];
+export type CourseInput = Schemas['CourseIn'];
+export type ManagedCourse = Schemas['ManagedCourseOut'];
+export type ManagedCourseSummary = Schemas['ManagedCourseSummaryOut'];
+export type MyReferrals = Schemas['MyReferralsOut'];
+export type InvitationItem = Schemas['InvitationOut'];
+export type InvitationStatus = Schemas['InvitationOut']['status'];
+export type NewInvitation = Schemas['NewInvitationOut'];
+export type InvitationPreview = Schemas['InvitationPreviewOut'];
+// Promise Tracker (M18, M19, D16) and scorecards (M20, D17).
+export type PromiseSummary = Schemas['PromiseSummaryOut'];
+export type PromiseDetail = Schemas['PromiseDetailOut'];
+export type PromiseStatus = Schemas['PromiseSummaryOut']['status'];
+export type PromiseTheme = Schemas['PromiseSummaryOut']['theme'];
+export type PromiseKind = Schemas['PromiseSummaryOut']['kind'];
+export type PromiseUpdateItem = Schemas['PromiseUpdateOut'];
+export type PromiseFeedbackItem = Schemas['PromiseFeedbackOut'];
+export type PromiseInput = Schemas['PromiseIn'];
+export type PromiseUpdateInput = Schemas['PromiseUpdateIn'];
+export type PromisePendingWork = Schemas['PendingWorkOut'];
+export type PromiseReportRow = Schemas['ReportRowOut'];
+export type MyScorecards = Schemas['MyScorecardsOut'];
+export type AreaScorecard = Schemas['AreaScorecardOut'];
+export type Scorecard = Schemas['ScorecardOut'];
+export type ScorecardFile = Schemas['ScorecardFileOut'];
+export type ScorecardCorrection = Schemas['CorrectionOut'];
+// Community Support (M11 to M14, S11, S12, D13, D14).
+export type SupportHome = Schemas['SupportHomeOut'];
+export type SupportCategory = Schemas['SupportRequestIn']['category'];
+export type SupportRequestInput = Schemas['SupportRequestIn'];
+export type MySupportRequestSummary = Schemas['MyRequestSummaryOut'];
+export type MySupportRequest = Schemas['MyRequestOut'];
+export type SupportDecision = Schemas['SupportDecisionOut'];
+export type SupportAppeal = Schemas['SupportAppealOut'];
+export type SupportAppealInput = Schemas['AppealIn'];
+export type SupportIntakeInput = Schemas['IntakeIn'];
+export type SupportCaseSummary = Schemas['StaffCaseSummaryOut'];
+export type SupportCaseFile = Schemas['StaffCaseFileOut'];
+export type SupportCaseworker = Schemas['CaseworkerOut'];
+export type SupportDecisionInput = Schemas['DecisionIn'];
+export type SupportDeliveryInput = Schemas['DeliveryIn'];
+export type SupportAppealDecisionInput = Schemas['AppealDecisionIn'];
+export type SupportProgramme = Schemas['ProgrammeOut'];
+export type SupportProgrammeInput = Schemas['ProgrammeIn'];
+export type SupportPartner = Schemas['PartnerOut'];
+export type SupportPartnerInput = Schemas['PartnerIn'];
+export type SupportStatistics = Schemas['StatisticsOut'];
+export type PublicSupportForm = Schemas['PublicSupportFormOut'];
+export type PublicSupportReceipt = Schemas['PublicReceiptOut'];
+export type PublicSupportStatistics = Schemas['PublicSupportStatisticsOut'];
+export type MySupportReferral = Schemas['MyReferralOut'];
+export type SupportReferral = Schemas['ReferralOut'];
+// Town halls (M21 to M23, D18).
+export type TownHall = Schemas['TownHallOut'];
+export type TownHallSession = Schemas['TownHallSessionOut'];
+export type TownHallQuestion = Schemas['QuestionOut'];
+export type TownHallInput = Schemas['TownHallIn'];
+export type TownHallStaffSession = Schemas['StaffSessionOut'];
+export type TownHallArchiveInput = Schemas['ArchiveIn'];
+// Field visits (S05 to S07, D24), the election duty roster (M30, S15) and staff reads.
+export type FieldVisitInput = Schemas['FieldVisitIn'];
+export type FieldVisit = Schemas['FieldVisitOut'];
+export type FieldVisitConcern = NonNullable<Schemas['FieldVisitIn']['concerns']>[number];
+export type FieldSyncResult = Schemas['SyncResultOut'];
+export type FieldVisitCount = Schemas['VisitCountOut'];
+export type RosterShift = Schemas['ShiftOut'];
+export type RosterShiftFile = Schemas['ShiftFileOut'];
+export type RosterShiftInput = Schemas['ShiftIn'];
+export type MyRosterShift = Schemas['MyShiftOut'];
+export type RosterPeriod = Schemas['OpenPeriodOut'];
+export type ElectionPeriodReport = Schemas['PeriodReportOut'];
+export type ElectionPeriodReportEntry = Schemas['PeriodReportEntryOut'];
+export type RosterMessage = Schemas['RosterMessageOut'];
+export type ManagedSurveyFile = Schemas['ManagedSurveyFileOut'];
+// Fact-checks (M48 reporting part, D12).
+export type MisinfoReport = Schemas['MisinfoReportOut'];
+export type StaffMisinfoReport = Schemas['StaffMisinfoReportOut'];
+export type MisinfoOutcome = NonNullable<Schemas['MisinfoReportOut']['outcome']>;
+export type CaseListFilters = {
+  stage?: CaseStage[];
+  mine?: boolean;
+  overdue?: boolean;
+  districtClosures?: boolean;
+  search?: string;
+  limit?: number;
+  offset?: number;
+};
 export type Household = Schemas['HouseholdOut'];
 export type HouseholdMember = Schemas['HouseholdMemberOut'];
 export type HouseholdInvitation = Schemas['HouseholdInvitationOut'];
 export type HouseholdCreateInput = Schemas['HouseholdCreateIn'];
 export type HouseholdUpdateInput = Schemas['HouseholdUpdateIn'];
 export type InviteAdultInput = Schemas['InviteAdultIn'];
+export type HouseholdInvitationSent = Schemas['HouseholdInvitationSentOut'];
 export type InvitationRespondInput = Schemas['InvitationRespondIn'];
 export type ConsentNotice = Schemas['ConsentNoticeOut'];
-export type ConsentLog = Schemas['ConsentLogOut'];
+export type HouseholdLogEntry = Schemas['HouseholdLogEntryOut'];
+export type HouseholdPlace = Schemas['HouseholdPlaceOut'];
+export type DependantInput = Schemas['DependantIn'];
+export type DependantUpdateInput = Schemas['DependantUpdateIn'];
+export type MyHouseholdDetailsInput = Schemas['MyHouseholdDetailsIn'];
+export type MemberRelationshipInput = Schemas['MemberRelationshipIn'];
 export type InvitationsList = Schemas['InvitationsListOut'];
 export type StaffHouseholdView = Schemas['StaffHouseholdViewOut'];
 export type FundConfig = Schemas['FundConfigResponse'];
@@ -980,13 +1176,30 @@ export function createApiClient({
     createHousehold: (body: HouseholdCreateInput) => request<Household>('POST', '/v1/households', body),
     updateHousehold: (body: HouseholdUpdateInput) => request<Household>('PATCH', '/v1/households/mine', body),
     getMyInvitations: () => request<InvitationsList>('GET', '/v1/households/invitations/mine'),
-    inviteAdult: (body: InviteAdultInput) => request<HouseholdInvitation>('POST', '/v1/households/invitations', body),
+    /** M08: a neutral confirmation; the invitee's name is never returned before they accept. */
+    inviteAdult: (body: InviteAdultInput) =>
+      request<HouseholdInvitationSent>('POST', '/v1/households/invitations', body),
     respondInvitation: (invitationId: string, body: InvitationRespondInput) =>
       request<Household | null>('POST', `/v1/households/invitations/${encodeURIComponent(invitationId)}/respond`, body),
     revokeInvitation: (invitationId: string) =>
       request<void>('POST', `/v1/households/invitations/${encodeURIComponent(invitationId)}/revoke`),
     removeHouseholdMember: (memberRecordId: string) =>
       request<void>('POST', `/v1/households/members/${encodeURIComponent(memberRecordId)}/remove`),
+    /** OD-30: an adult's own age band and occupation category; null clears a field. */
+    updateMyHouseholdDetails: (body: MyHouseholdDetailsInput) =>
+      request<Household>('PATCH', '/v1/households/members/me', body),
+    /** M10: the head corrects an adult's relationship. */
+    correctHouseholdRelationship: (memberRecordId: string, body: MemberRelationshipInput) =>
+      request<Household>('PATCH', `/v1/households/members/${encodeURIComponent(memberRecordId)}`, body),
+    /** M07 / OD-31: a child's minimum record; the adult who adds it is its guardian. */
+    addHouseholdDependant: (body: DependantInput) => request<Household>('POST', '/v1/households/dependants', body),
+    updateHouseholdDependant: (memberRecordId: string, body: DependantUpdateInput) =>
+      request<Household>('PATCH', `/v1/households/dependants/${encodeURIComponent(memberRecordId)}`, body),
+    removeHouseholdDependant: (memberRecordId: string) =>
+      request<void>('DELETE', `/v1/households/dependants/${encodeURIComponent(memberRecordId)}`),
+    getHouseholdLog: () => request<HouseholdLogEntry[]>('GET', '/v1/households/mine/log'),
+    giveCaseworkerConsent: () => request<Household>('POST', '/v1/households/mine/caseworker-consent'),
+    withdrawCaseworkerConsent: () => request<Household>('DELETE', '/v1/households/mine/caseworker-consent'),
     leaveHousehold: () => request<void>('POST', '/v1/households/leave'),
     getHouseholdPrivacyNotice: () => request<ConsentNotice>('GET', '/v1/households/privacy'),
     staffViewHousehold: (targetMemberId: string) =>
@@ -1005,6 +1218,572 @@ export function createApiClient({
     /** Area-scoped operational detail without reporter identity or contact data. Needs reports.view. */
     getCommunityReport: (reportId: string) =>
       request<CommunityReportSummary>('GET', `/v1/community/reports/${encodeURIComponent(reportId)}`),
+    // Community issues for members (H05 to H09). Every route answers 404 "feature_unavailable"
+    // while the community_issues module is switched off.
+    /** H05: Updates, Issues and Projects published for the member's GN division. */
+    getMyArea: () => request<MyArea>('GET', '/v1/issues/area'),
+    /** H07: whether the member may report (FR-RPT-017) and the controlled lists. */
+    getIssueReportingOptions: () => request<IssueReportingOptions>('GET', '/v1/issues/reporting'),
+    /** A report photo, re-encoded without location data into the restricted evidence store. */
+    uploadIssuePhoto: (image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
+      request<IssuePhoto>('POST', '/v1/issues/photos', image, contentType),
+    uploadIssueAdditionPhoto: (image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
+      request<IssuePhoto>('POST', '/v1/issues/addition-photos', image, contentType),
+    /**
+     * H08: sends the report. The same clientReference always returns the first receipt (FR-RPT-013).
+     * Throws ApiError "issue_refused" (422) with `problems`, e.g. "identity_not_verified", "location_required".
+     */
+    submitIssueReport: (input: IssueReportInput) => request<IssueDetail>('POST', '/v1/issues', input),
+    listMyIssueReports: () => request<{ items: IssueSummary[] }>('GET', '/v1/issues/mine'),
+    /** H06 for issues in the member's area; H09 with `report` filled in for the reporter. Throws "not_found" (404). */
+    getIssue: (issueId: string) => request<IssueDetail>('GET', `/v1/issues/${encodeURIComponent(issueId)}`),
+    setIssueFollowing: (issueId: string, follow: boolean) =>
+      request<IssueDetail>('PUT', `/v1/issues/${encodeURIComponent(issueId)}/follow`, { follow }),
+    /** FR-RPT-006: held for moderation; the reporter's answer to a request for details reopens the GN stage. */
+    addIssueInformation: (issueId: string, body: string, photoIds: string[] = []) =>
+      request<IssueAddition>('POST', `/v1/issues/${encodeURIComponent(issueId)}/information`, { body, photoIds }),
+    /** FR-RPT-016: rate the closure, or challenge it (resolved: false) with a note within 30 days. */
+    respondToIssueClosure: (issueId: string, input: ClosureResponseInput) =>
+      request<IssueDetail>('POST', `/v1/issues/${encodeURIComponent(issueId)}/closure-response`, input),
+    // The staff case workflow (W03 to W08). Refusals: "forbidden" or "own_record" (403), "not_found"
+    // (404, also outside the viewer's areas), "case_refused" (409) with `problems` such as "wrong_stage".
+    listCases: (filters: CaseListFilters = {}) => {
+      const q = new URLSearchParams();
+      for (const stage of filters.stage ?? []) q.append('stage', stage);
+      if (filters.mine) q.set('mine', 'true');
+      if (filters.overdue) q.set('overdue', 'true');
+      if (filters.districtClosures) q.set('districtClosures', 'true');
+      if (filters.search) q.set('search', filters.search);
+      if (filters.limit !== undefined) q.set('limit', String(filters.limit));
+      if (filters.offset !== undefined) q.set('offset', String(filters.offset));
+      const qs = q.toString();
+      return request<CaseList>('GET', `/v1/cases${qs ? `?${qs}` : ''}`);
+    },
+    /** The whole case file with the actions the viewer may take now; the read is audited. */
+    getCase: (caseId: string) => request<CaseFile>('GET', `/v1/cases/${encodeURIComponent(caseId)}`),
+    /** People who may be named owner for a step: deciding holders of `permission` over the case's area. */
+    listCaseOwnerOptions: (caseId: string, permission: string) =>
+      request<{ items: CaseOwnerOption[] }>(
+        'GET',
+        `/v1/cases/${encodeURIComponent(caseId)}/owners?permission=${encodeURIComponent(permission)}`,
+      ),
+    /** PRM-13: the assigned owner only; every look is audited. */
+    getCaseReporterContact: (caseId: string) =>
+      request<CaseReporterContact>('GET', `/v1/cases/${encodeURIComponent(caseId)}/reporter-contact`),
+    uploadCasePhoto: (caseId: string, image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
+      request<CasePhoto>('POST', `/v1/cases/${encodeURIComponent(caseId)}/photos`, image, contentType),
+    addCaseFact: (caseId: string, input: CaseFactInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/facts`, input),
+    addCaseFinding: (caseId: string, input: CaseFindingInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/findings`, input),
+    addCaseNote: (caseId: string, text: string) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/notes`, { text }),
+    returnCaseForDetails: (caseId: string, question: string) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/return`, { question }),
+    linkCaseToParent: (caseId: string, parentCaseNumber: string, note?: string) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/link`, { parentCaseNumber, note }),
+    forwardCase: (caseId: string, input: CaseForwardInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/forward`, input),
+    sendCaseDsReport: (caseId: string, input: CaseDsReportInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/ds-report`, input),
+    decideCaseAtDistrict: (caseId: string, input: CaseDistrictDecisionInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/district-decision`, input),
+    submitCaseRegionalPlan: (caseId: string, input: CaseRegionalPlanInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/regional-plan`, input),
+    decideCaseExecutive: (caseId: string, input: CaseExecutiveDecisionInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/executive-decision`, input),
+    recordCaseProgress: (caseId: string, input: CaseProgressInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/progress`, input),
+    closeCase: (caseId: string, input: CaseCloseInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/close`, input),
+    assignCase: (caseId: string, input: CaseAssignInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/assign`, input),
+    decideCaseChallenge: (caseId: string, input: CaseChallengeDecisionInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/challenge-decision`, input),
+    setCasePublicSummary: (caseId: string, input: CasePublicSummaryInput) =>
+      request<CaseFile>('POST', `/v1/cases/${encodeURIComponent(caseId)}/public-summary`, input),
+    /** D12: approve (optionally as an edited version with names or contact details taken out) or reject with a reason. */
+    moderateCaseAddition: (caseId: string, additionId: string, approve: boolean, reason?: string, editedBody?: string) =>
+      request<CaseFile>(
+        'POST',
+        `/v1/cases/${encodeURIComponent(caseId)}/additions/${encodeURIComponent(additionId)}/moderation`,
+        { approve, reason, editedBody },
+      ),
+    /** D12, content.moderate: public summaries to write or update and added information to moderate, oldest first. */
+    listPendingCaseModeration: () => request<PendingModeration>('GET', '/v1/cases/manage/pending-moderation'),
+    // Moderation appeals (D12). An idea's appeal answers 404 "feature_unavailable" while ideas_surveys is off,
+    // added information's while community_issues is off. Refusals: "appeal_refused" (422) with `problems`
+    // not_rejected, already_appealed or already_decided; 403 own_record, outside_your_area, original_moderator.
+    /** The author of a rejected idea or added information appeals the decision, once. */
+    appealModeration: (input: { itemKind: ModerationAppealItemKind; itemId: string; body: string }) =>
+      request<ModerationAppeal>('POST', '/v1/moderation-appeals', input),
+    /** The member's own appeal on one of their items, or null when they have not appealed it. */
+    getMyModerationAppeal: async (itemKind: ModerationAppealItemKind, itemId: string) =>
+      (
+        await request<{ appeal: ModerationAppeal | null }>(
+          'GET',
+          `/v1/moderation-appeals/mine?itemKind=${encodeURIComponent(itemKind)}&itemId=${encodeURIComponent(itemId)}`,
+        )
+      ).appeal,
+    /** content.moderate: appeals in the moderator's areas, open ones first, oldest first. */
+    listModerationAppeals: () => request<StaffModerationAppeal[]>('GET', '/v1/moderation-appeals/manage'),
+    /** Decided by a moderator who neither made the first decision nor wrote the item. */
+    decideModerationAppeal: (appealId: string, input: ModerationAppealDecisionInput) =>
+      request<StaffModerationAppeal>('POST', `/v1/moderation-appeals/manage/${encodeURIComponent(appealId)}/decision`, input),
+    // Volunteering (H10 to H12, S10). Every route answers 404 "feature_unavailable" while the
+    // volunteering module is switched off. Refusals: "volunteer_refused" (422) with `problems`.
+    /** H10: the skills list, availability choices and the member's own profile (or null). */
+    getVolunteerSkills: () => request<VolunteerSkills>('GET', '/v1/volunteering/skills'),
+    /** Saved only with consent: `problems` "consent_required" otherwise (FR-VOL-003). */
+    saveVolunteerProfile: (input: VolunteerProfileInput) =>
+      request<VolunteerProfile>('PUT', '/v1/volunteering/profile', input),
+    withdrawVolunteerProfile: () => request<void>('DELETE', '/v1/volunteering/profile'),
+    listVolunteerOpportunities: () => request<VolunteerOpportunity[]>('GET', '/v1/volunteering/opportunities'),
+    getVolunteerOpportunity: (opportunityId: string) =>
+      request<VolunteerOpportunity>('GET', `/v1/volunteering/opportunities/${encodeURIComponent(opportunityId)}`),
+    /** FR-VOL-005: "Offer to help". Problems: identity_not_verified, membership_not_active, opportunity_not_open, already_offered. */
+    offerToVolunteer: (opportunityId: string) =>
+      request<VolunteerOffer>('POST', `/v1/volunteering/opportunities/${encodeURIComponent(opportunityId)}/offer`),
+    withdrawVolunteerOffer: (opportunityId: string) =>
+      request<void>('DELETE', `/v1/volunteering/opportunities/${encodeURIComponent(opportunityId)}/offer`),
+    setVolunteerOpportunitySaved: (opportunityId: string, saved: boolean) =>
+      request<VolunteerOpportunity>('PUT', `/v1/volunteering/opportunities/${encodeURIComponent(opportunityId)}/saved`, { saved }),
+    /** H12: offers and confirmed assignments with history and messages. */
+    listMyVolunteerOffers: () => request<VolunteerOfferItem[]>('GET', '/v1/volunteering/assignments'),
+    /** FR-VOL-007, 008: a message, or a change request (confirmed assignments only) with its reason. */
+    contactVolunteerCoordinator: (offerId: string, input: VolunteerContactInput) =>
+      request<VolunteerContact>('POST', `/v1/volunteering/offers/${encodeURIComponent(offerId)}/contact`, input),
+    listManagedVolunteerOpportunities: (states: VolunteerOpportunityState[] = []) => {
+      const q = new URLSearchParams();
+      for (const state of states) q.append('state', state);
+      const qs = q.toString();
+      return request<ManagedVolunteerOpportunity[]>('GET', `/v1/volunteering/manage/opportunities${qs ? `?${qs}` : ''}`);
+    },
+    createVolunteerOpportunity: (input: VolunteerOpportunityInput) =>
+      request<ManagedVolunteerOpportunity>('POST', '/v1/volunteering/manage/opportunities', input),
+    updateVolunteerOpportunity: (opportunityId: string, input: VolunteerOpportunityUpdate) =>
+      request<ManagedVolunteerOpportunity>(
+        'PATCH',
+        `/v1/volunteering/manage/opportunities/${encodeURIComponent(opportunityId)}`,
+        input,
+      ),
+    /** Open, close, or cancel (with a reason; everyone who offered is told). */
+    moveVolunteerOpportunity: (opportunityId: string, state: 'open' | 'closed' | 'cancelled', reason?: string) =>
+      request<ManagedVolunteerOpportunity>(
+        'POST',
+        `/v1/volunteering/manage/opportunities/${encodeURIComponent(opportunityId)}/state`,
+        { state, reason },
+      ),
+    listVolunteerOffers: (opportunityId: string) =>
+      request<VolunteerOfferCard[]>(
+        'GET',
+        `/v1/volunteering/manage/opportunities/${encodeURIComponent(opportunityId)}/offers`,
+      ),
+    /** S10: confirm with a meeting point (and optional role), or decline with a reason. Problems include places_filled. */
+    decideVolunteerOffer: (offerId: string, input: VolunteerOfferDecision) =>
+      request<VolunteerOffer>('POST', `/v1/volunteering/manage/offers/${encodeURIComponent(offerId)}/decision`, input),
+    listVolunteerInbox: () => request<VolunteerInboxItem[]>('GET', '/v1/volunteering/manage/inbox'),
+    answerVolunteerContact: (contactId: string, answer: string) =>
+      request<VolunteerContact>('POST', `/v1/volunteering/manage/inbox/${encodeURIComponent(contactId)}/answer`, { answer }),
+    /** Consented skills profiles in the coordinator's areas; no phone numbers, no ranking. */
+    listVolunteers: (skill?: string) =>
+      request<VolunteerCard[]>(
+        'GET',
+        `/v1/volunteering/manage/volunteers${skill ? `?skill=${encodeURIComponent(skill)}` : ''}`,
+      ),
+    // Ideas (H13). Routes answer 404 "feature_unavailable" while ideas_surveys is off.
+    getIdeaBoard: () => request<IdeaBoard>('GET', '/v1/ideas'),
+    /** FR-IDEA-002: problems identity_not_verified, membership_not_active, no_area_on_profile, too_many_ideas_today. */
+    submitIdea: (input: IdeaInput) => request<Idea>('POST', '/v1/ideas', input),
+    /** FR-IDEA-004: one support per member; it never changes the idea's status. */
+    setIdeaSupport: (ideaId: string, support: boolean) =>
+      request<Idea>('PUT', `/v1/ideas/${encodeURIComponent(ideaId)}/support`, { support }),
+    withdrawIdea: (ideaId: string) => request<Idea>('POST', `/v1/ideas/${encodeURIComponent(ideaId)}/withdraw`),
+    listPendingIdeas: () => request<PendingIdea[]>('GET', '/v1/ideas/moderation'),
+    /**
+     * D12: publish as written, publish an edited (redacted) title or benefit, or reject with a reason.
+     * Problems: reason_required, already_moderated, edits_only_when_publishing, edited_title_length,
+     * edited_benefit_length.
+     */
+    moderateIdea: (ideaId: string, publish: boolean, reason?: string, edits: IdeaEdits = {}) =>
+      request<PendingIdea>('POST', `/v1/ideas/${encodeURIComponent(ideaId)}/moderation`, { publish, reason, ...edits }),
+    // Surveys (H14, H21).
+    listSurveys: () => request<SurveySummary[]>('GET', '/v1/surveys'),
+    /** The questions, or the receipt once answered (canAnswer false). */
+    getSurvey: (surveyId: string) => request<SurveyDetail>('GET', `/v1/surveys/${encodeURIComponent(surveyId)}`),
+    /** Answers by question id. Problems: answer_required:n, answer_invalid:n, already_answered, survey_closed. */
+    submitSurveyResponse: (surveyId: string, answers: Record<string, SurveyAnswerValue>) =>
+      request<SurveyDetail>('POST', `/v1/surveys/${encodeURIComponent(surveyId)}/responses`, { answers }),
+    listManagedSurveys: () => request<ManagedSurvey[]>('GET', '/v1/surveys/manage'),
+    createSurvey: (input: SurveyInput) => request<ManagedSurvey>('POST', '/v1/surveys/manage', input),
+    updateSurveyDraft: (surveyId: string, input: SurveyInput) =>
+      request<ManagedSurvey>('PUT', `/v1/surveys/manage/${encodeURIComponent(surveyId)}`, input),
+    moveSurvey: (surveyId: string, state: 'open' | 'closed') =>
+      request<ManagedSurvey>('POST', `/v1/surveys/manage/${encodeURIComponent(surveyId)}/state`, { state }),
+    /** Counts only; null means 1 to 9. */
+    getSurveyResults: (surveyId: string) =>
+      request<SurveyResults>('GET', `/v1/surveys/manage/${encodeURIComponent(surveyId)}/results`),
+    // Development proposals (M15 to M17, D15). Routes answer 404 while development_proposals is off.
+    getProposalBoard: (query?: { q?: string; category?: ProposalCategory }) => {
+      const q = new URLSearchParams();
+      if (query?.q) q.set('q', query.q);
+      if (query?.category) q.set('category', query.category);
+      const qs = q.toString();
+      return request<ProposalBoard>('GET', `/v1/proposals${qs ? `?${qs}` : ''}`);
+    },
+    /** M16: the same clientReference returns the first proposal. Throws "proposal_refused" (422) with `problems`. */
+    submitProposal: (input: ProposalInput) => request<ProposalDetail>('POST', '/v1/proposals', input),
+    getProposal: (proposalId: string) => request<ProposalDetail>('GET', `/v1/proposals/${encodeURIComponent(proposalId)}`),
+    reviseProposal: (proposalId: string, input: ProposalRevisionInput) =>
+      request<ProposalDetail>('PUT', `/v1/proposals/${encodeURIComponent(proposalId)}`, input),
+    withdrawProposal: (proposalId: string) =>
+      request<ProposalDetail>('POST', `/v1/proposals/${encodeURIComponent(proposalId)}/withdraw`),
+    listManagedProposals: (filters: { stage?: ProposalStage[]; q?: string; category?: ProposalCategory } = {}) => {
+      const q = new URLSearchParams();
+      for (const stage of filters.stage ?? []) q.append('stage', stage);
+      if (filters.q) q.set('q', filters.q);
+      if (filters.category) q.set('category', filters.category);
+      const qs = q.toString();
+      return request<ProposalSummary[]>('GET', `/v1/proposals/manage${qs ? `?${qs}` : ''}`);
+    },
+    getManagedProposal: (proposalId: string) =>
+      request<ProposalDetail>('GET', `/v1/proposals/manage/${encodeURIComponent(proposalId)}`),
+    /** Moderate (review or rejected) or move a stage; refused (403) without the tier's authority. */
+    moveProposal: (proposalId: string, input: ProposalMoveInput) =>
+      request<ProposalDetail>('POST', `/v1/proposals/manage/${encodeURIComponent(proposalId)}/stage`, input),
+    /** FR-DEV-008: counts by area and category; null means fewer than 10. */
+    getProposalNeeds: () => request<ProposalNeeds>('GET', '/v1/proposals/manage/needs'),
+    // Learning (H15, H16). Routes answer 404 "feature_unavailable" while learning is off.
+    getCourseCatalogue: () => request<CourseCatalogue>('GET', '/v1/learning/courses'),
+    getCourse: (courseId: string) => request<CourseDetail>('GET', `/v1/learning/courses/${encodeURIComponent(courseId)}`),
+    /** FR-LRN-002: the only action that records progress. */
+    completeLesson: (courseId: string, lessonId: string) =>
+      request<CourseDetail>(
+        'POST',
+        `/v1/learning/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}/complete`,
+      ),
+    /** FR-LRN-003: remember the lesson to resume at; nothing is marked complete. */
+    saveAndExitCourse: (courseId: string, lessonId: string) =>
+      request<CourseDetail>('POST', `/v1/learning/courses/${encodeURIComponent(courseId)}/save-exit`, { lessonId }),
+    listManagedCourses: () => request<ManagedCourseSummary[]>('GET', '/v1/learning/manage/courses'),
+    getManagedCourse: (courseId: string) =>
+      request<ManagedCourse>('GET', `/v1/learning/manage/courses/${encodeURIComponent(courseId)}`),
+    createCourse: (input: CourseInput) => request<ManagedCourse>('POST', '/v1/learning/manage/courses', input),
+    /** Drafts only: "only_drafts_change" otherwise. */
+    updateCourse: (courseId: string, input: CourseInput) =>
+      request<ManagedCourse>('PUT', `/v1/learning/manage/courses/${encodeURIComponent(courseId)}`, input),
+    moveCourse: (courseId: string, state: 'published' | 'retired') =>
+      request<ManagedCourse>('POST', `/v1/learning/manage/courses/${encodeURIComponent(courseId)}/state`, { state }),
+    // Invitations (H19, H20). Routes answer 404 while invitations is off.
+    /** H20: the member's referral code and invitations with only Shared, Pending or Active. */
+    getMyReferrals: () => request<MyReferrals>('GET', '/v1/invitations/mine'),
+    /** H19: the invitation text before sharing; creates nothing. Throws "membership_not_active" (422). */
+    previewInvitation: (language: 'ta' | 'en') =>
+      request<InvitationPreview>('GET', `/v1/invitations/preview?language=${encodeURIComponent(language)}`),
+    /**
+     * H19: call as the member shares. A link with an opaque token and its text; listed as Shared
+     * from now on. Throws "membership_not_active" or "too_many_invitations_today" (422).
+     */
+    createInvitation: (language: 'ta' | 'en') => request<NewInvitation>('POST', '/v1/invitations', { language }),
+    /** The share sheet was closed unsent: takes back the invitation just made. 404 once it may be out. */
+    cancelInvitation: (invitationNumber: number) =>
+      request<void>('POST', `/v1/invitations/${encodeURIComponent(String(invitationNumber))}/cancel`),
+    // Promise Tracker (M18, M19, D16). Routes answer 404 "feature_unavailable" while promises is off.
+    listPromises: (filters: { status?: PromiseStatus; theme?: PromiseTheme; area?: string } = {}) => {
+      const q = new URLSearchParams();
+      if (filters.status) q.set('status', filters.status);
+      if (filters.theme) q.set('theme', filters.theme);
+      if (filters.area) q.set('area', filters.area);
+      const qs = q.toString();
+      return request<PromiseSummary[]>('GET', `/v1/promises${qs ? `?${qs}` : ''}`);
+    },
+    getPromise: (promiseId: string) => request<PromiseDetail>('GET', `/v1/promises/${encodeURIComponent(promiseId)}`),
+    /** Moderated before others see it. */
+    givePromiseFeedback: (promiseId: string, body: string) =>
+      request<PromiseFeedbackItem>('POST', `/v1/promises/${encodeURIComponent(promiseId)}/feedback`, { body }),
+    listManagedPromises: (filters: { status?: PromiseStatus; theme?: PromiseTheme } = {}) => {
+      const q = new URLSearchParams();
+      if (filters.status) q.set('status', filters.status);
+      if (filters.theme) q.set('theme', filters.theme);
+      const qs = q.toString();
+      return request<PromiseSummary[]>('GET', `/v1/promises/manage${qs ? `?${qs}` : ''}`);
+    },
+    getManagedPromise: (promiseId: string) =>
+      request<PromiseDetail>('GET', `/v1/promises/manage/${encodeURIComponent(promiseId)}`),
+    getPromisePendingWork: () => request<PromisePendingWork>('GET', '/v1/promises/manage/pending'),
+    getPromiseReport: () => request<PromiseReportRow[]>('GET', '/v1/promises/manage/report'),
+    draftPromise: (input: PromiseInput) => request<PromiseDetail>('POST', '/v1/promises/manage', input),
+    updatePromiseDraft: (promiseId: string, input: PromiseInput) =>
+      request<PromiseDetail>('PUT', `/v1/promises/manage/${encodeURIComponent(promiseId)}`, input),
+    requestPromisePublication: (promiseId: string) =>
+      request<PromiseDetail>('POST', `/v1/promises/manage/${encodeURIComponent(promiseId)}/request-publication`),
+    /** A second person approves; the requester gets 403 "own_draft". */
+    decidePromisePublication: (promiseId: string, approve: boolean, reason?: string) =>
+      request<PromiseDetail>(
+        'POST',
+        `/v1/promises/manage/${encodeURIComponent(promiseId)}/publication-decision`,
+        { approve, reason },
+      ),
+    draftPromiseUpdate: (promiseId: string, input: PromiseUpdateInput) =>
+      request<PromiseUpdateItem>('POST', `/v1/promises/manage/${encodeURIComponent(promiseId)}/updates`, input),
+    decidePromiseUpdate: (updateId: string, approve: boolean, reason?: string) =>
+      request<PromiseUpdateItem>(
+        'POST',
+        `/v1/promises/manage/updates/${encodeURIComponent(updateId)}/decision`,
+        { approve, reason },
+      ),
+    moderatePromiseFeedback: (feedbackId: string, publish: boolean, reason?: string) =>
+      request<PromiseFeedbackItem>(
+        'POST',
+        `/v1/promises/manage/feedback/${encodeURIComponent(feedbackId)}/moderation`,
+        { publish, reason },
+      ),
+    replyToPromiseFeedback: (feedbackId: string, replyEn: string, replyTa: string) =>
+      request<PromiseFeedbackItem>(
+        'POST',
+        `/v1/promises/manage/feedback/${encodeURIComponent(feedbackId)}/reply`,
+        { replyEn, replyTa },
+      ),
+    // Scorecards (M20, D17). Routes answer 404 while scorecards is off.
+    /** M20: the member's GN, DS division and district for the last four published periods. */
+    getMyScorecards: () => request<MyScorecards>('GET', '/v1/scorecards/area'),
+    listScorecards: () => request<Scorecard[]>('GET', '/v1/scorecards/manage'),
+    getScorecard: (scorecardId: string) =>
+      request<ScorecardFile>('GET', `/v1/scorecards/manage/${encodeURIComponent(scorecardId)}`),
+    /** A finished quarter only ("period_not_finished"), e.g. "2026-Q4". */
+    draftScorecard: (period: string) => request<Scorecard>('POST', '/v1/scorecards/manage', { period }),
+    shareScorecard: (scorecardId: string) =>
+      request<Scorecard>('POST', `/v1/scorecards/manage/${encodeURIComponent(scorecardId)}/share`),
+    setScorecardNote: (scorecardId: string, areaKey: string, noteEn: string, noteTa: string) =>
+      request<Scorecard>('PUT', `/v1/scorecards/manage/${encodeURIComponent(scorecardId)}/notes`, { areaKey, noteEn, noteTa }),
+    requestScorecardCorrection: (scorecardId: string, areaKey: string, metric: string, reason: string) =>
+      request<ScorecardCorrection>(
+        'POST',
+        `/v1/scorecards/manage/${encodeURIComponent(scorecardId)}/corrections`,
+        { areaKey, metric, reason },
+      ),
+    decideScorecardCorrection: (correctionId: string, accept: boolean, note: string) =>
+      request<Scorecard>(
+        'POST',
+        `/v1/scorecards/manage/corrections/${encodeURIComponent(correctionId)}/decision`,
+        { accept, note },
+      ),
+    /** After the 10 working days ("review_period_running" before). */
+    publishScorecard: (scorecardId: string) =>
+      request<Scorecard>('POST', `/v1/scorecards/manage/${encodeURIComponent(scorecardId)}/publish`),
+    // Community Support (M11 to M14). Routes answer 404 "feature_unavailable" while community_support
+    // is off. Help never depends on membership; refusals are "support_refused" (422) with `problems`.
+    /** M11: emergency numbers first, the ten categories and the member's own requests. */
+    getSupportHome: () => request<SupportHome>('GET', '/v1/assistance'),
+    /** M12: problems consent_required, unknown_area. */
+    requestSupport: (input: SupportRequestInput) => request<MySupportRequest>('POST', '/v1/assistance/requests', input),
+    /** S11 public web form, no account: the official emergency numbers first, then the categories. */
+    getPublicSupportForm: () => request<PublicSupportForm>('GET', '/v1/assistance/public-form'),
+    /**
+     * S11 public web form, no account: answers only the AS- reference. Problems consent_required,
+     * phone_required, unknown_area, too_many_requests (5 an hour per address).
+     */
+    requestSupportPublicly: (input: SupportRequestInput) =>
+      request<PublicSupportReceipt>('POST', '/v1/assistance/public-requests', input),
+    /** D14, no account: requests by district and kind of help; a null count means fewer than 10. */
+    getPublicSupportStatistics: () => request<PublicSupportStatistics>('GET', '/v1/assistance/statistics'),
+    getMySupportRequest: (caseId: string) =>
+      request<MySupportRequest>('GET', `/v1/assistance/requests/${encodeURIComponent(caseId)}`),
+    /** M14: one complaint or appeal per decision ("already_appealed"). */
+    appealSupportDecision: (caseId: string, input: SupportAppealInput) =>
+      request<SupportAppeal>('POST', `/v1/assistance/requests/${encodeURIComponent(caseId)}/appeals`, input),
+    /**
+     * M12: the applicant agrees that this partner may see the request (it is then sent) or refuses; once.
+     * Problems referral_already_answered, not_allowed_from:<closed|withdrawn>.
+     */
+    answerSupportReferral: (caseId: string, referralId: string, consent: boolean) =>
+      request<MySupportRequest>(
+        'POST',
+        `/v1/assistance/requests/${encodeURIComponent(caseId)}/referrals/${encodeURIComponent(referralId)}/consent`,
+        { consent },
+      ),
+    listSupportCases: (states: string[] = []) => {
+      const q = new URLSearchParams();
+      for (const state of states) q.append('state', state);
+      const qs = q.toString();
+      return request<SupportCaseSummary[]>('GET', `/v1/assistance/manage/cases${qs ? `?${qs}` : ''}`);
+    },
+    recordSupportIntake: (input: SupportIntakeInput) =>
+      request<SupportCaseSummary>('POST', '/v1/assistance/manage/intake', input),
+    /**
+     * S12: the full file only for the assigned caseworker and decision-makers; intake staff get the summary
+     * of a case waiting for screening (fullFile false); anyone else 403 "not_assigned". Every opening is audited.
+     */
+    getSupportCase: (caseId: string) =>
+      request<SupportCaseFile>('GET', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}`),
+    listSupportCaseworkers: (caseId: string) =>
+      request<SupportCaseworker[]>('GET', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/caseworkers`),
+    /** Intake staff who route a case get its summary back (fullFile false): the file is now the caseworker's. */
+    assignSupportCase: (caseId: string, caseworkerId: string) =>
+      request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/assign`, { caseworkerId }),
+    linkSupportCase: (caseId: string, otherCaseId: string) =>
+      request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/link`, { otherCaseId }),
+    addSupportCaseNote: (caseId: string, body: string) =>
+      request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/notes`, { body }),
+    /** D13: the latest criteria of an active programme for the case's kind of help ("criteria_not_current" otherwise). */
+    decideSupportCase: (caseId: string, input: SupportDecisionInput) =>
+      request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/decision`, input),
+    recordSupportDelivery: (caseId: string, input: SupportDeliveryInput) =>
+      request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/deliveries`, input),
+    /**
+     * M12: proposed to an applicant who answers in the app (file.consentInApp); otherwise sent at once with
+     * the consent the caseworker records ("partner_consent_required" without it).
+     */
+    referSupportCase: (caseId: string, partnerId: string, purpose: string, consent: boolean) =>
+      request<SupportCaseFile>(
+        'POST',
+        `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/referrals`,
+        { partnerId, purpose, consent },
+      ),
+    /** What the partner said; only for a referral shared after consent ("referral_not_shared" otherwise). */
+    updateSupportReferral: (caseId: string, referralId: string, state: 'accepted' | 'completed' | 'declined', outcome?: string) =>
+      request<SupportCaseFile>(
+        'POST',
+        `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/referrals/${encodeURIComponent(referralId)}`,
+        { state, outcome },
+      ),
+    closeSupportCase: (caseId: string, note: string) =>
+      request<SupportCaseFile>('POST', `/v1/assistance/manage/cases/${encodeURIComponent(caseId)}/close`, { note }),
+    listSupportAppeals: () => request<SupportAppeal[]>('GET', '/v1/assistance/manage/appeals'),
+    /** Never the original decision-maker (403 "original_decider"). */
+    decideSupportAppeal: (appealId: string, input: SupportAppealDecisionInput) =>
+      request<void>('POST', `/v1/assistance/manage/appeals/${encodeURIComponent(appealId)}/decision`, input),
+    listSupportProgrammes: () => request<SupportProgramme[]>('GET', '/v1/assistance/manage/programmes'),
+    createSupportProgramme: (input: SupportProgrammeInput) =>
+      request<SupportProgramme>('POST', '/v1/assistance/manage/programmes', input),
+    publishSupportCriteria: (programmeId: string, criteriaEn: string, criteriaTa: string) =>
+      request<SupportProgramme>(
+        'POST',
+        `/v1/assistance/manage/programmes/${encodeURIComponent(programmeId)}/criteria`,
+        { criteriaEn, criteriaTa },
+      ),
+    setSupportProgrammeActive: (programmeId: string, active: boolean) =>
+      request<void>('POST', `/v1/assistance/manage/programmes/${encodeURIComponent(programmeId)}/active`, { active }),
+    listSupportPartners: () => request<SupportPartner[]>('GET', '/v1/assistance/manage/partners'),
+    addSupportPartner: (input: SupportPartnerInput) => request<SupportPartner>('POST', '/v1/assistance/manage/partners', input),
+    /** Counts only; null means fewer than 10. */
+    getSupportStatistics: () => request<SupportStatistics>('GET', '/v1/assistance/manage/statistics'),
+    // Town halls (M21 to M23, D18). Routes answer 404 "feature_unavailable" while town_halls is off.
+    listTownHalls: () => request<TownHall[]>('GET', '/v1/town-halls'),
+    /** Approved questions with vote totals and the member's own; `q` searches the question history. */
+    getTownHall: (townhallId: string, q?: string) =>
+      request<TownHallSession>(
+        'GET',
+        `/v1/town-halls/${encodeURIComponent(townhallId)}${q ? `?q=${encodeURIComponent(q)}` : ''}`,
+      ),
+    /** Shown to others only after moderation. Problems: session_closed, too_many_questions, membership_not_active. */
+    askTownHallQuestion: (townhallId: string, body: string) =>
+      request<TownHallQuestion>('POST', `/v1/town-halls/${encodeURIComponent(townhallId)}/questions`, { body }),
+    /** One vote per member per approved question; a second is ignored. */
+    voteTownHallQuestion: (questionId: string) =>
+      request<TownHallQuestion>('POST', `/v1/town-halls/questions/${encodeURIComponent(questionId)}/vote`),
+    setTownHallReminder: (townhallId: string, remind: boolean) =>
+      request<TownHallSession>('PUT', `/v1/town-halls/${encodeURIComponent(townhallId)}/reminder`, { remind }),
+    listManagedTownHalls: () => request<TownHall[]>('GET', '/v1/town-halls/manage'),
+    createTownHall: (input: TownHallInput) => request<TownHall>('POST', '/v1/town-halls/manage', input),
+    getManagedTownHall: (townhallId: string) =>
+      request<TownHallStaffSession>('GET', `/v1/town-halls/manage/${encodeURIComponent(townhallId)}`),
+    updateTownHall: (townhallId: string, input: TownHallInput) =>
+      request<TownHall>('PUT', `/v1/town-halls/manage/${encodeURIComponent(townhallId)}`, input),
+    /** Throws "silence_period" (409) inside an election silence window; "legal_review_required" in an election period. */
+    moveTownHall: (townhallId: string, state: 'scheduled' | 'live' | 'ended' | 'cancelled', reason?: string) =>
+      request<TownHall>('POST', `/v1/town-halls/manage/${encodeURIComponent(townhallId)}/state`, { state, reason }),
+    moderateTownHallQuestion: (questionId: string, decision: 'approve' | 'reject' | 'merge', reason?: string, mergeInto?: string) =>
+      request<TownHallQuestion>(
+        'POST',
+        `/v1/town-halls/manage/questions/${encodeURIComponent(questionId)}/moderation`,
+        { decision, reason, mergeInto },
+      ),
+    answerTownHallQuestion: (
+      questionId: string,
+      input: { mode: 'live' | 'written'; atSecond?: number; answerEn?: string; answerTa?: string },
+    ) => request<TownHallQuestion>('POST', `/v1/town-halls/manage/questions/${encodeURIComponent(questionId)}/answer`, input),
+    archiveTownHall: (townhallId: string, input: TownHallArchiveInput) =>
+      request<TownHall>('POST', `/v1/town-halls/manage/${encodeURIComponent(townhallId)}/archive`, input),
+    // Field visits (S05 to S07, D24). Needs field.collect; 404 "feature_unavailable" while field_visits is off.
+    /** S07: each visit comes back created, updated, conflict (with the server copy) or refused with `problems`. */
+    syncFieldVisits: (visits: FieldVisitInput[]) =>
+      request<FieldSyncResult[]>('POST', '/v1/field/visits/sync', { visits }),
+    listMyFieldVisits: (since?: string) =>
+      request<FieldVisit[]>('GET', `/v1/field/visits/mine${since ? `?since=${encodeURIComponent(since)}` : ''}`),
+    listSupervisedFieldVisits: (openFollowUps = false) =>
+      request<FieldVisit[]>('GET', `/v1/field/manage/visits${openFollowUps ? '?openFollowUps=true' : ''}`),
+    getFieldVisitCounts: () => request<FieldVisitCount[]>('GET', '/v1/field/manage/counts'),
+    setFieldFollowUp: (visitId: string, done: boolean) =>
+      request<FieldVisit>('POST', `/v1/field/manage/visits/${encodeURIComponent(visitId)}/follow-up`, { done }),
+    // Election duty roster (M30, S15). 404 while election_roster is off.
+    listMyRosterShifts: () => request<MyRosterShift[]>('GET', '/v1/election/roster/mine'),
+    answerRosterShift: (assignmentId: string, accept: boolean) =>
+      request<MyRosterShift>('POST', `/v1/election/roster/assignments/${encodeURIComponent(assignmentId)}/answer`, { accept }),
+    /** A time and an optional site confirmation; no location is recorded. */
+    checkInRosterShift: (assignmentId: string, siteConfirmed?: boolean) =>
+      request<MyRosterShift>(
+        'POST',
+        `/v1/election/roster/assignments/${encodeURIComponent(assignmentId)}/check-in`,
+        { siteConfirmed },
+      ),
+    checkOutRosterShift: (assignmentId: string) =>
+      request<MyRosterShift>('POST', `/v1/election/roster/assignments/${encodeURIComponent(assignmentId)}/check-out`),
+    /** Declared election periods covering the coordinator's areas, to schedule shifts in. */
+    listRosterPeriods: () => request<RosterPeriod[]>('GET', '/v1/election/roster/manage/periods'),
+    listRosterShifts: (periodId?: string) =>
+      request<RosterShift[]>(
+        'GET',
+        `/v1/election/roster/manage/shifts${periodId ? `?period_id=${encodeURIComponent(periodId)}` : ''}`,
+      ),
+    createRosterShift: (input: RosterShiftInput) => request<RosterShift>('POST', '/v1/election/roster/manage/shifts', input),
+    getRosterShift: (shiftId: string) =>
+      request<RosterShiftFile>('GET', `/v1/election/roster/manage/shifts/${encodeURIComponent(shiftId)}`),
+    offerRosterShift: (shiftId: string, memberCode: string) =>
+      request<RosterShiftFile>('POST', `/v1/election/roster/manage/shifts/${encodeURIComponent(shiftId)}/offers`, { memberCode }),
+    cancelRosterShift: (shiftId: string, reason: string) =>
+      request<RosterShiftFile>('POST', `/v1/election/roster/manage/shifts/${encodeURIComponent(shiftId)}/cancel`, { reason }),
+    messageRosterShift: (shiftId: string, bodyEn: string, bodyTa: string) =>
+      request<{ recipients: number }>(
+        'POST',
+        `/v1/election/roster/manage/shifts/${encodeURIComponent(shiftId)}/messages`,
+        { bodyEn, bodyTa },
+      ),
+    /** FR-ELX-009, Tier 5 (election.mode.manage). */
+    getElectionPeriodReport: (periodId: string) =>
+      request<ElectionPeriodReport>('GET', `/v1/election/roster/periods/${encodeURIComponent(periodId)}/report`),
+    /** FR-ELX-009: the audit entries behind the period report, newest first; ids only. */
+    listElectionPeriodReportEntries: (periodId: string) =>
+      request<ElectionPeriodReportEntry[]>('GET', `/v1/election/roster/periods/${encodeURIComponent(periodId)}/report/entries`),
+    /** The whole survey (texts and questions), for its editor. */
+    getManagedSurvey: (surveyId: string) =>
+      request<ManagedSurveyFile>('GET', `/v1/surveys/manage/${encodeURIComponent(surveyId)}`),
+    getManagedVolunteerOpportunity: (opportunityId: string) =>
+      request<ManagedVolunteerOpportunity>(
+        'GET',
+        `/v1/volunteering/manage/opportunities/${encodeURIComponent(opportunityId)}`,
+      ),
+    // Fact-checks (M48 reporting part, D12). 404 while fact_checks is off. Checking a statement against
+    // its signed original waits for the signing keys (INT-24).
+    uploadMisinfoScreenshot: (image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
+      request<{ id: string; width: number; height: number }>('POST', '/v1/fact-checks/screenshots', image, contentType),
+    /** A link or a screenshot is required ("link_or_screenshot_required"). */
+    reportMisinformation: (input: { link?: string; description: string; screenshotId?: string }) =>
+      request<MisinfoReport>('POST', '/v1/fact-checks/reports', input),
+    listMyMisinfoReports: () => request<MisinfoReport[]>('GET', '/v1/fact-checks/reports/mine'),
+    appealMisinfoDecision: (reportId: string, body: string) =>
+      request<MisinfoReport>('POST', `/v1/fact-checks/reports/${encodeURIComponent(reportId)}/appeal`, { body }),
+    listFactCheckQueue: (openOnly = true) =>
+      request<StaffMisinfoReport[]>('GET', `/v1/fact-checks/manage${openOnly ? '' : '?open_only=false'}`),
+    decideMisinfoReport: (reportId: string, outcome: MisinfoOutcome, reason: string) =>
+      request<StaffMisinfoReport>('POST', `/v1/fact-checks/manage/${encodeURIComponent(reportId)}/decision`, { outcome, reason }),
+    /** Never by the first fact-checker (403 "original_decider"). */
+    decideMisinfoAppeal: (reportId: string, change: boolean, reason: string, outcome?: MisinfoOutcome) =>
+      request<StaffMisinfoReport>(
+        'POST',
+        `/v1/fact-checks/manage/${encodeURIComponent(reportId)}/appeal-decision`,
+        { change, outcome, reason },
+      ),
     // Community Finance endpoints (Milestone 1.4)
     getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),
     createContribution: (body: ContributionCreateInput, idempotencyKey?: string) =>

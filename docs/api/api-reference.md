@@ -109,6 +109,219 @@ Writes that carry the session cookie and come from another website are refused w
 | `GET ?status&limit&offset` | `reports.view` | `200 {items,total,limit,offset}`; bounded and audited, without reporter identity/contact | `400 invalid_state`, `403`, `422` |
 | `GET /{reportId}` | `reports.view` over the immutable submission area | `200` report detail without reporter identity/contact; access is audited | `403`, `404` |
 
+### Community issues for members (`/v1/issues`)
+
+Behind the `community_issues` switch (phase 2): while it is off in production every route answers `404 feature_unavailable`.
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /area` | a session | `200 {hasArea, gnNameEn, gnNameTa, updates, issues, projects}`: published issues of the member's GN division only, with the moderator's public title (H05) | `401` |
+| `GET /reporting` | a session | `200 {allowed, reason, hasArea, gnNameEn, gnNameTa, categories, descriptionMin, maxPhotos}`; `hasArea` is true only with a GN division on the profile, which every report needs | `401` |
+| `POST /photos`, `POST /addition-photos` body = the image (`image/jpeg`, `png`, `webp`) | Verified and Active, as for reporting | `201 {id, width, height}`: re-encoded without metadata and sealed in the evidence store, never the gallery | `413`, `415`, `422 {code: "issue_refused", problems}`: `identity_not_verified`, `membership_not_active`, `too_many_photos_today`; `503 evidence_storage_not_configured` |
+| `POST /` body `{clientReference, category, title, description, locationKind: "my_gn" \| "landmark" \| "text", locationText?, visibility: "team" \| "public", photoIds}` | Verified and Active (FR-RPT-017), with a GN division on the profile (W03) | `201` the receipt (`CI-` case number, stage 1, next step); the same `clientReference` returns the first receipt. With exactly one GN collector the case is theirs; with none or several, every one of them gets `case_waiting` | `422 {code: "issue_refused", problems}`: `identity_not_verified`, `membership_not_active`, `location_required`, `no_gn_on_profile`, `too_many_reports_today`, `photo_not_found` |
+| `GET /mine` | a session | `200 {items}` the member's reports, newest first | `401` |
+| `GET /{id}` | the reporter, or a published issue in the member's GN (or one they follow) | `200` the four-stage stepper with dates, status, responsible tier; `report` and the closing summary only for the reporter (question asked, next step, linked case, closure response); everyone else sees the moderator's public summary (BR-032). `communityUpdates` show a moderator's edited version when there is one; `myAdditions` lists what this member added, in every state, with the rejection reason, `edited`, `canAppeal` and their `appeal` | `404 not_found` |
+| `PUT /{id}/follow` body `{follow}` | as above | `200` | `404`, `422 not_public` |
+| `POST /{id}/information` body `{body, photoIds}` | Verified and Active; the reporter or a published issue | `201 {id, state: "pending", isReply}`; the reporter's answer to a request for details returns the case to the GN stage | `404`, `422 cannot_add_information`, `photo_not_found` |
+| `POST /{id}/closure-response` body `{resolved, rating?, note?}` | the reporter, within 30 days of closure | `200`; `resolved: false` challenges the closure (a note is required) and alerts the closing tier | `404`, `422 not_closed`, `already_responded`, `challenge_window_closed`, `note_required` |
+
+### Case workflow for staff (`/v1/cases`)
+
+Same switch. Each endpoint needs a case permission (`cases.collect`, `cases.research`, `cases.decide_district`, `cases.plan_regional`, `cases.approve_executive`, `cases.implement_and_close`) or `content.moderate`; the service then checks the case's area, its stage and the caller's tier (Tiers 2B and 3B never send a decision). Cases outside the caller's areas answer `404`. Every action answers `200` with the updated case file; refusals are `403 forbidden` or `own_record` (audited) and `409 {code: "case_refused", problems}`, for example `wrong_stage`, `facts_required`, `completeness_check_incomplete`, `affected_area_required`, `owner_not_eligible`, `scope_required`, `evidence_required`, `bilingual_summary_required`.
+
+Nobody acts on a case they reported: no notes, public summary or moderation on one's own report, and nobody moderates information they added (`403 own_record`, audited). Every handover row (`forwarded`, `ds_report`, `district_action`, `escalated`, `regional_plan`, `executive_approved`, `executive_returned`, `executive_declined`, `assigned`, `returned`, `closed`, `reopened`) carries the previous owner, the new owner, a note and the time; the note of a divisional report is its recommendation, of a district action and an executive approval the approved scope, of a regional plan its solution. A case that enters a stage without a named owner (a new report with no or several GN collectors, a regional plan with several Tier 5 holders, a return to a region with no planner) sends `case_waiting` to every holder of that stage's permission over the area; the notice is done once someone owns the case.
+
+| Endpoint | Stage and permission | Effect |
+|---|---|---|
+| `GET ?stage&mine&overdue&districtClosures&search&limit&offset` | any | `200 {items, total, counts}`; overdue first |
+| `GET /manage/pending-moderation` | `content.moderate` | D12: `200 {summaries, additions}` in the moderator's areas, oldest first: public cases with no published summary yet (any open or resolved stage, `needs: "first_summary"`) or closed since their summary was last written (`needs: "update_after_closure"`), with the reporter's words for the moderator; and pending added information with its text. Items the viewer reported or wrote carry `mine: true` |
+| `GET /{id}` | any (read audited) | the case file with history, evidence, additions (each with `publishedBody` and `mine`), linked reports, open challenge, `affectedArea` and `allowedActions` |
+| `GET /{id}/owners?permission` | any | deciding holders of the permission over the case's area |
+| `GET /{id}/reporter-contact` | the owner, with `cases.view_reporter_contact` | name, phone and member code; audited |
+| `GET /{id}/photos/{photoId}`, `POST /{id}/photos` | any | the WebP image (`no-store`, audited); a case photo for progress or closure |
+| `POST /{id}/facts` `{statement, source}` | GN, `cases.collect` | W03 fact with its source |
+| `POST /{id}/findings` `{kind, statement, source?}` | DS, `cases.research` | W04 finding (`verified_fact` needs a source) |
+| `POST /{id}/notes` `{text}` | any open stage, not one's own report | a note |
+| `POST /{id}/return` `{question}` | GN, deciding | Returned; the reporter is asked |
+| `POST /{id}/link` `{parentCaseNumber, note?}` | GN, deciding | Linked to the parent; the reporter hears the parent's progress |
+| `POST /{id}/forward` `{locationConfirmed, descriptionClear, evidenceReviewed, ownerId, note, affectedArea}` | GN, deciding | to DS with a named owner; `affectedArea` (3 to 300 characters, W03) is kept on the case and shown at every later stage |
+| `POST /{id}/ds-report` `{summary, evidenceRefs, recommendation, districtOwnerId}` | DS, deciding | to the district; the recommendation is the handover note |
+| `POST /{id}/district-decision` `{decision: "act" \| "escalate", authority?, resources?, office?, scope?, ownerId?, dueDate?, reason?, decisionRequired?, regionalOwnerId?}` | district, `cases.decide_district` | act within authority and an approved `scope` (W08; `scope_required`), which is the handover note and shown at implementation; or escalate (regional) |
+| `POST /{id}/regional-plan` `{solution, responsibleTier, resources, expectedOutcome, reportingPlan}` | regional, `cases.plan_regional` | to Tier 5 |
+| `POST /{id}/executive-decision` `{decision: "approve" \| "return" \| "decline", ...}` | executive, `cases.approve_executive` | approve with conditions, return, or decline |
+| `POST /{id}/progress` `{step, evidenceRefs, photoIds}` | implementation, the owner | progress evidence |
+| `POST /{id}/close` `{outcome, evidenceRefs, photoIds, limitations?, summaryEn, summaryTa}` | implementation, the owner | Resolved; district closures are reported to Tiers 4 and 5 |
+| `POST /{id}/assign` `{ownerId, note}` | the stage's tier or the tier above | a handoff in the stage, or taking an unassigned case |
+| `POST /{id}/challenge-decision` `{accept, reason, stage?, ownerId?, dueDate?}` | resolved with an open challenge, district or executive | reopen at a stage with a new owner, or reject |
+| `POST /{id}/public-summary` `{publish, titleEn, titleTa, summaryEn, summaryTa, reason?}` | a public report, not one's own, `content.moderate`; also once resolved | publish or withhold the public summary; after closure this is how the outcome reaches the public. Audited with `outcome` |
+| `POST /{id}/additions/{additionId}/moderation` `{approve, reason?, editedBody?}` | `content.moderate`, not one's own report or addition | approve (as written, or as `editedBody`, 5 to 2000 characters, which members then see instead) or reject with a reason. Audited with the addition id, `outcome` and `redacted` |
+
+### Moderation appeals (`/v1/moderation-appeals`)
+
+D12: the author of a rejected idea or of rejected added information may appeal once. An idea's appeal is open only while `ideas_surveys` is on and added information's while `community_issues` is on; otherwise `404 feature_unavailable`. Refusals are `422 {code: "appeal_refused", problems}`. The appeal records the first moderator; the table refuses a decision by them.
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `POST /` body `{itemKind: "idea" \| "addition", itemId, body}` (body 10 to 1000 characters) | the item's author | `201 {id, itemKind, itemId, state: "open", body, reason, decidedAt, createdAt}`; audited with ids only | `404 not_found` (not the author's item), `422 not_rejected`, `already_appealed` |
+| `GET /mine?itemKind&itemId` | a session | `200 {appeal}`: the member's own appeal on that item, or `null` | `404 feature_unavailable` |
+| `GET /manage` | `content.moderate` | `200` appeals in the moderator's areas, open first, oldest first, with the item's words, the first decision and its reason, the case for added information, and `canDecide` | `403` |
+| `POST /manage/{id}/decision` body `{change, reason}` (reason 3 to 500 characters) | `content.moderate` over the item's area; not the first moderator, not the author | `200`; `change: true` publishes the idea or approves the added information; the author gets `idea_appeal_decided` or `addition_appeal_decided`; audited with ids and the outcome | `403 outside_your_area`, `own_record`, `original_moderator`; `404`; `422 already_decided` |
+
+### Volunteering (`/v1/volunteering`)
+
+Behind the `volunteering` switch (phase 2). Refusals are `422 {code: "volunteer_refused", problems}`; coordinator endpoints need `volunteers.manage` over the opportunity's area (`403 outside_your_area`, `own_record`). A volunteer's phone number is never returned and no list ranks volunteers.
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /skills` | a session | `200 {skills, availability, profile}` (H10) | `401` |
+| `PUT /profile` body `{skills, availability, travelArea: "my_gn" \| "my_ds", consent}` | a session | `200` the profile; saved only with consent | `422 consent_required`, `skills_required`, `unknown_skill` |
+| `DELETE /profile` | a session | `204`; consent withdrawn, profile deleted | none |
+| `GET /opportunities`, `GET /opportunities/{id}` | a session | open opportunities in the member's area with the five briefing elements, `saved` and `myOffer` (H11) | `404` |
+| `POST /opportunities/{id}/offer`, `DELETE .../offer` | Verified and Active | `201` the offer (`VF-` receipt, also in My Activity); withdraw before a decision | `422 identity_not_verified`, `membership_not_active`, `opportunity_not_open`, `already_offered`, `request_a_change_instead` |
+| `PUT /opportunities/{id}/saved` body `{saved}` | a session | `200` | `404` |
+| `GET /assignments` | a session | `200` offers and confirmed assignments with role, meeting point, history and messages (H12) | `401` |
+| `POST /offers/{id}/contact` body `{kind: "message" \| "change_request", body, confirmed: true}` | the volunteer | `201`; the coordinators are told; a change request keeps the assignment | `422 confirmation_required`, `not_confirmed`, `offer_closed` |
+| `GET /manage/opportunities?state`, `POST /manage/opportunities`, `PATCH .../{id}` | `volunteers.manage` | drafts and opportunities in the coordinator's areas, with places, confirmed and waiting counts | `403`, `422 starts_in_past`, `ends_before_start`, `unknown_skill`, `unknown_area` |
+| `POST /manage/opportunities/{id}/state` body `{state: "open" \| "closed" \| "cancelled", reason?}` | as above | `200`; cancelling tells everyone who offered | `422 not_allowed_from:<state>`, `reason_required` |
+| `GET /manage/opportunities/{id}/offers` | as above | offers by time, with skills only where the volunteer consented | `403`, `404` |
+| `POST /manage/offers/{id}/decision` body `{confirm, roleEn?, roleTa?, meetingPointEn?, meetingPointTa?, reason?}` | as above | `200`; the volunteer is told | `403 own_record`, `422 meeting_point_required`, `places_filled`, `reason_required`, `not_awaiting_decision` |
+| `GET /manage/inbox`, `POST /manage/inbox/{id}/answer` body `{answer}` | as above | open messages and change requests; the answer reaches the volunteer | `422 already_answered` |
+| `GET /manage/volunteers?skill` | as above | consented skills profiles in the coordinator's areas, by name | `403` |
+
+### Ideas, surveys and development proposals (`/v1/ideas`, `/v1/surveys`, `/v1/proposals`)
+
+Ideas and surveys sit behind the `ideas_surveys` switch, proposals behind `development_proposals` (both phase 2). Refusals are `422 {code: "idea_refused" | "survey_refused" | "proposal_refused", problems}`.
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /v1/ideas` | a session | `200 {local, mine}`: published ideas whose area path includes the member's GN division, DS division or district (never the whole province), and their own in every state (H13). Others see an idea's published (possibly edited) version; the author sees their own words, `editedByModerator` with `publishedTitle`/`publishedBenefit`, the reason for a rejection and their one `appeal` (`state: open \| upheld \| changed`, `reason`, `decidedAt`) | `401` |
+| `POST /v1/ideas` body `{title (≤80), benefit}` | Verified and Active | `201` the idea (`ID-` receipt, pending moderation, in My Activity) | `422 identity_not_verified`, `membership_not_active`, `no_area_on_profile`, `too_many_ideas_today` |
+| `PUT /v1/ideas/{id}/support` body `{support}`, `POST .../withdraw` | Verified and Active; support only for an idea on the member's board (the same area test) | `200`; one support per member, never a change of status | `404`, `422 own_idea` |
+| `GET /v1/ideas/moderation`, `POST /v1/ideas/{id}/moderation` body `{publish, reason?, editedTitle? (5-80), editedBenefit? (10-1000)}` | `content.moderate` over the area | pending ideas; publish as written or an edited (redacted) version that everyone but the author sees (D12; audited with `{"redacted": true}`), or reject with a reason; the author is told | `403 own_record`, `outside_your_area`; `422 reason_required`, `already_moderated`, `edits_only_when_publishing`, `edited_title_length`, `edited_benefit_length` |
+| `GET /v1/surveys`, `GET /v1/surveys/{id}` | a session, in the survey's area | open surveys with the member's receipt; questions, audience, privacy statement, `canAnswer` (H14) | `404` |
+| `POST /v1/surveys/{id}/responses` body `{answers}` | Verified, in the area | `200` with the `SR-` receipt and "What happens next" (H21); anonymous surveys store answers with no link to the member, written in their own transaction after the participation, so the rows do not share a transaction id; if the answers cannot be saved the participation is taken back | `422 answer_required:n`, `answer_invalid:n`, `already_answered`, `survey_closed` |
+| `GET/POST /v1/surveys/manage`, `PUT .../{id}` (drafts), `POST .../{id}/state` `{state}`, `GET .../{id}/results` | `surveys.manage` over the area | drafts with questions; open and close; counts with groups of 1 to 9 hidden | `403`, `422 anonymous_surveys_cannot_be_edited`, `questions_required`, `options_required:n`, `only_drafts_change` |
+| `GET /v1/proposals?q&category` | a session | `200 {area, mine}`: published proposals touching the member's GN division, DS division or district (never the whole province) and their own (M15); `q` matches words | `401` |
+| `POST /v1/proposals` body `{clientReference, title, category, area: {level: district \| ds \| gn, code}, problem, solution, benefit, costEstimate?, evidence?}` | Verified and Active | `201` the proposal (`DP-`), pending moderation; the same clientReference returns the first | `422 unknown_area`, `too_many_proposals_today` |
+| `GET /v1/proposals/{id}`, `PUT` (revise a rejected one), `POST .../withdraw` | the author, or a published proposal in the member's GN division, DS division or district | stage, reason and history with the recording tier (M17) | `404`, `422 only_rejected_proposals_are_revised` |
+| `GET /v1/proposals/manage?stage&q&category`, `GET .../{id}`, `POST .../{id}/stage` body `{stage, reason?}` | `content.moderate` (publish or reject), `dev.review` (not taken forward), `dev.approve_planning` (approved for planning, funding identified, implementation) | the D15 queue and moves; the author is told | `403 forbidden` (the tier lacks the authority), `own_record`; `422 not_allowed_from:<stage>`, `reason_required` |
+| `GET /v1/proposals/manage/needs` | `dev.review` or `dev.approve_planning` | counts by area and category; groups under 10 hidden, also by subtraction | `403` |
+
+AI topic, duplicate and summary suggestions and semantic search (FR-DEV-004, 005) are not built: they wait for the AI provider decision (OD-42).
+
+### Learning and invitations (`/v1/learning`, `/v1/invitations`)
+
+Behind the `learning` and `invitations` switches (phase 2).
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /v1/learning/courses` | a session | `200 {available, mine, completed}` with lessons and minutes (H15); a course retired after the member started or finished it stays in their lists but is no longer available to others | `401` |
+| `GET /v1/learning/courses/{id}` | a session | the lessons, which are complete, and `resumePosition` (H16) | `404` (drafts; retired courses only for those who started) |
+| `POST /v1/learning/courses/{id}/lessons/{lessonId}/complete` | a session | progress recorded only here; the last lesson completes the course (My Activity) and never changes a role | `404` |
+| `POST /v1/learning/courses/{id}/save-exit` body `{lessonId}` | a session | the lesson to resume at; nothing is marked complete | `404` |
+| `GET/POST /v1/learning/manage/courses`, `GET/PUT .../{id}` (drafts), `POST .../{id}/state` `{state: published \| retired}` | `content.moderate` [ASSUMPTION: the BRD names no permission] | course authoring | `403`, `422 {code: "learning_refused", problems: ["only_drafts_change" \| "lessons_required" \| "not_allowed_from:<state>"]}` |
+| `GET /v1/invitations/mine` | a session | `200 {referralCode, invitations: [{number, status: "shared" \| "pending" \| "active", createdAt}]}`: never who joined (H20) | `401` |
+| `GET /v1/invitations/preview?language=ta\|en` | Verified and Active | `200 {preview}`: the full invitation text, its link shown as `…/join/…`; creates nothing, so a preview is never listed (H19, H20) | `422 membership_not_active` |
+| `POST /v1/invitations` body `{language}` | Verified and Active | `201 {number, url, preview}`, called as the member shares: listed as Shared from now on; the link carries only an opaque `INV-` token (FR-REF-004); `MEMBER_APP_URL` sets its address | `422 membership_not_active`, `too_many_invitations_today` |
+| `POST /v1/invitations/{number}/cancel` | the inviter | `204`: the share sheet was closed unsent, so the invitation is taken back; only an unused one made in the last 15 minutes, so no link already out is broken | `404 not_found` |
+
+Registration (`POST /v1/identity/register`) accepts an invitation token in `referralCode`; each token admits one person, and the inviter then sees Pending, and Active once the membership is activated. Referral counts never become permissions, rewards, rankings or priority.
+
+### Promise Tracker and scorecards (`/v1/promises`, `/v1/scorecards`)
+
+Behind the `promises` and `scorecards` switches (phase 2). Refusals are `422 {code: "promise_refused" | "scorecard_refused", problems}`.
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /v1/promises?status&theme&area` | a session | every published promise (M18), labelled party commitment or government responsibility | `401` |
+| `GET /v1/promises/{id}`, `POST .../feedback` `{body}` | a session; feedback from Verified and Active members | milestones, approved updates with corrections beside the originals, the status reason in English and Tamil (`statusReason`, `statusReasonTa`), moderated feedback and the office's replies (M19) | `404`, `422 membership_not_active` |
+| `POST /v1/promises/manage`, `PUT .../{id}` (drafts), `POST .../{id}/request-publication` | `promise.edit` over the area | drafts with milestones; publication waits for a second person | `422 milestones_required`, `due_before_start`, `published_promises_change_by_update` |
+| `POST /v1/promises/manage/{id}/publication-decision` `{approve, reason?}` | `promise.publish` | published, or back to draft with a reason | `403 own_draft` (the person who drafted it or asked for publication) |
+| `POST /v1/promises/manage/{id}/updates` `{newStatus?, noteEn, noteTa, evidenceRefs, correctsId?}`, `POST .../updates/{id}/decision` | `promise.edit` drafts, `promise.publish` approves | dated updates applied only on approval; Completed needs evidence, Withdrawn and Blocked a reason in both languages (10 characters or more); a published promise past its due date becomes Delayed automatically and stays so until Completed or Withdrawn (a note without a status is still accepted); the office is asked for an update within 10 working days, and when none is approved in time the `promise.publish` holders over its area are told once (`promise_update_missed`) | `422 evidence_required`, `reason_required`, `overdue_stays_delayed` (at drafting and again at approval), `not_allowed_from:<status>`; `403 own_draft` |
+| `GET /v1/promises/manage`, `.../pending`, `.../report`, feedback moderation and replies | `promise.edit`, `promise.publish` or `content.moderate` | the D16 lists; pending work `{publications, updates, feedback}` (promises and updates waiting for a second person, feedback waiting for moderation); counts by status, theme, office and area, which the dashboard also adds up per status, area, theme and office | `403` |
+| `GET /v1/scorecards/area` | a session | the member's GN, DS division and district for the last four published quarters (M20), one version per quarter; `{insufficient: true}` under 10 accepted cases; every value with numerator and denominator (closures out of the accepted cases) | `401` |
+| `POST /v1/scorecards/manage` `{period}`, `.../{id}/share`, `PUT .../{id}/notes`, `.../{id}/publish` | `scorecard.publish` | compute a finished quarter; share for 10 working days, telling the case-permission holders over its areas (and their provinces, and platform-wide) with `scorecard_shared`; context notes; publish, which supersedes any other published version of the same quarter | `422 period_not_finished`, `draft_exists`, `review_period_running` |
+| `POST /v1/scorecards/manage/{id}/corrections` `{areaKey, metric, reason}`, `.../corrections/{id}/decision` | a case permission over that area (or `scorecard.publish`) to ask; `scorecard.publish` to decide | the area must be one of the card's areas; an accepted correction recomputes the figures; on a published scorecard it publishes the next version and keeps the earlier one | `403 outside_your_area`; `422 area_not_on_scorecard`, `unknown_metric`, `already_decided` |
+
+### My Household (`/v1/households`)
+
+Behind the `households` switch (phase 2). Voluntary (BR-098). The `household` schema has row-level security driven by the caller's member id: household data is visible only to the household's confirmed adults and, with recorded consent, to a caseworker; it is never joined with membership, finance, election or campaign data. Every change is written to the household's log (ids and field names, never names).
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /mine` | a session | `200` the household or `null`: `householdCode` (`HH-` and 8 hex digits), `places` (district, DS and GN names), `caseworkerConsentAt`, members (adults with their own `ageBand`, `occupationCategory`; children with `birthYear`, `guardianMemberId`), `myRole`, `myMemberId` (M06) | `401` |
+| `POST /` `{name?}` | an identity-verified member not in a household | `201`; the household takes the creator's area; the creator is head | `403 identity_not_verified`; `409 already_in_household` |
+| `PATCH /mine` `{name?}` | the head | `200` | `403 only_head_can_update`; `404 no_active_household` |
+| `GET /mine/log` | a confirmed adult of the household | `200 [{id, action, actor: you \| household_member \| former_member \| caseworker, actorName?, createdAt}]`, newest first, at most 100 (M10); a name only for a current adult | `404 no_active_household` |
+| `POST /mine/caseworker-consent`, `DELETE /mine/caseworker-consent` | the head to give; any confirmed adult to withdraw | `200` the household; logged and audited; consent also ends when the adult who gave it leaves | `403 only_head_can_give_consent` |
+| `GET /invitations/mine` | a session | `200 {received, sent}`: received with the household's name; sent (head) with the invitee's member code, never a name | `401` |
+| `POST /invitations` `{memberCode, relationship: spouse \| parent \| sibling \| other}` | the head (identity verified) | `201 {id, relationship, status, expiresAt}`: a neutral confirmation, nothing about the invitee (M08); 14 days | `403 only_head_can_invite`; `404 unknown_member_code`; `400 cannot_invite_self`; `409 invitation_already_pending`, `household_size_limit_reached` (20) |
+| `POST /invitations/{id}/respond` `{action: accept \| decline}` | the invitee; accepting needs a verified identity | `200` the household after accepting, `null` after declining (M09) | `403 not_your_invitation`, `identity_not_verified`; `404 invitation_not_found`; `409 invitation_expired`, `invitation_revoked`, `already_in_household`, `household_size_limit_reached` |
+| `POST /invitations/{id}/revoke` | the inviter or the head | `204` | `403 only_inviter_or_head_can_revoke`, `invitation_<status>` |
+| `PATCH /members/me` `{ageBand?, occupationCategory?}` | a confirmed adult, for their own entry only (OD-30) | `200`; a field sent as `null` is cleared | `404 no_active_household`; `422` unknown value |
+| `PATCH /members/{recordId}` `{relationship}` | the head, for an adult | `200` | `403 only_head_can_correct`; `404 member_record_not_found`; `409 not_an_adult_record` |
+| `POST /members/{recordId}/remove` | the head (another adult) or anyone (themselves) | `204`; the person's stored name and details are erased; children they are guardian of are deleted; a leaving head hands over to the adult who joined first; the household ends only when no adult remains (children deleted, names erased, invitations end) | `403 only_head_can_remove_members`; `404 member_record_not_found` |
+| `POST /dependants` `{firstName, relationship: child \| grandchild \| sibling \| other, birthYear}` | a verified confirmed adult, who becomes the guardian (M07, OD-31) | `201` the household; no account, photo, ID number or phone (other fields are refused) | `403 identity_not_verified`; `409 household_size_limit_reached`; `422 dependant_is_adult` (18 or over), `invalid_birth_year`, a name with digits |
+| `PATCH /dependants/{recordId}` (same fields, each optional), `DELETE /dependants/{recordId}` | the child's guardian or the head (correcting also needs a verified identity) | `200` / `204`; deleting removes the row | `403 only_guardian_or_head`; `404 member_record_not_found` |
+| `POST /leave` | a confirmed adult | `204`, as removing oneself | `404 no_active_household` |
+| `GET /privacy` | none | `200` the notice in Tamil and English | |
+| `GET /staff/{memberId or memberCode}` | `household.view_for_case` (PRM-33) over the member's area and the household's area, and the household's caseworker consent | `200` read-only `{targetMemberId, targetMemberCode, targetMemberName, household}` (D02); each opening logged in the household's log (`staff_view`) and audited (`household.view`); no staff write actions, as no household management permission exists | `403 outside_your_area`, `no_caseworker_consent` (both audited as `access.denied`; a member with no household gets the same answer); `404 target_member_not_found` |
+
+### Community Support (`/v1/assistance`)
+
+Behind the `community_support` switch (phase 2). Help never depends on membership, verification, donations or political support, and no response carries any of them (FR-AST-009). The `assistance` schema has row-level security: its rows are invisible unless the module opens them for its own transaction. Refusals are `422 {code: "support_refused", problems}`.
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /` | a session | `200 {emergencyContacts, categories, requests}` (M11): the official numbers first | `401` |
+| `POST /requests` body `{category, summary, emergency, consent, fullName, phone?, household?, area?}` | any session (no membership needed) | `201` with a random `AS-` reference that encodes nothing; emergencies alert intake staff at once | `422 consent_required`, `unknown_area` |
+| `GET /public-form` | none | `200 {emergencyContacts, categories}`: the public web form (S11, `https://app.tmk.lk/help/support`) shows the official numbers first | |
+| `POST /public-requests` (same body) | none | `201 {caseRef}` | `422 consent_required`, `phone_required`, `unknown_area`, `too_many_requests` (5 an hour per address) |
+| `GET /statistics` | none | `200 {minimumGroup, cells: [{areaKey, category, count}]}` (D14): requests by district (`district:<code>`, or `platform` when no area was given) and kind of help only; `count` is null under 10, and no totals are given that could be subtracted (FR-AST-012) | |
+| `GET /requests/{id}`, `POST .../appeals` `{decisionId, kind: appeal \| complaint, body}` | the applicant | status, decisions with reasons, help delivered, partner referrals (`{partner, partnerKind, purpose, state, consentAt}`, never the partner's outcome), appeals (M13, M14) | `404`, `422 already_appealed` |
+| `POST /requests/{id}/referrals/{referralId}/consent` `{consent}` | the applicant | M12, FR-AST-004: a `proposed` referral becomes `sent` (consent recorded now, by the applicant) or `consent_declined`; answers `200` with the request; audited with ids only; no notification yet, as no approved template fits | `404`, `422 referral_already_answered`, `not_allowed_from:closed\|withdrawn` |
+| `GET /manage/cases?state`, `POST /manage/intake` | `assistance.intake`, `casework` or `decide` | the queue: decision-makers see their areas, others unassigned screening cases and their own; S11 hotline and partner intake | `403` |
+| `GET /manage/cases/{id}` and the actions under it (`assign`, `link`, `notes`, `decision`, `deliveries`, `referrals`, `referrals/{id}`, `close`) | the assigned caseworker, or `assistance.decide` over the area (S12); `assistance.intake` over the area gets only the summary of an unassigned case in screening (`fullFile: false`: no name, phone, household, request or record) and may `GET .../caseworkers` and `assign` it, which answers the summary | the case file with duplicate suggestions (FR-AST-006: the same phone, app account or normalised name in the 30 days around it; the household text never matches on its own); every opening audited, the summary too; decisions cite the latest criteria version of an active programme that covers the case's kind of help, with reasons in both languages (also for a changed appeal decision); deliveries only after a decision; a referral `{partnerId, purpose, consent?}` needs consent for that partner: proposed to an applicant with an app account (`consentInApp: true`), who answers in the app, or sent at once with the consent the caseworker records for anyone else (`consentRecordedBy: caseworker`); the partner's answer (`referrals/{id}`) only after consent; referral steps audited (ids and state only) | `403 not_assigned` (audited); `422 criteria_version_required`, `criteria_not_current`, `reason_required`, `partner_consent_required`, `referral_not_shared`, `not_a_suggested_duplicate` |
+| `GET /manage/appeals`, `POST /manage/appeals/{id}/decision` `{change, reason, outcome?, criteriaVersionId?, reasonTa?}` | `assistance.decide` | open appeals carry their case id and AS- reference; uphold, or record a new decision that replaces the earlier one | `403 original_decider`; `422 new_decision_required`, `criteria_version_required`, `criteria_not_current` |
+| `GET/POST /manage/programmes`, `POST .../{id}/criteria`, `.../{id}/active`, `GET/POST /manage/partners` | `assistance.programme.manage` to change | programmes with versioned criteria (D14) and partners | `403` |
+| `GET /manage/statistics` | `assistance.decide` or `assistance.programme.manage` | counts by area, category and state; under 10 hidden, also by subtraction | `403` |
+
+### Town halls (`/v1/town-halls`)
+
+Behind the `town_halls` switch (phase 2). The streaming provider is not chosen (OD-44, DEP-20): a session keeps the provider's stream, audio-only and caption links once known. Voice questions wait for Tamil speech-to-text (OD-42).
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /`, `GET /{id}?q` | a session, in the session's area | sessions; approved questions with vote totals and the member's own (with the moderator's reason); `q` is matched literally (`%` and `_` are not wildcards); each outcome carries `caseId` only when the member may open that case | `404` |
+| `POST /{id}/questions` `{body}`, `POST /questions/{id}/vote`, `PUT /{id}/reminder` `{remind}` | Verified and Active to ask and to vote, while the session is scheduled or live | held for moderation; one vote per approved question; reminders 24 hours and 15 minutes before | `422 session_closed`, `membership_not_active`, `too_many_questions`, `own_question` |
+| `GET/POST /manage`, `GET/PUT /manage/{id}`, `POST /manage/{id}/state` `{state, reason?}` | `townhall.produce` (and `townhall.moderate` to read) | draft, schedule, go live, end or cancel; going live re-checks for an election period declared since scheduling; cancelling tells every member who set a reminder (`townhall_cancelled`); the staff view (`GET /manage/{id}`) also returns the legal review reference and every question | `409 silence_period`; `422 legal_review_required`, `not_allowed_from:<state>` |
+| `POST /manage/questions/{id}/moderation` `{decision, reason?, mergeInto?}` | `townhall.moderate` | approve, merge or reject with a reason; the author is told | `422 reason_required`, `merge_target_not_approved` |
+| `POST /manage/questions/{id}/answer` `{mode, atSecond?, answerEn?, answerTa?}`, `POST /manage/{id}/archive` | `townhall.produce` | live answers with the time, written answers in both languages; recording, transcripts and outcomes linked to published promises or existing cases (`caseNumber` like `CI-00012`) | `422 time_required`, `bilingual_answer_required`, `outcome_promise_not_published:<n>`, `outcome_case_not_found:<n>` |
+
+### Field visits and the election duty roster (`/v1/field`, `/v1/election/roster`)
+
+Behind the `field_visits` and `election_roster` switches (phase 2). Neither records a vote choice, intention, preference or proof of voting, and field visits have no field for political classification. Field rows sit behind row-level security (Alembic 0042): the API opens `field.firewall` for its own transaction before every query.
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `POST /v1/field/visits/sync` `{visits: [{clientId, baseVersion?, gnCode?, dsCode?, visitedAt, consent, concerns, notes?, placeText?, followUp?, caseNumber?, confirmedNotPolitical?}]}` | `field.collect` over the place | one result per visit: `created`, `updated`, `unchanged` (a resend of what the server holds, with its copy), `conflict` (with the server copy) or `refused` with `problems` (`outside_your_area`, `place_required` when no place is given and the coordinator collects in more than one area, `one_place_only`, `concerns_required`, `political_profiling` (a vote, voting intention, party or persuasion: always refused), `political_content` (ambiguous words: refused until `confirmedNotPolitical`), `not_your_visit`); the place is a GN, a DS or none (then the coordinator's one area); a declined visit keeps no text | `403` |
+| `GET /v1/field/visits/mine?since`, `GET /v1/field/manage/visits?openFollowUps`, `GET /v1/field/manage/counts`, `POST /v1/field/manage/visits/{id}/follow-up` | `field.collect` over the area | the coordinator's visits, the supervisor's area (D24), each with `gnCode`, `dsCode` and `areaKey` (its most specific area); counts by `areaKey` (`gn:`, `ds:` or a wider area for visits without a place) and concern, kept after the deletion at 12 calendar months | `403` |
+| `GET /v1/election/roster/mine`, `POST .../assignments/{id}/answer` `{accept}`, `.../check-in` `{siteConfirmed?}`, `.../check-out` | the volunteer | M30 shifts; check-in from an hour before the shift to its end, never a location | `422 not_accepted`, `outside_shift_time`, `already_checked_in` |
+| `GET /v1/election/roster/manage/periods` | `election.roster.manage` | declared periods that cover, or lie inside, the coordinator's areas, to schedule shifts in | `403` |
+| `GET/POST /v1/election/roster/manage/shifts`, `GET .../{id}`, `POST .../{id}/offers` `{memberCode}`, `.../cancel`, `.../messages` | `election.roster.manage` over the area | shifts in a declared period's area, offers to Verified and Active members in the shift's area, operational messages to the volunteers who accepted the shift; the shift file lists the messages already sent (`messages`) | `422 period_not_declared`, `outside_the_election_area`, `places_filled`, `member_outside_shift_area` |
+| `GET /v1/election/roster/periods/{id}/report` | `election.mode.manage` over the period's area | FR-ELX-009 counts: shifts, roster changes and messages, and, inside the period's time and area, broadcasts sent, content published (events, albums, promises, scorecards) and silence blocks | `403 outside_your_area`, `404` |
+| `GET /v1/election/roster/periods/{id}/report/entries` | `election.mode.manage` over the period's area | the audit entries behind the report, newest first, at most 500: `action`, `targetType`, `targetId`, `occurredAt` (ids only, no text); every roster entry for the period's shifts and the broadcasts, content and silence blocks the report counts | `403 outside_your_area`, `404` |
+
+### Fact-checks (`/v1/fact-checks`)
+
+Behind the `fact_checks` switch (phase 2). A person decides every report; no automatic score exists (BR-149). Checking a statement against its signed original (FR-AUT-005, M47, D30) waits for the signing keys (INT-24).
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `POST /screenshots` body = the image, `POST /reports` `{link?, description, screenshotId?}` | a session | `201` the `MR-` report, pending | `422 link_or_screenshot_required`, `screenshot_not_found`, `too_many_reports_today` |
+| `GET /reports/mine`, `POST /reports/{id}/appeal` `{body}` | the reporter | outcome and reason; one appeal | `422 not_decided`, `already_appealed` |
+| `GET /manage?open_only`, `GET /manage/{id}/screenshot`, `POST /manage/{id}/decision` `{outcome, reason}`, `POST /manage/{id}/appeal-decision` `{change, outcome?, reason}` | `content.moderate` | the D12 fact-check queue; screenshot views audited | `403 own_record`, `original_decider`; `422 already_decided`, `no_open_appeal`, `new_outcome_required` |
+
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 
 | Endpoint | Needs | Success | Errors |
@@ -131,7 +344,7 @@ Writes that carry the session cookie and come from another website are refused w
 
 | Endpoint | Needs | Success | Errors |
 |---|---|---|---|
-| `GET /v1/home` | a session | `200 {layout, displayName, districtName, gnName, identityState, reviewRef, membershipState, nextStep, comingUp, quickActions, tabs, hub}` | `401` |
+| `GET /v1/home` | a session | `200 {layout, displayName, districtName, gnName, identityState, reviewRef, membershipState, nextStep, comingUp, quickActions, tabs, hub, promises}`; `promises` is the Promise Tracker on Home (M18): `{feature, total, counts: [{status, count}]}` for the published promises made for the member's GN, DS division, district, province or the whole platform, and `feature.reason = "not_open"` with no counts while the `promises` switch is off | `401` |
 | `GET /v1/content/albums?category&q&limit`, `GET /v1/content/albums/{id}` | a session | `200` published albums; detail with publisher, summary, linked event and numbered photos | `404 not_found` |
 | `GET /v1/content/photos/{id}/thumb`, `.../display` | a session | `200 image/webp`, inline | `404`, `503 media_storage_not_configured` |
 | `POST /v1/content/photos/{id}/removal-requests` body `{reason, note?}` | a session | `201` receipt `{requestRef, state, handledBy, createdAt, dueAt}` (the open one if asked again) | `404` |

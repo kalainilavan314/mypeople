@@ -2,22 +2,14 @@
 
 import { redirect } from 'next/navigation';
 
-import { failure } from '@/lib/messages';
-import { staffApi } from '@/lib/session';
-
-/** Finds a member by exact member ID and opens their household operational view. */
+/**
+ * Opens the household record for a member ID. The record page asks the API once, so each opening
+ * is recorded once (in the household's history and the audit log); refusals are shown there.
+ */
 export async function findHouseholdMember(formData: FormData): Promise<void> {
-  const code = String(formData.get('code') ?? '').trim();
+  const code = String(formData.get('code') ?? '').trim().toUpperCase();
   if (!code) {
     redirect('/members?error=required');
   }
-
-  try {
-    const api = await staffApi();
-    const result = await api.staffViewHousehold(code);
-    redirect(`/members/${result.targetMemberId}`);
-  } catch (error) {
-    const fail = failure(error);
-    redirect(`/members?error=${encodeURIComponent(fail.code)}`);
-  }
+  redirect(`/members/${encodeURIComponent(code)}`);
 }

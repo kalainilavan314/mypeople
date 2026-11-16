@@ -25,8 +25,23 @@ from app.modules.access.reviews import router as access_reviews
 from app.modules.audit import router as audit
 from app.modules.content.gallery import router as gallery
 from app.modules.content.gallery.dependencies import build_media_store
+from app.modules.community.cases import router as community_cases
+from app.modules.community.factchecks import router as community_factchecks
+from app.modules.community.ideas import router as community_ideas
+from app.modules.community.learning import router as community_learning
+from app.modules.community.moderation_appeals import router as community_moderation_appeals
+from app.modules.community.promises import router as community_promises
+from app.modules.community.proposals import router as community_proposals
+from app.modules.community.scorecards import router as community_scorecards
+from app.modules.community.townhalls import router as community_townhalls
+from app.modules.community.surveys import router as community_surveys
+from app.modules.community.issues import router as community_issues
+from app.modules.community.issues.evidence import build_issue_vault
 from app.modules.community.reports.router import router as community_reports
 from app.modules.election import router as election
+from app.modules.engagement.field import router as field_visits
+from app.modules.engagement.volunteering import router as volunteering
+from app.modules.election.roster import router as election_roster
 from app.modules.events import router as events
 from app.modules.features import router as features
 from app.modules.finance.router import finance_router, fund_router, readiness_router as finance_readiness_router
@@ -40,6 +55,7 @@ from app.modules.operations import router as operations
 from app.modules.profile import router as profile
 from app.modules.profile.area_changes import router as area_changes
 from app.modules.analytics import router as analytics
+from app.modules.assistance import router as assistance
 from app.modules.auth import router as auth
 from app.modules.events.offline import router as events_offline
 from app.modules.identity.appeals import router as identity_appeals
@@ -52,6 +68,7 @@ from app.modules.geography import router as geography
 from app.modules.identity.reviews import router as identity_reviews
 from app.modules.membership import router as membership
 from app.modules.membership.card import router as member_card
+from app.modules.membership.invitations import router as member_invitations
 
 API_VERSION = "0.1.0"
 
@@ -85,6 +102,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = settings
     app.state.session_factory = sessionmaker(bind=engine, expire_on_commit=False)
     app.state.evidence_vault = build_vault(settings)
+    app.state.issue_vault = build_issue_vault(settings)
     app.state.media_store = build_media_store(settings)
     app.state.sms = build_sms(settings)
     app.state.push = build_push(settings)
@@ -107,6 +125,22 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(events.router)
     app.include_router(gallery.router)
     app.include_router(community_reports)
+    app.include_router(community_issues.router)
+    app.include_router(community_cases.router)
+    app.include_router(community_moderation_appeals.router)
+    app.include_router(volunteering.router)
+    app.include_router(community_ideas.router)
+    app.include_router(community_surveys.router)
+    app.include_router(community_proposals.router)
+    app.include_router(community_learning.router)
+    app.include_router(member_invitations.router)
+    app.include_router(community_promises.router)
+    app.include_router(community_scorecards.router)
+    app.include_router(assistance.router)
+    app.include_router(community_townhalls.router)
+    app.include_router(field_visits.router)
+    app.include_router(election_roster.router)
+    app.include_router(community_factchecks.router)
     app.include_router(home.router)
     app.include_router(profile.router)
     app.include_router(area_changes.router)
