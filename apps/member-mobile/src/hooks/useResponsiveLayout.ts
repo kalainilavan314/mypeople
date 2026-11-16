@@ -16,7 +16,9 @@ export function useResponsiveLayout() {
     contentWidth,
     fontScale,
     largeText,
-    stackCards: contentWidth < 330 || largeText,
+    // Two columns need enough room for translated titles, descriptions and
+    // Android accessibility scaling. Common 360-390 dp phones use one column.
+    stackCards: contentWidth < 380 || largeText,
     stackControls: contentWidth < 360 || largeText,
     stackHero: contentWidth < 330 || fontScale > 1.25,
   };

@@ -88,17 +88,6 @@ export function HomeActionTile({ feature, tone }: { feature: Feature; tone: 'red
         </AppText>
       </View>
 
-      {opens ? (
-        <View style={[styles.arrow, tone === 'red' ? styles.arrowOnRed : styles.arrowOnYellow]}>
-          <Ionicons
-            name="chevron-forward"
-            size={25}
-            color={foreground}
-            accessibilityElementsHidden
-            importantForAccessibility="no"
-          />
-        </View>
-      ) : null}
     </Pressable>
   );
 }
@@ -118,7 +107,6 @@ const styles = StyleSheet.create({
     flexBasis: '100%',
     width: '100%',
     minHeight: 152,
-    paddingRight: 68,
   },
   red: { backgroundColor: colors.primary },
   yellow: { backgroundColor: colors.brandYellow },
@@ -127,23 +115,10 @@ const styles = StyleSheet.create({
   backgroundIcon: { position: 'absolute', right: 8, top: 48, opacity: 0.1 },
   topRow: { zIndex: 1, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
   stackedTopRow: { justifyContent: 'flex-start' },
-  copy: { zIndex: 1, gap: spacing[1], paddingRight: spacing[4] },
-  stackedCopy: { paddingRight: 0 },
+  copy: { zIndex: 1, gap: spacing[1] },
+  stackedCopy: { width: '100%' },
   title: { fontSize: 23, lineHeight: 29, fontWeight: '700' },
   largeTextTitle: { fontSize: 18, lineHeight: 27 },
   description: { fontSize: 16, lineHeight: 23, fontWeight: '500' },
   largeTextDescription: { fontSize: 14, lineHeight: 22 },
-  arrow: {
-    zIndex: 1,
-    position: 'absolute',
-    right: spacing[3],
-    bottom: spacing[3],
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  arrowOnRed: { backgroundColor: 'rgba(255, 255, 255, 0.18)' },
-  arrowOnYellow: { backgroundColor: 'rgba(181, 18, 27, 0.10)' },
 });
