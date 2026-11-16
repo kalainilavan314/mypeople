@@ -8,11 +8,13 @@ import { QueryView } from '@/components/QueryView';
 import { CommunityServiceTile } from '@/features/home/CommunityServiceTile';
 import { MemberWelcomeCard } from '@/features/home/MemberWelcomeCard';
 import { api } from '@/lib/api';
+import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 
 /** H04: the community hub, a destination inside Home rather than a sixth tab (BRD §15A.4). */
 export default function HubScreen() {
   const { t } = useTranslation();
   const home = useApiQuery(() => api().getHome());
+  const { largeText } = useResponsiveLayout();
   return (
     <Screen
       edges={['bottom']}
@@ -25,7 +27,7 @@ export default function HubScreen() {
           return (
             <>
               <MemberWelcomeCard place={place} membershipState={data.membershipState} />
-              <AppText step="section" accessibilityRole="header" style={styles.sectionTitle}>
+              <AppText step="section" accessibilityRole="header" style={[styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
               {t('m.home.hubServices')}
               </AppText>
               <View style={styles.serviceGrid}>
@@ -43,5 +45,6 @@ export default function HubScreen() {
 
 const styles = StyleSheet.create({
   sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
+  responsiveSectionTitle: { fontSize: 20, lineHeight: 30 },
   serviceGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
 });

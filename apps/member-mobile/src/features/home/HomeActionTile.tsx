@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { colors, radius, spacing } from '@my-people/design-tokens';
 import { AppText } from '@my-people/mobile-ui';
 
+import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
+
 import { FEATURE_ICONS, FEATURE_ROUTES } from './features';
 
 type Feature = HomeView['quickActions'][number];
@@ -21,6 +23,7 @@ const BACKGROUND_ICONS: Record<string, ComponentProps<typeof Ionicons>['name']> 
 
 export function HomeActionTile({ feature, tone }: { feature: Feature; tone: 'red' | 'yellow' }) {
   const { t } = useTranslation();
+  const { stackCards, largeText } = useResponsiveLayout();
   const route = FEATURE_ROUTES[feature.key];
   const label = t(`m.home.feature_${feature.key}`, { defaultValue: feature.key });
   const description = t(`m.home.feature_${feature.key}_description`, { defaultValue: '' });
@@ -41,6 +44,7 @@ export function HomeActionTile({ feature, tone }: { feature: Feature; tone: 'red
       aria-disabled={!opens}
       style={({ pressed }) => [
         styles.tile,
+        stackCards && styles.stackedTile,
         tone === 'red' ? styles.red : styles.yellow,
         !opens && styles.unavailable,
         pressed && styles.pressed,
@@ -53,7 +57,7 @@ export function HomeActionTile({ feature, tone }: { feature: Feature; tone: 'red
         accessibilityElementsHidden
         importantForAccessibility="no"
       />
-      <View style={styles.topRow}>
+      <View style={[styles.topRow, stackCards && styles.stackedTopRow]}>
         <Ionicons
           name={feature.available ? (FEATURE_ICONS[feature.key] ?? 'ellipse-outline') : 'lock-closed-outline'}
           size={50}
@@ -72,11 +76,14 @@ export function HomeActionTile({ feature, tone }: { feature: Feature; tone: 'red
         ) : null}
       </View>
 
-      <View style={styles.copy}>
-        <AppText step="section" style={[styles.title, { color: foreground }]}>
+      <View style={[styles.copy, stackCards && styles.stackedCopy]}>
+        <AppText step="section" style={[styles.title, largeText && styles.largeTextTitle, { color: foreground }]}>
           {label}
         </AppText>
-        <AppText step="secondary" style={[styles.description, { color: foreground }]} numberOfLines={3}>
+        <AppText
+          step="secondary"
+          style={[styles.description, largeText && styles.largeTextDescription, { color: foreground }]}
+          numberOfLines={stackCards ? undefined : 3}>
           {unavailableReason ?? description}
         </AppText>
       </View>
@@ -107,15 +114,25 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     overflow: 'hidden',
   },
+  stackedTile: {
+    flexBasis: '100%',
+    width: '100%',
+    minHeight: 152,
+    paddingRight: 68,
+  },
   red: { backgroundColor: colors.primary },
   yellow: { backgroundColor: colors.brandYellow },
   unavailable: { opacity: 0.72 },
   pressed: { opacity: 0.84, transform: [{ scale: 0.98 }] },
   backgroundIcon: { position: 'absolute', right: 8, top: 48, opacity: 0.1 },
   topRow: { zIndex: 1, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
+  stackedTopRow: { justifyContent: 'flex-start' },
   copy: { zIndex: 1, gap: spacing[1], paddingRight: spacing[4] },
+  stackedCopy: { paddingRight: 0 },
   title: { fontSize: 23, lineHeight: 29, fontWeight: '700' },
+  largeTextTitle: { fontSize: 18, lineHeight: 27 },
   description: { fontSize: 16, lineHeight: 23, fontWeight: '500' },
+  largeTextDescription: { fontSize: 14, lineHeight: 22 },
   arrow: {
     zIndex: 1,
     position: 'absolute',
