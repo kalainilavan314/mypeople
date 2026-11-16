@@ -23,6 +23,7 @@ from app.modules.identity.registration.repository import NewMember
 from app.modules.identity.registration.rules import Route
 from app.modules.identity.reviews import repository as reviews_repository
 from app.modules.identity.reviews.rules import REQUIRED_DOCUMENTS
+from app.modules.membership.invitations import repository as invitations
 from app.modules.membership import repository as membership_repository
 from app.modules.membership.rules import NOTICE_VERSIONS, ConsentType
 
@@ -124,6 +125,8 @@ def register(db: Session, form: Registration, *, pepper: str, passport_pattern: 
     membership_repository.record_consent(db, member_id, "terms_and_privacy", NOTICE_VERSIONS["terms_and_privacy"])
     if referrer:
         repository.record_referral(db, referrer, member_id)
+        if form.referral_code and form.referral_code.strip().upper().startswith("INV-"):
+            invitations.mark_joined(db, form.referral_code.strip().upper(), member_id)
     if form.survey_answers:
         repository.save_survey_answers(db, member_id, form.survey_answers)
     # Ids and the route only: never the ID number, its hash or survey answers.

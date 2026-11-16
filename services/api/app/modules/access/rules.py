@@ -89,7 +89,7 @@ class Grantee:
     member_id: uuid.UUID
     identity_verified: bool
     membership_active: bool
-    # Their current assignments with the path of each area, for RB-12.
+    # Their current assignments with the path of each area; RB-12 weighs all of them, whatever the area.
     assignments: tuple[tuple[Assignment, AreaPath], ...]
 
 
@@ -156,7 +156,7 @@ def check_assignment(
 
     if area_path is not None:
         problems += _check_granter(granter_assignments, request, area_path)
-        problems += _check_separation_of_duties(grantee, request, area_path)
+    problems += _check_separation_of_duties(grantee, request)
     return problems
 
 
@@ -177,16 +177,15 @@ def _check_granter(granter_assignments: list[Assignment], request: AssignmentReq
     return problems
 
 
-def _check_separation_of_duties(grantee: Grantee, request: AssignmentRequest, area_path: AreaPath) -> list[str]:
-    # RB-12: assistance decisions never sit with fundraising or election-roster
-    # rights for the same person in an overlapping area.
-    nearby = {
-        permission
-        for assignment, path in grantee.assignments
-        if overlaps(path, area_path)
-        for permission in assignment.permissions
-    }
-    combined = nearby | request.permissions
+def _check_separation_of_duties(grantee: Grantee, request: AssignmentRequest) -> list[str]:
+    # RB-12, FR-AST-013: assistance decisions never sit with fundraising or
+    # election-roster rights for the same person, whatever the areas: someone who
+    # decides assistance anywhere holds neither anywhere, so help can never be
+    # tied to political support. "Campaign" rights are named by the spec too but
+    # have no permission until OD-32 (assistance governance) defines them; add
+    # them to POLITICAL_RIGHTS then, not before.
+    held = {permission for assignment, _ in grantee.assignments for permission in assignment.permissions}
+    combined = held | request.permissions
     if combined & ASSISTANCE_DECISIONS and combined & POLITICAL_RIGHTS:
         return ["separation_of_duties"]
     return []

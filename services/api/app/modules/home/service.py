@@ -2,10 +2,12 @@
 
 One answer for the Home tab: which layout to show, the greeting's name and
 area, exactly one next step, the nearest upcoming event in the member's
-area, and which quick actions and hub services are open or locked, with the
+area, the Promise Tracker's count of promises made for the member's area
+(M18), and which quick actions and hub services are open or locked, with the
 reason and next step for each lock. The server decides the locks, so the app
 never has to guess (BR-089). Home holds no data of its own; it reads the
-member's own identity review, membership, contact, profile and events.
+member's own identity review, membership, contact, profile and events, and
+the published promises.
 
 Not here: the notification list (FR-HOME-009 to 011, notifications batch)
 and the five bottom tabs (FR-HOME-014, the apps).
@@ -18,6 +20,7 @@ from datetime import UTC, datetime
 from sqlalchemy.orm import Session
 
 from app.modules.access import repository as access_repository
+from app.modules.community.promises import repository as promises
 from app.modules.events import repository as events
 from app.modules.events.repository import EventListItem, StoredEvent
 from app.modules.features import repository as features_repository
@@ -37,6 +40,15 @@ class Lock:
 
 
 @dataclass(frozen=True)
+class PromiseSummary:
+    """M18 on Home: the Promise Tracker, open or not open yet, and when open the published promises
+    made for the member's GN, DS division, district, province or the whole platform, by status."""
+
+    lock: Lock
+    counts: dict[str, int]  # empty while the tracker is not open
+
+
+@dataclass(frozen=True)
 class Home:
     active: bool  # H01; otherwise H02
     display_name: str
@@ -50,6 +62,7 @@ class Home:
     coming_up: EventListItem | None
     features: list[Lock]
     hub: list[Lock]
+    promises: PromiseSummary
 
 
 def _lock(feature: str, identity_verified: bool, membership_active: bool, closed: frozenset[str]) -> Lock:
@@ -107,4 +120,11 @@ def home(db: Session, member_id: uuid.UUID, *, flags_enforced: bool = False) -> 
         coming_up=next((item for item in upcoming if item.event.state == "published"), None),
         features=[_lock(f, verified, active, closed) for f in (*rules.QUICK_ACTIONS, *TABS_WITH_LOCKS)],
         hub=[_lock(s, verified, active, closed) for s in rules.HUB_SERVICES],
+        promises=_promises(db, area_keys, verified, active, closed),
     )
+
+
+def _promises(db: Session, area_keys: list[str], verified: bool, active: bool, closed: frozenset[str]) -> PromiseSummary:
+    lock = _lock(rules.PROMISE_TRACKER, verified, active, closed)
+    # Nothing is read from a module that is switched off.
+    return PromiseSummary(lock, promises.status_counts(db, area_keys) if lock.reason is None else {})

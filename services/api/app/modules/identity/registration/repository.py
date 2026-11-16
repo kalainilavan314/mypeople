@@ -15,6 +15,8 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.modules.membership.invitations import repository as invitations
+
 
 class IdNumberTaken(Exception):
     """Another active account already has this NIC or passport (BR-007)."""
@@ -134,9 +136,13 @@ def record_initial_verification(db: Session, member_id: uuid.UUID, status: str) 
 
 
 def find_referrer(db: Session, referral_code: str) -> uuid.UUID | None:
+    """The member behind a referral code, or behind an unused invitation token (INV-, FR-REF-004)."""
+    code = referral_code.strip().upper()
+    if code.startswith("INV-"):
+        return invitations.inviter_for_token(db, code)
     return db.scalar(
         text("SELECT id FROM npm.member WHERE referral_code = :code AND deleted_at IS NULL"),
-        {"code": referral_code.strip().upper()},
+        {"code": code},
     )
 
 

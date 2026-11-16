@@ -24,6 +24,7 @@ import {
 import { QueryView } from '@/components/QueryView';
 import { EventRow } from '@/features/events/EventRow';
 import { FeatureTile } from '@/features/home/FeatureTile';
+import { PromiseTrackerCard } from '@/features/home/PromiseTrackerCard';
 import { StaffRoleTags } from '@/features/staff/StaffRoleTags';
 import { useMyStaffRoles } from '@/features/staff/useMyStaffRoles';
 import { api } from '@/lib/api';
@@ -179,6 +180,22 @@ function HomeBody({ data, unread }: { data: HomeView; unread: number }) {
               <Button label={t('m.home.browseEvents')} variant="secondary" onPress={() => router.push('/events')} />
             </SurfaceCard>
           )}
+        </>
+      ) : null}
+
+      {/* M18: the Promise Tracker is on Home as well as in the Community Hub. An API from before
+          this addition sends no summary, so the section is left out rather than failing. */}
+      {data.promises ? (
+        <>
+          <View style={styles.sectionRow}>
+            <AppText step="section" accessibilityRole="header" style={styles.flex}>
+              {t('m.home.feature_promises')}
+            </AppText>
+            {data.promises.feature.available ? (
+              <Button label={t('m.common.seeAll')} variant="quiet" onPress={() => router.push('/promises')} />
+            ) : null}
+          </View>
+          <PromiseTrackerCard summary={data.promises} />
         </>
       ) : null}
     </>

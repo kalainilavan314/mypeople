@@ -102,8 +102,8 @@ MATRIX: dict[str, dict[Tier, Grant]] = {
     "reports.view": {"1": D, "2A": D, "2B": E, "3A": D, "3B": E, "4": D, "5": D},
 }
 
-# RB-12 [ASSUMPTION; OD-32]: no person may hold assistance decision rights
-# together with fundraising or election-roster rights in the same area, so
+# RB-12, FR-AST-013 [ASSUMPTION; OD-32]: no person may hold assistance decision
+# rights together with fundraising or election-roster rights, in any area, so
 # humanitarian help can never be tied to political support. "Campaign" rights
 # are not defined in the BRD yet and are not listed.
 ASSISTANCE_DECISIONS = frozenset({"assistance.decide"})

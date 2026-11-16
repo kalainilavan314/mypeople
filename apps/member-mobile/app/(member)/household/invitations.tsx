@@ -19,8 +19,9 @@ import { errorMessage } from '@/lib/errors';
 
 /**
  * Screen M09: Household invitation response
- * BRD v1.1 SC-22, FR-HH-006, BR-099.
- * Adult invitation review, acceptance, decline and revocation.
+ * BRD v1.1 SC-22, FR-HH-006, BR-099; MP-FEA-002 §4.1.
+ * The adult accepts or declines; they join, with the relationship, only after accepting.
+ * Accepting needs a verified identity (M06). The head sees and can withdraw what they sent.
  */
 export default function HouseholdInvitationsScreen() {
   const { t } = useTranslation();
@@ -147,11 +148,9 @@ export default function HouseholdInvitationsScreen() {
 
                   {data.sent.map((inv) => (
                     <SurfaceCard key={inv.id} style={styles.inviteCard}>
+                      {/* M08: the member code the head typed; never the invitee's name before they accept. */}
                       <View style={styles.cardHeader}>
-                        <AppText step="body" style={styles.householdName}>
-                          {inv.inviteeName}
-                        </AppText>
-                        <AppText step="caption" style={styles.inviterName}>
+                        <AppText step="body" style={styles.householdName} mono>
                           {inv.inviteeCode || ''}
                         </AppText>
                       </View>

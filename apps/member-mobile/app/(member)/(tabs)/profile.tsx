@@ -20,6 +20,7 @@ import {
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
+import { clearFieldVisits } from '@/features/staff/fieldVisits/visitStore';
 import { StaffRoleTags } from '@/features/staff/StaffRoleTags';
 import { useMyStaffRoles } from '@/features/staff/useMyStaffRoles';
 import { api } from '@/lib/api';
@@ -58,7 +59,10 @@ export default function ProfileScreen() {
       cancelLabel: t('m.common.cancel'),
       destructive: true,
     });
-    if (confirmed) await signOut();
+    if (!confirmed) return;
+    // Field visits waiting on this phone are member data: none stays after signing out.
+    await clearFieldVisits().catch(() => undefined);
+    await signOut();
   };
 
   return (

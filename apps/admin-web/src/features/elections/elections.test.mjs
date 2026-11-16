@@ -39,6 +39,13 @@ test('election mode is a built module needing election.mode.manage, and no longe
   assert.equal(plannedModules.some((m) => /election/i.test(m.name) || /party polls/i.test(m.desc)), false);
 });
 
+test('roster coordinators reach the duty roster without election mode management (S15)', () => {
+  const roster = builtModules.find((m) => m.href === '/roster');
+  assert.ok(roster);
+  assert.equal(roster.permission, 'election.roster.manage');
+  assert.match(roster.ta, /[஀-௿]/);
+});
+
 test('a complete declare form becomes the API input in UTC, with the area code upper-cased', () => {
   const { input, problems } = readPeriodForm(form(PERIOD));
   assert.deepEqual(problems, []);

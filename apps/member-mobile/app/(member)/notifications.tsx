@@ -44,6 +44,27 @@ function targetRoute(item: NotificationItem): Href | null {
       return '/profile/security';
     case 'removal_request':
       return '/gallery';
+    case 'issue':
+      return item.targetId ? { pathname: '/issues/[id]', params: { id: item.targetId } } : '/issues';
+    case 'volunteer_offer':
+      return '/volunteer/assignments';
+    case 'volunteer_contact':
+      return '/staff/volunteers';
+    case 'idea':
+      return '/ideas';
+    case 'proposal':
+      return item.targetId
+        ? { pathname: '/ideas/proposals/[id]', params: { id: item.targetId } }
+        : { pathname: '/ideas', params: { tab: 'proposals' } };
+    case 'support_request':
+      return item.targetId ? { pathname: '/support/[id]', params: { id: item.targetId } } : '/support';
+    case 'townhall':
+      return item.targetId ? { pathname: '/town-halls/[id]', params: { id: item.targetId } } : '/town-halls';
+    case 'roster_assignment':
+    case 'roster_shift':
+      return '/volunteer/assignments';
+    case 'misinfo_report':
+      return '/official';
     default:
       return null;
   }

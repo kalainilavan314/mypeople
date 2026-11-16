@@ -19,14 +19,17 @@ def test_four_quick_actions_and_none_duplicates_a_tab():
 
 def test_the_party_fund_never_comes_before_civic_participation():
     services = rules.HUB_SERVICES
-    assert len(services) == 8
+    assert len(services) == 10 and services[-2:] == ("promises", "support")
     assert services.index("party_fund") > max(services.index(s) for s in ("ideas", "surveys", "learning"))
 
 
 @pytest.mark.parametrize(
     ("feature", "verified", "active", "expected"),
     [
-        ("report_issue", False, False, None),
+        # FR-RPT-017, BR-026: reporting a local issue needs a Verified identity and an Active membership.
+        ("report_issue", False, False, ("identity_not_verified", "view_verification")),
+        ("report_issue", True, False, ("membership_not_active", "view_membership")),
+        ("my_area", False, False, None),
         ("events", False, False, None),
         ("card", False, False, None),  # open: it explains why it is not official yet
         ("volunteer", False, False, ("identity_not_verified", "view_verification")),
