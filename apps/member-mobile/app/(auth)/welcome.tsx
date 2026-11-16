@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +8,7 @@ import { colors, control, radius, spacing } from '@my-people/design-tokens/mobil
 
 import { AppText, Button, Notice, Screen, readOfflineCard, type OfflineCardPreview, useLanguage, useSession } from '@my-people/mobile-ui';
 
+import { WelcomeBackground, useWelcomeArt } from '@/features/auth/WelcomeBackground';
 import { OfflineCard } from '@/features/membership/OfflineCard';
 import { chooseLanguage, type AppLanguage } from '@/lib/i18n';
 
@@ -21,6 +23,7 @@ export default function WelcomeScreen() {
   const language = useLanguage();
   const { state, retry } = useSession();
   const [offlineCard, setOfflineCard] = useState<OfflineCardPreview | null>(null);
+  const art = useWelcomeArt();
   useEffect(() => {
     if (state.status !== 'unreachable') return;
     let active = true;
@@ -29,8 +32,10 @@ export default function WelcomeScreen() {
   }, [state.status]);
 
   return (
-    <Screen edges={['top', 'bottom']} maxContentWidth={560}>
-      <View style={styles.hero}>
+    <Screen edges={['top', 'bottom']} maxContentWidth={560} background={<WelcomeBackground frame={art.frame} />}>
+      {/* Light status bar icons over the red wave; the root layout's dark ones return on leaving. */}
+      <StatusBar style="light" />
+      <View style={[styles.hero, { marginTop: spacing[2] + art.contentTop }]}>
         <View style={styles.heroCopy}>
           <AppText step="page" accessibilityRole="header">
             {t('m.welcome.title')}
@@ -110,7 +115,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing[4],
     padding: spacing[4],
-    marginTop: spacing[2],
     borderRadius: radius.card,
     backgroundColor: colors.primaryContainer,
   },
