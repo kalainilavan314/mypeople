@@ -890,6 +890,142 @@
         ]
       }
     },
+    "/v1/membership/me/card/photo": {
+      "get": {
+        "tags": [
+          "member card"
+        ],
+        "summary": "Read My Card Photo",
+        "operationId": "read_my_card_photo_v1_membership_me_card_photo_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "No card photo"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "member card"
+        ],
+        "summary": "Put My Card Photo",
+        "description": "A photo for the card (JPEG, PNG or WebP): re-encoded without metadata and stored encrypted; replaces the last one.",
+        "operationId": "put_my_card_photo_v1_membership_me_card_photo_put",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardPhotoOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "member card"
+        ],
+        "summary": "Delete My Card Photo",
+        "operationId": "delete_my_card_photo_v1_membership_me_card_photo_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/membership/me/card/signature": {
+      "put": {
+        "tags": [
+          "member card"
+        ],
+        "summary": "Put My Card Signature",
+        "description": "The signature the member drew on the card's pad.",
+        "operationId": "put_my_card_signature_v1_membership_me_card_signature_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardSignatureIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "member card"
+        ],
+        "summary": "Delete My Card Signature",
+        "operationId": "delete_my_card_signature_v1_membership_me_card_signature_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/v1/membership/me/card/code": {
       "get": {
         "tags": [
@@ -26042,6 +26178,51 @@
                 "type": "null"
               }
             ]
+          },
+          "referralCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Referralcode",
+            "description": "The member's own referral code, shown on the card"
+          },
+          "photoVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photoversion",
+            "description": "Changes whenever the card photo changes; null without a photo"
+          },
+          "signature": {
+            "anyOf": [
+              {
+                "items": {
+                  "items": {
+                    "items": {
+                      "type": "number"
+                    },
+                    "type": "array"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signature",
+            "description": "The member's drawn signature: strokes of [x, y] points in 0..1 of a 3:1 pad; null when not signed"
           }
         },
         "type": "object",
@@ -26057,9 +26238,50 @@
           "gnName",
           "memberSince",
           "lastScannedAt",
-          "publicCard"
+          "publicCard",
+          "referralCode",
+          "photoVersion",
+          "signature"
         ],
         "title": "CardOut"
+      },
+      "CardPhotoOut": {
+        "properties": {
+          "photoVersion": {
+            "type": "string",
+            "title": "Photoversion"
+          }
+        },
+        "type": "object",
+        "required": [
+          "photoVersion"
+        ],
+        "title": "CardPhotoOut"
+      },
+      "CardSignatureIn": {
+        "properties": {
+          "strokes": {
+            "items": {
+              "items": {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "maxItems": 40,
+            "minItems": 1,
+            "title": "Strokes",
+            "description": "Strokes of [x, y] points in 0..1 of a 3:1 signature pad"
+          }
+        },
+        "type": "object",
+        "required": [
+          "strokes"
+        ],
+        "title": "CardSignatureIn"
       },
       "CaseActionOut": {
         "properties": {

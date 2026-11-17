@@ -16,6 +16,7 @@ milestones (FR-CARD-013), event passes and per-event scope (events batch).
 import time
 import uuid
 from dataclasses import dataclass
+from typing import Any
 from datetime import datetime
 
 from sqlalchemy.orm import Session
@@ -24,7 +25,7 @@ from app.core.permissions import TIER_RANK
 from app.modules.access import repository as access_repository
 from app.modules.audit import service as audit
 from app.modules.membership import repository as membership_repository
-from app.modules.membership.card import repository, tokens
+from app.modules.membership.card import extras, repository, tokens
 from app.modules.membership.card.tokens import CardCode
 
 SCAN = "events.checkin_scan"  # PRM-17
@@ -50,6 +51,10 @@ class Card:
     gn_name: str | None
     member_since: datetime | None
     last_scanned_at: datetime | None
+    referral_code: str | None
+    # The member's own: shown on their card, set and removed by them (owner's card design, 17 Nov 2026).
+    photo_version: str | None
+    signature: list[Any] | None
 
 
 def _designation(db: Session, member_id: uuid.UUID) -> str | None:
@@ -76,6 +81,9 @@ def my_card(db: Session, member_id: uuid.UUID) -> Card:
         gn_name=profile["gs_name"] if available else None,
         member_since=profile["joined_at"] if available else None,
         last_scanned_at=repository.last_scanned_at(db, member_id) if available else None,
+        referral_code=profile["referral_code"] if available else None,
+        photo_version=str(photo.photo_id) if (photo := extras.find_photo(db, member_id)) else None,
+        signature=extras.find_signature(db, member_id),
     )
 
 

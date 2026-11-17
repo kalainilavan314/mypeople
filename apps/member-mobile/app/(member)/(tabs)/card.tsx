@@ -1,16 +1,15 @@
 import { ApiError, type MemberCard } from '@my-people/api-client';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, type Href } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { router, useFocusEffect, type Href } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
   Button,
-  formatDate,
   formatDateTime,
   Notice,
   Screen,
@@ -27,6 +26,8 @@ import {
 
 import { QueryView } from '@/components/QueryView';
 import { OfflineCard } from '@/features/membership/OfflineCard';
+import { CARD_WIDTH, MemberIdCard } from '@/features/membership/card/MemberIdCard';
+import { useLiveCardCode } from '@/features/membership/card/useLiveCardCode';
 import { api } from '@/lib/api';
 import { errorMessage, noAnswer } from '@/lib/errors';
 
@@ -87,23 +88,9 @@ export default function CardScreen() {
   );
 }
 
-function Field({ label, value, mono = false }: { label: string; value: string | null; mono?: boolean }) {
-  if (!value) return null;
-  return (
-    <View style={styles.field}>
-      <AppText step="caption" tone="inverse">
-        {label}
-      </AppText>
-      <AppText step="body" tone="inverse" mono={mono}>
-        {value}
-      </AppText>
-    </View>
-  );
-}
-
 function CardAction({ label, icon, divided = false, onPress }: {
   label: string;
-  icon: 'share-outline' | 'time-outline';
+  icon: 'share-outline' | 'time-outline' | 'image-outline' | 'create-outline';
   divided?: boolean;
   onPress: () => void;
 }) {
@@ -120,50 +107,45 @@ function CardAction({ label, icon, divided = false, onPress }: {
   );
 }
 
+/**
+ * The card as the owner designed it (17 November 2026), with the member's own photo and drawn
+ * signature and the live QR. The QR is fetched only while this tab is on screen.
+ */
 function AvailableCard({ card }: { card: MemberCard }) {
   const { t } = useTranslation();
   const language = useLanguage();
+  const [width, setWidth] = useState(0);
+  const [focused, setFocused] = useState(true);
+  useFocusEffect(
+    useCallback(() => {
+      setFocused(true);
+      return () => setFocused(false);
+    }, []),
+  );
+  const qrCode = useLiveCardCode(focused);
 
   return (
     <>
-      <View style={styles.card} accessible accessibilityLabel={`${t('m.card.title')}, ${card.displayName}, ${card.memberCode}`}>
-        <View style={styles.cardHeader}>
-          <AppText step="label" tone="inverse">
-            என் மக்கள் · My People
-          </AppText>
-          <AppText step="caption" tone="inverse">
-            {card.designation ? t('m.card.tier', { tier: card.designation }) : t('m.card.member')}
-          </AppText>
-        </View>
-        <AppText step="page" tone="inverse">
-          {card.displayName}
-        </AppText>
-        <Field label={t('m.card.memberId')} value={card.memberCode} mono />
-        <View style={styles.row}>
-          <Field label={t('m.card.district')} value={card.districtName} />
-          <Field label={t('m.card.gn')} value={card.gnName} />
-        </View>
-        <Field label={t('m.card.since')} value={card.memberSince ? formatDate(card.memberSince, language) : null} />
-        <View style={styles.verified}>
-          <View style={styles.verifiedItem}>
-            <Ionicons name="checkmark-circle" size={18} color={colors.onPrimary} />
-            <AppText step="caption" tone="inverse">{t('m.card.identityVerified')}</AppText>
-          </View>
-          <View style={styles.verifiedItem}>
-            <Ionicons name="checkmark-circle" size={18} color={colors.onPrimary} />
-            <AppText step="caption" tone="inverse">{t('m.card.membershipActive')}</AppText>
-          </View>
-        </View>
+      <View onLayout={(event) => setWidth(Math.min(event.nativeEvent.layout.width, CARD_WIDTH))} style={styles.cardSlot}>
+        {width > 0 ? (
+          <MemberIdCard
+            card={card}
+            width={width}
+            qrCode={qrCode}
+            onPhotoPress={() => router.push('/card/photo' as Href)}
+            onSignPress={() => router.push('/card/sign' as Href)}
+          />
+        ) : null}
       </View>
+      <AppText step="caption" tone="muted" style={styles.center}>{t('m.card.cardEditHint')}</AppText>
 
-      <Button
-        label={t('m.card.showCode')}
-        icon="qr-code-outline"
-        onPress={() => router.push('/card/code')}
-      />
+      <Button label={t('m.card.showCode')} icon="qr-code-outline" onPress={() => router.push('/card/code')} />
+      <Button label={t('m.card.fullScreen')} icon="expand-outline" variant="secondary" onPress={() => router.push('/card/full' as Href)} />
       <AppText step="section" accessibilityRole="header">{t('m.card.optionsTitle')}</AppText>
       <SurfaceCard style={styles.actionList}>
-        <CardAction label={t('m.card.progressTitle')} icon="time-outline" onPress={() => router.push('/card/progress')} />
+        <CardAction label={t('m.card.cardPhotoRow')} icon="image-outline" onPress={() => router.push('/card/photo' as Href)} />
+        <CardAction label={t('m.card.signatureRow')} icon="create-outline" divided onPress={() => router.push('/card/sign' as Href)} />
+        <CardAction label={t('m.card.progressTitle')} icon="time-outline" divided onPress={() => router.push('/card/progress')} />
         <CardAction label={t('m.card.shareTitle')} icon="share-outline" divided onPress={() => router.push('/card/share' as Href)} />
       </SurfaceCard>
 
@@ -223,11 +205,13 @@ function Unavailable({ card }: { card: MemberCard }) {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.primary,
-    borderRadius: radius.sheet,
-    padding: spacing[5],
-    gap: spacing[3],
+  cardSlot: {
+    width: '100%',
+    alignItems: 'center',
+    shadowColor: colors.text,
+    shadowOpacity: 0.14,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
   },
   unavailable: { gap: spacing[4], paddingTop: spacing[6] },
   badge: {
@@ -243,11 +227,6 @@ const styles = StyleSheet.create({
   steps: { gap: spacing[4], paddingVertical: spacing[5] },
   step: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3] },
   flex: { flex: 1 },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing[2] },
-  field: { gap: 2, flex: 1 },
-  row: { flexDirection: 'row', gap: spacing[3] },
-  verified: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
-  verifiedItem: { flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
   actionList: { padding: 0, gap: 0, overflow: 'hidden' },
   action: { minHeight: control.touchMin + spacing[3], flexDirection: 'row', alignItems: 'center', gap: spacing[3], padding: spacing[3] },
   actionDivider: { borderTopWidth: 1, borderTopColor: colors.divider },

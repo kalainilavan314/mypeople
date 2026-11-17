@@ -16,6 +16,8 @@ export type MembershipChangeInput = Schemas['MembershipChangeInput'];
 export type AwaitingMember = Schemas['AwaitingMemberOut'];
 export type MemberLookup = Schemas['MemberLookupOut'];
 export type MemberCard = Schemas['CardOut'];
+/** A drawn signature: strokes of [x, y] points in 0..1 of a 3:1 pad. */
+export type CardSignatureStrokes = Schemas['CardSignatureIn']['strokes'];
 export type MemberCardCode = Schemas['CardCodeOut'];
 export type CardScan = Schemas['ScanOut'];
 export type SignInResponse = Schemas['SignInResponse'];
@@ -709,6 +711,19 @@ export function createApiClient({
      * Throws ApiError "card_not_available" (409) unless identity is Verified and membership Active.
      */
     getMyCardCode: () => request<MemberCardCode>('GET', '/v1/membership/me/card/code'),
+    /**
+     * The card's photo (the member's own, never the identity selfie): JPEG, PNG or WebP. It is re-encoded
+     * without metadata and stored encrypted; it replaces the last one. Throws card_refused (422) for a bad image.
+     */
+    uploadMyCardPhoto: (image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
+      request<Schemas['CardPhotoOut']>('PUT', '/v1/membership/me/card/photo', image, contentType),
+    removeMyCardPhoto: () => request<void>('DELETE', '/v1/membership/me/card/photo'),
+    /** Where the card photo is; it needs the session. `version` (the card's photoVersion) changes with the photo. */
+    myCardPhotoUrl: (version: string) => `${root}/v1/membership/me/card/photo?v=${encodeURIComponent(version)}`,
+    /** The signature the member drew on the card's pad. Throws card_refused (422) for strokes outside the pad. */
+    saveMyCardSignature: (strokes: CardSignatureStrokes) =>
+      request<void>('PUT', '/v1/membership/me/card/signature', { strokes }),
+    removeMyCardSignature: () => request<void>('DELETE', '/v1/membership/me/card/signature'),
     /** Checks a member's code: valid (name and member ID only), expired or not_valid. Needs events.checkin_scan. */
     scanMemberCard: (code: string) => request<CardScan>('POST', '/v1/membership/card/scan', { code }),
     /** Verified members still pending, in the caller's areas. Needs members.activate. */

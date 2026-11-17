@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 
 from app.core.request_info import client_ip
@@ -9,8 +9,18 @@ from app.db.session import get_db
 from app.modules.access.dependencies import require_permission
 from app.modules.access.service import Staff
 from app.modules.auth.dependencies import CurrentMember
-from app.modules.membership.card import service, tokens
-from app.modules.membership.card.schemas import CardCodeOut, CardOut, PublicCardOut, ScanInput, ScanOut
+from app.modules.content.gallery.dependencies import PhotoBody
+from app.modules.membership.card import extras, service, tokens
+from app.modules.membership.card.extras import CardPhotoVault
+from app.modules.membership.card.schemas import (
+    CardCodeOut,
+    CardOut,
+    CardPhotoOut,
+    CardSignatureIn,
+    PublicCardOut,
+    ScanInput,
+    ScanOut,
+)
 
 router = APIRouter(prefix="/v1/membership", tags=["member card"])
 
@@ -45,7 +55,56 @@ def read_my_card(member: CurrentMember, db: Db) -> CardOut:
         member_since=card.member_since,
         last_scanned_at=card.last_scanned_at,
         public_card=public,
+        referral_code=card.referral_code,
+        photo_version=card.photo_version,
+        signature=card.signature,
     )
+
+
+# The card's photo and the member's drawn signature: only ever the member's own.
+PHOTO_HEADERS = {"Cache-Control": "private, no-store"}
+
+
+def _refused(error: extras.CardExtraRefused) -> HTTPException:
+    return HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail={"code": "card_refused", "problems": [error.code]})
+
+
+@router.put("/me/card/photo", response_model=CardPhotoOut)
+def put_my_card_photo(member: CurrentMember, photo: PhotoBody, vault: CardPhotoVault, request: Request, db: Db) -> CardPhotoOut:
+    """A photo for the card (JPEG, PNG or WebP): re-encoded without metadata and stored encrypted; replaces the last one."""
+    try:
+        photo_id = extras.set_photo(db, vault, member.id, photo, client_ip(request))
+    except extras.CardExtraRefused as error:
+        raise _refused(error) from None
+    return CardPhotoOut(photo_version=str(photo_id))
+
+
+@router.get("/me/card/photo", response_class=Response, responses={404: {"description": "No card photo"}})
+def read_my_card_photo(member: CurrentMember, vault: CardPhotoVault, db: Db) -> Response:
+    try:
+        data = extras.photo_bytes(db, vault, member.id)
+    except extras.CardPhotoMissing:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not_found") from None
+    return Response(content=data, media_type="image/webp", headers=PHOTO_HEADERS)
+
+
+@router.delete("/me/card/photo", status_code=status.HTTP_204_NO_CONTENT)
+def delete_my_card_photo(member: CurrentMember, vault: CardPhotoVault, request: Request, db: Db) -> None:
+    extras.remove_photo(db, vault, member.id, client_ip(request))
+
+
+@router.put("/me/card/signature", status_code=status.HTTP_204_NO_CONTENT)
+def put_my_card_signature(body: CardSignatureIn, member: CurrentMember, request: Request, db: Db) -> None:
+    """The signature the member drew on the card's pad."""
+    try:
+        extras.set_signature(db, member.id, body.strokes, client_ip(request))
+    except extras.CardExtraRefused as error:
+        raise _refused(error) from None
+
+
+@router.delete("/me/card/signature", status_code=status.HTTP_204_NO_CONTENT)
+def delete_my_card_signature(member: CurrentMember, request: Request, db: Db) -> None:
+    extras.remove_signature(db, member.id, client_ip(request))
 
 
 @router.get("/me/card/code", responses={409: {"description": "card_not_available"}})
