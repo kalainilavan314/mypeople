@@ -28,6 +28,7 @@ import { PromiseTrackerCard } from '@/features/home/PromiseTrackerCard';
 import { StaffRoleTags } from '@/features/staff/StaffRoleTags';
 import { useMyStaffRoles } from '@/features/staff/useMyStaffRoles';
 import { api } from '@/lib/api';
+import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 
 type NextStep = NonNullable<HomeView['nextStep']>;
 
@@ -70,6 +71,7 @@ function HomeBody({ data }: { data: HomeView }) {
   const showComingUp = next?.kind !== 'event_soon';
   const roles = useMyStaffRoles();
   const staff = roles.assignments.length > 0;
+  const { largeText } = useResponsiveLayout();
 
   return (
     <>
@@ -119,7 +121,7 @@ function HomeBody({ data }: { data: HomeView }) {
         </SurfaceCard>
       ) : null}
 
-      <AppText step="section" accessibilityRole="header" style={styles.sectionTitle}>
+      <AppText step="section" accessibilityRole="header" style={[styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
         {t('m.home.quickActions')}
       </AppText>
       <View style={styles.actionGrid}>
@@ -131,7 +133,10 @@ function HomeBody({ data }: { data: HomeView }) {
       {showComingUp ? (
         <>
           <View style={styles.sectionRow}>
-            <AppText step="section" accessibilityRole="header" style={[styles.flex, styles.sectionTitle]}>
+            <AppText
+              step="section"
+              accessibilityRole="header"
+              style={[styles.flex, styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
               {t('m.home.comingUp')}
             </AppText>
             <Button label={t('m.common.seeAll')} variant="quiet" onPress={() => router.push('/events')} />
@@ -157,7 +162,10 @@ function HomeBody({ data }: { data: HomeView }) {
       {data.promises ? (
         <>
           <View style={styles.sectionRow}>
-            <AppText step="section" accessibilityRole="header" style={[styles.flex, styles.sectionTitle]}>
+            <AppText
+              step="section"
+              accessibilityRole="header"
+              style={[styles.flex, styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
               {t('m.home.feature_promises')}
             </AppText>
             {data.promises.feature.available ? (
@@ -174,6 +182,7 @@ function HomeBody({ data }: { data: HomeView }) {
 const styles = StyleSheet.create({
   nextAction: { backgroundColor: colors.primaryContainer, borderColor: colors.primaryContainer },
   sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
+  responsiveSectionTitle: { fontSize: 20, lineHeight: 30 },
   actionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
   sectionRow: { flexDirection: 'row', alignItems: 'center' },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },

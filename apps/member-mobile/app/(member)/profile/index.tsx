@@ -22,6 +22,7 @@ import { QueryView } from '@/components/QueryView';
 import { clearFieldVisits } from '@/features/staff/fieldVisits/visitStore';
 import { StaffRoleTags } from '@/features/staff/StaffRoleTags';
 import { type MyStaffRoles, useMyStaffRoles } from '@/features/staff/useMyStaffRoles';
+import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import { api } from '@/lib/api';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
@@ -122,6 +123,7 @@ export default function ProfileScreen() {
 
 function ProfileHero({ data, roles }: { data: ProfileView; roles: MyStaffRoles }) {
   const { t } = useTranslation();
+  const { largeText, stackHero } = useResponsiveLayout();
   const name = data.displayName ?? data.legalName;
 
   return (
@@ -130,7 +132,7 @@ function ProfileHero({ data, roles }: { data: ProfileView; roles: MyStaffRoles }
       locations={[0, 0.58, 1]}
       start={{ x: 0, y: 0.5 }}
       end={{ x: 1, y: 0.5 }}
-      style={styles.hero}>
+      style={[styles.hero, stackHero && styles.stackedHero]}>
       <View style={styles.heroYellow} />
       <Image
         source={require('../../../assets/brand/logo.png')}
@@ -139,14 +141,18 @@ function ProfileHero({ data, roles }: { data: ProfileView; roles: MyStaffRoles }
         accessible={false}
         importantForAccessibility="no"
       />
-      <View style={styles.heroTop}>
+      <View style={[styles.heroTop, stackHero && styles.stackedHeroTop]}>
         <View style={styles.avatar} accessibilityElementsHidden importantForAccessibility="no">
           <AppText step="page" tone="inverse" style={styles.avatarLetter}>
             {name.slice(0, 1).toUpperCase()}
           </AppText>
         </View>
         <View style={styles.identity}>
-          <AppText step="page" tone="inverse" accessibilityRole="header" style={styles.memberName} numberOfLines={2}>
+          <AppText
+            step="page"
+            tone="inverse"
+            accessibilityRole="header"
+            style={[styles.memberName, largeText && styles.largeTextMemberName]}>
             {name}
           </AppText>
           <AppText step="secondary" tone="inverse" mono style={styles.memberCode}>
@@ -154,7 +160,7 @@ function ProfileHero({ data, roles }: { data: ProfileView; roles: MyStaffRoles }
           </AppText>
         </View>
       </View>
-      <View style={styles.statuses}>
+      <View style={[styles.statuses, stackHero && styles.stackedStatuses]}>
         <StatusTag
           tone={IDENTITY_TONE[data.identityState]}
           label={`${t('m.profile.identity')}: ${t(`m.verify.status_${data.identityState}`)}`}
@@ -171,9 +177,13 @@ function ProfileHero({ data, roles }: { data: ProfileView; roles: MyStaffRoles }
 }
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
+  const { largeText } = useResponsiveLayout();
   return (
     <View style={styles.section}>
-      <AppText step="section" accessibilityRole="header" style={styles.sectionTitle}>
+      <AppText
+        step="section"
+        accessibilityRole="header"
+        style={[styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
         {title}
       </AppText>
       {children}
@@ -182,15 +192,19 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 function ProfileCard({ icon, label, href }: { icon: IconName; label: string; href: Href }) {
+  const { stackCards, largeText } = useResponsiveLayout();
   return (
     <Pressable
       onPress={() => router.push(href)}
       accessibilityRole="link"
       accessibilityLabel={label}
-      style={({ pressed }) => [styles.profileCard, pressed && styles.pressed]}>
+      style={({ pressed }) => [styles.profileCard, stackCards && styles.stackedProfileCard, pressed && styles.pressed]}>
       <View style={styles.cardAccent} />
       <Ionicons name={icon} size={34} color={colors.primary} />
-      <AppText step="label" style={styles.cardLabel} numberOfLines={2}>
+      <AppText
+        step="label"
+        style={[styles.cardLabel, largeText && styles.largeTextCardLabel]}
+        numberOfLines={stackCards ? undefined : 2}>
         {label}
       </AppText>
       <Ionicons name="chevron-forward" size={24} color={colors.text} />
@@ -224,6 +238,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: spacing[3],
   },
+  stackedHero: { minHeight: 0 },
   heroYellow: {
     position: 'absolute',
     left: 0,
@@ -242,6 +257,7 @@ const styles = StyleSheet.create({
     opacity: 0.12,
   },
   heroTop: { zIndex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing[3] },
+  stackedHeroTop: { alignItems: 'flex-start', flexDirection: 'column' },
   avatar: {
     width: 76,
     height: 76,
@@ -255,10 +271,13 @@ const styles = StyleSheet.create({
   avatarLetter: { fontSize: 38, lineHeight: 46, fontWeight: '700' },
   identity: { flex: 1, gap: spacing[1] },
   memberName: { fontSize: 29, lineHeight: 36, fontWeight: '700' },
+  largeTextMemberName: { fontSize: 22, lineHeight: 32 },
   memberCode: { fontSize: 16, lineHeight: 23, fontWeight: '600' },
   statuses: { zIndex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2], paddingBottom: spacing[1] },
+  stackedStatuses: { alignItems: 'flex-start', flexDirection: 'column' },
   section: { gap: spacing[3] },
   sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
+  responsiveSectionTitle: { fontSize: 20, lineHeight: 30 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
   profileCard: {
     position: 'relative',
@@ -276,6 +295,7 @@ const styles = StyleSheet.create({
     gap: spacing[3],
     overflow: 'hidden',
   },
+  stackedProfileCard: { flexBasis: '100%', width: '100%', minHeight: 76 },
   cardAccent: {
     position: 'absolute',
     right: -13,
@@ -286,6 +306,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 211, 42, 0.46)',
   },
   cardLabel: { flex: 1, fontSize: 17, lineHeight: 24, fontWeight: '700' },
+  largeTextCardLabel: { fontSize: 15, lineHeight: 24 },
   settingsList: {
     paddingHorizontal: spacing[3],
     borderRadius: radius.card,
