@@ -432,6 +432,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/membership/me/card/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read My Card Photo */
+        get: operations["read_my_card_photo_v1_membership_me_card_photo_get"];
+        /**
+         * Put My Card Photo
+         * @description A photo for the card (JPEG, PNG or WebP): re-encoded without metadata and stored encrypted; replaces the last one.
+         */
+        put: operations["put_my_card_photo_v1_membership_me_card_photo_put"];
+        post?: never;
+        /** Delete My Card Photo */
+        delete: operations["delete_my_card_photo_v1_membership_me_card_photo_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/membership/me/card/signature": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Put My Card Signature
+         * @description The signature the member drew on the card's pad.
+         */
+        put: operations["put_my_card_signature_v1_membership_me_card_signature_put"];
+        post?: never;
+        /** Delete My Card Signature */
+        delete: operations["delete_my_card_signature_v1_membership_me_card_signature_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/membership/me/card/code": {
         parameters: {
             query?: never;
@@ -8506,6 +8549,34 @@ export interface components {
              */
             lastScannedAt: string | null;
             publicCard: components["schemas"]["PublicCardOut"] | null;
+            /**
+             * Referralcode
+             * @description The member's own referral code, shown on the card
+             */
+            referralCode: string | null;
+            /**
+             * Photoversion
+             * @description Changes whenever the card photo changes; null without a photo
+             */
+            photoVersion: string | null;
+            /**
+             * Signature
+             * @description The member's drawn signature: strokes of [x, y] points in 0..1 of a 3:1 pad; null when not signed
+             */
+            signature: number[][][] | null;
+        };
+        /** CardPhotoOut */
+        CardPhotoOut: {
+            /** Photoversion */
+            photoVersion: string;
+        };
+        /** CardSignatureIn */
+        CardSignatureIn: {
+            /**
+             * Strokes
+             * @description Strokes of [x, y] points in 0..1 of a 3:1 signature pad
+             */
+            strokes: number[][][];
         };
         /** CaseActionOut */
         CaseActionOut: {
@@ -18634,6 +18705,118 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CardOut"];
                 };
+            };
+        };
+    };
+    read_my_card_photo_v1_membership_me_card_photo_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No card photo */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    put_my_card_photo_v1_membership_me_card_photo_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CardPhotoOut"];
+                };
+            };
+        };
+    };
+    delete_my_card_photo_v1_membership_me_card_photo_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    put_my_card_signature_v1_membership_me_card_signature_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CardSignatureIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_my_card_signature_v1_membership_me_card_signature_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -28,6 +28,21 @@ class CardOut(CamelModel):
     member_since: datetime | None
     last_scanned_at: datetime | None = Field(description="The last successful scan, for C02's confirmation")
     public_card: PublicCardOut | None
+    referral_code: str | None = Field(description="The member's own referral code, shown on the card")
+    photo_version: str | None = Field(description="Changes whenever the card photo changes; null without a photo")
+    signature: list[list[list[float]]] | None = Field(
+        description="The member's drawn signature: strokes of [x, y] points in 0..1 of a 3:1 pad; null when not signed"
+    )
+
+
+class CardSignatureIn(CamelModel):
+    strokes: list[list[list[float]]] = Field(
+        min_length=1, max_length=40, description="Strokes of [x, y] points in 0..1 of a 3:1 signature pad"
+    )
+
+
+class CardPhotoOut(CamelModel):
+    photo_version: str
 
 
 class CardCodeOut(CamelModel):

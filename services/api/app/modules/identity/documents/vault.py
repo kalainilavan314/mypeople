@@ -69,6 +69,10 @@ class FileStore:
         except FileNotFoundError:
             return None
 
+    def delete(self, document_id: uuid.UUID) -> None:
+        """Removes a sealed file that is no longer referenced (a replaced card photo, say)."""
+        self._path(document_id).unlink(missing_ok=True)
+
 
 class EvidenceVault:
     def __init__(self, store: FileStore, key: bytes) -> None:

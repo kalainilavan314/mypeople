@@ -37,6 +37,7 @@ from app.modules.community.townhalls import router as community_townhalls
 from app.modules.community.surveys import router as community_surveys
 from app.modules.community.issues import router as community_issues
 from app.modules.community.issues.evidence import build_issue_vault
+from app.modules.membership.card.extras import build_card_photo_vault
 from app.modules.community.reports.router import router as community_reports
 from app.modules.election import router as election
 from app.modules.engagement.field import router as field_visits
@@ -103,6 +104,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.session_factory = sessionmaker(bind=engine, expire_on_commit=False)
     app.state.evidence_vault = build_vault(settings)
     app.state.issue_vault = build_issue_vault(settings)
+    app.state.card_photo_vault = build_card_photo_vault(settings)
     app.state.media_store = build_media_store(settings)
     app.state.sms = build_sms(settings)
     app.state.push = build_push(settings)
