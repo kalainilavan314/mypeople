@@ -23,6 +23,7 @@ import {
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
+import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 import { chooseLanguage, type AppLanguage } from '@/lib/i18n';
@@ -45,18 +46,28 @@ export default function SettingsScreen() {
   const language = useLanguage();
   const choices = useApiQuery(() => api().getNotificationChoices());
   const policies = useApiQuery(() => api().listMyGovernancePolicies(), [language]);
+  const { largeText } = useResponsiveLayout();
   return (
     <Screen edges={['bottom']} maxContentWidth={720}>
-      <AppText step="section" accessibilityRole="header" style={styles.sectionTitle}>
+      <AppText
+        step="section"
+        accessibilityRole="header"
+        style={[styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
         {t('m.profile.language')}
       </AppText>
       <LanguagePicker selected={language} onSelect={(next) => void chooseLanguage(next)} />
-      <AppText step="section" accessibilityRole="header" style={styles.sectionTitle}>
+      <AppText
+        step="section"
+        accessibilityRole="header"
+        style={[styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
         {t('m.profile.notifications')}
       </AppText>
       <QueryView query={choices}>{(data) => <ChoicesForm initial={data} />}</QueryView>
       <ChannelsCard />
-      <AppText step="section" accessibilityRole="header" style={styles.sectionTitle}>
+      <AppText
+        step="section"
+        accessibilityRole="header"
+        style={[styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
         {t('m.profile.policies')}
       </AppText>
       <QueryView query={policies}>{(data) => <PolicyChoices items={data} reload={policies.reload} />}</QueryView>
@@ -174,6 +185,7 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
   const [quietStart, setQuietStart] = useState(initial.quietStart?.slice(0, 5) ?? '');
   const [quietEnd, setQuietEnd] = useState(initial.quietEnd?.slice(0, 5) ?? '');
   const [saved, setSaved] = useState(false);
+  const { stackControls, largeText } = useResponsiveLayout();
   const save = useApiAction(async () => {
     setSaved(false);
     const quiet = quietStart && quietEnd;
@@ -195,47 +207,62 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
   return (
     <>
       <SurfaceCard style={styles.topicList}>
-        <View style={styles.topicHeader}>
-          <View style={styles.topicHeaderSpacer} />
-          <AppText step="caption" tone="muted" style={styles.channelHeader}>
-            {t('m.profile.pushLabel')}
-          </AppText>
-          <AppText step="caption" tone="muted" style={styles.channelHeader}>
-            {t('m.profile.smsLabel')}
-          </AppText>
-        </View>
+        {!stackControls ? (
+          <View style={styles.topicHeader}>
+            <View style={styles.topicHeaderSpacer} />
+            <AppText step="caption" tone="muted" style={styles.channelHeader}>
+              {t('m.profile.pushLabel')}
+            </AppText>
+            <AppText step="caption" tone="muted" style={styles.channelHeader}>
+              {t('m.profile.smsLabel')}
+            </AppText>
+          </View>
+        ) : null}
         {topics.map((item, index) => (
-          <View key={item.topic} style={[styles.topic, index > 0 && styles.topicDivider]}>
-            <View style={styles.topicIcon}>
-              <Ionicons
-                name={TOPIC_ICONS[item.topic] ?? 'notifications-outline'}
-                size={29}
-                color={colors.primary}
-                accessibilityElementsHidden
-                importantForAccessibility="no"
-              />
-            </View>
-            <View style={styles.topicLabel}>
-              <AppText step="label" style={styles.topicTitle}>{t(`m.profile.topic_${item.topic}`)}</AppText>
-              {item.locked ? (
-                <AppText step="secondary" tone="muted">
-                  {t('m.profile.lockedTopic')}
-                </AppText>
-              ) : null}
-            </View>
-            {(['push', 'sms'] as const).map((channel) => (
-              <View key={channel} style={styles.channel}>
-                <Switch
-                  value={item[channel]}
-                  disabled={item.locked}
-                  onValueChange={(value) => toggle(item.topic, channel, value)}
-                  accessibilityLabel={`${t(`m.profile.topic_${item.topic}`)}: ${channel === 'push' ? t('m.profile.pushLabel') : t('m.profile.smsLabel')}`}
-                  trackColor={{ true: colors.success, false: colors.inputBorder }}
-                  thumbColor={colors.card}
-                  ios_backgroundColor={colors.inputBorder}
+          <View
+            key={item.topic}
+            style={[styles.topic, stackControls && styles.stackedTopic, index > 0 && styles.topicDivider]}>
+            <View style={[styles.topicIdentity, stackControls && styles.stackedTopicIdentity]}>
+              <View style={styles.topicIcon}>
+                <Ionicons
+                  name={TOPIC_ICONS[item.topic] ?? 'notifications-outline'}
+                  size={29}
+                  color={colors.primary}
+                  accessibilityElementsHidden
+                  importantForAccessibility="no"
                 />
               </View>
-            ))}
+              <View style={styles.topicLabel}>
+                <AppText step="label" style={[styles.topicTitle, largeText && styles.largeTextTopicTitle]}>
+                  {t(`m.profile.topic_${item.topic}`)}
+                </AppText>
+                {item.locked ? (
+                  <AppText step="secondary" tone="muted">
+                    {t('m.profile.lockedTopic')}
+                  </AppText>
+                ) : null}
+              </View>
+            </View>
+            <View style={[styles.channels, stackControls && styles.stackedChannels]}>
+              {(['push', 'sms'] as const).map((channel) => (
+                <View key={channel} style={[styles.channel, stackControls && styles.stackedChannel]}>
+                  {stackControls ? (
+                    <AppText step="caption" tone="muted" style={styles.stackedChannelLabel}>
+                      {channel === 'push' ? t('m.profile.pushLabel') : t('m.profile.smsLabel')}
+                    </AppText>
+                  ) : null}
+                  <Switch
+                    value={item[channel]}
+                    disabled={item.locked}
+                    onValueChange={(value) => toggle(item.topic, channel, value)}
+                    accessibilityLabel={`${t(`m.profile.topic_${item.topic}`)}: ${channel === 'push' ? t('m.profile.pushLabel') : t('m.profile.smsLabel')}`}
+                    trackColor={{ true: colors.success, false: colors.inputBorder }}
+                    thumbColor={colors.card}
+                    ios_backgroundColor={colors.inputBorder}
+                  />
+                </View>
+              ))}
+            </View>
           </View>
         ))}
       </SurfaceCard>
@@ -257,7 +284,7 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
             </AppText>
           </View>
         </View>
-        <View style={styles.quiet}>
+        <View style={[styles.quiet, stackControls && styles.stackedQuiet]}>
           <View style={styles.flex}>
             <TextField label={t('m.profile.quietFrom')} value={quietStart} onChangeText={setQuietStart} placeholder="22:00" maxLength={5} keyboardType="numbers-and-punctuation" />
           </View>
@@ -289,6 +316,7 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
 
 const styles = StyleSheet.create({
   sectionTitle: { fontSize: 24, lineHeight: 32, fontWeight: '700' },
+  responsiveSectionTitle: { fontSize: 20, lineHeight: 30 },
   languagePicker: {
     width: '100%',
     maxWidth: 320,
@@ -336,7 +364,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[2],
   },
+  stackedTopic: { alignItems: 'stretch', flexDirection: 'column', gap: spacing[3], paddingVertical: spacing[3] },
   topicDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
+  topicIdentity: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing[3] },
+  stackedTopicIdentity: { width: '100%' },
   topicIcon: {
     width: 52,
     height: 52,
@@ -347,10 +378,16 @@ const styles = StyleSheet.create({
   },
   topicLabel: { flex: 1, gap: 1 },
   topicTitle: { fontSize: 17, lineHeight: 24, fontWeight: '700' },
+  largeTextTopicTitle: { fontSize: 15, lineHeight: 24 },
+  channels: { flexDirection: 'row' },
+  stackedChannels: { width: '100%', gap: spacing[4], paddingLeft: 64 },
   channel: { width: 62, alignItems: 'center', justifyContent: 'center' },
+  stackedChannel: { width: 'auto', minWidth: 72, alignItems: 'flex-start', gap: spacing[1] },
+  stackedChannelLabel: { textAlign: 'left' },
   quietCard: { gap: spacing[4] },
   quietHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3] },
   quiet: { flexDirection: 'row', gap: spacing[3] },
+  stackedQuiet: { flexDirection: 'column' },
   clearQuiet: {
     minHeight: control.touchMin,
     borderRadius: radius.control,

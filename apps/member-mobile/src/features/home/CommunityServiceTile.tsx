@@ -7,12 +7,15 @@ import { useTranslation } from 'react-i18next';
 import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
 import { AppText } from '@my-people/mobile-ui';
 
+import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
+
 import { FEATURE_ICONS, FEATURE_ROUTES } from './features';
 
 type Feature = HomeView['hub']['services'][number];
 
 export function CommunityServiceTile({ feature }: { feature: Feature }) {
   const { t } = useTranslation();
+  const { stackCards, largeText } = useResponsiveLayout();
   const route = FEATURE_ROUTES[feature.key];
   const label = t(`m.home.feature_${feature.key}`, { defaultValue: feature.key });
   const description = t(`m.home.feature_${feature.key}_description`, { defaultValue: '' });
@@ -30,7 +33,7 @@ export function CommunityServiceTile({ feature }: { feature: Feature }) {
       accessibilityRole={opens ? 'link' : 'text'}
       accessibilityLabel={`${label}. ${description}${unavailableReason ? `. ${unavailableReason}` : ''}`}
       aria-disabled={!opens}
-      style={({ pressed }) => [styles.tile, pressed && styles.pressed]}>
+      style={({ pressed }) => [styles.tile, stackCards && styles.stackedTile, pressed && styles.pressed]}>
       <View style={styles.corner} />
       <View style={styles.iconCircle}>
         <Ionicons
@@ -52,10 +55,14 @@ export function CommunityServiceTile({ feature }: { feature: Feature }) {
         />
       ) : null}
       <View style={styles.copy}>
-        <AppText step="section" style={styles.title}>
+        <AppText step="section" style={[styles.title, largeText && styles.largeTextTitle]}>
           {label}
         </AppText>
-        <AppText step="secondary" tone="secondary" style={styles.description} numberOfLines={3}>
+        <AppText
+          step="secondary"
+          tone="secondary"
+          style={[styles.description, largeText && styles.largeTextDescription]}
+          numberOfLines={stackCards ? undefined : 3}>
           {description}
         </AppText>
       </View>
@@ -77,6 +84,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     justifyContent: 'space-between',
   },
+  stackedTile: { flexBasis: '100%', width: '100%', minHeight: 150 },
   pressed: { opacity: 0.82, transform: [{ scale: 0.98 }] },
   iconCircle: {
     width: 58,
@@ -90,7 +98,9 @@ const styles = StyleSheet.create({
   lock: { position: 'absolute', right: spacing[3], top: spacing[3], zIndex: 2 },
   copy: { zIndex: 1, gap: 1 },
   title: { fontSize: 21, lineHeight: 28, fontWeight: '700' },
+  largeTextTitle: { fontSize: 18, lineHeight: 27 },
   description: { fontSize: 16, lineHeight: 22 },
+  largeTextDescription: { fontSize: 14, lineHeight: 22 },
   corner: {
     position: 'absolute',
     width: 82,
