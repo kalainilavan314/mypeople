@@ -55,7 +55,7 @@ export function MemberCardPreview({ name, memberCode, place, active }: Props) {
         ) : null}
       </View>
       <AppText step="secondary" style={styles.faint} numberOfLines={1}>
-        {['என் மக்கள் · My People', place].filter(Boolean).join(' · ')}
+        {['தாயக மக்கள் கழகம் · TMK', place].filter(Boolean).join(' · ')}
       </AppText>
     </Pressable>
   );

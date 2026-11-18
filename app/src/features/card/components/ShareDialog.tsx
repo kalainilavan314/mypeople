@@ -20,13 +20,13 @@ export function ShareDialog({
   const share = async () => {
     try {
       const text = [
-        'My People',
+        'TMK',
         data.name,
         data.memberId,
         data.verificationLabel,
         ...(data.official ? [] : ['Provisional card: not an official membership credential']),
       ].join('\n');
-      if (navigator.share) await navigator.share({ title: 'My People', text });
+      if (navigator.share) await navigator.share({ title: 'TMK', text });
       else {
         await navigator.clipboard.writeText(text);
         setMessage(t('Copied', 'நகலெடுக்கப்பட்டது'));

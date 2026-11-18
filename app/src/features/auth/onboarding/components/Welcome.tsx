@@ -52,7 +52,7 @@ export function Welcome() {
                 color: '#0F2137',
               }}
             >
-              என் மக்கள்
+              தாயக மக்கள் கழகம்
             </span>
             <span
               style={{
@@ -63,7 +63,7 @@ export function Welcome() {
                 marginTop: 1,
               }}
             >
-              My People
+              TMK
             </span>
           </div>
         </div>

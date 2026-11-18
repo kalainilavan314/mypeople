@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "The locked fonts, screen components, stored session and data hooks shared by the My People member and staff apps",
+  "description": "The locked fonts, screen components, stored session and data hooks shared by the TMK member and staff apps",
   "exports": {
     ".": "./src/index.ts"
   },

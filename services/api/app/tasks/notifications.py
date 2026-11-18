@@ -124,7 +124,7 @@ def check(engine: Any, settings: Settings) -> dict[str, str]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="My People notification dispatcher and photo removal escalation runner."
+        description="TMK notification dispatcher and photo removal escalation runner."
     )
     parser.add_argument(
         "--dry-run",

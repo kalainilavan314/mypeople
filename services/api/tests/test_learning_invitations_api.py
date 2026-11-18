@@ -31,7 +31,7 @@ def lesson(n):
 
 def published_course(client, auth, author, lessons=3):
     created = client.post("/v1/learning/manage/courses", json={
-        "titleEn": "How My People works", "titleTa": "என் மக்கள் எவ்வாறு செயற்படுகிறது",
+        "titleEn": "How TMK works", "titleTa": "தாயக மக்கள் கழகம் எவ்வாறு செயற்படுகிறது",
         "summaryEn": "A short course about the movement and the app.",
         "summaryTa": "இயக்கமும் செயலியும் பற்றிய சிறு பாடநெறி.",
         "topic": "movement", "lessons": [lesson(n) for n in range(1, lessons + 1)],
@@ -116,10 +116,10 @@ def test_an_invitation_link_carries_only_an_opaque_token(client, auth, member_in
     created = client.post("/v1/invitations", json={"language": "ta"}, headers=auth(member)).json()
     mine = client.get("/v1/invitations/mine", headers=auth(member)).json()
 
-    assert previewed["preview"].startswith("என் மக்கள்") and "/join/" in previewed["preview"]
+    assert previewed["preview"].startswith("தாயக மக்கள் கழகம்") and "/join/" in previewed["preview"]
     assert before["invitations"] == []  # H20: a preview is never listed as Shared
     assert re.fullmatch(r"https://[^/]+/join/INV-[A-Z2-7]{12}", created["url"]), created["url"]
-    assert created["preview"].startswith("என் மக்கள்") and created["url"] in created["preview"]
+    assert created["preview"].startswith("தாயக மக்கள் கழகம்") and created["url"] in created["preview"]
     assert mine["referralCode"] and mine["invitations"] == [
         {"number": 1, "status": "shared", "createdAt": mine["invitations"][0]["createdAt"]}
     ]

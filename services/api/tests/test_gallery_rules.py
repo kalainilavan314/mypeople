@@ -63,7 +63,7 @@ def test_a_request_open_18_hours_is_escalated():
 
 def test_the_requester_is_told_the_outcome_in_both_languages():
     message = rules.outcome_message("RR-000001", "kept")
-    assert "RR-000001" in message and "kept" in message and "என் மக்கள்" in message
+    assert "RR-000001" in message and "kept" in message and "TMK:" in message
 
 
 def jpeg_with_location(width: int = 3000, height: int = 2000) -> bytes:

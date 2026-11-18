@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Colours, spacing, radii, type scale and locked fonts shared by the My People apps",
+  "description": "Colours, spacing, radii, type scale and locked fonts shared by the TMK apps",
   "exports": {
     ".": "./src/index.ts",
     "./mobile": "./src/mobile.ts"

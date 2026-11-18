@@ -85,4 +85,4 @@ def outcome_message(request_ref: str, state: str) -> str:
         "kept": ("படம் வைக்கப்பட்டுள்ளது; காரணத்தைச் செயலியில் பார்க்கவும்", "the photo has been kept; see the app for the reason"),
     }
     tamil, english = actions[state]
-    return f"என் மக்கள்: உங்கள் கோரிக்கை {request_ref}: {tamil}.\nMy People: your request {request_ref}: {english}."
+    return f"TMK: உங்கள் கோரிக்கை {request_ref}: {tamil}.\nTMK: your request {request_ref}: {english}."

@@ -48,8 +48,8 @@ def test_secrets_are_shown_as_base32_and_a_scannable_uri():
     text = totp.secret_text(secret)
     assert base64.b32decode(text + "=" * (-len(text) % 8)) == secret
     uri = totp.provisioning_uri(secret, "WTL-26-1234567")
-    assert uri.startswith("otpauth://totp/My%20People%3AWTL-26-1234567?secret=")
-    assert "issuer=My%20People" in uri and "digits=6" in uri and "period=30" in uri
+    assert uri.startswith("otpauth://totp/TMK%3AWTL-26-1234567?secret=")
+    assert "issuer=TMK" in uri and "digits=6" in uri and "period=30" in uri
 
 
 def test_devices_get_a_coarse_label_and_a_stable_key():

@@ -72,31 +72,31 @@ def code_request_wait(sent: CodeRequests) -> int | None:
 def code_message(code: str, lifetime: timedelta) -> str:
     minutes = int(lifetime.total_seconds() // 60)
     return (
-        f"என் மக்கள் குறியீடு: {code}. {minutes} நிமிடங்களுக்கு மட்டும். யாருடனும் பகிர வேண்டாம்.\n"
-        f"My People code: {code}. Valid for {minutes} minutes. Never share it."
+        f"TMK குறியீடு: {code}. {minutes} நிமிடங்களுக்கு மட்டும். யாருடனும் பகிர வேண்டாம்.\n"
+        f"TMK code: {code}. Valid for {minutes} minutes. Never share it."
     )
 
 
 PASSWORD_CHANGED_MESSAGE = (
-    "என் மக்கள்: உங்கள் கடவுச்சொல் மாற்றப்பட்டது. இது நீங்கள் இல்லையெனில் உதவியை அணுகவும்.\n"
-    "My People: your password was changed. If this was not you, contact support."
+    "TMK: உங்கள் கடவுச்சொல் மாற்றப்பட்டது. இது நீங்கள் இல்லையெனில் உதவியை அணுகவும்.\n"
+    "TMK: your password was changed. If this was not you, contact support."
 )
 CONTACT_CHANGED_MESSAGE = (
-    "என் மக்கள்: உங்கள் மீட்பு தொலைபேசி எண் மாற்றப்பட்டது. இது நீங்கள் இல்லையெனில் உதவியை அணுகவும்.\n"
-    "My People: your recovery number was changed. If this was not you, contact support."
+    "TMK: உங்கள் மீட்பு தொலைபேசி எண் மாற்றப்பட்டது. இது நீங்கள் இல்லையெனில் உதவியை அணுகவும்.\n"
+    "TMK: your recovery number was changed. If this was not you, contact support."
 )
 MFA_LOCKED_MESSAGE = (
-    "என் மக்கள்: பல தவறான அங்கீகாரக் குறியீடுகள் காரணமாக உங்கள் அங்கீகாரி தற்காலிகமாகப் பூட்டப்பட்டது. "
+    "TMK: பல தவறான அங்கீகாரக் குறியீடுகள் காரணமாக உங்கள் அங்கீகாரி தற்காலிகமாகப் பூட்டப்பட்டது. "
     "இது நீங்கள் இல்லையெனில் கடவுச்சொல்லை மாற்றவும்.\n"
-    "My People: your authenticator is locked for a while after several wrong codes. "
+    "TMK: your authenticator is locked for a while after several wrong codes. "
     "If this was not you, reset your password."
 )
 SUSPICIOUS_SIGN_IN_MESSAGE = (
-    "என் மக்கள்: உங்கள் கணக்கில் வழக்கத்துக்கு மாறான உள்நுழைவு. இது நீங்கள் இல்லையெனில் செயலியில் தெரிவித்துக் கடவுச்சொல்லை மாற்றவும்.\n"
-    "My People: an unusual sign-in to your account. If this was not you, say so in the app and change your password."
+    "TMK: உங்கள் கணக்கில் வழக்கத்துக்கு மாறான உள்நுழைவு. இது நீங்கள் இல்லையெனில் செயலியில் தெரிவித்துக் கடவுச்சொல்லை மாற்றவும்.\n"
+    "TMK: an unusual sign-in to your account. If this was not you, say so in the app and change your password."
 )
 
 NEW_DEVICE_MESSAGE = (
-    "என் மக்கள்: புதிய சாதனத்தில் உங்கள் கணக்கில் உள்நுழைவு. இது நீங்கள் இல்லையெனில் கடவுச்சொல்லை மாற்றவும்.\n"
-    "My People: a new device signed in to your account. If this was not you, reset your password."
+    "TMK: புதிய சாதனத்தில் உங்கள் கணக்கில் உள்நுழைவு. இது நீங்கள் இல்லையெனில் கடவுச்சொல்லை மாற்றவும்.\n"
+    "TMK: a new device signed in to your account. If this was not you, reset your password."
 )

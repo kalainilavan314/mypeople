@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "My People",
+    "name": "TMK",
     "slug": "my-people-member",
     "version": "0.1.0",
     "orientation": "portrait",
@@ -9,7 +9,8 @@
     "userInterfaceStyle": "light",
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#fffbf5",
+        "backgroundColor": "#ffffff",
+        "backgroundImage": "./assets/brand/adaptive-background.png",
         "foregroundImage": "./assets/brand/adaptive-icon.png"
       },
       "predictiveBackGestureEnabled": false,
@@ -25,9 +26,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#fffbf5",
+          "backgroundColor": "#ffffff",
           "image": "./assets/brand/splash-logo.png",
-          "imageWidth": 200,
+          "imageWidth": 300,
           "resizeMode": "contain"
         }
       ],
@@ -35,8 +36,8 @@
       [
         "expo-image-picker",
         {
-          "cameraPermission": "My People uses the camera to photograph your ID and take a selfie for identity verification, proof of residence for an area change, and, for staff, to scan event passes and membership cards at check-in.",
-          "photosPermission": "My People lets you choose a photo of your ID or proof of residence when you cannot use the camera.",
+          "cameraPermission": "TMK uses the camera to photograph your ID and take a selfie for identity verification, proof of residence for an area change, and, for staff, to scan event passes and membership cards at check-in.",
+          "photosPermission": "TMK lets you choose a photo of your ID or proof of residence when you cannot use the camera.",
           "microphonePermission": false
         }
       ],
@@ -44,7 +45,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "My People uses the camera to photograph your ID and take a selfie for identity verification, proof of residence for an area change, and, for staff, to scan event passes and membership cards at check-in.",
+          "cameraPermission": "TMK uses the camera to photograph your ID and take a selfie for identity verification, proof of residence for an area change, and, for staff, to scan event passes and membership cards at check-in.",
           "microphonePermission": false,
           "recordAudioAndroid": false
         }

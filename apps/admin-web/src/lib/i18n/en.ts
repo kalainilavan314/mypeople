@@ -3,10 +3,10 @@ import type { TranslationDictionary } from './types.ts';
 export const enMessages: TranslationDictionary = {
   locale: 'en',
   brand: {
-    title: 'My People',
+    title: 'TMK',
     subtitle: 'Administration',
-    metaTitle: 'My People · Administration',
-    metaDescription: 'Staff operational portal for My People',
+    metaTitle: 'TMK · Administration',
+    metaDescription: 'Staff operational portal for TMK',
   },
   nav: {
     dashboard: 'Dashboard',

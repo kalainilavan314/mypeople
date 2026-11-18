@@ -56,7 +56,7 @@ def test_codes_are_six_digits_and_stored_as_express_stores_them():
 
 def test_code_messages_are_bilingual_and_say_how_long():
     text = rules.code_message("123456", timedelta(minutes=10))
-    assert "123456" in text and "10" in text and "My People" in text and "என் மக்கள்" in text
+    assert "123456" in text and "10" in text and "TMK code" in text and "TMK குறியீடு" in text
 
 
 def test_a_reset_token_names_one_account_and_session_version():

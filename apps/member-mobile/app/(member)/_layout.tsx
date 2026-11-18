@@ -58,7 +58,8 @@ export default function MemberLayout() {
       <Stack.Screen name="household/invite" options={{ title: t('m.household.inviteAdult') }} />
       <Stack.Screen name="household/invitations" options={{ title: t('m.household.pendingInvitations') }} />
       <Stack.Screen name="household/privacy" options={{ title: t('m.household.privacyConsent') }} />
-      <Stack.Screen name="fund/index" options={{ title: t('m.fund.title') }} />
+      {/* The fund screens draw their own header, as in the payment design. */}
+      <Stack.Screen name="fund/index" options={{ title: t('m.fund.title'), headerShown: false }} />
       <Stack.Screen name="fund/receipt/[id]" options={{ title: t('m.fund.receiptTitle') }} />
       <Stack.Screen name="issues/index" options={{ title: t('m.issues.title') }} />
       <Stack.Screen name="issues/report" options={{ title: t('m.issues.reportTitle') }} />

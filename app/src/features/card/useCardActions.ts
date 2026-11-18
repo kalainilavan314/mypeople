@@ -42,7 +42,7 @@ export function useCardActions() {
         type: 'application/pdf',
       });
       if (navigator.canShare?.({ files: [file] }))
-        await navigator.share({ files: [file], title: 'My People Membership ID' });
+        await navigator.share({ files: [file], title: 'TMK Membership ID' });
       else {
         const url = URL.createObjectURL(file),
           a = document.createElement('a');

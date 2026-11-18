@@ -31,6 +31,16 @@ export default function WelcomeScreen() {
   return (
     <Screen edges={['top', 'bottom']} maxContentWidth={560}>
       <View style={styles.hero}>
+        {/* The party's flag with its emblem: red over yellow. */}
+        <View style={styles.flag}>
+          <Image
+            source={require('../../assets/brand/flag.png')}
+            style={styles.flagImage}
+            resizeMode="cover"
+            accessible={false}
+            importantForAccessibility="no"
+          />
+        </View>
         <View style={styles.heroCopy}>
           <AppText step="page" accessibilityRole="header">
             {t('m.welcome.title')}
@@ -42,13 +52,6 @@ export default function WelcomeScreen() {
             {t('m.welcome.subtitle')}
           </AppText>
         </View>
-        <Image
-          source={require('../../assets/brand/logo.png')}
-          style={styles.logo}
-          accessibilityIgnoresInvertColors
-          accessible={false}
-          importantForAccessibility="no"
-        />
       </View>
 
       <AppText step="body" style={styles.introduction}>
@@ -112,17 +115,15 @@ export default function WelcomeScreen() {
 
 const styles = StyleSheet.create({
   hero: {
-    minHeight: 152,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[4],
-    padding: spacing[4],
     marginTop: spacing[2],
     borderRadius: radius.card,
     backgroundColor: colors.primaryContainer,
+    overflow: 'hidden',
   },
-  heroCopy: { flex: 1, gap: spacing[1] },
-  logo: { width: 80, height: 80, borderRadius: radius.card, backgroundColor: colors.card },
+  // A 2:1 frame holds the flag: on the web a bundled image otherwise keeps its own pixel height.
+  flag: { width: '100%', aspectRatio: 2, overflow: 'hidden' },
+  flagImage: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' },
+  heroCopy: { gap: spacing[1], padding: spacing[4] },
   introduction: { maxWidth: 480 },
   gap: { gap: spacing[3] },
   languageGroup: { gap: spacing[2], marginTop: spacing[2] },

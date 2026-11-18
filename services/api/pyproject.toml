@@ -1,7 +1,7 @@
 [project]
 name = "my-people-api"
 version = "0.1.0"
-description = "My People (என் மக்கள்) API: FastAPI modular monolith"
+description = "TMK (தாயக மக்கள் கழகம்) API: FastAPI modular monolith"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

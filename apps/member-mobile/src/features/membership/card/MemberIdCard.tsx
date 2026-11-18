@@ -22,6 +22,9 @@ export const CARD_WIDTH = 640;
 export const CARD_HEIGHT = 384;
 
 // Brand lines printed on the card itself, as in the design; they are artwork, not interface text.
+// The party's name: Thayaga Makkal Kazhagam (தாயக மக்கள் கழகம், TMK).
+const PARTY_TA = 'தாயக மக்கள் கழகம்';
+const PARTY_EN = 'THAYAGA MAKKAL KAZHAGAM';
 const TOP_LINE = 'PEOPLE  •  COMMUNITY  •  A BRIGHTER NORTHERN PROVINCE';
 const RIBBON = ['SERVICE TODAY', 'STRONGER TOMORROW'];
 const MOTTO = ['PEOPLE', 'PLACES', 'POTENTIAL', 'PROGRESS'];
@@ -81,8 +84,10 @@ export function MemberIdCard({ card, width, qrCode, onPhotoPress, onSignPress }:
         <Signature card={card} onPress={onSignPress} />
 
         <View style={styles.titleBlock}>
-          <Text allowFontScaling={false} style={[styles.tamilTitle, { fontFamily: fontFamilyFor('ta', 700) }]}>என் மக்கள்</Text>
-          <Text allowFontScaling={false} style={[styles.englishTitle, ui(700)]}>MY PEOPLE</Text>
+          <Text allowFontScaling={false} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={[styles.tamilTitle, { fontFamily: fontFamilyFor('ta', 700) }]}>
+            {PARTY_TA}
+          </Text>
+          <Text allowFontScaling={false} style={[styles.englishTitle, ui(700)]}>{PARTY_EN}</Text>
           <View style={styles.goldRule} />
           <Text allowFontScaling={false} numberOfLines={1} style={[styles.subtitle, text(language, 400)]}>{t('m.card.subtitle')}</Text>
 
@@ -133,8 +138,8 @@ export function MemberIdCard({ card, width, qrCode, onPhotoPress, onSignPress }:
 
         <View style={styles.brand}>
           <Image source={require('../../../../assets/brand/logo.png')} style={styles.logo} resizeMode="contain" accessible={false} />
-          <Text allowFontScaling={false} style={[styles.brandTamil, { fontFamily: fontFamilyFor('ta', 700) }]}>என் மக்கள்</Text>
-          <Text allowFontScaling={false} style={[styles.brandEnglish, ui(700)]}>MY PEOPLE</Text>
+          <Text allowFontScaling={false} style={[styles.brandTamil, { fontFamily: fontFamilyFor('ta', 700) }]}>{PARTY_TA}</Text>
+          <Text allowFontScaling={false} style={[styles.brandEnglish, ui(700)]}>TMK</Text>
           <Text allowFontScaling={false} style={[styles.brandRegion, ui(500)]}>NORTHERN PROVINCE</Text>
         </View>
         <View style={styles.motto}>
@@ -344,8 +349,8 @@ const styles = StyleSheet.create({
   signLabel: { fontSize: 8.5, color: colors.textSecondary, marginTop: 4, textAlign: 'center' },
   signOrg: { fontSize: 7.5, color: colors.textMuted, textAlign: 'center' },
   titleBlock: { position: 'absolute', left: 184, top: 44, width: 280 },
-  tamilTitle: { fontSize: 34, lineHeight: 46, color: colors.primaryDark },
-  englishTitle: { fontSize: 16, letterSpacing: 7, color: colors.primary, marginTop: -2 },
+  tamilTitle: { fontSize: 21, lineHeight: 32, color: colors.primaryDark },
+  englishTitle: { fontSize: 11, letterSpacing: 2.4, color: colors.primary, marginTop: 0 },
   goldRule: { width: 250, height: 1, backgroundColor: colors.brandGold, marginTop: 4, marginBottom: 4 },
   subtitle: { fontSize: 10.5, color: colors.textSecondary },
   label: { fontSize: 7.5, letterSpacing: 1.4, color: colors.textSecondary },
@@ -373,8 +378,8 @@ const styles = StyleSheet.create({
   verifiedText: { fontSize: 11.5, color: colors.successText },
   brand: { position: 'absolute', left: 482, top: 42, width: 140, alignItems: 'center' },
   logo: { width: 62, height: 62 },
-  brandTamil: { fontSize: 14, lineHeight: 20, color: colors.primaryDark, marginTop: 2 },
-  brandEnglish: { fontSize: 8.5, letterSpacing: 3, color: colors.primary },
+  brandTamil: { fontSize: 11, lineHeight: 16, color: colors.primaryDark, marginTop: 2, textAlign: 'center' },
+  brandEnglish: { fontSize: 9, letterSpacing: 3, color: colors.primary },
   brandRegion: { fontSize: 6.2, letterSpacing: 2, color: colors.textSecondary },
   motto: { position: 'absolute', left: 578, top: 152, gap: 3 },
   mottoText: { fontSize: 6, letterSpacing: 1.6, color: colors.brandGold },

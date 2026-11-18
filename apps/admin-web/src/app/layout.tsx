@@ -14,8 +14,8 @@ import { LanguageProvider } from '@/lib/i18n/context';
 import type { Locale } from '@/lib/i18n/types';
 
 export const metadata: Metadata = {
-  title: 'My People · Administration',
-  description: 'Staff dashboard for My People (என் மக்கள்)',
+  title: 'TMK · Administration',
+  description: 'Staff dashboard for TMK (தாயக மக்கள் கழகம்)',
   // A staff tool: never listed by search engines.
   robots: { index: false, follow: false },
 };

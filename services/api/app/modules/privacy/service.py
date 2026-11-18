@@ -146,4 +146,4 @@ def close(
 def outcome_message(request: StoredRequest) -> str:
     tamil = "நிறைவேற்றப்பட்டது" if request.state == "completed" else "நிராகரிக்கப்பட்டது; காரணம் அனுப்பப்பட்டுள்ளது"
     english = "has been completed" if request.state == "completed" else "has been refused; the reason has been recorded"
-    return f"என் மக்கள்: உங்கள் கோரிக்கை {request.request_ref} {tamil}.\nMy People: your request {request.request_ref} {english}."
+    return f"TMK: உங்கள் கோரிக்கை {request.request_ref} {tamil}.\nTMK: your request {request.request_ref} {english}."

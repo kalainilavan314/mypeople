@@ -43,8 +43,8 @@ export function HomeHeader({ avatarUrl, search, onSearch }: Props) {
             <Logo size={24} />
           </span>
           <span className="home-appbar-name">
-            <strong>My People</strong>
-            <small lang="ta">என் மக்கள்</small>
+            <strong>TMK</strong>
+            <small lang="ta">தாயக மக்கள் கழகம்</small>
           </span>
         </div>
 
