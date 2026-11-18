@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText } from './AppText';
 
@@ -25,7 +25,7 @@ export function Notice({ tone = 'info', title, children }: Props) {
       style={[styles.box, { backgroundColor: style.background, borderColor: style.border }]}
       accessibilityRole={tone === 'error' ? 'alert' : undefined}
       accessibilityLiveRegion={tone === 'info' ? undefined : 'polite'}>
-      <Ionicons name={style.icon} size={20} color={style.color} />
+      <Ionicons name={style.icon} size={iconSize.row} color={style.color} />
       <View style={styles.text}>
         {title ? (
           <AppText step="card" tone="default">

@@ -1,7 +1,7 @@
 // Shared by the member and staff apps: the app fonts, the screen components
 // from the design specification (design/mobile/production-design-specification.md
 // §3), the stored session, and the hooks that load data through the API client.
-export { fontFamilyFor, appFonts, monoFontFamily, scaledTextStyle, textStyle, type TypographyScale } from './fonts';
+export { fontFamilyFor, appFonts, monoFontFamily, scaledTextStyle, tamilSize, textStyle, type TypographyScale } from './fonts';
 export {
   DisplayPreferencesProvider,
   TEXT_SCALE,

@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ComponentProps, ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { colors, radius, spacing, tints, type Tint } from '@my-people/design-tokens/mobile';
+import { colors, iconSize, iconTile, radius, spacing, tints, type Tint } from '@my-people/design-tokens/mobile';
 
 import { AppText } from './AppText';
 
@@ -25,7 +25,7 @@ export function MenuRow({ icon, label, hint, onPress, trailing, first = false, t
   const content = (
     <>
       <View style={[styles.tile, { backgroundColor: tints[tint].background }]}>
-        <Ionicons name={icon} size={20} color={tints[tint].icon} />
+        <Ionicons name={icon} size={iconSize.row} color={tints[tint].icon} />
       </View>
       <View style={styles.text}>
         <AppText step="card" weight={400}>{label}</AppText>
@@ -35,7 +35,10 @@ export function MenuRow({ icon, label, hint, onPress, trailing, first = false, t
           </AppText>
         ) : null}
       </View>
-      {trailing ?? (onPress ? <Ionicons name="chevron-forward" size={18} color={colors.controlBorder} /> : null)}
+      {trailing ? <View style={styles.trailing}>{trailing}</View> : null}
+      {!trailing && onPress ? (
+        <Ionicons name="chevron-forward" size={iconSize.chevron} color={colors.controlBorder} style={styles.trailing} />
+      ) : null}
     </>
   );
   if (!onPress) return <View style={[styles.row, !first && styles.separator]}>{content}</View>;
@@ -51,9 +54,18 @@ export function MenuRow({ icon, label, hint, onPress, trailing, first = false, t
 }
 
 const styles = StyleSheet.create({
-  row: { minHeight: 56, flexDirection: 'row', alignItems: 'center', gap: spacing[4], paddingVertical: spacing[3] },
-  tile: { width: 38, height: 38, borderRadius: radius.input - 2, alignItems: 'center', justifyContent: 'center' },
+  row: { minHeight: 56, flexDirection: 'row', alignItems: 'center', gap: spacing[3], paddingVertical: spacing[3] },
+  // The tile and the chevron never shrink, so a long Tamil label wraps inside its own column instead.
+  tile: {
+    width: iconTile.row,
+    height: iconTile.row,
+    borderRadius: radius.tile,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  trailing: { flexShrink: 0 },
   separator: { borderTopWidth: 1, borderTopColor: colors.divider },
-  text: { flex: 1 },
+  text: { flex: 1, minWidth: 0 },
   pressed: { backgroundColor: colors.surfaceVariant },
 });

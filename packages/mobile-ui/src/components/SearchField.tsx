@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 import { useTextScale } from '../display/DisplayPreferences';
 import { scaledTextStyle } from '../fonts';
 import { useLanguage } from '../hooks/useLanguage';
@@ -17,7 +17,7 @@ export function SearchField({ label, ...input }: Props) {
   const body = scaledTextStyle(language, 'body', useTextScale());
   return (
     <View style={styles.box}>
-      <Ionicons name="search-outline" size={20} color={colors.textMuted} accessibilityElementsHidden importantForAccessibility="no" />
+      <Ionicons name="search-outline" size={iconSize.row} color={colors.textMuted} accessibilityElementsHidden importantForAccessibility="no" />
       <TextInput
         {...input}
         accessibilityLabel={label}

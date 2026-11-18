@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, spacing } from '@my-people/design-tokens/mobile';
+import { colors, iconSize, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, Button, SurfaceCard } from '@my-people/mobile-ui';
 
 /**
@@ -15,7 +15,7 @@ export function ReceiptBanner({ caseNumber, nextStep }: { caseNumber: string; ne
   return (
     <SurfaceCard style={styles.banner}>
       <View style={styles.titleRow}>
-        <Ionicons name="checkmark-circle" size={28} color={colors.successText} />
+        <Ionicons name="checkmark-circle" size={iconSize.action} color={colors.successText} />
         <AppText step="section" accessibilityRole="header" accessibilityLiveRegion="polite" style={styles.flex}>
           {t('m.issues.receiptTitle')}
         </AppText>

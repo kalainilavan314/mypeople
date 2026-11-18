@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { colors, spacing } from '@my-people/design-tokens/mobile';
+import { colors, iconSize, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, SurfaceCard } from '@my-people/mobile-ui';
 
 type Props = {
@@ -23,7 +23,7 @@ export function ReceiptCard({ title, referenceLabel, reference, body, children }
   return (
     <SurfaceCard style={styles.card}>
       <View style={styles.titleRow}>
-        <Ionicons name="checkmark-circle" size={28} color={colors.successText} />
+        <Ionicons name="checkmark-circle" size={iconSize.action} color={colors.successText} />
         <AppText step="section" accessibilityRole="header" accessibilityLiveRegion="polite" style={styles.flex}>
           {title}
         </AppText>

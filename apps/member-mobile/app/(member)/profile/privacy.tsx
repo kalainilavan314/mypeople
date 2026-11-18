@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
@@ -52,11 +52,10 @@ export default function PrivacyScreen() {
           <SurfaceCard style={styles.dataCard}>
             {items.map((item, index) => (
               <View key={item.dataEn} style={[styles.item, index > 0 && styles.itemDivider]}>
-                <View style={styles.itemAccent} />
                 <View style={styles.itemIcon}>
                   <Ionicons
                     name={DATA_ICONS[index] ?? 'document-text-outline'}
-                    size={29}
+                    size={iconSize.action}
                     color={colors.primary}
                     accessibilityElementsHidden
                     importantForAccessibility="no"
@@ -93,7 +92,7 @@ export default function PrivacyScreen() {
           list.length === 0 ? (
             <SurfaceCard style={styles.emptyState}>
               <View style={styles.itemIcon}>
-                <Ionicons name="document-text-outline" size={29} color={colors.primary} />
+                <Ionicons name="document-text-outline" size={iconSize.action} color={colors.primary} />
               </View>
               <AppText step="secondary" tone="secondary" style={styles.flex}>
                 {t('m.common.empty')}
@@ -117,7 +116,7 @@ function RequestCard({ request }: { request: PrivacyRequest }) {
         <View style={styles.itemIcon}>
           <Ionicons
             name={request.kind === 'copy' ? 'download-outline' : 'close-circle-outline'}
-            size={29}
+            size={iconSize.action}
             color={colors.primary}
           />
         </View>
@@ -212,7 +211,7 @@ function ClosureRequest({ onSent }: { onSent: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
+  sectionTitle: { fontSize: 20, lineHeight: 28, fontWeight: '700' },
   dataCard: { padding: 0, gap: 0, overflow: 'hidden' },
   item: {
     position: 'relative',
@@ -224,15 +223,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   itemDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
-  itemAccent: {
-    position: 'absolute',
-    width: 72,
-    height: 50,
-    right: -14,
-    bottom: -16,
-    borderTopLeftRadius: 54,
-    backgroundColor: 'rgba(255, 211, 42, 0.44)',
-  },
   itemIcon: {
     width: 52,
     height: 52,

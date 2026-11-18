@@ -1,9 +1,12 @@
-import { StyleSheet, Switch, View } from 'react-native';
+import { Platform, StyleSheet, Switch, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { colors, spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText, ChipRow, Screen, SurfaceCard, type TextSize, useDisplayPreferences } from '@my-people/mobile-ui';
+
+/** react-native-web's extra prop for the switched-on thumb; native platforms use thumbColor. */
+const WEB_THUMB = Platform.OS === 'web' ? { activeThumbColor: colors.card } : {};
 
 /**
  * M44: an in-app text size that works whatever the phone's own setting
@@ -53,7 +56,10 @@ export default function AccessibilityScreen() {
             value={dataSaver}
             onValueChange={setDataSaver}
             accessibilityLabel={t('m.accessibility.dataSaverLabel')}
-            trackColor={{ true: colors.primary, false: colors.inputBorder }}
+            trackColor={{ true: colors.switchOn, false: colors.inputBorder }}
+            thumbColor={colors.card}
+            ios_backgroundColor={colors.inputBorder}
+            {...WEB_THUMB}
           />
         </View>
       </SurfaceCard>

@@ -33,7 +33,7 @@ export default function VolunteerScreen() {
               <MenuRow
                 first
                 icon="construct-outline"
-                tint="rose"
+                tint="brand"
                 label={t('m.volunteer.mySkills')}
                 hint={t('m.volunteer.mySkillsHint')}
                 onPress={() => router.push('/volunteer/skills')}

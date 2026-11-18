@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 import { AppText } from '@my-people/mobile-ui';
 
 type Option<K extends string> = { key: K; label: string };
@@ -33,7 +33,7 @@ export function ToggleChips<K extends string>({ options, selected, onChange, lab
             accessibilityState={{ checked, disabled }}
             aria-checked={checked}
             style={[styles.chip, checked ? styles.active : styles.inactive, disabled && styles.disabled]}>
-            {checked ? <Ionicons name="checkmark" size={16} color={colors.onBrandAccent} /> : null}
+            {checked ? <Ionicons name="checkmark" size={iconSize.status} color={colors.onBrandAccent} /> : null}
             <AppText step="label" tone={checked ? 'brandAccent' : 'secondary'}>
               {option.label}
             </AppText>

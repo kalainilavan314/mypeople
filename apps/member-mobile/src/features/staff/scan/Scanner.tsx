@@ -3,7 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, Button, Notice } from '@my-people/mobile-ui';
 
 type Props = {
@@ -47,7 +47,7 @@ export function Scanner({ onScan, paused, deniedMessage }: Props) {
         <View style={styles.pausedCover}>
           <Ionicons
             name="checkmark-circle"
-            size={44}
+            size={iconSize.state}
             color={colors.onPrimary}
             accessibilityElementsHidden
             importantForAccessibility="no-hide-descendants"

@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, Button, Notice, Screen, StatusTag, SurfaceCard, useApiQuery } from '@my-people/mobile-ui';
 import { QueryView } from '@/components/QueryView';
 import { api } from '@/lib/api';
@@ -55,7 +55,7 @@ export default function SetupScreen() {
                 const tone = step.done ? 'success' : current ? 'primary' : 'muted';
                 return (
                   <View key={step.name} style={[styles.step, index > 0 && styles.divider, current && styles.current]}>
-                    <Ionicons name={icon} size={20} color={iconColor} />
+                    <Ionicons name={icon} size={iconSize.row} color={iconColor} />
                     <AppText step="body" style={styles.stepName}>
                       {t(`m.setup.step_${step.name}`)}
                     </AppText>

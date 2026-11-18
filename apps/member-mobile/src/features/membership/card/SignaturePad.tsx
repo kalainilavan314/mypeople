@@ -2,7 +2,9 @@ import { useRef, useState } from 'react';
 import { PanResponder, Platform, StyleSheet, View, type GestureResponderEvent, type ViewStyle } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
+// Drawn onto the official card, so it keeps the card's TMK gold (root entry) rather than the app's sage.
+import { colors } from '@my-people/design-tokens';
+import { radius, spacing } from '@my-people/design-tokens/mobile';
 import { AppText } from '@my-people/mobile-ui';
 
 import { strokePath } from './SignatureStrokes';

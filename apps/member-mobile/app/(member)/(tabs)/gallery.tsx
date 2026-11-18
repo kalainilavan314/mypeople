@@ -9,6 +9,7 @@ import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, ChipRow, formatDate, Screen, useApiQuery, useLanguage, useLocalized } from '@my-people/mobile-ui';
 
 import { GalleryImage } from '@/components/GalleryImage';
+import { PhotoBackdrop } from '@/components/PhotoBackdrop';
 import { QueryView } from '@/components/QueryView';
 import { api } from '@/lib/api';
 
@@ -25,6 +26,7 @@ export default function GalleryScreen() {
       subtitle={t('m.gallery.subtitle')}
       edges={[]}
       maxContentWidth={720}
+      backdrop={<PhotoBackdrop />}
       onRefresh={albums.reload}
       refreshing={albums.loading && albums.data !== undefined}>
       <ChipRow
@@ -96,8 +98,8 @@ const styles = StyleSheet.create({
     flexBasis: '47%',
     minWidth: 150,
     flexGrow: 1,
-    backgroundColor: colors.card,
-    borderColor: colors.border,
+    backgroundColor: colors.glass,
+    borderColor: colors.glassBorder,
     borderWidth: 1,
     borderRadius: radius.card,
     overflow: 'hidden',
@@ -109,8 +111,8 @@ const styles = StyleSheet.create({
     margin: spacing[2],
     paddingHorizontal: spacing[2],
     paddingVertical: 2,
-    borderRadius: radius.tag,
-    backgroundColor: colors.primaryDark, // a dark chip, so the white count stays readable over any photo
+    borderRadius: radius.pill,
+    backgroundColor: 'rgba(29, 41, 37, 0.78)', // a dark chip, so the white count stays readable over any photo
   },
   caption: { padding: spacing[3], gap: 2 },
 });

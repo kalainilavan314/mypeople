@@ -89,7 +89,7 @@ function Briefing({ opportunity, reload }: { opportunity: VolunteerOpportunity; 
     <>
       <View style={styles.header}>
         <View style={styles.titleRow}>
-          <IconTile icon="hand-left-outline" tint="rose" size={40} />
+          <IconTile icon="hand-left-outline" tint="brand" size={40} />
           <AppText step="secondary" tone="muted" mono style={styles.flex}>
             {opportunity.opportunityRef}
           </AppText>

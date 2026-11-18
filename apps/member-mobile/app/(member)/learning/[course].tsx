@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, spacing } from '@my-people/design-tokens/mobile';
+import { colors, iconSize, spacing } from '@my-people/design-tokens/mobile';
 import {
   AppText,
   Button,
@@ -99,7 +99,7 @@ function CourseBody({ course }: { course: CourseDetail }) {
               <Ionicons
                 accessible={false}
                 name={lesson.completed ? 'checkmark-circle' : 'ellipse-outline'}
-                size={22}
+                size={iconSize.row}
                 color={lesson.completed ? colors.successText : colors.controlBorder}
               />
               <View style={styles.flex}>
@@ -111,7 +111,7 @@ function CourseBody({ course }: { course: CourseDetail }) {
                   {`${t('m.learning.minutes', { minutes: lesson.minutes })} · ${state}`}
                 </AppText>
               </View>
-              <Ionicons accessible={false} name="chevron-forward" size={18} color={colors.controlBorder} />
+              <Ionicons accessible={false} name="chevron-forward" size={iconSize.chevron} color={colors.controlBorder} />
             </Pressable>
           );
         })}

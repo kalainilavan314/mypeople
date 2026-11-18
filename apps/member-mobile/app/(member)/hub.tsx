@@ -66,8 +66,8 @@ export default function HubScreen() {
 }
 
 const styles = StyleSheet.create({
-  sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
-  responsiveSectionTitle: { fontSize: 20, lineHeight: 30 },
+  sectionTitle: { fontSize: 20, lineHeight: 28, fontWeight: '700' },
+  responsiveSectionTitle: { fontSize: 18, lineHeight: 27 },
   serviceGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
   rows: { paddingVertical: 0 },
 });

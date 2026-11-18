@@ -1,4 +1,3 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import type { HomeView } from '@my-people/api-client';
 import { router, type Href } from 'expo-router';
 import { useCallback } from 'react';
@@ -11,6 +10,7 @@ import {
   AppText,
   Button,
   formatDateTime,
+  IconTile,
   Notice,
   Screen,
   SurfaceCard,
@@ -20,6 +20,7 @@ import {
   useReloadOnFocus,
 } from '@my-people/mobile-ui';
 
+import { PhotoBackdrop } from '@/components/PhotoBackdrop';
 import { QueryView } from '@/components/QueryView';
 import { EventRow } from '@/features/events/EventRow';
 import { HomeActionTile } from '@/features/home/HomeActionTile';
@@ -56,7 +57,12 @@ export default function HomeScreen() {
   useReloadOnFocus(reload);
 
   return (
-    <Screen edges={[]} maxContentWidth={720} onRefresh={reload} refreshing={home.loading && home.data !== undefined}>
+    <Screen
+      edges={[]}
+      maxContentWidth={720}
+      backdrop={<PhotoBackdrop />}
+      onRefresh={reload}
+      refreshing={home.loading && home.data !== undefined}>
       <QueryView query={home}>{(data) => <HomeBody data={data} />}</QueryView>
     </Screen>
   );
@@ -87,7 +93,7 @@ function HomeBody({ data }: { data: HomeView }) {
       ) : null}
 
       {next ? (
-        <SurfaceCard accent style={styles.nextAction}>
+        <SurfaceCard accent variant="glass" style={styles.nextAction}>
           <AppText step="caption" tone="primary">
             {t('m.home.nextStep')}
           </AppText>
@@ -110,7 +116,7 @@ function HomeBody({ data }: { data: HomeView }) {
       {/* Only for people with a staff role: their tier, and the way into the Staff section, which
           asks for the authenticator code (OD-26, one app for members and staff). */}
       {staff ? (
-        <SurfaceCard onPress={() => router.push('/staff')} accessibilityLabel={t('m.home.staffSection')}>
+        <SurfaceCard variant="glass" onPress={() => router.push('/staff')} accessibilityLabel={t('m.home.staffSection')}>
           <AppText step="section">{t('m.home.staffSection')}</AppText>
           <View style={styles.tags}>
             <StaffRoleTags roles={roles} />
@@ -125,8 +131,8 @@ function HomeBody({ data }: { data: HomeView }) {
         {t('m.home.quickActions')}
       </AppText>
       <View style={styles.actionGrid}>
-        {data.quickActions.map((feature, index) => (
-          <HomeActionTile key={feature.key} feature={feature} tone={index === 0 || index === 3 ? 'red' : 'yellow'} />
+        {data.quickActions.map((feature) => (
+          <HomeActionTile key={feature.key} feature={feature} />
         ))}
       </View>
 
@@ -144,9 +150,9 @@ function HomeBody({ data }: { data: HomeView }) {
           {data.comingUp ? (
             <EventRow event={data.comingUp} />
           ) : (
-            <SurfaceCard style={styles.emptyEvents}>
+            <SurfaceCard variant="glass" style={styles.emptyEvents}>
               <View style={styles.emptyEventCopy}>
-                <Ionicons name="calendar-outline" size={34} color={colors.primary} />
+                <IconTile icon="calendar-outline" tint="brand" />
                 <AppText step="body" tone="secondary" style={styles.flex}>
                   {t('m.home.noEvents')}
                 </AppText>
@@ -181,8 +187,8 @@ function HomeBody({ data }: { data: HomeView }) {
 
 const styles = StyleSheet.create({
   nextAction: { backgroundColor: colors.primaryContainer, borderColor: colors.primaryContainer },
-  sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
-  responsiveSectionTitle: { fontSize: 20, lineHeight: 30 },
+  sectionTitle: { fontSize: 20, lineHeight: 28, fontWeight: '700' },
+  responsiveSectionTitle: { fontSize: 18, lineHeight: 27 },
   actionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
   sectionRow: { flexDirection: 'row', alignItems: 'center' },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },

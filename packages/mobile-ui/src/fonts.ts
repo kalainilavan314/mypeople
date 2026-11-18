@@ -48,6 +48,18 @@ const TAMIL: Record<FontWeight, string> = {
   700: 'NotoSansTamil_700Bold',
 };
 
+/**
+ * Noto Sans Tamil draws noticeably larger than Outfit at the same pixel size, so Tamil text is set
+ * about 10% smaller than the English step (the owner found it too big in the sage design, November
+ * 2026). Small text is left alone, so nothing Tamil drops below 12 px.
+ */
+export const TAMIL_SIZE_RATIO = 0.9;
+
+export function tamilSize(latinSize: number): number {
+  if (latinSize <= 12) return latinSize;
+  return Math.max(12, Math.round(latinSize * TAMIL_SIZE_RATIO));
+}
+
 /** The loaded font for a language and weight. Native apps cannot fall back per glyph, so Tamil gets its own font. */
 export function fontFamilyFor(language: string, weight: FontWeight): string {
   return language === 'ta' ? TAMIL[weight] : OUTFIT[weight];
@@ -69,9 +81,9 @@ export function textStyle(language: string, step: keyof typeof typeScale, typogr
   const steps = typography === 'comfortable' ? comfortableTypeScale : typeScale;
   const { size: latinSize, lineHeight, weight } = steps[step];
   const tamil = language === 'ta';
-  // Puvi's type scale is the PWA's, small enough that Tamil keeps the English sizes; it only
-  // gets more line height (lineHeightRatio.tamil).
-  const size = latinSize;
+  // Tamil is set a step smaller than English (tamilSize) and gets more line height
+  // (lineHeightRatio.tamil) for the vowel signs above and below the letters.
+  const size = tamil ? tamilSize(latinSize) : latinSize;
   // Text must remain readable when system font scaling expands Tamil glyphs: every step keeps
   // above a 1.45 line-height baseline, and Tamil gets its larger script-specific leading.
   const accessibleLineHeight = Math.ceil(size * 1.45);
@@ -79,6 +91,8 @@ export function textStyle(language: string, step: keyof typeof typeScale, typogr
   return {
     fontFamily: fontFamilyFor(language, weight),
     fontSize: size,
-    lineHeight: tamil ? Math.max(lineHeight, accessibleLineHeight, tamilLineHeight) : Math.max(lineHeight, accessibleLineHeight),
+    lineHeight: tamil
+      ? Math.max(Math.ceil(lineHeight * TAMIL_SIZE_RATIO), accessibleLineHeight, tamilLineHeight)
+      : Math.max(lineHeight, accessibleLineHeight),
   };
 }

@@ -29,7 +29,7 @@ export function OpportunityCard({ opportunity }: { opportunity: VolunteerOpportu
       accessibilityLabel={`${title}. ${role}. ${when}. ${place}${saved}${offer}`}
       accessibilityHint={t('m.volunteer.opensBriefing')}>
       <View style={styles.row}>
-        <IconTile icon="hand-left-outline" tint="rose" size={40} />
+        <IconTile icon="hand-left-outline" tint="brand" size={40} />
         <View style={styles.text}>
           <AppText step="card">{title}</AppText>
           <AppText step="secondary" tone="secondary">

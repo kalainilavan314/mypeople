@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
@@ -63,7 +63,7 @@ export default function PhotoScreen() {
                   accessibilityLabel={t('m.gallery.previous')}
                   aria-disabled={index === 0}
                   style={[styles.pageButton, index === 0 && styles.disabled]}>
-                  <Ionicons name="chevron-back" size={24} color={colors.primary} />
+                  <Ionicons name="chevron-back" size={iconSize.action} color={colors.primary} />
                 </Pressable>
                 <AppText step="label" tone="muted" accessibilityLiveRegion="polite">
                   {t('m.gallery.photoOf', { n: photo.number, total: data.photos.length })}
@@ -75,7 +75,7 @@ export default function PhotoScreen() {
                   accessibilityLabel={t('m.gallery.next')}
                   aria-disabled={index >= data.photos.length - 1}
                   style={[styles.pageButton, index >= data.photos.length - 1 && styles.disabled]}>
-                  <Ionicons name="chevron-forward" size={24} color={colors.primary} />
+                  <Ionicons name="chevron-forward" size={iconSize.action} color={colors.primary} />
                 </Pressable>
               </View>
               <RemovalRequest key={photo.id} photoId={photo.id} />

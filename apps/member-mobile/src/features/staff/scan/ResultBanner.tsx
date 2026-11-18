@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 import { AppText } from '@my-people/mobile-ui';
 
 type Props = { ok: boolean; title: string; name?: string | null; memberCode?: string | null };
@@ -19,7 +19,7 @@ export function ResultBanner({ ok, title, name, memberCode }: Props) {
       <View style={styles.titleRow}>
         <Ionicons
           name={ok ? 'checkmark-circle' : 'alert-circle'}
-          size={28}
+          size={iconSize.action}
           color={ok ? colors.success : colors.error}
           accessibilityElementsHidden
           importantForAccessibility="no-hide-descendants"

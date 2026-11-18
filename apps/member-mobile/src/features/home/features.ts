@@ -46,7 +46,7 @@ export const FEATURE_ICONS: Record<string, IconName> = {
   local_reports: 'document-text-outline',
   area_projects: 'construct-outline',
   events: 'calendar-outline',
-  card: 'card-outline',
+  card: 'id-card-outline',
   gallery: 'images-outline',
   profile: 'person-outline',
   help: 'help-buoy-outline',
@@ -54,16 +54,16 @@ export const FEATURE_ICONS: Record<string, IconName> = {
   support: 'heart-outline',
 };
 
-/** The tile colour of each feature, as in the reference recording. */
+/** The tile of each feature; in the sage design (18 November 2026) every tile is the same calm sage. */
 export const FEATURE_TINTS: Partial<Record<string, Tint>> = {
   my_area: 'green',
   community: 'sand',
   events: 'teal',
   help: 'purple',
   report_issue: 'blue',
-  volunteer: 'rose',
-  volunteering: 'rose',
-  ideas: 'amber',
+  volunteer: 'brand',
+  volunteering: 'brand',
+  ideas: 'brand',
   surveys: 'purple',
   learning: 'green',
   party_fund: 'blue',
@@ -74,5 +74,5 @@ export const FEATURE_TINTS: Partial<Record<string, Tint>> = {
   gallery: 'blue',
   profile: 'brand',
   promises: 'teal',
-  support: 'rose',
+  support: 'brand',
 };

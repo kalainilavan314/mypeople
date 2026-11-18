@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ComponentProps } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { radius, tints, type Tint } from '@my-people/design-tokens/mobile';
+import { iconSize, iconTile, radius, tints, type Tint } from '@my-people/design-tokens/mobile';
 
 type Props = {
   icon: ComponentProps<typeof Ionicons>['name'];
@@ -19,11 +19,11 @@ export function IconTile({ icon, tint = 'blue', size = 48 }: Props) {
       accessible={false}
       importantForAccessibility="no-hide-descendants"
       style={[styles.tile, { width: size, height: size, backgroundColor: colours.background }]}>
-      <Ionicons name={icon} size={size === 48 ? 24 : 20} color={colours.icon} />
+      <Ionicons name={icon} size={size === iconTile.action ? iconSize.action : iconSize.row} color={colours.icon} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  tile: { borderRadius: radius.tile, alignItems: 'center', justifyContent: 'center' },
+  tile: { borderRadius: radius.tile, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
 });

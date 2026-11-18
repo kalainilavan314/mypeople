@@ -3,7 +3,7 @@ import type { SurveyAnswerValue, SurveyQuestion } from '@my-people/api-client';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, Checkbox, TextField, useLocalized } from '@my-people/mobile-ui';
 
 import { PREFER_NOT_TO_SAY } from './answers';
@@ -86,7 +86,7 @@ export function QuestionInput({ question, value, onChange, label }: Props) {
                 accessibilityState={{ checked }}
                 aria-checked={checked}
                 style={[styles.scaleStep, checked ? styles.scaleChosen : styles.scaleIdle]}>
-                {checked ? <Ionicons accessible={false} name="checkmark" size={16} color={colors.onBrandAccent} /> : null}
+                {checked ? <Ionicons accessible={false} name="checkmark" size={iconSize.status} color={colors.onBrandAccent} /> : null}
                 <AppText step="card" tone={checked ? 'brandAccent' : 'default'}>
                   {String(number)}
                 </AppText>
@@ -132,7 +132,7 @@ function Radio({ label, checked, onPress }: { label: string; checked: boolean; o
       <Ionicons
         accessible={false}
         name={checked ? 'radio-button-on' : 'radio-button-off'}
-        size={24}
+        size={iconSize.action}
         color={checked ? colors.primary : colors.controlBorder}
       />
       <AppText step="body" style={styles.flex}>

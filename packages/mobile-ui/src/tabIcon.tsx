@@ -2,28 +2,29 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ComponentProps } from 'react';
 import { StyleSheet, View, type ColorValue } from 'react-native';
 
+import { colors, iconSize } from '@my-people/design-tokens/mobile';
+
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
 /**
- * A tab bar icon in the colour and size the tab bar asks for; the chosen tab shows in the brand
- * colour and switches to the solid icon (`activeName`, or the name without "-outline").
+ * A tab bar icon in the colour the tab bar asks for. Every tab draws the same outlined icon at the
+ * same size in the same fixed box; the chosen tab only gains a pale sage pill behind it, so nothing
+ * moves or changes size when the tab changes (the sage design of 18 November 2026).
  */
-export function tabIcon(name: IconName, fixedSize?: number, activeName?: IconName) {
-  return function TabIcon({ color, size, focused }: { color: ColorValue; size: number; focused: boolean }) {
+export function tabIcon(name: IconName) {
+  return function TabIcon({ color, focused }: { color: ColorValue; size: number; focused: boolean }) {
     // The tab bar passes our design-token colours, which are strings. React
     // Native's ColorValue also allows numbers and null, which the icon does not.
     const iconColor = typeof color === 'string' ? color : undefined;
-    const resolvedName = focused
-      ? activeName ?? (name.endsWith('-outline') ? (name.replace(/-outline$/, '') as IconName) : name)
-      : name;
     return (
-      <View style={styles.icon}>
-        <Ionicons name={resolvedName} color={iconColor} size={fixedSize ?? size} />
+      <View style={[styles.pill, focused && styles.chosen]}>
+        <Ionicons name={name} color={iconColor} size={iconSize.tab} />
       </View>
     );
   };
 }
 
 const styles = StyleSheet.create({
-  icon: { width: 34, height: 30, alignItems: 'center', justifyContent: 'center' },
+  pill: { width: 48, height: 32, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  chosen: { backgroundColor: colors.brandYellow },
 });

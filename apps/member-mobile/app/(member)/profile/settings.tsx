@@ -4,10 +4,10 @@ import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Switch, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
@@ -27,6 +27,9 @@ import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import { api } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 import { chooseLanguage, type AppLanguage } from '@/lib/i18n';
+
+/** react-native-web's extra prop for the switched-on thumb; native platforms use thumbColor. */
+const WEB_THUMB = Platform.OS === 'web' ? { activeThumbColor: colors.card } : {};
 
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 
@@ -226,7 +229,7 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
               <View style={styles.topicIcon}>
                 <Ionicons
                   name={TOPIC_ICONS[item.topic] ?? 'notifications-outline'}
-                  size={29}
+                  size={iconSize.action}
                   color={colors.primary}
                   accessibilityElementsHidden
                   importantForAccessibility="no"
@@ -256,9 +259,11 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
                     disabled={item.locked}
                     onValueChange={(value) => toggle(item.topic, channel, value)}
                     accessibilityLabel={`${t(`m.profile.topic_${item.topic}`)}: ${channel === 'push' ? t('m.profile.pushLabel') : t('m.profile.smsLabel')}`}
-                    trackColor={{ true: colors.success, false: colors.inputBorder }}
+                    trackColor={{ true: colors.switchOn, false: colors.inputBorder }}
                     thumbColor={colors.card}
                     ios_backgroundColor={colors.inputBorder}
+                    // The web build draws the "on" thumb in its own teal unless told otherwise.
+                    {...WEB_THUMB}
                   />
                 </View>
               ))}
@@ -271,7 +276,7 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
           <View style={styles.topicIcon}>
             <Ionicons
               name="moon-outline"
-              size={29}
+              size={iconSize.action}
               color={colors.primary}
               accessibilityElementsHidden
               importantForAccessibility="no"
@@ -300,7 +305,7 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
           accessibilityRole="button"
           accessibilityLabel={t('m.profile.clearQuiet')}
           style={({ pressed }) => [styles.clearQuiet, pressed && styles.pressed]}>
-          <Ionicons name="information-circle-outline" size={22} color={colors.primary} />
+          <Ionicons name="information-circle-outline" size={iconSize.row} color={colors.primary} />
           <AppText step="label" tone="primary">
             {t('m.profile.clearQuiet')}
           </AppText>
@@ -315,8 +320,8 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
 }
 
 const styles = StyleSheet.create({
-  sectionTitle: { fontSize: 24, lineHeight: 32, fontWeight: '700' },
-  responsiveSectionTitle: { fontSize: 20, lineHeight: 30 },
+  sectionTitle: { fontSize: 20, lineHeight: 28, fontWeight: '700' },
+  responsiveSectionTitle: { fontSize: 18, lineHeight: 27 },
   languagePicker: {
     width: '100%',
     maxWidth: 320,

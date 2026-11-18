@@ -4,8 +4,8 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
-import { AppText } from '@my-people/mobile-ui';
+import { colors, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
+import { AppText, IconTile } from '@my-people/mobile-ui';
 
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 
@@ -34,20 +34,11 @@ export function CommunityServiceTile({ feature }: { feature: Feature }) {
       accessibilityLabel={`${label}. ${description}${unavailableReason ? `. ${unavailableReason}` : ''}`}
       aria-disabled={!opens}
       style={({ pressed }) => [styles.tile, stackCards && styles.stackedTile, pressed && styles.pressed]}>
-      <View style={styles.corner} />
-      <View style={styles.iconCircle}>
-        <Ionicons
-          name={FEATURE_ICONS[feature.key] ?? 'ellipse-outline'}
-          size={34}
-          color={colors.primaryDark}
-          accessibilityElementsHidden
-          importantForAccessibility="no"
-        />
-      </View>
+      <IconTile icon={FEATURE_ICONS[feature.key] ?? 'ellipse-outline'} tint="brand" />
       {unavailableReason ? (
         <Ionicons
-          name="lock-closed"
-          size={17}
+          name="lock-closed-outline"
+          size={iconSize.status}
           color={colors.textMuted}
           style={styles.lock}
           accessibilityElementsHidden
@@ -60,7 +51,7 @@ export function CommunityServiceTile({ feature }: { feature: Feature }) {
         </AppText>
         <AppText
           step="secondary"
-          tone="secondary"
+          tone="muted"
           style={[styles.description, largeText && styles.largeTextDescription]}
           numberOfLines={stackCards ? undefined : 3}>
           {description}
@@ -75,39 +66,25 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: '46%',
     minWidth: 140,
-    minHeight: 174,
+    minHeight: 160,
     borderRadius: radius.card,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.card,
     padding: spacing[4],
-    overflow: 'hidden',
+    gap: spacing[3],
     justifyContent: 'space-between',
+    shadowColor: colors.shadow,
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
   },
-  stackedTile: { flexBasis: '100%', width: '100%', minHeight: 150 },
-  pressed: { opacity: 0.82, transform: [{ scale: 0.98 }] },
-  iconCircle: {
-    width: 58,
-    height: 58,
-    borderRadius: 29,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primaryContainer,
-    zIndex: 1,
-  },
-  lock: { position: 'absolute', right: spacing[3], top: spacing[3], zIndex: 2 },
-  copy: { zIndex: 1, gap: 1 },
-  title: { fontSize: 21, lineHeight: 28, fontWeight: '700' },
-  largeTextTitle: { fontSize: 18, lineHeight: 27 },
-  description: { fontSize: 16, lineHeight: 22 },
-  largeTextDescription: { fontSize: 14, lineHeight: 22 },
-  corner: {
-    position: 'absolute',
-    width: 82,
-    height: 62,
-    right: -16,
-    bottom: -18,
-    borderTopLeftRadius: 70,
-    backgroundColor: 'rgba(255, 211, 42, 0.42)',
-  },
+  stackedTile: { flexBasis: '100%', width: '100%', minHeight: 0 },
+  pressed: { backgroundColor: colors.surfaceVariant },
+  lock: { position: 'absolute', right: spacing[4], top: spacing[4] },
+  copy: { gap: spacing[1] },
+  title: { fontSize: 17, lineHeight: 24, fontWeight: '700' },
+  largeTextTitle: { fontSize: 16, lineHeight: 24 },
+  description: { fontSize: 14, lineHeight: 20 },
+  largeTextDescription: { fontSize: 14, lineHeight: 21 },
 });

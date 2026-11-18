@@ -43,6 +43,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.card,
+    shadowColor: colors.shadow,
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
   },
   pressed: { backgroundColor: colors.surfaceVariant },
 });
