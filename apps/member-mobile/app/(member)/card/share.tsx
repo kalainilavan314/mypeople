@@ -47,7 +47,7 @@ export default function ShareCardScreen() {
         {(data) => data.available && data.publicCard ? (
           <SurfaceCard>
             <View ref={preview} collapsable={false} style={styles.preview}>
-              <AppText step="label" tone="inverse">என் மக்கள் · My People</AppText>
+              <AppText step="label" tone="inverse">தாயக மக்கள் கழகம் · TMK</AppText>
               <AppText step="section" tone="inverse">{data.publicCard.displayName}</AppText>
               <AppText step="body" tone="inverse" mono>{data.publicCard.memberCode}</AppText>
               <AppText step="caption" tone="inverse">{t('m.card.shareImageDisclaimer')}</AppText>

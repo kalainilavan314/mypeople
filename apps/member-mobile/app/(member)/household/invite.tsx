@@ -100,7 +100,7 @@ export default function InviteAdultScreen() {
   );
 }
 
-/** M08 share sheet: a message in both languages asking them to join My People and accept the invitation. */
+/** M08 share sheet: a message in both languages asking them to join TMK and accept the invitation. */
 function ShareInvitationCard({ householdName }: { householdName: string | null }) {
   const { t, i18n } = useTranslation();
 

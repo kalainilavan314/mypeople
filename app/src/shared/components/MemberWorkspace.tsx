@@ -32,7 +32,7 @@ export function useWorkspaceText() {
 export function WorkspaceTitle({ title, detail }: { title: string; detail: string }) {
   return (
     <header className="work-heading">
-      <span className="work-eyebrow">MY PEOPLE · என் மக்கள்</span>
+      <span className="work-eyebrow">TMK · தாயக மக்கள் கழகம்</span>
       <h1>{title}</h1>
       <p>{detail}</p>
     </header>

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Typed functions for the My People API (/v1), with types generated from its OpenAPI document",
+  "description": "Typed functions for the TMK API (/v1), with types generated from its OpenAPI document",
   "exports": {
     ".": "./src/index.ts"
   },

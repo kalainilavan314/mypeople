@@ -29,11 +29,11 @@ Status = Literal["shared", "pending", "active"]
 
 PREVIEW = {
     "en": (
-        "You are invited to join My People (என் மக்கள்), the Northern Province People's Movement app. "
+        "You are invited to join the Thayaga Makkal Kazhagam (TMK) app. "
         "Register with your own NIC or passport; a reviewer checks every identity. Join here: {url}"
     ),
     "ta": (
-        "என் மக்கள் (My People) — வடமாகாண மக்கள் இயக்கச் செயலியில் இணைய உங்களுக்கு அழைப்பு. "
+        "தாயக மக்கள் கழகம் (TMK) செயலியில் இணைய உங்களுக்கு அழைப்பு. "
         "உங்கள் சொந்த தேசிய அடையாள அட்டை அல்லது கடவுச்சீட்டுடன் பதிவுசெய்யுங்கள்; ஒவ்வொரு அடையாளமும் "
         "சரிபார்க்கப்படும். இங்கே இணையுங்கள்: {url}"
     ),

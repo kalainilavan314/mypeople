@@ -1,4 +1,4 @@
-// Typed functions for the My People API (/v1), used by the Expo apps and the
+// Typed functions for the TMK API (/v1), used by the Expo apps and the
 // Next.js dashboard.
 //
 // The types come from the API's OpenAPI document. src/schema.ts is generated

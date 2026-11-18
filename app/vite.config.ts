@@ -26,8 +26,8 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2}'],
       },
       manifest: {
-        name: 'என் மக்கள் · My People',
-        short_name: 'My People',
+        name: 'தாயக மக்கள் கழகம் · TMK',
+        short_name: 'TMK',
         description:
           'இலக்கு ஒன்று தான் இனத்தின் விடிவு · The target is one, the liberation of the race.',
         lang: 'ta',

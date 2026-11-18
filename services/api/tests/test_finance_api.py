@@ -72,7 +72,7 @@ def finance_settings(database_settings: Settings) -> Settings:
         update={
             "finance_intake_enabled": True,
             "finance_bank_name": "Bank of Ceylon",
-            "finance_account_name": "My People Party Fund",
+            "finance_account_name": "TMK Party Fund",
             "finance_account_number": "0001234567",
             "finance_branch_name": "Colombo Central",
             "finance_transfer_instructions_en": "Please use reference in transfer",

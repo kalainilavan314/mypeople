@@ -21,7 +21,7 @@ export function UpdatePrompt() {
         <div
           style={{ font: `400 12px/1.4 ${font.ui}`, color: 'rgba(255,255,255,.75)', marginTop: 2 }}
         >
-          {t('update.body', 'My People has been updated.')}
+          {t('update.body', 'TMK has been updated.')}
         </div>
       </div>
       <button

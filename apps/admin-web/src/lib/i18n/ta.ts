@@ -3,10 +3,10 @@ import type { TranslationDictionary } from './types.ts';
 export const taMessages: TranslationDictionary = {
   locale: 'ta',
   brand: {
-    title: 'என் மக்கள்',
+    title: 'தாயக மக்கள் கழகம்',
     subtitle: 'நிர்வாகம்',
-    metaTitle: 'என் மக்கள் · நிர்வாகம்',
-    metaDescription: 'என் மக்கள் பணியாளர் செயல்பாட்டுப் பலகை',
+    metaTitle: 'தாயக மக்கள் கழகம் · நிர்வாகம்',
+    metaDescription: 'தாயக மக்கள் கழகம் பணியாளர் செயல்பாட்டுப் பலகை',
   },
   nav: {
     dashboard: 'செயல்பாட்டுப் பலகை',

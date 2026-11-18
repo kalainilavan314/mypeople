@@ -597,7 +597,7 @@ def get_contribution(db: Session, contribution_id: UUID, member_id: UUID) -> Con
             transfer_date=row.transfer_date,
             issued_at=receipt_row.issued_at,
             status="VERIFIED",
-            share_payload=f"My People Official Contribution Receipt\nReceipt No: {receipt_code}\nReference: {row.contribution_ref}\nDate: {row.transfer_date}\nStatus: Verified",
+            share_payload=f"TMK Official Contribution Receipt\nReceipt No: {receipt_code}\nReference: {row.contribution_ref}\nDate: {row.transfer_date}\nStatus: Verified",
         )
 
     return ContributionDetailResponse(
@@ -641,7 +641,7 @@ def get_receipt(db: Session, contribution_id: UUID, member_id: UUID) -> ReceiptR
         transfer_date=row.transfer_date,
         issued_at=receipt_row.issued_at,
         status="VERIFIED",
-        share_payload=f"My People Official Contribution Receipt\nReceipt No: {code}\nReference: {row.contribution_ref}\nDate: {row.transfer_date}\nStatus: Verified",
+        share_payload=f"TMK Official Contribution Receipt\nReceipt No: {code}\nReference: {row.contribution_ref}\nDate: {row.transfer_date}\nStatus: Verified",
     )
 
 
@@ -736,7 +736,7 @@ def get_staff_contribution_detail(db: Session, contribution_id: UUID) -> StaffCo
             transfer_date=row.transfer_date,
             issued_at=receipt_row.issued_at,
             status="VERIFIED",
-            share_payload=f"My People Official Contribution Receipt\nReceipt No: {code}\nReference: {row.contribution_ref}\nDate: {row.transfer_date}\nStatus: Verified",
+            share_payload=f"TMK Official Contribution Receipt\nReceipt No: {code}\nReference: {row.contribution_ref}\nDate: {row.transfer_date}\nStatus: Verified",
         )
 
     timeline = [
@@ -1145,7 +1145,7 @@ def approve_contribution(
             transfer_date=row.transfer_date,
             issued_at=receipt.issued_at,
             status="VERIFIED",
-            share_payload=f"My People Official Contribution Receipt\nReceipt No: {receipt_code}\nReference: {row.contribution_ref}\nDate: {row.transfer_date}\nStatus: Verified",
+            share_payload=f"TMK Official Contribution Receipt\nReceipt No: {receipt_code}\nReference: {row.contribution_ref}\nDate: {row.transfer_date}\nStatus: Verified",
         )
 
     elif req.action == "reject":

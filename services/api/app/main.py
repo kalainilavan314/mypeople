@@ -1,4 +1,4 @@
-"""Entry point for the My People API.
+"""Entry point for the TMK API.
 
 Run locally from services/api with:
     uvicorn app.main:create_app --factory --reload --port 8000
@@ -93,7 +93,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     publish_docs = settings.app_env != "production"
 
     app = FastAPI(
-        title="My People API",
+        title="TMK API",
         version=API_VERSION,
         docs_url="/docs" if publish_docs else None,
         redoc_url=None,

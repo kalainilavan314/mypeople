@@ -595,7 +595,7 @@ export function StaffSidebar({ staff, allowedModules, serverLocale }: StaffSideb
             </button>
             <Link
               href="/"
-              title={locale === 'ta' ? 'என் மக்கள் · முகப்பலகை' : 'My People · Dashboard'}
+              title={locale === 'ta' ? 'தாயக மக்கள் கழகம் · முகப்பலகை' : 'TMK · Dashboard'}
               aria-label="Dashboard"
               className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary font-semibold text-sm hover:bg-primary/20 transition-colors">
               MP

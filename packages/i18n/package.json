@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Tamil, English and Sinhala UI text shared by the My People apps (i18next resources)",
+  "description": "Tamil, English and Sinhala UI text shared by the TMK apps (i18next resources)",
   "exports": {
     ".": "./src/index.ts",
     "./staff-terms": "./src/staffTerms.ts"

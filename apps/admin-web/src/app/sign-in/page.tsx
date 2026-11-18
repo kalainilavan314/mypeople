@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Suspense } from 'react';
 
 import { Feedback } from '@/components/Feedback';
@@ -10,7 +11,14 @@ export default function SignInPage(props: PageProps<'/sign-in'>) {
     <main className="min-h-screen bg-page px-4 py-6 sm:px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_30rem] lg:gap-16 lg:px-12 lg:py-12 xl:px-20">
       <section className="flex max-w-xl flex-col justify-between border-b border-line pb-10 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-16">
         <div className="flex flex-col gap-6">
-          <p className="text-sm font-semibold text-primary">My People</p>
+          <div className="flex items-center gap-3">
+            {/* The party's emblem (app/icon.png, which the proxy serves without a session). */}
+            <Image src="/icon.png" alt="" width={48} height={48} priority />
+            <div className="flex flex-col">
+              <p className="text-sm font-semibold text-primary">TMK</p>
+              <p lang="ta" className="text-sm text-muted">தாயக மக்கள் கழகம்</p>
+            </div>
+          </div>
           <div className="flex flex-col gap-3">
             <PageHeader ta="பணியாளர் உள்நுழைவு" en="Staff administration" />
             <p className="max-w-md text-base leading-7 text-muted">

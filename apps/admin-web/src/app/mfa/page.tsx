@@ -45,8 +45,8 @@ async function MfaStep({ searchParams }: { searchParams: PageProps<'/mfa'>['sear
               ? 'பணியாளர்கள் ஒவ்வொரு அமர்விலும் அங்கீகாரக் குறியீட்டை உள்ளிட வேண்டும். செயலியைப் பயன்படுத்தி குறியீட்டை ஸ்கேன் செய்யவும் அல்லது விசையை உள்ளிட்டு, தோன்றும் ஆறு இலக்கக் குறியீட்டைப் பதிவுசெய்யவும்.'
               : 'Staff give an authenticator code in every session. Set one up: scan the code with an authenticator app or type the key, then enter the six-digit code it shows.'
             : locale === 'ta'
-              ? 'உங்கள் அங்கீகாரச் செயலியைத் திறந்து "என் மக்கள்" (My People) கணக்கிற்கான 6 இலக்கக் குறியீட்டை உள்ளிடவும்.'
-              : 'Open your authenticator app and enter the six-digit code for My People.'}
+              ? 'உங்கள் அங்கீகாரச் செயலியைத் திறந்து "தாயக மக்கள் கழகம்" (TMK) கணக்கிற்கான 6 இலக்கக் குறியீட்டை உள்ளிடவும்.'
+              : 'Open your authenticator app and enter the six-digit code for TMK.'}
         </p>
       </div>
 

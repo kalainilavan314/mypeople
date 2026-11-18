@@ -148,13 +148,13 @@ def manual_result(
 
 def cancelled_message(title_en: str, title_ta: str) -> str:
     return (
-        f"என் மக்கள்: \"{title_ta}\" நிகழ்வு ரத்து செய்யப்பட்டது.\n"
-        f"My People: the event \"{title_en}\" has been cancelled."
+        f"TMK: \"{title_ta}\" நிகழ்வு ரத்து செய்யப்பட்டது.\n"
+        f"TMK: the event \"{title_en}\" has been cancelled."
     )
 
 
 def changed_message(title_en: str, title_ta: str) -> str:
     return (
-        f"என் மக்கள்: \"{title_ta}\" நிகழ்வின் நேரம் அல்லது இடம் மாறியுள்ளது. விவரங்களை செயலியில் பார்க்கவும்.\n"
-        f"My People: the time or place of \"{title_en}\" has changed. See the app for details."
+        f"TMK: \"{title_ta}\" நிகழ்வின் நேரம் அல்லது இடம் மாறியுள்ளது. விவரங்களை செயலியில் பார்க்கவும்.\n"
+        f"TMK: the time or place of \"{title_en}\" has changed. See the app for details."
     )

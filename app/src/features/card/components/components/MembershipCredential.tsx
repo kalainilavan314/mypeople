@@ -20,7 +20,7 @@ export function MembershipCredential({ data }: { data: MembershipCredentialData 
       lang="en"
       className="membership-credential"
       style={{ width: CREDENTIAL_WIDTH, height: CREDENTIAL_HEIGHT }}
-      aria-label="My People membership credential"
+      aria-label="TMK membership credential"
     >
       <Guilloche />
       <div className="credential-motto">
@@ -61,13 +61,13 @@ export function MembershipCredential({ data }: { data: MembershipCredentialData 
         )}
         <div className="credential-signature-rule" />
         <span>Authorized e-signature</span>
-        <small>My People – Northern Province</small>
+        <small>TMK – Northern Province</small>
       </div>
       <div className="credential-brand">
         <div className="credential-tamil" lang="ta">
-          என் மக்கள்
+          தாயக மக்கள் கழகம்
         </div>
-        <div className="credential-english">MY PEOPLE</div>
+        <div className="credential-english">THAYAGA MAKKAL KAZHAGAM</div>
         <div className="credential-brand-rule" />
         <div className="credential-subtitle">Northern Province Community Membership</div>
       </div>
@@ -137,8 +137,8 @@ export function MembershipCredential({ data }: { data: MembershipCredentialData 
       </dl>
       <div className="credential-official">
         <Logo size={112} />
-        <strong lang="ta">என் மக்கள்</strong>
-        <span>MY PEOPLE</span>
+        <strong lang="ta">தாயக மக்கள் கழகம்</strong>
+        <span>TMK</span>
         <small>NORTHERN PROVINCE</small>
       </div>
       <div className="credential-watermark" aria-hidden="true">

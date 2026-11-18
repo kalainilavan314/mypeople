@@ -1,7 +1,7 @@
 {
   "auth": {
     "welcome": "Welcome!",
-    "welcomeSub": "My People · Northern & Eastern Province",
+    "welcomeSub": "TMK · Thayaga Makkal Kazhagam",
     "welcomeBack": "Welcome back",
     "trustDivider": "A safer, stronger community together",
     "trustSecureTitle": "Secure",
@@ -340,7 +340,7 @@
     "nReferred": "{{n}} referred",
     "location": "Location",
     "helpSupport": "Help & Support",
-    "about": "About My People",
+    "about": "About TMK",
     "points": "Points",
     "referred": "Referred",
     "checkins": "Check-ins",
@@ -370,7 +370,7 @@
   },
   "onboarding": {
     "joinTitle": "Join the movement",
-    "joinSubtitle": "வடமாகாண மக்கள் இயக்கம்",
+    "joinSubtitle": "Thayaga Makkal Kazhagam",
     "phoneLabel": "Mobile number",
     "phoneHint": "We'll send a one-time code by SMS",
     "sendCode": "Send code",
@@ -572,8 +572,8 @@
     "trustCommunity": "Community-first"
   },
   "brand": {
-    "name": "My People",
-    "nameTa": "என் மக்கள்",
+    "name": "TMK",
+    "nameTa": "தாயக மக்கள் கழகம்",
     "slogan": "The target is one, the liberation of the race.",
     "sloganTa": "இலக்கு ஒன்று தான் இனத்தின் விடிவு"
   },
@@ -596,7 +596,7 @@
   },
   "update": {
     "title": "New version available",
-    "body": "My People has been updated.",
+    "body": "TMK has been updated.",
     "action": "Update now"
   },
   "skills": {

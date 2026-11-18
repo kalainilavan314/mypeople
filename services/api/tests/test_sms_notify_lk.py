@@ -63,7 +63,7 @@ def test_a_number_that_is_not_sri_lankan_mobile_is_not_sent(phone):
 
 def test_a_message_goes_to_the_send_endpoint_with_the_account_and_sender():
     post = FakeNotify()
-    sender(post).send("+94762006562", "My People code: 123456.")
+    sender(post).send("+94762006562", "TMK code: 123456.")
 
     [(url, fields, timeout)] = post.calls
     assert url == NOTIFY_LK_SEND_URL == "https://app.notify.lk/api/v1/send"
@@ -72,14 +72,14 @@ def test_a_message_goes_to_the_send_endpoint_with_the_account_and_sender():
         "api_key": "test-only-api-key",
         "sender_id": "MyPeople",
         "to": "94762006562",
-        "message": "My People code: 123456.",
+        "message": "TMK code: 123456.",
     }
     assert 0 < timeout <= 10
 
 
 def test_tamil_text_is_sent_as_unicode():
     post = FakeNotify()
-    sender(post).send("0762006562", "என் மக்கள் குறியீடு: 123456.\nMy People code: 123456.")
+    sender(post).send("0762006562", "TMK குறியீடு: 123456.\nTMK code: 123456.")
 
     assert post.calls[0][1]["type"] == "unicode"
 
@@ -95,7 +95,7 @@ def test_tamil_text_is_sent_as_unicode():
 )
 def test_a_refused_or_unanswered_send_is_a_delivery_failure(fake, caplog):
     with caplog.at_level(logging.WARNING), pytest.raises(SmsDeliveryFailed):
-        sender(fake).send("+94762006562", "My People code: 654321.")
+        sender(fake).send("+94762006562", "TMK code: 654321.")
 
     # A failure is still "unavailable" to best-effort notices, which carry on without the text.
     assert issubclass(SmsDeliveryFailed, SmsUnavailable)

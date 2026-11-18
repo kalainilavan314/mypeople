@@ -3,7 +3,7 @@
 export const en = {
   tabs: { home: 'Home', checkIn: 'Check-in', approvals: 'Approvals', alerts: 'Alerts', profile: 'Role' },
   common: {
-    backToApp: 'Back to My People',
+    backToApp: 'Back to TMK',
     continue: 'Continue',
     cancel: 'Cancel',
     sending: 'Sending…',
@@ -57,7 +57,7 @@ export const en = {
       'Staff sign in with a second factor every time. Scan this code with an authenticator app, or type the key, then enter the 6-digit code it shows.',
     key: 'Key',
     verifyTitle: 'Enter your authenticator code',
-    verifyBody: 'Open your authenticator app and enter the 6-digit code for My People.',
+    verifyBody: 'Open your authenticator app and enter the 6-digit code for TMK.',
     code: '6-digit code',
     confirm: 'Confirm',
   },

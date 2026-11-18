@@ -50,7 +50,7 @@ export function Join() {
               color: 'rgba(255,255,255,.8)',
             }}
           >
-            MY PEOPLE
+            TMK
           </div>
           <h1 style={{ font: `700 28px/1.35 ${font.ta}`, margin: '14px 0 6px' }}>
             {t('onboarding.joinTitle')}

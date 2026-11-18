@@ -21,7 +21,7 @@ export function Community() {
         <div>
           <div className="cm-eyebrow-row">
             <Icon name="users" size={17} color="var(--accent)" strokeWidth={2.4} />
-            <span>My People / என் மக்கள்</span>
+            <span>TMK / தாயக மக்கள் கழகம்</span>
           </div>
           <h1 className="cm-title">{t('Community', 'Community')}</h1>
           <p className="cm-sub-ta">நம் மக்கள். நம் பகுதி. நம் முன்னேற்றம்.</p>

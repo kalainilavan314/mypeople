@@ -15,7 +15,7 @@ from urllib.parse import quote
 STEP_SECONDS = 30
 DIGITS = 6
 DRIFT_STEPS = 1
-ISSUER = "My People"
+ISSUER = "TMK"
 
 
 def new_secret() -> bytes:
