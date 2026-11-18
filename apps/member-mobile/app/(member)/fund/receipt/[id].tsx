@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
   receiptCodeText: {
     fontSize: 20,
     fontWeight: '700',
-    color: colors.text,
+    color: colors.successText,
   },
   flex: {
     flex: 1,

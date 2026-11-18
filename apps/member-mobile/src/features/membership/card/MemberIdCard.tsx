@@ -28,12 +28,9 @@ const MOTTO = ['PEOPLE', 'PLACES', 'POTENTIAL', 'PROGRESS'];
 const FOOTER = ['A STRONGER NORTHERN PROVINCE', 'THROUGH ITS PEOPLE'];
 const VALUES = 'UNITY  |  OPPORTUNITY  |  RESPONSIBILITY';
 
-// The owner's monochrome design (18 November 2026): a white card, a quiet grey band and watermark,
-// grey rules, and the ribbon and footer in charcoal. The layout and every detail stay as designed.
-const CREAM = colors.card;
-const SAND = colors.surfaceVariant;
-const PALM = '#e9e9e9';
-const RULE = '#bdbdbd';
+const CREAM = '#fdf6ee';
+const SAND = '#f3e4d3';
+const PALM = '#e8d2bd';
 
 type Props = {
   card: MemberCard;
@@ -245,16 +242,16 @@ function Artwork() {
     <Svg width={CARD_WIDTH} height={CARD_HEIGHT} style={StyleSheet.absoluteFill} pointerEvents="none">
       <Rect width={CARD_WIDTH} height={CARD_HEIGHT} fill={CREAM} />
       <Path d="M0 0 H470 C452 22 430 30 380 32 C280 34 110 38 0 56 Z" fill={SAND} opacity={0.55} />
-      <Path d="M0 58 C110 40 280 36 380 34 C432 32 455 24 472 0" stroke={RULE} strokeWidth={1.4} fill="none" opacity={0.8} />
+      <Path d="M0 58 C110 40 280 36 380 34 C432 32 455 24 472 0" stroke={colors.brandGold} strokeWidth={1.4} fill="none" opacity={0.8} />
       <Path d="M466 0 H640 V36 C610 40 560 40 520 36 C495 33 478 18 466 0 Z" fill={colors.primary} />
-      <Path d="M466 0 C478 18 495 33 520 36 C560 40 610 40 640 36" stroke={colors.primaryDark} strokeWidth={2} fill="none" opacity={0.4} />
+      <Path d="M466 0 C478 18 495 33 520 36 C560 40 610 40 640 36" stroke={colors.primaryDark} strokeWidth={2} fill="none" opacity={0.6} />
       <G opacity={0.55}>
         <Palm x={560} y={318} height={120} />
         <Palm x={604} y={330} height={86} />
         <Palm x={520} y={330} height={64} />
       </G>
       <Path d="M0 342 C150 334 380 330 640 336 V384 H0 Z" fill={colors.primary} />
-      <Path d="M0 340 C150 332 380 328 640 334" stroke={RULE} strokeWidth={1.4} fill="none" />
+      <Path d="M0 340 C150 332 380 328 640 334" stroke={colors.brandGold} strokeWidth={1.4} fill="none" />
       <G opacity={0.45}>
         {[30, 58, 86, 120, 154, 182].map((x, index) => (
           <Kolam key={x} x={x} y={364} size={index === 3 ? 13 : 9} />
@@ -305,8 +302,6 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
     height: CARD_HEIGHT,
     borderRadius: 22,
-    borderWidth: 1,
-    borderColor: colors.border,
     overflow: 'hidden',
     backgroundColor: CREAM,
     transformOrigin: 'top left',
@@ -322,8 +317,8 @@ const styles = StyleSheet.create({
     width: 138,
     height: 166,
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderWidth: 4,
+    borderColor: colors.card,
     backgroundColor: SAND,
     overflow: 'hidden',
   },
@@ -336,7 +331,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderWidth: 1,
     borderStyle: 'dashed',
-    borderColor: RULE,
+    borderColor: colors.brandGold,
     borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
@@ -345,13 +340,13 @@ const styles = StyleSheet.create({
   },
   signBlank: { width: 150, height: 50 },
   signHint: { fontSize: 10, color: colors.primary },
-  signRule: { width: 138, height: 1, backgroundColor: RULE, marginTop: 2 },
+  signRule: { width: 138, height: 1, backgroundColor: colors.brandGold, marginTop: 2 },
   signLabel: { fontSize: 8.5, color: colors.textSecondary, marginTop: 4, textAlign: 'center' },
   signOrg: { fontSize: 7.5, color: colors.textMuted, textAlign: 'center' },
   titleBlock: { position: 'absolute', left: 184, top: 44, width: 280 },
   tamilTitle: { fontSize: 34, lineHeight: 46, color: colors.primaryDark },
   englishTitle: { fontSize: 16, letterSpacing: 7, color: colors.primary, marginTop: -2 },
-  goldRule: { width: 250, height: 1, backgroundColor: RULE, marginTop: 4, marginBottom: 4 },
+  goldRule: { width: 250, height: 1, backgroundColor: colors.brandGold, marginTop: 4, marginBottom: 4 },
   subtitle: { fontSize: 10.5, color: colors.textSecondary },
   label: { fontSize: 7.5, letterSpacing: 1.4, color: colors.textSecondary },
   nameLabel: { marginTop: 10 },
@@ -382,7 +377,7 @@ const styles = StyleSheet.create({
   brandEnglish: { fontSize: 8.5, letterSpacing: 3, color: colors.primary },
   brandRegion: { fontSize: 6.2, letterSpacing: 2, color: colors.textSecondary },
   motto: { position: 'absolute', left: 578, top: 152, gap: 3 },
-  mottoText: { fontSize: 6, letterSpacing: 1.6, color: colors.textMuted },
+  mottoText: { fontSize: 6, letterSpacing: 1.6, color: colors.brandGold },
   qrBox: {
     position: 'absolute',
     left: 508,
@@ -411,7 +406,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   footerCentre: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  footerRule: { width: 16, height: 1, backgroundColor: RULE },
+  footerRule: { width: 16, height: 1, backgroundColor: colors.brandGold },
   footerText: { fontSize: 6.8, letterSpacing: 1.5, color: colors.onPrimary, textAlign: 'center' },
   values: { fontSize: 6.2, letterSpacing: 0.9, color: colors.onPrimary },
 });

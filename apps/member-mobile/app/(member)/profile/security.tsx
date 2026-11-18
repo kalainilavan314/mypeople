@@ -94,14 +94,14 @@ export default function SecurityScreen() {
                     <View style={styles.deviceIcon}>
                       <Ionicons
                         name="phone-portrait-outline"
-                        size={20}
-                        color={colors.text}
+                        size={29}
+                        color={colors.primary}
                         accessibilityElementsHidden
                         importantForAccessibility="no"
                       />
                     </View>
                     <View style={styles.sessionCopy}>
-                      <AppText step="card">
+                      <AppText step="card" style={styles.sessionTitle}>
                         {session.deviceLabel}
                       </AppText>
                       <AppText step="secondary" tone="muted">
@@ -173,12 +173,13 @@ function SecurityAlerts({ alerts, busy, onAnswer }: AlertsProps) {
       </AppText>
       {open.map((alert) => (
         <SurfaceCard key={alert.id} style={styles.alertCard}>
+          <View style={styles.cardAccent} />
           <View style={styles.alertHeader}>
             <View style={styles.alertIcon}>
               <Ionicons
                 name="shield-checkmark-outline"
-                size={20}
-                color={colors.text}
+                size={31}
+                color={colors.primary}
                 accessibilityElementsHidden
                 importantForAccessibility="no"
               />
@@ -216,7 +217,7 @@ function SecurityAlerts({ alerts, busy, onAnswer }: AlertsProps) {
         <SurfaceCard key={alert.id}>
           <View style={styles.alertHeader}>
             <View style={styles.alertIcon}>
-              <Ionicons name="shield-checkmark-outline" size={20} color={colors.text} />
+              <Ionicons name="shield-checkmark-outline" size={31} color={colors.primary} />
             </View>
             <View style={styles.flex}>
               <AlertSummary alert={alert} />
@@ -237,7 +238,7 @@ function AlertSummary({ alert }: { alert: SecurityAlert }) {
   const language = useLanguage();
   return (
     <>
-      <AppText step="card">{t(`m.profile.alertKind_${alert.kind}`)}</AppText>
+      <AppText step="card" style={styles.alertTitle}>{t(`m.profile.alertKind_${alert.kind}`)}</AppText>
       <AppText step="secondary" tone="muted">
         {t('m.profile.alertWhen', { device: alert.deviceLabel, time: formatDateTime(alert.createdAt, language) })}
       </AppText>
@@ -286,19 +287,29 @@ function PasswordChange() {
 }
 
 const styles = StyleSheet.create({
-  sectionTitle: { marginTop: spacing[2] },
+  sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
   alertCard: { position: 'relative', overflow: 'hidden' },
+  cardAccent: {
+    position: 'absolute',
+    width: 92,
+    height: 64,
+    right: -18,
+    top: 72,
+    borderTopLeftRadius: 64,
+    backgroundColor: 'rgba(255, 211, 42, 0.42)',
+  },
   alertHeader: { zIndex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3] },
   alertIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.tile,
-    backgroundColor: colors.surfaceVariant,
+    width: 58,
+    height: 58,
+    borderRadius: radius.card,
+    backgroundColor: colors.primaryContainer,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  alertTitle: { fontSize: 18, lineHeight: 25, fontWeight: '700' },
   signalRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], marginTop: spacing[2] },
-  signalDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.text },
+  signalDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.primary },
   alertDivider: { height: 1, backgroundColor: colors.divider, marginVertical: spacing[1] },
   actions: { flexDirection: 'row', gap: spacing[3] },
   flex: { flex: 1 },
@@ -313,19 +324,20 @@ const styles = StyleSheet.create({
   },
   sessionDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
   deviceIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.tile,
-    backgroundColor: colors.surfaceVariant,
+    width: 52,
+    height: 52,
+    borderRadius: radius.card,
+    backgroundColor: colors.primaryContainer,
     alignItems: 'center',
     justifyContent: 'center',
   },
   sessionCopy: { flex: 1, gap: 1 },
+  sessionTitle: { fontSize: 17, lineHeight: 24, fontWeight: '700' },
   compactAction: {
     minWidth: 82,
     minHeight: control.touchMin,
     borderWidth: 1,
-    borderColor: colors.inputBorder,
+    borderColor: colors.primary,
     borderRadius: radius.control,
     paddingHorizontal: spacing[3],
     alignItems: 'center',

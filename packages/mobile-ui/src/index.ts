@@ -32,7 +32,6 @@ export { SegmentedControl } from './components/SegmentedControl';
 export { StatusTag, type Tone } from './components/StatusTag';
 export { SurfaceCard } from './components/SurfaceCard';
 export { TextField } from './components/TextField';
-export { ToggleSwitch } from './components/ToggleSwitch';
 
 export { sessionEnded, useApiAction, useApiQuery, type Loaded } from './hooks/useApi';
 export { useLanguage, useLocalized, type AppLanguage } from './hooks/useLanguage';

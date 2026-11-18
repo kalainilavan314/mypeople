@@ -52,21 +52,22 @@ export default function PrivacyScreen() {
           <SurfaceCard style={styles.dataCard}>
             {items.map((item, index) => (
               <View key={item.dataEn} style={[styles.item, index > 0 && styles.itemDivider]}>
+                <View style={styles.itemAccent} />
                 <View style={styles.itemIcon}>
                   <Ionicons
                     name={DATA_ICONS[index] ?? 'document-text-outline'}
-                    size={20}
-                    color={colors.text}
+                    size={29}
+                    color={colors.primary}
                     accessibilityElementsHidden
                     importantForAccessibility="no"
                   />
                 </View>
                 <View style={styles.itemCopy}>
-                  <AppText step="label">{localized(item.dataEn, item.dataTa)}</AppText>
-                  <AppText step="secondary" tone="secondary">
+                  <AppText step="label" style={styles.itemTitle}>{localized(item.dataEn, item.dataTa)}</AppText>
+                  <AppText step="secondary" tone="secondary" style={styles.itemBody}>
                     {localized(item.purposeEn, item.purposeTa)}
                   </AppText>
-                  <AppText step="secondary" tone="muted">
+                  <AppText step="secondary" tone="muted" style={styles.itemBody}>
                     {localized(item.retentionEn, item.retentionTa)}
                   </AppText>
                 </View>
@@ -92,7 +93,7 @@ export default function PrivacyScreen() {
           list.length === 0 ? (
             <SurfaceCard style={styles.emptyState}>
               <View style={styles.itemIcon}>
-                <Ionicons name="document-text-outline" size={20} color={colors.text} />
+                <Ionicons name="document-text-outline" size={29} color={colors.primary} />
               </View>
               <AppText step="secondary" tone="secondary" style={styles.flex}>
                 {t('m.common.empty')}
@@ -116,12 +117,12 @@ function RequestCard({ request }: { request: PrivacyRequest }) {
         <View style={styles.itemIcon}>
           <Ionicons
             name={request.kind === 'copy' ? 'download-outline' : 'close-circle-outline'}
-            size={20}
-            color={colors.text}
+            size={29}
+            color={colors.primary}
           />
         </View>
         <View style={styles.flex}>
-          <AppText step="card">{t(`m.profile.kind_${request.kind}`)}</AppText>
+          <AppText step="card" style={styles.requestTitle}>{t(`m.profile.kind_${request.kind}`)}</AppText>
           <AppText step="secondary" tone="muted" mono>
             {request.requestRef}
           </AppText>
@@ -211,7 +212,7 @@ function ClosureRequest({ onSent }: { onSent: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  sectionTitle: { marginTop: spacing[2] },
+  sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
   dataCard: { padding: 0, gap: 0, overflow: 'hidden' },
   item: {
     position: 'relative',
@@ -223,18 +224,30 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   itemDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
+  itemAccent: {
+    position: 'absolute',
+    width: 72,
+    height: 50,
+    right: -14,
+    bottom: -16,
+    borderTopLeftRadius: 54,
+    backgroundColor: 'rgba(255, 211, 42, 0.44)',
+  },
   itemIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.tile,
-    backgroundColor: colors.surfaceVariant,
+    width: 52,
+    height: 52,
+    borderRadius: radius.card,
+    backgroundColor: colors.primaryContainer,
     alignItems: 'center',
     justifyContent: 'center',
   },
   itemCopy: { flex: 1, gap: 1, paddingRight: spacing[3] },
+  itemTitle: { fontSize: 17, lineHeight: 24, fontWeight: '700' },
+  itemBody: { fontSize: 15, lineHeight: 22 },
   actions: { gap: spacing[3] },
   emptyState: { flexDirection: 'row', alignItems: 'center', gap: spacing[3] },
   requestCard: { gap: spacing[3] },
   requestHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing[3] },
+  requestTitle: { fontSize: 17, lineHeight: 24, fontWeight: '700' },
   flex: { flex: 1 },
 });

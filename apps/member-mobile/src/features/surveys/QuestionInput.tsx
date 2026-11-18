@@ -86,8 +86,8 @@ export function QuestionInput({ question, value, onChange, label }: Props) {
                 accessibilityState={{ checked }}
                 aria-checked={checked}
                 style={[styles.scaleStep, checked ? styles.scaleChosen : styles.scaleIdle]}>
-                {checked ? <Ionicons accessible={false} name="checkmark" size={16} color={colors.onSelected} /> : null}
-                <AppText step="card" tone={checked ? 'selected' : 'default'}>
+                {checked ? <Ionicons accessible={false} name="checkmark" size={16} color={colors.onBrandAccent} /> : null}
+                <AppText step="card" tone={checked ? 'brandAccent' : 'default'}>
                   {String(number)}
                 </AppText>
               </Pressable>
@@ -157,6 +157,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.control,
     borderWidth: 1,
   },
-  scaleChosen: { backgroundColor: colors.selected, borderColor: colors.selected },
+  scaleChosen: { backgroundColor: colors.brandYellow, borderColor: colors.brandGold },
   scaleIdle: { backgroundColor: colors.card, borderColor: colors.inputBorder },
 });

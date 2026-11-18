@@ -14,7 +14,7 @@ const TONES = {
   muted: colors.textMuted,
   primary: colors.primary,
   link: colors.link,
-  selected: colors.onSelected,
+  brandAccent: colors.onBrandAccent,
   inverse: colors.onPrimary,
   error: colors.error,
   success: colors.successText,
