@@ -28,8 +28,7 @@ export function SegmentedControl<K extends string>({ options, selected, onSelect
             accessibilityState={{ selected: active }}
             aria-selected={active}
             style={[styles.segment, active && styles.active]}>
-            {/* Two lines rather than "…": Tamil labels are longer and must stay whole on narrow phones. */}
-            <AppText step="label" weight={active ? 600 : 400} tone={active ? 'default' : 'secondary'} numberOfLines={2} style={styles.label}>
+            <AppText step="body" tone={active ? 'default' : 'muted'} numberOfLines={1}>
               {option.label}
             </AppText>
           </Pressable>
@@ -41,11 +40,10 @@ export function SegmentedControl<K extends string>({ options, selected, onSelect
 
 const styles = StyleSheet.create({
   track: { flexDirection: 'row', backgroundColor: colors.primaryContainer, borderRadius: radius.control, padding: spacing[1], gap: spacing[1] },
-  segment: { flex: 1, minHeight: 44, borderRadius: radius.control - 3, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing[1], paddingVertical: spacing[1] },
-  label: { textAlign: 'center' },
+  segment: { flex: 1, minHeight: 44, borderRadius: radius.control - 3, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing[2] },
   active: {
     backgroundColor: colors.card,
-    shadowColor: colors.text,
+    shadowColor: colors.primary,
     shadowOpacity: 0.08,
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 1 },

@@ -2,15 +2,14 @@ import { ApiError, type MemberCard } from '@my-people/api-client';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect, type Href } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
   Button,
-  MenuRow,
   formatDateTime,
   Notice,
   Screen,
@@ -89,6 +88,25 @@ export default function CardScreen() {
   );
 }
 
+function CardAction({ label, icon, divided = false, onPress }: {
+  label: string;
+  icon: 'share-outline' | 'time-outline' | 'image-outline' | 'create-outline';
+  divided?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={({ pressed }) => [styles.action, divided && styles.actionDivider, pressed && styles.actionPressed]}>
+      <Ionicons name={icon} size={20} color={colors.textSecondary} />
+      <AppText step="label" style={styles.actionLabel}>{label}</AppText>
+      <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+    </Pressable>
+  );
+}
+
 /**
  * The card as the owner designed it (17 November 2026), with the member's own photo and drawn
  * signature and the live QR. The QR is fetched only while this tab is on screen.
@@ -125,10 +143,10 @@ function AvailableCard({ card }: { card: MemberCard }) {
       <Button label={t('m.card.fullScreen')} icon="expand-outline" variant="secondary" onPress={() => router.push('/card/full' as Href)} />
       <AppText step="section" accessibilityRole="header">{t('m.card.optionsTitle')}</AppText>
       <SurfaceCard style={styles.actionList}>
-        <MenuRow first icon="image-outline" label={t('m.card.cardPhotoRow')} onPress={() => router.push('/card/photo' as Href)} />
-        <MenuRow icon="create-outline" label={t('m.card.signatureRow')} onPress={() => router.push('/card/sign' as Href)} />
-        <MenuRow icon="time-outline" label={t('m.card.progressTitle')} onPress={() => router.push('/card/progress')} />
-        <MenuRow icon="share-outline" label={t('m.card.shareTitle')} onPress={() => router.push('/card/share' as Href)} />
+        <CardAction label={t('m.card.cardPhotoRow')} icon="image-outline" onPress={() => router.push('/card/photo' as Href)} />
+        <CardAction label={t('m.card.signatureRow')} icon="create-outline" divided onPress={() => router.push('/card/sign' as Href)} />
+        <CardAction label={t('m.card.progressTitle')} icon="time-outline" divided onPress={() => router.push('/card/progress')} />
+        <CardAction label={t('m.card.shareTitle')} icon="share-outline" divided onPress={() => router.push('/card/share' as Href)} />
       </SurfaceCard>
 
       {card.lastScannedAt ? (
@@ -209,5 +227,9 @@ const styles = StyleSheet.create({
   steps: { gap: spacing[4], paddingVertical: spacing[5] },
   step: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3] },
   flex: { flex: 1 },
-  actionList: { paddingVertical: 0, gap: 0 },
+  actionList: { padding: 0, gap: 0, overflow: 'hidden' },
+  action: { minHeight: control.touchMin + spacing[3], flexDirection: 'row', alignItems: 'center', gap: spacing[3], padding: spacing[3] },
+  actionDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
+  actionPressed: { backgroundColor: colors.surfaceVariant },
+  actionLabel: { flex: 1 },
 });

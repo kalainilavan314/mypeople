@@ -33,8 +33,8 @@ export function ToggleChips<K extends string>({ options, selected, onChange, lab
             accessibilityState={{ checked, disabled }}
             aria-checked={checked}
             style={[styles.chip, checked ? styles.active : styles.inactive, disabled && styles.disabled]}>
-            {checked ? <Ionicons name="checkmark" size={16} color={colors.onSelected} /> : null}
-            <AppText step="label" tone={checked ? 'selected' : 'secondary'}>
+            {checked ? <Ionicons name="checkmark" size={16} color={colors.onBrandAccent} /> : null}
+            <AppText step="label" tone={checked ? 'brandAccent' : 'secondary'}>
               {option.label}
             </AppText>
           </Pressable>
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     borderWidth: 1,
   },
-  active: { backgroundColor: colors.selected, borderColor: colors.selected },
+  active: { backgroundColor: colors.brandYellow, borderColor: colors.brandGold },
   inactive: { backgroundColor: colors.card, borderColor: colors.inputBorder },
   disabled: { opacity: 0.5 },
 });

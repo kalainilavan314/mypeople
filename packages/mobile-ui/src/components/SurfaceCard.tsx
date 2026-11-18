@@ -5,7 +5,7 @@ import { colors, control, radius, spacing } from '@my-people/design-tokens/mobil
 
 type Props = {
   children: ReactNode;
-  /** A 3 px charcoal rule on the left, for the one next step on Home. */
+  /** A 4 px navy rule on the left, for the one next step on Home. */
   accent?: boolean;
   /** Makes the whole card one pressable; it must then hold no other buttons. */
   onPress?: () => void;
@@ -42,6 +42,6 @@ const styles = StyleSheet.create({
     padding: spacing[4],
     gap: spacing[2],
   },
-  accent: { borderLeftWidth: 3, borderLeftColor: colors.text },
+  accent: { borderLeftWidth: 4, borderLeftColor: colors.primary },
   pressed: { backgroundColor: colors.surfaceVariant },
 });

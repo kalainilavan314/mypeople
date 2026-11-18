@@ -2,6 +2,8 @@ import type { Href } from 'expo-router';
 import type Ionicons from '@expo/vector-icons/Ionicons';
 import type { ComponentProps } from 'react';
 
+import type { Tint } from '@my-people/design-tokens/mobile';
+
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
 /**
@@ -50,4 +52,27 @@ export const FEATURE_ICONS: Record<string, IconName> = {
   help: 'help-buoy-outline',
   promises: 'flag-outline',
   support: 'heart-outline',
+};
+
+/** The tile colour of each feature, as in the reference recording. */
+export const FEATURE_TINTS: Partial<Record<string, Tint>> = {
+  my_area: 'green',
+  community: 'sand',
+  events: 'teal',
+  help: 'purple',
+  report_issue: 'blue',
+  volunteer: 'rose',
+  volunteering: 'rose',
+  ideas: 'amber',
+  surveys: 'purple',
+  learning: 'green',
+  party_fund: 'blue',
+  invite: 'green',
+  local_reports: 'blue',
+  area_projects: 'teal',
+  card: 'brand',
+  gallery: 'blue',
+  profile: 'brand',
+  promises: 'teal',
+  support: 'rose',
 };

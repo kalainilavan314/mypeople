@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Switch, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
@@ -20,7 +20,6 @@ import {
   useApiAction,
   useApiQuery,
   useLanguage,
-  ToggleSwitch,
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
@@ -47,19 +46,20 @@ export default function SettingsScreen() {
   const language = useLanguage();
   const choices = useApiQuery(() => api().getNotificationChoices());
   const policies = useApiQuery(() => api().listMyGovernancePolicies(), [language]);
+  const { largeText } = useResponsiveLayout();
   return (
     <Screen edges={['bottom']} maxContentWidth={720}>
       <AppText
         step="section"
         accessibilityRole="header"
-        style={styles.sectionTitle}>
+        style={[styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
         {t('m.profile.language')}
       </AppText>
       <LanguagePicker selected={language} onSelect={(next) => void chooseLanguage(next)} />
       <AppText
         step="section"
         accessibilityRole="header"
-        style={styles.sectionTitle}>
+        style={[styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
         {t('m.profile.notifications')}
       </AppText>
       <QueryView query={choices}>{(data) => <ChoicesForm initial={data} />}</QueryView>
@@ -67,7 +67,7 @@ export default function SettingsScreen() {
       <AppText
         step="section"
         accessibilityRole="header"
-        style={styles.sectionTitle}>
+        style={[styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
         {t('m.profile.policies')}
       </AppText>
       <QueryView query={policies}>{(data) => <PolicyChoices items={data} reload={policies.reload} />}</QueryView>
@@ -132,7 +132,7 @@ function LanguagePicker({ selected, onSelect }: { selected: AppLanguage; onSelec
               active ? styles.languageActive : styles.languageInactive,
               pressed && styles.pressed,
             ]}>
-            <AppText step="label" tone={active ? 'selected' : 'default'} style={styles.languageLabel}>
+            <AppText step="label" tone={active ? 'brandAccent' : 'default'} style={styles.languageLabel}>
               {option.label}
             </AppText>
           </Pressable>
@@ -185,7 +185,7 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
   const [quietStart, setQuietStart] = useState(initial.quietStart?.slice(0, 5) ?? '');
   const [quietEnd, setQuietEnd] = useState(initial.quietEnd?.slice(0, 5) ?? '');
   const [saved, setSaved] = useState(false);
-  const { stackControls } = useResponsiveLayout();
+  const { stackControls, largeText } = useResponsiveLayout();
   const save = useApiAction(async () => {
     setSaved(false);
     const quiet = quietStart && quietEnd;
@@ -226,14 +226,14 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
               <View style={styles.topicIcon}>
                 <Ionicons
                   name={TOPIC_ICONS[item.topic] ?? 'notifications-outline'}
-                  size={20}
-                  color={colors.text}
+                  size={29}
+                  color={colors.primary}
                   accessibilityElementsHidden
                   importantForAccessibility="no"
                 />
               </View>
               <View style={styles.topicLabel}>
-                <AppText step="card">
+                <AppText step="label" style={[styles.topicTitle, largeText && styles.largeTextTopicTitle]}>
                   {t(`m.profile.topic_${item.topic}`)}
                 </AppText>
                 {item.locked ? (
@@ -251,11 +251,14 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
                       {channel === 'push' ? t('m.profile.pushLabel') : t('m.profile.smsLabel')}
                     </AppText>
                   ) : null}
-                  <ToggleSwitch
+                  <Switch
                     value={item[channel]}
                     disabled={item.locked}
                     onValueChange={(value) => toggle(item.topic, channel, value)}
                     accessibilityLabel={`${t(`m.profile.topic_${item.topic}`)}: ${channel === 'push' ? t('m.profile.pushLabel') : t('m.profile.smsLabel')}`}
+                    trackColor={{ true: colors.success, false: colors.inputBorder }}
+                    thumbColor={colors.card}
+                    ios_backgroundColor={colors.inputBorder}
                   />
                 </View>
               ))}
@@ -268,14 +271,14 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
           <View style={styles.topicIcon}>
             <Ionicons
               name="moon-outline"
-              size={20}
-              color={colors.text}
+              size={29}
+              color={colors.primary}
               accessibilityElementsHidden
               importantForAccessibility="no"
             />
           </View>
           <View style={styles.flex}>
-            <AppText step="card">{t('m.profile.quietHours')}</AppText>
+            <AppText step="label" style={styles.topicTitle}>{t('m.profile.quietHours')}</AppText>
             <AppText step="secondary" tone="secondary">
               {t('m.profile.quietHoursHint')}
             </AppText>
@@ -312,7 +315,8 @@ function ChoicesForm({ initial }: { initial: NotificationChoices }) {
 }
 
 const styles = StyleSheet.create({
-  sectionTitle: { marginTop: spacing[2] },
+  sectionTitle: { fontSize: 24, lineHeight: 32, fontWeight: '700' },
+  responsiveSectionTitle: { fontSize: 20, lineHeight: 30 },
   languagePicker: {
     width: '100%',
     maxWidth: 320,
@@ -337,11 +341,11 @@ const styles = StyleSheet.create({
   },
   languageActive: {
     marginLeft: -1,
-    borderColor: colors.selected,
-    backgroundColor: colors.selected,
+    borderColor: colors.brandGold,
+    backgroundColor: colors.brandYellow,
     borderRadius: radius.pill,
   },
-  languageLabel: { textAlign: 'center' },
+  languageLabel: { fontSize: 16, lineHeight: 24, fontWeight: '700' },
   topicList: { padding: 0, gap: 0, overflow: 'hidden' },
   version: { textAlign: 'center' },
   topicHeader: {
@@ -351,7 +355,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   topicHeaderSpacer: { flex: 1 },
-  channelHeader: { width: 62, textAlign: 'center' },
+  channelHeader: { width: 62, textAlign: 'center', fontSize: 13, lineHeight: 20, fontWeight: '700' },
   topic: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -365,16 +369,18 @@ const styles = StyleSheet.create({
   topicIdentity: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing[3] },
   stackedTopicIdentity: { width: '100%' },
   topicIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.tile,
-    backgroundColor: colors.surfaceVariant,
+    width: 52,
+    height: 52,
+    borderRadius: radius.card,
+    backgroundColor: colors.primaryContainer,
     alignItems: 'center',
     justifyContent: 'center',
   },
   topicLabel: { flex: 1, gap: 1 },
+  topicTitle: { fontSize: 17, lineHeight: 24, fontWeight: '700' },
+  largeTextTopicTitle: { fontSize: 15, lineHeight: 24 },
   channels: { flexDirection: 'row' },
-  stackedChannels: { width: '100%', gap: spacing[4], paddingLeft: 52 },
+  stackedChannels: { width: '100%', gap: spacing[4], paddingLeft: 64 },
   channel: { width: 62, alignItems: 'center', justifyContent: 'center' },
   stackedChannel: { width: 'auto', minWidth: 72, alignItems: 'flex-start', gap: spacing[1] },
   stackedChannelLabel: { textAlign: 'left' },
@@ -385,7 +391,7 @@ const styles = StyleSheet.create({
   clearQuiet: {
     minHeight: control.touchMin,
     borderRadius: radius.control,
-    backgroundColor: colors.surfaceVariant,
+    backgroundColor: colors.warningBackground,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
