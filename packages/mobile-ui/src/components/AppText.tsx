@@ -33,13 +33,16 @@ type Props = Omit<TextProps, 'style'> & {
 };
 
 /**
- * Text in the app font for the member's language (Outfit, or Noto Sans Tamil), on the shared type scale,
+ * Text in the app font for its script (Noto Sans Tamil for Tamil, Outfit for English), on the shared type scale,
  * enlarged by the member's in-app text size (M44). The phone's own font
  * setting still applies on top, capped so the two together stay within twice
  * the base size and layouts remain usable.
  */
 export function AppText({ step = 'body', tone = 'default', mono = false, weight, style, children, ...rest }: Props) {
-  const language = useLanguage();
+  // The font follows the text, not only the app language: a Tamil name shown in English mode gets
+  // Noto Sans Tamil (Outfit has no Tamil glyphs, so phones fell back to a different font), and
+  // English-only text such as "TMK" or a place name in Tamil mode stays in Outfit at its own size.
+  const language = scriptOf(children, useLanguage());
   const scale = useTextScale();
   const typography = useTypographyScale();
   const base = scaledTextStyle(language, step, scale, typography);
@@ -60,6 +63,19 @@ export function AppText({ step = 'body', tone = 'default', mono = false, weight,
       {children}
     </Text>
   );
+}
+
+const TAMIL_LETTERS = /[\u0B80-\u0BFF]/;
+const LATIN_LETTERS = /[A-Za-z]/;
+
+/** "ta" or "en" by the letters in plain-text children; the app language for anything else. */
+function scriptOf(children: ReactNode, language: string): string {
+  const parts = Array.isArray(children) ? children : [children];
+  if (!parts.every((part) => typeof part === 'string' || typeof part === 'number')) return language;
+  const text = parts.join('');
+  if (TAMIL_LETTERS.test(text)) return 'ta';
+  if (LATIN_LETTERS.test(text)) return 'en';
+  return language;
 }
 
 const WEIGHTS: Record<string, FontWeight> = {
