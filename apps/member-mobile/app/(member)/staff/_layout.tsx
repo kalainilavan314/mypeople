@@ -44,7 +44,7 @@ function StaffStack() {
   const { t } = useTranslation();
   const language = useLanguage();
   return (
-    <Stack screenOptions={headerOptions(language)}>
+    <Stack screenOptions={headerOptions(language, 'comfortable')}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="checkin/[id]" options={{ title: t('s.checkIn.scanPass') }} />
       <Stack.Screen name="roster/[id]" options={{ title: t('s.checkIn.roster') }} />

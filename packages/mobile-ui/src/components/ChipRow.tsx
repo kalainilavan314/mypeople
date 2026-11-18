@@ -32,7 +32,7 @@ export function ChipRow<K extends string>({ options, selected, onSelect, label }
             accessibilityRole="tab"
             aria-selected={active}
             style={[styles.chip, active ? styles.active : styles.inactive]}>
-            <AppText step="label" tone={active ? 'brandAccent' : 'secondary'}>
+            <AppText step="label" tone={active ? 'selected' : 'secondary'}>
               {option.label}
             </AppText>
           </Pressable>
@@ -51,6 +51,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
   },
-  active: { backgroundColor: colors.brandYellow, borderColor: colors.brandGold },
+  active: { backgroundColor: colors.selected, borderColor: colors.selected },
   inactive: { backgroundColor: colors.card, borderColor: colors.inputBorder },
 });

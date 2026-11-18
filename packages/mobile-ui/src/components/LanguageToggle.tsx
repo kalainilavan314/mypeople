@@ -55,11 +55,11 @@ const styles = StyleSheet.create({
     padding: 2,
     borderRadius: radius.pill,
     borderWidth: 1,
-    borderColor: '#d8e2f3',
-    backgroundColor: '#eef3fc',
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceVariant,
   },
   option: { minHeight: 30, paddingHorizontal: 10, borderRadius: radius.pill, justifyContent: 'center' },
-  active: { backgroundColor: colors.primary },
+  active: { backgroundColor: colors.selected },
   // The Tamil name sits in Noto Sans Tamil even when the app is in English.
   tamil: { fontFamily: 'NotoSansTamil_400Regular' },
 });

@@ -9,7 +9,11 @@ import { AppText, useApiQuery, useReloadOnFocus } from '@my-people/mobile-ui';
 
 import { api } from '@/lib/api';
 
-/** Stable member navigation: account on the left, product in the centre, inbox on the right. */
+/**
+ * The app bar of the four main tabs: profile on the left, the logo and name in the centre, the inbox
+ * on the right, on white with one hairline below. The brand stays centred whatever the two sides hold,
+ * because both side controls have the same width.
+ */
 export function MemberTopBar() {
   const { t } = useTranslation();
   const inbox = useApiQuery(() => api().getNotifications({ limit: 1 }));
@@ -25,7 +29,7 @@ export function MemberTopBar() {
           accessibilityLabel={t('nav.profile')}
           hitSlop={4}
           style={({ pressed }) => [styles.action, pressed && styles.pressed]}>
-          <Ionicons name="person" size={34} color={colors.primaryDark} />
+          <Ionicons name="person-circle-outline" size={28} color={colors.text} />
         </Pressable>
 
         <View style={styles.brand} accessibilityRole="header">
@@ -35,7 +39,7 @@ export function MemberTopBar() {
             resizeMode="contain"
             accessible={false}
           />
-          <AppText step="section" numberOfLines={1} style={styles.brandName}>
+          <AppText step="card" weight={700} numberOfLines={1} style={styles.brandName}>
             {t('m.welcome.title')}
           </AppText>
         </View>
@@ -50,7 +54,7 @@ export function MemberTopBar() {
           }
           hitSlop={4}
           style={({ pressed }) => [styles.action, pressed && styles.pressed]}>
-          <Ionicons name="notifications" size={34} color={colors.primaryDark} />
+          <Ionicons name="notifications-outline" size={26} color={colors.text} />
           {unread > 0 ? <View style={styles.unread} /> : null}
         </Pressable>
       </View>
@@ -60,13 +64,13 @@ export function MemberTopBar() {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: colors.brandYellow,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0, 0, 0, 0.06)',
+    backgroundColor: colors.card,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
   },
   bar: {
-    height: 64,
-    paddingHorizontal: spacing.gutter,
+    height: 56,
+    paddingHorizontal: spacing[2],
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -77,19 +81,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: control.touchMin / 2,
   },
-  pressed: { backgroundColor: 'rgba(181, 18, 27, 0.08)' },
+  pressed: { backgroundColor: colors.surfaceVariant },
   brand: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing[2] },
-  brandLogo: { width: 38, height: 38 },
-  brandName: { color: colors.primary },
+  brandLogo: { width: 28, height: 28 },
+  brandName: { color: colors.text, flexShrink: 1 },
   unread: {
     position: 'absolute',
-    top: 8,
-    right: 8,
+    top: 11,
+    right: 12,
     width: 9,
     height: 9,
     borderRadius: 5,
-    backgroundColor: colors.error,
+    backgroundColor: colors.text,
     borderWidth: 2,
-    borderColor: colors.brandYellow,
+    borderColor: colors.card,
   },
 });

@@ -1,9 +1,9 @@
-import { StyleSheet, Switch, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { colors, spacing } from '@my-people/design-tokens/mobile';
 
-import { AppText, ChipRow, Screen, SurfaceCard, type TextSize, useDisplayPreferences } from '@my-people/mobile-ui';
+import { AppText, ChipRow, Screen, SurfaceCard, type TextSize, ToggleSwitch, useDisplayPreferences } from '@my-people/mobile-ui';
 
 /**
  * M44: an in-app text size that works whatever the phone's own setting
@@ -49,11 +49,10 @@ export default function AccessibilityScreen() {
               {t('m.accessibility.dataSaverHint')}
             </AppText>
           </View>
-          <Switch
+          <ToggleSwitch
             value={dataSaver}
             onValueChange={setDataSaver}
             accessibilityLabel={t('m.accessibility.dataSaverLabel')}
-            trackColor={{ true: colors.primary, false: colors.inputBorder }}
           />
         </View>
       </SurfaceCard>

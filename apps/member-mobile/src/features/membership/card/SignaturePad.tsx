@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     borderRadius: radius.card,
     borderWidth: 1.5,
-    borderColor: colors.brandGold,
+    borderColor: colors.inputBorder,
     overflow: 'hidden',
   },
   baseline: {
@@ -149,8 +149,8 @@ const styles = StyleSheet.create({
     right: spacing[4],
     bottom: '24%',
     height: 1,
-    backgroundColor: colors.brandGold,
+    backgroundColor: colors.inputBorder,
   },
-  cross: { position: 'absolute', left: spacing[2], bottom: '24%', color: colors.brandGold },
+  cross: { position: 'absolute', left: spacing[2], bottom: '24%', color: colors.textMuted },
   placeholder: { position: 'absolute', left: 0, right: 0, top: '30%', textAlign: 'center' },
 });

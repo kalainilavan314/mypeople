@@ -21,14 +21,14 @@ import {
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
+import { SectionHeader } from '@/components/SectionHeader';
 import { EventRow } from '@/features/events/EventRow';
-import { HomeActionTile } from '@/features/home/HomeActionTile';
+import { FeatureRow } from '@/features/home/FeatureRow';
 import { MemberWelcomeCard } from '@/features/home/MemberWelcomeCard';
 import { PromiseTrackerCard } from '@/features/home/PromiseTrackerCard';
 import { StaffRoleTags } from '@/features/staff/StaffRoleTags';
 import { useMyStaffRoles } from '@/features/staff/useMyStaffRoles';
 import { api } from '@/lib/api';
-import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 
 type NextStep = NonNullable<HomeView['nextStep']>;
 
@@ -71,7 +71,6 @@ function HomeBody({ data }: { data: HomeView }) {
   const showComingUp = next?.kind !== 'event_soon';
   const roles = useMyStaffRoles();
   const staff = roles.assignments.length > 0;
-  const { largeText } = useResponsiveLayout();
 
   return (
     <>
@@ -88,7 +87,7 @@ function HomeBody({ data }: { data: HomeView }) {
 
       {next ? (
         <SurfaceCard accent style={styles.nextAction}>
-          <AppText step="caption" tone="primary">
+          <AppText step="caption" tone="secondary">
             {t('m.home.nextStep')}
           </AppText>
           <AppText step="section">{t(`m.home.next_${next.kind}`)}</AppText>
@@ -111,7 +110,10 @@ function HomeBody({ data }: { data: HomeView }) {
           asks for the authenticator code (OD-26, one app for members and staff). */}
       {staff ? (
         <SurfaceCard onPress={() => router.push('/staff')} accessibilityLabel={t('m.home.staffSection')}>
-          <AppText step="section">{t('m.home.staffSection')}</AppText>
+          <View style={styles.titleRow}>
+            <AppText step="card" style={styles.flex}>{t('m.home.staffSection')}</AppText>
+            <Ionicons name="chevron-forward" size={18} color={colors.controlBorder} accessibilityElementsHidden importantForAccessibility="no" />
+          </View>
           <View style={styles.tags}>
             <StaffRoleTags roles={roles} />
           </View>
@@ -121,32 +123,22 @@ function HomeBody({ data }: { data: HomeView }) {
         </SurfaceCard>
       ) : null}
 
-      <AppText step="section" accessibilityRole="header" style={[styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
-        {t('m.home.quickActions')}
-      </AppText>
-      <View style={styles.actionGrid}>
+      <SectionHeader title={t('m.home.quickActions')} />
+      <SurfaceCard style={styles.list}>
         {data.quickActions.map((feature, index) => (
-          <HomeActionTile key={feature.key} feature={feature} tone={index === 0 || index === 3 ? 'red' : 'yellow'} />
+          <FeatureRow key={feature.key} feature={feature} first={index === 0} />
         ))}
-      </View>
+      </SurfaceCard>
 
       {showComingUp ? (
         <>
-          <View style={styles.sectionRow}>
-            <AppText
-              step="section"
-              accessibilityRole="header"
-              style={[styles.flex, styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
-              {t('m.home.comingUp')}
-            </AppText>
-            <Button label={t('m.common.seeAll')} variant="quiet" onPress={() => router.push('/events')} />
-          </View>
+          <SectionHeader title={t('m.home.comingUp')} actionLabel={t('m.common.seeAll')} onAction={() => router.push('/events')} />
           {data.comingUp ? (
             <EventRow event={data.comingUp} />
           ) : (
             <SurfaceCard style={styles.emptyEvents}>
               <View style={styles.emptyEventCopy}>
-                <Ionicons name="calendar-outline" size={34} color={colors.primary} />
+                <Ionicons name="calendar-outline" size={24} color={colors.textSecondary} accessibilityElementsHidden importantForAccessibility="no" />
                 <AppText step="body" tone="secondary" style={styles.flex}>
                   {t('m.home.noEvents')}
                 </AppText>
@@ -161,17 +153,11 @@ function HomeBody({ data }: { data: HomeView }) {
           this addition sends no summary, so the section is left out rather than failing. */}
       {data.promises ? (
         <>
-          <View style={styles.sectionRow}>
-            <AppText
-              step="section"
-              accessibilityRole="header"
-              style={[styles.flex, styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
-              {t('m.home.feature_promises')}
-            </AppText>
-            {data.promises.feature.available ? (
-              <Button label={t('m.common.seeAll')} variant="quiet" onPress={() => router.push('/promises')} />
-            ) : null}
-          </View>
+          <SectionHeader
+            title={t('m.home.feature_promises')}
+            actionLabel={data.promises.feature.available ? t('m.common.seeAll') : undefined}
+            onAction={() => router.push('/promises')}
+          />
           <PromiseTrackerCard summary={data.promises} />
         </>
       ) : null}
@@ -180,11 +166,9 @@ function HomeBody({ data }: { data: HomeView }) {
 }
 
 const styles = StyleSheet.create({
-  nextAction: { backgroundColor: colors.primaryContainer, borderColor: colors.primaryContainer },
-  sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
-  responsiveSectionTitle: { fontSize: 20, lineHeight: 30 },
-  actionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
-  sectionRow: { flexDirection: 'row', alignItems: 'center' },
+  nextAction: { gap: spacing[3] },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
+  list: { padding: 0, gap: 0, overflow: 'hidden' },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
   emptyEvents: { gap: spacing[4] },
   emptyEventCopy: { flexDirection: 'row', alignItems: 'center', gap: spacing[3] },
