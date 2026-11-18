@@ -1,113 +1,73 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import type { HomeView } from '@my-people/api-client';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
-import { AppText, StatusTag } from '@my-people/mobile-ui';
+import { colors, spacing } from '@my-people/design-tokens/mobile';
+import { AppText, IconTile, StatusTag, SurfaceCard } from '@my-people/mobile-ui';
 
-import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
-
+/**
+ * The top of Home and the Community hub: a plain greeting (Home only), then a compact card with the
+ * member's membership state and their district and GN division.
+ */
 export function MemberWelcomeCard({
   place,
   membershipState,
+  greeting = true,
 }: {
   place: string;
   membershipState: HomeView['membershipState'];
+  /** The "Welcome" heading above the card; the hub shows the card alone. */
+  greeting?: boolean;
 }) {
   const { t } = useTranslation();
-  const { largeText, stackHero } = useResponsiveLayout();
   const membershipTone = membershipState === 'active' ? 'verified' : membershipState === 'pending' ? 'pending' : 'error';
 
   return (
-    <LinearGradient
-      colors={[colors.primaryDark, colors.primary, colors.primaryLight]}
-      locations={[0, 0.58, 1]}
-      start={{ x: 0, y: 0.5 }}
-      end={{ x: 1, y: 0.5 }}
-      style={[styles.hero, stackHero && styles.stackedHero]}>
-      <Image
-        source={require('../../../assets/brand/logo.png')}
-        style={styles.logo}
-        resizeMode="contain"
-        accessible={false}
-        importantForAccessibility="no"
-      />
-      <View style={[styles.content, stackHero && styles.stackedContent]}>
-        <AppText
-          step="page"
-          tone="inverse"
-          accessibilityRole="header"
-          style={[styles.title, largeText && styles.largeTextTitle]}>
-          {t('m.home.welcomeTitle')} 👋
-        </AppText>
-        <AppText step="label" tone="inverse" style={[styles.subtitle, largeText && styles.largeTextSubtitle]}>
-          {t('m.home.welcomeSubtitle')}
-        </AppText>
+    <View style={styles.block}>
+      {greeting ? (
+        <View style={styles.greeting}>
+          <AppText step="page" accessibilityRole="header">
+            {t('m.home.welcomeTitle')}
+          </AppText>
+          <AppText step="body" tone="secondary">
+            {t('m.home.welcomeSubtitle')}
+          </AppText>
+        </View>
+      ) : null}
+
+      <SurfaceCard style={styles.card}>
+        <View style={styles.membership}>
+          <IconTile icon="card-outline" size={40} />
+          <AppText step="card" style={styles.flex}>
+            {t('m.profile.membership')}
+          </AppText>
+          <StatusTag tone={membershipTone} label={t(`m.home.membership_${membershipState}`)} />
+        </View>
         {place ? (
           <View style={styles.place}>
-            <Ionicons name="location" size={21} color={colors.onPrimary} />
-            <AppText step="secondary" tone="inverse" style={styles.placeText} numberOfLines={2}>
+            <Ionicons
+              name="location-outline"
+              size={18}
+              color={colors.textSecondary}
+              accessibilityElementsHidden
+              importantForAccessibility="no"
+            />
+            <AppText step="secondary" tone="secondary" style={styles.flex}>
               {place}
             </AppText>
           </View>
         ) : null}
-
-        <View style={styles.divider} />
-        <View style={[styles.membershipRow, stackHero && styles.stackedMembershipRow]}>
-          <View style={styles.membershipLabel}>
-            <Ionicons name="card" size={22} color={colors.onPrimary} />
-            <AppText step="label" tone="inverse">
-              {t('m.profile.membership')}
-            </AppText>
-          </View>
-          <StatusTag tone={membershipTone} label={t(`m.home.membership_${membershipState}`)} />
-        </View>
-      </View>
-    </LinearGradient>
+      </SurfaceCard>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  hero: {
-    position: 'relative',
-    minHeight: 232,
-    borderRadius: radius.card,
-    overflow: 'hidden',
-  },
-  stackedHero: { minHeight: 0 },
-  logo: {
-    position: 'absolute',
-    width: 196,
-    height: 196,
-    right: -22,
-    top: 18,
-    tintColor: colors.onPrimary,
-    opacity: 0.14,
-  },
-  content: {
-    flex: 1,
-    zIndex: 1,
-    padding: spacing[6],
-    gap: spacing[2],
-    justifyContent: 'center',
-  },
-  stackedContent: { padding: spacing[4], justifyContent: 'flex-start' },
-  title: { fontSize: 34, lineHeight: 42, fontWeight: '700' },
-  largeTextTitle: { fontSize: 24, lineHeight: 34 },
-  subtitle: { fontSize: 19, lineHeight: 28, fontWeight: '600' },
-  largeTextSubtitle: { fontSize: 16, lineHeight: 25 },
-  place: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], marginTop: spacing[3] },
-  placeText: { flex: 1, fontSize: 17, lineHeight: 25, fontWeight: '600' },
-  divider: { height: 1, backgroundColor: 'rgba(255, 255, 255, 0.42)', marginVertical: spacing[2] },
-  membershipRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing[3],
-    flexWrap: 'wrap',
-  },
-  stackedMembershipRow: { alignItems: 'flex-start', flexDirection: 'column' },
-  membershipLabel: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
+  block: { gap: spacing[4] },
+  greeting: { gap: spacing[1] },
+  card: { gap: spacing[3] },
+  membership: { flexDirection: 'row', alignItems: 'center', gap: spacing[3], flexWrap: 'wrap' },
+  place: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], paddingTop: spacing[3], borderTopWidth: 1, borderTopColor: colors.divider },
+  flex: { flex: 1 },
 });

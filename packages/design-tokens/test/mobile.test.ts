@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { colors, fontFamily, tints } from '../src/mobile.ts';
+import { colors, comfortableTypeScale, fontFamily, tamilComfortableTypeScale, tints } from '../src/mobile.ts';
 
 function luminance(hex: string): number {
   const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
@@ -25,6 +25,8 @@ test('text colours pass AA on the page, cards and their own backgrounds', () => 
     ['link on card', colors.link, colors.card],
     ['link on warning background', colors.link, colors.warningBackground],
     ['on primary', colors.onPrimary, colors.primary],
+    ['on selected', colors.onSelected, colors.selected],
+    ['secondary on surface variant', colors.textSecondary, colors.surfaceVariant],
     ['warning text', colors.warningText, colors.warningBackground],
     ['warning text on pill', colors.warningText, colors.warningPill],
     ['success text', colors.successText, colors.successBackground],
@@ -39,6 +41,30 @@ test('text colours pass AA on the page, cards and their own backgrounds', () => 
 test('icons on their tinted tiles reach the 3:1 non-text contrast', () => {
   for (const [name, tint] of Object.entries(tints)) {
     assert.ok(contrast(tint.icon, tint.background) >= 3, `${name}: ${contrast(tint.icon, tint.background).toFixed(2)}`);
+  }
+});
+
+test('inactive icons reach the 3:1 non-text contrast on white', () => {
+  assert.ok(contrast(colors.iconInactive, colors.card) >= 3);
+});
+
+// The owner's monochrome design (18 November 2026): no red, yellow or gold as interface accents. A
+// colour is "neutral" when its red, green and blue channels are within a few steps of each other.
+test('interface colours are neutral greys; only state colours carry a hue', () => {
+  const states = new Set(Object.keys(colors).filter((name) => /^(success|warning|error)/.test(name)));
+  for (const [name, hex] of Object.entries(colors)) {
+    if (states.has(name)) continue;
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    assert.ok(Math.max(r, g, b) - Math.min(r, g, b) <= 4, `${name} ${hex} is not a neutral grey`);
+  }
+});
+
+test('Tamil is a step more compact than English, never below 12, with room for vowel signs', () => {
+  for (const [step, tamil] of Object.entries(tamilComfortableTypeScale)) {
+    const english = comfortableTypeScale[step as keyof typeof comfortableTypeScale];
+    assert.ok(tamil.size <= english.size, `${step}: Tamil ${tamil.size} > English ${english.size}`);
+    assert.ok(tamil.size >= 12, `${step}: Tamil ${tamil.size} is below 12`);
+    assert.ok(tamil.lineHeight / tamil.size >= 1.5, `${step}: Tamil line height ${tamil.lineHeight} is too tight`);
   }
 });
 

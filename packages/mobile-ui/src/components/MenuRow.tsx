@@ -51,8 +51,8 @@ export function MenuRow({ icon, label, hint, onPress, trailing, first = false, t
 }
 
 const styles = StyleSheet.create({
-  row: { minHeight: 56, flexDirection: 'row', alignItems: 'center', gap: spacing[4], paddingVertical: spacing[3] },
-  tile: { width: 38, height: 38, borderRadius: radius.input - 2, alignItems: 'center', justifyContent: 'center' },
+  row: { minHeight: 60, flexDirection: 'row', alignItems: 'center', gap: spacing[3], paddingVertical: spacing[3] },
+  tile: { width: 40, height: 40, borderRadius: radius.tile, alignItems: 'center', justifyContent: 'center' },
   separator: { borderTopWidth: 1, borderTopColor: colors.divider },
   text: { flex: 1 },
   pressed: { backgroundColor: colors.surfaceVariant },

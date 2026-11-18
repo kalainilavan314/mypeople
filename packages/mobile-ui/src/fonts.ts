@@ -11,7 +11,7 @@ import { Outfit_400Regular } from '@expo-google-fonts/outfit/400Regular';
 import { Outfit_500Medium } from '@expo-google-fonts/outfit/500Medium';
 import { Outfit_600SemiBold } from '@expo-google-fonts/outfit/600SemiBold';
 import { Outfit_700Bold } from '@expo-google-fonts/outfit/700Bold';
-import { comfortableTypeScale, lineHeightRatio, typeScale, type FontWeight } from '@my-people/design-tokens/mobile';
+import { comfortableTypeScale, lineHeightRatio, tamilComfortableTypeScale, typeScale, type FontWeight } from '@my-people/design-tokens/mobile';
 
 export const appFonts = {
   Outfit_300Light,
@@ -64,14 +64,15 @@ export function scaledTextStyle(
   return { ...base, fontSize: Math.round(base.fontSize * scale), lineHeight: Math.ceil(base.lineHeight * scale) };
 }
 
-/** Font, size and line height for a step of the type scale. */
+/**
+ * Font, size and line height for a step of the type scale. On the app's comfortable scale Tamil has
+ * its own, slightly more compact sizes (Noto Sans Tamil draws larger than Outfit) with about 1.6 line
+ * height; on the compact scale it keeps the English sizes with Tamil leading.
+ */
 export function textStyle(language: string, step: keyof typeof typeScale, typography: TypographyScale = 'default') {
-  const steps = typography === 'comfortable' ? comfortableTypeScale : typeScale;
-  const { size: latinSize, lineHeight, weight } = steps[step];
   const tamil = language === 'ta';
-  // Puvi's type scale is the PWA's, small enough that Tamil keeps the English sizes; it only
-  // gets more line height (lineHeightRatio.tamil).
-  const size = latinSize;
+  const steps = typography === 'comfortable' ? (tamil ? tamilComfortableTypeScale : comfortableTypeScale) : typeScale;
+  const { size, lineHeight, weight } = steps[step];
   // Text must remain readable when system font scaling expands Tamil glyphs: every step keeps
   // above a 1.45 line-height baseline, and Tamil gets its larger script-specific leading.
   const accessibleLineHeight = Math.ceil(size * 1.45);
