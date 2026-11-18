@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText } from '@my-people/mobile-ui';
 
@@ -38,7 +38,7 @@ export function MemberCardPreview({ name, memberCode, place, active }: Props) {
           {t('m.home.memberCard')}
         </AppText>
         <View style={[styles.pill, active ? styles.pillActive : styles.pillPending]}>
-          <Ionicons name={active ? 'checkmark-circle' : 'time-outline'} size={15} color={active ? colors.successText : colors.warningText} />
+          <Ionicons name={active ? 'checkmark-circle' : 'time-outline'} size={iconSize.status} color={active ? colors.successText : colors.warningText} />
           <AppText step="secondary" tone={active ? 'success' : 'warning'}>
             {state}
           </AppText>

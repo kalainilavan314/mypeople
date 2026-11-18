@@ -3,7 +3,7 @@ import type { IssueVisibility } from '@my-people/api-client';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, Notice } from '@my-people/mobile-ui';
 
 type Props = { value: IssueVisibility; onChange: (value: IssueVisibility) => void };
@@ -34,7 +34,7 @@ export function VisibilityChoice({ value, onChange }: Props) {
             style={({ pressed }) => [styles.option, checked && styles.checked, pressed && styles.pressed]}>
             <Ionicons
               name={checked ? 'radio-button-on' : 'radio-button-off'}
-              size={22}
+              size={iconSize.row}
               color={checked ? colors.primary : colors.controlBorder}
             />
             <View style={styles.text}>

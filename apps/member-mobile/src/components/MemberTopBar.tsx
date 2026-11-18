@@ -4,14 +4,18 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { colors, control, spacing } from '@my-people/design-tokens/mobile';
-import { AppText, useApiQuery, useReloadOnFocus } from '@my-people/mobile-ui';
+import { colors, control, iconSize, iconTile, spacing } from '@my-people/design-tokens/mobile';
+import { AppText, fontFamilyFor, useApiQuery, useLanguage, useReloadOnFocus } from '@my-people/mobile-ui';
 
 import { api } from '@/lib/api';
 
 /** Stable member navigation: account on the left, product in the centre, inbox on the right. */
 export function MemberTopBar() {
   const { t } = useTranslation();
+  const language = useLanguage();
+  // "TMK" over the Tamil party name, as the design's two-line brand; it fits at 320 px in both languages.
+  const shortName = language === 'ta' ? t('m.welcome.titleOther') : t('m.welcome.title');
+  const tamilName = language === 'ta' ? t('m.welcome.title') : t('m.welcome.titleOther');
   const inbox = useApiQuery(() => api().getNotifications({ limit: 1 }));
   useReloadOnFocus(inbox.reload);
   const unread = inbox.data?.unread ?? 0;
@@ -24,8 +28,12 @@ export function MemberTopBar() {
           accessibilityRole="button"
           accessibilityLabel={t('nav.profile')}
           hitSlop={4}
-          style={({ pressed }) => [styles.action, pressed && styles.pressed]}>
-          <Ionicons name="person" size={34} color={colors.primaryDark} />
+          style={styles.action}>
+          {({ pressed }) => (
+            <View style={[styles.circle, pressed && styles.pressed]}>
+              <Ionicons name="person-outline" size={iconSize.header} color={colors.primaryDark} />
+            </View>
+          )}
         </Pressable>
 
         <View style={styles.brand} accessibilityRole="header">
@@ -35,9 +43,18 @@ export function MemberTopBar() {
             resizeMode="contain"
             accessible={false}
           />
-          <AppText step="section" numberOfLines={1} style={styles.brandName}>
-            {t('m.welcome.title')}
-          </AppText>
+          <View style={styles.brandText}>
+            <AppText step="section" numberOfLines={1} style={styles.brandName}>
+              {shortName}
+            </AppText>
+            <AppText
+              step="caption"
+              tone="muted"
+              numberOfLines={1}
+              style={[styles.brandTamil, { fontFamily: fontFamilyFor('ta', 500) }]}>
+              {tamilName}
+            </AppText>
+          </View>
         </View>
 
         <Pressable
@@ -49,9 +66,13 @@ export function MemberTopBar() {
               : t('m.home.notifications')
           }
           hitSlop={4}
-          style={({ pressed }) => [styles.action, pressed && styles.pressed]}>
-          <Ionicons name="notifications" size={34} color={colors.primaryDark} />
-          {unread > 0 ? <View style={styles.unread} /> : null}
+          style={styles.action}>
+          {({ pressed }) => (
+            <View style={[styles.circle, pressed && styles.pressed]}>
+              <Ionicons name="notifications-outline" size={iconSize.header} color={colors.primaryDark} />
+              {unread > 0 ? <View style={styles.unread} /> : null}
+            </View>
+          )}
         </Pressable>
       </View>
     </SafeAreaView>
@@ -60,36 +81,43 @@ export function MemberTopBar() {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: colors.brandYellow,
+    backgroundColor: colors.page,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0, 0, 0, 0.06)',
+    borderBottomColor: colors.divider,
   },
   bar: {
-    height: 64,
+    height: 60,
     paddingHorizontal: spacing.gutter,
     flexDirection: 'row',
     alignItems: 'center',
   },
-  action: {
-    width: control.touchMin,
-    height: control.touchMin,
+  // A 44 px touch target holding the design's 40 px frosted circle.
+  action: { width: control.touchMin, height: control.touchMin, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  circle: {
+    width: iconTile.header,
+    height: iconTile.header,
+    borderRadius: iconTile.header / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: control.touchMin / 2,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  pressed: { backgroundColor: 'rgba(181, 18, 27, 0.08)' },
-  brand: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing[2] },
-  brandLogo: { width: 38, height: 38 },
-  brandName: { color: colors.primary },
+  pressed: { backgroundColor: colors.surfaceVariant },
+  brand: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing[2] },
+  brandLogo: { width: 32, height: 32 },
+  brandText: { flexShrink: 1, minWidth: 0 },
+  brandName: { color: colors.text, fontSize: 16, lineHeight: 20 },
+  brandTamil: { fontSize: 11, lineHeight: 16 },
   unread: {
     position: 'absolute',
-    top: 8,
+    top: 7,
     right: 8,
     width: 9,
     height: 9,
     borderRadius: 5,
     backgroundColor: colors.error,
     borderWidth: 2,
-    borderColor: colors.brandYellow,
+    borderColor: colors.card,
   },
 });

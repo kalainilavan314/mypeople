@@ -4,7 +4,7 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import type { SecurityAlert, SecurityAlertAnswer } from '@my-people/api-client';
-import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
@@ -94,7 +94,7 @@ export default function SecurityScreen() {
                     <View style={styles.deviceIcon}>
                       <Ionicons
                         name="phone-portrait-outline"
-                        size={29}
+                        size={iconSize.action}
                         color={colors.primary}
                         accessibilityElementsHidden
                         importantForAccessibility="no"
@@ -173,12 +173,11 @@ function SecurityAlerts({ alerts, busy, onAnswer }: AlertsProps) {
       </AppText>
       {open.map((alert) => (
         <SurfaceCard key={alert.id} style={styles.alertCard}>
-          <View style={styles.cardAccent} />
           <View style={styles.alertHeader}>
             <View style={styles.alertIcon}>
               <Ionicons
                 name="shield-checkmark-outline"
-                size={31}
+                size={iconSize.action}
                 color={colors.primary}
                 accessibilityElementsHidden
                 importantForAccessibility="no"
@@ -217,7 +216,7 @@ function SecurityAlerts({ alerts, busy, onAnswer }: AlertsProps) {
         <SurfaceCard key={alert.id}>
           <View style={styles.alertHeader}>
             <View style={styles.alertIcon}>
-              <Ionicons name="shield-checkmark-outline" size={31} color={colors.primary} />
+              <Ionicons name="shield-checkmark-outline" size={iconSize.action} color={colors.primary} />
             </View>
             <View style={styles.flex}>
               <AlertSummary alert={alert} />
@@ -287,17 +286,8 @@ function PasswordChange() {
 }
 
 const styles = StyleSheet.create({
-  sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
+  sectionTitle: { fontSize: 20, lineHeight: 28, fontWeight: '700' },
   alertCard: { position: 'relative', overflow: 'hidden' },
-  cardAccent: {
-    position: 'absolute',
-    width: 92,
-    height: 64,
-    right: -18,
-    top: 72,
-    borderTopLeftRadius: 64,
-    backgroundColor: 'rgba(255, 211, 42, 0.42)',
-  },
   alertHeader: { zIndex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3] },
   alertIcon: {
     width: 58,

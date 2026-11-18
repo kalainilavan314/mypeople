@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { FlatList, Modal, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import { useLanguage } from '../hooks/useLanguage';
 import { stringsFor } from '../strings';
@@ -54,7 +54,7 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
         <AppText step="body" tone={chosen ? 'default' : 'muted'} style={styles.value}>
           {chosen?.label ?? placeholder}
         </AppText>
-        <Ionicons name="chevron-down" size={20} color={colors.textMuted} />
+        <Ionicons name="chevron-down" size={iconSize.row} color={colors.textMuted} />
       </Pressable>
       {error ? (
         <AppText step="secondary" tone="error" accessibilityRole="alert" accessibilityLiveRegion="polite">
@@ -74,7 +74,7 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
               accessibilityLabel={text.close}
               hitSlop={8}
               style={styles.close}>
-              <Ionicons name="close" size={24} color={colors.text} />
+              <Ionicons name="close" size={iconSize.action} color={colors.text} />
             </Pressable>
           </View>
           {options.length > 8 ? (
@@ -99,7 +99,7 @@ export function SelectField({ label, value, options, onChange, placeholder, disa
                 <AppText step="body" style={styles.value}>
                   {item.label}
                 </AppText>
-                {item.value === value ? <Ionicons name="checkmark" size={20} color={colors.primary} /> : null}
+                {item.value === value ? <Ionicons name="checkmark" size={iconSize.row} color={colors.primary} /> : null}
               </Pressable>
             )}
           />

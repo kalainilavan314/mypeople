@@ -6,10 +6,11 @@ import type { ComponentProps, ReactNode } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 import {
   AppText,
   confirmAction,
+  IconTile,
   Screen,
   StatusTag,
   type Tone,
@@ -112,7 +113,7 @@ export default function ProfileScreen() {
         accessibilityRole="button"
         accessibilityLabel={t('m.common.signOut')}
         style={({ pressed }) => [styles.signOut, pressed && styles.pressed]}>
-        <Ionicons name="log-out-outline" size={28} color={colors.primary} />
+        <Ionicons name="log-out-outline" size={iconSize.header} color={colors.primary} />
         <AppText step="section" tone="primary" style={styles.signOutLabel}>
           {t('m.common.signOut')}
         </AppText>
@@ -133,7 +134,6 @@ function ProfileHero({ data, roles }: { data: ProfileView; roles: MyStaffRoles }
       start={{ x: 0, y: 0.5 }}
       end={{ x: 1, y: 0.5 }}
       style={[styles.hero, stackHero && styles.stackedHero]}>
-      <View style={styles.heroYellow} />
       <Image
         source={require('../../../assets/brand/logo.png')}
         style={styles.heroLogo}
@@ -199,15 +199,14 @@ function ProfileCard({ icon, label, href }: { icon: IconName; label: string; hre
       accessibilityRole="link"
       accessibilityLabel={label}
       style={({ pressed }) => [styles.profileCard, stackCards && styles.stackedProfileCard, pressed && styles.pressed]}>
-      <View style={styles.cardAccent} />
-      <Ionicons name={icon} size={34} color={colors.primary} />
+      <IconTile icon={icon} tint="brand" size={40} />
       <AppText
         step="label"
         style={[styles.cardLabel, largeText && styles.largeTextCardLabel]}
         numberOfLines={stackCards ? undefined : 2}>
         {label}
       </AppText>
-      <Ionicons name="chevron-forward" size={24} color={colors.text} />
+      <Ionicons name="chevron-forward" size={iconSize.chevron} color={colors.controlBorder} style={styles.chevron} />
     </Pressable>
   );
 }
@@ -219,11 +218,11 @@ function ProfileRow({ icon, label, href, first = false }: { icon: IconName; labe
       accessibilityRole="link"
       accessibilityLabel={label}
       style={({ pressed }) => [styles.profileRow, !first && styles.rowDivider, pressed && styles.pressed]}>
-      <Ionicons name={icon} size={30} color={colors.primary} />
+      <IconTile icon={icon} tint="brand" size={40} />
       <AppText step="label" style={styles.rowLabel}>
         {label}
       </AppText>
-      <Ionicons name="chevron-forward" size={24} color={colors.text} />
+      <Ionicons name="chevron-forward" size={iconSize.chevron} color={colors.controlBorder} style={styles.chevron} />
     </Pressable>
   );
 }
@@ -239,14 +238,6 @@ const styles = StyleSheet.create({
     gap: spacing[3],
   },
   stackedHero: { minHeight: 0 },
-  heroYellow: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 8,
-    backgroundColor: colors.brandYellow,
-  },
   heroLogo: {
     position: 'absolute',
     width: 170,
@@ -254,37 +245,37 @@ const styles = StyleSheet.create({
     right: -22,
     top: 10,
     tintColor: colors.onPrimary,
-    opacity: 0.12,
+    opacity: 0.1,
   },
   heroTop: { zIndex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing[3] },
   stackedHeroTop: { alignItems: 'flex-start', flexDirection: 'column' },
   avatar: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
-    borderWidth: 3,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    borderWidth: 2,
     borderColor: colors.onPrimary,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(141, 10, 18, 0.34)',
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
   },
-  avatarLetter: { fontSize: 38, lineHeight: 46, fontWeight: '700' },
-  identity: { flex: 1, gap: spacing[1] },
-  memberName: { fontSize: 29, lineHeight: 36, fontWeight: '700' },
+  avatarLetter: { fontSize: 30, lineHeight: 38, fontWeight: '700' },
+  identity: { flex: 1, minWidth: 0, gap: spacing[1] },
+  memberName: { fontSize: 24, lineHeight: 32, fontWeight: '700' },
   largeTextMemberName: { fontSize: 22, lineHeight: 32 },
-  memberCode: { fontSize: 16, lineHeight: 23, fontWeight: '600' },
+  memberCode: { fontSize: 15, lineHeight: 22, fontWeight: '600' },
   statuses: { zIndex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2], paddingBottom: spacing[1] },
   stackedStatuses: { alignItems: 'flex-start', flexDirection: 'column' },
   section: { gap: spacing[3] },
-  sectionTitle: { fontSize: 26, lineHeight: 34, fontWeight: '700' },
-  responsiveSectionTitle: { fontSize: 20, lineHeight: 30 },
+  sectionTitle: { fontSize: 20, lineHeight: 28, fontWeight: '700' },
+  responsiveSectionTitle: { fontSize: 18, lineHeight: 27 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] },
   profileCard: {
     position: 'relative',
     flexGrow: 1,
     flexBasis: '46%',
     minWidth: 140,
-    minHeight: 82,
+    minHeight: 72,
     padding: spacing[3],
     borderRadius: radius.card,
     borderWidth: 1,
@@ -294,19 +285,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing[3],
     overflow: 'hidden',
+    shadowColor: colors.shadow,
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
   },
-  stackedProfileCard: { flexBasis: '100%', width: '100%', minHeight: 76 },
-  cardAccent: {
-    position: 'absolute',
-    right: -13,
-    bottom: -17,
-    width: 58,
-    height: 42,
-    borderTopLeftRadius: 48,
-    backgroundColor: 'rgba(255, 211, 42, 0.46)',
-  },
-  cardLabel: { flex: 1, fontSize: 17, lineHeight: 24, fontWeight: '700' },
-  largeTextCardLabel: { fontSize: 15, lineHeight: 24 },
+  stackedProfileCard: { flexBasis: '100%', width: '100%', minHeight: 64 },
+  cardLabel: { flex: 1, minWidth: 0, fontSize: 16, lineHeight: 23, fontWeight: '700' },
+  largeTextCardLabel: { fontSize: 15, lineHeight: 23 },
+  chevron: { flexShrink: 0 },
   settingsList: {
     paddingHorizontal: spacing[3],
     borderRadius: radius.card,
@@ -315,16 +302,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
   },
   profileRow: {
-    minHeight: 62,
+    minHeight: 60,
+    paddingVertical: spacing[2],
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing[4],
+    gap: spacing[3],
   },
   rowDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
-  rowLabel: { flex: 1, fontSize: 17, lineHeight: 24, fontWeight: '700' },
+  rowLabel: { flex: 1, minWidth: 0, fontSize: 16, lineHeight: 23, fontWeight: '600' },
   signOut: {
-    minHeight: control.height + 8,
-    borderWidth: 1.5,
+    minHeight: control.height,
+    borderWidth: 1,
     borderColor: colors.primary,
     borderRadius: radius.control,
     flexDirection: 'row',
@@ -333,6 +321,6 @@ const styles = StyleSheet.create({
     gap: spacing[3],
     backgroundColor: colors.card,
   },
-  signOutLabel: { fontSize: 18, lineHeight: 26, fontWeight: '700' },
+  signOutLabel: { fontSize: 16, lineHeight: 24, fontWeight: '700' },
   pressed: { opacity: 0.78 },
 });

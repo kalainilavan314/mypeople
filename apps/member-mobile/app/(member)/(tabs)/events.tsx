@@ -6,6 +6,7 @@ import { spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText, Button, ChipRow, Screen, SurfaceCard, TextField, useApiQuery, useReloadOnFocus } from '@my-people/mobile-ui';
 
+import { PhotoBackdrop } from '@/components/PhotoBackdrop';
 import { QueryView } from '@/components/QueryView';
 import { EventRow } from '@/features/events/EventRow';
 import { api } from '@/lib/api';
@@ -41,6 +42,7 @@ export default function EventsScreen() {
       subtitle={t('m.events.subtitle')}
       edges={[]}
       maxContentWidth={720}
+      backdrop={<PhotoBackdrop />}
       onRefresh={events.reload}
       refreshing={events.loading && events.data !== undefined}>
       <TextField
@@ -67,7 +69,7 @@ export default function EventsScreen() {
         {(list) => (
           <View style={styles.list} accessibilityLiveRegion="polite">
             {list.length === 0 ? (
-              <SurfaceCard>
+              <SurfaceCard variant="glass">
                 <AppText step="secondary" tone="muted">
                   {filter === 'mine' ? t('m.events.emptyMine') : t('m.events.empty')}
                 </AppText>

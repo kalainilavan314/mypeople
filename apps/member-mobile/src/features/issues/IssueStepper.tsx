@@ -3,7 +3,7 @@ import type { IssueStatus, IssueStep } from '@my-people/api-client';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, spacing } from '@my-people/design-tokens/mobile';
+import { colors, iconSize, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, formatDate, useLanguage } from '@my-people/mobile-ui';
 
 import { MEMBER_STAGES } from './labels';
@@ -51,7 +51,7 @@ export function IssueStepper({ steps, stage, status }: Props) {
             <View style={styles.rail}>
               <View style={[styles.dot, done && styles.dotDone, current && styles.dotCurrent, stopped && styles.dotStopped]}>
                 {done || stopped ? (
-                  <Ionicons name={stopped ? 'close' : 'checkmark'} size={16} color={colors.onPrimary} />
+                  <Ionicons name={stopped ? 'close' : 'checkmark'} size={iconSize.status} color={colors.onPrimary} />
                 ) : (
                   <AppText step="label" tone={current ? 'inverse' : 'muted'}>
                     {number}

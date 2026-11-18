@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors } from '@my-people/design-tokens/mobile';
+import { colors, iconSize } from '@my-people/design-tokens/mobile';
 
 /**
  * Leaves the Staff section for the member screens. The section is one screen on top of the
@@ -24,7 +24,7 @@ export function LeaveStaffButton() {
       accessibilityLabel={t('s.common.backToApp')}
       hitSlop={8}
       style={styles.button}>
-      <Ionicons name="arrow-back" size={24} color={colors.text} />
+      <Ionicons name="chevron-back" size={iconSize.header} color={colors.text} />
     </Pressable>
   );
 }

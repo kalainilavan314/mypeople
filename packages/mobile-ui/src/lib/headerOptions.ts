@@ -1,5 +1,5 @@
 import { colors, comfortableTypeScale, typeScale } from '@my-people/design-tokens/mobile';
-import { fontFamilyFor, type TypographyScale } from '../fonts';
+import { fontFamilyFor, tamilSize, type TypographyScale } from '../fonts';
 
 /** Header styling for the stacks: quiet page chrome with one brand-coloured affordance. */
 export function headerOptions(language: string, scale: TypographyScale = 'default') {
@@ -11,7 +11,7 @@ export function headerOptions(language: string, scale: TypographyScale = 'defaul
     headerTitleAlign: 'center' as const,
     headerTitleStyle: {
       fontFamily: fontFamilyFor(language, title.weight),
-      fontSize: language === 'ta' ? Math.min(17, title.size) : title.size,
+      fontSize: language === 'ta' ? tamilSize(title.size) : title.size,
       color: colors.text,
     },
     headerBackButtonDisplayMode: 'minimal' as const,

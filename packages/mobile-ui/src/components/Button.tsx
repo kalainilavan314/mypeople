@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ComponentProps } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText } from './AppText';
 
@@ -37,7 +37,7 @@ export function Button({ label, onPress, variant = 'primary', busy = false, busy
   const inactive = disabled || busy;
   const iconColor = ICON_COLOR[fill.text];
   const accessibleName = busy && busyLabel ? busyLabel : label;
-  const glyph = busy ? <ActivityIndicator size="small" color={iconColor} /> : icon ? <Ionicons name={icon} size={20} color={iconColor} /> : null;
+  const glyph = busy ? <ActivityIndicator size="small" color={iconColor} /> : icon ? <Ionicons name={icon} size={iconSize.row} color={iconColor} /> : null;
 
   return (
     <Pressable

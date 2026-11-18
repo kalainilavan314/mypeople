@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText } from '@my-people/mobile-ui';
 
@@ -37,7 +37,7 @@ export function FeatureTile({ feature, divided = false }: { feature: Feature; di
       style={({ pressed }) => [styles.row, divided && styles.divided, pressed && styles.pressed]}>
       <Ionicons
         name={feature.available ? (FEATURE_ICONS[feature.key] ?? 'ellipse-outline') : 'lock-closed-outline'}
-        size={20}
+        size={iconSize.row}
         color={opens ? colors.textSecondary : colors.textMuted}
       />
       <View style={styles.copy}>
@@ -50,7 +50,7 @@ export function FeatureTile({ feature, divided = false }: { feature: Feature; di
           </AppText>
         ) : null}
       </View>
-      {opens ? <Ionicons name="chevron-forward" size={18} color={colors.textMuted} /> : null}
+      {opens ? <Ionicons name="chevron-forward" size={iconSize.chevron} color={colors.textMuted} /> : null}
     </Pressable>
   );
 }

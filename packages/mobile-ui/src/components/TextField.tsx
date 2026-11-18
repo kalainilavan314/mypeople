@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
 import { Platform, Pressable, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 import { useTextScale } from '../display/DisplayPreferences';
 import { scaledTextStyle } from '../fonts';
 
@@ -81,7 +81,7 @@ export function TextField({ label, hint, error, secret = false, optional = false
             aria-label={hidden ? text.showPassword : text.hidePassword}
             hitSlop={8}
             style={styles.reveal}>
-            <Ionicons name={hidden ? 'eye-outline' : 'eye-off-outline'} size={20} color={colors.textMuted} />
+            <Ionicons name={hidden ? 'eye-outline' : 'eye-off-outline'} size={iconSize.row} color={colors.textMuted} />
           </Pressable>
         ) : null}
       </View>

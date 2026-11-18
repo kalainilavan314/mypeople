@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { colors, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 
 import { AppText } from '@my-people/mobile-ui';
 
@@ -20,7 +20,7 @@ export function StatusNotice({ title, body, link, onPress }: Props) {
       accessibilityRole="link"
       accessibilityLabel={`${title}. ${body} ${link}`}
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
-      <Ionicons name="information-circle-outline" size={24} color={colors.warningText} />
+      <Ionicons name="information-circle-outline" size={iconSize.action} color={colors.warningText} />
       <View style={styles.text}>
         <AppText step="card" weight={400}>
           {title}
@@ -32,7 +32,7 @@ export function StatusNotice({ title, body, link, onPress }: Props) {
           {link}
         </AppText>
       </View>
-      <Ionicons name="chevron-forward" size={18} color={colors.warningText} />
+      <Ionicons name="chevron-forward" size={iconSize.chevron} color={colors.warningText} />
     </Pressable>
   );
 }

@@ -36,7 +36,7 @@ export const CATEGORY_TINTS: Record<IssueCategory, Tint> = {
   road: 'sand',
   water: 'blue',
   waste: 'green',
-  electricity: 'amber',
+  electricity: 'brand',
   agriculture: 'green',
   environment: 'teal',
   public_facility: 'purple',

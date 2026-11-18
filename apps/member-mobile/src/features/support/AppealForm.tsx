@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, spacing } from '@my-people/design-tokens/mobile';
 import {
   AppText,
   Button,
@@ -70,7 +70,7 @@ export function AppealForm({ caseId, decisions, onSent }: { caseId: string; deci
               <Ionicons
                 accessible={false}
                 name={checked ? 'radio-button-on' : 'radio-button-off'}
-                size={24}
+                size={iconSize.action}
                 color={checked ? colors.primary : colors.controlBorder}
               />
               <AppText step="body" style={styles.flex}>

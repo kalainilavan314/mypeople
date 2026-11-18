@@ -3,7 +3,7 @@ import type { SupportHome } from '@my-people/api-client';
 import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, spacing } from '@my-people/design-tokens/mobile';
 import { AppText, SurfaceCard, useLocalized } from '@my-people/mobile-ui';
 
 type Contact = SupportHome['emergencyContacts'][number];
@@ -18,7 +18,7 @@ export function EmergencyNumbers({ contacts, lead }: { contacts: Contact[]; lead
   return (
     <SurfaceCard style={styles.card}>
       <View style={styles.titleRow}>
-        <Ionicons accessible={false} name="call-outline" size={22} color={colors.error} />
+        <Ionicons accessible={false} name="call-outline" size={iconSize.row} color={colors.error} />
         <AppText step="section" accessibilityRole="header" style={styles.flex}>
           {t('m.support.emergencyTitle')}
         </AppText>
@@ -41,7 +41,7 @@ export function EmergencyNumbers({ contacts, lead }: { contacts: Contact[]; lead
             <AppText step="section" tone="primary" mono>
               {contact.number}
             </AppText>
-            <Ionicons accessible={false} name="call" size={20} color={colors.primary} />
+            <Ionicons accessible={false} name="call" size={iconSize.row} color={colors.primary} />
           </Pressable>
         );
       })}

@@ -5,8 +5,10 @@ import { colors, control, radius, spacing } from '@my-people/design-tokens/mobil
 
 type Props = {
   children: ReactNode;
-  /** A 4 px navy rule on the left, for the one next step on Home. */
+  /** A 4 px sage rule on the left, for the one next step on Home. */
   accent?: boolean;
+  /** "glass" is the frosted card for the photographic background of Home, Events and Gallery. */
+  variant?: 'plain' | 'glass';
   /** Makes the whole card one pressable; it must then hold no other buttons. */
   onPress?: () => void;
   accessibilityLabel?: string;
@@ -14,9 +16,17 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-/** Flat white card, separated from the page by one quiet border. */
-export function SurfaceCard({ children, accent = false, onPress, accessibilityLabel, accessibilityHint, style }: Props) {
-  const cardStyle = [styles.card, accent && styles.accent, style];
+/** White card with soft corners, separated from the page by one quiet border and a faint shadow. */
+export function SurfaceCard({
+  children,
+  accent = false,
+  variant = 'plain',
+  onPress,
+  accessibilityLabel,
+  accessibilityHint,
+  style,
+}: Props) {
+  const cardStyle = [styles.card, variant === 'glass' && styles.glass, accent && styles.accent, style];
   // Non-interactive cards must NOT have accessible={true}, so child elements remain directly accessible.
   if (!onPress) return <View style={cardStyle}>{children}</View>;
   return (
@@ -41,7 +51,12 @@ const styles = StyleSheet.create({
     borderRadius: radius.card,
     padding: spacing[4],
     gap: spacing[2],
+    shadowColor: colors.shadow,
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
   },
+  glass: { backgroundColor: colors.glass, borderColor: colors.glassBorder },
   accent: { borderLeftWidth: 4, borderLeftColor: colors.primary },
   pressed: { backgroundColor: colors.surfaceVariant },
 });

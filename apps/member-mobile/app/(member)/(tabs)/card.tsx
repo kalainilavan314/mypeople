@@ -5,19 +5,20 @@ import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
   Button,
-  formatDateTime,
-  Notice,
-  Screen,
-  SurfaceCard,
   clearOfflineCard,
+  formatDateTime,
+  IconTile,
+  Notice,
+  type OfflineCardPreview,
   readOfflineCard,
   saveOfflineCard,
-  type OfflineCardPreview,
+  Screen,
+  SurfaceCard,
   useApiQuery,
   useLanguage,
   useMember,
@@ -100,9 +101,9 @@ function CardAction({ label, icon, divided = false, onPress }: {
       accessibilityRole="button"
       accessibilityLabel={label}
       style={({ pressed }) => [styles.action, divided && styles.actionDivider, pressed && styles.actionPressed]}>
-      <Ionicons name={icon} size={20} color={colors.textSecondary} />
+      <IconTile icon={icon} tint="brand" size={40} />
       <AppText step="label" style={styles.actionLabel}>{label}</AppText>
-      <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+      <Ionicons name="chevron-forward" size={iconSize.chevron} color={colors.controlBorder} style={styles.chevron} />
     </Pressable>
   );
 }
@@ -180,7 +181,7 @@ function Unavailable({ card }: { card: MemberCard }) {
   return (
     <View style={styles.unavailable}>
       <View style={styles.badge} accessibilityElementsHidden importantForAccessibility="no">
-        <Ionicons name="card-outline" size={40} color={colors.warningText} />
+        <Ionicons name="id-card-outline" size={iconSize.state} color={colors.warningText} />
       </View>
       <AppText step="title" style={styles.center} accessibilityRole="header">
         {t('m.card.notActiveTitle')}
@@ -191,7 +192,7 @@ function Unavailable({ card }: { card: MemberCard }) {
       <SurfaceCard style={styles.steps}>
         {steps.map((step) => (
           <View key={step.label} style={styles.step} accessible accessibilityLabel={`${step.label}: ${step.state}`}>
-            <Ionicons name={step.done ? 'checkmark-circle' : 'ellipse-outline'} size={24} color={step.done ? colors.success : colors.inputBorder} />
+            <Ionicons name={step.done ? 'checkmark-circle' : 'ellipse-outline'} size={iconSize.action} color={step.done ? colors.success : colors.inputBorder} />
             <View style={styles.flex}>
               <AppText step="card" weight={400}>{step.label}</AppText>
               <AppText step="secondary" tone="muted">{step.state}</AppText>
@@ -231,5 +232,6 @@ const styles = StyleSheet.create({
   action: { minHeight: control.touchMin + spacing[3], flexDirection: 'row', alignItems: 'center', gap: spacing[3], padding: spacing[3] },
   actionDivider: { borderTopWidth: 1, borderTopColor: colors.divider },
   actionPressed: { backgroundColor: colors.surfaceVariant },
-  actionLabel: { flex: 1 },
+  actionLabel: { flex: 1, minWidth: 0 },
+  chevron: { flexShrink: 0 },
 });

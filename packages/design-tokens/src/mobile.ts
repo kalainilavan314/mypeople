@@ -1,12 +1,11 @@
 // Design tokens for the Expo app, members and the Staff section (import '@my-people/design-tokens/mobile').
 //
-// Puvi's production UI (12 November 2026) centralised one brand theme: brand red for authority and
-// primary actions, yellow for the chosen state, gold as a scarce accent, a warm cream page, flat white
-// cards and the PWA's sizes. The owner chose it over the earlier reference-recording look, so the
-// colours, spacing, corners, control heights and type sizes here come from the root entry
-// ('@my-people/design-tokens'), which the PWA and the dashboard use too. This file only adds what
-// the app needs on top: link and switch colours, softer warning and error edges, the tinted icon
-// tiles, and the names of a few extra sizes the app's screens use.
+// On 18 November 2026 the owner chose the sage design from the 174-screen design package for the
+// app: a soft sage-and-white page, frosted white cards, deep sage for primary actions and the chosen
+// state, and one outlined icon set at fixed sizes. It replaces Puvi's red, yellow and gold theme of
+// 12 November in the app only; the PWA and the dashboard keep the root entry's colours, and so do
+// the party's official marks (the TMK logo, flag and the membership card, which import the root
+// entry directly). Spacing, control heights and type sizes still come from the root entry.
 //
 // Fonts are locked (CLAUDE.md): on 11 November 2026 the owner asked for Outfit for English and UI
 // text in the Expo app, so it differs from the root entry's Inter. Tamil stays Noto Sans Tamil, which
@@ -14,35 +13,99 @@
 // surfaces they sit on (test/mobile.test.ts).
 import * as brand from '@my-people/design-tokens';
 
+const sage = {
+  deep: '#365548',
+  mid: '#426a54',
+  light: '#7c9a88',
+  ink: '#1d2925',
+  pale: '#e5efe6',
+  chosen: '#dce9df',
+} as const;
+
 export const colors = {
   ...brand.colors,
-  // Links and switches take the brand colour; it reads at 6:1 on the cream page and white cards.
-  link: brand.colors.primary,
-  switchOn: brand.colors.primary,
+  // Deep sage carries primary actions, links, switches and the chosen tab; white reads at 8:1 on it.
+  primary: sage.deep,
+  primaryDark: '#273e32',
+  primaryMid: sage.mid,
+  primaryLight: sage.light,
+  primaryContainer: sage.pale,
+  onPrimary: '#ffffff',
+  // The chosen state of chips, toggles and answer scales: a pale sage fill with a sage edge.
+  brandYellow: sage.chosen,
+  brandGold: sage.light,
+  onBrandAccent: sage.ink,
+  page: '#f6f8f5',
+  card: '#ffffff',
+  surfaceVariant: '#eef3ee',
+  text: sage.ink,
+  textSecondary: '#46524b',
+  textMuted: '#5c6861',
+  border: '#dfe7de',
+  inputBorder: '#b7c4b9',
+  divider: '#ebf0ea',
+  controlBorder: '#6b7a70',
+  focusRing: sage.deep,
+  link: sage.deep,
+  switchOn: sage.deep,
   warningBorder: '#f6e4bb',
   warningPill: '#ffe0a0',
   errorBorder: '#f3c9cf',
+  /** Frosted card over the soft photographic background of Home, Events and Gallery. */
+  glass: 'rgba(255, 255, 255, 0.8)',
+  glassBorder: 'rgba(255, 255, 255, 0.92)',
+  /** Shadow colour for the few raised surfaces (tab bar, frosted cards); kept very light. */
+  shadow: '#203c30',
 } as const;
 
-/** Pale tile behind an icon, with the icon's colour (quick actions, list rows, notices). */
+/**
+ * Pale tile behind an icon, with the icon's colour (quick actions, list rows, notices). The design
+ * uses one calm sage tile for every function, so the old colour names all draw it; only rose
+ * (sign-out, danger) and amber (warnings) keep a meaning of their own.
+ */
+const sageTile = { background: '#e8efe9', icon: sage.deep } as const;
 export const tints = {
-  blue: { background: '#e5e9f6', icon: '#3b5bb5' },
-  green: { background: '#e5efe9', icon: '#2f7d4f' },
-  sand: { background: '#f1ebe2', icon: '#a0651a' },
-  teal: { background: '#e3f3f1', icon: '#17806f' },
-  purple: { background: '#eee9f9', icon: '#6f44c4' },
-  rose: { background: '#fbe7e8', icon: '#c2414b' },
-  amber: { background: '#fdf1dc', icon: '#b26a00' },
-  brand: { background: brand.colors.primaryContainer, icon: brand.colors.primary },
+  blue: sageTile,
+  green: sageTile,
+  sand: sageTile,
+  teal: sageTile,
+  purple: sageTile,
+  rose: { background: '#fbe9e9', icon: '#b42318' },
+  amber: { background: '#fdf1dc', icon: '#9a5b00' },
+  brand: sageTile,
 } as const;
 
 export type Tint = keyof typeof tints;
 
+/**
+ * Icon sizes in pixels, one per place, so the same function looks the same everywhere. Ionicons'
+ * outline set is the app's one icon library (about a 1.8 px stroke at 24 px).
+ */
+export const iconSize = {
+  /** Bottom tab bar. */
+  tab: 24,
+  /** Profile, notifications and back in the top bar. */
+  header: 22,
+  /** Quick-action tiles and notices (on a 48 px tile). */
+  action: 24,
+  /** Leading icon of a list row (on a 40 px tile) and of a card heading. */
+  row: 20,
+  /** A trailing chevron or a small inline icon beside text. */
+  chevron: 18,
+  /** Status marks inside tags and beside short labels. */
+  status: 16,
+  /** The one large icon of an empty, success or error state. */
+  state: 40,
+} as const;
+
+/** Square tiles that hold an icon: 48 for quick actions and notices, 40 for list rows, 40 for header buttons. */
+export const iconTile = { action: 48, row: 40, header: 40 } as const;
+
 /** Spacing on the PWA's 4-point grid; the screen gutter is 16. */
 export const spacing = { ...brand.spacing, 5: 20 } as const;
 
-/** Corner radii: tags 4, inputs and buttons 8, cards and tiles 12, sheets 16. */
-export const radius = { ...brand.radius, input: brand.radius.control, tile: brand.radius.card, sheet: 16 } as const;
+/** Corner radii: tags 4, icon tiles 12, inputs and buttons 14, cards 18, sheets 22 (the sage design's soft corners). */
+export const radius = { ...brand.radius, control: 14, card: 18, input: 14, tile: 12, sheet: 22 } as const;
 
 /** Heights in pixels. Every touch target is at least 44 × 44; main buttons and inputs are 48. */
 export const control = { ...brand.control, input: brand.control.height, tabBar: 56 } as const;

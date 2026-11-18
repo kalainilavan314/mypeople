@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { colors, control, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, spacing } from '@my-people/design-tokens/mobile';
 import { AppText } from '@my-people/mobile-ui';
 
 /** A heading that opens and closes the long text under it, such as a transcript. */
@@ -20,7 +20,7 @@ export function Collapsible({ title, children }: { title: string; children: Reac
         <AppText step="card" style={styles.flex}>
           {title}
         </AppText>
-        <Ionicons accessible={false} name={open ? 'chevron-up' : 'chevron-down'} size={20} color={colors.textSecondary} />
+        <Ionicons accessible={false} name={open ? 'chevron-up' : 'chevron-down'} size={iconSize.row} color={colors.textSecondary} />
       </Pressable>
       {open ? children : null}
     </View>

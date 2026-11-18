@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
+import { colors, control, iconSize, radius, spacing } from '@my-people/design-tokens/mobile';
 import { AppText } from '@my-people/mobile-ui';
 
 type Props = {
@@ -23,7 +23,7 @@ export function PhotoThumb({ uri, number, uploaded = false, onRemove }: Props) {
         <Image source={{ uri }} style={styles.image} resizeMode="cover" accessibilityLabel={label} />
       ) : (
         <View style={styles.placeholder} accessible accessibilityRole="image" accessibilityLabel={label}>
-          <Ionicons name="image-outline" size={28} color={colors.textMuted} />
+          <Ionicons name="image-outline" size={iconSize.action} color={colors.textMuted} />
         </View>
       )}
       {uploaded ? (
@@ -38,7 +38,7 @@ export function PhotoThumb({ uri, number, uploaded = false, onRemove }: Props) {
           accessibilityLabel={t('m.issues.removePhoto', { number })}
           hitSlop={4}
           style={styles.remove}>
-          <Ionicons name="close" size={18} color={colors.onPrimary} />
+          <Ionicons name="close" size={iconSize.chevron} color={colors.onPrimary} />
         </Pressable>
       ) : null}
     </View>

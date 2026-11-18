@@ -5,7 +5,9 @@ import { Image, Pressable, StyleSheet, Text, View, type TextStyle } from 'react-
 import Svg, { G, Path, Rect } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 
-import { colors } from '@my-people/design-tokens/mobile';
+// The card is the party's official credential (the owner's design of 17 November 2026), so it keeps
+// TMK's red and gold from the root entry while the rest of the app uses the sage theme.
+import { colors } from '@my-people/design-tokens';
 import { AuthorizedImage, QrCode, fontFamilyFor, formatDate, monoFontFamily, useLanguage } from '@my-people/mobile-ui';
 
 import { api } from '@/lib/api';

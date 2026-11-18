@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors, spacing } from '@my-people/design-tokens/mobile';
+import { colors, iconSize, spacing } from '@my-people/design-tokens/mobile';
 
 import {
   AppText,
@@ -30,6 +30,7 @@ export function EventRow({ event }: { event: EventSummary }) {
   else if (event.placesLeft === 0) status = { tone: 'neutral', label: t('m.events.full') };
   return (
     <SurfaceCard
+      variant="glass"
       onPress={() => router.push({ pathname: '/events/[id]', params: { id: event.id } })}
       accessibilityLabel={title}>
       <View style={styles.row}>
@@ -44,7 +45,7 @@ export function EventRow({ event }: { event: EventSummary }) {
           </AppText>
           {status ? <StatusTag tone={status.tone} label={status.label} /> : null}
         </View>
-        <Ionicons name="chevron-forward" size={18} color={colors.textMuted} style={styles.chevron} />
+        <Ionicons name="chevron-forward" size={iconSize.chevron} color={colors.textMuted} style={styles.chevron} />
       </View>
     </SurfaceCard>
   );
@@ -52,6 +53,6 @@ export function EventRow({ event }: { event: EventSummary }) {
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: spacing[3] },
-  text: { flex: 1, gap: 2 },
-  chevron: { alignSelf: 'center' },
+  text: { flex: 1, minWidth: 0, gap: 2 },
+  chevron: { alignSelf: 'center', flexShrink: 0 },
 });
