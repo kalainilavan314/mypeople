@@ -58,15 +58,17 @@ export default function RenewalScreen() {
       <FeatureQueryView feature="renewal" query={renewal}>
         {(data) => <RenewalBody data={data} onChanged={renewal.reload} />}
       </FeatureQueryView>
-      <SurfaceCard style={styles.rowCard}>
-        <MenuRow
-          first
-          icon="ribbon-outline"
-          label={t('m.renewal.certificatesRow')}
-          hint={t('m.renewal.certificatesHint')}
-          onPress={() => router.push('/renewal/certificates' as Href)}
-        />
-      </SurfaceCard>
+      {renewal.data ? (
+        <SurfaceCard style={styles.rowCard}>
+          <MenuRow
+            first
+            icon="ribbon-outline"
+            label={t('m.renewal.certificatesRow')}
+            hint={t('m.renewal.certificatesHint')}
+            onPress={() => router.push('/renewal/certificates' as Href)}
+          />
+        </SurfaceCard>
+      ) : null}
     </Screen>
   );
 }

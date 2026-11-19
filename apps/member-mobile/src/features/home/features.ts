@@ -53,7 +53,7 @@ export const FEATURE_ICONS: Record<string, IconName> = {
   help: 'help-buoy-outline',
   promises: 'flag-outline',
   support: 'heart-outline',
-  renewal: 'ribbon-outline',
+  renewal: 'refresh-circle-outline',
 };
 
 /** The tile of each feature; in the sage design (18 November 2026) every tile is the same calm sage. */
