@@ -7,10 +7,12 @@ permission is the area of the assignment it is in, and each tier has one
 kind of area (TIER_AREA_LEVEL).
 
 Not grantable through staff assignments, and so not listed here:
-PRM-01, PRM-32 and PRM-56 (a member's own record), the event-scoped
+PRM-01 and PRM-32 (a member's own record), the event-scoped
 PRM-17 for members (OD-12), PRM-50 (committee scope), PRM-55 (partner
 organisations), and PRM-47 and PRM-57, which the BRD gives platform scope
-regardless of tier. They arrive with their own modules.
+regardless of tier. They arrive with their own modules. PRM-56
+(appointment.manage_own) is listed: it is granted to staff holding a public
+role, and its scope is the person's own calendar, whatever the area.
 """
 
 from typing import Literal
@@ -95,6 +97,14 @@ MATRIX: dict[str, dict[Tier, Grant]] = {
     "certificate.issue_revoke": {"3B": E, "5": D},  # PRM-52
     "disaster.relay": {"3B": E, "5": E},  # PRM-53
     "relief.logistics": {"2B": E, "3B": E},  # PRM-54
+    # Phase 3, Meet Your Representative (APT): PRM-56 reaches only the person's own calendar.
+    "appointment.manage_own": {"1": E, "2A": E, "2B": E, "3A": E, "3B": E, "4": E, "5": E},  # PRM-56
+    # Not in the BRD matrix [ASSUMPTION]: D29 says Tier 5 publishes representative profiles and slots.
+    "appointment.profile.manage": {"4": E, "5": D},
+    # Not in the BRD matrix [ASSUMPTION]: FR-LIV-002 needs a content editor role (FR-ADM-013) and
+    # FR-LIV-003 a content review; like PRM-47 they reach the whole guide, whatever the tier's area.
+    "guide.edit": {"3B": E, "4": E, "5": E},
+    "guide.review": {"4": E, "5": D},
     # Not in the BRD matrix [ASSUMPTION]: FR-PROF-018 and 019 route data-subject requests to
     # the DPO without naming a permission; the DPO's account holds it as an explicit Tier 5 grant.
     "privacy.requests.handle": {"5": E},

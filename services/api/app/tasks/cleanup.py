@@ -1,5 +1,6 @@
 """Periodic maintenance and cleanup jobs, run once:
-- clean up expired and consumed/cancelled assignment previews.
+- clean up expired and consumed/cancelled assignment previews;
+- delete appointments with a representative two years after the meeting (ENT-58).
 
 Run from system timer or background worker:
     python -m app.tasks.cleanup
@@ -13,11 +14,13 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings
 from app.db.session import create_database_engine
 from app.modules.access import service as access_service
+from app.modules.events.appointments import service as appointments
 
 
 def run_once(db: Session, now: datetime | None = None) -> dict[str, int]:
     cleaned_previews = access_service.cleanup_previews(db)
-    return {"cleanedAssignmentPreviews": cleaned_previews}
+    purged_appointments = appointments.purge(db, now or datetime.now(UTC))
+    return {"cleanedAssignmentPreviews": cleaned_previews, "appointmentsPurged": purged_appointments}
 
 
 def main() -> None:

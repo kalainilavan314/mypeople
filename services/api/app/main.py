@@ -25,6 +25,7 @@ from app.modules.access.reviews import router as access_reviews
 from app.modules.audit import router as audit
 from app.modules.content.gallery import router as gallery
 from app.modules.content.gallery.dependencies import build_media_store
+from app.modules.content.guide import router as livelihood_guide
 from app.modules.community.cases import router as community_cases
 from app.modules.community.factchecks import router as community_factchecks
 from app.modules.community.ideas import router as community_ideas
@@ -59,6 +60,7 @@ from app.modules.analytics import router as analytics
 from app.modules.assistance import router as assistance
 from app.modules.auth import router as auth
 from app.modules.events.offline import router as events_offline
+from app.modules.events.appointments import router as appointments
 from app.modules.identity.appeals import router as identity_appeals
 from app.modules.identity.documents import router as identity_documents
 from app.modules.identity.documents.dependencies import build_vault
@@ -143,6 +145,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(field_visits.router)
     app.include_router(election_roster.router)
     app.include_router(community_factchecks.router)
+    app.include_router(livelihood_guide.router)
+    app.include_router(appointments.router)
     app.include_router(home.router)
     app.include_router(profile.router)
     app.include_router(area_changes.router)

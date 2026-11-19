@@ -122,6 +122,11 @@ _ACTIVITY = {
                COALESCE(p.completed_at, p.updated_at) AS at, c.id AS target_id
         FROM community.course_progress p JOIN community.course c ON c.id = p.course_id
         WHERE p.member_id = :member""",
+    "appointment": """
+        SELECT 'appointment' AS kind, a.appointment_ref AS reference, r.role_en AS title, a.state,
+               COALESCE(a.follow_up_at, a.cancelled_at, a.booked_at) AS at, a.id AS target_id
+        FROM events.appointment a JOIN events.representative r ON r.id = a.representative_id
+        WHERE a.member_id = :member""",
 }
 
 

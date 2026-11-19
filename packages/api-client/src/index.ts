@@ -311,6 +311,39 @@ export type ManagedSurveyFile = Schemas['ManagedSurveyFileOut'];
 export type MisinfoReport = Schemas['MisinfoReportOut'];
 export type StaffMisinfoReport = Schemas['StaffMisinfoReportOut'];
 export type MisinfoOutcome = NonNullable<Schemas['MisinfoReportOut']['outcome']>;
+// Welfare, jobs and livelihood guide (M39, M40, D28).
+export type GuideEntrySummary = Schemas['GuideEntrySummaryOut'];
+export type GuideEntry = Schemas['GuideEntryOut'];
+export type GuideCategory = Schemas['GuideEntrySummaryOut']['category'];
+export type GuideReport = Schemas['GuideReportOut'];
+export type GuideReportReason = Schemas['GuideReportIn']['reason'];
+export type GuideEntryInput = Schemas['GuideEntryIn'];
+export type GuideEntryManaged = Schemas['GuideEntryManagedOut'];
+export type GuideEntryManagedDetail = Schemas['GuideEntryDetailManagedOut'];
+export type GuideEntryState = Schemas['GuideEntryManagedOut']['state'];
+export type GuideManagedReport = Schemas['GuideManagedReportOut'];
+// Meet Your Representative (M41, M42, S17, D29).
+export type RepresentativeSummary = Schemas['RepresentativeSummaryOut'];
+export type RepresentativeDetail = Schemas['RepresentativeDetailOut'];
+export type AppointmentSlot = Schemas['AppointmentSlotOut'];
+export type Appointment = Schemas['AppointmentOut'];
+export type AppointmentState = Schemas['AppointmentOut']['state'];
+export type AppointmentNeed = Schemas['AppointmentOut']['needs'][number];
+export type AppointmentContactPreference = Schemas['AppointmentOut']['contactPreference'];
+export type AppointmentBookInput = Schemas['AppointmentBookIn'];
+export type AppointmentCalendar = Schemas['CalendarOut'];
+export type AppointmentCalendarSlot = Schemas['CalendarSlotOut'];
+export type AppointmentBooking = Schemas['BookingOut'];
+export type RepresentativeOwnProfile = Schemas['OwnProfileOut'];
+export type RepresentativeOwnProfileInput = Schemas['OwnProfileIn'];
+export type AppointmentSlotSeriesInput = Schemas['SlotSeriesIn'];
+export type AppointmentFollowUpInput = Schemas['AppointmentFollowUpIn'];
+export type RepresentativeProfileSlot = Schemas['ProfileSlotOut'];
+export type RepresentativeManaged = Schemas['RepresentativeManagedOut'];
+export type RepresentativeManagedDetail = Schemas['RepresentativeManagedDetailOut'];
+export type RepresentativeProfileInput = Schemas['RepresentativeProfileIn'];
+export type RepresentativeCreateInput = Schemas['RepresentativeCreateIn'];
+export type RepresentativeProfileState = Schemas['RepresentativeManagedOut']['state'];
 export type CaseListFilters = {
   stage?: CaseStage[];
   mine?: boolean;
@@ -1798,6 +1831,127 @@ export function createApiClient({
         'POST',
         `/v1/fact-checks/manage/${encodeURIComponent(reportId)}/appeal-decision`,
         { change, outcome, reason },
+      ),
+    // Livelihood guide (M39, M40, D28). 404 "feature_unavailable" while livelihood_guide is off.
+    searchGuide: (filters: { q?: string; category?: GuideCategory } = {}) => {
+      const q = new URLSearchParams();
+      if (filters.q) q.set('q', filters.q);
+      if (filters.category) q.set('category', filters.category);
+      const qs = q.toString();
+      return request<GuideEntrySummary[]>('GET', `/v1/guide${qs ? `?${qs}` : ''}`);
+    },
+    getGuideEntry: (entryId: string) => request<GuideEntry>('GET', `/v1/guide/${encodeURIComponent(entryId)}`),
+    /** One open report per member and entry ("already_reported"). */
+    reportGuideEntry: (entryId: string, reason: GuideReportReason, note?: string) =>
+      request<GuideReport>('POST', `/v1/guide/${encodeURIComponent(entryId)}/reports`, { reason, note: note || null }),
+    listManagedGuideEntries: (filters: { state?: GuideEntryState; expired?: boolean; q?: string } = {}) => {
+      const q = new URLSearchParams();
+      if (filters.state) q.set('state', filters.state);
+      if (filters.expired) q.set('expired', 'true');
+      if (filters.q) q.set('q', filters.q);
+      const qs = q.toString();
+      return request<GuideEntryManaged[]>('GET', `/v1/guide/manage${qs ? `?${qs}` : ''}`);
+    },
+    getManagedGuideEntry: (entryId: string) =>
+      request<GuideEntryManagedDetail>('GET', `/v1/guide/manage/${encodeURIComponent(entryId)}`),
+    draftGuideEntry: (input: GuideEntryInput) => request<GuideEntryManagedDetail>('POST', '/v1/guide/manage', input),
+    /** Saving a published entry takes it off the guide until it is reviewed again. */
+    saveGuideEntry: (entryId: string, input: GuideEntryInput) =>
+      request<GuideEntryManagedDetail>('PUT', `/v1/guide/manage/${encodeURIComponent(entryId)}`, input),
+    requestGuideReview: (entryId: string) =>
+      request<GuideEntryManagedDetail>('POST', `/v1/guide/manage/${encodeURIComponent(entryId)}/request-review`),
+    /** A second person: 403 "own_entry" for the one who asked or last changed it. */
+    reviewGuideEntry: (entryId: string, approve: boolean, note?: string) =>
+      request<GuideEntryManagedDetail>('POST', `/v1/guide/manage/${encodeURIComponent(entryId)}/review`, {
+        approve,
+        note: note || null,
+      }),
+    markGuideEntryVerified: (entryId: string) =>
+      request<GuideEntryManagedDetail>('POST', `/v1/guide/manage/${encodeURIComponent(entryId)}/verified`),
+    withdrawGuideEntry: (entryId: string, reason: string) =>
+      request<GuideEntryManagedDetail>('POST', `/v1/guide/manage/${encodeURIComponent(entryId)}/withdraw`, { reason }),
+    listGuideReports: (state: 'open' | 'fixed' | 'dismissed' = 'open') =>
+      request<GuideManagedReport[]>('GET', `/v1/guide/manage/reports?state=${state}`),
+    resolveGuideReport: (reportId: string, outcome: 'fixed' | 'dismissed', note?: string) =>
+      request<GuideManagedReport>('POST', `/v1/guide/manage/reports/${encodeURIComponent(reportId)}/resolution`, {
+        outcome,
+        note: note || null,
+      }),
+    // Meet Your Representative (M41, M42, S17, D29). 404 "feature_unavailable" while representatives is off.
+    listRepresentatives: () => request<RepresentativeSummary[]>('GET', '/v1/appointments/representatives'),
+    getRepresentative: (representativeId: string) =>
+      request<RepresentativeDetail>('GET', `/v1/appointments/representatives/${encodeURIComponent(representativeId)}`),
+    listMyAppointments: () => request<Appointment[]>('GET', '/v1/appointments/mine'),
+    getMyAppointment: (appointmentId: string) =>
+      request<Appointment>('GET', `/v1/appointments/mine/${encodeURIComponent(appointmentId)}`),
+    /** Without caseLinkConsent no case reference is stored. */
+    bookAppointment: (input: AppointmentBookInput) => request<Appointment>('POST', '/v1/appointments', input),
+    cancelMyAppointment: (appointmentId: string, reason?: string) =>
+      request<Appointment>('POST', `/v1/appointments/mine/${encodeURIComponent(appointmentId)}/cancel`, {
+        reason: reason || null,
+      }),
+    rescheduleMyAppointment: (appointmentId: string, slotId: string) =>
+      request<Appointment>('POST', `/v1/appointments/mine/${encodeURIComponent(appointmentId)}/reschedule`, { slotId }),
+    getAppointmentCalendar: (filters: { from?: string; days?: number } = {}) => {
+      const q = new URLSearchParams();
+      if (filters.from) q.set('from', filters.from);
+      if (filters.days !== undefined) q.set('days', String(filters.days));
+      const qs = q.toString();
+      return request<AppointmentCalendar>('GET', `/v1/appointments/calendar${qs ? `?${qs}` : ''}`);
+    },
+    updateOwnRepresentativeProfile: (input: RepresentativeOwnProfileInput) =>
+      request<RepresentativeOwnProfile>('PUT', '/v1/appointments/calendar/profile', input),
+    approveOwnContacts: (approve: boolean) =>
+      request<RepresentativeOwnProfile>('POST', '/v1/appointments/calendar/contacts', { approve }),
+    addOwnAppointmentSlots: (input: AppointmentSlotSeriesInput) =>
+      request<RepresentativeProfileSlot[]>('POST', '/v1/appointments/calendar/slots', input),
+    withdrawOwnAppointmentSlot: (slotId: string, reason: string) =>
+      request<RepresentativeProfileSlot>('POST', `/v1/appointments/calendar/slots/${encodeURIComponent(slotId)}/withdraw`, {
+        reason,
+      }),
+    getAppointmentBooking: (appointmentId: string) =>
+      request<AppointmentBooking>('GET', `/v1/appointments/calendar/bookings/${encodeURIComponent(appointmentId)}`),
+    cancelAppointmentBooking: (appointmentId: string, reason: string) =>
+      request<AppointmentBooking>('POST', `/v1/appointments/calendar/bookings/${encodeURIComponent(appointmentId)}/cancel`, {
+        reason,
+      }),
+    recordAppointmentFollowUp: (appointmentId: string, input: AppointmentFollowUpInput) =>
+      request<AppointmentBooking>(
+        'POST',
+        `/v1/appointments/calendar/bookings/${encodeURIComponent(appointmentId)}/follow-up`,
+        input,
+      ),
+    listRepresentativeProfiles: (state?: RepresentativeProfileState) =>
+      request<RepresentativeManaged[]>('GET', `/v1/appointments/profiles${state ? `?state=${state}` : ''}`),
+    getRepresentativeProfile: (representativeId: string) =>
+      request<RepresentativeManagedDetail>('GET', `/v1/appointments/profiles/${encodeURIComponent(representativeId)}`),
+    createRepresentativeProfile: (input: RepresentativeCreateInput) =>
+      request<RepresentativeManagedDetail>('POST', '/v1/appointments/profiles', input),
+    /** Changing a contact route clears the person's approval. */
+    updateRepresentativeProfile: (representativeId: string, input: RepresentativeProfileInput) =>
+      request<RepresentativeManagedDetail>('PUT', `/v1/appointments/profiles/${encodeURIComponent(representativeId)}`, input),
+    publishRepresentativeProfile: (representativeId: string) =>
+      request<RepresentativeManagedDetail>(
+        'POST',
+        `/v1/appointments/profiles/${encodeURIComponent(representativeId)}/publish`,
+      ),
+    withdrawRepresentativeProfile: (representativeId: string, reason: string) =>
+      request<RepresentativeManagedDetail>(
+        'POST',
+        `/v1/appointments/profiles/${encodeURIComponent(representativeId)}/withdraw`,
+        { reason },
+      ),
+    addRepresentativeSlots: (representativeId: string, input: AppointmentSlotSeriesInput) =>
+      request<RepresentativeProfileSlot[]>(
+        'POST',
+        `/v1/appointments/profiles/${encodeURIComponent(representativeId)}/slots`,
+        input,
+      ),
+    withdrawRepresentativeSlot: (representativeId: string, slotId: string, reason: string) =>
+      request<RepresentativeProfileSlot>(
+        'POST',
+        `/v1/appointments/profiles/${encodeURIComponent(representativeId)}/slots/${encodeURIComponent(slotId)}/withdraw`,
+        { reason },
       ),
     // Community Finance endpoints (Milestone 1.4)
     getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),

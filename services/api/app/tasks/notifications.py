@@ -8,7 +8,8 @@ Jobs performed per cycle:
 2. Escalate overdue photo removal requests (> 18h) to Tier 5 reviewers.
 3. Alert the next tier once about each case stage past its time limit (FR-WEB-028), mark
    published promises past their due date Delayed (FR-PRM-009), and tell the publishers once when
-   a Delayed promise's 10 working days for an update pass without one.
+   a Delayed promise's 10 working days for an update pass without one; remind members of town
+   halls and of appointments with their representative (24 hours and 1 hour before, FR-APT-003).
 4. Dispatch pending push notifications respecting quiet hours and preferences.
 
 Concurrency & Safety:
@@ -36,6 +37,7 @@ from app.integrations.push import NoPush, PushSender, build_push
 from app.modules.community.issues import breaches as case_breaches
 from app.modules.community.promises import service as promises
 from app.modules.community.townhalls import service as townhalls
+from app.modules.events.appointments import service as appointments
 from app.modules.engagement.field import service as field_visits
 from app.modules.content.gallery import service as gallery
 from app.modules.messaging.broadcasts import service as broadcasts
@@ -62,6 +64,7 @@ def run_once(db: Session, push: PushSender, now: datetime | None = None) -> dict
     promises_delayed = promises.mark_delayed(db, moment)
     promise_updates_missed = promises.escalate_missed_updates(db, moment)
     townhall_reminders = townhalls.remind(db, moment)
+    appointment_reminders = appointments.remind(db, moment)
     field_visits_purged = field_visits.purge(db, moment)
     pushed = notifications.dispatch(db, push, moment)
     return {
@@ -71,6 +74,7 @@ def run_once(db: Session, push: PushSender, now: datetime | None = None) -> dict
         "promisesDelayed": promises_delayed,
         "promiseUpdatesMissed": promise_updates_missed,
         "townHallReminders": townhall_reminders,
+        "appointmentReminders": appointment_reminders,
         "fieldVisitsPurged": field_visits_purged,
         **asdict(pushed),
     }

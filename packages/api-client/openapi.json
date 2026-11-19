@@ -17220,6 +17220,2099 @@
         }
       }
     },
+    "/v1/guide": {
+      "get": {
+        "tags": [
+          "guide"
+        ],
+        "summary": "Search Guide",
+        "description": "M39: published entries that have not passed their end date (FR-LIV-001, 003).",
+        "operationId": "search_guide_v1_guide_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Words in either language",
+              "title": "Q"
+            },
+            "description": "Words in either language"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "assistance_programme",
+                    "scholarship",
+                    "job",
+                    "vocational_training",
+                    "agriculture",
+                    "fisheries",
+                    "enterprise_grant",
+                    "course",
+                    "public_service_contact"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GuideEntrySummaryOut"
+                  },
+                  "title": "Response Search Guide V1 Guide Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/guide/manage": {
+      "get": {
+        "tags": [
+          "guide"
+        ],
+        "summary": "List Managed",
+        "operationId": "list_managed_v1_guide_manage_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "draft",
+                    "in_review",
+                    "published",
+                    "withdrawn"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "expired",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Only published entries past their end date",
+              "default": false,
+              "title": "Expired"
+            },
+            "description": "Only published entries past their end date"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GuideEntryManagedOut"
+                  },
+                  "title": "Response List Managed V1 Guide Manage Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "guide"
+        ],
+        "summary": "Draft Entry",
+        "operationId": "draft_entry_v1_guide_manage_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuideEntryIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideEntryDetailManagedOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/guide/manage/reports": {
+      "get": {
+        "tags": [
+          "guide"
+        ],
+        "summary": "Report Queue",
+        "description": "D28: reports that an entry is outdated, oldest first (FR-LIV-006).",
+        "operationId": "report_queue_v1_guide_manage_reports_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(open|fixed|dismissed)$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "open",
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GuideManagedReportOut"
+                  },
+                  "title": "Response Report Queue V1 Guide Manage Reports Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/guide/manage/reports/{report_id}/resolution": {
+      "post": {
+        "tags": [
+          "guide"
+        ],
+        "summary": "Resolve Report",
+        "operationId": "resolve_report_v1_guide_manage_reports__report_id__resolution_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Report Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuideReportResolutionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideManagedReportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/guide/manage/{entry_id}": {
+      "get": {
+        "tags": [
+          "guide"
+        ],
+        "summary": "Read Managed",
+        "operationId": "read_managed_v1_guide_manage__entry_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideEntryDetailManagedOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "guide"
+        ],
+        "summary": "Save Entry",
+        "description": "Saving a published entry takes it off the guide until it is reviewed again (FR-LIV-003).",
+        "operationId": "save_entry_v1_guide_manage__entry_id__put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuideEntryIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideEntryDetailManagedOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/guide/manage/{entry_id}/request-review": {
+      "post": {
+        "tags": [
+          "guide"
+        ],
+        "summary": "Request Review",
+        "description": "Refused without a source link, both languages or the dates (FR-LIV-002, 005).",
+        "operationId": "request_review_v1_guide_manage__entry_id__request_review_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideEntryDetailManagedOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/guide/manage/{entry_id}/review": {
+      "post": {
+        "tags": [
+          "guide"
+        ],
+        "summary": "Review Entry",
+        "description": "A second person publishes or returns it; the person who asked or last changed it gets 403 own_entry.",
+        "operationId": "review_entry_v1_guide_manage__entry_id__review_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuideReviewIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideEntryDetailManagedOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/guide/manage/{entry_id}/verified": {
+      "post": {
+        "tags": [
+          "guide"
+        ],
+        "summary": "Mark Verified",
+        "description": "The editor checked the published entry against its source today.",
+        "operationId": "mark_verified_v1_guide_manage__entry_id__verified_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideEntryDetailManagedOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/guide/manage/{entry_id}/withdraw": {
+      "post": {
+        "tags": [
+          "guide"
+        ],
+        "summary": "Withdraw Entry",
+        "operationId": "withdraw_entry_v1_guide_manage__entry_id__withdraw_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuideWithdrawIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideEntryDetailManagedOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/guide/{entry_id}": {
+      "get": {
+        "tags": [
+          "guide"
+        ],
+        "summary": "Read Entry",
+        "description": "M40: source link, publication and last-verified dates, and the eligibility disclaimer.",
+        "operationId": "read_entry_v1_guide__entry_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideEntryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/guide/{entry_id}/reports": {
+      "post": {
+        "tags": [
+          "guide"
+        ],
+        "summary": "Report Entry",
+        "description": "FR-LIV-006: report an outdated entry; one open report per member and entry.",
+        "operationId": "report_entry_v1_guide__entry_id__reports_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuideReportIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideReportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/representatives": {
+      "get": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "List Representatives",
+        "description": "M41: published role profiles, those covering the member's own area first (FR-APT-001).",
+        "operationId": "list_representatives_v1_appointments_representatives_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RepresentativeSummaryOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Representatives V1 Appointments Representatives Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/appointments/representatives/{representative_id}": {
+      "get": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Read Representative",
+        "description": "M41: the role, area, office hours, approved contacts only (FR-APT-007) and free slots (FR-APT-002).",
+        "operationId": "read_representative_v1_appointments_representatives__representative_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "representative_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Representative Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepresentativeDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/mine": {
+      "get": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "My Appointments",
+        "operationId": "my_appointments_v1_appointments_mine_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AppointmentOut"
+                  },
+                  "type": "array",
+                  "title": "Response My Appointments V1 Appointments Mine Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/appointments": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Book Appointment",
+        "description": "M42: book a free slot. Needs a Verified identity and an Active membership [ASSUMPTION]. With\ncaseLinkConsent false, no case reference is stored (FR-APT-005).",
+        "operationId": "book_appointment_v1_appointments_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppointmentBookIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/appointments/mine/{appointment_id}": {
+      "get": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Read My Appointment",
+        "description": "M42: the booking with the representative's follow-up note (FR-APT-006).",
+        "operationId": "read_my_appointment_v1_appointments_mine__appointment_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Appointment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/mine/{appointment_id}/cancel": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Cancel My Appointment",
+        "operationId": "cancel_my_appointment_v1_appointments_mine__appointment_id__cancel_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Appointment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppointmentCancelIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/mine/{appointment_id}/reschedule": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Reschedule My Appointment",
+        "description": "Move to another free slot of the same representative; reminders start again.",
+        "operationId": "reschedule_my_appointment_v1_appointments_mine__appointment_id__reschedule_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Appointment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppointmentRescheduleIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/calendar": {
+      "get": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Read Calendar",
+        "description": "S17: the representative's slots, bookings, needs and follow-up notes.",
+        "operationId": "read_calendar_v1_appointments_calendar_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "First day; a week ago by default",
+              "title": "From"
+            },
+            "description": "First day; a week ago by default"
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 120,
+              "minimum": 1,
+              "default": 45,
+              "title": "Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendarOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/calendar/profile": {
+      "put": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Update Own Profile",
+        "operationId": "update_own_profile_v1_appointments_calendar_profile_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnProfileIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnProfileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/appointments/calendar/contacts": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Approve Own Contacts",
+        "description": "BR-143: the person approves (or withdraws approval of) the routes entered for them.",
+        "operationId": "approve_own_contacts_v1_appointments_calendar_contacts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContactApprovalIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnProfileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/appointments/calendar/slots": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Add Own Slots",
+        "description": "No overlapping slots (S17).",
+        "operationId": "add_own_slots_v1_appointments_calendar_slots_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SlotSeriesIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProfileSlotOut"
+                  },
+                  "type": "array",
+                  "title": "Response Add Own Slots V1 Appointments Calendar Slots Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/appointments/calendar/slots/{slot_id}/withdraw": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Withdraw Own Slot",
+        "description": "A booking on the slot is cancelled and the member told why.",
+        "operationId": "withdraw_own_slot_v1_appointments_calendar_slots__slot_id__withdraw_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "slot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Slot Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SlotWithdrawIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileSlotOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/calendar/bookings/{appointment_id}": {
+      "get": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Read Booking",
+        "operationId": "read_booking_v1_appointments_calendar_bookings__appointment_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Appointment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/calendar/bookings/{appointment_id}/cancel": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Cancel Booking",
+        "operationId": "cancel_booking_v1_appointments_calendar_bookings__appointment_id__cancel_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Appointment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingCancelIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/calendar/bookings/{appointment_id}/follow-up": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Record Follow Up",
+        "description": "FR-APT-006: the note is visible to the member.",
+        "operationId": "record_follow_up_v1_appointments_calendar_bookings__appointment_id__follow_up_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Appointment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppointmentFollowUpIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/profiles": {
+      "get": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "List Profiles",
+        "operationId": "list_profiles_v1_appointments_profiles_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "draft",
+                    "published",
+                    "withdrawn"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RepresentativeManagedOut"
+                  },
+                  "title": "Response List Profiles V1 Appointments Profiles Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Create Profile",
+        "description": "D29: a draft profile for the person with this member ID; any contact routes wait for their approval.",
+        "operationId": "create_profile_v1_appointments_profiles_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RepresentativeCreateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepresentativeManagedDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/profiles/{representative_id}": {
+      "get": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Read Profile",
+        "operationId": "read_profile_v1_appointments_profiles__representative_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "representative_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Representative Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepresentativeManagedDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Update Profile",
+        "description": "Changing a contact route clears the person's approval and asks them again (BR-143).",
+        "operationId": "update_profile_v1_appointments_profiles__representative_id__put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "representative_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Representative Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RepresentativeProfileIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepresentativeManagedDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/profiles/{representative_id}/publish": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Publish Profile",
+        "description": "Refused unless the person holds PRM-56, so bookings reach someone.",
+        "operationId": "publish_profile_v1_appointments_profiles__representative_id__publish_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "representative_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Representative Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepresentativeManagedDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/profiles/{representative_id}/withdraw": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Withdraw Profile",
+        "description": "Bookings still ahead are cancelled and their members told.",
+        "operationId": "withdraw_profile_v1_appointments_profiles__representative_id__withdraw_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "representative_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Representative Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileWithdrawIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepresentativeManagedDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/profiles/{representative_id}/slots": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Add Slots",
+        "operationId": "add_slots_v1_appointments_profiles__representative_id__slots_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "representative_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Representative Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SlotSeriesIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProfileSlotOut"
+                  },
+                  "title": "Response Add Slots V1 Appointments Profiles  Representative Id  Slots Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/appointments/profiles/{representative_id}/slots/{slot_id}/withdraw": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Withdraw Slot",
+        "operationId": "withdraw_slot_v1_appointments_profiles__representative_id__slots__slot_id__withdraw_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "representative_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Representative Id"
+            }
+          },
+          {
+            "name": "slot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Slot Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SlotWithdrawIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileSlotOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/home": {
       "get": {
         "tags": [
@@ -17364,7 +19457,8 @@
                     "idea",
                     "survey_response",
                     "proposal",
-                    "course"
+                    "course",
+                    "appointment"
                   ],
                   "type": "string"
                 },
@@ -22927,7 +25021,8 @@
               "idea",
               "survey_response",
               "proposal",
-              "course"
+              "course",
+              "appointment"
             ],
             "title": "Kind"
           },
@@ -24068,6 +26163,427 @@
         ],
         "title": "AppealSummaryOut",
         "description": "One row of the D05 queue."
+      },
+      "AppointmentBookIn": {
+        "properties": {
+          "slotId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Slotid"
+          },
+          "topic": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Topic",
+            "description": "What the member would like to talk about"
+          },
+          "contactPreference": {
+            "type": "string",
+            "enum": [
+              "in_app",
+              "phone_call",
+              "sms"
+            ],
+            "title": "Contactpreference"
+          },
+          "contactPhone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contactphone",
+            "description": "Only for a call or a text; never stored for in-app contact"
+          },
+          "needs": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "step_free_access",
+                "sign_language",
+                "tamil_interpreter",
+                "sinhala_interpreter",
+                "english_interpreter",
+                "large_print",
+                "someone_with_me"
+              ]
+            },
+            "type": "array",
+            "maxItems": 7,
+            "title": "Needs",
+            "description": "Accessibility or language needs"
+          },
+          "needsNote": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Needsnote"
+          },
+          "caseRef": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caseref",
+            "description": "Kept only when caseLinkConsent is true"
+          },
+          "caseLinkConsent": {
+            "type": "boolean",
+            "title": "Caselinkconsent",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "slotId",
+          "topic",
+          "contactPreference"
+        ],
+        "title": "AppointmentBookIn"
+      },
+      "AppointmentCancelIn": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "title": "AppointmentCancelIn"
+      },
+      "AppointmentFollowUpIn": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "no_show"
+            ],
+            "title": "Outcome"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "Shown to the member; required when completed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcome"
+        ],
+        "title": "AppointmentFollowUpIn"
+      },
+      "AppointmentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "appointmentRef": {
+            "type": "string",
+            "title": "Appointmentref"
+          },
+          "representativeId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Representativeid"
+          },
+          "representativeRoleEn": {
+            "type": "string",
+            "title": "Representativeroleen"
+          },
+          "representativeRoleTa": {
+            "type": "string",
+            "title": "Representativeroleta"
+          },
+          "representativeNameEn": {
+            "type": "string",
+            "title": "Representativenameen"
+          },
+          "representativeNameTa": {
+            "type": "string",
+            "title": "Representativenameta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "slot": {
+            "$ref": "#/components/schemas/AppointmentSlotOut"
+          },
+          "topic": {
+            "type": "string",
+            "title": "Topic"
+          },
+          "contactPreference": {
+            "type": "string",
+            "enum": [
+              "in_app",
+              "phone_call",
+              "sms"
+            ],
+            "title": "Contactpreference"
+          },
+          "contactPhone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contactphone"
+          },
+          "needs": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "step_free_access",
+                "sign_language",
+                "tamil_interpreter",
+                "sinhala_interpreter",
+                "english_interpreter",
+                "large_print",
+                "someone_with_me"
+              ]
+            },
+            "type": "array",
+            "title": "Needs"
+          },
+          "needsNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Needsnote"
+          },
+          "caseRef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caseref",
+            "description": "Stored only when the member consented to link it (FR-APT-005)"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "booked",
+              "cancelled",
+              "completed",
+              "no_show"
+            ],
+            "title": "State"
+          },
+          "cancelledBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "member",
+                  "representative"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelledby"
+          },
+          "cancelReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelreason"
+          },
+          "cancelledAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelledat"
+          },
+          "followUpNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Followupnote"
+          },
+          "followUpAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Followupat"
+          },
+          "bookedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Bookedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "appointmentRef",
+          "representativeId",
+          "representativeRoleEn",
+          "representativeRoleTa",
+          "representativeNameEn",
+          "representativeNameTa",
+          "areaKey",
+          "slot",
+          "topic",
+          "contactPreference",
+          "contactPhone",
+          "needs",
+          "needsNote",
+          "caseRef",
+          "state",
+          "cancelledBy",
+          "cancelReason",
+          "cancelledAt",
+          "followUpNote",
+          "followUpAt",
+          "bookedAt"
+        ],
+        "title": "AppointmentOut",
+        "description": "M42: the member's own booking, with the representative's follow-up note (FR-APT-006)."
+      },
+      "AppointmentRescheduleIn": {
+        "properties": {
+          "slotId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Slotid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "slotId"
+        ],
+        "title": "AppointmentRescheduleIn"
+      },
+      "AppointmentSlotOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "phone_call"
+            ],
+            "title": "Mode"
+          },
+          "placeEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placeen"
+          },
+          "placeTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placeta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "startsAt",
+          "endsAt",
+          "mode",
+          "placeEn",
+          "placeTa"
+        ],
+        "title": "AppointmentSlotOut"
       },
       "ArchiveIn": {
         "properties": {
@@ -25504,6 +28020,252 @@
         ],
         "title": "AwaitingMemberOut"
       },
+      "BookingCancelIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason",
+            "description": "Shown to the member"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "BookingCancelIn"
+      },
+      "BookingOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "appointmentRef": {
+            "type": "string",
+            "title": "Appointmentref"
+          },
+          "representativeId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Representativeid"
+          },
+          "representativeRoleEn": {
+            "type": "string",
+            "title": "Representativeroleen"
+          },
+          "representativeRoleTa": {
+            "type": "string",
+            "title": "Representativeroleta"
+          },
+          "representativeNameEn": {
+            "type": "string",
+            "title": "Representativenameen"
+          },
+          "representativeNameTa": {
+            "type": "string",
+            "title": "Representativenameta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "slot": {
+            "$ref": "#/components/schemas/AppointmentSlotOut"
+          },
+          "topic": {
+            "type": "string",
+            "title": "Topic"
+          },
+          "contactPreference": {
+            "type": "string",
+            "enum": [
+              "in_app",
+              "phone_call",
+              "sms"
+            ],
+            "title": "Contactpreference"
+          },
+          "contactPhone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contactphone"
+          },
+          "needs": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "step_free_access",
+                "sign_language",
+                "tamil_interpreter",
+                "sinhala_interpreter",
+                "english_interpreter",
+                "large_print",
+                "someone_with_me"
+              ]
+            },
+            "type": "array",
+            "title": "Needs"
+          },
+          "needsNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Needsnote"
+          },
+          "caseRef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caseref",
+            "description": "Stored only when the member consented to link it (FR-APT-005)"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "booked",
+              "cancelled",
+              "completed",
+              "no_show"
+            ],
+            "title": "State"
+          },
+          "cancelledBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "member",
+                  "representative"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelledby"
+          },
+          "cancelReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelreason"
+          },
+          "cancelledAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelledat"
+          },
+          "followUpNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Followupnote"
+          },
+          "followUpAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Followupat"
+          },
+          "bookedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Bookedat"
+          },
+          "memberName": {
+            "type": "string",
+            "title": "Membername"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "caseConsentAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caseconsentat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "appointmentRef",
+          "representativeId",
+          "representativeRoleEn",
+          "representativeRoleTa",
+          "representativeNameEn",
+          "representativeNameTa",
+          "areaKey",
+          "slot",
+          "topic",
+          "contactPreference",
+          "contactPhone",
+          "needs",
+          "needsNote",
+          "caseRef",
+          "state",
+          "cancelledBy",
+          "cancelReason",
+          "cancelledAt",
+          "followUpNote",
+          "followUpAt",
+          "bookedAt",
+          "memberName",
+          "memberCode",
+          "caseConsentAt"
+        ],
+        "title": "BookingOut",
+        "description": "S17: a booking as the representative sees it: who booked, their needs, contact and any linked case."
+      },
       "BroadcastCreateIn": {
         "properties": {
           "topic": {
@@ -26023,6 +28785,126 @@
           "pendingApproval"
         ],
         "title": "BroadcastsQueueCount"
+      },
+      "CalendarOut": {
+        "properties": {
+          "profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OwnProfileOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "None until a profile manager creates the person's profile"
+          },
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/CalendarSlotOut"
+            },
+            "type": "array",
+            "title": "Slots"
+          }
+        },
+        "type": "object",
+        "required": [
+          "profile",
+          "slots"
+        ],
+        "title": "CalendarOut"
+      },
+      "CalendarSlotOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "phone_call"
+            ],
+            "title": "Mode"
+          },
+          "placeEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placeen"
+          },
+          "placeTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placeta"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "withdrawnReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawnreason"
+          },
+          "booking": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BookingOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The live booking, or the last cancelled one"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "startsAt",
+          "endsAt",
+          "mode",
+          "placeEn",
+          "placeTa",
+          "state",
+          "withdrawnReason",
+          "booking"
+        ],
+        "title": "CalendarSlotOut"
       },
       "CancelIn": {
         "properties": {
@@ -27781,6 +30663,19 @@
           "purposeLimitationEn"
         ],
         "title": "ConsentNoticeOut"
+      },
+      "ContactApprovalIn": {
+        "properties": {
+          "approve": {
+            "type": "boolean",
+            "title": "Approve"
+          }
+        },
+        "type": "object",
+        "required": [
+          "approve"
+        ],
+        "title": "ContactApprovalIn"
       },
       "ContactIn": {
         "properties": {
@@ -31891,6 +34786,1308 @@
           "reason"
         ],
         "title": "GateIn"
+      },
+      "GuideEntryDetailManagedOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "entryRef": {
+            "type": "string",
+            "title": "Entryref"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "assistance_programme",
+              "scholarship",
+              "job",
+              "vocational_training",
+              "agriculture",
+              "fisheries",
+              "enterprise_grant",
+              "course",
+              "public_service_contact"
+            ],
+            "title": "Category"
+          },
+          "titleEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summaryta"
+          },
+          "bodyEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bodyta"
+          },
+          "providerEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provideren"
+          },
+          "providerTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Providerta"
+          },
+          "contact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceurl"
+          },
+          "publishedOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedon"
+          },
+          "verifiedOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verifiedon"
+          },
+          "expiresOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expireson"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "in_review",
+              "published",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "expired": {
+            "type": "boolean",
+            "title": "Expired",
+            "description": "Published but past its end date, so members no longer see it"
+          },
+          "needsReverification": {
+            "type": "boolean",
+            "title": "Needsreverification",
+            "description": "Not checked against its source for over 180 days"
+          },
+          "missing": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing",
+            "description": "Problems that stop review or publication now (empty when complete)"
+          },
+          "reviewNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewnote",
+            "description": "The reviewer's note, or the reason it was returned"
+          },
+          "withdrawnReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawnreason"
+          },
+          "openReports": {
+            "type": "integer",
+            "title": "Openreports"
+          },
+          "reviewRequestedByMe": {
+            "type": "boolean",
+            "title": "Reviewrequestedbyme"
+          },
+          "lastChangedByMe": {
+            "type": "boolean",
+            "title": "Lastchangedbyme"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "reports": {
+            "items": {
+              "$ref": "#/components/schemas/GuideManagedReportOut"
+            },
+            "type": "array",
+            "title": "Reports"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "entryRef",
+          "category",
+          "titleEn",
+          "titleTa",
+          "summaryEn",
+          "summaryTa",
+          "bodyEn",
+          "bodyTa",
+          "providerEn",
+          "providerTa",
+          "contact",
+          "sourceUrl",
+          "publishedOn",
+          "verifiedOn",
+          "expiresOn",
+          "state",
+          "expired",
+          "needsReverification",
+          "missing",
+          "reviewNote",
+          "withdrawnReason",
+          "openReports",
+          "reviewRequestedByMe",
+          "lastChangedByMe",
+          "publishedAt",
+          "updatedAt",
+          "reports"
+        ],
+        "title": "GuideEntryDetailManagedOut"
+      },
+      "GuideEntryIn": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "assistance_programme",
+              "scholarship",
+              "job",
+              "vocational_training",
+              "agriculture",
+              "fisheries",
+              "enterprise_grant",
+              "course",
+              "public_service_contact"
+            ],
+            "title": "Category"
+          },
+          "titleEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 220
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 400
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 600
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summaryta"
+          },
+          "bodyEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 6000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bodyta"
+          },
+          "providerEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provideren"
+          },
+          "providerTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Providerta"
+          },
+          "contact": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact",
+            "description": "An official office's public contact only"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "pattern": "^https?://\\S+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceurl"
+          },
+          "publishedOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedon",
+            "description": "When the provider published the information"
+          },
+          "verifiedOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verifiedon",
+            "description": "When an editor last checked it against the source"
+          },
+          "expiresOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expireson",
+            "description": "The end date; the entry leaves the guide after it"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category"
+        ],
+        "title": "GuideEntryIn",
+        "description": "D28: a draft may be saved incomplete; review asks for every field in both languages."
+      },
+      "GuideEntryManagedOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "entryRef": {
+            "type": "string",
+            "title": "Entryref"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "assistance_programme",
+              "scholarship",
+              "job",
+              "vocational_training",
+              "agriculture",
+              "fisheries",
+              "enterprise_grant",
+              "course",
+              "public_service_contact"
+            ],
+            "title": "Category"
+          },
+          "titleEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summaryta"
+          },
+          "bodyEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bodyta"
+          },
+          "providerEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provideren"
+          },
+          "providerTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Providerta"
+          },
+          "contact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceurl"
+          },
+          "publishedOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedon"
+          },
+          "verifiedOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verifiedon"
+          },
+          "expiresOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expireson"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "in_review",
+              "published",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "expired": {
+            "type": "boolean",
+            "title": "Expired",
+            "description": "Published but past its end date, so members no longer see it"
+          },
+          "needsReverification": {
+            "type": "boolean",
+            "title": "Needsreverification",
+            "description": "Not checked against its source for over 180 days"
+          },
+          "missing": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing",
+            "description": "Problems that stop review or publication now (empty when complete)"
+          },
+          "reviewNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewnote",
+            "description": "The reviewer's note, or the reason it was returned"
+          },
+          "withdrawnReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawnreason"
+          },
+          "openReports": {
+            "type": "integer",
+            "title": "Openreports"
+          },
+          "reviewRequestedByMe": {
+            "type": "boolean",
+            "title": "Reviewrequestedbyme"
+          },
+          "lastChangedByMe": {
+            "type": "boolean",
+            "title": "Lastchangedbyme"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "entryRef",
+          "category",
+          "titleEn",
+          "titleTa",
+          "summaryEn",
+          "summaryTa",
+          "bodyEn",
+          "bodyTa",
+          "providerEn",
+          "providerTa",
+          "contact",
+          "sourceUrl",
+          "publishedOn",
+          "verifiedOn",
+          "expiresOn",
+          "state",
+          "expired",
+          "needsReverification",
+          "missing",
+          "reviewNote",
+          "withdrawnReason",
+          "openReports",
+          "reviewRequestedByMe",
+          "lastChangedByMe",
+          "publishedAt",
+          "updatedAt"
+        ],
+        "title": "GuideEntryManagedOut",
+        "description": "D28: an entry in any state, with what still stops it being published."
+      },
+      "GuideEntryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "entryRef": {
+            "type": "string",
+            "title": "Entryref"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "assistance_programme",
+              "scholarship",
+              "job",
+              "vocational_training",
+              "agriculture",
+              "fisheries",
+              "enterprise_grant",
+              "course",
+              "public_service_contact"
+            ],
+            "title": "Category"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "type": "string",
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "type": "string",
+            "title": "Summaryta"
+          },
+          "providerEn": {
+            "type": "string",
+            "title": "Provideren"
+          },
+          "providerTa": {
+            "type": "string",
+            "title": "Providerta"
+          },
+          "publishedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Publishedon"
+          },
+          "verifiedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Verifiedon"
+          },
+          "expiresOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expireson"
+          },
+          "bodyEn": {
+            "type": "string",
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "title": "Bodyta"
+          },
+          "contact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact",
+            "description": "An official office's public contact, never a private person's"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "title": "Sourceurl"
+          },
+          "disclaimerEn": {
+            "type": "string",
+            "title": "Disclaimeren",
+            "description": "Shown with every entry: the guide never says who qualifies (FR-LIV-004)"
+          },
+          "disclaimerTa": {
+            "type": "string",
+            "title": "Disclaimerta"
+          },
+          "myOpenReport": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GuideReportOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The member's own report waiting for the editors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "entryRef",
+          "category",
+          "titleEn",
+          "titleTa",
+          "summaryEn",
+          "summaryTa",
+          "providerEn",
+          "providerTa",
+          "publishedOn",
+          "verifiedOn",
+          "expiresOn",
+          "bodyEn",
+          "bodyTa",
+          "contact",
+          "sourceUrl",
+          "disclaimerEn",
+          "disclaimerTa",
+          "myOpenReport"
+        ],
+        "title": "GuideEntryOut",
+        "description": "M40: the entry with its source and the eligibility disclaimer (FR-LIV-002, 004)."
+      },
+      "GuideEntrySummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "entryRef": {
+            "type": "string",
+            "title": "Entryref"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "assistance_programme",
+              "scholarship",
+              "job",
+              "vocational_training",
+              "agriculture",
+              "fisheries",
+              "enterprise_grant",
+              "course",
+              "public_service_contact"
+            ],
+            "title": "Category"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "type": "string",
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "type": "string",
+            "title": "Summaryta"
+          },
+          "providerEn": {
+            "type": "string",
+            "title": "Provideren"
+          },
+          "providerTa": {
+            "type": "string",
+            "title": "Providerta"
+          },
+          "publishedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Publishedon"
+          },
+          "verifiedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Verifiedon"
+          },
+          "expiresOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expireson"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "entryRef",
+          "category",
+          "titleEn",
+          "titleTa",
+          "summaryEn",
+          "summaryTa",
+          "providerEn",
+          "providerTa",
+          "publishedOn",
+          "verifiedOn",
+          "expiresOn"
+        ],
+        "title": "GuideEntrySummaryOut",
+        "description": "M39: one published entry in the list. Every published entry has both languages."
+      },
+      "GuideManagedReportOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "entryId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Entryid"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "outdated",
+              "closed",
+              "broken_link",
+              "wrong_details",
+              "other"
+            ],
+            "title": "Reason"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "fixed",
+              "dismissed"
+            ],
+            "title": "State"
+          },
+          "resolutionNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolutionnote"
+          },
+          "resolvedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolvedat"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "entryRef": {
+            "type": "string",
+            "title": "Entryref"
+          },
+          "entryTitleEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entrytitleen"
+          },
+          "entryTitleTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entrytitleta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "entryId",
+          "reason",
+          "note",
+          "state",
+          "resolutionNote",
+          "resolvedAt",
+          "createdAt",
+          "entryRef",
+          "entryTitleEn",
+          "entryTitleTa"
+        ],
+        "title": "GuideManagedReportOut",
+        "description": "D28's queue: the report with the entry it is about. The reporter is never named."
+      },
+      "GuideReportIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "outdated",
+              "closed",
+              "broken_link",
+              "wrong_details",
+              "other"
+            ],
+            "title": "Reason"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "What looks outdated; optional"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "GuideReportIn"
+      },
+      "GuideReportOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "entryId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Entryid"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "outdated",
+              "closed",
+              "broken_link",
+              "wrong_details",
+              "other"
+            ],
+            "title": "Reason"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "fixed",
+              "dismissed"
+            ],
+            "title": "State"
+          },
+          "resolutionNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolutionnote"
+          },
+          "resolvedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolvedat"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "entryId",
+          "reason",
+          "note",
+          "state",
+          "resolutionNote",
+          "resolvedAt",
+          "createdAt"
+        ],
+        "title": "GuideReportOut"
+      },
+      "GuideReportResolutionIn": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "fixed",
+              "dismissed"
+            ],
+            "title": "Outcome"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "Required when dismissing the report"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcome"
+        ],
+        "title": "GuideReportResolutionIn"
+      },
+      "GuideReviewIn": {
+        "properties": {
+          "approve": {
+            "type": "boolean",
+            "title": "Approve"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "Required when returning the entry"
+          }
+        },
+        "type": "object",
+        "required": [
+          "approve"
+        ],
+        "title": "GuideReviewIn"
+      },
+      "GuideWithdrawIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "GuideWithdrawIn"
       },
       "HTTPValidationError": {
         "properties": {
@@ -39096,6 +43293,217 @@
         ],
         "title": "OutcomeIn"
       },
+      "OwnProfileIn": {
+        "properties": {
+          "officeHoursEn": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Officehoursen"
+          },
+          "officeHoursTa": {
+            "type": "string",
+            "maxLength": 700,
+            "minLength": 3,
+            "title": "Officehoursta"
+          },
+          "publicPhone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20,
+                "pattern": "^\\s*(\\+94|0)[0-9\\s-]{9,12}\\s*$|^\\s*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicphone"
+          },
+          "publicEmail": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicemail"
+          },
+          "officeAddressEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officeaddressen"
+          },
+          "officeAddressTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 450
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officeaddressta"
+          },
+          "showContacts": {
+            "type": "boolean",
+            "title": "Showcontacts",
+            "description": "The person's approval to show these routes to members (BR-143)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "officeHoursEn",
+          "officeHoursTa",
+          "showContacts"
+        ],
+        "title": "OwnProfileIn"
+      },
+      "OwnProfileOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "roleEn": {
+            "type": "string",
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "type": "string",
+            "title": "Roleta"
+          },
+          "displayNameEn": {
+            "type": "string",
+            "title": "Displaynameen"
+          },
+          "displayNameTa": {
+            "type": "string",
+            "title": "Displaynameta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "officeHoursEn": {
+            "type": "string",
+            "title": "Officehoursen"
+          },
+          "officeHoursTa": {
+            "type": "string",
+            "title": "Officehoursta"
+          },
+          "publicPhone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicphone"
+          },
+          "publicEmail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicemail"
+          },
+          "officeAddressEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officeaddressen"
+          },
+          "officeAddressTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officeaddressta"
+          },
+          "contactsApprovedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contactsapprovedat",
+            "description": "Members see the contact routes only once this is set"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "withdrawnReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawnreason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "roleEn",
+          "roleTa",
+          "displayNameEn",
+          "displayNameTa",
+          "areaKey",
+          "officeHoursEn",
+          "officeHoursTa",
+          "publicPhone",
+          "publicEmail",
+          "officeAddressEn",
+          "officeAddressTa",
+          "contactsApprovedAt",
+          "state",
+          "withdrawnReason"
+        ],
+        "title": "OwnProfileOut",
+        "description": "The representative's own profile, with every contact route and whether they approved it."
+      },
       "OwnerOptionOut": {
         "properties": {
           "memberId": {
@@ -40885,6 +45293,80 @@
         "title": "ProfileOut",
         "description": "P01 and P02. Locked fields change only through a new identity review (BR-073)."
       },
+      "ProfileSlotOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "phone_call"
+            ],
+            "title": "Mode"
+          },
+          "placeEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placeen"
+          },
+          "placeTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placeta"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "booked": {
+            "type": "boolean",
+            "title": "Booked"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "startsAt",
+          "endsAt",
+          "mode",
+          "placeEn",
+          "placeTa",
+          "state",
+          "booked"
+        ],
+        "title": "ProfileSlotOut",
+        "description": "D29 sees whether a slot is taken, never by whom."
+      },
       "ProfileUpdateIn": {
         "properties": {
           "displayName": {
@@ -40934,6 +45416,21 @@
         "type": "object",
         "title": "ProfileUpdateIn",
         "description": "Only these; anything else is refused by the schema. An empty display name greets by the legal name."
+      },
+      "ProfileWithdrawIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "ProfileWithdrawIn"
       },
       "ProgrammeIn": {
         "properties": {
@@ -44423,6 +48920,814 @@
         ],
         "title": "ReportingOptionsOut"
       },
+      "RepresentativeAreaIn": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "district",
+              "ds",
+              "gn"
+            ],
+            "title": "Level"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 2,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "code"
+        ],
+        "title": "RepresentativeAreaIn"
+      },
+      "RepresentativeContactsOut": {
+        "properties": {
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "officeAddressEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officeaddressen"
+          },
+          "officeAddressTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officeaddressta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "phone",
+          "email",
+          "officeAddressEn",
+          "officeAddressTa"
+        ],
+        "title": "RepresentativeContactsOut",
+        "description": "BR-143, FR-APT-007: only the routes the person approved; empty when they approved none."
+      },
+      "RepresentativeCreateIn": {
+        "properties": {
+          "roleEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Roleen",
+            "description": "The official role, such as District Coordinator"
+          },
+          "roleTa": {
+            "type": "string",
+            "maxLength": 220,
+            "minLength": 3,
+            "title": "Roleta"
+          },
+          "displayNameEn": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Displaynameen"
+          },
+          "displayNameTa": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Displaynameta"
+          },
+          "officeHoursEn": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Officehoursen"
+          },
+          "officeHoursTa": {
+            "type": "string",
+            "maxLength": 700,
+            "minLength": 3,
+            "title": "Officehoursta"
+          },
+          "publicPhone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20,
+                "pattern": "^\\s*(\\+94|0)[0-9\\s-]{9,12}\\s*$|^\\s*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicphone"
+          },
+          "publicEmail": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicemail"
+          },
+          "officeAddressEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officeaddressen"
+          },
+          "officeAddressTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 450
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officeaddressta"
+          },
+          "memberCode": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 3,
+            "title": "Membercode",
+            "description": "The member ID of the person holding the role"
+          },
+          "area": {
+            "$ref": "#/components/schemas/RepresentativeAreaIn"
+          }
+        },
+        "type": "object",
+        "required": [
+          "roleEn",
+          "roleTa",
+          "displayNameEn",
+          "displayNameTa",
+          "officeHoursEn",
+          "officeHoursTa",
+          "memberCode",
+          "area"
+        ],
+        "title": "RepresentativeCreateIn"
+      },
+      "RepresentativeDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "roleEn": {
+            "type": "string",
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "type": "string",
+            "title": "Roleta"
+          },
+          "displayNameEn": {
+            "type": "string",
+            "title": "Displaynameen"
+          },
+          "displayNameTa": {
+            "type": "string",
+            "title": "Displaynameta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey",
+            "description": "The District, DS or GN division covered, such as district:LK41"
+          },
+          "officeHoursEn": {
+            "type": "string",
+            "title": "Officehoursen"
+          },
+          "officeHoursTa": {
+            "type": "string",
+            "title": "Officehoursta"
+          },
+          "coversMyArea": {
+            "type": "boolean",
+            "title": "Coversmyarea"
+          },
+          "openSlots": {
+            "type": "integer",
+            "title": "Openslots"
+          },
+          "nextOpenSlot": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nextopenslot"
+          },
+          "contacts": {
+            "$ref": "#/components/schemas/RepresentativeContactsOut"
+          },
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/AppointmentSlotOut"
+            },
+            "type": "array",
+            "title": "Slots"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "roleEn",
+          "roleTa",
+          "displayNameEn",
+          "displayNameTa",
+          "areaKey",
+          "officeHoursEn",
+          "officeHoursTa",
+          "coversMyArea",
+          "openSlots",
+          "nextOpenSlot",
+          "contacts",
+          "slots"
+        ],
+        "title": "RepresentativeDetailOut",
+        "description": "M41, M42: the profile with its approved contacts and the free slots. With no slots, the office\nhours are the way to meet (FR-APT-002)."
+      },
+      "RepresentativeManagedDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "roleEn": {
+            "type": "string",
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "type": "string",
+            "title": "Roleta"
+          },
+          "displayNameEn": {
+            "type": "string",
+            "title": "Displaynameen"
+          },
+          "displayNameTa": {
+            "type": "string",
+            "title": "Displaynameta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "officeHoursEn": {
+            "type": "string",
+            "title": "Officehoursen"
+          },
+          "officeHoursTa": {
+            "type": "string",
+            "title": "Officehoursta"
+          },
+          "publicPhone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicphone"
+          },
+          "publicEmail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicemail"
+          },
+          "officeAddressEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officeaddressen"
+          },
+          "officeAddressTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officeaddressta"
+          },
+          "contactsApprovedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contactsapprovedat",
+            "description": "Members see the contact routes only once this is set"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "withdrawnReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawnreason"
+          },
+          "openSlots": {
+            "type": "integer",
+            "title": "Openslots"
+          },
+          "nextOpenSlot": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nextopenslot"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "holdsCalendarPermission": {
+            "type": "boolean",
+            "title": "Holdscalendarpermission",
+            "description": "Whether the person holds PRM-56, needed to publish"
+          },
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/ProfileSlotOut"
+            },
+            "type": "array",
+            "title": "Slots"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "roleEn",
+          "roleTa",
+          "displayNameEn",
+          "displayNameTa",
+          "areaKey",
+          "officeHoursEn",
+          "officeHoursTa",
+          "publicPhone",
+          "publicEmail",
+          "officeAddressEn",
+          "officeAddressTa",
+          "contactsApprovedAt",
+          "state",
+          "withdrawnReason",
+          "openSlots",
+          "nextOpenSlot",
+          "publishedAt",
+          "updatedAt",
+          "holdsCalendarPermission",
+          "slots"
+        ],
+        "title": "RepresentativeManagedDetailOut"
+      },
+      "RepresentativeManagedOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "roleEn": {
+            "type": "string",
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "type": "string",
+            "title": "Roleta"
+          },
+          "displayNameEn": {
+            "type": "string",
+            "title": "Displaynameen"
+          },
+          "displayNameTa": {
+            "type": "string",
+            "title": "Displaynameta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "officeHoursEn": {
+            "type": "string",
+            "title": "Officehoursen"
+          },
+          "officeHoursTa": {
+            "type": "string",
+            "title": "Officehoursta"
+          },
+          "publicPhone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicphone"
+          },
+          "publicEmail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicemail"
+          },
+          "officeAddressEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officeaddressen"
+          },
+          "officeAddressTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officeaddressta"
+          },
+          "contactsApprovedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contactsapprovedat",
+            "description": "Members see the contact routes only once this is set"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "withdrawnReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawnreason"
+          },
+          "openSlots": {
+            "type": "integer",
+            "title": "Openslots"
+          },
+          "nextOpenSlot": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nextopenslot"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "roleEn",
+          "roleTa",
+          "displayNameEn",
+          "displayNameTa",
+          "areaKey",
+          "officeHoursEn",
+          "officeHoursTa",
+          "publicPhone",
+          "publicEmail",
+          "officeAddressEn",
+          "officeAddressTa",
+          "contactsApprovedAt",
+          "state",
+          "withdrawnReason",
+          "openSlots",
+          "nextOpenSlot",
+          "publishedAt",
+          "updatedAt"
+        ],
+        "title": "RepresentativeManagedOut"
+      },
+      "RepresentativeProfileIn": {
+        "properties": {
+          "roleEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Roleen",
+            "description": "The official role, such as District Coordinator"
+          },
+          "roleTa": {
+            "type": "string",
+            "maxLength": 220,
+            "minLength": 3,
+            "title": "Roleta"
+          },
+          "displayNameEn": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Displaynameen"
+          },
+          "displayNameTa": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Displaynameta"
+          },
+          "officeHoursEn": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Officehoursen"
+          },
+          "officeHoursTa": {
+            "type": "string",
+            "maxLength": 700,
+            "minLength": 3,
+            "title": "Officehoursta"
+          },
+          "publicPhone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20,
+                "pattern": "^\\s*(\\+94|0)[0-9\\s-]{9,12}\\s*$|^\\s*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicphone"
+          },
+          "publicEmail": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicemail"
+          },
+          "officeAddressEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officeaddressen"
+          },
+          "officeAddressTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 450
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officeaddressta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "roleEn",
+          "roleTa",
+          "displayNameEn",
+          "displayNameTa",
+          "officeHoursEn",
+          "officeHoursTa"
+        ],
+        "title": "RepresentativeProfileIn"
+      },
+      "RepresentativeSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "roleEn": {
+            "type": "string",
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "type": "string",
+            "title": "Roleta"
+          },
+          "displayNameEn": {
+            "type": "string",
+            "title": "Displaynameen"
+          },
+          "displayNameTa": {
+            "type": "string",
+            "title": "Displaynameta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey",
+            "description": "The District, DS or GN division covered, such as district:LK41"
+          },
+          "officeHoursEn": {
+            "type": "string",
+            "title": "Officehoursen"
+          },
+          "officeHoursTa": {
+            "type": "string",
+            "title": "Officehoursta"
+          },
+          "coversMyArea": {
+            "type": "boolean",
+            "title": "Coversmyarea"
+          },
+          "openSlots": {
+            "type": "integer",
+            "title": "Openslots"
+          },
+          "nextOpenSlot": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nextopenslot"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "roleEn",
+          "roleTa",
+          "displayNameEn",
+          "displayNameTa",
+          "areaKey",
+          "officeHoursEn",
+          "officeHoursTa",
+          "coversMyArea",
+          "openSlots",
+          "nextOpenSlot"
+        ],
+        "title": "RepresentativeSummaryOut",
+        "description": "M41: a role profile in the directory."
+      },
       "ResetTokenOut": {
         "properties": {
           "resetToken": {
@@ -46336,6 +51641,86 @@
           "nameTa"
         ],
         "title": "SkillOut"
+      },
+      "SlotSeriesIn": {
+        "properties": {
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat",
+            "description": "The first slot's start, with its time zone"
+          },
+          "minutes": {
+            "type": "integer",
+            "maximum": 120.0,
+            "minimum": 10.0,
+            "title": "Minutes",
+            "description": "Length of each slot"
+          },
+          "count": {
+            "type": "integer",
+            "maximum": 16.0,
+            "minimum": 1.0,
+            "title": "Count",
+            "description": "Consecutive slots of that length"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "phone_call"
+            ],
+            "title": "Mode"
+          },
+          "placeEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placeen",
+            "description": "Required in person: an official office"
+          },
+          "placeTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 450
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placeta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "startsAt",
+          "minutes",
+          "count",
+          "mode"
+        ],
+        "title": "SlotSeriesIn"
+      },
+      "SlotWithdrawIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "SlotWithdrawIn"
       },
       "StaffApprovalDetail": {
         "properties": {

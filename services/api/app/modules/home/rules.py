@@ -40,6 +40,8 @@ HUB_SERVICES = (
     "area_projects",
     "promises",
     "support",
+    "livelihood_guide",  # M39, Phase 3
+    "representatives",  # M41, Phase 3
 )
 
 # Services whose routes sit behind a v1.1 module switch (FR-ARCH-011). While the switch is off the
@@ -59,6 +61,8 @@ GATED_BY_MODULE = {
     "invite": "invitations",
     "promises": "promises",
     "support": "community_support",
+    "livelihood_guide": "livelihood_guide",
+    "representatives": "representatives",
 }
 
 # M18: the Promise Tracker is also shown on Home itself, with a count of the promises made for the
@@ -72,6 +76,9 @@ PROMISE_TRACKER = "promises"
 # why it is not official yet.
 OPEN_TO_EVERYONE = frozenset(
     {"my_area", "events", "card", "gallery", "learning", "local_reports", "area_projects", "promises", "support"}
+    # Reading the guide and the representatives' profiles is open to everyone (M39, M41); booking an
+    # appointment itself waits for a Verified identity and an Active membership [ASSUMPTION].
+    | {"livelihood_guide", "representatives"}
 )
 
 
