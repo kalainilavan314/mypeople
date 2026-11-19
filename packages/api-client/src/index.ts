@@ -311,6 +311,24 @@ export type ManagedSurveyFile = Schemas['ManagedSurveyFileOut'];
 export type MisinfoReport = Schemas['MisinfoReportOut'];
 export type StaffMisinfoReport = Schemas['StaffMisinfoReportOut'];
 export type MisinfoOutcome = NonNullable<Schemas['MisinfoReportOut']['outcome']>;
+// Official content (M47, M48 check part, D30) and the Election Commission links of M29.
+export type OfficialStatement = Schemas['OfficialStatementOut'];
+export type OfficialStatementFile = Schemas['OfficialStatementFileOut'];
+export type OfficialRevision = Schemas['OfficialRevisionOut'];
+export type OfficialCheck = Schemas['OfficialCheckOut'];
+export type OfficialCheckStatus = OfficialCheck['status'];
+export type ManagedOfficialStatement = Schemas['ManagedStatementOut'];
+export type OfficialStatementState = ManagedOfficialStatement['state'];
+export type OfficialDraftInput = Schemas['OfficialDraftIn'];
+export type OfficialCorrectionInput = Schemas['OfficialCorrectionIn'];
+export type OfficialWithdrawInput = Schemas['OfficialWithdrawIn'];
+export type OfficialImage = Schemas['OfficialImageOut'];
+export type OfficialPublisher = Schemas['PublisherOut'];
+export type OfficialPublisherInput = Schemas['PublisherIn'];
+export type OfficialSigningStatus = Schemas['SigningStatusOut'];
+export type OfficialPublicKey = Schemas['PublicKeyOut'];
+export type ElectionOfficialLinks = Schemas['OfficialLinksOut'];
+export type ElectionOfficialLink = Schemas['OfficialLinkOut'];
 export type CaseListFilters = {
   stage?: CaseStage[];
   mine?: boolean;
@@ -1779,7 +1797,7 @@ export function createApiClient({
         `/v1/volunteering/manage/opportunities/${encodeURIComponent(opportunityId)}`,
       ),
     // Fact-checks (M48 reporting part, D12). 404 while fact_checks is off. Checking a statement against
-    // its signed original waits for the signing keys (INT-24).
+    // its signed original is checkOfficialStatement (official_content).
     uploadMisinfoScreenshot: (image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
       request<{ id: string; width: number; height: number }>('POST', '/v1/fact-checks/screenshots', image, contentType),
     /** A link or a screenshot is required ("link_or_screenshot_required"). */
@@ -1799,6 +1817,53 @@ export function createApiClient({
         `/v1/fact-checks/manage/${encodeURIComponent(reportId)}/appeal-decision`,
         { change, outcome, reason },
       ),
+    // Official content (M47, M48 check part, D30). 404 while official_content is off. Only content whose
+    // signature verifies is "signed": show the "Official statement" label on nothing else (BR-148).
+    listOfficialStatements: (limit?: number) =>
+      request<OfficialStatement[]>('GET', `/v1/content/official${limit ? `?limit=${limit}` : ''}`),
+    getOfficialStatement: (statementId: string) =>
+      request<OfficialStatementFile>('GET', `/v1/content/official/${encodeURIComponent(statementId)}`),
+    /** Open to anyone, no session needed; `code` may be a check link. 429 "too_many_requests" when one address checks too often. */
+    checkOfficialStatement: (code: string) =>
+      request<OfficialCheck>('GET', `/v1/content/official/check?code=${encodeURIComponent(code)}`),
+    listOfficialPublicKeys: () => request<OfficialPublicKey[]>('GET', '/v1/content/official/keys'),
+    /** An image a published statement carries; served without a session. */
+    officialImageUrl: (imageId: string, size: 'display' | 'thumb' = 'display') =>
+      `${root}/v1/content/official/images/${encodeURIComponent(imageId)}?size=${size}`,
+    /** Whether a signing key is configured and whether the caller is a registered publisher. */
+    getOfficialSigningStatus: () => request<OfficialSigningStatus>('GET', '/v1/content/official/manage/signing'),
+    listManagedOfficialStatements: (states?: readonly OfficialStatementState[]) =>
+      request<ManagedOfficialStatement[]>('GET', `/v1/content/official/manage${toQueueQuery({ states })}`),
+    getManagedOfficialStatement: (statementId: string) =>
+      request<ManagedOfficialStatement>('GET', `/v1/content/official/manage/${encodeURIComponent(statementId)}`),
+    draftOfficialStatement: (input: OfficialDraftInput) =>
+      request<ManagedOfficialStatement>('POST', '/v1/content/official/manage', input),
+    saveOfficialDraft: (statementId: string, input: OfficialDraftInput) =>
+      request<ManagedOfficialStatement>('PUT', `/v1/content/official/manage/${encodeURIComponent(statementId)}`, input),
+    uploadOfficialImage: (image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
+      request<OfficialImage>('POST', '/v1/content/official/manage/images', image, contentType),
+    /** 503 "signing_unavailable" without a key; 403 "not_a_registered_publisher"; 409 "silence_period". */
+    signAndPublishOfficialStatement: (statementId: string) =>
+      request<ManagedOfficialStatement>('POST', `/v1/content/official/manage/${encodeURIComponent(statementId)}/publish`),
+    correctOfficialStatement: (statementId: string, input: OfficialCorrectionInput) =>
+      request<ManagedOfficialStatement>(
+        'POST',
+        `/v1/content/official/manage/${encodeURIComponent(statementId)}/corrections`,
+        input,
+      ),
+    withdrawOfficialStatement: (statementId: string, input: OfficialWithdrawInput) =>
+      request<ManagedOfficialStatement>(
+        'POST',
+        `/v1/content/official/manage/${encodeURIComponent(statementId)}/withdraw`,
+        input,
+      ),
+    listOfficialPublishers: () => request<OfficialPublisher[]>('GET', '/v1/content/official/publishers'),
+    registerOfficialPublisher: (input: OfficialPublisherInput) =>
+      request<OfficialPublisher>('POST', '/v1/content/official/publishers', input),
+    revokeOfficialPublisher: (publisherId: string, reason: string) =>
+      request<OfficialPublisher>('POST', `/v1/content/official/publishers/${encodeURIComponent(publisherId)}/revoke`, { reason }),
+    /** M29: the Election Commission's own services (FR-ELX-002, 003). 404 while election_mode is off. */
+    getElectionOfficialLinks: () => request<ElectionOfficialLinks>('GET', '/v1/election/official-links'),
     // Community Finance endpoints (Milestone 1.4)
     getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),
     createContribution: (body: ContributionCreateInput, idempotencyKey?: string) =>

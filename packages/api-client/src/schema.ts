@@ -5585,6 +5585,307 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/content/official/keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Public Keys
+         * @description Every key that has signed a statement, and the current one: verify any signature with these.
+         */
+        get: operations["list_public_keys_v1_content_official_keys_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/official/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check Statement
+         * @description M48, FR-AUT-005: open to anyone, no session needed. Verified, withdrawn, or not verified
+         *     ("No matching official record").
+         */
+        get: operations["check_statement_v1_content_official_check_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/official/images/{image_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Public Image
+         * @description An image a published statement carries. Its SHA-256 (display size) is part of the signature.
+         */
+        get: operations["read_public_image_v1_content_official_images__image_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/official/manage/signing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Signing Status
+         * @description Whether signing is available (a key is configured) and whether the caller is a registered publisher.
+         */
+        get: operations["read_signing_status_v1_content_official_manage_signing_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/official/publishers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Publishers */
+        get: operations["list_publishers_v1_content_official_publishers_get"];
+        put?: never;
+        /**
+         * Register Publisher
+         * @description FR-AUT-001: Tier 5 registers someone who holds content.sign_publish; never themselves.
+         */
+        post: operations["register_publisher_v1_content_official_publishers_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/official/publishers/{publisher_id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Revoke Publisher
+         * @description Their signed statements keep verifying; they cannot sign again.
+         */
+        post: operations["revoke_publisher_v1_content_official_publishers__publisher_id__revoke_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/official/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Managed
+         * @description Drafts, published and withdrawn statements, latest change first.
+         */
+        get: operations["list_managed_v1_content_official_manage_get"];
+        put?: never;
+        /** Create Draft */
+        post: operations["create_draft_v1_content_official_manage_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/official/manage/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Image
+         * @description JPEG, PNG or WebP up to 15 MB; kept as WebP without metadata. Attach it to a draft or a correction.
+         */
+        post: operations["upload_image_v1_content_official_manage_images_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/official/manage/images/{image_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Draft Image */
+        get: operations["read_draft_image_v1_content_official_manage_images__image_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/official/manage/{statement_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Managed */
+        get: operations["read_managed_v1_content_official_manage__statement_id__get"];
+        /**
+         * Save Draft
+         * @description Only while it is a draft; once signed, it changes only by a correction.
+         */
+        put: operations["save_draft_v1_content_official_manage__statement_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/official/manage/{statement_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sign And Publish
+         * @description FR-AUT-002: signs the draft (and its image) as revision 1 and gives it its public check code.
+         */
+        post: operations["sign_and_publish_v1_content_official_manage__statement_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/official/manage/{statement_id}/corrections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish Correction
+         * @description BR-150: a new signed revision with its reason; the original and every earlier revision stay.
+         */
+        post: operations["publish_correction_v1_content_official_manage__statement_id__corrections_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/official/manage/{statement_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw Statement
+         * @description By a registered publisher or Tier 5; every check then says it was withdrawn, and why.
+         */
+        post: operations["withdraw_statement_v1_content_official_manage__statement_id__withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/official": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Official Statements
+         * @description M47: published and withdrawn statements, latest first. "Official statement" only where signed (BR-148).
+         */
+        get: operations["list_official_statements_v1_content_official_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/content/official/{statement_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Official Statement
+         * @description M47: the statement with its full revision history (FR-AUT-004).
+         */
+        get: operations["read_official_statement_v1_content_official__statement_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -7358,6 +7659,27 @@ export interface paths {
          * @description Elections running for the member's area: date, countdown, official source and notices (FR-ELX-001, 004).
          */
         get: operations["read_current_elections_v1_election_current_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/election/official-links": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Official Links
+         * @description M29: links to the Election Commission's services (FR-ELX-002, 003). Opened in the browser; nothing is
+         *     collected or stored here, and there is no polling-station locator of the app's own (OD-37).
+         */
+        get: operations["read_official_links_v1_election_official_links_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -12110,6 +12432,58 @@ export interface components {
              */
             createdAt: string;
         };
+        /**
+         * ManagedStatementOut
+         * @description D30: a statement as publishers see it: the draft while it is one, then its signed revisions.
+         */
+        ManagedStatementOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Statementref */
+            statementRef: string;
+            /** Checkcode */
+            checkCode: string | null;
+            /** Checklink */
+            checkLink: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "published" | "withdrawn";
+            /** Drafttitleen */
+            draftTitleEn: string;
+            /** Drafttitleta */
+            draftTitleTa: string;
+            /** Draftbodyen */
+            draftBodyEn: string;
+            /** Draftbodyta */
+            draftBodyTa: string;
+            /** Draftimageid */
+            draftImageId: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Withdrawnat */
+            withdrawnAt: string | null;
+            /** Withdrawalreasonen */
+            withdrawalReasonEn: string | null;
+            /** Withdrawalreasonta */
+            withdrawalReasonTa: string | null;
+            /** Signed */
+            signed: boolean;
+            /** Revisions */
+            revisions: components["schemas"]["OfficialRevisionOut"][];
+        };
         /** ManagedSurveyFileOut */
         ManagedSurveyFileOut: {
             /**
@@ -13168,6 +13542,279 @@ export interface components {
         OfferIn: {
             /** Membercode */
             memberCode: string;
+        };
+        /**
+         * OfficialCheckOut
+         * @description FR-AUT-005: what a check by code or link says. Nothing about the person checking is kept.
+         */
+        OfficialCheckOut: {
+            /**
+             * Checkcode
+             * @description The code as understood, or null when the text held none
+             */
+            checkCode: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "verified" | "withdrawn" | "not_verified";
+            /** Problem */
+            problem: ("no_matching_record" | "signature_invalid") | null;
+            /** @description Only for a verified or withdrawn record */
+            statement: components["schemas"]["OfficialStatementFileOut"] | null;
+        };
+        /** OfficialCorrectionIn */
+        OfficialCorrectionIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /**
+             * Imageid
+             * @description The current image to keep it, a new one, or none
+             */
+            imageId?: string | null;
+            /**
+             * Reasonen
+             * @description Shown with the correction
+             */
+            reasonEn: string;
+            /** Reasonta */
+            reasonTa: string;
+        };
+        /**
+         * OfficialDraftIn
+         * @description A draft may be incomplete; both languages are needed before it can be signed.
+         */
+        OfficialDraftIn: {
+            /**
+             * Titleen
+             * @default
+             */
+            titleEn: string;
+            /**
+             * Titleta
+             * @default
+             */
+            titleTa: string;
+            /**
+             * Bodyen
+             * @default
+             */
+            bodyEn: string;
+            /**
+             * Bodyta
+             * @default
+             */
+            bodyTa: string;
+            /** Imageid */
+            imageId?: string | null;
+        };
+        /** OfficialImageOut */
+        OfficialImageOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
+            /** Sha256 */
+            sha256: string;
+        };
+        /** OfficialLinkOut */
+        OfficialLinkOut: {
+            /** Key */
+            key: string;
+            /** Labelen */
+            labelEn: string;
+            /** Labelta */
+            labelTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Url */
+            url: string;
+        };
+        /**
+         * OfficialLinksOut
+         * @description M29: the Election Commission's own services, each labelled "Election Commission information" (FR-ELX-004).
+         */
+        OfficialLinksOut: {
+            /** Links */
+            links: components["schemas"]["OfficialLinkOut"][];
+            /** Labelen */
+            labelEn: string;
+            /** Labelta */
+            labelTa: string;
+            /**
+             * Pollingstationlocator
+             * @description False until an authorised dataset exists (OD-37)
+             */
+            pollingStationLocator: boolean;
+        };
+        /** OfficialRevisionOut */
+        OfficialRevisionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Revision */
+            revision: number;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Imageid */
+            imageId: string | null;
+            /** Imagewidth */
+            imageWidth: number | null;
+            /** Imageheight */
+            imageHeight: number | null;
+            /** Imagesha256 */
+            imageSha256: string | null;
+            /**
+             * Correctionreasonen
+             * @description Null on the original; every correction says why (BR-150)
+             */
+            correctionReasonEn: string | null;
+            /** Correctionreasonta */
+            correctionReasonTa: string | null;
+            /** Publishernameen */
+            publisherNameEn: string;
+            /** Publishernameta */
+            publisherNameTa: string;
+            /**
+             * Publishedat
+             * Format: date-time
+             */
+            publishedAt: string;
+            /**
+             * Verified
+             * @description The signature verifies against the published key now (BR-148)
+             */
+            verified: boolean;
+            /** Keyid */
+            keyId: string;
+            /**
+             * Signature
+             * @description Ed25519 over signedPayload (UTF-8), base64
+             */
+            signature: string;
+            /** Signedpayload */
+            signedPayload: string;
+        };
+        /** OfficialStatementFileOut */
+        OfficialStatementFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Checkcode */
+            checkCode: string;
+            /** Checklink */
+            checkLink: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "published" | "withdrawn";
+            /**
+             * Signed
+             * @description Every revision verifies; only then is it labelled "Official statement" (FR-AUT-003)
+             */
+            signed: boolean;
+            /**
+             * Firstpublishedat
+             * Format: date-time
+             */
+            firstPublishedAt: string;
+            /**
+             * Lastpublishedat
+             * Format: date-time
+             */
+            lastPublishedAt: string;
+            /** Revisioncount */
+            revisionCount: number;
+            latest: components["schemas"]["OfficialRevisionOut"];
+            /** Withdrawnat */
+            withdrawnAt: string | null;
+            /** Withdrawalreasonen */
+            withdrawalReasonEn: string | null;
+            /** Withdrawalreasonta */
+            withdrawalReasonTa: string | null;
+            /**
+             * Revisions
+             * @description Oldest first; the original is never changed (BR-150)
+             */
+            revisions: components["schemas"]["OfficialRevisionOut"][];
+        };
+        /**
+         * OfficialStatementOut
+         * @description M47: the latest revision of a published or withdrawn statement, and its history.
+         */
+        OfficialStatementOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Checkcode */
+            checkCode: string;
+            /** Checklink */
+            checkLink: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "published" | "withdrawn";
+            /**
+             * Signed
+             * @description Every revision verifies; only then is it labelled "Official statement" (FR-AUT-003)
+             */
+            signed: boolean;
+            /**
+             * Firstpublishedat
+             * Format: date-time
+             */
+            firstPublishedAt: string;
+            /**
+             * Lastpublishedat
+             * Format: date-time
+             */
+            lastPublishedAt: string;
+            /** Revisioncount */
+            revisionCount: number;
+            latest: components["schemas"]["OfficialRevisionOut"];
+            /** Withdrawnat */
+            withdrawnAt: string | null;
+            /** Withdrawalreasonen */
+            withdrawalReasonEn: string | null;
+            /** Withdrawalreasonta */
+            withdrawalReasonTa: string | null;
+        };
+        /** OfficialWithdrawIn */
+        OfficialWithdrawIn: {
+            /**
+             * Reasonen
+             * @description Shown to everyone who checks it
+             */
+            reasonEn: string;
+            /** Reasonta */
+            reasonTa: string;
         };
         /** OfflineSyncIn */
         OfflineSyncIn: {
@@ -14767,6 +15414,28 @@ export interface components {
             /** Gnname */
             gnName: string | null;
         };
+        /** PublicKeyOut */
+        PublicKeyOut: {
+            /** Keyid */
+            keyId: string;
+            /**
+             * Algorithm
+             * @constant
+             */
+            algorithm: "ed25519";
+            /**
+             * Publickey
+             * @description The raw 32-byte Ed25519 public key, base64-encoded
+             */
+            publicKey: string;
+            /**
+             * Firstusedat
+             * Format: date-time
+             */
+            firstUsedAt: string;
+            /** Current */
+            current: boolean;
+        };
         /** PublicReceiptOut */
         PublicReceiptOut: {
             /** Caseref */
@@ -14859,6 +15528,48 @@ export interface components {
             approve: boolean;
             /** Reason */
             reason?: string | null;
+        };
+        /** PublisherIn */
+        PublisherIn: {
+            /** Membercode */
+            memberCode: string;
+            /**
+             * Nameen
+             * @description Shown on every statement: a role or office
+             */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+        };
+        /** PublisherOut */
+        PublisherOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Membercode */
+            memberCode: string;
+            /** Fullname */
+            fullName: string;
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "active" | "revoked";
+            /**
+             * Registeredat
+             * Format: date-time
+             */
+            registeredAt: string;
+            /** Revokedat */
+            revokedAt: string | null;
+            /** Revokereason */
+            revokeReason: string | null;
         };
         /**
          * QualityOut
@@ -15765,6 +16476,11 @@ export interface components {
             /** Reviews */
             reviews: components["schemas"]["ReviewOut"][];
         };
+        /** RevokeIn */
+        RevokeIn: {
+            /** Reason */
+            reason: string;
+        };
         /** RevokeInput */
         RevokeInput: {
             /** Reason */
@@ -16300,6 +17016,26 @@ export interface components {
              */
             refreshToken: string;
             member: components["schemas"]["MemberProfile"];
+        };
+        /** SigningStatusOut */
+        SigningStatusOut: {
+            /**
+             * Available
+             * @description False while no signing key is configured (INT-24): publishing is blocked
+             */
+            available: boolean;
+            /** Keyid */
+            keyId: string | null;
+            /**
+             * Algorithm
+             * @default ed25519
+             * @constant
+             */
+            algorithm: "ed25519";
+            /** Publickey */
+            publicKey: string | null;
+            /** @description The caller's registration; without one, signing is unavailable */
+            myPublisher: components["schemas"]["PublisherOut"] | null;
         };
         /** SimpleQueueCount */
         SimpleQueueCount: {
@@ -29453,6 +30189,772 @@ export interface operations {
             };
         };
     };
+    list_public_keys_v1_content_official_keys_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicKeyOut"][];
+                };
+            };
+        };
+    };
+    check_statement_v1_content_official_check_get: {
+        parameters: {
+            query: {
+                /** @description A check code, or a check link */
+                code: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfficialCheckOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_requests, with Retry-After */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_public_image_v1_content_official_images__image_id__get: {
+        parameters: {
+            query?: {
+                size?: "display" | "thumb";
+            };
+            header?: never;
+            path: {
+                image_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/webp": string;
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_signing_status_v1_content_official_manage_signing_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SigningStatusOut"];
+                };
+            };
+        };
+    };
+    list_publishers_v1_content_official_publishers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublisherOut"][];
+                };
+            };
+            /** @description forbidden, platform_scope_required, own_record or not_a_registered_publisher */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description official_refused, with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    register_publisher_v1_content_official_publishers_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublisherIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublisherOut"];
+                };
+            };
+            /** @description forbidden, platform_scope_required, own_record or not_a_registered_publisher */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description official_refused, with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    revoke_publisher_v1_content_official_publishers__publisher_id__revoke_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                publisher_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RevokeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublisherOut"];
+                };
+            };
+            /** @description forbidden, platform_scope_required, own_record or not_a_registered_publisher */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description official_refused, with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_managed_v1_content_official_manage_get: {
+        parameters: {
+            query?: {
+                state?: ("draft" | "published" | "withdrawn")[] | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedStatementOut"][];
+                };
+            };
+            /** @description forbidden, platform_scope_required, own_record or not_a_registered_publisher */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description official_refused, with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    create_draft_v1_content_official_manage_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfficialDraftIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedStatementOut"];
+                };
+            };
+            /** @description forbidden, platform_scope_required, own_record or not_a_registered_publisher */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description official_refused, with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    upload_image_v1_content_official_manage_images_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "image/jpeg": string;
+                "image/png": string;
+                "image/webp": string;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfficialImageOut"];
+                };
+            };
+            /** @description forbidden, platform_scope_required, own_record or not_a_registered_publisher */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description too_large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description unsupported_type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description official_refused, with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_draft_image_v1_content_official_manage_images__image_id__get: {
+        parameters: {
+            query?: {
+                size?: "display" | "thumb";
+            };
+            header?: never;
+            path: {
+                image_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/webp": string;
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_managed_v1_content_official_manage__statement_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                statement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedStatementOut"];
+                };
+            };
+            /** @description forbidden, platform_scope_required, own_record or not_a_registered_publisher */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description official_refused, with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    save_draft_v1_content_official_manage__statement_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                statement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfficialDraftIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedStatementOut"];
+                };
+            };
+            /** @description forbidden, platform_scope_required, own_record or not_a_registered_publisher */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description official_refused, with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sign_and_publish_v1_content_official_manage__statement_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                statement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedStatementOut"];
+                };
+            };
+            /** @description forbidden, platform_scope_required, own_record or not_a_registered_publisher */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description silence_period, with the period refs (NFR-ELC-03) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description official_refused, with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description signing_unavailable: no signing key is configured (INT-24) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    publish_correction_v1_content_official_manage__statement_id__corrections_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                statement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfficialCorrectionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedStatementOut"];
+                };
+            };
+            /** @description forbidden, platform_scope_required, own_record or not_a_registered_publisher */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description silence_period, with the period refs (NFR-ELC-03) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description official_refused, with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description signing_unavailable: no signing key is configured (INT-24) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    withdraw_statement_v1_content_official_manage__statement_id__withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                statement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfficialWithdrawIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedStatementOut"];
+                };
+            };
+            /** @description forbidden, platform_scope_required, own_record or not_a_registered_publisher */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description official_refused, with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_official_statements_v1_content_official_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfficialStatementOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_official_statement_v1_content_official__statement_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                statement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfficialStatementFileOut"];
+                };
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     read_home_v1_home_get: {
         parameters: {
             query?: never;
@@ -33034,6 +34536,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ElectionBannerOut"][];
+                };
+            };
+        };
+    };
+    read_official_links_v1_election_official_links_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfficialLinksOut"];
                 };
             };
         };

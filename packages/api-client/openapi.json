@@ -17220,6 +17220,995 @@
         }
       }
     },
+    "/v1/content/official/keys": {
+      "get": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "List Public Keys",
+        "description": "Every key that has signed a statement, and the current one: verify any signature with these.",
+        "operationId": "list_public_keys_v1_content_official_keys_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PublicKeyOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Public Keys V1 Content Official Keys Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/official/check": {
+      "get": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "Check Statement",
+        "description": "M48, FR-AUT-005: open to anyone, no session needed. Verified, withdrawn, or not verified\n(\"No matching official record\").",
+        "operationId": "check_statement_v1_content_official_check_get",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "description": "A check code, or a check link",
+              "title": "Code"
+            },
+            "description": "A check code, or a check link"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficialCheckOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "too_many_requests, with Retry-After"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/official/images/{image_id}": {
+      "get": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "Read Public Image",
+        "description": "An image a published statement carries. Its SHA-256 (display size) is part of the signature.",
+        "operationId": "read_public_image_v1_content_official_images__image_id__get",
+        "parameters": [
+          {
+            "name": "image_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Image Id"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "display",
+                "thumb"
+              ],
+              "type": "string",
+              "default": "display",
+              "title": "Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/official/manage/signing": {
+      "get": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "Read Signing Status",
+        "description": "Whether signing is available (a key is configured) and whether the caller is a registered publisher.",
+        "operationId": "read_signing_status_v1_content_official_manage_signing_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SigningStatusOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/content/official/publishers": {
+      "get": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "List Publishers",
+        "operationId": "list_publishers_v1_content_official_publishers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PublisherOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Publishers V1 Content Official Publishers Get"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, platform_scope_required, own_record or not_a_registered_publisher"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "official_refused, with problems"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "Register Publisher",
+        "description": "FR-AUT-001: Tier 5 registers someone who holds content.sign_publish; never themselves.",
+        "operationId": "register_publisher_v1_content_official_publishers_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublisherIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublisherOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, platform_scope_required, own_record or not_a_registered_publisher"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "official_refused, with problems"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/content/official/publishers/{publisher_id}/revoke": {
+      "post": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "Revoke Publisher",
+        "description": "Their signed statements keep verifying; they cannot sign again.",
+        "operationId": "revoke_publisher_v1_content_official_publishers__publisher_id__revoke_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "publisher_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Publisher Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublisherOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, platform_scope_required, own_record or not_a_registered_publisher"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "official_refused, with problems"
+          }
+        }
+      }
+    },
+    "/v1/content/official/manage": {
+      "get": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "List Managed",
+        "description": "Drafts, published and withdrawn statements, latest change first.",
+        "operationId": "list_managed_v1_content_official_manage_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "draft",
+                      "published",
+                      "withdrawn"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ManagedStatementOut"
+                  },
+                  "title": "Response List Managed V1 Content Official Manage Get"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, platform_scope_required, own_record or not_a_registered_publisher"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "official_refused, with problems"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "Create Draft",
+        "operationId": "create_draft_v1_content_official_manage_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfficialDraftIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedStatementOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, platform_scope_required, own_record or not_a_registered_publisher"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "official_refused, with problems"
+          }
+        }
+      }
+    },
+    "/v1/content/official/manage/images": {
+      "post": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "Upload Image",
+        "description": "JPEG, PNG or WebP up to 15 MB; kept as WebP without metadata. Attach it to a draft or a correction.",
+        "operationId": "upload_image_v1_content_official_manage_images_post",
+        "requestBody": {
+          "content": {
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/webp": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficialImageOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, platform_scope_required, own_record or not_a_registered_publisher"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "official_refused, with problems"
+          },
+          "413": {
+            "description": "too_large"
+          },
+          "415": {
+            "description": "unsupported_type"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/content/official/manage/images/{image_id}": {
+      "get": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "Read Draft Image",
+        "operationId": "read_draft_image_v1_content_official_manage_images__image_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "image_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Image Id"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "display",
+                "thumb"
+              ],
+              "type": "string",
+              "default": "display",
+              "title": "Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/official/manage/{statement_id}": {
+      "get": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "Read Managed",
+        "operationId": "read_managed_v1_content_official_manage__statement_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "statement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Statement Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedStatementOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, platform_scope_required, own_record or not_a_registered_publisher"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "official_refused, with problems"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "Save Draft",
+        "description": "Only while it is a draft; once signed, it changes only by a correction.",
+        "operationId": "save_draft_v1_content_official_manage__statement_id__put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "statement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Statement Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfficialDraftIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedStatementOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, platform_scope_required, own_record or not_a_registered_publisher"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "official_refused, with problems"
+          }
+        }
+      }
+    },
+    "/v1/content/official/manage/{statement_id}/publish": {
+      "post": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "Sign And Publish",
+        "description": "FR-AUT-002: signs the draft (and its image) as revision 1 and gives it its public check code.",
+        "operationId": "sign_and_publish_v1_content_official_manage__statement_id__publish_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "statement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Statement Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedStatementOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, platform_scope_required, own_record or not_a_registered_publisher"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "official_refused, with problems"
+          },
+          "409": {
+            "description": "silence_period, with the period refs (NFR-ELC-03)"
+          },
+          "503": {
+            "description": "signing_unavailable: no signing key is configured (INT-24)"
+          }
+        }
+      }
+    },
+    "/v1/content/official/manage/{statement_id}/corrections": {
+      "post": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "Publish Correction",
+        "description": "BR-150: a new signed revision with its reason; the original and every earlier revision stay.",
+        "operationId": "publish_correction_v1_content_official_manage__statement_id__corrections_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "statement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Statement Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfficialCorrectionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedStatementOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, platform_scope_required, own_record or not_a_registered_publisher"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "official_refused, with problems"
+          },
+          "409": {
+            "description": "silence_period, with the period refs (NFR-ELC-03)"
+          },
+          "503": {
+            "description": "signing_unavailable: no signing key is configured (INT-24)"
+          }
+        }
+      }
+    },
+    "/v1/content/official/manage/{statement_id}/withdraw": {
+      "post": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "Withdraw Statement",
+        "description": "By a registered publisher or Tier 5; every check then says it was withdrawn, and why.",
+        "operationId": "withdraw_statement_v1_content_official_manage__statement_id__withdraw_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "statement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Statement Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfficialWithdrawIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedStatementOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, platform_scope_required, own_record or not_a_registered_publisher"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "official_refused, with problems"
+          }
+        }
+      }
+    },
+    "/v1/content/official": {
+      "get": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "List Official Statements",
+        "description": "M47: published and withdrawn statements, latest first. \"Official statement\" only where signed (BR-148).",
+        "operationId": "list_official_statements_v1_content_official_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OfficialStatementOut"
+                  },
+                  "title": "Response List Official Statements V1 Content Official Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content/official/{statement_id}": {
+      "get": {
+        "tags": [
+          "official-content"
+        ],
+        "summary": "Read Official Statement",
+        "description": "M47: the statement with its full revision history (FR-AUT-004).",
+        "operationId": "read_official_statement_v1_content_official__statement_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "statement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Statement Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficialStatementFileOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/home": {
       "get": {
         "tags": [
@@ -22787,6 +23776,36 @@
                   },
                   "type": "array",
                   "title": "Response Read Current Elections V1 Election Current Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/election/official-links": {
+      "get": {
+        "tags": [
+          "election"
+        ],
+        "summary": "Read Official Links",
+        "description": "M29: links to the Election Commission's services (FR-ELX-002, 003). Opened in the browser; nothing is\ncollected or stored here, and there is no polling-station locator of the app's own (OD-37).",
+        "operationId": "read_official_links_v1_election_official_links_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficialLinksOut"
                 }
               }
             }
@@ -35383,6 +36402,155 @@
         ],
         "title": "ManagedOpportunityOut"
       },
+      "ManagedStatementOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "statementRef": {
+            "type": "string",
+            "title": "Statementref"
+          },
+          "checkCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkcode"
+          },
+          "checkLink": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checklink"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "draftTitleEn": {
+            "type": "string",
+            "title": "Drafttitleen"
+          },
+          "draftTitleTa": {
+            "type": "string",
+            "title": "Drafttitleta"
+          },
+          "draftBodyEn": {
+            "type": "string",
+            "title": "Draftbodyen"
+          },
+          "draftBodyTa": {
+            "type": "string",
+            "title": "Draftbodyta"
+          },
+          "draftImageId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Draftimageid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "withdrawnAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawnat"
+          },
+          "withdrawalReasonEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawalreasonen"
+          },
+          "withdrawalReasonTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawalreasonta"
+          },
+          "signed": {
+            "type": "boolean",
+            "title": "Signed"
+          },
+          "revisions": {
+            "items": {
+              "$ref": "#/components/schemas/OfficialRevisionOut"
+            },
+            "type": "array",
+            "title": "Revisions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "statementRef",
+          "checkCode",
+          "checkLink",
+          "state",
+          "draftTitleEn",
+          "draftTitleTa",
+          "draftBodyEn",
+          "draftBodyTa",
+          "draftImageId",
+          "createdAt",
+          "updatedAt",
+          "withdrawnAt",
+          "withdrawalReasonEn",
+          "withdrawalReasonTa",
+          "signed",
+          "revisions"
+        ],
+        "title": "ManagedStatementOut",
+        "description": "D30: a statement as publishers see it: the draft while it is one, then its signed revisions."
+      },
       "ManagedSurveyFileOut": {
         "properties": {
           "id": {
@@ -38238,6 +39406,651 @@
           "memberCode"
         ],
         "title": "OfferIn"
+      },
+      "OfficialCheckOut": {
+        "properties": {
+          "checkCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkcode",
+            "description": "The code as understood, or null when the text held none"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "withdrawn",
+              "not_verified"
+            ],
+            "title": "Status"
+          },
+          "problem": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "no_matching_record",
+                  "signature_invalid"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Problem"
+          },
+          "statement": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OfficialStatementFileOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Only for a verified or withdrawn record"
+          }
+        },
+        "type": "object",
+        "required": [
+          "checkCode",
+          "status",
+          "problem",
+          "statement"
+        ],
+        "title": "OfficialCheckOut",
+        "description": "FR-AUT-005: what a check by code or link says. Nothing about the person checking is kept."
+      },
+      "OfficialCorrectionIn": {
+        "properties": {
+          "titleEn": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "maxLength": 6000,
+            "minLength": 1,
+            "title": "Bodyta"
+          },
+          "imageId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imageid",
+            "description": "The current image to keep it, a new one, or none"
+          },
+          "reasonEn": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reasonen",
+            "description": "Shown with the correction"
+          },
+          "reasonTa": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 3,
+            "title": "Reasonta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "titleEn",
+          "titleTa",
+          "bodyEn",
+          "bodyTa",
+          "reasonEn",
+          "reasonTa"
+        ],
+        "title": "OfficialCorrectionIn"
+      },
+      "OfficialDraftIn": {
+        "properties": {
+          "titleEn": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Titleen",
+            "default": ""
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Titleta",
+            "default": ""
+          },
+          "bodyEn": {
+            "type": "string",
+            "maxLength": 5000,
+            "title": "Bodyen",
+            "default": ""
+          },
+          "bodyTa": {
+            "type": "string",
+            "maxLength": 6000,
+            "title": "Bodyta",
+            "default": ""
+          },
+          "imageId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imageid"
+          }
+        },
+        "type": "object",
+        "title": "OfficialDraftIn",
+        "description": "A draft may be incomplete; both languages are needed before it can be signed."
+      },
+      "OfficialImageOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "width",
+          "height",
+          "sha256"
+        ],
+        "title": "OfficialImageOut"
+      },
+      "OfficialLinkOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "labelEn": {
+            "type": "string",
+            "title": "Labelen"
+          },
+          "labelTa": {
+            "type": "string",
+            "title": "Labelta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "labelEn",
+          "labelTa",
+          "descriptionEn",
+          "descriptionTa",
+          "url"
+        ],
+        "title": "OfficialLinkOut"
+      },
+      "OfficialLinksOut": {
+        "properties": {
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/OfficialLinkOut"
+            },
+            "type": "array",
+            "title": "Links"
+          },
+          "labelEn": {
+            "type": "string",
+            "title": "Labelen"
+          },
+          "labelTa": {
+            "type": "string",
+            "title": "Labelta"
+          },
+          "pollingStationLocator": {
+            "type": "boolean",
+            "title": "Pollingstationlocator",
+            "description": "False until an authorised dataset exists (OD-37)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "links",
+          "labelEn",
+          "labelTa",
+          "pollingStationLocator"
+        ],
+        "title": "OfficialLinksOut",
+        "description": "M29: the Election Commission's own services, each labelled \"Election Commission information\" (FR-ELX-004)."
+      },
+      "OfficialRevisionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "type": "string",
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "title": "Bodyta"
+          },
+          "imageId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imageid"
+          },
+          "imageWidth": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imagewidth"
+          },
+          "imageHeight": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imageheight"
+          },
+          "imageSha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imagesha256"
+          },
+          "correctionReasonEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correctionreasonen",
+            "description": "Null on the original; every correction says why (BR-150)"
+          },
+          "correctionReasonTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correctionreasonta"
+          },
+          "publisherNameEn": {
+            "type": "string",
+            "title": "Publishernameen"
+          },
+          "publisherNameTa": {
+            "type": "string",
+            "title": "Publishernameta"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Publishedat"
+          },
+          "verified": {
+            "type": "boolean",
+            "title": "Verified",
+            "description": "The signature verifies against the published key now (BR-148)"
+          },
+          "keyId": {
+            "type": "string",
+            "title": "Keyid"
+          },
+          "signature": {
+            "type": "string",
+            "title": "Signature",
+            "description": "Ed25519 over signedPayload (UTF-8), base64"
+          },
+          "signedPayload": {
+            "type": "string",
+            "title": "Signedpayload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "revision",
+          "titleEn",
+          "titleTa",
+          "bodyEn",
+          "bodyTa",
+          "imageId",
+          "imageWidth",
+          "imageHeight",
+          "imageSha256",
+          "correctionReasonEn",
+          "correctionReasonTa",
+          "publisherNameEn",
+          "publisherNameTa",
+          "publishedAt",
+          "verified",
+          "keyId",
+          "signature",
+          "signedPayload"
+        ],
+        "title": "OfficialRevisionOut"
+      },
+      "OfficialStatementFileOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "checkCode": {
+            "type": "string",
+            "title": "Checkcode"
+          },
+          "checkLink": {
+            "type": "string",
+            "title": "Checklink"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "published",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "signed": {
+            "type": "boolean",
+            "title": "Signed",
+            "description": "Every revision verifies; only then is it labelled \"Official statement\" (FR-AUT-003)"
+          },
+          "firstPublishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Firstpublishedat"
+          },
+          "lastPublishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Lastpublishedat"
+          },
+          "revisionCount": {
+            "type": "integer",
+            "title": "Revisioncount"
+          },
+          "latest": {
+            "$ref": "#/components/schemas/OfficialRevisionOut"
+          },
+          "withdrawnAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawnat"
+          },
+          "withdrawalReasonEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawalreasonen"
+          },
+          "withdrawalReasonTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawalreasonta"
+          },
+          "revisions": {
+            "items": {
+              "$ref": "#/components/schemas/OfficialRevisionOut"
+            },
+            "type": "array",
+            "title": "Revisions",
+            "description": "Oldest first; the original is never changed (BR-150)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "checkCode",
+          "checkLink",
+          "state",
+          "signed",
+          "firstPublishedAt",
+          "lastPublishedAt",
+          "revisionCount",
+          "latest",
+          "withdrawnAt",
+          "withdrawalReasonEn",
+          "withdrawalReasonTa",
+          "revisions"
+        ],
+        "title": "OfficialStatementFileOut"
+      },
+      "OfficialStatementOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "checkCode": {
+            "type": "string",
+            "title": "Checkcode"
+          },
+          "checkLink": {
+            "type": "string",
+            "title": "Checklink"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "published",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "signed": {
+            "type": "boolean",
+            "title": "Signed",
+            "description": "Every revision verifies; only then is it labelled \"Official statement\" (FR-AUT-003)"
+          },
+          "firstPublishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Firstpublishedat"
+          },
+          "lastPublishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Lastpublishedat"
+          },
+          "revisionCount": {
+            "type": "integer",
+            "title": "Revisioncount"
+          },
+          "latest": {
+            "$ref": "#/components/schemas/OfficialRevisionOut"
+          },
+          "withdrawnAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawnat"
+          },
+          "withdrawalReasonEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawalreasonen"
+          },
+          "withdrawalReasonTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawalreasonta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "checkCode",
+          "checkLink",
+          "state",
+          "signed",
+          "firstPublishedAt",
+          "lastPublishedAt",
+          "revisionCount",
+          "latest",
+          "withdrawnAt",
+          "withdrawalReasonEn",
+          "withdrawalReasonTa"
+        ],
+        "title": "OfficialStatementOut",
+        "description": "M47: the latest revision of a published or withdrawn statement, and its history."
+      },
+      "OfficialWithdrawIn": {
+        "properties": {
+          "reasonEn": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reasonen",
+            "description": "Shown to everyone who checks it"
+          },
+          "reasonTa": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 3,
+            "title": "Reasonta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reasonEn",
+          "reasonTa"
+        ],
+        "title": "OfficialWithdrawIn"
       },
       "OfflineSyncIn": {
         "properties": {
@@ -42525,6 +44338,42 @@
         "title": "PublicCardOut",
         "description": "What a shared public card may show (FR-CARD-012, BR-067): no QR, no identity numbers."
       },
+      "PublicKeyOut": {
+        "properties": {
+          "keyId": {
+            "type": "string",
+            "title": "Keyid"
+          },
+          "algorithm": {
+            "type": "string",
+            "const": "ed25519",
+            "title": "Algorithm"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "Publickey",
+            "description": "The raw 32-byte Ed25519 public key, base64-encoded"
+          },
+          "firstUsedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Firstusedat"
+          },
+          "current": {
+            "type": "boolean",
+            "title": "Current"
+          }
+        },
+        "type": "object",
+        "required": [
+          "keyId",
+          "algorithm",
+          "publicKey",
+          "firstUsedAt",
+          "current"
+        ],
+        "title": "PublicKeyOut"
+      },
       "PublicReceiptOut": {
         "properties": {
           "caseRef": {
@@ -42791,6 +44640,110 @@
           "approve"
         ],
         "title": "PublicationDecisionIn"
+      },
+      "PublisherIn": {
+        "properties": {
+          "memberCode": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 3,
+            "title": "Membercode"
+          },
+          "nameEn": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Nameen",
+            "description": "Shown on every statement: a role or office"
+          },
+          "nameTa": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Nameta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberCode",
+          "nameEn",
+          "nameTa"
+        ],
+        "title": "PublisherIn"
+      },
+      "PublisherOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "nameEn": {
+            "type": "string",
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "title": "Nameta"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "revoked"
+            ],
+            "title": "State"
+          },
+          "registeredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Registeredat"
+          },
+          "revokedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revokedat"
+          },
+          "revokeReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revokereason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "memberCode",
+          "fullName",
+          "nameEn",
+          "nameTa",
+          "state",
+          "registeredAt",
+          "revokedAt",
+          "revokeReason"
+        ],
+        "title": "PublisherOut"
       },
       "QualityOut": {
         "properties": {
@@ -45064,6 +47017,21 @@
         ],
         "title": "RevisionOut"
       },
+      "RevokeIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "RevokeIn"
+      },
       "RevokeInput": {
         "properties": {
           "reason": {
@@ -46300,6 +48268,62 @@
         ],
         "title": "SignInResponse",
         "description": "The tokens are returned for mobile apps and the dashboard's server; browsers use the HttpOnly cookies."
+      },
+      "SigningStatusOut": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available",
+            "description": "False while no signing key is configured (INT-24): publishing is blocked"
+          },
+          "keyId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keyid"
+          },
+          "algorithm": {
+            "type": "string",
+            "const": "ed25519",
+            "title": "Algorithm",
+            "default": "ed25519"
+          },
+          "publicKey": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publickey"
+          },
+          "myPublisher": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PublisherOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The caller's registration; without one, signing is unavailable"
+          }
+        },
+        "type": "object",
+        "required": [
+          "available",
+          "keyId",
+          "publicKey",
+          "myPublisher"
+        ],
+        "title": "SigningStatusOut"
       },
       "SimpleQueueCount": {
         "properties": {
