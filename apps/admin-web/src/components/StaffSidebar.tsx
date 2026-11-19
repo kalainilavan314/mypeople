@@ -394,6 +394,8 @@ function getModuleIcon(href: string) {
     case '/scorecards':
       return ScorecardsIcon;
     case '/support':
+    case '/disaster':
+    case '/blood-requests':
       return SupportIcon;
     case '/town-halls':
       return TownHallsIcon;

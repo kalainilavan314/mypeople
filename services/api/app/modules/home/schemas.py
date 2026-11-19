@@ -84,6 +84,7 @@ class HomeOut(CamelModel):
     tabs: list[HomeFeatureOut] = Field(description="Events, Card and Gallery, open or locked")
     hub: HomeHubOut
     promises: HomePromisesOut
+    safety_alerts: int = Field(description="Current official warnings for the home area (M35's Home banner); 0 while off")
 
     @classmethod
     def build(cls, home: Home) -> "HomeOut":
@@ -114,4 +115,5 @@ class HomeOut(CamelModel):
             tabs=[HomeFeatureOut.build(lock) for lock in tabs],
             hub=HomeHubOut(gn_label=home.gn_name, services=[HomeFeatureOut.build(lock) for lock in home.hub]),
             promises=HomePromisesOut.build(home.promises),
+            safety_alerts=home.safety_alerts,
         )

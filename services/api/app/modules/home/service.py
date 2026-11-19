@@ -20,6 +20,7 @@ from datetime import UTC, datetime
 from sqlalchemy.orm import Session
 
 from app.modules.access import repository as access_repository
+from app.modules.assistance.alerts import repository as alerts
 from app.modules.community.promises import repository as promises
 from app.modules.events import repository as events
 from app.modules.events.repository import EventListItem, StoredEvent
@@ -63,6 +64,7 @@ class Home:
     features: list[Lock]
     hub: list[Lock]
     promises: PromiseSummary
+    safety_alerts: int  # M35's Home banner: current official warnings for the home area
 
 
 def _lock(feature: str, identity_verified: bool, membership_active: bool, closed: frozenset[str]) -> Lock:
@@ -121,7 +123,16 @@ def home(db: Session, member_id: uuid.UUID, *, flags_enforced: bool = False) -> 
         features=[_lock(f, verified, active, closed) for f in (*rules.QUICK_ACTIONS, *TABS_WITH_LOCKS)],
         hub=[_lock(s, verified, active, closed) for s in rules.HUB_SERVICES],
         promises=_promises(db, area_keys, verified, active, closed),
+        safety_alerts=_safety_alerts(db, area_keys, now, closed),
     )
+
+
+def _safety_alerts(db: Session, area_keys: list[str], now: datetime, closed: frozenset[str]) -> int:
+    """FR-DIS-002: by the home area, never GPS; nothing is read while the module is switched off."""
+    if "disaster_alerts" in closed:
+        return 0
+    local = [key for key in area_keys if key.split(":", 1)[0] in ("district", "ds", "gn")]
+    return len(alerts.for_areas(db, local, current=True, now=now)) if local else 0
 
 
 def _promises(db: Session, area_keys: list[str], verified: bool, active: bool, closed: frozenset[str]) -> PromiseSummary:

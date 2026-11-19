@@ -27,4 +27,13 @@ everyone (`/statistics`).
   caseworker records the consent the applicant gave them. No approved notification fits a waiting
   proposal yet, so the applicant sees it on their request rather than in a push.
 
-Not built yet: disaster relief FR-DIS-001 to 008 (`/v1/alerts`, `/v1/relief`), Phase 3.
+**Status: disaster support built** (Alembic 0048, behind the `disaster_alerts` switch), FR-DIS-001 to 008:
+
+- `alerts/`: `/v1/alerts`. Staff with disaster.relay relay official warnings (Disaster Management Centre and Department of
+  Meteorology only, with the source's own https link, issue time and end time) to District, DS or GN divisions; members
+  there are told at once (FR-MSG-003) and read them by home area (M35, never GPS). Alerts expire at the source's end time,
+  are flagged and raised once with the relayers after 6 hours without a check, keep every check as a revision, and are
+  deleted 2 years after they end. Shelters only from authorised sources, marked possibly out of date after 12 hours.
+  M36 opens an urgent case here (`emergency_needs`), and Verified, Active members offer relief help (FR-DIS-004).
+- `relief/`: `/v1/relief` for relief.logistics. Stock per store (a District or DS division) and relief handed out to an
+  AS- case or a group at a site, never a name, behind its own row-level firewall and append-only (FR-DIS-005).

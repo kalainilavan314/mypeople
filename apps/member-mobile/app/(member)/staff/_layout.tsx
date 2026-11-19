@@ -59,6 +59,8 @@ function StaffStack() {
       <Stack.Screen name="field-visits/sync" options={{ title: t('s.fieldVisits.syncTitle') }} />
       <Stack.Screen name="committees/index" options={{ title: t('s.committees.title') }} />
       <Stack.Screen name="committees/[id]" options={{ title: t('s.committees.toolsTitle') }} />
+      <Stack.Screen name="relief/index" options={{ title: t('s.relief.title') }} />
+      <Stack.Screen name="relief/record" options={{ title: t('s.relief.recordTitle') }} />
     </Stack>
   );
 }

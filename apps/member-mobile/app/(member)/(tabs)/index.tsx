@@ -85,6 +85,15 @@ function HomeBody({ data }: { data: HomeView }) {
       <MemberWelcomeCard place={place} membershipState={data.membershipState} />
       <ElectionBanner />
 
+      {data.safetyAlerts > 0 ? (
+        <Notice tone="warning" title={t('m.home.safetyBannerTitle', { count: data.safetyAlerts })}>
+          <AppText step="secondary" tone="warning">
+            {t('m.home.safetyBannerBody')}
+          </AppText>
+          <Button label={t('m.home.safetyBannerOpen')} variant="secondary" icon="warning-outline" onPress={() => router.push('/alerts')} />
+        </Notice>
+      ) : null}
+
       {data.layout === 'awaiting_review' && !next ? (
         <Notice tone="warning" title={t('m.home.awaitingTitle')}>
           <AppText step="secondary" tone="warning">

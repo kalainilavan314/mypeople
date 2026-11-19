@@ -43,6 +43,8 @@ HUB_SERVICES = (
     "budgeting",
     "committees",
     "diaspora",
+    "disaster_alerts",
+    "blood_donors",
 )
 
 # Services whose routes sit behind a v1.1 module switch (FR-ARCH-011). While the switch is off the
@@ -65,6 +67,8 @@ GATED_BY_MODULE = {
     "budgeting": "participatory_budgeting",
     "committees": "committees",
     "diaspora": "diaspora",
+    "disaster_alerts": "disaster_alerts",
+    "blood_donors": "blood_donors",
 }
 
 # M18: the Promise Tracker is also shown on Home itself, with a count of the promises made for the
@@ -82,6 +86,8 @@ OPEN_TO_EVERYONE = frozenset(
     | {"budgeting"}
     # M46, FR-DSP-001: supporters abroad register without a verified identity or membership.
     | {"diaspora"}
+    # Official warnings and blood donation are for everyone; neither depends on membership (BR-102).
+    | {"disaster_alerts", "blood_donors"}
 )
 
 

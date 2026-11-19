@@ -6,10 +6,10 @@ Built screens are in the Expo member and staff apps and the Next.js dashboard; n
 
 | App | Screens | Built |
 |---|---|---|
-| Member app | 112 | 84 |
-| Staff app | 18 | 14 |
-| Dashboard | 44 | 33 |
-| **All** | **174** | **131** |
+| Member app | 112 | 88 |
+| Staff app | 18 | 15 |
+| Dashboard | 44 | 35 |
+| **All** | **174** | **138** |
 
 Counted on 13 November 2026, after the Phase 2 build. Three staff app screens (S11, S12, S15) are built on the dashboard rather than in the app; M48 is partly built and not counted. Phase 2 modules stay behind their switches until Gate G2 (`docs/requirements/phase2-status.md`).
 
@@ -114,10 +114,10 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | M32 | Committee space | Wings and committees (SC-31) | 3 | Built | `apps/member-mobile/app/(member)/committees/[id]/` | Moderated threads at `[id]/thread/[threadId]`; no direct messages (OS-17) |
 | M33 | Membership renewal | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 (renewal) | `apps/member-mobile/app/(member)/renewal/` |  |
 | M34 | My certificates | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 | `apps/member-mobile/app/(member)/renewal/` |  |
-| M35 | Alerts and safety | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/alerts/` |  |
-| M36 | Emergency help request | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/alerts/` |  |
-| M37 | Blood donor enrolment | Blood donors (SC-35) | 3 | Blocked: OD-39 (blood donors) | `apps/member-mobile/app/(member)/blood-donors/` |  |
-| M38 | Donation request response | Blood donors (SC-35) | 3 | Blocked: OD-39 | `apps/member-mobile/app/(member)/blood-donors/` |  |
+| M35 | Alerts and safety | Disaster support (SC-34) | 3 (alert relay may move to 2) | Built | `apps/member-mobile/app/(member)/alerts/` | Behind `disaster_alerts`; open to everyone signed in. Alerts by home area or a chosen District/DS/GN (never GPS), alert detail, 90-day history, shelters, relief volunteering (`alerts/volunteer`), last alerts kept on the phone with their time; Home banner |
+| M36 | Emergency help request | Disaster support (SC-34) | 3 (alert relay may move to 2) | Built | `apps/member-mobile/app/(member)/alerts/help.tsx` | Emergency numbers work offline; the request becomes an urgent Community Support case (fails closed while `community_support` is off) |
+| M37 | Blood donor enrolment | Blood donors (SC-35) | 3 | Built | `apps/member-mobile/app/(member)/blood-donors/` | Behind `blood_donors`; OD-39 built as the BRD's recommendation [ASSUMPTION]; go-live still needs OD-39 and DEP-18 |
+| M38 | Donation request response | Blood donors (SC-35) | 3 | Built | `apps/member-mobile/app/(member)/blood-donors/requests/[id].tsx` | Contact passed on only after accept with consent |
 | M39 | Livelihood and welfare guide | Livelihood guide (SC-36) | 3 | To build | `apps/member-mobile/app/(member)/livelihood/` |  |
 | M40 | Guide entry detail | Livelihood guide (SC-36) | 3 | To build | `apps/member-mobile/app/(member)/livelihood/` |  |
 | M41 | Meet your representative | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/representatives/` |  |
@@ -152,7 +152,7 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | S13 | Approvals and escalations | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/approvals.tsx` |  |
 | S14 | Operational notifications | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/alerts.tsx` |  |
 | S15 | Election duty roster manager | Election mode (SC-30) | 2 | Built (dashboard) | `apps/admin-web/src/app/(staff)/roster/`, `apps/admin-web/src/app/(staff)/elections/[id]/roster/` | Shifts, offers, messages and cancellation on the dashboard; members answer and check in with M30 |
-| S16 | Relief distribution record | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/staff/relief/` |  |
+| S16 | Relief distribution record | Disaster support (SC-34) | 3 (alert relay may move to 2) | Built | `apps/member-mobile/app/(member)/staff/relief/` | relief.logistics; quantity checks against the store; AS- case or group, never a name; draft encrypted on the phone |
 | S17 | Appointment calendar | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/staff/appointments/` |  |
 | S18 | Committee coordinator tools | Wings and committees (SC-31) | 3 | Built | `apps/member-mobile/app/(member)/staff/committees/` | Also at `committees/[id]/coordinate` for coordinators without a staff role (PRM-50 is committee-scoped) |
 
@@ -194,8 +194,8 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | D23 | Committees and wings administration | Wings and committees (SC-31) | 3 | Built | `apps/admin-web/src/app/(staff)/committees/` | Diaspora events and counts at `committees/diaspora` |
 | D24 | Field operations oversight | Field operations (SC-32) | 2 | Built | `apps/admin-web/src/app/(staff)/field/` | Counts by area and month; visits deleted after 12 months (OD-38) |
 | D25 | Renewals and certificates | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 | `apps/admin-web/src/app/(staff)/renewals/` |  |
-| D26 | Disaster alerts and relief logistics | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/admin-web/src/app/(staff)/disaster/` |  |
-| D27 | Blood request desk | Blood donors (SC-35) | 3 | Blocked: OD-39 | `apps/admin-web/src/app/(staff)/blood-requests/` |  |
+| D26 | Disaster alerts and relief logistics | Disaster support (SC-34) | 3 (alert relay may move to 2) | Built | `apps/admin-web/src/app/(staff)/disaster/` | Alert composer, 6-hour stale flag, checks and withdrawal, shelters, relief stock and distributions, relief volunteers |
+| D27 | Blood request desk | Blood donors (SC-35) | 3 | Built | `apps/admin-web/src/app/(staff)/blood-requests/` | Partner desk (PRM-55) and Tier 5 oversight (`donor.oversight` [ASSUMPTION]); counts only until a donor consents |
 | D28 | Livelihood guide content | Livelihood guide (SC-36) | 3 | To build | `apps/admin-web/src/app/(staff)/livelihood/` |  |
 | D29 | Representatives and appointments | Meet your representative (SC-37) | 3 | To build | `apps/admin-web/src/app/(staff)/representatives/` |  |
 | D30 | Official content publishing and signing | Official content and fact-checks (SC-41) | 2 | Built | `apps/admin-web/src/app/(staff)/publishing/` | Draft, image, sign and publish, corrections and withdrawal; Tier 5 registers publishers at `publishing/publishers/`. [ASSUMPTION] INT-24: one Ed25519 key in `CONTENT_SIGNING_KEY` until a KMS; without it signing is refused |

@@ -116,4 +116,6 @@ def test_the_registry_lists_every_module_with_the_gate_it_needs(enforced, auth, 
         "official_content": "G3",
         "committees": "G3",
         "diaspora": "G3",
+        "disaster_alerts": "G3",
+        "blood_donors": "G3",
     }

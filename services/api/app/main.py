@@ -48,6 +48,7 @@ from app.modules.engagement.field import router as field_visits
 from app.modules.engagement.committees import router as committees
 from app.modules.diaspora import router as diaspora
 from app.modules.engagement.volunteering import router as volunteering
+from app.modules.engagement.blood_donors import router as blood_donors
 from app.modules.election.roster import router as election_roster
 from app.modules.events import router as events
 from app.modules.features import router as features
@@ -63,6 +64,8 @@ from app.modules.profile import router as profile
 from app.modules.profile.area_changes import router as area_changes
 from app.modules.analytics import router as analytics
 from app.modules.assistance import router as assistance
+from app.modules.assistance.alerts import router as disaster_alerts
+from app.modules.assistance.relief import router as relief
 from app.modules.auth import router as auth
 from app.modules.events.offline import router as events_offline
 from app.modules.identity.appeals import router as identity_appeals
@@ -147,6 +150,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(community_promises.router)
     app.include_router(community_scorecards.router)
     app.include_router(assistance.router)
+    app.include_router(disaster_alerts.router)
+    app.include_router(relief.router)
+    app.include_router(blood_donors.router)
     app.include_router(community_townhalls.router)
     app.include_router(field_visits.router)
     app.include_router(election_roster.router)

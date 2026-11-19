@@ -24,7 +24,7 @@ def last_audit(db_session):
 
 
 def test_tier_five_may_hold_forty_one_of_the_permissions():
-    assert len(EVERY_TIER5) == 41
+    assert len(EVERY_TIER5) == 42  # donor.oversight (OD-39) is the 42nd
     assert "events.checkin_scan" not in EVERY_TIER5  # kept for the tiers that do the work (BRD §9.8)
 
 

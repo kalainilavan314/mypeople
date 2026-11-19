@@ -33,6 +33,8 @@ export const FEATURE_ROUTES: Partial<Record<string, Href>> = {
   budgeting: '/budgeting',
   committees: '/committees',
   diaspora: '/diaspora',
+  disaster_alerts: '/alerts',
+  blood_donors: '/blood-donors',
 };
 
 export const FEATURE_ICONS: Record<string, IconName> = {
@@ -58,6 +60,8 @@ export const FEATURE_ICONS: Record<string, IconName> = {
   budgeting: 'wallet-outline',
   committees: 'people-outline',
   diaspora: 'globe-outline',
+  disaster_alerts: 'warning-outline',
+  blood_donors: 'water-outline',
 };
 
 /** The tile of each feature; in the sage design (18 November 2026) every tile is the same calm sage. */
@@ -84,4 +88,6 @@ export const FEATURE_TINTS: Partial<Record<string, Tint>> = {
   budgeting: 'brand',
   committees: 'teal',
   diaspora: 'green',
+  disaster_alerts: 'amber',
+  blood_donors: 'brand',
 };
