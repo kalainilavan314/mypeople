@@ -17220,6 +17220,1154 @@
         }
       }
     },
+    "/v1/pb/cycles": {
+      "get": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "List Cycles",
+        "description": "M24: published cycles, the member's own areas first. Drafts are never shown.",
+        "operationId": "list_cycles_v1_pb_cycles_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PbMemberCycleSummaryOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Cycles V1 Pb Cycles Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/pb/cycles/{cycle_id}": {
+      "get": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Read Cycle",
+        "description": "M24: budget, fund source, dates, eligibility rules and the projects on the ballot; whether this\nmember may vote (with the reason if not) and whether they already took part.",
+        "operationId": "read_cycle_v1_pb_cycles__cycle_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cycle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cycle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbMemberCycleOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/projects/{project_id}": {
+      "get": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Read Project",
+        "description": "M25: a ballot project with its estimated cost and recorded reviews; once funded, spending and\ncompletion evidence.",
+        "operationId": "read_project_v1_pb_projects__project_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbProjectDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/cycles/{cycle_id}/ballot": {
+      "post": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Cast Ballot",
+        "description": "M26: one private ballot per eligible member per cycle (422 already_voted after that). The\nreceipt code is shown once and never stored; nothing here is logged with the member.",
+        "operationId": "cast_ballot_v1_pb_cycles__cycle_id__ballot_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cycle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cycle Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PbBallotIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbReceiptOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/cycles/{cycle_id}/receipt-check": {
+      "post": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Check Receipt",
+        "description": "FR-PBG-005: confirms a ballot with this receipt was counted, without revealing its choice.",
+        "operationId": "check_receipt_v1_pb_cycles__cycle_id__receipt_check_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cycle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cycle Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PbReceiptCheckIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbReceiptCheckOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/cycles/{cycle_id}/results": {
+      "get": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Read Results",
+        "description": "M27: certified totals only; 422 results_not_certified before two people certify.",
+        "operationId": "read_results_v1_pb_cycles__cycle_id__results_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cycle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cycle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbMemberResultsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/manage/cycles": {
+      "get": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "List Managed",
+        "operationId": "list_managed_v1_pb_manage_cycles_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PbCycleSummaryOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Managed V1 Pb Manage Cycles Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Create Cycle",
+        "operationId": "create_cycle_v1_pb_manage_cycles_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PbCycleIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbStaffCycleOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/pb/manage/cycles/{cycle_id}": {
+      "get": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Read Managed",
+        "operationId": "read_managed_v1_pb_manage_cycles__cycle_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cycle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cycle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbStaffCycleOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Update Cycle",
+        "description": "BR-121: only before voting is scheduled; after publication a change publishes the rules again.",
+        "operationId": "update_cycle_v1_pb_manage_cycles__cycle_id__put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cycle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cycle Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PbCycleIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbStaffCycleOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/manage/cycles/{cycle_id}/move": {
+      "post": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Move Cycle",
+        "description": "Publish the rules (to proposal_intake), review, schedule voting (rules lock), close voting once\nthe closing time has passed, or cancel with a reason before voting.",
+        "operationId": "move_cycle_v1_pb_manage_cycles__cycle_id__move_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cycle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cycle Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PbMoveIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbStaffCycleOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/manage/cycles/{cycle_id}/candidates": {
+      "get": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "List Candidates",
+        "description": "FR-PBG-002: development proposals approved for planning in the cycle's area, not yet added.",
+        "operationId": "list_candidates_v1_pb_manage_cycles__cycle_id__candidates_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cycle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cycle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PbCandidateOut"
+                  },
+                  "title": "Response List Candidates V1 Pb Manage Cycles  Cycle Id  Candidates Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/manage/cycles/{cycle_id}/projects": {
+      "post": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Add Project",
+        "operationId": "add_project_v1_pb_manage_cycles__cycle_id__projects_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cycle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cycle Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PbProjectIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbStaffCycleOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/manage/projects/{project_id}": {
+      "put": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Update Project",
+        "description": "A changed estimated cost clears the financial review and takes the project off the ballot.",
+        "operationId": "update_project_v1_pb_manage_projects__project_id__put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PbProjectIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbStaffCycleOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/manage/projects/{project_id}/reviews": {
+      "post": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Record Review",
+        "operationId": "record_review_v1_pb_manage_projects__project_id__reviews_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PbReviewIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbStaffCycleOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/manage/projects/{project_id}/ballot": {
+      "post": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Place On Ballot",
+        "description": "FR-PBG-002: refused (financial_review_required, legal_review_required) until both are recorded.",
+        "operationId": "place_on_ballot_v1_pb_manage_projects__project_id__ballot_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PbBallotPlacementIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbStaffCycleOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/manage/cycles/{cycle_id}/recount": {
+      "get": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Recount",
+        "description": "FR-PBG-006: replays the hash chain and counts again; only after voting closes.",
+        "operationId": "recount_v1_pb_manage_cycles__cycle_id__recount_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cycle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cycle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbRecountOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/manage/cycles/{cycle_id}/certify": {
+      "post": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Certify",
+        "description": "FR-PBG-006: two different people certify the same recount (403 already_certified_by_you);\na mismatch blocks certification (422 count_mismatch, chain_broken).",
+        "operationId": "certify_v1_pb_manage_cycles__cycle_id__certify_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cycle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cycle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbStaffCycleOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/manage/cycles/{cycle_id}/allocations": {
+      "post": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Allocate",
+        "description": "FR-PBG-008: the Treasurer records each funded project's allocation in the finance records.",
+        "operationId": "allocate_v1_pb_manage_cycles__cycle_id__allocations_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cycle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cycle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbStaffCycleOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/manage/projects/{project_id}/expenditures": {
+      "post": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Record Expenditure",
+        "description": "Spending on a funded project, with evidence; never beyond its allocation.",
+        "operationId": "record_expenditure_v1_pb_manage_projects__project_id__expenditures_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PbExpenditureIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbExpenditureOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pb/manage/projects/{project_id}/completion": {
+      "post": {
+        "tags": [
+          "budgeting"
+        ],
+        "summary": "Record Completion",
+        "operationId": "record_completion_v1_pb_manage_projects__project_id__completion_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PbCompletionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PbStaffCycleOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/home": {
       "get": {
         "tags": [
@@ -39333,6 +40481,1884 @@
           "newPassword"
         ],
         "title": "PasswordResetInput"
+      },
+      "PbAreaIn": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "province",
+              "district",
+              "ds",
+              "gn"
+            ],
+            "title": "Level"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 1,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "code"
+        ],
+        "title": "PbAreaIn"
+      },
+      "PbBallotIn": {
+        "properties": {
+          "choices": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Choices",
+            "description": "Project ids, at most the cycle's max choices"
+          }
+        },
+        "type": "object",
+        "required": [
+          "choices"
+        ],
+        "title": "PbBallotIn"
+      },
+      "PbBallotPlacementIn": {
+        "properties": {
+          "onBallot": {
+            "type": "boolean",
+            "title": "Onballot"
+          }
+        },
+        "type": "object",
+        "required": [
+          "onBallot"
+        ],
+        "title": "PbBallotPlacementIn"
+      },
+      "PbCandidateOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "proposalRef": {
+            "type": "string",
+            "title": "Proposalref"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "costEstimate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Costestimate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "proposalRef",
+          "title",
+          "category",
+          "areaKey",
+          "costEstimate"
+        ],
+        "title": "PbCandidateOut"
+      },
+      "PbCertificationOut": {
+        "properties": {
+          "certifiedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Certifiedat"
+          },
+          "ballotCount": {
+            "type": "integer",
+            "title": "Ballotcount"
+          },
+          "chainHead": {
+            "type": "string",
+            "title": "Chainhead"
+          }
+        },
+        "type": "object",
+        "required": [
+          "certifiedAt",
+          "ballotCount",
+          "chainHead"
+        ],
+        "title": "PbCertificationOut",
+        "description": "Who certified is kept for the audit, not published; members see that two people did, and when."
+      },
+      "PbCompletionIn": {
+        "properties": {
+          "completedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Completedon"
+          },
+          "evidenceRef": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Evidenceref",
+            "description": "Completion certificate, photos or inspection report"
+          },
+          "noteEn": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Noteen"
+          },
+          "noteTa": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Noteta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "completedOn",
+          "evidenceRef",
+          "noteEn",
+          "noteTa"
+        ],
+        "title": "PbCompletionIn"
+      },
+      "PbCompletionOut": {
+        "properties": {
+          "completedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Completedon"
+          },
+          "evidenceRef": {
+            "type": "string",
+            "title": "Evidenceref"
+          },
+          "noteEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Noteen"
+          },
+          "noteTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Noteta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "completedOn",
+          "evidenceRef",
+          "noteEn",
+          "noteTa"
+        ],
+        "title": "PbCompletionOut"
+      },
+      "PbCycleIn": {
+        "properties": {
+          "titleEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 5,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 220,
+            "minLength": 5,
+            "title": "Titleta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "maxLength": 4500,
+            "minLength": 10,
+            "title": "Descriptionta"
+          },
+          "fundKind": {
+            "type": "string",
+            "enum": [
+              "party_fund",
+              "community_fund"
+            ],
+            "title": "Fundkind"
+          },
+          "fundSourceEn": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Fundsourceen",
+            "description": "The lawful fund that pays (OD-25)"
+          },
+          "fundSourceTa": {
+            "type": "string",
+            "maxLength": 450,
+            "minLength": 3,
+            "title": "Fundsourceta"
+          },
+          "budget": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 999999999999.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Budget",
+            "description": "Rupees"
+          },
+          "eligibilityEn": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Eligibilityen",
+            "description": "Who may vote, as published to members"
+          },
+          "eligibilityTa": {
+            "type": "string",
+            "maxLength": 4500,
+            "minLength": 10,
+            "title": "Eligibilityta"
+          },
+          "maxChoices": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Maxchoices",
+            "description": "How many projects each member may choose"
+          },
+          "votingOpensAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Votingopensat"
+          },
+          "votingClosesAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Votingclosesat"
+          },
+          "area": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PbAreaIn"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Required when creating; a cycle's area never changes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "titleEn",
+          "titleTa",
+          "descriptionEn",
+          "descriptionTa",
+          "fundKind",
+          "fundSourceEn",
+          "fundSourceTa",
+          "budget",
+          "eligibilityEn",
+          "eligibilityTa",
+          "maxChoices",
+          "votingOpensAt",
+          "votingClosesAt"
+        ],
+        "title": "PbCycleIn"
+      },
+      "PbCycleRulesOut": {
+        "properties": {
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          },
+          "fundSourceEn": {
+            "type": "string",
+            "title": "Fundsourceen"
+          },
+          "fundSourceTa": {
+            "type": "string",
+            "title": "Fundsourceta"
+          },
+          "eligibilityEn": {
+            "type": "string",
+            "title": "Eligibilityen"
+          },
+          "eligibilityTa": {
+            "type": "string",
+            "title": "Eligibilityta"
+          },
+          "minAge": {
+            "type": "integer",
+            "title": "Minage"
+          },
+          "maxChoices": {
+            "type": "integer",
+            "title": "Maxchoices"
+          },
+          "rulesPublishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rulespublishedat"
+          },
+          "statusReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Statusreason",
+            "description": "Why a cycle was cancelled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "descriptionEn",
+          "descriptionTa",
+          "fundSourceEn",
+          "fundSourceTa",
+          "eligibilityEn",
+          "eligibilityTa",
+          "minAge",
+          "maxChoices",
+          "rulesPublishedAt",
+          "statusReason"
+        ],
+        "title": "PbCycleRulesOut",
+        "description": "FR-PBG-001: what is published before voting opens and never changes during voting."
+      },
+      "PbCycleSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "cycleRef": {
+            "type": "string",
+            "title": "Cycleref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "fundKind": {
+            "type": "string",
+            "enum": [
+              "party_fund",
+              "community_fund"
+            ],
+            "title": "Fundkind",
+            "description": "OD-25: a party fund or a community fund; never a public budget (FR-PBG-009)"
+          },
+          "budget": {
+            "type": "string",
+            "title": "Budget"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "votingOpensAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Votingopensat"
+          },
+          "votingClosesAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Votingclosesat"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "proposal_intake",
+              "review",
+              "voting_open",
+              "voting_closed",
+              "results_certified",
+              "allocated",
+              "implemented",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "upcoming",
+              "voting",
+              "counting",
+              "results",
+              "cancelled"
+            ],
+            "title": "Phase"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "cycleRef",
+          "titleEn",
+          "titleTa",
+          "fundKind",
+          "budget",
+          "currency",
+          "areaKey",
+          "votingOpensAt",
+          "votingClosesAt",
+          "status",
+          "phase"
+        ],
+        "title": "PbCycleSummaryOut"
+      },
+      "PbExpenditureIn": {
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 999999999999.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Amount"
+          },
+          "spentOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Spenton"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 5,
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "maxLength": 1500,
+            "minLength": 5,
+            "title": "Descriptionta"
+          },
+          "evidenceRef": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Evidenceref",
+            "description": "Invoice, payment voucher or bank reference"
+          }
+        },
+        "type": "object",
+        "required": [
+          "amount",
+          "spentOn",
+          "descriptionEn",
+          "descriptionTa",
+          "evidenceRef"
+        ],
+        "title": "PbExpenditureIn"
+      },
+      "PbExpenditureOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "projectId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Projectid"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "spentOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Spenton"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          },
+          "evidenceRef": {
+            "type": "string",
+            "title": "Evidenceref"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "projectId",
+          "amount",
+          "spentOn",
+          "descriptionEn",
+          "descriptionTa",
+          "evidenceRef"
+        ],
+        "title": "PbExpenditureOut"
+      },
+      "PbMemberCycleOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "cycleRef": {
+            "type": "string",
+            "title": "Cycleref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "fundKind": {
+            "type": "string",
+            "enum": [
+              "party_fund",
+              "community_fund"
+            ],
+            "title": "Fundkind",
+            "description": "OD-25: a party fund or a community fund; never a public budget (FR-PBG-009)"
+          },
+          "budget": {
+            "type": "string",
+            "title": "Budget"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "votingOpensAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Votingopensat"
+          },
+          "votingClosesAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Votingclosesat"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "proposal_intake",
+              "review",
+              "voting_open",
+              "voting_closed",
+              "results_certified",
+              "allocated",
+              "implemented",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "upcoming",
+              "voting",
+              "counting",
+              "results",
+              "cancelled"
+            ],
+            "title": "Phase"
+          },
+          "rules": {
+            "$ref": "#/components/schemas/PbCycleRulesOut"
+          },
+          "projects": {
+            "items": {
+              "$ref": "#/components/schemas/PbProjectSummaryOut"
+            },
+            "type": "array",
+            "title": "Projects",
+            "description": "Only projects on the ballot"
+          },
+          "inMyArea": {
+            "type": "boolean",
+            "title": "Inmyarea"
+          },
+          "canVote": {
+            "type": "boolean",
+            "title": "Canvote",
+            "description": "Eligible and not voted yet; checked again when the ballot is cast"
+          },
+          "ineligibleReason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "identity_not_verified",
+                  "membership_not_active",
+                  "age_not_recorded",
+                  "under_voting_age",
+                  "outside_cycle_area"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ineligiblereason"
+          },
+          "participatedOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Participatedon",
+            "description": "The day the member took part; their choice is never shown"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "cycleRef",
+          "titleEn",
+          "titleTa",
+          "fundKind",
+          "budget",
+          "currency",
+          "areaKey",
+          "votingOpensAt",
+          "votingClosesAt",
+          "status",
+          "phase",
+          "rules",
+          "projects",
+          "inMyArea",
+          "canVote",
+          "ineligibleReason",
+          "participatedOn"
+        ],
+        "title": "PbMemberCycleOut"
+      },
+      "PbMemberCycleSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "cycleRef": {
+            "type": "string",
+            "title": "Cycleref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "fundKind": {
+            "type": "string",
+            "enum": [
+              "party_fund",
+              "community_fund"
+            ],
+            "title": "Fundkind",
+            "description": "OD-25: a party fund or a community fund; never a public budget (FR-PBG-009)"
+          },
+          "budget": {
+            "type": "string",
+            "title": "Budget"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "votingOpensAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Votingopensat"
+          },
+          "votingClosesAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Votingclosesat"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "proposal_intake",
+              "review",
+              "voting_open",
+              "voting_closed",
+              "results_certified",
+              "allocated",
+              "implemented",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "upcoming",
+              "voting",
+              "counting",
+              "results",
+              "cancelled"
+            ],
+            "title": "Phase"
+          },
+          "inMyArea": {
+            "type": "boolean",
+            "title": "Inmyarea"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "cycleRef",
+          "titleEn",
+          "titleTa",
+          "fundKind",
+          "budget",
+          "currency",
+          "areaKey",
+          "votingOpensAt",
+          "votingClosesAt",
+          "status",
+          "phase",
+          "inMyArea"
+        ],
+        "title": "PbMemberCycleSummaryOut"
+      },
+      "PbMemberResultsOut": {
+        "properties": {
+          "cycle": {
+            "$ref": "#/components/schemas/PbCycleSummaryOut"
+          },
+          "ballots": {
+            "type": "integer",
+            "title": "Ballots"
+          },
+          "eligibleCount": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eligiblecount"
+          },
+          "countsShown": {
+            "type": "boolean",
+            "title": "Countsshown"
+          },
+          "budget": {
+            "type": "string",
+            "title": "Budget"
+          },
+          "allocatedTotal": {
+            "type": "string",
+            "title": "Allocatedtotal"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/PbResultRowOut"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "certifications": {
+            "items": {
+              "$ref": "#/components/schemas/PbCertificationOut"
+            },
+            "type": "array",
+            "title": "Certifications"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cycle",
+          "ballots",
+          "eligibleCount",
+          "countsShown",
+          "budget",
+          "allocatedTotal",
+          "rows",
+          "certifications"
+        ],
+        "title": "PbMemberResultsOut"
+      },
+      "PbMoveIn": {
+        "properties": {
+          "to": {
+            "type": "string",
+            "enum": [
+              "proposal_intake",
+              "review",
+              "voting_open",
+              "voting_closed",
+              "cancelled"
+            ],
+            "title": "To"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "Required to cancel (10 characters or more)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "to"
+        ],
+        "title": "PbMoveIn"
+      },
+      "PbProjectDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "proposalRef": {
+            "type": "string",
+            "title": "Proposalref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "type": "string",
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "type": "string",
+            "title": "Summaryta"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "estimatedCost": {
+            "type": "string",
+            "title": "Estimatedcost"
+          },
+          "cycleId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Cycleid"
+          },
+          "cycleRef": {
+            "type": "string",
+            "title": "Cycleref"
+          },
+          "cycleTitleEn": {
+            "type": "string",
+            "title": "Cycletitleen"
+          },
+          "cycleTitleTa": {
+            "type": "string",
+            "title": "Cycletitleta"
+          },
+          "problem": {
+            "type": "string",
+            "title": "Problem",
+            "description": "From the development proposal, in the author's words"
+          },
+          "solution": {
+            "type": "string",
+            "title": "Solution"
+          },
+          "benefit": {
+            "type": "string",
+            "title": "Benefit"
+          },
+          "financialReview": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PbReviewOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "legalReview": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PbReviewOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "onBallot": {
+            "type": "boolean",
+            "title": "Onballot"
+          },
+          "votes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Votes",
+            "description": "Certified total; null before certification or when too few ballots to show"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "funded": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Funded"
+          },
+          "allocated": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allocated"
+          },
+          "spent": {
+            "type": "string",
+            "title": "Spent"
+          },
+          "expenditures": {
+            "items": {
+              "$ref": "#/components/schemas/PbExpenditureOut"
+            },
+            "type": "array",
+            "title": "Expenditures"
+          },
+          "completion": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PbCompletionOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "proposalRef",
+          "titleEn",
+          "titleTa",
+          "summaryEn",
+          "summaryTa",
+          "category",
+          "areaKey",
+          "estimatedCost",
+          "cycleId",
+          "cycleRef",
+          "cycleTitleEn",
+          "cycleTitleTa",
+          "problem",
+          "solution",
+          "benefit",
+          "financialReview",
+          "legalReview",
+          "onBallot",
+          "votes",
+          "rank",
+          "funded",
+          "allocated",
+          "spent",
+          "expenditures",
+          "completion"
+        ],
+        "title": "PbProjectDetailOut"
+      },
+      "PbProjectIn": {
+        "properties": {
+          "proposalId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposalid",
+            "description": "Required when adding; an approved-for-planning proposal"
+          },
+          "titleEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 5,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 220,
+            "minLength": 5,
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Summaryta"
+          },
+          "estimatedCost": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 999999999999.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Estimatedcost"
+          }
+        },
+        "type": "object",
+        "required": [
+          "titleEn",
+          "titleTa",
+          "summaryEn",
+          "summaryTa",
+          "estimatedCost"
+        ],
+        "title": "PbProjectIn"
+      },
+      "PbProjectSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "proposalRef": {
+            "type": "string",
+            "title": "Proposalref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "type": "string",
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "type": "string",
+            "title": "Summaryta"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "estimatedCost": {
+            "type": "string",
+            "title": "Estimatedcost"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "proposalRef",
+          "titleEn",
+          "titleTa",
+          "summaryEn",
+          "summaryTa",
+          "category",
+          "areaKey",
+          "estimatedCost"
+        ],
+        "title": "PbProjectSummaryOut"
+      },
+      "PbProjectTotalOut": {
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Projectid"
+          },
+          "proposalRef": {
+            "type": "string",
+            "title": "Proposalref"
+          },
+          "votes": {
+            "type": "integer",
+            "title": "Votes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "projectId",
+          "proposalRef",
+          "votes"
+        ],
+        "title": "PbProjectTotalOut"
+      },
+      "PbReceiptCheckIn": {
+        "properties": {
+          "receiptCode": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 16,
+            "title": "Receiptcode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "receiptCode"
+        ],
+        "title": "PbReceiptCheckIn"
+      },
+      "PbReceiptCheckOut": {
+        "properties": {
+          "counted": {
+            "type": "boolean",
+            "title": "Counted",
+            "description": "A ballot with this receipt is in the cycle's counted chain"
+          },
+          "certified": {
+            "type": "boolean",
+            "title": "Certified",
+            "description": "And two people have certified that chain's totals"
+          }
+        },
+        "type": "object",
+        "required": [
+          "counted",
+          "certified"
+        ],
+        "title": "PbReceiptCheckOut"
+      },
+      "PbReceiptOut": {
+        "properties": {
+          "receiptCode": {
+            "type": "string",
+            "title": "Receiptcode"
+          },
+          "participatedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Participatedon"
+          }
+        },
+        "type": "object",
+        "required": [
+          "receiptCode",
+          "participatedOn"
+        ],
+        "title": "PbReceiptOut",
+        "description": "Shown once. The code is never stored: keep it to check later that the ballot was counted."
+      },
+      "PbRecountOut": {
+        "properties": {
+          "chainValid": {
+            "type": "boolean",
+            "title": "Chainvalid"
+          },
+          "problem": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Problem"
+          },
+          "ballots": {
+            "type": "integer",
+            "title": "Ballots"
+          },
+          "participation": {
+            "type": "integer",
+            "title": "Participation"
+          },
+          "chainHead": {
+            "type": "string",
+            "title": "Chainhead"
+          },
+          "matchesCertified": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matchescertified",
+            "description": "Null before the first certification"
+          },
+          "totals": {
+            "items": {
+              "$ref": "#/components/schemas/PbProjectTotalOut"
+            },
+            "type": "array",
+            "title": "Totals"
+          }
+        },
+        "type": "object",
+        "required": [
+          "chainValid",
+          "problem",
+          "ballots",
+          "participation",
+          "chainHead",
+          "matchesCertified",
+          "totals"
+        ],
+        "title": "PbRecountOut"
+      },
+      "PbResultRowOut": {
+        "properties": {
+          "project": {
+            "$ref": "#/components/schemas/PbProjectSummaryOut"
+          },
+          "votes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Votes",
+            "description": "Null when too few ballots were cast to show counts safely"
+          },
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "funded": {
+            "type": "boolean",
+            "title": "Funded"
+          },
+          "allocated": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allocated"
+          },
+          "spent": {
+            "type": "string",
+            "title": "Spent"
+          },
+          "completedOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completedon"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project",
+          "votes",
+          "rank",
+          "funded",
+          "allocated",
+          "spent",
+          "completedOn"
+        ],
+        "title": "PbResultRowOut"
+      },
+      "PbReviewIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "financial",
+              "legal"
+            ],
+            "title": "Kind"
+          },
+          "reference": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Reference",
+            "description": "The review's document or file reference"
+          },
+          "noteEn": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Noteen"
+          },
+          "noteTa": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Noteta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "reference",
+          "noteEn",
+          "noteTa"
+        ],
+        "title": "PbReviewIn"
+      },
+      "PbReviewOut": {
+        "properties": {
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          },
+          "noteEn": {
+            "type": "string",
+            "title": "Noteen"
+          },
+          "noteTa": {
+            "type": "string",
+            "title": "Noteta"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Recordedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reference",
+          "noteEn",
+          "noteTa",
+          "recordedAt"
+        ],
+        "title": "PbReviewOut"
+      },
+      "PbStaffCycleOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "cycleRef": {
+            "type": "string",
+            "title": "Cycleref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "fundKind": {
+            "type": "string",
+            "enum": [
+              "party_fund",
+              "community_fund"
+            ],
+            "title": "Fundkind",
+            "description": "OD-25: a party fund or a community fund; never a public budget (FR-PBG-009)"
+          },
+          "budget": {
+            "type": "string",
+            "title": "Budget"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "votingOpensAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Votingopensat"
+          },
+          "votingClosesAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Votingclosesat"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "proposal_intake",
+              "review",
+              "voting_open",
+              "voting_closed",
+              "results_certified",
+              "allocated",
+              "implemented",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "upcoming",
+              "voting",
+              "counting",
+              "results",
+              "cancelled"
+            ],
+            "title": "Phase"
+          },
+          "rules": {
+            "$ref": "#/components/schemas/PbCycleRulesOut"
+          },
+          "areaPath": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Areapath"
+          },
+          "eligibleCount": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eligiblecount"
+          },
+          "projects": {
+            "items": {
+              "$ref": "#/components/schemas/PbStaffProjectOut"
+            },
+            "type": "array",
+            "title": "Projects"
+          },
+          "participation": {
+            "type": "integer",
+            "title": "Participation",
+            "description": "How many took part so far; never who, never a running total per project"
+          },
+          "ballots": {
+            "type": "integer",
+            "title": "Ballots"
+          },
+          "certifications": {
+            "items": {
+              "$ref": "#/components/schemas/PbCertificationOut"
+            },
+            "type": "array",
+            "title": "Certifications"
+          },
+          "allocatedTotal": {
+            "type": "string",
+            "title": "Allocatedtotal"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "cycleRef",
+          "titleEn",
+          "titleTa",
+          "fundKind",
+          "budget",
+          "currency",
+          "areaKey",
+          "votingOpensAt",
+          "votingClosesAt",
+          "status",
+          "phase",
+          "rules",
+          "areaPath",
+          "eligibleCount",
+          "projects",
+          "participation",
+          "ballots",
+          "certifications",
+          "allocatedTotal",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "PbStaffCycleOut"
+      },
+      "PbStaffProjectOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "proposalRef": {
+            "type": "string",
+            "title": "Proposalref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "summaryEn": {
+            "type": "string",
+            "title": "Summaryen"
+          },
+          "summaryTa": {
+            "type": "string",
+            "title": "Summaryta"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "estimatedCost": {
+            "type": "string",
+            "title": "Estimatedcost"
+          },
+          "cycleId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Cycleid"
+          },
+          "cycleRef": {
+            "type": "string",
+            "title": "Cycleref"
+          },
+          "cycleTitleEn": {
+            "type": "string",
+            "title": "Cycletitleen"
+          },
+          "cycleTitleTa": {
+            "type": "string",
+            "title": "Cycletitleta"
+          },
+          "problem": {
+            "type": "string",
+            "title": "Problem",
+            "description": "From the development proposal, in the author's words"
+          },
+          "solution": {
+            "type": "string",
+            "title": "Solution"
+          },
+          "benefit": {
+            "type": "string",
+            "title": "Benefit"
+          },
+          "financialReview": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PbReviewOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "legalReview": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PbReviewOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "onBallot": {
+            "type": "boolean",
+            "title": "Onballot"
+          },
+          "votes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Votes",
+            "description": "Certified total; null before certification or when too few ballots to show"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "funded": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Funded"
+          },
+          "allocated": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allocated"
+          },
+          "spent": {
+            "type": "string",
+            "title": "Spent"
+          },
+          "expenditures": {
+            "items": {
+              "$ref": "#/components/schemas/PbExpenditureOut"
+            },
+            "type": "array",
+            "title": "Expenditures"
+          },
+          "completion": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PbCompletionOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proposalId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Proposalid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "proposalRef",
+          "titleEn",
+          "titleTa",
+          "summaryEn",
+          "summaryTa",
+          "category",
+          "areaKey",
+          "estimatedCost",
+          "cycleId",
+          "cycleRef",
+          "cycleTitleEn",
+          "cycleTitleTa",
+          "problem",
+          "solution",
+          "benefit",
+          "financialReview",
+          "legalReview",
+          "onBallot",
+          "votes",
+          "rank",
+          "funded",
+          "allocated",
+          "spent",
+          "expenditures",
+          "completion",
+          "proposalId"
+        ],
+        "title": "PbStaffProjectOut"
       },
       "PendingAdditionOut": {
         "properties": {

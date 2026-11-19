@@ -30,6 +30,12 @@ export const builtModules: readonly AdminModule[] = [
     permission: ['promise.edit', 'promise.publish', 'content.moderate'] as const,
   },
   {
+    href: '/budgeting',
+    ta: 'பங்கேற்பு வரவுசெலவு',
+    en: 'Participatory budgeting',
+    permission: ['pb.manage', 'pb.certify', 'finance.approve'] as const,
+  },
+  {
     href: '/scorecards',
     ta: 'பொறுப்புக்கூறல் மதிப்பீட்டு அட்டைகள்',
     en: 'Accountability scorecards',
@@ -90,7 +96,6 @@ export const builtModules: readonly AdminModule[] = [
 
 /** Planned modules in later phases with user-facing bilingual labels. */
 export const plannedModules = [
-  { name: 'Participatory budgeting', ta: 'பங்கேற்பு வரவுசெலவுத் திட்டம்', desc: 'Community voting on local budgets' },
   { name: 'Official publishing and signing', ta: 'அதிகாரப்பூர்வ வெளியீடு', desc: 'Official gazette and signed notices' },
   { name: 'Committees and wings', ta: 'குழுக்களும் பிரிவுகளும்', desc: 'Youth, women, and diaspora wings' },
   { name: 'AI monitoring and further reports', ta: 'அறிக்கைகளும் அவதானிப்பும்', desc: 'Model safety (D21) and dashboards beyond the Phase 1 figures' },

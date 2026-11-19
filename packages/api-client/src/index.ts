@@ -311,6 +311,31 @@ export type ManagedSurveyFile = Schemas['ManagedSurveyFileOut'];
 export type MisinfoReport = Schemas['MisinfoReportOut'];
 export type StaffMisinfoReport = Schemas['StaffMisinfoReportOut'];
 export type MisinfoOutcome = NonNullable<Schemas['MisinfoReportOut']['outcome']>;
+// Participatory budgeting (M24 to M27, D19).
+export type BudgetCycleSummary = Schemas['PbMemberCycleSummaryOut'];
+export type BudgetCycle = Schemas['PbMemberCycleOut'];
+export type BudgetCyclePhase = Schemas['PbCycleSummaryOut']['phase'];
+export type BudgetCycleStatus = Schemas['PbCycleSummaryOut']['status'];
+export type BudgetFundKind = Schemas['PbCycleSummaryOut']['fundKind'];
+export type BudgetIneligibleReason = NonNullable<Schemas['PbMemberCycleOut']['ineligibleReason']>;
+export type BudgetProjectSummary = Schemas['PbProjectSummaryOut'];
+export type BudgetProject = Schemas['PbProjectDetailOut'];
+export type BudgetReceipt = Schemas['PbReceiptOut'];
+export type BudgetReceiptCheck = Schemas['PbReceiptCheckOut'];
+export type BudgetResults = Schemas['PbMemberResultsOut'];
+export type BudgetResultRow = Schemas['PbResultRowOut'];
+export type ManagedBudgetCycleSummary = Schemas['PbCycleSummaryOut'];
+export type ManagedBudgetCycle = Schemas['PbStaffCycleOut'];
+export type ManagedBudgetProject = Schemas['PbStaffProjectOut'];
+export type BudgetCycleInput = Schemas['PbCycleIn'];
+export type BudgetCycleMove = Schemas['PbMoveIn']['to'];
+export type BudgetCandidate = Schemas['PbCandidateOut'];
+export type BudgetProjectInput = Schemas['PbProjectIn'];
+export type BudgetReviewInput = Schemas['PbReviewIn'];
+export type BudgetRecount = Schemas['PbRecountOut'];
+export type BudgetExpenditure = Schemas['PbExpenditureOut'];
+export type BudgetExpenditureInput = Schemas['PbExpenditureIn'];
+export type BudgetCompletionInput = Schemas['PbCompletionIn'];
 export type CaseListFilters = {
   stage?: CaseStage[];
   mine?: boolean;
@@ -1799,6 +1824,53 @@ export function createApiClient({
         `/v1/fact-checks/manage/${encodeURIComponent(reportId)}/appeal-decision`,
         { change, outcome, reason },
       ),
+    // Participatory budgeting (M24 to M27, D19). 404 "feature_unavailable" while participatory_budgeting
+    // is off; refusals are "budgeting_refused" (422) with `problems`.
+    listBudgetCycles: () => request<BudgetCycleSummary[]>('GET', '/v1/pb/cycles'),
+    getBudgetCycle: (cycleId: string) => request<BudgetCycle>('GET', `/v1/pb/cycles/${encodeURIComponent(cycleId)}`),
+    getBudgetProject: (projectId: string) =>
+      request<BudgetProject>('GET', `/v1/pb/projects/${encodeURIComponent(projectId)}`),
+    /**
+     * M26: one ballot per eligible member per cycle. The receipt code comes back once and is never
+     * stored. Throws "budgeting_refused" with already_voted, voting_not_open, an ineligibility reason
+     * or a choice problem.
+     */
+    castBudgetBallot: (cycleId: string, choices: string[]) =>
+      request<BudgetReceipt>('POST', `/v1/pb/cycles/${encodeURIComponent(cycleId)}/ballot`, { choices }),
+    checkBudgetReceipt: (cycleId: string, receiptCode: string) =>
+      request<BudgetReceiptCheck>('POST', `/v1/pb/cycles/${encodeURIComponent(cycleId)}/receipt-check`, { receiptCode }),
+    /** M27: certified totals only; "budgeting_refused" results_not_certified before then. */
+    getBudgetResults: (cycleId: string) =>
+      request<BudgetResults>('GET', `/v1/pb/cycles/${encodeURIComponent(cycleId)}/results`),
+    listManagedBudgetCycles: () => request<ManagedBudgetCycleSummary[]>('GET', '/v1/pb/manage/cycles'),
+    getManagedBudgetCycle: (cycleId: string) =>
+      request<ManagedBudgetCycle>('GET', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}`),
+    createBudgetCycle: (input: BudgetCycleInput) => request<ManagedBudgetCycle>('POST', '/v1/pb/manage/cycles', input),
+    updateBudgetCycle: (cycleId: string, input: BudgetCycleInput) =>
+      request<ManagedBudgetCycle>('PUT', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}`, input),
+    moveBudgetCycle: (cycleId: string, to: BudgetCycleMove, reason?: string) =>
+      request<ManagedBudgetCycle>('POST', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}/move`, { to, reason }),
+    listBudgetCandidates: (cycleId: string) =>
+      request<BudgetCandidate[]>('GET', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}/candidates`),
+    addBudgetProject: (cycleId: string, input: BudgetProjectInput) =>
+      request<ManagedBudgetCycle>('POST', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}/projects`, input),
+    updateBudgetProject: (projectId: string, input: BudgetProjectInput) =>
+      request<ManagedBudgetCycle>('PUT', `/v1/pb/manage/projects/${encodeURIComponent(projectId)}`, input),
+    recordBudgetReview: (projectId: string, input: BudgetReviewInput) =>
+      request<ManagedBudgetCycle>('POST', `/v1/pb/manage/projects/${encodeURIComponent(projectId)}/reviews`, input),
+    placeBudgetProject: (projectId: string, onBallot: boolean) =>
+      request<ManagedBudgetCycle>('POST', `/v1/pb/manage/projects/${encodeURIComponent(projectId)}/ballot`, { onBallot }),
+    recountBudgetCycle: (cycleId: string) =>
+      request<BudgetRecount>('GET', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}/recount`),
+    /** Two different people certify (403 "already_certified_by_you"); a mismatch is "count_mismatch". */
+    certifyBudgetCycle: (cycleId: string) =>
+      request<ManagedBudgetCycle>('POST', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}/certify`),
+    allocateBudgetCycle: (cycleId: string) =>
+      request<ManagedBudgetCycle>('POST', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}/allocations`),
+    recordBudgetExpenditure: (projectId: string, input: BudgetExpenditureInput) =>
+      request<BudgetExpenditure>('POST', `/v1/pb/manage/projects/${encodeURIComponent(projectId)}/expenditures`, input),
+    recordBudgetCompletion: (projectId: string, input: BudgetCompletionInput) =>
+      request<ManagedBudgetCycle>('POST', `/v1/pb/manage/projects/${encodeURIComponent(projectId)}/completion`, input),
     // Community Finance endpoints (Milestone 1.4)
     getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),
     createContribution: (body: ContributionCreateInput, idempotencyKey?: string) =>

@@ -103,10 +103,10 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | M21 | Town hall live | Town hall (SC-27) | 2 | Built | `apps/member-mobile/app/(member)/town-halls/[id].tsx` | Behind `town_halls`; the live stream waits for OD-44 and DEP-20 (provider links shown once known) |
 | M22 | Ask and vote | Town hall (SC-27) | 2 | Built | `apps/member-mobile/app/(member)/town-halls/[id].tsx` | Voice questions wait for OD-42 |
 | M23 | Town hall archive | Town hall (SC-27) | 2 | Built | `apps/member-mobile/app/(member)/town-halls/` |  |
-| M24 | Budgeting cycle overview | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
-| M25 | Budget project detail | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
-| M26 | Cast budgeting ballot | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
-| M27 | Budgeting results | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
+| M24 | Budgeting cycle overview | Participatory budgeting (SC-28) | 3 | Built | `apps/member-mobile/app/(member)/budgeting/index.tsx`, `budgeting/[id].tsx` | Behind `participatory_budgeting` (G3); consultation label; receipt check |
+| M25 | Budget project detail | Participatory budgeting (SC-28) | 3 | Built | `apps/member-mobile/app/(member)/budgeting/projects/[id].tsx` | Reviews, allocation, spending and completion evidence |
+| M26 | Cast budgeting ballot | Participatory budgeting (SC-28) | 3 | Built | `apps/member-mobile/app/(member)/budgeting/[id]/ballot.tsx` | Online only; receipt code shown once, copy kept on the device |
+| M27 | Budgeting results | Participatory budgeting (SC-28) | 3 | Built | `apps/member-mobile/app/(member)/budgeting/[id]/results.tsx` | Certified totals only; counts hidden under 10 ballots |
 | M28 | Tamil AI Assistant | Tamil AI assistant (SC-29) | 3 | Blocked: OD-42 (AI provider) | `apps/member-mobile/app/(member)/assistant.tsx` |  |
 | M29 | Election information | Election mode (SC-30) | 2 | Blocked: DEP-19 (legal opinion) | `apps/member-mobile/app/(member)/election.tsx` |  |
 | M30 | Duty roster and shift check-in | Election mode (SC-30) | 2 | Built | `apps/member-mobile/app/(member)/volunteer/assignments.tsx` | Behind `election_roster`; decided: election duties listed with H12 My assignment |
@@ -187,7 +187,7 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | D16 | Promise Tracker administration | Promise Tracker (SC-25) | 2 | Built | `apps/admin-web/src/app/(staff)/promises/` | Delay and status report at `promises/report` |
 | D17 | Scorecard publication | Accountability scorecard (SC-26) | 2 | Built | `apps/admin-web/src/app/(staff)/scorecards/` |  |
 | D18 | Town hall production and moderation | Town hall (SC-27) | 2 | Built | `apps/admin-web/src/app/(staff)/town-halls/` |  |
-| D19 | Budgeting administration | Participatory budgeting (SC-28) | 3 | To build | `apps/admin-web/src/app/(staff)/budgeting/` |  |
+| D19 | Budgeting administration | Participatory budgeting (SC-28) | 3 | Built | `apps/admin-web/src/app/(staff)/budgeting/` | Cycles, projects, recount, two-person certification, allocations, spending |
 | D20 | Assistant knowledge base | Tamil AI assistant (SC-29) | 3 | Blocked: OD-42 | `apps/admin-web/src/app/(staff)/assistant/` |  |
 | D21 | AI model registry and monitoring | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-42 | `apps/admin-web/src/app/(staff)/ai-models/` |  |
 | D22 | Election mode administration | Election mode (SC-30) | 2 | Built (periods, silence windows, notices; duty roster, polling information and period report have no API yet) | `apps/admin-web/src/app/(staff)/elections/` |  |
