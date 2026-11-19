@@ -70,6 +70,13 @@ export const builtModules: readonly AdminModule[] = [
   },
   // donor.request is not a staff permission: lib/staff.ts adds it for accounts a partner authorised (PRM-55).
   { href: '/blood-requests', ta: 'இரத்தக் கோரிக்கை மேசை', en: 'Blood request desk', permission: ['donor.request', 'donor.oversight'] as const },
+  { href: '/livelihood', ta: 'வாழ்வாதார வழிகாட்டி', en: 'Livelihood guide', permission: ['guide.edit', 'guide.review'] as const },
+  {
+    href: '/representatives',
+    ta: 'பிரதிநிதிகளும் சந்திப்புகளும்',
+    en: 'Representatives and appointments',
+    permission: ['appointment.profile.manage', 'appointment.manage_own'] as const,
+  },
   { href: '/field', ta: 'களப் பார்வைகள்', en: 'Field visits', permission: 'field.collect' },
   {
     href: '/committees',

@@ -54,6 +54,8 @@ FEATURES: dict[str, Feature] = {
         Feature("diaspora", "Diaspora participation (FR-DSP-001 to 006; contributions stay off, OD-40)", 3),
         Feature("disaster_alerts", "Disaster alerts, emergency help and relief logistics (FR-DIS-001 to 008)", 3),
         Feature("blood_donors", "Blood donor network (FR-BLD-001 to 008, OD-39)", 3),
+        Feature("livelihood_guide", "Welfare, jobs and livelihood guide (FR-LIV-001 to 006)", 3),
+        Feature("representatives", "Meet Your Representative: profiles and appointments (FR-APT-001 to 007)", 3),
     )
 }
 

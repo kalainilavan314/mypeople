@@ -7448,6 +7448,621 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/guide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search Guide
+         * @description M39: published entries that have not passed their end date (FR-LIV-001, 003).
+         */
+        get: operations["search_guide_v1_guide_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/guide/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Managed */
+        get: operations["list_managed_v1_guide_manage_get"];
+        put?: never;
+        /** Draft Entry */
+        post: operations["draft_entry_v1_guide_manage_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/guide/manage/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Report Queue
+         * @description D28: reports that an entry is outdated, oldest first (FR-LIV-006).
+         */
+        get: operations["report_queue_v1_guide_manage_reports_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/guide/manage/reports/{report_id}/resolution": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resolve Report */
+        post: operations["resolve_report_v1_guide_manage_reports__report_id__resolution_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/guide/manage/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Managed */
+        get: operations["read_managed_v1_guide_manage__entry_id__get"];
+        /**
+         * Save Entry
+         * @description Saving a published entry takes it off the guide until it is reviewed again (FR-LIV-003).
+         */
+        put: operations["save_entry_v1_guide_manage__entry_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/guide/manage/{entry_id}/request-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Review
+         * @description Refused without a source link, both languages or the dates (FR-LIV-002, 005).
+         */
+        post: operations["request_review_v1_guide_manage__entry_id__request_review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/guide/manage/{entry_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Review Entry
+         * @description A second person publishes or returns it; the person who asked or last changed it gets 403 own_entry.
+         */
+        post: operations["review_entry_v1_guide_manage__entry_id__review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/guide/manage/{entry_id}/verified": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark Verified
+         * @description The editor checked the published entry against its source today.
+         */
+        post: operations["mark_verified_v1_guide_manage__entry_id__verified_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/guide/manage/{entry_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw Entry */
+        post: operations["withdraw_entry_v1_guide_manage__entry_id__withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/guide/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Entry
+         * @description M40: source link, publication and last-verified dates, and the eligibility disclaimer.
+         */
+        get: operations["read_entry_v1_guide__entry_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/guide/{entry_id}/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report Entry
+         * @description FR-LIV-006: report an outdated entry; one open report per member and entry.
+         */
+        post: operations["report_entry_v1_guide__entry_id__reports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/representatives": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Representatives
+         * @description M41: published role profiles, those covering the member's own area first (FR-APT-001).
+         */
+        get: operations["list_representatives_v1_appointments_representatives_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/representatives/{representative_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Representative
+         * @description M41: the role, area, office hours, approved contacts only (FR-APT-007) and free slots (FR-APT-002).
+         */
+        get: operations["read_representative_v1_appointments_representatives__representative_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Appointments */
+        get: operations["my_appointments_v1_appointments_mine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Book Appointment
+         * @description M42: book a free slot. Needs a Verified identity and an Active membership [ASSUMPTION]. With
+         *     caseLinkConsent false, no case reference is stored (FR-APT-005).
+         */
+        post: operations["book_appointment_v1_appointments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/mine/{appointment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Appointment
+         * @description M42: the booking with the representative's follow-up note (FR-APT-006).
+         */
+        get: operations["read_my_appointment_v1_appointments_mine__appointment_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/mine/{appointment_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel My Appointment */
+        post: operations["cancel_my_appointment_v1_appointments_mine__appointment_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/mine/{appointment_id}/reschedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reschedule My Appointment
+         * @description Move to another free slot of the same representative; reminders start again.
+         */
+        post: operations["reschedule_my_appointment_v1_appointments_mine__appointment_id__reschedule_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/calendar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Calendar
+         * @description S17: the representative's slots, bookings, needs and follow-up notes.
+         */
+        get: operations["read_calendar_v1_appointments_calendar_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/calendar/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Own Profile */
+        put: operations["update_own_profile_v1_appointments_calendar_profile_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/calendar/contacts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve Own Contacts
+         * @description BR-143: the person approves (or withdraws approval of) the routes entered for them.
+         */
+        post: operations["approve_own_contacts_v1_appointments_calendar_contacts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/calendar/slots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Own Slots
+         * @description No overlapping slots (S17).
+         */
+        post: operations["add_own_slots_v1_appointments_calendar_slots_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/calendar/slots/{slot_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw Own Slot
+         * @description A booking on the slot is cancelled and the member told why.
+         */
+        post: operations["withdraw_own_slot_v1_appointments_calendar_slots__slot_id__withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/calendar/bookings/{appointment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Booking */
+        get: operations["read_booking_v1_appointments_calendar_bookings__appointment_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/calendar/bookings/{appointment_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Booking */
+        post: operations["cancel_booking_v1_appointments_calendar_bookings__appointment_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/calendar/bookings/{appointment_id}/follow-up": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record Follow Up
+         * @description FR-APT-006: the note is visible to the member.
+         */
+        post: operations["record_follow_up_v1_appointments_calendar_bookings__appointment_id__follow_up_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/profiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Profiles */
+        get: operations["list_profiles_v1_appointments_profiles_get"];
+        put?: never;
+        /**
+         * Create Profile
+         * @description D29: a draft profile for the person with this member ID; any contact routes wait for their approval.
+         */
+        post: operations["create_profile_v1_appointments_profiles_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/profiles/{representative_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Profile */
+        get: operations["read_profile_v1_appointments_profiles__representative_id__get"];
+        /**
+         * Update Profile
+         * @description Changing a contact route clears the person's approval and asks them again (BR-143).
+         */
+        put: operations["update_profile_v1_appointments_profiles__representative_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/profiles/{representative_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish Profile
+         * @description Refused unless the person holds PRM-56, so bookings reach someone.
+         */
+        post: operations["publish_profile_v1_appointments_profiles__representative_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/profiles/{representative_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw Profile
+         * @description Bookings still ahead are cancelled and their members told.
+         */
+        post: operations["withdraw_profile_v1_appointments_profiles__representative_id__withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/profiles/{representative_id}/slots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Slots */
+        post: operations["add_slots_v1_appointments_profiles__representative_id__slots_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appointments/profiles/{representative_id}/slots/{slot_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw Slot */
+        post: operations["withdraw_slot_v1_appointments_profiles__representative_id__slots__slot_id__withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -9298,7 +9913,7 @@ export interface components {
              * Kind
              * @enum {string}
              */
-            kind: "identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal" | "course" | "committee_task";
+            kind: "identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal" | "course" | "committee_task" | "appointment";
             /** Reference */
             reference: string;
             /** Title */
@@ -9930,6 +10545,166 @@ export interface components {
             claimedAt: string | null;
             /** Decidedat */
             decidedAt: string | null;
+        };
+        /** AppointmentBookIn */
+        AppointmentBookIn: {
+            /**
+             * Slotid
+             * Format: uuid
+             */
+            slotId: string;
+            /**
+             * Topic
+             * @description What the member would like to talk about
+             */
+            topic: string;
+            /**
+             * Contactpreference
+             * @enum {string}
+             */
+            contactPreference: "in_app" | "phone_call" | "sms";
+            /**
+             * Contactphone
+             * @description Only for a call or a text; never stored for in-app contact
+             */
+            contactPhone?: string | null;
+            /**
+             * Needs
+             * @description Accessibility or language needs
+             */
+            needs?: ("step_free_access" | "sign_language" | "tamil_interpreter" | "sinhala_interpreter" | "english_interpreter" | "large_print" | "someone_with_me")[];
+            /** Needsnote */
+            needsNote?: string | null;
+            /**
+             * Caseref
+             * @description Kept only when caseLinkConsent is true
+             */
+            caseRef?: string | null;
+            /**
+             * Caselinkconsent
+             * @default false
+             */
+            caseLinkConsent: boolean;
+        };
+        /** AppointmentCancelIn */
+        AppointmentCancelIn: {
+            /** Reason */
+            reason?: string | null;
+        };
+        /** AppointmentFollowUpIn */
+        AppointmentFollowUpIn: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "completed" | "no_show";
+            /**
+             * Note
+             * @description Shown to the member; required when completed
+             */
+            note?: string | null;
+        };
+        /**
+         * AppointmentOut
+         * @description M42: the member's own booking, with the representative's follow-up note (FR-APT-006).
+         */
+        AppointmentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Appointmentref */
+            appointmentRef: string;
+            /**
+             * Representativeid
+             * Format: uuid
+             */
+            representativeId: string;
+            /** Representativeroleen */
+            representativeRoleEn: string;
+            /** Representativeroleta */
+            representativeRoleTa: string;
+            /** Representativenameen */
+            representativeNameEn: string;
+            /** Representativenameta */
+            representativeNameTa: string;
+            /** Areakey */
+            areaKey: string;
+            slot: components["schemas"]["AppointmentSlotOut"];
+            /** Topic */
+            topic: string;
+            /**
+             * Contactpreference
+             * @enum {string}
+             */
+            contactPreference: "in_app" | "phone_call" | "sms";
+            /** Contactphone */
+            contactPhone: string | null;
+            /** Needs */
+            needs: ("step_free_access" | "sign_language" | "tamil_interpreter" | "sinhala_interpreter" | "english_interpreter" | "large_print" | "someone_with_me")[];
+            /** Needsnote */
+            needsNote: string | null;
+            /**
+             * Caseref
+             * @description Stored only when the member consented to link it (FR-APT-005)
+             */
+            caseRef: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "booked" | "cancelled" | "completed" | "no_show";
+            /** Cancelledby */
+            cancelledBy: ("member" | "representative") | null;
+            /** Cancelreason */
+            cancelReason: string | null;
+            /** Cancelledat */
+            cancelledAt: string | null;
+            /** Followupnote */
+            followUpNote: string | null;
+            /** Followupat */
+            followUpAt: string | null;
+            /**
+             * Bookedat
+             * Format: date-time
+             */
+            bookedAt: string;
+        };
+        /** AppointmentRescheduleIn */
+        AppointmentRescheduleIn: {
+            /**
+             * Slotid
+             * Format: uuid
+             */
+            slotId: string;
+        };
+        /** AppointmentSlotOut */
+        AppointmentSlotOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "in_person" | "phone_call";
+            /** Placeen */
+            placeEn: string | null;
+            /** Placeta */
+            placeTa: string | null;
         };
         /** ArchiveIn */
         ArchiveIn: {
@@ -10929,6 +11704,87 @@ export interface components {
             /** Revokedat */
             revokedAt: string | null;
         };
+        /** BookingCancelIn */
+        BookingCancelIn: {
+            /**
+             * Reason
+             * @description Shown to the member
+             */
+            reason: string;
+        };
+        /**
+         * BookingOut
+         * @description S17: a booking as the representative sees it: who booked, their needs, contact and any linked case.
+         */
+        BookingOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Appointmentref */
+            appointmentRef: string;
+            /**
+             * Representativeid
+             * Format: uuid
+             */
+            representativeId: string;
+            /** Representativeroleen */
+            representativeRoleEn: string;
+            /** Representativeroleta */
+            representativeRoleTa: string;
+            /** Representativenameen */
+            representativeNameEn: string;
+            /** Representativenameta */
+            representativeNameTa: string;
+            /** Areakey */
+            areaKey: string;
+            slot: components["schemas"]["AppointmentSlotOut"];
+            /** Topic */
+            topic: string;
+            /**
+             * Contactpreference
+             * @enum {string}
+             */
+            contactPreference: "in_app" | "phone_call" | "sms";
+            /** Contactphone */
+            contactPhone: string | null;
+            /** Needs */
+            needs: ("step_free_access" | "sign_language" | "tamil_interpreter" | "sinhala_interpreter" | "english_interpreter" | "large_print" | "someone_with_me")[];
+            /** Needsnote */
+            needsNote: string | null;
+            /**
+             * Caseref
+             * @description Stored only when the member consented to link it (FR-APT-005)
+             */
+            caseRef: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "booked" | "cancelled" | "completed" | "no_show";
+            /** Cancelledby */
+            cancelledBy: ("member" | "representative") | null;
+            /** Cancelreason */
+            cancelReason: string | null;
+            /** Cancelledat */
+            cancelledAt: string | null;
+            /** Followupnote */
+            followUpNote: string | null;
+            /** Followupat */
+            followUpAt: string | null;
+            /**
+             * Bookedat
+             * Format: date-time
+             */
+            bookedAt: string;
+            /** Membername */
+            memberName: string;
+            /** Membercode */
+            memberCode: string;
+            /** Caseconsentat */
+            caseConsentAt: string | null;
+        };
         /** BroadcastCreateIn */
         BroadcastCreateIn: {
             /**
@@ -11082,6 +11938,49 @@ export interface components {
             drafts: number;
             /** Pendingapproval */
             pendingApproval: number;
+        };
+        /** CalendarOut */
+        CalendarOut: {
+            /** @description None until a profile manager creates the person's profile */
+            profile: components["schemas"]["OwnProfileOut"] | null;
+            /** Slots */
+            slots: components["schemas"]["CalendarSlotOut"][];
+        };
+        /** CalendarSlotOut */
+        CalendarSlotOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "in_person" | "phone_call";
+            /** Placeen */
+            placeEn: string | null;
+            /** Placeta */
+            placeTa: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "withdrawn";
+            /** Withdrawnreason */
+            withdrawnReason: string | null;
+            /** @description The live booking, or the last cancelled one */
+            booking: components["schemas"]["BookingOut"] | null;
         };
         /** CancelIn */
         CancelIn: {
@@ -12324,6 +13223,11 @@ export interface components {
             purposeLimitationTa: string;
             /** Purposelimitationen */
             purposeLimitationEn: string;
+        };
+        /** ContactApprovalIn */
+        ContactApprovalIn: {
+            /** Approve */
+            approve: boolean;
         };
         /** ContactIn */
         ContactIn: {
@@ -14162,6 +15066,444 @@ export interface components {
              * @description The sign-off record, e.g. a decision or minutes reference
              */
             approvalRef: string;
+            /** Reason */
+            reason: string;
+        };
+        /** GuideEntryDetailManagedOut */
+        GuideEntryDetailManagedOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Entryref */
+            entryRef: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "assistance_programme" | "scholarship" | "job" | "vocational_training" | "agriculture" | "fisheries" | "enterprise_grant" | "course" | "public_service_contact";
+            /** Titleen */
+            titleEn: string | null;
+            /** Titleta */
+            titleTa: string | null;
+            /** Summaryen */
+            summaryEn: string | null;
+            /** Summaryta */
+            summaryTa: string | null;
+            /** Bodyen */
+            bodyEn: string | null;
+            /** Bodyta */
+            bodyTa: string | null;
+            /** Provideren */
+            providerEn: string | null;
+            /** Providerta */
+            providerTa: string | null;
+            /** Contact */
+            contact: string | null;
+            /** Sourceurl */
+            sourceUrl: string | null;
+            /** Publishedon */
+            publishedOn: string | null;
+            /** Verifiedon */
+            verifiedOn: string | null;
+            /** Expireson */
+            expiresOn: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "in_review" | "published" | "withdrawn";
+            /**
+             * Expired
+             * @description Published but past its end date, so members no longer see it
+             */
+            expired: boolean;
+            /**
+             * Needsreverification
+             * @description Not checked against its source for over 180 days
+             */
+            needsReverification: boolean;
+            /**
+             * Missing
+             * @description Problems that stop review or publication now (empty when complete)
+             */
+            missing: string[];
+            /**
+             * Reviewnote
+             * @description The reviewer's note, or the reason it was returned
+             */
+            reviewNote: string | null;
+            /** Withdrawnreason */
+            withdrawnReason: string | null;
+            /** Openreports */
+            openReports: number;
+            /** Reviewrequestedbyme */
+            reviewRequestedByMe: boolean;
+            /** Lastchangedbyme */
+            lastChangedByMe: boolean;
+            /** Publishedat */
+            publishedAt: string | null;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Reports */
+            reports: components["schemas"]["GuideManagedReportOut"][];
+        };
+        /**
+         * GuideEntryIn
+         * @description D28: a draft may be saved incomplete; review asks for every field in both languages.
+         */
+        GuideEntryIn: {
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "assistance_programme" | "scholarship" | "job" | "vocational_training" | "agriculture" | "fisheries" | "enterprise_grant" | "course" | "public_service_contact";
+            /** Titleen */
+            titleEn?: string | null;
+            /** Titleta */
+            titleTa?: string | null;
+            /** Summaryen */
+            summaryEn?: string | null;
+            /** Summaryta */
+            summaryTa?: string | null;
+            /** Bodyen */
+            bodyEn?: string | null;
+            /** Bodyta */
+            bodyTa?: string | null;
+            /** Provideren */
+            providerEn?: string | null;
+            /** Providerta */
+            providerTa?: string | null;
+            /**
+             * Contact
+             * @description An official office's public contact only
+             */
+            contact?: string | null;
+            /** Sourceurl */
+            sourceUrl?: string | null;
+            /**
+             * Publishedon
+             * @description When the provider published the information
+             */
+            publishedOn?: string | null;
+            /**
+             * Verifiedon
+             * @description When an editor last checked it against the source
+             */
+            verifiedOn?: string | null;
+            /**
+             * Expireson
+             * @description The end date; the entry leaves the guide after it
+             */
+            expiresOn?: string | null;
+        };
+        /**
+         * GuideEntryManagedOut
+         * @description D28: an entry in any state, with what still stops it being published.
+         */
+        GuideEntryManagedOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Entryref */
+            entryRef: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "assistance_programme" | "scholarship" | "job" | "vocational_training" | "agriculture" | "fisheries" | "enterprise_grant" | "course" | "public_service_contact";
+            /** Titleen */
+            titleEn: string | null;
+            /** Titleta */
+            titleTa: string | null;
+            /** Summaryen */
+            summaryEn: string | null;
+            /** Summaryta */
+            summaryTa: string | null;
+            /** Bodyen */
+            bodyEn: string | null;
+            /** Bodyta */
+            bodyTa: string | null;
+            /** Provideren */
+            providerEn: string | null;
+            /** Providerta */
+            providerTa: string | null;
+            /** Contact */
+            contact: string | null;
+            /** Sourceurl */
+            sourceUrl: string | null;
+            /** Publishedon */
+            publishedOn: string | null;
+            /** Verifiedon */
+            verifiedOn: string | null;
+            /** Expireson */
+            expiresOn: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "in_review" | "published" | "withdrawn";
+            /**
+             * Expired
+             * @description Published but past its end date, so members no longer see it
+             */
+            expired: boolean;
+            /**
+             * Needsreverification
+             * @description Not checked against its source for over 180 days
+             */
+            needsReverification: boolean;
+            /**
+             * Missing
+             * @description Problems that stop review or publication now (empty when complete)
+             */
+            missing: string[];
+            /**
+             * Reviewnote
+             * @description The reviewer's note, or the reason it was returned
+             */
+            reviewNote: string | null;
+            /** Withdrawnreason */
+            withdrawnReason: string | null;
+            /** Openreports */
+            openReports: number;
+            /** Reviewrequestedbyme */
+            reviewRequestedByMe: boolean;
+            /** Lastchangedbyme */
+            lastChangedByMe: boolean;
+            /** Publishedat */
+            publishedAt: string | null;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /**
+         * GuideEntryOut
+         * @description M40: the entry with its source and the eligibility disclaimer (FR-LIV-002, 004).
+         */
+        GuideEntryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Entryref */
+            entryRef: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "assistance_programme" | "scholarship" | "job" | "vocational_training" | "agriculture" | "fisheries" | "enterprise_grant" | "course" | "public_service_contact";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /** Provideren */
+            providerEn: string;
+            /** Providerta */
+            providerTa: string;
+            /**
+             * Publishedon
+             * Format: date
+             */
+            publishedOn: string;
+            /**
+             * Verifiedon
+             * Format: date
+             */
+            verifiedOn: string;
+            /** Expireson */
+            expiresOn: string | null;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /**
+             * Contact
+             * @description An official office's public contact, never a private person's
+             */
+            contact: string | null;
+            /** Sourceurl */
+            sourceUrl: string;
+            /**
+             * Disclaimeren
+             * @description Shown with every entry: the guide never says who qualifies (FR-LIV-004)
+             */
+            disclaimerEn: string;
+            /** Disclaimerta */
+            disclaimerTa: string;
+            /** @description The member's own report waiting for the editors */
+            myOpenReport: components["schemas"]["GuideReportOut"] | null;
+        };
+        /**
+         * GuideEntrySummaryOut
+         * @description M39: one published entry in the list. Every published entry has both languages.
+         */
+        GuideEntrySummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Entryref */
+            entryRef: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "assistance_programme" | "scholarship" | "job" | "vocational_training" | "agriculture" | "fisheries" | "enterprise_grant" | "course" | "public_service_contact";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /** Provideren */
+            providerEn: string;
+            /** Providerta */
+            providerTa: string;
+            /**
+             * Publishedon
+             * Format: date
+             */
+            publishedOn: string;
+            /**
+             * Verifiedon
+             * Format: date
+             */
+            verifiedOn: string;
+            /** Expireson */
+            expiresOn: string | null;
+        };
+        /**
+         * GuideManagedReportOut
+         * @description D28's queue: the report with the entry it is about. The reporter is never named.
+         */
+        GuideManagedReportOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Entryid
+             * Format: uuid
+             */
+            entryId: string;
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "outdated" | "closed" | "broken_link" | "wrong_details" | "other";
+            /** Note */
+            note: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "fixed" | "dismissed";
+            /** Resolutionnote */
+            resolutionNote: string | null;
+            /** Resolvedat */
+            resolvedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Entryref */
+            entryRef: string;
+            /** Entrytitleen */
+            entryTitleEn: string | null;
+            /** Entrytitleta */
+            entryTitleTa: string | null;
+        };
+        /** GuideReportIn */
+        GuideReportIn: {
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "outdated" | "closed" | "broken_link" | "wrong_details" | "other";
+            /**
+             * Note
+             * @description What looks outdated; optional
+             */
+            note?: string | null;
+        };
+        /** GuideReportOut */
+        GuideReportOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Entryid
+             * Format: uuid
+             */
+            entryId: string;
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "outdated" | "closed" | "broken_link" | "wrong_details" | "other";
+            /** Note */
+            note: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "fixed" | "dismissed";
+            /** Resolutionnote */
+            resolutionNote: string | null;
+            /** Resolvedat */
+            resolvedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** GuideReportResolutionIn */
+        GuideReportResolutionIn: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "fixed" | "dismissed";
+            /**
+             * Note
+             * @description Required when dismissing the report
+             */
+            note?: string | null;
+        };
+        /** GuideReviewIn */
+        GuideReviewIn: {
+            /** Approve */
+            approve: boolean;
+            /**
+             * Note
+             * @description Required when returning the entry
+             */
+            note?: string | null;
+        };
+        /** GuideWithdrawIn */
+        GuideWithdrawIn: {
             /** Reason */
             reason: string;
         };
@@ -17282,6 +18624,71 @@ export interface components {
              */
             caseNumber?: string | null;
         };
+        /** OwnProfileIn */
+        OwnProfileIn: {
+            /** Officehoursen */
+            officeHoursEn: string;
+            /** Officehoursta */
+            officeHoursTa: string;
+            /** Publicphone */
+            publicPhone?: string | null;
+            /** Publicemail */
+            publicEmail?: string | null;
+            /** Officeaddressen */
+            officeAddressEn?: string | null;
+            /** Officeaddressta */
+            officeAddressTa?: string | null;
+            /**
+             * Showcontacts
+             * @description The person's approval to show these routes to members (BR-143)
+             */
+            showContacts: boolean;
+        };
+        /**
+         * OwnProfileOut
+         * @description The representative's own profile, with every contact route and whether they approved it.
+         */
+        OwnProfileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Displaynameen */
+            displayNameEn: string;
+            /** Displaynameta */
+            displayNameTa: string;
+            /** Areakey */
+            areaKey: string;
+            /** Officehoursen */
+            officeHoursEn: string;
+            /** Officehoursta */
+            officeHoursTa: string;
+            /** Publicphone */
+            publicPhone: string | null;
+            /** Publicemail */
+            publicEmail: string | null;
+            /** Officeaddressen */
+            officeAddressEn: string | null;
+            /** Officeaddressta */
+            officeAddressTa: string | null;
+            /**
+             * Contactsapprovedat
+             * @description Members see the contact routes only once this is set
+             */
+            contactsApprovedAt: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "published" | "withdrawn";
+            /** Withdrawnreason */
+            withdrawnReason: string | null;
+        };
         /** OwnerOptionOut */
         OwnerOptionOut: {
             /**
@@ -18805,6 +20212,43 @@ export interface components {
             openAreaChange: components["schemas"]["AreaChangeOut"] | null;
         };
         /**
+         * ProfileSlotOut
+         * @description D29 sees whether a slot is taken, never by whom.
+         */
+        ProfileSlotOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "in_person" | "phone_call";
+            /** Placeen */
+            placeEn: string | null;
+            /** Placeta */
+            placeTa: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "withdrawn";
+            /** Booked */
+            booked: boolean;
+        };
+        /**
          * ProfileUpdateIn
          * @description Only these; anything else is refused by the schema. An empty display name greets by the legal name.
          */
@@ -18815,6 +20259,11 @@ export interface components {
             gender?: ("male" | "female" | "other") | null;
             /** Language */
             language?: ("ta" | "en") | null;
+        };
+        /** ProfileWithdrawIn */
+        ProfileWithdrawIn: {
+            /** Reason */
+            reason: string;
         };
         /** ProgrammeIn */
         ProgrammeIn: {
@@ -20423,6 +21872,273 @@ export interface components {
             /** Maxphotos */
             maxPhotos: number;
         };
+        /** RepresentativeAreaIn */
+        RepresentativeAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+        };
+        /**
+         * RepresentativeContactsOut
+         * @description BR-143, FR-APT-007: only the routes the person approved; empty when they approved none.
+         */
+        RepresentativeContactsOut: {
+            /** Phone */
+            phone: string | null;
+            /** Email */
+            email: string | null;
+            /** Officeaddressen */
+            officeAddressEn: string | null;
+            /** Officeaddressta */
+            officeAddressTa: string | null;
+        };
+        /** RepresentativeCreateIn */
+        RepresentativeCreateIn: {
+            /**
+             * Roleen
+             * @description The official role, such as District Coordinator
+             */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Displaynameen */
+            displayNameEn: string;
+            /** Displaynameta */
+            displayNameTa: string;
+            /** Officehoursen */
+            officeHoursEn: string;
+            /** Officehoursta */
+            officeHoursTa: string;
+            /** Publicphone */
+            publicPhone?: string | null;
+            /** Publicemail */
+            publicEmail?: string | null;
+            /** Officeaddressen */
+            officeAddressEn?: string | null;
+            /** Officeaddressta */
+            officeAddressTa?: string | null;
+            /**
+             * Membercode
+             * @description The member ID of the person holding the role
+             */
+            memberCode: string;
+            area: components["schemas"]["RepresentativeAreaIn"];
+        };
+        /**
+         * RepresentativeDetailOut
+         * @description M41, M42: the profile with its approved contacts and the free slots. With no slots, the office
+         *     hours are the way to meet (FR-APT-002).
+         */
+        RepresentativeDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Displaynameen */
+            displayNameEn: string;
+            /** Displaynameta */
+            displayNameTa: string;
+            /**
+             * Areakey
+             * @description The District, DS or GN division covered, such as district:LK41
+             */
+            areaKey: string;
+            /** Officehoursen */
+            officeHoursEn: string;
+            /** Officehoursta */
+            officeHoursTa: string;
+            /** Coversmyarea */
+            coversMyArea: boolean;
+            /** Openslots */
+            openSlots: number;
+            /** Nextopenslot */
+            nextOpenSlot: string | null;
+            contacts: components["schemas"]["RepresentativeContactsOut"];
+            /** Slots */
+            slots: components["schemas"]["AppointmentSlotOut"][];
+        };
+        /** RepresentativeManagedDetailOut */
+        RepresentativeManagedDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Displaynameen */
+            displayNameEn: string;
+            /** Displaynameta */
+            displayNameTa: string;
+            /** Areakey */
+            areaKey: string;
+            /** Officehoursen */
+            officeHoursEn: string;
+            /** Officehoursta */
+            officeHoursTa: string;
+            /** Publicphone */
+            publicPhone: string | null;
+            /** Publicemail */
+            publicEmail: string | null;
+            /** Officeaddressen */
+            officeAddressEn: string | null;
+            /** Officeaddressta */
+            officeAddressTa: string | null;
+            /**
+             * Contactsapprovedat
+             * @description Members see the contact routes only once this is set
+             */
+            contactsApprovedAt: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "published" | "withdrawn";
+            /** Withdrawnreason */
+            withdrawnReason: string | null;
+            /** Openslots */
+            openSlots: number;
+            /** Nextopenslot */
+            nextOpenSlot: string | null;
+            /** Publishedat */
+            publishedAt: string | null;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /**
+             * Holdscalendarpermission
+             * @description Whether the person holds PRM-56, needed to publish
+             */
+            holdsCalendarPermission: boolean;
+            /** Slots */
+            slots: components["schemas"]["ProfileSlotOut"][];
+        };
+        /** RepresentativeManagedOut */
+        RepresentativeManagedOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Displaynameen */
+            displayNameEn: string;
+            /** Displaynameta */
+            displayNameTa: string;
+            /** Areakey */
+            areaKey: string;
+            /** Officehoursen */
+            officeHoursEn: string;
+            /** Officehoursta */
+            officeHoursTa: string;
+            /** Publicphone */
+            publicPhone: string | null;
+            /** Publicemail */
+            publicEmail: string | null;
+            /** Officeaddressen */
+            officeAddressEn: string | null;
+            /** Officeaddressta */
+            officeAddressTa: string | null;
+            /**
+             * Contactsapprovedat
+             * @description Members see the contact routes only once this is set
+             */
+            contactsApprovedAt: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "published" | "withdrawn";
+            /** Withdrawnreason */
+            withdrawnReason: string | null;
+            /** Openslots */
+            openSlots: number;
+            /** Nextopenslot */
+            nextOpenSlot: string | null;
+            /** Publishedat */
+            publishedAt: string | null;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /** RepresentativeProfileIn */
+        RepresentativeProfileIn: {
+            /**
+             * Roleen
+             * @description The official role, such as District Coordinator
+             */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Displaynameen */
+            displayNameEn: string;
+            /** Displaynameta */
+            displayNameTa: string;
+            /** Officehoursen */
+            officeHoursEn: string;
+            /** Officehoursta */
+            officeHoursTa: string;
+            /** Publicphone */
+            publicPhone?: string | null;
+            /** Publicemail */
+            publicEmail?: string | null;
+            /** Officeaddressen */
+            officeAddressEn?: string | null;
+            /** Officeaddressta */
+            officeAddressTa?: string | null;
+        };
+        /**
+         * RepresentativeSummaryOut
+         * @description M41: a role profile in the directory.
+         */
+        RepresentativeSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /** Displaynameen */
+            displayNameEn: string;
+            /** Displaynameta */
+            displayNameTa: string;
+            /**
+             * Areakey
+             * @description The District, DS or GN division covered, such as district:LK41
+             */
+            areaKey: string;
+            /** Officehoursen */
+            officeHoursEn: string;
+            /** Officehoursta */
+            officeHoursTa: string;
+            /** Coversmyarea */
+            coversMyArea: boolean;
+            /** Openslots */
+            openSlots: number;
+            /** Nextopenslot */
+            nextOpenSlot: string | null;
+        };
         /** ResetTokenOut */
         ResetTokenOut: {
             /** Resettoken */
@@ -21482,6 +23198,42 @@ export interface components {
             nameEn: string;
             /** Nameta */
             nameTa: string;
+        };
+        /** SlotSeriesIn */
+        SlotSeriesIn: {
+            /**
+             * Startsat
+             * Format: date-time
+             * @description The first slot's start, with its time zone
+             */
+            startsAt: string;
+            /**
+             * Minutes
+             * @description Length of each slot
+             */
+            minutes: number;
+            /**
+             * Count
+             * @description Consecutive slots of that length
+             */
+            count: number;
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "in_person" | "phone_call";
+            /**
+             * Placeen
+             * @description Required in person: an official office
+             */
+            placeEn?: string | null;
+            /** Placeta */
+            placeTa?: string | null;
+        };
+        /** SlotWithdrawIn */
+        SlotWithdrawIn: {
+            /** Reason */
+            reason: string;
         };
         /** StaffApprovalDetail */
         StaffApprovalDetail: {
@@ -38191,6 +39943,1176 @@ export interface operations {
             };
         };
     };
+    search_guide_v1_guide_get: {
+        parameters: {
+            query?: {
+                /** @description Words in either language */
+                q?: string | null;
+                category?: ("assistance_programme" | "scholarship" | "job" | "vocational_training" | "agriculture" | "fisheries" | "enterprise_grant" | "course" | "public_service_contact") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuideEntrySummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_managed_v1_guide_manage_get: {
+        parameters: {
+            query?: {
+                state?: ("draft" | "in_review" | "published" | "withdrawn") | null;
+                /** @description Only published entries past their end date */
+                expired?: boolean;
+                q?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuideEntryManagedOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    draft_entry_v1_guide_manage_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuideEntryIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuideEntryDetailManagedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_queue_v1_guide_manage_reports_get: {
+        parameters: {
+            query?: {
+                state?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuideManagedReportOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resolve_report_v1_guide_manage_reports__report_id__resolution_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuideReportResolutionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuideManagedReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_managed_v1_guide_manage__entry_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuideEntryDetailManagedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    save_entry_v1_guide_manage__entry_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuideEntryIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuideEntryDetailManagedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_review_v1_guide_manage__entry_id__request_review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuideEntryDetailManagedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    review_entry_v1_guide_manage__entry_id__review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuideReviewIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuideEntryDetailManagedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mark_verified_v1_guide_manage__entry_id__verified_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuideEntryDetailManagedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_entry_v1_guide_manage__entry_id__withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuideWithdrawIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuideEntryDetailManagedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_entry_v1_guide__entry_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuideEntryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_entry_v1_guide__entry_id__reports_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuideReportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuideReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_representatives_v1_appointments_representatives_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RepresentativeSummaryOut"][];
+                };
+            };
+        };
+    };
+    read_representative_v1_appointments_representatives__representative_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                representative_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RepresentativeDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_appointments_v1_appointments_mine_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentOut"][];
+                };
+            };
+        };
+    };
+    book_appointment_v1_appointments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointmentBookIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_my_appointment_v1_appointments_mine__appointment_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_my_appointment_v1_appointments_mine__appointment_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointmentCancelIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reschedule_my_appointment_v1_appointments_mine__appointment_id__reschedule_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointmentRescheduleIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_calendar_v1_appointments_calendar_get: {
+        parameters: {
+            query?: {
+                /** @description First day; a week ago by default */
+                from?: string | null;
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalendarOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_own_profile_v1_appointments_calendar_profile_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OwnProfileIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnProfileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_own_contacts_v1_appointments_calendar_contacts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContactApprovalIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnProfileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_own_slots_v1_appointments_calendar_slots_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SlotSeriesIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileSlotOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_own_slot_v1_appointments_calendar_slots__slot_id__withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SlotWithdrawIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileSlotOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_booking_v1_appointments_calendar_bookings__appointment_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_booking_v1_appointments_calendar_bookings__appointment_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookingCancelIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_follow_up_v1_appointments_calendar_bookings__appointment_id__follow_up_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointmentFollowUpIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_profiles_v1_appointments_profiles_get: {
+        parameters: {
+            query?: {
+                state?: ("draft" | "published" | "withdrawn") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RepresentativeManagedOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_profile_v1_appointments_profiles_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RepresentativeCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RepresentativeManagedDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_profile_v1_appointments_profiles__representative_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                representative_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RepresentativeManagedDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_profile_v1_appointments_profiles__representative_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                representative_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RepresentativeProfileIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RepresentativeManagedDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_profile_v1_appointments_profiles__representative_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                representative_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RepresentativeManagedDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_profile_v1_appointments_profiles__representative_id__withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                representative_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileWithdrawIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RepresentativeManagedDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_slots_v1_appointments_profiles__representative_id__slots_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                representative_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SlotSeriesIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileSlotOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_slot_v1_appointments_profiles__representative_id__slots__slot_id__withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                representative_id: string;
+                slot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SlotWithdrawIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileSlotOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     read_home_v1_home_get: {
         parameters: {
             query?: never;
@@ -38267,7 +41189,7 @@ export interface operations {
     list_activity_v1_profile_activity_get: {
         parameters: {
             query?: {
-                kind?: ("identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal" | "course" | "committee_task") | null;
+                kind?: ("identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal" | "course" | "committee_task" | "appointment") | null;
                 limit?: number;
             };
             header?: never;

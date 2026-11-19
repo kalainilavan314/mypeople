@@ -61,6 +61,10 @@ function StaffStack() {
       <Stack.Screen name="committees/[id]" options={{ title: t('s.committees.toolsTitle') }} />
       <Stack.Screen name="relief/index" options={{ title: t('s.relief.title') }} />
       <Stack.Screen name="relief/record" options={{ title: t('s.relief.recordTitle') }} />
+      <Stack.Screen name="appointments/index" options={{ title: t('s.appointments.title') }} />
+      <Stack.Screen name="appointments/[id]" options={{ title: t('s.appointments.bookingTitle') }} />
+      <Stack.Screen name="appointments/slots" options={{ title: t('s.appointments.addSlots') }} />
+      <Stack.Screen name="appointments/profile" options={{ title: t('s.appointments.editProfile') }} />
     </Stack>
   );
 }

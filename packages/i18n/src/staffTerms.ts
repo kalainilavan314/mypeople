@@ -67,6 +67,10 @@ export const permissionNames: Readonly<Record<string, StaffTerm>> = {
   },
   'privacy.requests.handle': { ta: 'தனியுரிமைக் கோரிக்கைகளைக் கையாளுதல்', en: 'Handle privacy requests' },
   'reports.view': { ta: 'சமூகப் புகார்களைப் பார்த்தல்', en: 'View community reports' },
+  'appointment.manage_own': { ta: 'தனது சந்திப்பு நாட்காட்டியை நிர்வகித்தல்', en: 'Manage own appointment calendar' },
+  'appointment.profile.manage': { ta: 'பிரதிநிதிகளின் விவரங்களை வெளியிடுதல்', en: 'Publish representative profiles' },
+  'guide.edit': { ta: 'வாழ்வாதார வழிகாட்டியைத் திருத்துதல்', en: 'Edit the livelihood guide' },
+  'guide.review': { ta: 'வாழ்வாதார வழிகாட்டிப் பதிவுகளை மீளாய்வு செய்தல்', en: 'Review livelihood guide entries' },
 };
 
 /** The permission's name in the language, or the code itself for one this table does not know yet. */

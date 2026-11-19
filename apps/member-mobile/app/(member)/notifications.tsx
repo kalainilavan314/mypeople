@@ -76,6 +76,14 @@ function targetRoute(item: NotificationItem): Href | null {
       return item.targetId ? { pathname: '/alerts/[id]', params: { id: item.targetId } } : '/alerts';
     case 'blood_request':
       return item.targetId ? { pathname: '/blood-donors/requests/[id]', params: { id: item.targetId } } : '/blood-donors';
+    case 'guide_entry':
+      return item.targetId ? { pathname: '/livelihood/[id]', params: { id: item.targetId } } : '/livelihood';
+    case 'appointment':
+      return item.targetId
+        ? { pathname: '/representatives/appointments/[id]', params: { id: item.targetId } }
+        : '/representatives/appointments';
+    case 'appointment_calendar':
+      return '/staff/appointments';
     default:
       return null;
   }

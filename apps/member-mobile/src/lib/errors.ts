@@ -29,7 +29,9 @@ export type RefusalScope =
   | 'committees'
   | 'diaspora'
   | 'safety'
-  | 'bloodDonors';
+  | 'bloodDonors'
+  | 'livelihood'
+  | 'representatives';
 
 /**
  * The member-facing message for a failed request: the API's error code when

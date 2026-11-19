@@ -45,6 +45,8 @@ HUB_SERVICES = (
     "diaspora",
     "disaster_alerts",
     "blood_donors",
+    "livelihood_guide",  # M39, Phase 3
+    "representatives",  # M41, Phase 3
 )
 
 # Services whose routes sit behind a v1.1 module switch (FR-ARCH-011). While the switch is off the
@@ -69,6 +71,8 @@ GATED_BY_MODULE = {
     "diaspora": "diaspora",
     "disaster_alerts": "disaster_alerts",
     "blood_donors": "blood_donors",
+    "livelihood_guide": "livelihood_guide",
+    "representatives": "representatives",
 }
 
 # M18: the Promise Tracker is also shown on Home itself, with a count of the promises made for the
@@ -88,6 +92,9 @@ OPEN_TO_EVERYONE = frozenset(
     | {"diaspora"}
     # Official warnings and blood donation are for everyone; neither depends on membership (BR-102).
     | {"disaster_alerts", "blood_donors"}
+    # Reading the guide and the representatives' profiles is open to everyone (M39, M41); booking an
+    # appointment itself waits for a Verified identity and an Active membership [ASSUMPTION].
+    | {"livelihood_guide", "representatives"}
 )
 
 

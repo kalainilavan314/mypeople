@@ -21,7 +21,8 @@ def test_the_party_fund_never_comes_before_civic_participation():
     services = rules.HUB_SERVICES
     # The Phase 1 and 2 services come first; the Phase 3 services follow them.
     assert services[8:10] == ("promises", "support")
-    assert {"budgeting", "committees", "diaspora", "disaster_alerts", "blood_donors"} <= set(services[10:])
+    assert {"budgeting", "committees", "diaspora", "disaster_alerts", "blood_donors",
+            "livelihood_guide", "representatives"} <= set(services[10:])
     assert services.index("party_fund") > max(services.index(s) for s in ("ideas", "surveys", "learning"))
 
 

@@ -122,6 +122,14 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | M40 | Guide entry detail | Livelihood guide (SC-36) | 3 | To build | `apps/member-mobile/app/(member)/livelihood/` |  |
 | M41 | Meet your representative | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/representatives/` |  |
 | M42 | Book or manage appointment | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/representatives/` |  |
+| M35 | Alerts and safety | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/alerts/` |  |
+| M36 | Emergency help request | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/alerts/` |  |
+| M37 | Blood donor enrolment | Blood donors (SC-35) | 3 | Blocked: OD-39 (blood donors) | `apps/member-mobile/app/(member)/blood-donors/` |  |
+| M38 | Donation request response | Blood donors (SC-35) | 3 | Blocked: OD-39 | `apps/member-mobile/app/(member)/blood-donors/` |  |
+| M39 | Livelihood and welfare guide | Livelihood guide (SC-36) | 3 | Built | `apps/member-mobile/app/(member)/livelihood/index.tsx` | Behind `livelihood_guide` |
+| M40 | Guide entry detail | Livelihood guide (SC-36) | 3 | Built | `apps/member-mobile/app/(member)/livelihood/[id].tsx` | Behind `livelihood_guide` |
+| M41 | Meet your representative | Meet your representative (SC-37) | 3 | Built | `apps/member-mobile/app/(member)/representatives/index.tsx`, `[id].tsx` | Behind `representatives` |
+| M42 | Book or manage appointment | Meet your representative (SC-37) | 3 | Built | `apps/member-mobile/app/(member)/representatives/book.tsx`, `appointments/` | Behind `representatives` |
 | M43 | Voice report | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Blocked: Voice is Phase 3 | `apps/member-mobile/app/(member)/issues/new (voice mode of H07)` | Decided: a voice option inside H07, not a second report screen |
 | M44 | Accessibility and data saver | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Built (text size and data saver; voice in Phase 3) | `apps/member-mobile/app/(member)/profile/accessibility.tsx` | In-app text size (Standard, Large, Larger) and a data saver that loads gallery photos on tap; stays on the device |
 | M45 | Messages and channels | SMS and WhatsApp (SC-39) | 1 SMS, 2 WhatsApp | Built (preferences; SMS waits on INT-01, push on INT-02, WhatsApp in Phase 2) | `apps/member-mobile/app/(member)/profile/settings.tsx (channels, with P05)` | Independent push/SMS toggles per category; no second preferences screen. Decided: extends the P05 settings screen; no second preferences screen. |
@@ -155,6 +163,9 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | S16 | Relief distribution record | Disaster support (SC-34) | 3 (alert relay may move to 2) | Built | `apps/member-mobile/app/(member)/staff/relief/` | relief.logistics; quantity checks against the store; AS- case or group, never a name; draft encrypted on the phone |
 | S17 | Appointment calendar | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/staff/appointments/` |  |
 | S18 | Committee coordinator tools | Wings and committees (SC-31) | 3 | Built | `apps/member-mobile/app/(member)/staff/committees/` | Also at `committees/[id]/coordinate` for coordinators without a staff role (PRM-50 is committee-scoped) |
+| S16 | Relief distribution record | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/staff/relief/` |  |
+| S17 | Appointment calendar | Meet your representative (SC-37) | 3 | Built | `apps/member-mobile/app/(member)/staff/appointments/` | Behind `representatives`; also on the web at `/representatives/calendar` |
+| S18 | Committee coordinator tools | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/staff/committees/` |  |
 
 ## Dashboard
 
@@ -199,6 +210,11 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | D28 | Livelihood guide content | Livelihood guide (SC-36) | 3 | To build | `apps/admin-web/src/app/(staff)/livelihood/` |  |
 | D29 | Representatives and appointments | Meet your representative (SC-37) | 3 | To build | `apps/admin-web/src/app/(staff)/representatives/` |  |
 | D30 | Official content publishing and signing | Official content and fact-checks (SC-41) | 2 | Built | `apps/admin-web/src/app/(staff)/publishing/` | Draft, image, sign and publish, corrections and withdrawal; Tier 5 registers publishers at `publishing/publishers/`. [ASSUMPTION] INT-24: one Ed25519 key in `CONTENT_SIGNING_KEY` until a KMS; without it signing is refused |
+| D26 | Disaster alerts and relief logistics | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/admin-web/src/app/(staff)/disaster/` |  |
+| D27 | Blood request desk | Blood donors (SC-35) | 3 | Blocked: OD-39 | `apps/admin-web/src/app/(staff)/blood-requests/` |  |
+| D28 | Livelihood guide content | Livelihood guide (SC-36) | 3 | Built | `apps/admin-web/src/app/(staff)/livelihood/` | Behind `livelihood_guide` |
+| D29 | Representatives and appointments | Meet your representative (SC-37) | 3 | Built | `apps/admin-web/src/app/(staff)/representatives/` | Behind `representatives` |
+| D30 | Official content publishing and signing | Official content and fact-checks (SC-41) | 2 | Blocked: INT-24 (signing keys in KMS) | `apps/admin-web/src/app/(staff)/publishing/` |  |
 | D31 | Security centre | Account and device security (SC-42) | 1 | Built | `apps/admin-web/src/app/(staff)/access-reviews/page.tsx` |  |
 | D32 | Analytics dashboards | Administration (SC-17, SC-20) | 1–3 | Built (Phase 1 operational figures; further dashboards and exports later) | `apps/admin-web/src/app/(staff)/analytics/` | Registration, identity reviews, review queue and event attendance for the viewer's areas; groups of 1 to 9 hidden |
 | D33 | Audit log viewer | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/audit/page.tsx` |  |

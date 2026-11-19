@@ -31,7 +31,9 @@ export type ClosableFeature =
   | 'committees'
   | 'diaspora'
   | 'safety'
-  | 'bloodDonors';
+  | 'bloodDonors'
+  | 'livelihood'
+  | 'representatives';
 
 /**
  * QueryView for a module the team can switch off. While it is off the API answers
