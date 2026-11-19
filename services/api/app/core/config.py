@@ -101,6 +101,12 @@ class Settings(BaseSettings):
     # from the immutable FIN-01 production control recorded through P3.
     finance_internal_review_threshold_minor: int = 10_000_000
 
+    # Official content signing (FR-AUT-001, 002). An Ed25519 private key: its 32-byte seed,
+    # base64-encoded. [ASSUMPTION] INT-24: the BRD wants the key in a KMS; until one is chosen
+    # the key is a server setting, read only by content/official/signing.py. Without it signing
+    # is unavailable and nothing can be published as official (fails closed).
+    content_signing_key: SecretStr | None = None
+
     @field_validator("allowed_origins", mode="before")
     @classmethod
     def split_comma_separated(cls, value: object) -> object:
@@ -130,6 +136,18 @@ class Settings(BaseSettings):
                 key = b""
             if len(key) != 32:
                 raise ValueError("FINANCE_ENCRYPTION_KEY must be 32 bytes, base64-encoded")
+        return value
+
+    @field_validator("content_signing_key")
+    @classmethod
+    def signing_key_is_32_bytes(cls, value: SecretStr | None) -> SecretStr | None:
+        if value is not None:
+            try:
+                key = base64.b64decode(value.get_secret_value(), validate=True)
+            except binascii.Error:
+                key = b""
+            if len(key) != 32:
+                raise ValueError("CONTENT_SIGNING_KEY must be a 32-byte Ed25519 seed, base64-encoded")
         return value
 
     @model_validator(mode="after")

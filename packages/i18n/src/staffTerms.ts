@@ -59,6 +59,7 @@ export const permissionNames: Readonly<Record<string, StaffTerm>> = {
   'field.collect': { ta: 'களத் தரவைச் சேகரித்தல்', en: 'Collect field data' },
   'certificate.issue_revoke': { ta: 'சான்றிதழ்களை வழங்குதலும் மீளப்பெறுதலும்', en: 'Issue and revoke certificates' },
   'disaster.relay': { ta: 'அதிகாரபூர்வ அனர்த்த எச்சரிக்கைகளை அனுப்புதல்', en: 'Relay official disaster alerts' },
+  'content.sign_publish': { ta: 'அதிகாரபூர்வ அறிக்கைகளில் கையொப்பமிட்டு வெளியிடுதல்', en: 'Sign and publish official statements' },
   'relief.logistics': { ta: 'நிவாரண விநியோகத்தை நிர்வகித்தல்', en: 'Manage relief logistics' },
   'privacy.requests.handle': { ta: 'தனியுரிமைக் கோரிக்கைகளைக் கையாளுதல்', en: 'Handle privacy requests' },
   'reports.view': { ta: 'சமூகப் புகார்களைப் பார்த்தல்', en: 'View community reports' },

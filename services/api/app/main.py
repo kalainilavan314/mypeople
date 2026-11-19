@@ -25,6 +25,9 @@ from app.modules.access.reviews import router as access_reviews
 from app.modules.audit import router as audit
 from app.modules.content.gallery import router as gallery
 from app.modules.content.gallery.dependencies import build_media_store
+from app.modules.content.official import router as official_content
+from app.modules.content.official.dependencies import build_check_limiter
+from app.modules.content.official.signing import build_signer
 from app.modules.community.cases import router as community_cases
 from app.modules.community.factchecks import router as community_factchecks
 from app.modules.community.ideas import router as community_ideas
@@ -107,6 +110,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.issue_vault = build_issue_vault(settings)
     app.state.card_photo_vault = build_card_photo_vault(settings)
     app.state.media_store = build_media_store(settings)
+    app.state.content_signer = build_signer(settings)
+    app.state.official_check_limiter = build_check_limiter()
     app.state.sms = build_sms(settings)
     app.state.push = build_push(settings)
     app.include_router(health.router)
@@ -145,6 +150,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(election_roster.router)
     app.include_router(community_factchecks.router)
     app.include_router(budgeting.router)
+    app.include_router(official_content.router)
     app.include_router(home.router)
     app.include_router(profile.router)
     app.include_router(area_changes.router)

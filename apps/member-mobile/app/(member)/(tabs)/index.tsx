@@ -22,6 +22,7 @@ import {
 
 import { PhotoBackdrop } from '@/components/PhotoBackdrop';
 import { QueryView } from '@/components/QueryView';
+import { ElectionBanner } from '@/features/election/ElectionBanner';
 import { EventRow } from '@/features/events/EventRow';
 import { HomeActionTile } from '@/features/home/HomeActionTile';
 import { MemberWelcomeCard } from '@/features/home/MemberWelcomeCard';
@@ -82,6 +83,7 @@ function HomeBody({ data }: { data: HomeView }) {
   return (
     <>
       <MemberWelcomeCard place={place} membershipState={data.membershipState} />
+      <ElectionBanner />
 
       {data.layout === 'awaiting_review' && !next ? (
         <Notice tone="warning" title={t('m.home.awaitingTitle')}>

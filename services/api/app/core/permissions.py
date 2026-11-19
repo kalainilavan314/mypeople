@@ -9,8 +9,10 @@ kind of area (TIER_AREA_LEVEL).
 Not grantable through staff assignments, and so not listed here:
 PRM-01, PRM-32 and PRM-56 (a member's own record), the event-scoped
 PRM-17 for members (OD-12), PRM-50 (committee scope), PRM-55 (partner
-organisations), and PRM-47 and PRM-57, which the BRD gives platform scope
-regardless of tier. They arrive with their own modules.
+organisations), and PRM-47, which the BRD gives platform scope regardless of
+tier. It arrives with its own module. PRM-57 (content.sign_publish) also has
+platform scope whatever the tier; it is listed, and the official content
+module checks it without an area.
 """
 
 from typing import Literal
@@ -94,6 +96,8 @@ MATRIX: dict[str, dict[Tier, Grant]] = {
     "field.collect": {"1": D, "2B": E},  # PRM-51
     "certificate.issue_revoke": {"3B": E, "5": D},  # PRM-52
     "disaster.relay": {"3B": E, "5": E},  # PRM-53
+    # Platform scope whatever the tier (BRD §9.8 "P*"): official_content checks it without an area.
+    "content.sign_publish": {"3B": E, "5": E},  # PRM-57
     "relief.logistics": {"2B": E, "3B": E},  # PRM-54
     # Not in the BRD matrix [ASSUMPTION]: FR-PROF-018 and 019 route data-subject requests to
     # the DPO without naming a permission; the DPO's account holds it as an explicit Tier 5 grant.

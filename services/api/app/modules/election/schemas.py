@@ -7,7 +7,7 @@ from pydantic import AwareDatetime, Field
 from app.core.schemas import CamelModel
 from app.modules.access.schemas import AreaRef
 from app.modules.election.repository import StoredNotice, StoredPeriod
-from app.modules.election.rules import LABELS, ElectionType, NoticeSource
+from app.modules.election.rules import LABELS, OFFICIAL_LINKS, POLLING_STATION_LOCATOR, ElectionType, NoticeSource
 from app.modules.election.service import CurrentElection, Declared, PeriodFile
 
 PeriodState = Literal["declared", "ended", "withdrawn"]
@@ -139,6 +139,34 @@ class PeriodFileOut(PeriodOut):
         return cls(
             **PeriodOut.build(file.period).model_dump(),
             notices=[ElectionNoticeOut.build(n) for n in file.notices],
+        )
+
+
+class OfficialLinkOut(CamelModel):
+    key: str
+    label_en: str
+    label_ta: str
+    description_en: str
+    description_ta: str
+    url: str
+
+
+class OfficialLinksOut(CamelModel):
+    """M29: the Election Commission's own services, each labelled "Election Commission information" (FR-ELX-004)."""
+
+    links: list[OfficialLinkOut]
+    label_en: str
+    label_ta: str
+    polling_station_locator: bool = Field(description="False until an authorised dataset exists (OD-37)")
+
+    @classmethod
+    def current(cls) -> "OfficialLinksOut":
+        label_en, label_ta = LABELS["election_commission"]
+        return cls(
+            links=[OfficialLinkOut(**vars(link)) for link in OFFICIAL_LINKS],
+            label_en=label_en,
+            label_ta=label_ta,
+            polling_station_locator=POLLING_STATION_LOCATOR,
         )
 
 

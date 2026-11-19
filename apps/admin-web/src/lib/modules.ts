@@ -16,6 +16,12 @@ export const builtModules: readonly AdminModule[] = [
   { href: '/volunteering', ta: 'தன்னார்வ வாய்ப்புகள்', en: 'Volunteering opportunities', permission: 'volunteers.manage' },
   { href: '/moderation', ta: 'நடுவர் வரிசை', en: 'Moderation queue', permission: 'content.moderate' },
   {
+    href: '/publishing',
+    ta: 'அதிகாரபூர்வ வெளியீடும் கையொப்பமும்',
+    en: 'Official publishing and signing',
+    permission: ['content.sign_publish', 'system.configure'] as const,
+  },
+  {
     href: '/development',
     ta: 'அபிவிருத்தி முன்மொழிவுகள்',
     en: 'Development proposals',
@@ -96,7 +102,6 @@ export const builtModules: readonly AdminModule[] = [
 
 /** Planned modules in later phases with user-facing bilingual labels. */
 export const plannedModules = [
-  { name: 'Official publishing and signing', ta: 'அதிகாரப்பூர்வ வெளியீடு', desc: 'Official gazette and signed notices' },
   { name: 'Committees and wings', ta: 'குழுக்களும் பிரிவுகளும்', desc: 'Youth, women, and diaspora wings' },
   { name: 'AI monitoring and further reports', ta: 'அறிக்கைகளும் அவதானிப்பும்', desc: 'Model safety (D21) and dashboards beyond the Phase 1 figures' },
 ] as const;

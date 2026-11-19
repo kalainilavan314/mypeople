@@ -113,4 +113,5 @@ def test_the_registry_lists_every_module_with_the_gate_it_needs(enforced, auth, 
         "participatory_budgeting": "G3",
         "election_mode": "G2",
         "households": "G2",
+        "official_content": "G3",
     }

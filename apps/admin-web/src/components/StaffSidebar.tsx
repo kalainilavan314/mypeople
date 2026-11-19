@@ -258,6 +258,14 @@ function FinanceIcon({ className }: { className?: string }) {
   );
 }
 
+function PublishingIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h4m5 4H6a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v9a2 2 0 01-2 2zM13 4v5h5" />
+    </svg>
+  );
+}
+
 function SignOutIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -386,6 +394,8 @@ function getModuleIcon(href: string) {
     case '/finance':
     case '/finance-readiness':
       return FinanceIcon;
+    case '/publishing':
+      return PublishingIcon;
     default:
       return HomeIcon;
   }

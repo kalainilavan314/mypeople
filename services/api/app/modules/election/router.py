@@ -18,6 +18,7 @@ from app.modules.election.schemas import (
     ElectionBannerOut,
     ElectionNoticeOut,
     NoticeIn,
+    OfficialLinksOut,
     PeriodFileOut,
     PeriodIn,
     PeriodOut,
@@ -62,6 +63,13 @@ HANDLED = (service.PeriodNotFound, AccessRefused, service.ElectionRefused, servi
 def read_current_elections(member: CurrentMember, db: Db) -> list[ElectionBannerOut]:
     """Elections running for the member's area: date, countdown, official source and notices (FR-ELX-001, 004)."""
     return [ElectionBannerOut.build(current) for current in service.current_for_member(db, member.id)]
+
+
+@member_router.get("/official-links")
+def read_official_links(member: CurrentMember) -> OfficialLinksOut:
+    """M29: links to the Election Commission's services (FR-ELX-002, 003). Opened in the browser; nothing is
+    collected or stored here, and there is no polling-station locator of the app's own (OD-37)."""
+    return OfficialLinksOut.current()
 
 
 @router.get("/periods")
