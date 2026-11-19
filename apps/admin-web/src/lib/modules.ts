@@ -63,6 +63,12 @@ export const builtModules: readonly AdminModule[] = [
   },
   { href: '/town-halls', ta: 'மக்கள் மன்றங்கள்', en: 'Town halls', permission: ['townhall.produce', 'townhall.moderate'] as const },
   { href: '/field', ta: 'களப் பார்வைகள்', en: 'Field visits', permission: 'field.collect' },
+  {
+    href: '/committees',
+    ta: 'குழுக்களும் அணிகளும்',
+    en: 'Committees and wings',
+    permission: ['roles.assign', 'system.configure', 'events.manage'] as const,
+  },
   { href: '/gallery', ta: 'புகைப்படங்கள் & நீக்கங்கள்', en: 'Gallery console', permission: ['gallery.publish', 'gallery.takedown'] as const },
   { href: '/messages', ta: 'அறிவித்தல்கள் & செய்திகள்', en: 'Messaging composer', permission: 'notifications.send' },
   { href: '/policy-decisions', ta: 'கொள்கை முடிவுகள்', en: 'Policy decisions', permission: 'system.configure' },
@@ -102,6 +108,5 @@ export const builtModules: readonly AdminModule[] = [
 
 /** Planned modules in later phases with user-facing bilingual labels. */
 export const plannedModules = [
-  { name: 'Committees and wings', ta: 'குழுக்களும் பிரிவுகளும்', desc: 'Youth, women, and diaspora wings' },
   { name: 'AI monitoring and further reports', ta: 'அறிக்கைகளும் அவதானிப்பும்', desc: 'Model safety (D21) and dashboards beyond the Phase 1 figures' },
 ] as const;

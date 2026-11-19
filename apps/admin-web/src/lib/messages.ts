@@ -384,6 +384,22 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     ta: 'தேர்தல் அமைதிக்காலம் ஒன்று நடைமுறையில் உள்ளது. அது முடியும் வரை அதிகாரபூர்வ அறிக்கைகளை வெளியிடவோ திருத்தவோ முடியாது; மீளப்பெறலாம்.',
     en: 'An election silence period is in force. Official statements cannot be published or corrected until it ends; they can still be withdrawn.',
   },
+  committee_refused: {
+    ta: 'இதைக் குழுவில் செய்ய முடியவில்லை. கீழுள்ள காரணங்களைப் பார்க்கவும்.',
+    en: 'This could not be done. See the reasons below.',
+  },
+  not_committee_officer: {
+    ta: 'இக்குழுவின் ஒருங்கிணைப்பாளர்களும் செயலாளரும் மட்டுமே இதைச் செய்யலாம்.',
+    en: 'Only this committee’s coordinators and secretary can do this.',
+  },
+  diaspora_refused: {
+    ta: 'விவரங்களைச் சேமிக்க முடியவில்லை.',
+    en: 'The details could not be saved.',
+  },
+  platform_scope_required: {
+    ta: 'இதற்கு முழுத் தளத்துக்குமான அனுமதி தேவை.',
+    en: 'This needs the permission over the whole platform.',
+  },
 };
 
 const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
@@ -1400,6 +1416,66 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'அறிக்கைகளில் காட்டப்படும் பெயரைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
     en: 'Write the name shown on statements in Tamil and English.',
   },
+  wing_required: {
+    ta: 'குழு சேரும் அணியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the wing the committee belongs to.',
+  },
+  wing_not_active: {
+    ta: 'அணி இன்னும் அங்கீகரிக்கப்படவில்லை. முதலில் அணியை அங்கீகரிக்கவும்.',
+    en: 'The wing is not approved yet. Approve the wing first.',
+  },
+  wing_type_mismatch: {
+    ta: 'குழுவின் வகை அதன் அணியின் வகையுடன் ஒன்றாக இருக்க வேண்டும்.',
+    en: 'A committee has the same type as its wing.',
+  },
+  outside_wing_area: {
+    ta: 'குழுவின் பகுதி அதன் அணியின் பகுதிக்குள் இருக்க வேண்டும்.',
+    en: 'The committee’s area must lie inside its wing’s area.',
+  },
+  wing_has_open_committees: {
+    ta: 'இந்த அணியில் திறந்த அல்லது முன்மொழியப்பட்ட குழுக்கள் உள்ளன. முதலில் அவற்றை மூடவும்.',
+    en: 'This wing still has open or proposed committees. Close them first.',
+  },
+  name_required: {
+    ta: 'தமிழிலும் ஆங்கிலத்திலும் பெயரை எழுதவும்.',
+    en: 'Write the name in Tamil and English.',
+  },
+  wing_type_required: {
+    ta: 'அணியின் வகையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the type of wing.',
+  },
+  unknown_member: {
+    ta: 'இந்த உறுப்பினர் இலக்கத்துடன் எவரும் இல்லை.',
+    en: 'No member has this member code.',
+  },
+  member_code_required: {
+    ta: 'உறுப்பினர் இலக்கத்தை எழுதவும்.',
+    en: 'Write the member code.',
+  },
+  already_has_role: {
+    ta: 'இவருக்கு ஏற்கனவே இந்தப் பொறுப்பு உள்ளது.',
+    en: 'This person already has this role.',
+  },
+  last_coordinator: {
+    ta: 'ஒவ்வொரு குழுவிலும் ஒருங்கிணைப்பாளர் ஒருவர் இருக்க வேண்டும். முதலில் இன்னொருவரை நியமிக்கவும்.',
+    en: 'A committee always keeps one coordinator. Name another coordinator first.',
+  },
+  committee_not_open: {
+    ta: 'இக்குழு திறந்திருக்கவில்லை.',
+    en: 'This committee is not open.',
+  },
+  committee_kind_required: {
+    ta: 'அணியா குழுவா எனத் தெரிவுசெய்யவும்.',
+    en: 'Choose wing or committee.',
+  },
+  committee_purpose_required: {
+    ta: 'நோக்கத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write the purpose in Tamil and English (at least 10 letters).',
+  },
+  committee_role_required: {
+    ta: 'குழுப் பொறுப்பைத் தெரிவுசெய்யவும்.',
+    en: 'Choose a committee role.',
+  },
 };
 
 /** Problems that name a question or lesson by its number, e.g. "options_required:2". */
@@ -2113,6 +2189,38 @@ const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
   publisher_revoked: {
     ta: 'வெளியீட்டாளர் பதிவு மீளப்பெறப்பட்டது. அவர் முன்பு கையொப்பமிட்டவை தொடர்ந்தும் உறுதிப்படும்.',
     en: 'Publisher registration revoked. What they signed before still verifies.',
+  },
+  committee_proposed: {
+    ta: 'முன்மொழியப்பட்டது. Tier 5 அங்கீகரித்ததும் உறுப்பினர்களுக்குத் திறக்கும்.',
+    en: 'Proposed. It opens to members once a Tier 5 approves it.',
+  },
+  committee_approved: {
+    ta: 'அங்கீகரிக்கப்பட்டது. இப்போது உறுப்பினர்களுக்குத் திறந்துள்ளது.',
+    en: 'Approved. It is now open to members.',
+  },
+  committee_rejected: {
+    ta: 'காரணத்துடன் நிராகரிக்கப்பட்டது.',
+    en: 'Rejected with your reason.',
+  },
+  committee_closed: {
+    ta: 'மூடப்பட்டது. பதிவுகள் வைக்கப்பட்டுள்ளன.',
+    en: 'Closed. Its records are kept.',
+  },
+  committee_role_granted: {
+    ta: 'பொறுப்பு வழங்கப்பட்டது; உங்கள் பெயருடன் பதிவுசெய்யப்பட்டது.',
+    en: 'Role given and logged with your name.',
+  },
+  committee_member_removed: {
+    ta: 'குழுவிலிருந்து நீக்கப்பட்டார். அவரது அணுகல் உடனே முடிந்தது.',
+    en: 'Removed from the committee. Their access ended at once.',
+  },
+  diaspora_event_listed: {
+    ta: 'வெளிநாட்டு ஆதரவாளர்களுக்காக நிகழ்வு பட்டியலிடப்பட்டது.',
+    en: 'Event listed for supporters abroad.',
+  },
+  diaspora_event_unlisted: {
+    ta: 'நிகழ்வு பட்டியலிலிருந்து அகற்றப்பட்டது.',
+    en: 'Event taken off the list.',
   },
 };
 

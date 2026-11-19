@@ -41,6 +41,8 @@ HUB_SERVICES = (
     "promises",
     "support",
     "budgeting",
+    "committees",
+    "diaspora",
 )
 
 # Services whose routes sit behind a v1.1 module switch (FR-ARCH-011). While the switch is off the
@@ -61,6 +63,8 @@ GATED_BY_MODULE = {
     "promises": "promises",
     "support": "community_support",
     "budgeting": "participatory_budgeting",
+    "committees": "committees",
+    "diaspora": "diaspora",
 }
 
 # M18: the Promise Tracker is also shown on Home itself, with a count of the promises made for the
@@ -76,6 +80,8 @@ OPEN_TO_EVERYONE = frozenset(
     {"my_area", "events", "card", "gallery", "learning", "local_reports", "area_projects", "promises", "support"}
     # M24: anyone may read a budgeting cycle; the ballot checks eligibility itself (FR-PBG-003).
     | {"budgeting"}
+    # M46, FR-DSP-001: supporters abroad register without a verified identity or membership.
+    | {"diaspora"}
 )
 
 

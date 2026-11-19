@@ -50,6 +50,8 @@ FEATURES: dict[str, Feature] = {
         Feature("fact_checks", "Misinformation reports and the fact-check queue (FR-AUT-006 to 009)", 2),
         Feature("participatory_budgeting", "Participatory budgeting: cycles, private ballots, certified results (FR-PBG-001 to 010)", 3),
         Feature("official_content", "Signed official statements, publishing and public checks (FR-AUT-001 to 005)", 3),
+        Feature("committees", "Wings and committees (FR-COM-001 to 009)", 3),
+        Feature("diaspora", "Diaspora participation (FR-DSP-001 to 006; contributions stay off, OD-40)", 3),
     )
 }
 

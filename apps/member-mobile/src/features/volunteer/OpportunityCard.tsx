@@ -19,6 +19,7 @@ export function OpportunityCard({ opportunity }: { opportunity: VolunteerOpportu
   const place = localized(opportunity.placeEn, opportunity.placeTa);
   const when = whenText(opportunity.startsAt, opportunity.endsAt, language);
   const saved = opportunity.saved ? `. ${t('m.volunteer.saved')}` : '';
+  const remote = opportunity.remote ? `. ${t('m.volunteer.remote')}` : '';
   const offer = opportunity.myOffer
     ? `. ${t(`m.profile.activityState_volunteer_offer_${opportunity.myOffer.state}`)}`
     : '';
@@ -26,7 +27,7 @@ export function OpportunityCard({ opportunity }: { opportunity: VolunteerOpportu
   return (
     <SurfaceCard
       onPress={() => router.push({ pathname: '/volunteer/[id]', params: { id: opportunity.id } })}
-      accessibilityLabel={`${title}. ${role}. ${when}. ${place}${saved}${offer}`}
+      accessibilityLabel={`${title}. ${role}. ${when}. ${place}${remote}${saved}${offer}`}
       accessibilityHint={t('m.volunteer.opensBriefing')}>
       <View style={styles.row}>
         <IconTile icon="hand-left-outline" tint="brand" size={40} />
@@ -43,8 +44,9 @@ export function OpportunityCard({ opportunity }: { opportunity: VolunteerOpportu
       <AppText step="secondary" tone="muted">
         {place}
       </AppText>
-      {opportunity.saved || opportunity.myOffer ? (
+      {opportunity.remote || opportunity.saved || opportunity.myOffer ? (
         <View style={styles.tags}>
+          {opportunity.remote ? <StatusTag tone="neutral" label={t('m.volunteer.remote')} /> : null}
           {opportunity.saved ? <StatusTag tone="neutral" label={t('m.volunteer.saved')} /> : null}
           {opportunity.myOffer ? <OfferStatusTag state={opportunity.myOffer.state} /> : null}
         </View>

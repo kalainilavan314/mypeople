@@ -79,6 +79,7 @@ def check_decision(*, offer_state: str, confirm: bool, confirmed: int, places: i
     return None if reason and reason.strip() else "reason_required"
 
 
-def visible_to(opportunity_area_key: str, member_area_keys: list[str]) -> bool:
-    """An opportunity set for a GN, DS division or district reaches the members inside it."""
-    return opportunity_area_key == "platform" or opportunity_area_key in member_area_keys
+def visible_to(opportunity_area_key: str, member_area_keys: list[str], remote: bool = False) -> bool:
+    """An opportunity set for a GN, DS division or district reaches the members inside it; a remote one
+    reaches every member, wherever they live (FR-DSP-003)."""
+    return remote or opportunity_area_key == "platform" or opportunity_area_key in member_area_keys

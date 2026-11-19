@@ -16,6 +16,8 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings
 from app.modules.access.service import Staff
 from app.modules.audit import service as audit
+from app.modules.diaspora import repository as diaspora_repository
+from app.modules.diaspora import rules as diaspora_rules
 from app.modules.features import repository as feature_repository
 from app.modules.finance import images, repository, rules, vault
 from app.modules.finance.scanner import MalwareScanner
@@ -361,6 +363,10 @@ def create_or_get_draft(
     if not settings.is_finance_configured:
         raise FinanceNotConfigured("finance_not_configured")
     threshold_minor, reporting_mode, third_party_mode = _active_production_values(db, settings)
+    # FR-DSP-006, BR-147, OS-16: a registered overseas supporter's contribution would be cross-border;
+    # it stays unavailable until the approvals in OD-40 are recorded.
+    if not diaspora_rules.FOREIGN_CONTRIBUTIONS_ENABLED and diaspora_repository.is_registered(db, member_id):
+        raise InvalidSubmission("foreign_contributions_disabled")
     if not req.paying_for_self and third_party_mode == "blocked":
         raise InvalidSubmission("third_party_payment_not_allowed")
 

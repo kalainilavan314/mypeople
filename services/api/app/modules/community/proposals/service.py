@@ -25,6 +25,7 @@ from app.modules.access.service import AccessRefused, Staff, refuse, visible_are
 from app.modules.audit import service as audit
 from app.modules.community.proposals import repository, rules
 from app.modules.community.proposals.repository import Proposal, StageEvent
+from app.modules.diaspora import repository as diaspora_repository
 from app.modules.messaging.notifications import service as notifications
 
 PROPOSALS_PER_DAY = 5  # [ASSUMPTION]
@@ -87,6 +88,8 @@ def submit(db: Session, member_id: uuid.UUID, new: NewProposal, ip: str) -> Prop
         assert found is not None
         return found
     repository.record_event(db, proposal_id, None, "pending_moderation", member_id, None, None)
+    if diaspora_repository.is_registered(db, member_id):
+        diaspora_repository.tag_proposal(db, proposal_id)  # FR-DSP-004: for aggregate analysis only
     audit.record(db, actor_id=member_id, action="proposal.submitted", target_type="proposal", target_id=str(proposal_id),
                  area_path=path, details={"category": new.category}, ip=ip)
     db.commit()

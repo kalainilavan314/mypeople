@@ -98,6 +98,7 @@ export function readOpportunity(form: FormLike): Read<VolunteerOpportunityInput>
       eventId: uuidOrNull(form, 'eventId'),
       skills,
       places,
+      remote: text(form, 'remote') === 'yes', // FR-DSP-003: done from anywhere, shown as "Remote"
       area,
     },
     problems,
@@ -120,6 +121,7 @@ export function readOpportunityUpdate(form: FormLike): Read<VolunteerOpportunity
       ...written.values,
       ...(timesChanged ? { startsAt: when.startsAt, endsAt: when.endsAt } : {}),
       places,
+      remote: text(form, 'remote') === 'yes',
     },
     problems,
   };

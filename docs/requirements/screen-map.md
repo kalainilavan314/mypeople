@@ -110,8 +110,8 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | M28 | Tamil AI Assistant | Tamil AI assistant (SC-29) | 3 | Blocked: OD-42 (AI provider) | `apps/member-mobile/app/(member)/assistant.tsx` |  |
 | M29 | Election information | Election mode (SC-30) | 2 | Built | `apps/member-mobile/app/(member)/election.tsx` | Behind `election_mode`; Election Commission dates, notices and links only, labelled; Home banner `src/features/election/ElectionBanner.tsx`. [ASSUMPTION] DEP-19: the switch stays off until the legal opinion is recorded |
 | M30 | Duty roster and shift check-in | Election mode (SC-30) | 2 | Built | `apps/member-mobile/app/(member)/volunteer/assignments.tsx` | Behind `election_roster`; decided: election duties listed with H12 My assignment |
-| M31 | My committees | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/committees/` |  |
-| M32 | Committee space | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/committees/` |  |
+| M31 | My committees | Wings and committees (SC-31) | 3 | Built | `apps/member-mobile/app/(member)/committees/index.tsx` | Behind `committees`; Tier 5 approves each wing and committee |
+| M32 | Committee space | Wings and committees (SC-31) | 3 | Built | `apps/member-mobile/app/(member)/committees/[id]/` | Moderated threads at `[id]/thread/[threadId]`; no direct messages (OS-17) |
 | M33 | Membership renewal | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 (renewal) | `apps/member-mobile/app/(member)/renewal/` |  |
 | M34 | My certificates | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 | `apps/member-mobile/app/(member)/renewal/` |  |
 | M35 | Alerts and safety | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/alerts/` |  |
@@ -125,7 +125,7 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | M43 | Voice report | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Blocked: Voice is Phase 3 | `apps/member-mobile/app/(member)/issues/new (voice mode of H07)` | Decided: a voice option inside H07, not a second report screen |
 | M44 | Accessibility and data saver | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Built (text size and data saver; voice in Phase 3) | `apps/member-mobile/app/(member)/profile/accessibility.tsx` | In-app text size (Standard, Large, Larger) and a data saver that loads gallery photos on tap; stays on the device |
 | M45 | Messages and channels | SMS and WhatsApp (SC-39) | 1 SMS, 2 WhatsApp | Built (preferences; SMS waits on INT-01, push on INT-02, WhatsApp in Phase 2) | `apps/member-mobile/app/(member)/profile/settings.tsx (channels, with P05)` | Independent push/SMS toggles per category; no second preferences screen. Decided: extends the P05 settings screen; no second preferences screen. |
-| M46 | Diaspora participation | Diaspora (SC-40) | 3 | To build | `apps/member-mobile/app/(member)/diaspora.tsx` |  |
+| M46 | Diaspora participation | Diaspora (SC-40) | 3 | Built | `apps/member-mobile/app/(member)/diaspora/` | Behind `diaspora`; registration at `diaspora/register`; contributions from abroad stay off (OD-40) |
 | M47 | Official updates | Official content and fact-checks (SC-41) | 2 | Built | `apps/member-mobile/app/(member)/official/updates/` | Behind `official_content` (Phase 3 switch); "Official statement" only where the Ed25519 signature verifies; full revision history. [ASSUMPTION] INT-24: key in a server setting until a KMS |
 | M48 | Check or report a statement | Official content and fact-checks (SC-41) | 2 | Built | `apps/member-mobile/app/(member)/official/` | Checking by code or link (`official/check.tsx`, behind `official_content`) and reporting (behind `fact_checks`); a check link opens the public page `apps/member-mobile/app/check/[code].tsx`, no account needed |
 | M49 | Devices and sessions | Account and device security (SC-42) | 1 | Built (remote revocation) | `apps/member-mobile/app/(member)/profile/security.tsx` | Confirmed session termination; device file wipe and passkeys await INT-02/INT-09. |
@@ -154,7 +154,7 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | S15 | Election duty roster manager | Election mode (SC-30) | 2 | Built (dashboard) | `apps/admin-web/src/app/(staff)/roster/`, `apps/admin-web/src/app/(staff)/elections/[id]/roster/` | Shifts, offers, messages and cancellation on the dashboard; members answer and check in with M30 |
 | S16 | Relief distribution record | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/staff/relief/` |  |
 | S17 | Appointment calendar | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/staff/appointments/` |  |
-| S18 | Committee coordinator tools | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/staff/committees/` |  |
+| S18 | Committee coordinator tools | Wings and committees (SC-31) | 3 | Built | `apps/member-mobile/app/(member)/staff/committees/` | Also at `committees/[id]/coordinate` for coordinators without a staff role (PRM-50 is committee-scoped) |
 
 ## Dashboard
 
@@ -191,7 +191,7 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | D20 | Assistant knowledge base | Tamil AI assistant (SC-29) | 3 | Blocked: OD-42 | `apps/admin-web/src/app/(staff)/assistant/` |  |
 | D21 | AI model registry and monitoring | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-42 | `apps/admin-web/src/app/(staff)/ai-models/` |  |
 | D22 | Election mode administration | Election mode (SC-30) | 2 | Built (periods, silence windows, notices; duty roster, polling information and period report have no API yet) | `apps/admin-web/src/app/(staff)/elections/` |  |
-| D23 | Committees and wings administration | Wings and committees (SC-31) | 3 | To build | `apps/admin-web/src/app/(staff)/committees/` |  |
+| D23 | Committees and wings administration | Wings and committees (SC-31) | 3 | Built | `apps/admin-web/src/app/(staff)/committees/` | Diaspora events and counts at `committees/diaspora` |
 | D24 | Field operations oversight | Field operations (SC-32) | 2 | Built | `apps/admin-web/src/app/(staff)/field/` | Counts by area and month; visits deleted after 12 months (OD-38) |
 | D25 | Renewals and certificates | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 | `apps/admin-web/src/app/(staff)/renewals/` |  |
 | D26 | Disaster alerts and relief logistics | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/admin-web/src/app/(staff)/disaster/` |  |

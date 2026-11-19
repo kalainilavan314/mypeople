@@ -27,7 +27,9 @@ export type ClosableFeature =
   | 'election.info'
   | 'official'
   | 'official.updates'
-  | 'budgeting';
+  | 'budgeting'
+  | 'committees'
+  | 'diaspora';
 
 /**
  * QueryView for a module the team can switch off. While it is off the API answers

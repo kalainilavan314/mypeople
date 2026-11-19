@@ -458,6 +458,39 @@ export type DuplicateCaseFile = Schemas['CaseFileOut'];
 export type DuplicateReportInput = Schemas['ReportInput'];
 export type DuplicateDecisionInput = Schemas['CaseDecisionInput'];
 export type DuplicateFlag = Schemas['DuplicateFlagOut'];
+// Wings and committees (M31, M32, S18, D23) and diaspora participation (M46).
+export type Committee = Schemas['CommitteeOut'];
+export type CommitteeCard = Schemas['CommitteeCardOut'];
+export type CommitteeWingType = Committee['wingType'];
+export type CommitteeKind = Committee['kind'];
+export type CommitteeState = Committee['state'];
+export type CommitteeRole = Schemas['CommitteeRoleIn']['role'];
+export type CommitteeMembership = Schemas['CommitteeMembershipOut'];
+export type CommitteeMembershipState = CommitteeMembership['state'];
+export type CommitteeSpace = Schemas['CommitteeSpaceOut'];
+export type CommitteeItem = Schemas['CommitteeItemOut'];
+export type CommitteeItemType = CommitteeItem['itemType'];
+export type CommitteeItemInput = Schemas['CommitteeItemIn'];
+export type CommitteeThread = Schemas['CommitteeThreadOut'];
+export type CommitteePost = Schemas['CommitteePostOut'];
+export type CommitteePostDecision = Schemas['CommitteePostDecisionIn']['decision'];
+export type CommitteeCoordinating = Schemas['CommitteeCoordinatingOut'];
+export type CommitteeManage = Schemas['CommitteeManageOut'];
+export type CommitteeRosterEntry = Schemas['CommitteeRosterEntryOut'];
+export type CommitteeWaitingPost = Schemas['CommitteeWaitingPostOut'];
+export type CommitteeActivity = Schemas['CommitteeActivityOut'];
+export type CommitteeAdmin = Schemas['CommitteeAdminOut'];
+export type CommitteeAdminDetail = Schemas['CommitteeAdminDetailOut'];
+export type CommitteeProposalInput = Schemas['CommitteeProposalIn'];
+export type DiasporaOptions = Schemas['DiasporaOptionsOut'];
+export type DiasporaTopic = DiasporaOptions['topics'][number];
+export type DiasporaMe = Schemas['DiasporaMeOut'];
+export type DiasporaSupporter = Schemas['DiasporaSupporterOut'];
+export type DiasporaSupporterInput = Schemas['DiasporaSupporterIn'];
+export type DiasporaInternationalEvent = Schemas['DiasporaInternationalEventOut'];
+export type DiasporaOpportunity = Schemas['DiasporaOpportunityOut'];
+export type DiasporaEvent = Schemas['DiasporaEventOut'];
+export type DiasporaSummary = Schemas['DiasporaSummaryOut'];
 
 /** A response other than 2xx. `code` is the API's error code, e.g. "invalid_credentials". */
 export class ApiError extends Error {
@@ -1821,6 +1854,118 @@ export function createApiClient({
         'GET',
         `/v1/volunteering/manage/opportunities/${encodeURIComponent(opportunityId)}`,
       ),
+    // Wings and committees (M31, M32, S18, D23). 404 "feature_unavailable" while committees is off.
+    // Refusals are "committee_refused" (422) with `problems`; 403 "not_committee_officer" outside one's own committee.
+    listCommittees: (wingType?: CommitteeWingType) =>
+      request<CommitteeCard[]>('GET', `/v1/committees${toEventQuery({ wing_type: wingType })}`),
+    /** M32: `items` is empty unless the member is an approved member of the committee. */
+    getCommitteeSpace: (committeeId: string) =>
+      request<CommitteeSpace>('GET', `/v1/committees/${encodeURIComponent(committeeId)}`),
+    applyToCommittee: (committeeId: string, note?: string) =>
+      request<CommitteeMembership>('POST', `/v1/committees/${encodeURIComponent(committeeId)}/applications`, { note }),
+    /** Withdraws an application or leaves the committee ("last_coordinator" for the only coordinator). */
+    leaveCommittee: (committeeId: string) =>
+      request<void>('POST', `/v1/committees/${encodeURIComponent(committeeId)}/leave`),
+    /** A member's thread waits for a coordinator or secretary; there are no direct messages. */
+    startCommitteeThread: (committeeId: string, title: string, body: string) =>
+      request<CommitteeItem>('POST', `/v1/committees/${encodeURIComponent(committeeId)}/threads`, { title, body }),
+    getCommitteeThread: (committeeId: string, threadId: string) =>
+      request<CommitteeThread>('GET', `/v1/committees/${encodeURIComponent(committeeId)}/threads/${encodeURIComponent(threadId)}`),
+    replyInCommitteeThread: (committeeId: string, threadId: string, body: string) =>
+      request<CommitteePost>(
+        'POST',
+        `/v1/committees/${encodeURIComponent(committeeId)}/threads/${encodeURIComponent(threadId)}/posts`,
+        { body },
+      ),
+    completeCommitteeTask: (committeeId: string, itemId: string) =>
+      request<CommitteeItem>('POST', `/v1/committees/${encodeURIComponent(committeeId)}/tasks/${encodeURIComponent(itemId)}/done`),
+    setCommitteeSignup: (committeeId: string, itemId: string, signedUp: boolean) =>
+      request<CommitteeItem>(
+        'PUT',
+        `/v1/committees/${encodeURIComponent(committeeId)}/volunteer/${encodeURIComponent(itemId)}/signup`,
+        { signedUp },
+      ),
+    listCoordinatedCommittees: () => request<CommitteeCoordinating[]>('GET', '/v1/committees/coordinating'),
+    getCommitteeManage: (committeeId: string) =>
+      request<CommitteeManage>('GET', `/v1/committees/${encodeURIComponent(committeeId)}/manage`),
+    decideCommitteeApplication: (committeeId: string, membershipId: string, approve: boolean, role: CommitteeRole, reason?: string) =>
+      request<CommitteeRosterEntry>(
+        'POST',
+        `/v1/committees/${encodeURIComponent(committeeId)}/manage/applications/${encodeURIComponent(membershipId)}/decision`,
+        { approve, role, reason },
+      ),
+    setCommitteeRole: (committeeId: string, membershipId: string, role: CommitteeRole) =>
+      request<CommitteeRosterEntry>(
+        'PUT',
+        `/v1/committees/${encodeURIComponent(committeeId)}/manage/members/${encodeURIComponent(membershipId)}/role`,
+        { role },
+      ),
+    removeCommitteeMember: (committeeId: string, membershipId: string, reason: string) =>
+      request<void>(
+        'POST',
+        `/v1/committees/${encodeURIComponent(committeeId)}/manage/members/${encodeURIComponent(membershipId)}/remove`,
+        { reason },
+      ),
+    createCommitteeItem: (committeeId: string, input: CommitteeItemInput) =>
+      request<CommitteeItem>('POST', `/v1/committees/${encodeURIComponent(committeeId)}/manage/items`, input),
+    /** Minutes: a coordinator other than the author (403 "own_minutes"). Member threads: a coordinator or secretary. */
+    decideCommitteeItem: (committeeId: string, itemId: string, approve: boolean, reason?: string) =>
+      request<CommitteeItem>(
+        'POST',
+        `/v1/committees/${encodeURIComponent(committeeId)}/manage/items/${encodeURIComponent(itemId)}/decision`,
+        { approve, reason },
+      ),
+    hideCommitteeItem: (committeeId: string, itemId: string, reason: string) =>
+      request<CommitteeItem>(
+        'POST',
+        `/v1/committees/${encodeURIComponent(committeeId)}/manage/items/${encodeURIComponent(itemId)}/hide`,
+        { reason },
+      ),
+    listCommitteeSignups: (committeeId: string, itemId: string) =>
+      request<{ names: string[] }>(
+        'GET',
+        `/v1/committees/${encodeURIComponent(committeeId)}/manage/items/${encodeURIComponent(itemId)}/signups`,
+      ),
+    decideCommitteePost: (committeeId: string, postId: string, decision: CommitteePostDecision, reason?: string) =>
+      request<CommitteePost>(
+        'POST',
+        `/v1/committees/${encodeURIComponent(committeeId)}/manage/posts/${encodeURIComponent(postId)}/decision`,
+        { decision, reason },
+      ),
+    // D23: roles.assign or system.configure; approving and closing need system.configure (Tier 5).
+    listAdminCommittees: (filters: { state?: CommitteeState; wingType?: CommitteeWingType } = {}) =>
+      request<CommitteeAdmin[]>('GET', `/v1/committees/admin${toEventQuery({ state: filters.state, wing_type: filters.wingType })}`),
+    proposeCommittee: (input: CommitteeProposalInput) => request<CommitteeAdmin>('POST', '/v1/committees/admin', input),
+    getAdminCommittee: (committeeId: string) =>
+      request<CommitteeAdminDetail>('GET', `/v1/committees/admin/${encodeURIComponent(committeeId)}`),
+    decideCommittee: (committeeId: string, approve: boolean, reason?: string) =>
+      request<CommitteeAdmin>('POST', `/v1/committees/admin/${encodeURIComponent(committeeId)}/decision`, { approve, reason }),
+    closeCommittee: (committeeId: string, reason: string) =>
+      request<CommitteeAdmin>('POST', `/v1/committees/admin/${encodeURIComponent(committeeId)}/close`, { reason }),
+    grantCommitteeRole: (committeeId: string, memberCode: string, role: CommitteeRole) =>
+      request<CommitteeRosterEntry>('POST', `/v1/committees/admin/${encodeURIComponent(committeeId)}/roles`, { memberCode, role }),
+    removeCommitteeMemberAsAdmin: (committeeId: string, membershipId: string, reason: string) =>
+      request<void>(
+        'POST',
+        `/v1/committees/admin/${encodeURIComponent(committeeId)}/members/${encodeURIComponent(membershipId)}/remove`,
+        { reason },
+      ),
+
+    // Diaspora participation (M46). 404 "feature_unavailable" while diaspora is off. There is no payment
+    // route: contributions from abroad stay off until OD-40 (getMyDiaspora().contributions says why).
+    getDiasporaOptions: () => request<DiasporaOptions>('GET', '/v1/diaspora/options'),
+    getMyDiaspora: () => request<DiasporaMe>('GET', '/v1/diaspora/me'),
+    /** Problems: consent_required, country_not_listed, time_zone_not_in_country, unknown_skill. */
+    saveMyDiaspora: (input: DiasporaSupporterInput) => request<DiasporaMe>('PUT', '/v1/diaspora/me', input),
+    withdrawMyDiaspora: () => request<void>('DELETE', '/v1/diaspora/me'),
+    listDiasporaEvents: () => request<DiasporaInternationalEvent[]>('GET', '/v1/diaspora/events'),
+    listDiasporaOpportunities: () => request<DiasporaOpportunity[]>('GET', '/v1/diaspora/opportunities'),
+    listDiasporaManagedEvents: () => request<DiasporaEvent[]>('GET', '/v1/diaspora/manage/events'),
+    setDiasporaEventListed: (eventId: string, international: boolean) =>
+      request<DiasporaEvent>('PUT', `/v1/diaspora/manage/events/${encodeURIComponent(eventId)}`, { international }),
+    /** Counts only; a null count means fewer than 5. Needs analytics.view over the whole platform. */
+    getDiasporaSummary: () => request<DiasporaSummary>('GET', '/v1/diaspora/manage/summary'),
+
     // Fact-checks (M48 reporting part, D12). 404 while fact_checks is off. Checking a statement against
     // its signed original is checkOfficialStatement (official_content).
     uploadMisinfoScreenshot: (image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
