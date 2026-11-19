@@ -98,6 +98,16 @@ export function OpportunityForm({
             {(control) => <input {...control} type="number" inputMode="numeric" min={1} max={500} required defaultValue={values.places} className={CONTROL} />}
           </ActionField>
         </div>
+        <label className="flex min-h-11 items-start gap-3 text-sm text-text">
+          <input type="checkbox" name="remote" value="yes" defaultChecked={values.remote === 'yes'} className="mt-1 h-5 w-5" />
+          <span>
+            <span lang="ta" className="block font-semibold">தொலைநிலைப் பணி</span>
+            <span className="block font-semibold">Remote: can be done from anywhere</span>
+            <span className="block text-xs text-muted">
+              Shown as “Remote” and open to members wherever they live, supporters abroad included (FR-DSP-003).
+            </span>
+          </span>
+        </label>
         {editing && current ? (
           <>
             <input type="hidden" name="startsAtWas" value={current.startsAt ?? ''} />

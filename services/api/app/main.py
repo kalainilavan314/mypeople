@@ -41,6 +41,8 @@ from app.modules.membership.card.extras import build_card_photo_vault
 from app.modules.community.reports.router import router as community_reports
 from app.modules.election import router as election
 from app.modules.engagement.field import router as field_visits
+from app.modules.engagement.committees import router as committees
+from app.modules.diaspora import router as diaspora
 from app.modules.engagement.volunteering import router as volunteering
 from app.modules.election.roster import router as election_roster
 from app.modules.events import router as events
@@ -143,6 +145,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(field_visits.router)
     app.include_router(election_roster.router)
     app.include_router(community_factchecks.router)
+    app.include_router(committees.router)
+    app.include_router(diaspora.router)
     app.include_router(home.router)
     app.include_router(profile.router)
     app.include_router(area_changes.router)

@@ -92,6 +92,12 @@ export default function MemberLayout() {
       <Stack.Screen name="town-halls/[id]" options={{ title: t('m.townHalls.sessionTitle') }} />
       <Stack.Screen name="official/index" options={{ title: t('m.official.title') }} />
       <Stack.Screen name="official/report" options={{ title: t('m.official.reportTitle') }} />
+      <Stack.Screen name="committees/index" options={{ title: t('m.committees.title') }} />
+      <Stack.Screen name="committees/[id]/index" options={{ title: t('m.committees.detailTitle') }} />
+      <Stack.Screen name="committees/[id]/thread/[threadId]" options={{ title: t('m.committees.threadTitle') }} />
+      <Stack.Screen name="committees/[id]/coordinate" options={{ title: t('s.committees.toolsTitle') }} />
+      <Stack.Screen name="diaspora/index" options={{ title: t('m.diaspora.title') }} />
+      <Stack.Screen name="diaspora/register" options={{ title: t('m.diaspora.registerTitle') }} />
       <Stack.Screen name="staff" options={{ headerShown: false }} />
     </Stack>
   );

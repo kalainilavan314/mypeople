@@ -112,4 +112,6 @@ def test_the_registry_lists_every_module_with_the_gate_it_needs(enforced, auth, 
         "fact_checks": "G2",
         "election_mode": "G2",
         "households": "G2",
+        "committees": "G3",
+        "diaspora": "G3",
     }

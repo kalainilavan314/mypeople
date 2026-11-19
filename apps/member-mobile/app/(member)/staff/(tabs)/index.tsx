@@ -34,11 +34,14 @@ export default function StaffHomeScreen() {
     [permissions],
   );
   const volunteerAssignments = useApiQuery(() => api().listMyVolunteerAssignments(), []);
+  // S18: committees this person coordinates; none (or committees switched off) shows no card.
+  const committees = useApiQuery(() => api().listCoordinatedCommittees().catch(() => []), []);
   const reload = useCallback(() => {
     reviews.reload();
     approvals.reload();
     volunteerAssignments.reload();
-  }, [reviews.reload, approvals.reload, volunteerAssignments.reload]);
+    committees.reload();
+  }, [reviews.reload, approvals.reload, volunteerAssignments.reload, committees.reload]);
   useReloadOnFocus(reload);
 
   const scans = permissions.has('events.checkin_scan') || permissions.has('events.manage');
@@ -51,7 +54,8 @@ export default function StaffHomeScreen() {
     !scans &&
     !looksUp &&
     !coordinatesVolunteers &&
-    !collectsVisits;
+    !collectsVisits &&
+    !committees.data?.length;
 
   return (
     <Screen edges={[]} onRefresh={reload} refreshing={reviews.loading || approvals.loading}>
@@ -116,6 +120,18 @@ export default function StaffHomeScreen() {
           <AppText step="section">{t('s.volunteers.title')}</AppText>
           <AppText step="body" tone="secondary">
             {t('s.volunteers.homeBody')}
+          </AppText>
+        </SurfaceCard>
+      ) : null}
+
+      {committees.data?.length ? (
+        <SurfaceCard onPress={() => router.push('/staff/committees')} accessibilityLabel={t('s.committees.title')}>
+          <AppText step="section">{t('s.committees.title')}</AppText>
+          <AppText step="body" tone="secondary">
+            {t('s.committees.homeBody', {
+              count: committees.data.length,
+              waiting: committees.data.reduce((sum, entry) => sum + entry.waiting, 0),
+            })}
           </AppText>
         </SurfaceCard>
       ) : null}

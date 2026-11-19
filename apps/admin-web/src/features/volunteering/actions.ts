@@ -24,7 +24,7 @@ function opportunityIdFrom(formData: FormData): string {
 }
 
 export async function createOpportunity(_previous: FormState, formData: FormData): Promise<FormState> {
-  const values = { ...valuesOf(formData, [...TEXT_FIELDS, 'startsAt', 'endsAt', 'places', 'eventId', 'area']), skills: checked(formData, 'skills').join(',') };
+  const values = { ...valuesOf(formData, [...TEXT_FIELDS, 'startsAt', 'endsAt', 'places', 'eventId', 'area', 'remote']), skills: checked(formData, 'skills').join(',') };
   const { input, problems } = readOpportunity(formData);
   if (!input) return incomplete(VOLUNTEER_REFUSED, problems, values);
   let id: string;
@@ -38,7 +38,7 @@ export async function createOpportunity(_previous: FormState, formData: FormData
 
 export async function updateOpportunity(_previous: FormState, formData: FormData): Promise<FormState> {
   const id = opportunityIdFrom(formData);
-  const values = valuesOf(formData, [...TEXT_FIELDS, 'startsAt', 'endsAt', 'places']);
+  const values = valuesOf(formData, [...TEXT_FIELDS, 'startsAt', 'endsAt', 'places', 'remote']);
   const { input, problems } = readOpportunityUpdate(formData);
   if (!input) return incomplete(VOLUNTEER_REFUSED, problems, values);
   try {

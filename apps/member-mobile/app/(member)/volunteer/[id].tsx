@@ -104,6 +104,7 @@ function Briefing({ opportunity, reload }: { opportunity: VolunteerOpportunity; 
               label={t(`m.volunteer.opportunity_${opportunity.state}`)}
             />
           ) : null}
+          {opportunity.remote ? <StatusTag tone="neutral" label={t('m.volunteer.remote')} /> : null}
           {opportunity.saved ? <StatusTag tone="neutral" label={t('m.volunteer.saved')} /> : null}
           {myOffer && !receipt ? <OfferStatusTag state={myOffer.state} /> : null}
         </View>

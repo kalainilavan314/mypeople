@@ -5585,6 +5585,604 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/committees/admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Admin List
+         * @description D23: wings and committees in the administrator's areas, proposals included.
+         */
+        get: operations["admin_list_v1_committees_admin_get"];
+        put?: never;
+        /**
+         * Propose
+         * @description FR-COM-001: proposed now; it exists for members once a Tier 5 approves it.
+         */
+        post: operations["propose_v1_committees_admin_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/admin/{committee_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Admin Read
+         * @description The roster with roles and the activity counts; never the committee's content (RB-08).
+         */
+        get: operations["admin_read_v1_committees_admin__committee_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/admin/{committee_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Admin Decide
+         * @description Tier 5 approves, or rejects with a reason (FR-COM-001).
+         */
+        post: operations["admin_decide_v1_committees_admin__committee_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/admin/{committee_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Admin Close */
+        post: operations["admin_close_v1_committees_admin__committee_id__close_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/admin/{committee_id}/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Admin Grant Role
+         * @description FR-COM-003: an explicit role grant by member code, logged with the administrator.
+         */
+        post: operations["admin_grant_role_v1_committees_admin__committee_id__roles_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/admin/{committee_id}/members/{membership_id}/remove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Admin Remove */
+        post: operations["admin_remove_v1_committees_admin__committee_id__members__membership_id__remove_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/coordinating": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Coordinating
+         * @description The committees where the member is coordinator or secretary, with how much waits for them.
+         */
+        get: operations["list_coordinating_v1_committees_coordinating_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Manage */
+        get: operations["manage_v1_committees__committee_id__manage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/manage/applications/{membership_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide Application */
+        post: operations["decide_application_v1_committees__committee_id__manage_applications__membership_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/manage/members/{membership_id}/role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Set Role */
+        put: operations["set_role_v1_committees__committee_id__manage_members__membership_id__role_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/manage/members/{membership_id}/remove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Remove Member */
+        post: operations["remove_member_v1_committees__committee_id__manage_members__membership_id__remove_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/manage/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Item */
+        post: operations["create_item_v1_committees__committee_id__manage_items_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/manage/items/{item_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Item
+         * @description Minutes: a coordinator other than the author approves (403 own_minutes). Threads: a moderator.
+         */
+        post: operations["decide_item_v1_committees__committee_id__manage_items__item_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/manage/items/{item_id}/hide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Hide Item */
+        post: operations["hide_item_v1_committees__committee_id__manage_items__item_id__hide_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/manage/items/{item_id}/signups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Signups */
+        get: operations["list_signups_v1_committees__committee_id__manage_items__item_id__signups_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/manage/posts/{post_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide Post */
+        post: operations["decide_post_v1_committees__committee_id__manage_posts__post_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Committees
+         * @description M31: approved committees for the member's area (and platform-wide ones), with their own state.
+         */
+        get: operations["list_committees_v1_committees_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Space
+         * @description M32: the committee's space for its approved members; its description and the application for anyone else.
+         */
+        get: operations["read_space_v1_committees__committee_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Apply */
+        post: operations["apply_v1_committees__committee_id__applications_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Leave
+         * @description Withdraws an application, or leaves the committee.
+         */
+        post: operations["leave_v1_committees__committee_id__leave_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/threads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Thread
+         * @description FR-COM-008: a discussion thread for the whole committee, moderated; there are no direct messages.
+         */
+        post: operations["start_thread_v1_committees__committee_id__threads_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/threads/{thread_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Thread */
+        get: operations["read_thread_v1_committees__committee_id__threads__thread_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/threads/{thread_id}/posts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reply */
+        post: operations["reply_v1_committees__committee_id__threads__thread_id__posts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/tasks/{item_id}/done": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Complete Task */
+        post: operations["complete_task_v1_committees__committee_id__tasks__item_id__done_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/committees/{committee_id}/volunteer/{item_id}/signup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Set Signup */
+        put: operations["set_signup_v1_committees__committee_id__volunteer__item_id__signup_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/diaspora/options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Options
+         * @description The countries with their time zones, the contact topics and the skills to choose from.
+         */
+        get: operations["read_options_v1_diaspora_options_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/diaspora/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Me */
+        get: operations["read_me_v1_diaspora_me_get"];
+        /**
+         * Register
+         * @description FR-DSP-001: register or update; separate from identity verification and with no contribution rights.
+         */
+        put: operations["register_v1_diaspora_me_put"];
+        post?: never;
+        /** Withdraw */
+        delete: operations["withdraw_v1_diaspora_me_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/diaspora/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Events
+         * @description FR-DSP-002: international events in Sri Lanka time and in the supporter's own time zone.
+         */
+        get: operations["list_events_v1_diaspora_events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/diaspora/opportunities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Opportunities
+         * @description FR-DSP-003: remote, skill-based volunteering; offering to help goes through volunteering.
+         */
+        get: operations["list_opportunities_v1_diaspora_opportunities_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/diaspora/manage/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Managed Events */
+        get: operations["list_managed_events_v1_diaspora_manage_events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/diaspora/manage/events/{event_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set International
+         * @description List an event for supporters abroad, or take it off the list.
+         */
+        put: operations["set_international_v1_diaspora_manage_events__event_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/diaspora/manage/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Summary
+         * @description Counts only, small numbers hidden: by country, by contact topic, and diaspora proposals by stage.
+         */
+        get: operations["read_summary_v1_diaspora_manage_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -7414,7 +8012,7 @@ export interface components {
              * Kind
              * @enum {string}
              */
-            kind: "identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal" | "course";
+            kind: "identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal" | "course" | "committee_task";
             /** Reference */
             reference: string;
             /** Title */
@@ -9014,6 +9612,583 @@ export interface components {
             devCode?: string | null;
         };
         /**
+         * CommitteeActivityOut
+         * @description FR-COM-009, RPT-23: one committee's activity in numbers, since `since`.
+         */
+        CommitteeActivityOut: {
+            /**
+             * Since
+             * Format: date-time
+             */
+            since: string;
+            /** Coordinators */
+            coordinators: number;
+            /** Secretaries */
+            secretaries: number;
+            /** Members */
+            members: number;
+            /** Applicationswaiting */
+            applicationsWaiting: number;
+            /** Joinedrecently */
+            joinedRecently: number;
+            /** Leftrecently */
+            leftRecently: number;
+            /** Announcements */
+            announcements: number;
+            /** Meetingsheld */
+            meetingsHeld: number;
+            /** Meetingsplanned */
+            meetingsPlanned: number;
+            /** Minutesapproved */
+            minutesApproved: number;
+            /** Minuteswaiting */
+            minutesWaiting: number;
+            /** Tasksopen */
+            tasksOpen: number;
+            /** Tasksoverdue */
+            tasksOverdue: number;
+            /** Tasksdone */
+            tasksDone: number;
+            /** Volunteersignups */
+            volunteerSignups: number;
+            /** Documents */
+            documents: number;
+            /** Threads */
+            threads: number;
+            /** Replies */
+            replies: number;
+            /** Discussionwaiting */
+            discussionWaiting: number;
+        };
+        /** CommitteeAdminDetailOut */
+        CommitteeAdminDetailOut: {
+            committee: components["schemas"]["CommitteeAdminOut"];
+            /** Roster */
+            roster: components["schemas"]["CommitteeRosterEntryOut"][];
+            /** Committees */
+            committees: components["schemas"]["CommitteeAdminOut"][];
+            report: components["schemas"]["CommitteeActivityOut"] | null;
+        };
+        /** CommitteeAdminOut */
+        CommitteeAdminOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Committeeref */
+            committeeRef: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "wing" | "committee";
+            /**
+             * Wingtype
+             * @enum {string}
+             */
+            wingType: "youth" | "women" | "farmers" | "fishers" | "professional" | "diaspora";
+            /** Wingid */
+            wingId: string | null;
+            /** Wingnameen */
+            wingNameEn: string | null;
+            /** Wingnameta */
+            wingNameTa: string | null;
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+            /** Purposeen */
+            purposeEn: string;
+            /** Purposeta */
+            purposeTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "proposed" | "active" | "rejected" | "closed";
+            /** Members */
+            members: number;
+            /** Areapath */
+            areaPath: string[];
+            /** Applications */
+            applications: number;
+            /**
+             * Proposedat
+             * Format: date-time
+             */
+            proposedAt: string;
+            /** Decidedat */
+            decidedAt: string | null;
+            /** Decisionreason */
+            decisionReason: string | null;
+            /** Closedat */
+            closedAt: string | null;
+            /** Closereason */
+            closeReason: string | null;
+        };
+        /** CommitteeApplicationDecisionIn */
+        CommitteeApplicationDecisionIn: {
+            /** Approve */
+            approve: boolean;
+            /**
+             * Role
+             * @default member
+             * @enum {string}
+             */
+            role: "coordinator" | "secretary" | "member";
+            /** Reason */
+            reason?: string | null;
+        };
+        /** CommitteeApplicationIn */
+        CommitteeApplicationIn: {
+            /** Note */
+            note?: string | null;
+        };
+        /**
+         * CommitteeCardOut
+         * @description M31: a committee with the member's own application or role, and why they cannot apply, if so.
+         */
+        CommitteeCardOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Committeeref */
+            committeeRef: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "wing" | "committee";
+            /**
+             * Wingtype
+             * @enum {string}
+             */
+            wingType: "youth" | "women" | "farmers" | "fishers" | "professional" | "diaspora";
+            /** Wingid */
+            wingId: string | null;
+            /** Wingnameen */
+            wingNameEn: string | null;
+            /** Wingnameta */
+            wingNameTa: string | null;
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+            /** Purposeen */
+            purposeEn: string;
+            /** Purposeta */
+            purposeTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "proposed" | "active" | "rejected" | "closed";
+            /** Members */
+            members: number;
+            myMembership: components["schemas"]["CommitteeMembershipOut"] | null;
+            /** Applyproblem */
+            applyProblem: string | null;
+        };
+        /** CommitteeCoordinatingOut */
+        CommitteeCoordinatingOut: {
+            committee: components["schemas"]["CommitteeOut"];
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "coordinator" | "secretary" | "member";
+            /** Waiting */
+            waiting: number;
+        };
+        /** CommitteeDecisionIn */
+        CommitteeDecisionIn: {
+            /** Approve */
+            approve: boolean;
+            /** Reason */
+            reason?: string | null;
+        };
+        /**
+         * CommitteeItemIn
+         * @description An announcement, meeting, minutes, task, volunteer opportunity or document (FR-COM-004 to 007).
+         */
+        CommitteeItemIn: {
+            /**
+             * Itemtype
+             * @enum {string}
+             */
+            itemType: "announcement" | "meeting" | "minutes" | "task" | "volunteer" | "document";
+            /** Title */
+            title: string;
+            /** Body */
+            body: string;
+            /** Startsat */
+            startsAt?: string | null;
+            /** Endsat */
+            endsAt?: string | null;
+            /** Place */
+            place?: string | null;
+            /** Meetingid */
+            meetingId?: string | null;
+            /** Dueon */
+            dueOn?: string | null;
+            /** Assigneemembershipid */
+            assigneeMembershipId?: string | null;
+            /** Places */
+            places?: number | null;
+            /** Accessroles */
+            accessRoles?: ("coordinator" | "secretary" | "member")[] | null;
+        };
+        /** CommitteeItemOut */
+        CommitteeItemOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Itemref */
+            itemRef: string;
+            /**
+             * Itemtype
+             * @enum {string}
+             */
+            itemType: "announcement" | "meeting" | "minutes" | "task" | "volunteer" | "document" | "thread";
+            /** Title */
+            title: string;
+            /** Body */
+            body: string;
+            /** Authorname */
+            authorName: string;
+            /** Mine */
+            mine: boolean;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "published" | "awaiting_approval" | "returned" | "hidden";
+            /** Startsat */
+            startsAt: string | null;
+            /** Endsat */
+            endsAt: string | null;
+            /** Place */
+            place: string | null;
+            /** Meetingid */
+            meetingId: string | null;
+            /** Dueon */
+            dueOn: string | null;
+            /** Assigneename */
+            assigneeName: string | null;
+            /** Assignedtome */
+            assignedToMe: boolean;
+            /** Places */
+            places: number | null;
+            /** Signups */
+            signups: number;
+            /** Signedup */
+            signedUp: boolean;
+            /** Doneat */
+            doneAt: string | null;
+            /** Overdue */
+            overdue: boolean;
+            /** Accessroles */
+            accessRoles: ("coordinator" | "secretary" | "member")[];
+            /** Replies */
+            replies: number;
+            /** Decisionreason */
+            decisionReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** CommitteeManageOut */
+        CommitteeManageOut: {
+            committee: components["schemas"]["CommitteeOut"];
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "coordinator" | "secretary" | "member";
+            /** Applications */
+            applications: components["schemas"]["CommitteeRosterEntryOut"][];
+            /** Roster */
+            roster: components["schemas"]["CommitteeRosterEntryOut"][];
+            /** Waitingitems */
+            waitingItems: components["schemas"]["CommitteeItemOut"][];
+            /** Waitingposts */
+            waitingPosts: components["schemas"]["CommitteeWaitingPostOut"][];
+            /** Recentitems */
+            recentItems: components["schemas"]["CommitteeItemOut"][];
+            report: components["schemas"]["CommitteeActivityOut"];
+        };
+        /** CommitteeMembershipOut */
+        CommitteeMembershipOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "applied" | "approved" | "declined" | "withdrawn" | "left" | "removed";
+            /** Role */
+            role: ("coordinator" | "secretary" | "member") | null;
+            /**
+             * Appliedat
+             * Format: date-time
+             */
+            appliedAt: string;
+            /** Decidedat */
+            decidedAt: string | null;
+            /** Decisionreason */
+            decisionReason: string | null;
+        };
+        /** CommitteeOut */
+        CommitteeOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Committeeref */
+            committeeRef: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "wing" | "committee";
+            /**
+             * Wingtype
+             * @enum {string}
+             */
+            wingType: "youth" | "women" | "farmers" | "fishers" | "professional" | "diaspora";
+            /** Wingid */
+            wingId: string | null;
+            /** Wingnameen */
+            wingNameEn: string | null;
+            /** Wingnameta */
+            wingNameTa: string | null;
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+            /** Purposeen */
+            purposeEn: string;
+            /** Purposeta */
+            purposeTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "proposed" | "active" | "rejected" | "closed";
+            /** Members */
+            members: number;
+        };
+        /** CommitteePostDecisionIn */
+        CommitteePostDecisionIn: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "publish" | "return" | "hide";
+            /** Reason */
+            reason?: string | null;
+        };
+        /** CommitteePostIn */
+        CommitteePostIn: {
+            /** Body */
+            body: string;
+        };
+        /** CommitteePostOut */
+        CommitteePostOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Authorname */
+            authorName: string;
+            /** Mine */
+            mine: boolean;
+            /** Body */
+            body: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "published" | "awaiting_approval" | "returned" | "hidden";
+            /** Decisionreason */
+            decisionReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** CommitteeProposalIn */
+        CommitteeProposalIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "wing" | "committee";
+            /**
+             * Wingtype
+             * @enum {string}
+             */
+            wingType: "youth" | "women" | "farmers" | "fishers" | "professional" | "diaspora";
+            /** Wingid */
+            wingId?: string | null;
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+            /** Purposeen */
+            purposeEn: string;
+            /** Purposeta */
+            purposeTa: string;
+            area: components["schemas"]["AreaRef"];
+        };
+        /** CommitteeReasonIn */
+        CommitteeReasonIn: {
+            /** Reason */
+            reason: string;
+        };
+        /** CommitteeRoleGrantIn */
+        CommitteeRoleGrantIn: {
+            /** Membercode */
+            memberCode: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "coordinator" | "secretary" | "member";
+        };
+        /** CommitteeRoleIn */
+        CommitteeRoleIn: {
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "coordinator" | "secretary" | "member";
+        };
+        /**
+         * CommitteeRosterEntryOut
+         * @description A person in the committee's roster: name, member code, state and role; nothing else (RB-09).
+         */
+        CommitteeRosterEntryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Membercode */
+            memberCode: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "applied" | "approved" | "declined" | "withdrawn" | "left" | "removed";
+            /** Role */
+            role: ("coordinator" | "secretary" | "member") | null;
+            /** Applicationnote */
+            applicationNote: string | null;
+            /**
+             * Appliedat
+             * Format: date-time
+             */
+            appliedAt: string;
+            /** Decidedat */
+            decidedAt: string | null;
+            /** Rolesetat */
+            roleSetAt: string | null;
+        };
+        /** CommitteeSignupIn */
+        CommitteeSignupIn: {
+            /** Signedup */
+            signedUp: boolean;
+        };
+        /** CommitteeSignupsOut */
+        CommitteeSignupsOut: {
+            /** Names */
+            names: string[];
+        };
+        /**
+         * CommitteeSpaceOut
+         * @description M32. `items` is empty unless the member is an approved member of an active committee.
+         */
+        CommitteeSpaceOut: {
+            committee: components["schemas"]["CommitteeOut"];
+            myMembership: components["schemas"]["CommitteeMembershipOut"] | null;
+            /** Applyproblem */
+            applyProblem: string | null;
+            /** Items */
+            items: components["schemas"]["CommitteeItemOut"][];
+            /** Mywaiting */
+            myWaiting: components["schemas"]["CommitteeItemOut"][];
+        };
+        /** CommitteeThreadIn */
+        CommitteeThreadIn: {
+            /** Title */
+            title: string;
+            /** Body */
+            body: string;
+        };
+        /** CommitteeThreadOut */
+        CommitteeThreadOut: {
+            thread: components["schemas"]["CommitteeItemOut"];
+            /** Posts */
+            posts: components["schemas"]["CommitteePostOut"][];
+            /** Canmoderate */
+            canModerate: boolean;
+        };
+        /** CommitteeWaitingPostOut */
+        CommitteeWaitingPostOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Authorname */
+            authorName: string;
+            /** Mine */
+            mine: boolean;
+            /** Body */
+            body: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "published" | "awaiting_approval" | "returned" | "hidden";
+            /** Decisionreason */
+            decisionReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Threadid
+             * Format: uuid
+             */
+            threadId: string;
+            /** Threadtitle */
+            threadTitle: string;
+        };
+        /**
          * CommunityReportListOut
          * @description Bounded, paginated list of area-scoped community reports.
          */
@@ -9747,6 +10922,211 @@ export interface components {
         DeviceTokenIn: {
             /** Token */
             token: string;
+        };
+        /**
+         * DiasporaContributionStatusOut
+         * @description FR-DSP-006: whether contributions from abroad are open, and why not (OD-40).
+         */
+        DiasporaContributionStatusOut: {
+            /** Available */
+            available: boolean;
+            /** Reason */
+            reason: string | null;
+        };
+        /**
+         * DiasporaCountOut
+         * @description A count, or null when fewer than 5 (small numbers are hidden).
+         */
+        DiasporaCountOut: {
+            /** Key */
+            key: string;
+            /** Count */
+            count: number | null;
+        };
+        /** DiasporaCountryOut */
+        DiasporaCountryOut: {
+            /** Code */
+            code: string;
+            /** Timezones */
+            timeZones: string[];
+        };
+        /** DiasporaEventOut */
+        DiasporaEventOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Eventref */
+            eventRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /** Venue */
+            venue: string;
+            /** Areakey */
+            areaKey: string;
+            /** International */
+            international: boolean;
+        };
+        /** DiasporaInternationalEventOut */
+        DiasporaInternationalEventOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Eventref */
+            eventRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Venue */
+            venue: string;
+            sriLanka: components["schemas"]["DiasporaWallClockOut"];
+            local: components["schemas"]["DiasporaWallClockOut"] | null;
+            /** Timezone */
+            timeZone: string | null;
+        };
+        /** DiasporaInternationalIn */
+        DiasporaInternationalIn: {
+            /** International */
+            international: boolean;
+        };
+        /** DiasporaMeOut */
+        DiasporaMeOut: {
+            supporter: components["schemas"]["DiasporaSupporterOut"] | null;
+            contributions: components["schemas"]["DiasporaContributionStatusOut"];
+        };
+        /** DiasporaOpportunityOut */
+        DiasporaOpportunityOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Opportunityref */
+            opportunityRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /**
+             * Startsat
+             * Format: date-time
+             */
+            startsAt: string;
+            /**
+             * Endsat
+             * Format: date-time
+             */
+            endsAt: string;
+            /** Skills */
+            skills: string[];
+            /** Placesleft */
+            placesLeft: number;
+            /** Matchesmyskills */
+            matchesMySkills: boolean;
+        };
+        /** DiasporaOptionsOut */
+        DiasporaOptionsOut: {
+            /** Countries */
+            countries: components["schemas"]["DiasporaCountryOut"][];
+            /** Topics */
+            topics: ("international_events" | "committee_networking")[];
+            /** Skills */
+            skills: components["schemas"]["DiasporaSkillOut"][];
+        };
+        /** DiasporaSkillOut */
+        DiasporaSkillOut: {
+            /** Key */
+            key: string;
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+        };
+        /** DiasporaSummaryOut */
+        DiasporaSummaryOut: {
+            /** Total */
+            total: number;
+            /** Bycountry */
+            byCountry: components["schemas"]["DiasporaCountOut"][];
+            /** Bytopic */
+            byTopic: components["schemas"]["DiasporaCountOut"][];
+            /** Proposalsbystage */
+            proposalsByStage: components["schemas"]["DiasporaCountOut"][];
+        };
+        /** DiasporaSupporterIn */
+        DiasporaSupporterIn: {
+            /** Countrycode */
+            countryCode: string;
+            /** Timezone */
+            timeZone: string;
+            /** Contacttopics */
+            contactTopics?: ("international_events" | "committee_networking")[];
+            /** Skills */
+            skills?: string[];
+            /**
+             * Consent
+             * @description Agreement to keep these details to tailor diaspora participation (FR-DSP-001)
+             */
+            consent: boolean;
+        };
+        /** DiasporaSupporterOut */
+        DiasporaSupporterOut: {
+            /** Countrycode */
+            countryCode: string;
+            /** Timezone */
+            timeZone: string;
+            /** Contacttopics */
+            contactTopics: ("international_events" | "committee_networking")[];
+            /** Skills */
+            skills: string[];
+            /**
+             * Registeredat
+             * Format: date-time
+             */
+            registeredAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /** DiasporaWallClockOut */
+        DiasporaWallClockOut: {
+            /** Date */
+            date: string;
+            /** Time */
+            time: string;
+            /** Utcoffset */
+            utcOffset: string;
         };
         /** DistrictDecisionIn */
         DistrictDecisionIn: {
@@ -12094,6 +13474,8 @@ export interface components {
              * @enum {string}
              */
             state: "draft" | "open" | "closed" | "cancelled";
+            /** Remote */
+            remote: boolean;
             /** Places */
             places: number;
             /** Confirmed */
@@ -12335,6 +13717,8 @@ export interface components {
              * @enum {string}
              */
             state: "draft" | "open" | "closed" | "cancelled";
+            /** Remote */
+            remote: boolean;
             /** Saved */
             saved: boolean;
             myOffer: components["schemas"]["MyOfferOut"] | null;
@@ -13354,6 +14738,12 @@ export interface components {
             skills?: string[];
             /** Places */
             places: number;
+            /**
+             * Remote
+             * @description Done from anywhere, e.g. translation (FR-DSP-003)
+             * @default false
+             */
+            remote: boolean;
             area: components["schemas"]["AreaIn"];
         };
         /** OpportunityOut */
@@ -13408,6 +14798,8 @@ export interface components {
              * @enum {string}
              */
             state: "draft" | "open" | "closed" | "cancelled";
+            /** Remote */
+            remote: boolean;
         };
         /** OpportunityStateIn */
         OpportunityStateIn: {
@@ -13451,6 +14843,8 @@ export interface components {
             endsAt?: string | null;
             /** Places */
             places?: number | null;
+            /** Remote */
+            remote?: boolean | null;
         };
         /** OutcomeIn */
         OutcomeIn: {
@@ -29453,6 +30847,1076 @@ export interface operations {
             };
         };
     };
+    admin_list_v1_committees_admin_get: {
+        parameters: {
+            query?: {
+                state?: ("proposed" | "active" | "rejected" | "closed") | null;
+                wing_type?: ("youth" | "women" | "farmers" | "fishers" | "professional" | "diaspora") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeAdminOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    propose_v1_committees_admin_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteeProposalIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeAdminOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    admin_read_v1_committees_admin__committee_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeAdminDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    admin_decide_v1_committees_admin__committee_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteeDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeAdminOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    admin_close_v1_committees_admin__committee_id__close_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteeReasonIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeAdminOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    admin_grant_role_v1_committees_admin__committee_id__roles_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteeRoleGrantIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeRosterEntryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    admin_remove_v1_committees_admin__committee_id__members__membership_id__remove_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+                membership_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteeReasonIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_coordinating_v1_committees_coordinating_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeCoordinatingOut"][];
+                };
+            };
+        };
+    };
+    manage_v1_committees__committee_id__manage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeManageOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_application_v1_committees__committee_id__manage_applications__membership_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+                membership_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteeApplicationDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeRosterEntryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_role_v1_committees__committee_id__manage_members__membership_id__role_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+                membership_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteeRoleIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeRosterEntryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_member_v1_committees__committee_id__manage_members__membership_id__remove_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+                membership_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteeReasonIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_item_v1_committees__committee_id__manage_items_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteeItemIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeItemOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_item_v1_committees__committee_id__manage_items__item_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteeDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeItemOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    hide_item_v1_committees__committee_id__manage_items__item_id__hide_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteeReasonIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeItemOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_signups_v1_committees__committee_id__manage_items__item_id__signups_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeSignupsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_post_v1_committees__committee_id__manage_posts__post_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+                post_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteePostDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteePostOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_committees_v1_committees_get: {
+        parameters: {
+            query?: {
+                wing_type?: ("youth" | "women" | "farmers" | "fishers" | "professional" | "diaspora") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeCardOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_space_v1_committees__committee_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeSpaceOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    apply_v1_committees__committee_id__applications_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteeApplicationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeMembershipOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    leave_v1_committees__committee_id__leave_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_thread_v1_committees__committee_id__threads_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteeThreadIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeItemOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_thread_v1_committees__committee_id__threads__thread_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+                thread_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeThreadOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reply_v1_committees__committee_id__threads__thread_id__posts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+                thread_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteePostIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteePostOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    complete_task_v1_committees__committee_id__tasks__item_id__done_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeItemOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_signup_v1_committees__committee_id__volunteer__item_id__signup_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                committee_id: string;
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitteeSignupIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeItemOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_options_v1_diaspora_options_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiasporaOptionsOut"];
+                };
+            };
+        };
+    };
+    read_me_v1_diaspora_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiasporaMeOut"];
+                };
+            };
+        };
+    };
+    register_v1_diaspora_me_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DiasporaSupporterIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiasporaMeOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_v1_diaspora_me_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_events_v1_diaspora_events_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiasporaInternationalEventOut"][];
+                };
+            };
+        };
+    };
+    list_opportunities_v1_diaspora_opportunities_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiasporaOpportunityOut"][];
+                };
+            };
+        };
+    };
+    list_managed_events_v1_diaspora_manage_events_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiasporaEventOut"][];
+                };
+            };
+        };
+    };
+    set_international_v1_diaspora_manage_events__event_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DiasporaInternationalIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiasporaEventOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_summary_v1_diaspora_manage_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiasporaSummaryOut"];
+                };
+            };
+        };
+    };
     read_home_v1_home_get: {
         parameters: {
             query?: never;
@@ -29529,7 +31993,7 @@ export interface operations {
     list_activity_v1_profile_activity_get: {
         parameters: {
             query?: {
-                kind?: ("identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal" | "course") | null;
+                kind?: ("identity_review" | "appeal" | "event" | "removal_request" | "area_change" | "privacy_request" | "issue_report" | "volunteer_offer" | "idea" | "survey_response" | "proposal" | "course" | "committee_task") | null;
                 limit?: number;
             };
             header?: never;

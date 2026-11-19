@@ -71,6 +71,7 @@ class OpportunityOut(CamelModel):
     event_id: uuid.UUID | None
     skills: list[str]
     state: OpportunityState
+    remote: bool
 
     @classmethod
     def fields(cls, o: repository.Opportunity) -> dict:  # type: ignore[type-arg]
@@ -80,6 +81,7 @@ class OpportunityOut(CamelModel):
             "description_ta": o.description_ta, "place_en": o.place_en, "place_ta": o.place_ta, "bring_en": o.bring_en,
             "bring_ta": o.bring_ta, "team_en": o.team_en, "team_ta": o.team_ta, "starts_at": o.starts_at,
             "ends_at": o.ends_at, "event_id": o.event_id, "skills": o.skills, "state": o.state,
+            "remote": o.remote,
         }
 
 
@@ -197,6 +199,7 @@ class OpportunityIn(CamelModel):
     event_id: uuid.UUID | None = None
     skills: list[str] = Field(default_factory=list, max_length=10)
     places: int = Field(ge=1, le=500)
+    remote: bool = Field(default=False, description="Done from anywhere, e.g. translation (FR-DSP-003)")
     area: AreaIn
 
 
@@ -216,6 +219,7 @@ class OpportunityUpdateIn(CamelModel):
     starts_at: datetime | None = None
     ends_at: datetime | None = None
     places: int | None = Field(default=None, ge=1, le=500)
+    remote: bool | None = None
 
 
 class OpportunityStateIn(CamelModel):

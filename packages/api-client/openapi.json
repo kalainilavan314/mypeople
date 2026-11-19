@@ -17220,6 +17220,1948 @@
         }
       }
     },
+    "/v1/committees/admin": {
+      "get": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Admin List",
+        "description": "D23: wings and committees in the administrator's areas, proposals included.",
+        "operationId": "admin_list_v1_committees_admin_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "proposed",
+                    "active",
+                    "rejected",
+                    "closed"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "wing_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "youth",
+                    "women",
+                    "farmers",
+                    "fishers",
+                    "professional",
+                    "diaspora"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Wing Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommitteeAdminOut"
+                  },
+                  "title": "Response Admin List V1 Committees Admin Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Propose",
+        "description": "FR-COM-001: proposed now; it exists for members once a Tier 5 approves it.",
+        "operationId": "propose_v1_committees_admin_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteeProposalIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeAdminOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/admin/{committee_id}": {
+      "get": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Admin Read",
+        "description": "The roster with roles and the activity counts; never the committee's content (RB-08).",
+        "operationId": "admin_read_v1_committees_admin__committee_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeAdminDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/admin/{committee_id}/decision": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Admin Decide",
+        "description": "Tier 5 approves, or rejects with a reason (FR-COM-001).",
+        "operationId": "admin_decide_v1_committees_admin__committee_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteeDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeAdminOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/admin/{committee_id}/close": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Admin Close",
+        "operationId": "admin_close_v1_committees_admin__committee_id__close_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteeReasonIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeAdminOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/admin/{committee_id}/roles": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Admin Grant Role",
+        "description": "FR-COM-003: an explicit role grant by member code, logged with the administrator.",
+        "operationId": "admin_grant_role_v1_committees_admin__committee_id__roles_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteeRoleGrantIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeRosterEntryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/admin/{committee_id}/members/{membership_id}/remove": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Admin Remove",
+        "operationId": "admin_remove_v1_committees_admin__committee_id__members__membership_id__remove_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          },
+          {
+            "name": "membership_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Membership Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteeReasonIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/coordinating": {
+      "get": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "List Coordinating",
+        "description": "The committees where the member is coordinator or secretary, with how much waits for them.",
+        "operationId": "list_coordinating_v1_committees_coordinating_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CommitteeCoordinatingOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Coordinating V1 Committees Coordinating Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/committees/{committee_id}/manage": {
+      "get": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Manage",
+        "operationId": "manage_v1_committees__committee_id__manage_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeManageOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/manage/applications/{membership_id}/decision": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Decide Application",
+        "operationId": "decide_application_v1_committees__committee_id__manage_applications__membership_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          },
+          {
+            "name": "membership_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Membership Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteeApplicationDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeRosterEntryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/manage/members/{membership_id}/role": {
+      "put": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Set Role",
+        "operationId": "set_role_v1_committees__committee_id__manage_members__membership_id__role_put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          },
+          {
+            "name": "membership_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Membership Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteeRoleIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeRosterEntryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/manage/members/{membership_id}/remove": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Remove Member",
+        "operationId": "remove_member_v1_committees__committee_id__manage_members__membership_id__remove_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          },
+          {
+            "name": "membership_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Membership Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteeReasonIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/manage/items": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Create Item",
+        "operationId": "create_item_v1_committees__committee_id__manage_items_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteeItemIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeItemOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/manage/items/{item_id}/decision": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Decide Item",
+        "description": "Minutes: a coordinator other than the author approves (403 own_minutes). Threads: a moderator.",
+        "operationId": "decide_item_v1_committees__committee_id__manage_items__item_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          },
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteeDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeItemOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/manage/items/{item_id}/hide": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Hide Item",
+        "operationId": "hide_item_v1_committees__committee_id__manage_items__item_id__hide_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          },
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteeReasonIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeItemOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/manage/items/{item_id}/signups": {
+      "get": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "List Signups",
+        "operationId": "list_signups_v1_committees__committee_id__manage_items__item_id__signups_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          },
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeSignupsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/manage/posts/{post_id}/decision": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Decide Post",
+        "operationId": "decide_post_v1_committees__committee_id__manage_posts__post_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          },
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Post Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteePostDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteePostOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees": {
+      "get": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "List Committees",
+        "description": "M31: approved committees for the member's area (and platform-wide ones), with their own state.",
+        "operationId": "list_committees_v1_committees_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "wing_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "youth",
+                    "women",
+                    "farmers",
+                    "fishers",
+                    "professional",
+                    "diaspora"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Wing Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommitteeCardOut"
+                  },
+                  "title": "Response List Committees V1 Committees Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}": {
+      "get": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Read Space",
+        "description": "M32: the committee's space for its approved members; its description and the application for anyone else.",
+        "operationId": "read_space_v1_committees__committee_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeSpaceOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/applications": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Apply",
+        "operationId": "apply_v1_committees__committee_id__applications_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteeApplicationIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeMembershipOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/leave": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Leave",
+        "description": "Withdraws an application, or leaves the committee.",
+        "operationId": "leave_v1_committees__committee_id__leave_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/threads": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Start Thread",
+        "description": "FR-COM-008: a discussion thread for the whole committee, moderated; there are no direct messages.",
+        "operationId": "start_thread_v1_committees__committee_id__threads_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteeThreadIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeItemOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/threads/{thread_id}": {
+      "get": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Read Thread",
+        "operationId": "read_thread_v1_committees__committee_id__threads__thread_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          },
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Thread Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeThreadOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/threads/{thread_id}/posts": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Reply",
+        "operationId": "reply_v1_committees__committee_id__threads__thread_id__posts_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          },
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Thread Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteePostIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteePostOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/tasks/{item_id}/done": {
+      "post": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Complete Task",
+        "operationId": "complete_task_v1_committees__committee_id__tasks__item_id__done_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          },
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeItemOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/committees/{committee_id}/volunteer/{item_id}/signup": {
+      "put": {
+        "tags": [
+          "committees"
+        ],
+        "summary": "Set Signup",
+        "operationId": "set_signup_v1_committees__committee_id__volunteer__item_id__signup_put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "committee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Committee Id"
+            }
+          },
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitteeSignupIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitteeItemOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/diaspora/options": {
+      "get": {
+        "tags": [
+          "diaspora"
+        ],
+        "summary": "Read Options",
+        "description": "The countries with their time zones, the contact topics and the skills to choose from.",
+        "operationId": "read_options_v1_diaspora_options_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiasporaOptionsOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/diaspora/me": {
+      "get": {
+        "tags": [
+          "diaspora"
+        ],
+        "summary": "Read Me",
+        "operationId": "read_me_v1_diaspora_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiasporaMeOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "diaspora"
+        ],
+        "summary": "Register",
+        "description": "FR-DSP-001: register or update; separate from identity verification and with no contribution rights.",
+        "operationId": "register_v1_diaspora_me_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiasporaSupporterIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiasporaMeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "diaspora"
+        ],
+        "summary": "Withdraw",
+        "operationId": "withdraw_v1_diaspora_me_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/diaspora/events": {
+      "get": {
+        "tags": [
+          "diaspora"
+        ],
+        "summary": "List Events",
+        "description": "FR-DSP-002: international events in Sri Lanka time and in the supporter's own time zone.",
+        "operationId": "list_events_v1_diaspora_events_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DiasporaInternationalEventOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Events V1 Diaspora Events Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/diaspora/opportunities": {
+      "get": {
+        "tags": [
+          "diaspora"
+        ],
+        "summary": "List Opportunities",
+        "description": "FR-DSP-003: remote, skill-based volunteering; offering to help goes through volunteering.",
+        "operationId": "list_opportunities_v1_diaspora_opportunities_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DiasporaOpportunityOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Opportunities V1 Diaspora Opportunities Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/diaspora/manage/events": {
+      "get": {
+        "tags": [
+          "diaspora"
+        ],
+        "summary": "List Managed Events",
+        "operationId": "list_managed_events_v1_diaspora_manage_events_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DiasporaEventOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Managed Events V1 Diaspora Manage Events Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/diaspora/manage/events/{event_id}": {
+      "put": {
+        "tags": [
+          "diaspora"
+        ],
+        "summary": "Set International",
+        "description": "List an event for supporters abroad, or take it off the list.",
+        "operationId": "set_international_v1_diaspora_manage_events__event_id__put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiasporaInternationalIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiasporaEventOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/diaspora/manage/summary": {
+      "get": {
+        "tags": [
+          "diaspora"
+        ],
+        "summary": "Read Summary",
+        "description": "Counts only, small numbers hidden: by country, by contact topic, and diaspora proposals by stage.",
+        "operationId": "read_summary_v1_diaspora_manage_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiasporaSummaryOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/v1/home": {
       "get": {
         "tags": [
@@ -17364,7 +19306,8 @@
                     "idea",
                     "survey_response",
                     "proposal",
-                    "course"
+                    "course",
+                    "committee_task"
                   ],
                   "type": "string"
                 },
@@ -22927,7 +24870,8 @@
               "idea",
               "survey_response",
               "proposal",
-              "course"
+              "course",
+              "committee_task"
             ],
             "title": "Kind"
           },
@@ -27471,6 +29415,1744 @@
         "title": "CodeSentOut",
         "description": "devCode appears only with SMS_PROVIDER=development, for local testing."
       },
+      "CommitteeActivityOut": {
+        "properties": {
+          "since": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Since"
+          },
+          "coordinators": {
+            "type": "integer",
+            "title": "Coordinators"
+          },
+          "secretaries": {
+            "type": "integer",
+            "title": "Secretaries"
+          },
+          "members": {
+            "type": "integer",
+            "title": "Members"
+          },
+          "applicationsWaiting": {
+            "type": "integer",
+            "title": "Applicationswaiting"
+          },
+          "joinedRecently": {
+            "type": "integer",
+            "title": "Joinedrecently"
+          },
+          "leftRecently": {
+            "type": "integer",
+            "title": "Leftrecently"
+          },
+          "announcements": {
+            "type": "integer",
+            "title": "Announcements"
+          },
+          "meetingsHeld": {
+            "type": "integer",
+            "title": "Meetingsheld"
+          },
+          "meetingsPlanned": {
+            "type": "integer",
+            "title": "Meetingsplanned"
+          },
+          "minutesApproved": {
+            "type": "integer",
+            "title": "Minutesapproved"
+          },
+          "minutesWaiting": {
+            "type": "integer",
+            "title": "Minuteswaiting"
+          },
+          "tasksOpen": {
+            "type": "integer",
+            "title": "Tasksopen"
+          },
+          "tasksOverdue": {
+            "type": "integer",
+            "title": "Tasksoverdue"
+          },
+          "tasksDone": {
+            "type": "integer",
+            "title": "Tasksdone"
+          },
+          "volunteerSignups": {
+            "type": "integer",
+            "title": "Volunteersignups"
+          },
+          "documents": {
+            "type": "integer",
+            "title": "Documents"
+          },
+          "threads": {
+            "type": "integer",
+            "title": "Threads"
+          },
+          "replies": {
+            "type": "integer",
+            "title": "Replies"
+          },
+          "discussionWaiting": {
+            "type": "integer",
+            "title": "Discussionwaiting"
+          }
+        },
+        "type": "object",
+        "required": [
+          "since",
+          "coordinators",
+          "secretaries",
+          "members",
+          "applicationsWaiting",
+          "joinedRecently",
+          "leftRecently",
+          "announcements",
+          "meetingsHeld",
+          "meetingsPlanned",
+          "minutesApproved",
+          "minutesWaiting",
+          "tasksOpen",
+          "tasksOverdue",
+          "tasksDone",
+          "volunteerSignups",
+          "documents",
+          "threads",
+          "replies",
+          "discussionWaiting"
+        ],
+        "title": "CommitteeActivityOut",
+        "description": "FR-COM-009, RPT-23: one committee's activity in numbers, since `since`."
+      },
+      "CommitteeAdminDetailOut": {
+        "properties": {
+          "committee": {
+            "$ref": "#/components/schemas/CommitteeAdminOut"
+          },
+          "roster": {
+            "items": {
+              "$ref": "#/components/schemas/CommitteeRosterEntryOut"
+            },
+            "type": "array",
+            "title": "Roster"
+          },
+          "committees": {
+            "items": {
+              "$ref": "#/components/schemas/CommitteeAdminOut"
+            },
+            "type": "array",
+            "title": "Committees"
+          },
+          "report": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CommitteeActivityOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "committee",
+          "roster",
+          "committees",
+          "report"
+        ],
+        "title": "CommitteeAdminDetailOut"
+      },
+      "CommitteeAdminOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "committeeRef": {
+            "type": "string",
+            "title": "Committeeref"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "wing",
+              "committee"
+            ],
+            "title": "Kind"
+          },
+          "wingType": {
+            "type": "string",
+            "enum": [
+              "youth",
+              "women",
+              "farmers",
+              "fishers",
+              "professional",
+              "diaspora"
+            ],
+            "title": "Wingtype"
+          },
+          "wingId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wingid"
+          },
+          "wingNameEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wingnameen"
+          },
+          "wingNameTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wingnameta"
+          },
+          "nameEn": {
+            "type": "string",
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "title": "Nameta"
+          },
+          "purposeEn": {
+            "type": "string",
+            "title": "Purposeen"
+          },
+          "purposeTa": {
+            "type": "string",
+            "title": "Purposeta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "active",
+              "rejected",
+              "closed"
+            ],
+            "title": "State"
+          },
+          "members": {
+            "type": "integer",
+            "title": "Members"
+          },
+          "areaPath": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Areapath"
+          },
+          "applications": {
+            "type": "integer",
+            "title": "Applications"
+          },
+          "proposedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Proposedat"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedat"
+          },
+          "closeReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closereason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "committeeRef",
+          "kind",
+          "wingType",
+          "wingId",
+          "wingNameEn",
+          "wingNameTa",
+          "nameEn",
+          "nameTa",
+          "purposeEn",
+          "purposeTa",
+          "areaKey",
+          "state",
+          "members",
+          "areaPath",
+          "applications",
+          "proposedAt",
+          "decidedAt",
+          "decisionReason",
+          "closedAt",
+          "closeReason"
+        ],
+        "title": "CommitteeAdminOut"
+      },
+      "CommitteeApplicationDecisionIn": {
+        "properties": {
+          "approve": {
+            "type": "boolean",
+            "title": "Approve"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "coordinator",
+              "secretary",
+              "member"
+            ],
+            "title": "Role",
+            "default": "member"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "approve"
+        ],
+        "title": "CommitteeApplicationDecisionIn"
+      },
+      "CommitteeApplicationIn": {
+        "properties": {
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "title": "CommitteeApplicationIn"
+      },
+      "CommitteeCardOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "committeeRef": {
+            "type": "string",
+            "title": "Committeeref"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "wing",
+              "committee"
+            ],
+            "title": "Kind"
+          },
+          "wingType": {
+            "type": "string",
+            "enum": [
+              "youth",
+              "women",
+              "farmers",
+              "fishers",
+              "professional",
+              "diaspora"
+            ],
+            "title": "Wingtype"
+          },
+          "wingId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wingid"
+          },
+          "wingNameEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wingnameen"
+          },
+          "wingNameTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wingnameta"
+          },
+          "nameEn": {
+            "type": "string",
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "title": "Nameta"
+          },
+          "purposeEn": {
+            "type": "string",
+            "title": "Purposeen"
+          },
+          "purposeTa": {
+            "type": "string",
+            "title": "Purposeta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "active",
+              "rejected",
+              "closed"
+            ],
+            "title": "State"
+          },
+          "members": {
+            "type": "integer",
+            "title": "Members"
+          },
+          "myMembership": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CommitteeMembershipOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "applyProblem": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applyproblem"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "committeeRef",
+          "kind",
+          "wingType",
+          "wingId",
+          "wingNameEn",
+          "wingNameTa",
+          "nameEn",
+          "nameTa",
+          "purposeEn",
+          "purposeTa",
+          "areaKey",
+          "state",
+          "members",
+          "myMembership",
+          "applyProblem"
+        ],
+        "title": "CommitteeCardOut",
+        "description": "M31: a committee with the member's own application or role, and why they cannot apply, if so."
+      },
+      "CommitteeCoordinatingOut": {
+        "properties": {
+          "committee": {
+            "$ref": "#/components/schemas/CommitteeOut"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "coordinator",
+              "secretary",
+              "member"
+            ],
+            "title": "Role"
+          },
+          "waiting": {
+            "type": "integer",
+            "title": "Waiting"
+          }
+        },
+        "type": "object",
+        "required": [
+          "committee",
+          "role",
+          "waiting"
+        ],
+        "title": "CommitteeCoordinatingOut"
+      },
+      "CommitteeDecisionIn": {
+        "properties": {
+          "approve": {
+            "type": "boolean",
+            "title": "Approve"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "approve"
+        ],
+        "title": "CommitteeDecisionIn"
+      },
+      "CommitteeItemIn": {
+        "properties": {
+          "itemType": {
+            "type": "string",
+            "enum": [
+              "announcement",
+              "meeting",
+              "minutes",
+              "task",
+              "volunteer",
+              "document"
+            ],
+            "title": "Itemtype"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 8000,
+            "minLength": 1,
+            "title": "Body"
+          },
+          "startsAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endsat"
+          },
+          "place": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place"
+          },
+          "meetingId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meetingid"
+          },
+          "dueOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dueon"
+          },
+          "assigneeMembershipId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assigneemembershipid"
+          },
+          "places": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 500.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Places"
+          },
+          "accessRoles": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "coordinator",
+                    "secretary",
+                    "member"
+                  ]
+                },
+                "type": "array",
+                "maxItems": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accessroles"
+          }
+        },
+        "type": "object",
+        "required": [
+          "itemType",
+          "title",
+          "body"
+        ],
+        "title": "CommitteeItemIn",
+        "description": "An announcement, meeting, minutes, task, volunteer opportunity or document (FR-COM-004 to 007)."
+      },
+      "CommitteeItemOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "itemRef": {
+            "type": "string",
+            "title": "Itemref"
+          },
+          "itemType": {
+            "type": "string",
+            "enum": [
+              "announcement",
+              "meeting",
+              "minutes",
+              "task",
+              "volunteer",
+              "document",
+              "thread"
+            ],
+            "title": "Itemtype"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "authorName": {
+            "type": "string",
+            "title": "Authorname"
+          },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "published",
+              "awaiting_approval",
+              "returned",
+              "hidden"
+            ],
+            "title": "State"
+          },
+          "startsAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endsat"
+          },
+          "place": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place"
+          },
+          "meetingId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meetingid"
+          },
+          "dueOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dueon"
+          },
+          "assigneeName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assigneename"
+          },
+          "assignedToMe": {
+            "type": "boolean",
+            "title": "Assignedtome"
+          },
+          "places": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Places"
+          },
+          "signups": {
+            "type": "integer",
+            "title": "Signups"
+          },
+          "signedUp": {
+            "type": "boolean",
+            "title": "Signedup"
+          },
+          "doneAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doneat"
+          },
+          "overdue": {
+            "type": "boolean",
+            "title": "Overdue"
+          },
+          "accessRoles": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "coordinator",
+                "secretary",
+                "member"
+              ]
+            },
+            "type": "array",
+            "title": "Accessroles"
+          },
+          "replies": {
+            "type": "integer",
+            "title": "Replies"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "itemRef",
+          "itemType",
+          "title",
+          "body",
+          "authorName",
+          "mine",
+          "state",
+          "startsAt",
+          "endsAt",
+          "place",
+          "meetingId",
+          "dueOn",
+          "assigneeName",
+          "assignedToMe",
+          "places",
+          "signups",
+          "signedUp",
+          "doneAt",
+          "overdue",
+          "accessRoles",
+          "replies",
+          "decisionReason",
+          "createdAt"
+        ],
+        "title": "CommitteeItemOut"
+      },
+      "CommitteeManageOut": {
+        "properties": {
+          "committee": {
+            "$ref": "#/components/schemas/CommitteeOut"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "coordinator",
+              "secretary",
+              "member"
+            ],
+            "title": "Role"
+          },
+          "applications": {
+            "items": {
+              "$ref": "#/components/schemas/CommitteeRosterEntryOut"
+            },
+            "type": "array",
+            "title": "Applications"
+          },
+          "roster": {
+            "items": {
+              "$ref": "#/components/schemas/CommitteeRosterEntryOut"
+            },
+            "type": "array",
+            "title": "Roster"
+          },
+          "waitingItems": {
+            "items": {
+              "$ref": "#/components/schemas/CommitteeItemOut"
+            },
+            "type": "array",
+            "title": "Waitingitems"
+          },
+          "waitingPosts": {
+            "items": {
+              "$ref": "#/components/schemas/CommitteeWaitingPostOut"
+            },
+            "type": "array",
+            "title": "Waitingposts"
+          },
+          "recentItems": {
+            "items": {
+              "$ref": "#/components/schemas/CommitteeItemOut"
+            },
+            "type": "array",
+            "title": "Recentitems"
+          },
+          "report": {
+            "$ref": "#/components/schemas/CommitteeActivityOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "committee",
+          "role",
+          "applications",
+          "roster",
+          "waitingItems",
+          "waitingPosts",
+          "recentItems",
+          "report"
+        ],
+        "title": "CommitteeManageOut"
+      },
+      "CommitteeMembershipOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "applied",
+              "approved",
+              "declined",
+              "withdrawn",
+              "left",
+              "removed"
+            ],
+            "title": "State"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "coordinator",
+                  "secretary",
+                  "member"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "appliedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Appliedat"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "state",
+          "role",
+          "appliedAt",
+          "decidedAt",
+          "decisionReason"
+        ],
+        "title": "CommitteeMembershipOut"
+      },
+      "CommitteeOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "committeeRef": {
+            "type": "string",
+            "title": "Committeeref"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "wing",
+              "committee"
+            ],
+            "title": "Kind"
+          },
+          "wingType": {
+            "type": "string",
+            "enum": [
+              "youth",
+              "women",
+              "farmers",
+              "fishers",
+              "professional",
+              "diaspora"
+            ],
+            "title": "Wingtype"
+          },
+          "wingId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wingid"
+          },
+          "wingNameEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wingnameen"
+          },
+          "wingNameTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wingnameta"
+          },
+          "nameEn": {
+            "type": "string",
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "title": "Nameta"
+          },
+          "purposeEn": {
+            "type": "string",
+            "title": "Purposeen"
+          },
+          "purposeTa": {
+            "type": "string",
+            "title": "Purposeta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "active",
+              "rejected",
+              "closed"
+            ],
+            "title": "State"
+          },
+          "members": {
+            "type": "integer",
+            "title": "Members"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "committeeRef",
+          "kind",
+          "wingType",
+          "wingId",
+          "wingNameEn",
+          "wingNameTa",
+          "nameEn",
+          "nameTa",
+          "purposeEn",
+          "purposeTa",
+          "areaKey",
+          "state",
+          "members"
+        ],
+        "title": "CommitteeOut"
+      },
+      "CommitteePostDecisionIn": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "publish",
+              "return",
+              "hide"
+            ],
+            "title": "Decision"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "CommitteePostDecisionIn"
+      },
+      "CommitteePostIn": {
+        "properties": {
+          "body": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 2,
+            "title": "Body"
+          }
+        },
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "title": "CommitteePostIn"
+      },
+      "CommitteePostOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "authorName": {
+            "type": "string",
+            "title": "Authorname"
+          },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "published",
+              "awaiting_approval",
+              "returned",
+              "hidden"
+            ],
+            "title": "State"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "authorName",
+          "mine",
+          "body",
+          "state",
+          "decisionReason",
+          "createdAt"
+        ],
+        "title": "CommitteePostOut"
+      },
+      "CommitteeProposalIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "wing",
+              "committee"
+            ],
+            "title": "Kind"
+          },
+          "wingType": {
+            "type": "string",
+            "enum": [
+              "youth",
+              "women",
+              "farmers",
+              "fishers",
+              "professional",
+              "diaspora"
+            ],
+            "title": "Wingtype"
+          },
+          "wingId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wingid"
+          },
+          "nameEn": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Nameta"
+          },
+          "purposeEn": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Purposeen"
+          },
+          "purposeTa": {
+            "type": "string",
+            "maxLength": 1500,
+            "minLength": 10,
+            "title": "Purposeta"
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaRef"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "wingType",
+          "nameEn",
+          "nameTa",
+          "purposeEn",
+          "purposeTa",
+          "area"
+        ],
+        "title": "CommitteeProposalIn"
+      },
+      "CommitteeReasonIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "CommitteeReasonIn"
+      },
+      "CommitteeRoleGrantIn": {
+        "properties": {
+          "memberCode": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 3,
+            "title": "Membercode"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "coordinator",
+              "secretary",
+              "member"
+            ],
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberCode",
+          "role"
+        ],
+        "title": "CommitteeRoleGrantIn"
+      },
+      "CommitteeRoleIn": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "coordinator",
+              "secretary",
+              "member"
+            ],
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role"
+        ],
+        "title": "CommitteeRoleIn"
+      },
+      "CommitteeRosterEntryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "applied",
+              "approved",
+              "declined",
+              "withdrawn",
+              "left",
+              "removed"
+            ],
+            "title": "State"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "coordinator",
+                  "secretary",
+                  "member"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "applicationNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applicationnote"
+          },
+          "appliedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Appliedat"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          },
+          "roleSetAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rolesetat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "memberCode",
+          "state",
+          "role",
+          "applicationNote",
+          "appliedAt",
+          "decidedAt",
+          "roleSetAt"
+        ],
+        "title": "CommitteeRosterEntryOut",
+        "description": "A person in the committee's roster: name, member code, state and role; nothing else (RB-09)."
+      },
+      "CommitteeSignupIn": {
+        "properties": {
+          "signedUp": {
+            "type": "boolean",
+            "title": "Signedup"
+          }
+        },
+        "type": "object",
+        "required": [
+          "signedUp"
+        ],
+        "title": "CommitteeSignupIn"
+      },
+      "CommitteeSignupsOut": {
+        "properties": {
+          "names": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Names"
+          }
+        },
+        "type": "object",
+        "required": [
+          "names"
+        ],
+        "title": "CommitteeSignupsOut"
+      },
+      "CommitteeSpaceOut": {
+        "properties": {
+          "committee": {
+            "$ref": "#/components/schemas/CommitteeOut"
+          },
+          "myMembership": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CommitteeMembershipOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "applyProblem": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applyproblem"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CommitteeItemOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "myWaiting": {
+            "items": {
+              "$ref": "#/components/schemas/CommitteeItemOut"
+            },
+            "type": "array",
+            "title": "Mywaiting"
+          }
+        },
+        "type": "object",
+        "required": [
+          "committee",
+          "myMembership",
+          "applyProblem",
+          "items",
+          "myWaiting"
+        ],
+        "title": "CommitteeSpaceOut",
+        "description": "M32. `items` is empty unless the member is an approved member of an active committee."
+      },
+      "CommitteeThreadIn": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 2,
+            "title": "Body"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "body"
+        ],
+        "title": "CommitteeThreadIn"
+      },
+      "CommitteeThreadOut": {
+        "properties": {
+          "thread": {
+            "$ref": "#/components/schemas/CommitteeItemOut"
+          },
+          "posts": {
+            "items": {
+              "$ref": "#/components/schemas/CommitteePostOut"
+            },
+            "type": "array",
+            "title": "Posts"
+          },
+          "canModerate": {
+            "type": "boolean",
+            "title": "Canmoderate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "thread",
+          "posts",
+          "canModerate"
+        ],
+        "title": "CommitteeThreadOut"
+      },
+      "CommitteeWaitingPostOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "authorName": {
+            "type": "string",
+            "title": "Authorname"
+          },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "published",
+              "awaiting_approval",
+              "returned",
+              "hidden"
+            ],
+            "title": "State"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "threadId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Threadid"
+          },
+          "threadTitle": {
+            "type": "string",
+            "title": "Threadtitle"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "authorName",
+          "mine",
+          "body",
+          "state",
+          "decisionReason",
+          "createdAt",
+          "threadId",
+          "threadTitle"
+        ],
+        "title": "CommitteeWaitingPostOut"
+      },
       "CommunityReportListOut": {
         "properties": {
           "items": {
@@ -29126,6 +32808,533 @@
           "token"
         ],
         "title": "DeviceTokenIn"
+      },
+      "DiasporaContributionStatusOut": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "available",
+          "reason"
+        ],
+        "title": "DiasporaContributionStatusOut",
+        "description": "FR-DSP-006: whether contributions from abroad are open, and why not (OD-40)."
+      },
+      "DiasporaCountOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "count"
+        ],
+        "title": "DiasporaCountOut",
+        "description": "A count, or null when fewer than 5 (small numbers are hidden)."
+      },
+      "DiasporaCountryOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "timeZones": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Timezones"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "timeZones"
+        ],
+        "title": "DiasporaCountryOut"
+      },
+      "DiasporaEventOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "eventRef": {
+            "type": "string",
+            "title": "Eventref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "venue": {
+            "type": "string",
+            "title": "Venue"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "international": {
+            "type": "boolean",
+            "title": "International"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "eventRef",
+          "titleEn",
+          "titleTa",
+          "startsAt",
+          "venue",
+          "areaKey",
+          "international"
+        ],
+        "title": "DiasporaEventOut"
+      },
+      "DiasporaInternationalEventOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "eventRef": {
+            "type": "string",
+            "title": "Eventref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "title": "Descriptionen"
+          },
+          "descriptionTa": {
+            "type": "string",
+            "title": "Descriptionta"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "venue": {
+            "type": "string",
+            "title": "Venue"
+          },
+          "sriLanka": {
+            "$ref": "#/components/schemas/DiasporaWallClockOut"
+          },
+          "local": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DiasporaWallClockOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeZone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "eventRef",
+          "titleEn",
+          "titleTa",
+          "descriptionEn",
+          "descriptionTa",
+          "startsAt",
+          "endsAt",
+          "venue",
+          "sriLanka",
+          "local",
+          "timeZone"
+        ],
+        "title": "DiasporaInternationalEventOut"
+      },
+      "DiasporaInternationalIn": {
+        "properties": {
+          "international": {
+            "type": "boolean",
+            "title": "International"
+          }
+        },
+        "type": "object",
+        "required": [
+          "international"
+        ],
+        "title": "DiasporaInternationalIn"
+      },
+      "DiasporaMeOut": {
+        "properties": {
+          "supporter": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DiasporaSupporterOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "contributions": {
+            "$ref": "#/components/schemas/DiasporaContributionStatusOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "supporter",
+          "contributions"
+        ],
+        "title": "DiasporaMeOut"
+      },
+      "DiasporaOpportunityOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "opportunityRef": {
+            "type": "string",
+            "title": "Opportunityref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "roleEn": {
+            "type": "string",
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "type": "string",
+            "title": "Roleta"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startsat"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Endsat"
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills"
+          },
+          "placesLeft": {
+            "type": "integer",
+            "title": "Placesleft"
+          },
+          "matchesMySkills": {
+            "type": "boolean",
+            "title": "Matchesmyskills"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "opportunityRef",
+          "titleEn",
+          "titleTa",
+          "roleEn",
+          "roleTa",
+          "startsAt",
+          "endsAt",
+          "skills",
+          "placesLeft",
+          "matchesMySkills"
+        ],
+        "title": "DiasporaOpportunityOut"
+      },
+      "DiasporaOptionsOut": {
+        "properties": {
+          "countries": {
+            "items": {
+              "$ref": "#/components/schemas/DiasporaCountryOut"
+            },
+            "type": "array",
+            "title": "Countries"
+          },
+          "topics": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "international_events",
+                "committee_networking"
+              ]
+            },
+            "type": "array",
+            "title": "Topics"
+          },
+          "skills": {
+            "items": {
+              "$ref": "#/components/schemas/DiasporaSkillOut"
+            },
+            "type": "array",
+            "title": "Skills"
+          }
+        },
+        "type": "object",
+        "required": [
+          "countries",
+          "topics",
+          "skills"
+        ],
+        "title": "DiasporaOptionsOut"
+      },
+      "DiasporaSkillOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "nameEn": {
+            "type": "string",
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "title": "Nameta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "nameEn",
+          "nameTa"
+        ],
+        "title": "DiasporaSkillOut"
+      },
+      "DiasporaSummaryOut": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "byCountry": {
+            "items": {
+              "$ref": "#/components/schemas/DiasporaCountOut"
+            },
+            "type": "array",
+            "title": "Bycountry"
+          },
+          "byTopic": {
+            "items": {
+              "$ref": "#/components/schemas/DiasporaCountOut"
+            },
+            "type": "array",
+            "title": "Bytopic"
+          },
+          "proposalsByStage": {
+            "items": {
+              "$ref": "#/components/schemas/DiasporaCountOut"
+            },
+            "type": "array",
+            "title": "Proposalsbystage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "byCountry",
+          "byTopic",
+          "proposalsByStage"
+        ],
+        "title": "DiasporaSummaryOut"
+      },
+      "DiasporaSupporterIn": {
+        "properties": {
+          "countryCode": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$",
+            "title": "Countrycode"
+          },
+          "timeZone": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 3,
+            "title": "Timezone"
+          },
+          "contactTopics": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "international_events",
+                "committee_networking"
+              ]
+            },
+            "type": "array",
+            "maxItems": 2,
+            "title": "Contacttopics"
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "title": "Skills"
+          },
+          "consent": {
+            "type": "boolean",
+            "title": "Consent",
+            "description": "Agreement to keep these details to tailor diaspora participation (FR-DSP-001)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "countryCode",
+          "timeZone",
+          "consent"
+        ],
+        "title": "DiasporaSupporterIn"
+      },
+      "DiasporaSupporterOut": {
+        "properties": {
+          "countryCode": {
+            "type": "string",
+            "title": "Countrycode"
+          },
+          "timeZone": {
+            "type": "string",
+            "title": "Timezone"
+          },
+          "contactTopics": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "international_events",
+                "committee_networking"
+              ]
+            },
+            "type": "array",
+            "title": "Contacttopics"
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills"
+          },
+          "registeredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Registeredat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "countryCode",
+          "timeZone",
+          "contactTopics",
+          "skills",
+          "registeredAt",
+          "updatedAt"
+        ],
+        "title": "DiasporaSupporterOut"
+      },
+      "DiasporaWallClockOut": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "time": {
+            "type": "string",
+            "title": "Time"
+          },
+          "utcOffset": {
+            "type": "string",
+            "title": "Utcoffset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "time",
+          "utcOffset"
+        ],
+        "title": "DiasporaWallClockOut"
       },
       "DistrictDecisionIn": {
         "properties": {
@@ -35320,6 +39529,10 @@
             ],
             "title": "State"
           },
+          "remote": {
+            "type": "boolean",
+            "title": "Remote"
+          },
           "places": {
             "type": "integer",
             "title": "Places"
@@ -35374,6 +39587,7 @@
           "eventId",
           "skills",
           "state",
+          "remote",
           "places",
           "confirmed",
           "waiting",
@@ -35917,6 +40131,10 @@
             ],
             "title": "State"
           },
+          "remote": {
+            "type": "boolean",
+            "title": "Remote"
+          },
           "saved": {
             "type": "boolean",
             "title": "Saved"
@@ -35953,6 +40171,7 @@
           "eventId",
           "skills",
           "state",
+          "remote",
           "saved",
           "myOffer"
         ],
@@ -38670,6 +42889,12 @@
             "minimum": 1.0,
             "title": "Places"
           },
+          "remote": {
+            "type": "boolean",
+            "title": "Remote",
+            "description": "Done from anywhere, e.g. translation (FR-DSP-003)",
+            "default": false
+          },
           "area": {
             "$ref": "#/components/schemas/AreaIn"
           }
@@ -38792,6 +43017,10 @@
               "cancelled"
             ],
             "title": "State"
+          },
+          "remote": {
+            "type": "boolean",
+            "title": "Remote"
           }
         },
         "type": "object",
@@ -38814,7 +43043,8 @@
           "endsAt",
           "eventId",
           "skills",
-          "state"
+          "state",
+          "remote"
         ],
         "title": "OpportunityOut"
       },
@@ -39042,6 +43272,17 @@
               }
             ],
             "title": "Places"
+          },
+          "remote": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remote"
           }
         },
         "type": "object",
