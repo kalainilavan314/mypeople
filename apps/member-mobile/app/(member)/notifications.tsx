@@ -65,6 +65,18 @@ function targetRoute(item: NotificationItem): Href | null {
       return '/volunteer/assignments';
     case 'misinfo_report':
       return '/official';
+    case 'renewal':
+      return '/renewal';
+    case 'certificate':
+      return item.targetId
+        ? { pathname: '/renewal/certificate/[id]', params: { id: item.targetId } }
+        : '/renewal/certificates';
+    case 'assisted_verification':
+      return '/verify/assisted';
+    case 'assisted_session':
+      return item.targetId
+        ? { pathname: '/staff/assisted-verification/[id]', params: { id: item.targetId } }
+        : '/staff/assisted-verification';
     default:
       return null;
   }

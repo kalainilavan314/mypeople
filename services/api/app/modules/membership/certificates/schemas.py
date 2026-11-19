@@ -94,23 +94,26 @@ class ManagedCertificateOut(CertificateOut):
     area_key: str
 
     @classmethod
-    def from_listed(cls, listed: ListedCertificate) -> Self:
-        base = CertificateOut.build(listed.certificate).model_dump()
-        return cls(**base, member_code=listed.member_code, area_key=listed.area_key)
+    def from_listed(cls, listed: ListedCertificate, refs: dict[uuid.UUID, str]) -> Self:
+        replaced_by = listed.certificate.superseded_by
+        base = CertificateOut.build(listed.certificate, superseded_by_ref=refs.get(replaced_by) if replaced_by else None)
+        return cls(**base.model_dump(), member_code=listed.member_code, area_key=listed.area_key)
 
 
 class PublicCertificateOut(CamelModel):
-    """FR-RNW-007: only these four, and nothing else about the holder."""
+    """FR-RNW-007: only these four. A revoked or superseded certificate shows its status and nothing about
+    the holder: the name is given only while the certificate is valid."""
 
     kind: Kind
-    holder_name: str
+    holder_name: str | None
     issued_on: date
     status: Literal["valid", "revoked", "superseded"]
 
     @classmethod
     def build(cls, result: PublicCheck) -> Self:
-        return cls(kind=result.kind, holder_name=result.holder_name, issued_on=result.issued_on,  # type: ignore[arg-type]
-                   status=result.status)  # type: ignore[arg-type]
+        valid = result.status == "valid"
+        return cls(kind=result.kind, holder_name=result.holder_name if valid else None,  # type: ignore[arg-type]
+                   issued_on=result.issued_on, status=result.status)  # type: ignore[arg-type]
 
 
 def my_certificates_out(mine: MyCertificates, verify_url: dict[uuid.UUID, str]) -> MyCertificatesOut:

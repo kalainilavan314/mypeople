@@ -24,7 +24,9 @@ export type RefusalScope =
   | 'promises'
   | 'support'
   | 'townHalls'
-  | 'official';
+  | 'official'
+  | 'renewal'
+  | 'verify';
 
 /**
  * The member-facing message for a failed request: the API's error code when

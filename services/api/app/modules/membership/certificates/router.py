@@ -99,15 +99,16 @@ def list_certificates(
     limit: Annotated[int, Query(ge=1, le=200)] = 100,
 ) -> list[ManagedCertificateOut]:
     """D25: certificates of members in the caller's areas, newest first."""
-    return [ManagedCertificateOut.from_listed(item)
-            for item in service.search(db, staff, status=certificate_status, kind=kind, ref=ref, limit=limit)]
+    found = service.search(db, staff, status=certificate_status, kind=kind, ref=ref, limit=limit)
+    refs = service.superseded_refs(db, [item.certificate for item in found])
+    return [ManagedCertificateOut.from_listed(item, refs) for item in found]
 
 
 def _listed(db: Session, staff: Staff, certificate_ref: str) -> ManagedCertificateOut:
     found = service.search(db, staff, status=None, kind=None, ref=certificate_ref, limit=1)
     if not found:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not_found")
-    return ManagedCertificateOut.from_listed(found[0])
+    return ManagedCertificateOut.from_listed(found[0], service.superseded_refs(db, [found[0].certificate]))
 
 
 @router.post("/manage", status_code=status.HTTP_201_CREATED, responses=REFUSED)
@@ -144,8 +145,8 @@ def reissue_certificate(certificate_id: uuid.UUID, body: CertificateReasonIn, st
 )
 def check_certificate(token: Annotated[str, Path(min_length=10, max_length=100)], request: Request,
                       db: Db) -> PublicCertificateOut:
-    """INT-22, FR-RNW-007: anyone, without an account. Only the type, the holder's name, the issue date and
-    Valid, Revoked or Superseded; nothing else about the holder."""
+    """INT-22, FR-RNW-007: anyone, without an account. Only the type, the issue date and Valid, Revoked or
+    Superseded, with the holder's name while it is valid; nothing else about the holder."""
     try:
         return PublicCertificateOut.build(service.check(db, token, client_ip(request), _secret(request)))
     except service.TooManyChecks:

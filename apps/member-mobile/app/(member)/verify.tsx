@@ -41,7 +41,15 @@ const TONE: Record<State, Tone> = {
 
 const DOCUMENT_KINDS = new Set<string>(['nic_front', 'nic_back', 'passport_page', 'selfie']);
 
-type Loaded = { progress: RegistrationProgress; review: IdentityReview | null; appealsOpen: boolean };
+type Loaded = {
+  progress: RegistrationProgress;
+  review: IdentityReview | null;
+  appealsOpen: boolean;
+  assistedOpen: boolean;
+};
+
+/** FR-IDV-014: after this many flagged photos the help offer is put first. */
+const FLAGGED_BEFORE_HELP = 3;
 
 /**
  * A04 to A12: consent before any upload (BR-008), the route's photos, the
@@ -58,7 +66,12 @@ export default function VerifyScreen() {
       api().getMyIdentityReview(),
       api().getEnabledFeatures(),
     ]);
-    return { progress, review, appealsOpen: features.enabled.includes('identity_appeals') };
+    return {
+      progress,
+      review,
+      appealsOpen: features.enabled.includes('identity_appeals'),
+      assistedOpen: features.enabled.includes('assisted_verification'),
+    };
   });
 
   return (
@@ -89,6 +102,9 @@ function VerifyBody({ data, reload, targetStep }: { data: Loaded; reload: () => 
   const requested = new Set(state === 'needs_update' ? (latest?.requestedItems ?? []) : []);
   const photos = progress.steps.filter((step) => DOCUMENT_KINDS.has(step.name));
   const canSend = state === 'not_submitted' || state === 'needs_update';
+  // M05 (FR-IDV-014): photos the checks flagged in this visit, and whether the camera was refused.
+  const [flagged, setFlagged] = useState(0);
+  const [cameraDenied, setCameraDenied] = useState(false);
 
   return (
     <>
@@ -143,6 +159,8 @@ function VerifyBody({ data, reload, targetStep }: { data: Loaded; reload: () => 
               requested={requested.has(step.name)}
               target={targetStep === step.name || requested.has(step.name)}
               onUploaded={reload}
+              onFlagged={() => setFlagged((count) => count + 1)}
+              onCameraDenied={() => setCameraDenied(true)}
             />
           ))}
           <SubmitCard
@@ -155,6 +173,10 @@ function VerifyBody({ data, reload, targetStep }: { data: Loaded; reload: () => 
             }}
           />
         </>
+      ) : null}
+
+      {canSend && data.assistedOpen ? (
+        <HelpCard cause={cameraDenied ? 'no_camera' : flagged >= FLAGGED_BEFORE_HELP ? 'checks_failed' : null} />
       ) : null}
 
       {state === 'unable_to_verify' ? (
@@ -172,6 +194,34 @@ function VerifyBody({ data, reload, targetStep }: { data: Loaded; reload: () => 
 
       {review ? <DecisionHistory review={review} /> : null}
     </>
+  );
+}
+
+/**
+ * M05 entry (FR-IDV-014, BR-144): help is always offered; it comes first, as a warning, when the
+ * camera cannot be used or the checks flagged three photos.
+ */
+function HelpCard({ cause }: { cause: 'no_camera' | 'checks_failed' | null }) {
+  const { t } = useTranslation();
+  const open = () => router.push({ pathname: '/verify/assisted', params: cause ? { reason: cause } : {} });
+  if (cause) {
+    return (
+      <Notice tone="warning" title={t('m.verify.helpTitle')}>
+        <AppText step="secondary" tone="warning">
+          {cause === 'no_camera' ? t('m.verify.helpNoCamera') : t('m.verify.helpChecksFailed')}
+        </AppText>
+        <Button label={t('m.verify.helpAction')} icon="people-outline" onPress={open} />
+      </Notice>
+    );
+  }
+  return (
+    <SurfaceCard>
+      <AppText step="card">{t('m.verify.helpTitle')}</AppText>
+      <AppText step="secondary" tone="secondary">
+        {t('m.verify.helpBody')}
+      </AppText>
+      <Button label={t('m.verify.helpAction')} variant="secondary" icon="people-outline" onPress={open} />
+    </SurfaceCard>
   );
 }
 

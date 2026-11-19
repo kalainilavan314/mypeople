@@ -19,7 +19,7 @@ The coordinators' and caseworkers' screens (BRD §11.30, screens S01–S18) insi
 | S13 approvals | Broadcasts above district scope, area changes with the proof, albums to publish or return, photo removal requests (escalated at 18 hours) |
 | S14 alerts | The person's own notices |
 
-Not built: S04 assisted verification (OD-04), S11 and S12 assistance cases, field visits, screenshot blocking on evidence. Identity reviews are decided on the dashboard. The Tamil text in `src/i18n/staff/ta.ts` is new and needs a Tamil speaker's review.
+S04 assisted verification is `app/(member)/staff/assisted-verification/` (queue and session; words in `s.assisted`, refusals in `assisted/problems.ts`), behind `assisted_verification`. Not built: S11 and S12 assistance cases, screenshot blocking on evidence. Identity reviews are decided on the dashboard. The Tamil text in `src/i18n/staff/ta.ts` is new and needs a Tamil speaker's review.
 
 ## Run
 

@@ -74,6 +74,10 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     ta: 'முதலில் இதனைப் பொறுப்பேற்கவும்.',
     en: 'Claim it first.',
   },
+  witnessed_by_you: {
+    ta: 'இந்த உதவியுடனான சரிபார்ப்பு அமர்வுக்கு நீங்கள் சாட்சியாக இருந்ததால், இந்த மதிப்பாய்வை வேறொரு மதிப்பாய்வாளர் தீர்மானிக்க வேண்டும்.',
+    en: 'You witnessed the assisted verification session behind this review, so another reviewer must decide it.',
+  },
   not_open: {
     ta: 'இது இனி செயலில் இல்லை.',
     en: 'This is no longer open.',
@@ -341,6 +345,11 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
   factcheck_refused: {
     ta: 'உண்மைச் சரிபார்ப்பு முடிவு பதிவுசெய்யப்படவில்லை.',
     en: 'The fact-check decision was not recorded.',
+  },
+  // Renewal and certificates (D25).
+  certificate_refused: {
+    ta: 'சான்றிதழ் நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The certificate action was not recorded. Fix the points below and try again.',
   },
   own_draft: {
     ta: 'இதை நீங்களே வரைந்ததால் அல்லது அங்கீகாரம் கோரியதால் இதை நீங்கள் அங்கீகரிக்க முடியாது; வெளியிடும் அனுமதியுள்ள வேறொருவர் அங்கீகரிக்க வேண்டும்.',
@@ -1166,6 +1175,27 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'இந்த முறைப்பாடு இன்னும் தீர்மானிக்கப்படவில்லை.',
     en: 'This report has not been decided yet.',
   },
+  // Renewal and certificates (D25).
+  member_code_required: {
+    ta: 'உறுப்பினர் அடையாளக் குறியீட்டை உள்ளிடவும்.',
+    en: 'Enter the member ID.',
+  },
+  certificate_event_required: {
+    ta: 'உறுப்பினர் கலந்துகொண்ட நிகழ்வின் அடையாளத்தை உள்ளிடவும்.',
+    en: 'Enter the ID of the event the member attended.',
+  },
+  already_issued: {
+    ta: 'இந்தச் சான்றிதழ் ஏற்கனவே வழங்கப்பட்டுள்ளது: காரணத்துடன் அதனை மீள வழங்கவும்.',
+    en: 'Already issued: reissue it instead, with a reason.',
+  },
+  no_attendance_recorded: {
+    ta: 'இந்த நிகழ்வில் உறுப்பினரின் வருகை பதிவுசெய்யப்படவில்லை.',
+    en: 'The member’s attendance at this event was not recorded at check-in.',
+  },
+  no_completed_assignments: {
+    ta: 'உறுப்பினருக்கு முடிவடைந்த தன்னார்வப் பணிகள் இன்னும் இல்லை.',
+    en: 'The member has no completed volunteer assignments yet.',
+  },
 };
 
 /** Problems that name a question or lesson by its number, e.g. "options_required:2". */
@@ -1790,6 +1820,19 @@ const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
   misinfo_appeal_changed: {
     ta: 'முடிவு மாற்றப்பட்டது.',
     en: 'Outcome changed.',
+  },
+  // Renewal and certificates (D25).
+  certificate_issued: {
+    ta: 'சான்றிதழ் வழங்கப்பட்டது. உறுப்பினர் அதனைத் தமது செயலியில் பதிவிறக்கலாம்.',
+    en: 'Certificate issued. The member can download it in their app.',
+  },
+  certificate_revoked: {
+    ta: 'சான்றிதழ் மீளப்பெறப்பட்டது; சரிபார்க்கும்போது அது மீளப்பெறப்பட்டதாகக் காட்டும். உறுப்பினருக்கு அறிவிக்கப்பட்டது.',
+    en: 'Certificate revoked; it now checks as Revoked. The member has been told.',
+  },
+  certificate_reissued: {
+    ta: 'புதிய சான்றிதழ் வழங்கப்பட்டது; பழையது மாற்றப்பட்டதாகக் காட்டும். உறுப்பினருக்கு அறிவிக்கப்பட்டது.',
+    en: 'New certificate issued; the old one now checks as Superseded. The member has been told.',
   },
 };
 

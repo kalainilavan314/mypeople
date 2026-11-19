@@ -10,6 +10,7 @@ export const permissionNames: Readonly<Record<string, StaffTerm>> = {
   'members.view_profile': { ta: 'உறுப்பினர் சுயவிவரங்களைப் பார்த்தல்', en: 'View member profiles' },
   'members.view_identity_evidence': { ta: 'அடையாள ஆவணங்களைப் பார்த்தல்', en: 'View identity documents' },
   'members.verify': { ta: 'உறுப்பினர் அடையாளத்தைச் சரிபார்த்தல்', en: 'Verify member identities' },
+  'members.assisted_verification': { ta: 'உதவியுடனான அடையாளச் சரிபார்ப்பு அமர்வுகளை நடத்துதல்', en: 'Run assisted identity verification sessions' },
   'members.activate': { ta: 'உறுப்புரிமையைச் செயற்படுத்துதல்', en: 'Activate memberships' },
   'roles.assign': { ta: 'பணியாளர் பொறுப்புகளை ஒதுக்குதல்', en: 'Assign staff roles' },
   'cases.collect': { ta: 'சமூக விவகாரங்களைப் பதிவுசெய்தல்', en: 'Record community cases' },

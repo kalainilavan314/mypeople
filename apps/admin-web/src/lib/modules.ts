@@ -11,6 +11,7 @@ export const builtModules: readonly AdminModule[] = [
   { href: '/appeals', ta: 'மேன்முறையீடுகள்', en: 'Verification appeals', permission: 'idv.appeal.decide' },
   { href: '/duplicates', ta: 'இரட்டைக் கணக்குகள்', en: 'Duplicate investigations', permission: 'idv.duplicate.investigate' },
   { href: '/membership', ta: 'உறுப்புரிமை', en: 'Membership activation', permission: 'members.activate' },
+  { href: '/renewals', ta: 'புதுப்பித்தலும் சான்றிதழ்களும்', en: 'Renewals and certificates', permission: 'certificate.issue_revoke' },
   { href: '/events', ta: 'நிகழ்வுகள்', en: 'Event console', permission: 'events.manage' },
   { href: '/volunteer-assignments', ta: 'தன்னார்வப் பணிகள்', en: 'Volunteer assignments', permission: 'volunteers.manage' },
   { href: '/volunteering', ta: 'தன்னார்வ வாய்ப்புகள்', en: 'Volunteering opportunities', permission: 'volunteers.manage' },

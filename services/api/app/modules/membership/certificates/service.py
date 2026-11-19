@@ -222,6 +222,11 @@ def search(db: Session, staff: Staff, *, status: str | None, kind: str | None, r
                              ref=ref.strip() if ref else None, limit=limit)
 
 
+def superseded_refs(db: Session, certificates: list[Certificate]) -> dict[uuid.UUID, str]:
+    """The reference of each certificate that replaced one of these."""
+    return repository.refs(db, [c.superseded_by for c in certificates if c.superseded_by])
+
+
 def staff_issue(db: Session, staff: Staff, member_code: str, kind: Kind, event_id: uuid.UUID | None, secret: str,
                 ip: str, now: datetime | None = None) -> Certificate:
     moment = now or datetime.now(UTC)

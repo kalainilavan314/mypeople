@@ -82,11 +82,16 @@ def test_revoked_and_reissued_certificates_verify_as_such(client, auth, member_i
                             headers=auth(officer))
 
     assert new["id"] != certificate["id"] and new["memberCode"] and new["status"] == "valid"
-    assert old_check["status"] == "superseded"  # FR-RNW-008
+    assert old_check["status"] == "superseded" and old_check["holderName"] is None  # FR-RNW-007, 008
+    listed_old = client.get("/v1/membership/certificates/manage", params={"ref": certificate["certificateRef"]},
+                            headers=auth(officer)).json()
+    assert listed_old[0]["supersededByRef"] == new["certificateRef"]
     old_mine = next(c for c in mine["certificates"] if c["id"] == certificate["id"])
     assert old_mine["supersededByRef"] == new["certificateRef"] and old_mine["statusReason"]
     assert revoked.json()["status"] == "revoked" and revoked.json()["statusReason"] == "Issued in error"
-    assert client.get(f"/v1/public/certificates/{new_token}").json()["status"] == "revoked"
+    # "Revoked" and nothing else about the holder.
+    assert client.get(f"/v1/public/certificates/{new_token}").json() == {
+        "kind": "membership", "holderName": None, "issuedOn": new["issuedOn"], "status": "revoked"}
     assert twice.json()["detail"]["problems"] == ["not_allowed_from:revoked"]
     assert no_reason.status_code == 422
     sent = list(db_session.scalars(text("SELECT template FROM notifications.notification WHERE member_id = :id"),

@@ -30,6 +30,7 @@ export default function MemberLayout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="verify" options={{ title: t('m.verify.title') }} />
       <Stack.Screen name="verify/appeal" options={{ title: t('m.verify.appealTitle') }} />
+      <Stack.Screen name="verify/assisted" options={{ title: t('m.verify.assistedTitle') }} />
       <Stack.Screen name="card/code" options={{ presentation: 'fullScreenModal', headerShown: false }} />
       <Stack.Screen name="card/progress" options={{ title: t('m.card.progressTitle') }} />
       <Stack.Screen name="card/share" options={{ title: t('m.card.shareTitle') }} />
@@ -92,6 +93,9 @@ export default function MemberLayout() {
       <Stack.Screen name="town-halls/[id]" options={{ title: t('m.townHalls.sessionTitle') }} />
       <Stack.Screen name="official/index" options={{ title: t('m.official.title') }} />
       <Stack.Screen name="official/report" options={{ title: t('m.official.reportTitle') }} />
+      <Stack.Screen name="renewal/index" options={{ title: t('m.renewal.title') }} />
+      <Stack.Screen name="renewal/certificates" options={{ title: t('m.renewal.certificatesTitle') }} />
+      <Stack.Screen name="renewal/certificate/[id]" options={{ title: t('m.renewal.certificateTitle') }} />
       <Stack.Screen name="staff" options={{ headerShown: false }} />
     </Stack>
   );

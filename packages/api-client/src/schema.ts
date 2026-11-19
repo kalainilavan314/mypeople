@@ -7564,8 +7564,8 @@ export interface paths {
         };
         /**
          * Check Certificate
-         * @description INT-22, FR-RNW-007: anyone, without an account. Only the type, the holder's name, the issue date and
-         *     Valid, Revoked or Superseded; nothing else about the holder.
+         * @description INT-22, FR-RNW-007: anyone, without an account. Only the type, the issue date and Valid, Revoked or
+         *     Superseded, with the holder's name while it is valid; nothing else about the holder.
          */
         get: operations["check_certificate_v1_public_certificates__token__get"];
         put?: never;
@@ -15743,7 +15743,8 @@ export interface components {
         };
         /**
          * PublicCertificateOut
-         * @description FR-RNW-007: only these four, and nothing else about the holder.
+         * @description FR-RNW-007: only these four. A revoked or superseded certificate shows its status and nothing about
+         *     the holder: the name is given only while the certificate is valid.
          */
         PublicCertificateOut: {
             /**
@@ -15752,7 +15753,7 @@ export interface components {
              */
             kind: "membership" | "event_participation" | "volunteer_service";
             /** Holdername */
-            holderName: string;
+            holderName: string | null;
             /**
              * Issuedon
              * Format: date

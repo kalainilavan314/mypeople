@@ -57,6 +57,8 @@ function StaffStack() {
       <Stack.Screen name="field-visits/index" options={{ title: t('s.fieldVisits.title') }} />
       <Stack.Screen name="field-visits/new" options={{ title: t('s.fieldVisits.newTitle') }} />
       <Stack.Screen name="field-visits/sync" options={{ title: t('s.fieldVisits.syncTitle') }} />
+      <Stack.Screen name="assisted-verification/index" options={{ title: t('s.assisted.title') }} />
+      <Stack.Screen name="assisted-verification/[id]" options={{ title: t('s.assisted.sessionTitle') }} />
     </Stack>
   );
 }

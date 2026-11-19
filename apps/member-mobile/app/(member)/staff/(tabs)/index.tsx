@@ -45,13 +45,16 @@ export default function StaffHomeScreen() {
   const looksUp = permissions.has('members.view_profile');
   const coordinatesVolunteers = permissions.has('volunteers.manage');
   const collectsVisits = permissions.has('field.collect');
+  // S04 (OD-04): the assisted-session grant, or identity review rights.
+  const assistsVerification = permissions.has('members.assisted_verification') || permissions.has('members.verify');
   const nothing =
     !permissions.has('members.verify') &&
     !approvesAnything(permissions) &&
     !scans &&
     !looksUp &&
     !coordinatesVolunteers &&
-    !collectsVisits;
+    !collectsVisits &&
+    !assistsVerification;
 
   return (
     <Screen edges={[]} onRefresh={reload} refreshing={reviews.loading || approvals.loading}>
@@ -107,6 +110,15 @@ export default function StaffHomeScreen() {
           <AppText step="section">{t('s.fieldVisits.title')}</AppText>
           <AppText step="body" tone="secondary">
             {t('s.fieldVisits.homeBody')}
+          </AppText>
+        </SurfaceCard>
+      ) : null}
+
+      {assistsVerification ? (
+        <SurfaceCard onPress={() => router.push('/staff/assisted-verification')} accessibilityLabel={t('s.assisted.title')}>
+          <AppText step="section">{t('s.assisted.title')}</AppText>
+          <AppText step="body" tone="secondary">
+            {t('s.assisted.homeBody')}
           </AppText>
         </SurfaceCard>
       ) : null}

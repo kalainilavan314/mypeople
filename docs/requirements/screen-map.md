@@ -84,7 +84,7 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | M02 | Confirm extracted NIC number | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-42 (OCR provider) | `apps/member-mobile/app/(member)/verify/` |  |
 | M03 | Guided liveness capture | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-28, OD-29 (biometrics) | `apps/member-mobile/app/(member)/verify/` |  |
 | M04 | Verification appeal | AI-assisted identity screening (SC-21) | 1–2 | Built (feature-gated) | `apps/member-mobile/app/(member)/verify/appeal.tsx` | Uses `/v1/identity/me/review/appeal`; shows decision reasons and 10-working-day target. |
-| M05 | Assisted verification request | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-04 (assisted verification) | `apps/member-mobile/app/(member)/verify/` |  |
+| M05 | Assisted verification request | AI-assisted identity screening (SC-21) | 1–2 | Built (feature-gated `assisted_verification`; OD-04 recommendation as [ASSUMPTION]) | `apps/member-mobile/app/(member)/verify/assisted.tsx` | Offered on the photo screen when the camera is refused or three photos were flagged, and always on request; no ID data in the request; needs a code-confirmed number |
 | M06 | My Household / எனது குடும்பம் | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` | Verified members only; household ID (`HH-`) with its District, DS and GN; the first adult becomes head when the head leaves |
 | M07 | Add household member | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` | Children as guardian-managed minimum records (first name, relationship, birth year; OD-31 recommendation); adults join only by invitation and describe themselves (OD-30) |
 | M08 | Invite adult member | My Household (SC-22) | 2 | Built | `apps/member-mobile/app/(member)/household/` | Member code or the phone's share sheet; the inviter never sees the invitee's name before they accept |
@@ -112,8 +112,8 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | M30 | Duty roster and shift check-in | Election mode (SC-30) | 2 | Built | `apps/member-mobile/app/(member)/volunteer/assignments.tsx` | Behind `election_roster`; decided: election duties listed with H12 My assignment |
 | M31 | My committees | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/committees/` |  |
 | M32 | Committee space | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/committees/` |  |
-| M33 | Membership renewal | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 (renewal) | `apps/member-mobile/app/(member)/renewal/` |  |
-| M34 | My certificates | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 | `apps/member-mobile/app/(member)/renewal/` |  |
+| M33 | Membership renewal | Renewal and certificates (SC-33) | 2–3 | Built (feature-gated `renewal`; OD-43 recommendation as [ASSUMPTION]) | `apps/member-mobile/app/(member)/renewal/index.tsx` | Contact and area only, never documents (BR-136); notices 30 and 7 days before; 60-day grace, then Inactive with reactivation by confirming |
+| M34 | My certificates | Renewal and certificates (SC-33) | 2–3 | Built (feature-gated `renewal`) | `apps/member-mobile/app/(member)/renewal/certificates.tsx`, `renewal/certificate/[id].tsx`; public check `apps/member-mobile/app/certificate/[token].tsx` | Membership, event-participation and volunteer-service certificates; PDF with a verification QR; never an NIC or passport number |
 | M35 | Alerts and safety | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/alerts/` |  |
 | M36 | Emergency help request | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/alerts/` |  |
 | M37 | Blood donor enrolment | Blood donors (SC-35) | 3 | Blocked: OD-39 (blood donors) | `apps/member-mobile/app/(member)/blood-donors/` |  |
@@ -140,7 +140,7 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | S01 | Staff sign-in and role context | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(auth)/sign-in.tsx`, `apps/member-mobile/app/(member)/staff/_layout.tsx` |  |
 | S02 | Tasks and area dashboard | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/index.tsx` |  |
 | S03 | Member support lookup | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/lookup.tsx` |  |
-| S04 | Assisted verification session | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-04 (assisted verification) | `apps/member-mobile/app/(member)/staff/assisted-verification/` | Assisted verification only; the queue is W01/W02 on the dashboard |
+| S04 | Assisted verification session | AI-assisted identity screening (SC-21) | 1–2 | Built (feature-gated `assisted_verification`; OD-04 recommendation as [ASSUMPTION]) | `apps/member-mobile/app/(member)/staff/assisted-verification/` | Witness checklist must be complete; photos only on the member's phone or an office device, through the evidence vault; the review is decided in W01/W02 by someone other than the witness |
 | S05 | Field case capture | Field operations (SC-32) | 2 | Built | `apps/member-mobile/app/(member)/staff/field-visits/` | Behind `field_visits`; saved on the phone first and sent when online |
 | S06 | Field visit record | Field operations (SC-32) | 2 | Built | `apps/member-mobile/app/(member)/staff/field-visits/` |  |
 | S07 | Offline sync and conflicts | Field operations (SC-32) | 2 | Built | `apps/member-mobile/app/(member)/staff/field-visits/sync.tsx` |  |
@@ -193,7 +193,7 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | D22 | Election mode administration | Election mode (SC-30) | 2 | Built (periods, silence windows, notices; duty roster, polling information and period report have no API yet) | `apps/admin-web/src/app/(staff)/elections/` |  |
 | D23 | Committees and wings administration | Wings and committees (SC-31) | 3 | To build | `apps/admin-web/src/app/(staff)/committees/` |  |
 | D24 | Field operations oversight | Field operations (SC-32) | 2 | Built | `apps/admin-web/src/app/(staff)/field/` | Counts by area and month; visits deleted after 12 months (OD-38) |
-| D25 | Renewals and certificates | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 | `apps/admin-web/src/app/(staff)/renewals/` |  |
+| D25 | Renewals and certificates | Renewal and certificates (SC-33) | 2–3 | Built (feature-gated `renewal`) | `apps/admin-web/src/app/(staff)/renewals/` | Due list by phase with grace periods; issue, revoke and reissue certificates with a reason (PRM-52) |
 | D26 | Disaster alerts and relief logistics | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/admin-web/src/app/(staff)/disaster/` |  |
 | D27 | Blood request desk | Blood donors (SC-35) | 3 | Blocked: OD-39 | `apps/admin-web/src/app/(staff)/blood-requests/` |  |
 | D28 | Livelihood guide content | Livelihood guide (SC-36) | 3 | To build | `apps/admin-web/src/app/(staff)/livelihood/` |  |
