@@ -25,6 +25,7 @@ def test_run_once_coordinates_all_four_subsystems():
         patch("app.modules.community.promises.service.escalate_missed_updates", return_value=2) as mock_missed,
         patch("app.modules.community.townhalls.service.remind", return_value=4),
         patch("app.modules.engagement.field.service.purge", return_value=0),
+        patch("app.modules.engagement.budgeting.service.purge_expired", return_value=0),
         patch(
             "app.modules.messaging.notifications.service.dispatch",
             return_value=Dispatched(sent=5, skipped=2, waiting=0),
@@ -45,6 +46,7 @@ def test_run_once_coordinates_all_four_subsystems():
             "promiseUpdatesMissed": 2,
             "townHallReminders": 4,
             "fieldVisitsPurged": 0,
+            "ballotsPurged": 0,
             "sent": 5,
             "skipped": 2,
             "waiting": 0,

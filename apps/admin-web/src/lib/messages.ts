@@ -358,6 +358,15 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     ta: 'இப்பகுதியிலும் இந்நேரத்திலும் தேர்தல் அமைதிக்காலம் நடைமுறையில் உள்ளது.',
     en: 'An election silence period covers this area and time.',
   },
+  // Participatory budgeting (D19).
+  budgeting_refused: {
+    ta: 'வரவுசெலவு நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The budgeting step was not recorded. Fix the points below and try again.',
+  },
+  already_certified_by_you: {
+    ta: 'இந்த எண்ணிக்கையை நீங்கள் ஏற்கனவே சான்றுறுதிப்படுத்தியுள்ளீர்கள். இரண்டாவது சான்றுறுதி வேறொருவரால் செய்யப்பட வேண்டும்.',
+    en: 'You have already certified this count. The second certification must come from a different person.',
+  },
 };
 
 const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
@@ -1166,6 +1175,191 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'இந்த முறைப்பாடு இன்னும் தீர்மானிக்கப்படவில்லை.',
     en: 'This report has not been decided yet.',
   },
+  // Participatory budgeting (D19): the API's budgeting_refused problems, then the dashboard's own checks.
+  rules_locked: {
+    ta: 'வாக்களிப்பு திட்டமிடப்பட்ட பின் விதிகளை மாற்ற முடியாது.',
+    en: 'The rules cannot change once voting is scheduled.',
+  },
+  ballot_locked: {
+    ta: 'வாக்களிப்பு திட்டமிடப்பட்ட பின் திட்டங்களையும் வாக்குச்சீட்டையும் மாற்ற முடியாது.',
+    en: 'Projects and the ballot cannot change once voting is scheduled.',
+  },
+  closes_before_opens: {
+    ta: 'வாக்களிப்பு முடியும் நேரம் தொடங்கும் நேரத்துக்குப் பின் இருக்க வேண்டும்.',
+    en: 'Voting must close after it opens.',
+  },
+  voting_must_open_after_publication: {
+    ta: 'விதிகள் வெளியிடப்பட்ட பின்னரே வாக்களிப்பு தொடங்க வேண்டும். எதிர்கால நேரம் ஒன்றைத் தெரிவுசெய்யவும்.',
+    en: 'Voting must open after the rules are published. Choose an opening time in the future.',
+  },
+  rules_not_published_before_voting: {
+    ta: 'வாக்களிப்பு தொடங்குவதற்கு முன் விதிகள் வெளியிடப்படவில்லை.',
+    en: 'The rules were not published before voting opens.',
+  },
+  voting_window_passed: {
+    ta: 'வாக்களிப்பு முடியும் நேரம் ஏற்கனவே கடந்துவிட்டது. வாக்களிப்புத் திகதிகளை மாற்றவும்.',
+    en: 'The voting closing time has already passed. Change the voting dates.',
+  },
+  too_few_projects_on_ballot: {
+    ta: 'வாக்களிப்பைத் திட்டமிட குறைந்தது இரண்டு திட்டங்கள் வாக்குச்சீட்டில் இருக்க வேண்டும்.',
+    en: 'At least two projects must be on the ballot to schedule voting.',
+  },
+  max_choices_above_projects: {
+    ta: 'ஒருவர் தெரிவுசெய்யக்கூடிய திட்டங்களின் எண்ணிக்கை வாக்குச்சீட்டிலுள்ள திட்டங்களை விட அதிகமாக இருக்கக்கூடாது.',
+    en: 'Members cannot be allowed to choose more projects than there are on the ballot.',
+  },
+  voting_still_open: {
+    ta: 'வெளியிடப்பட்ட முடிவு நேரம் கடக்கும் வரை வாக்களிப்பை முடிக்க முடியாது.',
+    en: 'Voting can be closed only after the published closing time.',
+  },
+  voting_overlaps_election_silence: {
+    ta: 'வாக்களிப்புக் காலம் இப்பகுதியின் தேர்தல் அமைதிக்காலத்துடன் மோதுகிறது. வேறு திகதிகளைத் தெரிவுசெய்யவும்.',
+    en: 'The voting period overlaps an election silence period for this area. Choose other dates.',
+  },
+  no_projects: {
+    ta: 'மீளாய்வுக்கு அனுப்ப முன் குறைந்தது ஒரு திட்டத்தைச் சேர்க்கவும்.',
+    en: 'Add at least one project before moving to review.',
+  },
+  proposal_not_approved_for_planning: {
+    ta: 'இப்பகுதியில் திட்டமிடலுக்கு அங்கீகரிக்கப்பட்ட முன்மொழிவுகளை மட்டுமே சேர்க்கலாம்; இது ஏற்கனவே சேர்க்கப்பட்டிருக்கலாம்.',
+    en: 'Only a proposal approved for planning in this area can be added, and it may already be in the cycle.',
+  },
+  already_in_cycle: {
+    ta: 'இந்த முன்மொழிவு ஏற்கனவே இச்சுழற்சியில் உள்ளது.',
+    en: 'This proposal is already in the cycle.',
+  },
+  financial_review_required: {
+    ta: 'வாக்குச்சீட்டில் சேர்க்க முன் நிதி மீளாய்வைப் பதிவுசெய்யவும்.',
+    en: 'Record the financial review before putting the project on the ballot.',
+  },
+  pb_legal_review_required: {
+    ta: 'வாக்குச்சீட்டில் சேர்க்க முன் சட்ட மீளாய்வைப் பதிவுசெய்யவும்.',
+    en: 'Record the legal review before putting the project on the ballot.',
+  },
+  voting_not_closed: {
+    ta: 'வாக்களிப்பு முடிந்த பின்னரே எண்ணிக்கையை மீண்டும் நடத்தலாம்.',
+    en: 'The count can be rerun only after voting closes.',
+  },
+  chain_broken: {
+    ta: 'வாக்குச்சீட்டுச் சங்கிலி உடைந்துள்ளது. சான்றுறுதிப்படுத்தல் தடுக்கப்பட்டது; இது தணிக்கைப் பதிவில் உள்ளது.',
+    en: 'The ballot chain is broken. Certification is blocked and the attempt is in the audit log.',
+  },
+  chain_gap: {
+    ta: 'வாக்குச்சீட்டுச் சங்கிலியில் இடைவெளி உள்ளது. சான்றுறுதிப்படுத்தல் தடுக்கப்பட்டது.',
+    en: 'A ballot is missing from the chain. Certification is blocked.',
+  },
+  ballot_altered: {
+    ta: 'ஒரு வாக்குச்சீட்டு மாற்றப்பட்டுள்ளது. சான்றுறுதிப்படுத்தல் தடுக்கப்பட்டது.',
+    en: 'A ballot has been altered. Certification is blocked.',
+  },
+  unknown_choice: {
+    ta: 'வாக்குச்சீட்டில் இல்லாத திட்டம் ஒன்று ஒரு வாக்கில் உள்ளது. சான்றுறுதிப்படுத்தல் தடுக்கப்பட்டது.',
+    en: 'A ballot names a project that is not on the ballot. Certification is blocked.',
+  },
+  count_mismatch: {
+    ta: 'எண்ணிக்கை பங்கேற்புப் பதிவுகளுடனோ முதல் சான்றுறுதியுடனோ பொருந்தவில்லை. சான்றுறுதிப்படுத்தல் தடுக்கப்பட்டது; இது தணிக்கைப் பதிவில் உள்ளது.',
+    en: 'The count does not match the participation records or the first certification. Certification is blocked and the attempt is in the audit log.',
+  },
+  nothing_to_allocate: {
+    ta: 'நிதி வழங்கப்படும் திட்டம் எதுவும் இல்லை.',
+    en: 'No project was funded, so there is nothing to allocate.',
+  },
+  allocations_exceed_budget: {
+    ta: 'ஒதுக்கீடுகள் வரவுசெலவுத் தொகையை மீறுகின்றன.',
+    en: 'The allocations would exceed the budget.',
+  },
+  not_allocated: {
+    ta: 'இத்திட்டத்துக்கு இன்னும் நிதி ஒதுக்கப்படவில்லை.',
+    en: 'This project has no allocation yet.',
+  },
+  spending_exceeds_allocation: {
+    ta: 'செலவு இத்திட்டத்தின் ஒதுக்கீட்டை மீறும்.',
+    en: 'The spending would exceed the allocation of this project.',
+  },
+  project_completed: {
+    ta: 'இத்திட்டம் ஏற்கனவே நிறைவடைந்ததாகப் பதிவுசெய்யப்பட்டுள்ளது.',
+    en: 'This project is already recorded as completed.',
+  },
+  area_level_invalid: {
+    ta: 'சுழற்சி ஒரு மாகாணம், மாவட்டம், பிரதேச செயலகப் பிரிவு அல்லது கிராம சேவகர் பிரிவுக்கானதாக இருக்க வேண்டும்.',
+    en: 'A cycle is for a province, district, DS division or GN division.',
+  },
+  proposal_required: {
+    ta: 'திட்டமிடலுக்கு அங்கீகரிக்கப்பட்ட முன்மொழிவைத் தெரிவுசெய்யவும்.',
+    en: 'Choose a proposal approved for planning.',
+  },
+  fund_kind_required: {
+    ta: 'நிதியின் வகையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the kind of fund.',
+  },
+  fund_source_required: {
+    ta: 'நிதி மூலத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the fund source in Tamil and English.',
+  },
+  budget_invalid: {
+    ta: 'வரவுசெலவுத் தொகையை ரூபாயில் உள்ளிடவும் (பூச்சியத்துக்கு மேல்).',
+    en: 'Enter the budget in rupees (more than zero).',
+  },
+  eligibility_required: {
+    ta: 'யார் வாக்களிக்கலாம் என்பதைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write who may vote in Tamil and English (at least 10 characters).',
+  },
+  max_choices_invalid: {
+    ta: 'ஒருவர் தெரிவுசெய்யக்கூடிய திட்டங்களை 1 முதல் 10 வரை உள்ளிடவும்.',
+    en: 'Enter how many projects each member may choose, from 1 to 10.',
+  },
+  voting_opens_required: {
+    ta: 'வாக்களிப்பு தொடங்கும் திகதியையும் நேரத்தையும் உள்ளிடவும்.',
+    en: 'Enter when voting opens.',
+  },
+  voting_closes_required: {
+    ta: 'வாக்களிப்பு முடியும் திகதியையும் நேரத்தையும் உள்ளிடவும்.',
+    en: 'Enter when voting closes.',
+  },
+  cost_invalid: {
+    ta: 'மதிப்பிடப்பட்ட செலவை ரூபாயில் உள்ளிடவும் (பூச்சியத்துக்கு மேல்).',
+    en: 'Enter the estimated cost in rupees (more than zero).',
+  },
+  review_kind_required: {
+    ta: 'நிதி மீளாய்வா சட்ட மீளாய்வா என்பதைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the financial or the legal review.',
+  },
+  review_reference_required: {
+    ta: 'மீளாய்வின் குறிப்பு இலக்கத்தை உள்ளிடவும்.',
+    en: 'Enter the reference of the review.',
+  },
+  review_note_required: {
+    ta: 'மீளாய்வு கண்டதைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write what the review found in Tamil and English (at least 10 characters).',
+  },
+  move_required: {
+    ta: 'அடுத்த படியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the next step.',
+  },
+  amount_invalid: {
+    ta: 'தொகையை ரூபாயில் உள்ளிடவும் (பூச்சியத்துக்கு மேல்).',
+    en: 'Enter the amount in rupees (more than zero).',
+  },
+  spent_on_required: {
+    ta: 'செலவிடப்பட்ட திகதியை உள்ளிடவும்.',
+    en: 'Enter the date it was spent.',
+  },
+  spending_description_required: {
+    ta: 'செலவு எதற்கு என்பதைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write what the spending paid for in Tamil and English.',
+  },
+  evidence_ref_required: {
+    ta: 'சான்றின் குறிப்பை உள்ளிடவும் (குறைந்தது 3 எழுத்துகள்).',
+    en: 'Enter the evidence reference (at least 3 characters).',
+  },
+  completed_on_required: {
+    ta: 'நிறைவடைந்த திகதியை உள்ளிடவும்.',
+    en: 'Enter the completion date.',
+  },
+  completion_note_required: {
+    ta: 'நிறைவுக் குறிப்பைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write the completion note in Tamil and English (at least 10 characters).',
+  },
 };
 
 /** Problems that name a question or lesson by its number, e.g. "options_required:2". */
@@ -1790,6 +1984,71 @@ const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
   misinfo_appeal_changed: {
     ta: 'முடிவு மாற்றப்பட்டது.',
     en: 'Outcome changed.',
+  },
+  // Participatory budgeting (D19).
+  budget_cycle_created: {
+    ta: 'சுழற்சி வரைவாகச் சேமிக்கப்பட்டது. விதிகள் வெளியிடப்படும் வரை உறுப்பினர்களுக்குத் தெரியாது.',
+    en: 'Cycle saved as a draft. Members see nothing until the rules are published.',
+  },
+  budget_rules_saved: {
+    ta: 'விதிகள் சேமிக்கப்பட்டன.',
+    en: 'Rules saved.',
+  },
+  budget_moved_proposal_intake: {
+    ta: 'விதிகள் வெளியிடப்பட்டன. திட்டங்களைச் சேர்க்கலாம்.',
+    en: 'Rules published. Projects can now be added.',
+  },
+  budget_moved_review: {
+    ta: 'சுழற்சி மீளாய்வுக்கு அனுப்பப்பட்டது.',
+    en: 'The cycle moved to review.',
+  },
+  budget_moved_voting_open: {
+    ta: 'வாக்களிப்பு திட்டமிடப்பட்டது. விதிகளும் வாக்குச்சீட்டும் இப்போது பூட்டப்பட்டுள்ளன.',
+    en: 'Voting scheduled. The rules and the ballot are now locked.',
+  },
+  budget_moved_voting_closed: {
+    ta: 'வாக்களிப்பு முடிந்தது. சான்றுறுதிப்படுத்துபவர்களுக்கு அறிவிக்கப்பட்டது.',
+    en: 'Voting closed. The certifiers have been asked to certify the count.',
+  },
+  budget_moved_cancelled: {
+    ta: 'சுழற்சி இரத்துச்செய்யப்பட்டது. காரணம் உறுப்பினர்களுக்குக் காட்டப்படும்.',
+    en: 'Cycle cancelled. Members see the reason.',
+  },
+  budget_project_added: {
+    ta: 'திட்டம் சேர்க்கப்பட்டது. வாக்குச்சீட்டில் சேர்க்க முன் நிதி மற்றும் சட்ட மீளாய்வுகளைப் பதிவுசெய்யவும்.',
+    en: 'Project added. Record its financial and legal reviews before putting it on the ballot.',
+  },
+  budget_project_saved: {
+    ta: 'திட்டம் சேமிக்கப்பட்டது.',
+    en: 'Project saved.',
+  },
+  budget_review_recorded: {
+    ta: 'மீளாய்வு பதிவுசெய்யப்பட்டது.',
+    en: 'Review recorded.',
+  },
+  budget_project_on_ballot: {
+    ta: 'திட்டம் வாக்குச்சீட்டில் சேர்க்கப்பட்டது.',
+    en: 'Project put on the ballot.',
+  },
+  budget_project_off_ballot: {
+    ta: 'திட்டம் வாக்குச்சீட்டிலிருந்து நீக்கப்பட்டது.',
+    en: 'Project taken off the ballot.',
+  },
+  budget_certified: {
+    ta: 'சான்றுறுதி பதிவுசெய்யப்பட்டது. இரண்டு பேர் சான்றுறுதிப்படுத்திய பின் முடிவுகள் வெளியிடப்படும்.',
+    en: 'Certification recorded. The results are published once two people have certified.',
+  },
+  budget_allocated: {
+    ta: 'ஒதுக்கீடுகள் நிதிப் பதிவுகளில் பதிவுசெய்யப்பட்டன.',
+    en: 'Allocations recorded in the finance records.',
+  },
+  budget_spending_recorded: {
+    ta: 'செலவு பதிவுசெய்யப்பட்டது.',
+    en: 'Spending recorded.',
+  },
+  budget_project_completed: {
+    ta: 'திட்ட நிறைவு பதிவுசெய்யப்பட்டது.',
+    en: 'Project completion recorded.',
   },
 };
 

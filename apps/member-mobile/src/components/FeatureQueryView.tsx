@@ -20,7 +20,8 @@ export type ClosableFeature =
   | 'support'
   | 'townHalls'
   | 'election'
-  | 'official';
+  | 'official'
+  | 'budgeting';
 
 /**
  * QueryView for a module the team can switch off. While it is off the API answers

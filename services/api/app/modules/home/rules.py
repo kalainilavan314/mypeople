@@ -27,8 +27,8 @@ EVENT_SOON = timedelta(hours=48)
 QUICK_ACTIONS = ("report_issue", "volunteer", "my_area", "community")
 
 # FR-HOME-012, 013: the services in this order (the Promise Tracker, FR-PRM-007, and Community
-# Support, M11, follow the eight of Phase 1). The party fund follows ideas, surveys and
-# learning and is never styled more prominently (BR-048).
+# Support, M11, follow the eight of Phase 1; participatory budgeting, M24, follows from Phase 3).
+# The party fund follows ideas, surveys and learning and is never styled more prominently (BR-048).
 HUB_SERVICES = (
     "ideas",
     "surveys",
@@ -40,6 +40,7 @@ HUB_SERVICES = (
     "area_projects",
     "promises",
     "support",
+    "budgeting",
 )
 
 # Services whose routes sit behind a v1.1 module switch (FR-ARCH-011). While the switch is off the
@@ -59,6 +60,7 @@ GATED_BY_MODULE = {
     "invite": "invitations",
     "promises": "promises",
     "support": "community_support",
+    "budgeting": "participatory_budgeting",
 }
 
 # M18: the Promise Tracker is also shown on Home itself, with a count of the promises made for the
@@ -72,6 +74,8 @@ PROMISE_TRACKER = "promises"
 # why it is not official yet.
 OPEN_TO_EVERYONE = frozenset(
     {"my_area", "events", "card", "gallery", "learning", "local_reports", "area_projects", "promises", "support"}
+    # M24: anyone may read a budgeting cycle; the ballot checks eligibility itself (FR-PBG-003).
+    | {"budgeting"}
 )
 
 

@@ -485,6 +485,16 @@ TEMPLATES: dict[str, Template] = {
         "promise",
         action_required=True,
     ),
+    # Participatory budgeting (FR-PBG-006): voting closed, two people must certify the recount.
+    "pb_certification_needed": Template(
+        "review",
+        "A budgeting count is waiting for certification",
+        "ஒரு பங்கேற்பு வரவுசெலவு எண்ணிக்கை சான்றுறுதிப்படுத்தலுக்குக் காத்திருக்கிறது",
+        "Voting has closed. Open budgeting administration to rerun the count and certify it.",
+        "வாக்களிப்பு முடிந்துவிட்டது. எண்ணிக்கையை மீண்டும் சரிபார்த்துச் சான்றுறுதிப்படுத்த வரவுசெலவு நிர்வாகத்தைத் திறக்கவும்.",
+        "pb_cycle",
+        action_required=True,
+    ),
     "townhall_cancelled": Template(
         "events",
         "A town hall you planned to join was cancelled",

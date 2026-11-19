@@ -92,6 +92,11 @@ export default function MemberLayout() {
       <Stack.Screen name="town-halls/[id]" options={{ title: t('m.townHalls.sessionTitle') }} />
       <Stack.Screen name="official/index" options={{ title: t('m.official.title') }} />
       <Stack.Screen name="official/report" options={{ title: t('m.official.reportTitle') }} />
+      <Stack.Screen name="budgeting/index" options={{ title: t('m.budgeting.title') }} />
+      <Stack.Screen name="budgeting/[id]" options={{ title: t('m.budgeting.cycleTitle') }} />
+      <Stack.Screen name="budgeting/[id]/ballot" options={{ title: t('m.budgeting.ballotTitle') }} />
+      <Stack.Screen name="budgeting/[id]/results" options={{ title: t('m.budgeting.resultsTitle') }} />
+      <Stack.Screen name="budgeting/projects/[id]" options={{ title: t('m.budgeting.projectTitle') }} />
       <Stack.Screen name="staff" options={{ headerShown: false }} />
     </Stack>
   );

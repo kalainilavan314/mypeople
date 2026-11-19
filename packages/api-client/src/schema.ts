@@ -5585,6 +5585,381 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/pb/cycles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Cycles
+         * @description M24: published cycles, the member's own areas first. Drafts are never shown.
+         */
+        get: operations["list_cycles_v1_pb_cycles_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/cycles/{cycle_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Cycle
+         * @description M24: budget, fund source, dates, eligibility rules and the projects on the ballot; whether this
+         *     member may vote (with the reason if not) and whether they already took part.
+         */
+        get: operations["read_cycle_v1_pb_cycles__cycle_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/projects/{project_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Project
+         * @description M25: a ballot project with its estimated cost and recorded reviews; once funded, spending and
+         *     completion evidence.
+         */
+        get: operations["read_project_v1_pb_projects__project_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/cycles/{cycle_id}/ballot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cast Ballot
+         * @description M26: one private ballot per eligible member per cycle (422 already_voted after that). The
+         *     receipt code is shown once and never stored; nothing here is logged with the member.
+         */
+        post: operations["cast_ballot_v1_pb_cycles__cycle_id__ballot_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/cycles/{cycle_id}/receipt-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check Receipt
+         * @description FR-PBG-005: confirms a ballot with this receipt was counted, without revealing its choice.
+         */
+        post: operations["check_receipt_v1_pb_cycles__cycle_id__receipt_check_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/cycles/{cycle_id}/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Results
+         * @description M27: certified totals only; 422 results_not_certified before two people certify.
+         */
+        get: operations["read_results_v1_pb_cycles__cycle_id__results_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/manage/cycles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Managed */
+        get: operations["list_managed_v1_pb_manage_cycles_get"];
+        put?: never;
+        /** Create Cycle */
+        post: operations["create_cycle_v1_pb_manage_cycles_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/manage/cycles/{cycle_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Managed */
+        get: operations["read_managed_v1_pb_manage_cycles__cycle_id__get"];
+        /**
+         * Update Cycle
+         * @description BR-121: only before voting is scheduled; after publication a change publishes the rules again.
+         */
+        put: operations["update_cycle_v1_pb_manage_cycles__cycle_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/manage/cycles/{cycle_id}/move": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Move Cycle
+         * @description Publish the rules (to proposal_intake), review, schedule voting (rules lock), close voting once
+         *     the closing time has passed, or cancel with a reason before voting.
+         */
+        post: operations["move_cycle_v1_pb_manage_cycles__cycle_id__move_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/manage/cycles/{cycle_id}/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Candidates
+         * @description FR-PBG-002: development proposals approved for planning in the cycle's area, not yet added.
+         */
+        get: operations["list_candidates_v1_pb_manage_cycles__cycle_id__candidates_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/manage/cycles/{cycle_id}/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Project */
+        post: operations["add_project_v1_pb_manage_cycles__cycle_id__projects_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/manage/projects/{project_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update Project
+         * @description A changed estimated cost clears the financial review and takes the project off the ballot.
+         */
+        put: operations["update_project_v1_pb_manage_projects__project_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/manage/projects/{project_id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Review */
+        post: operations["record_review_v1_pb_manage_projects__project_id__reviews_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/manage/projects/{project_id}/ballot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Place On Ballot
+         * @description FR-PBG-002: refused (financial_review_required, legal_review_required) until both are recorded.
+         */
+        post: operations["place_on_ballot_v1_pb_manage_projects__project_id__ballot_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/manage/cycles/{cycle_id}/recount": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Recount
+         * @description FR-PBG-006: replays the hash chain and counts again; only after voting closes.
+         */
+        get: operations["recount_v1_pb_manage_cycles__cycle_id__recount_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/manage/cycles/{cycle_id}/certify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Certify
+         * @description FR-PBG-006: two different people certify the same recount (403 already_certified_by_you);
+         *     a mismatch blocks certification (422 count_mismatch, chain_broken).
+         */
+        post: operations["certify_v1_pb_manage_cycles__cycle_id__certify_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/manage/cycles/{cycle_id}/allocations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Allocate
+         * @description FR-PBG-008: the Treasurer records each funded project's allocation in the finance records.
+         */
+        post: operations["allocate_v1_pb_manage_cycles__cycle_id__allocations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/manage/projects/{project_id}/expenditures": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record Expenditure
+         * @description Spending on a funded project, with evidence; never beyond its allocation.
+         */
+        post: operations["record_expenditure_v1_pb_manage_projects__project_id__expenditures_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pb/manage/projects/{project_id}/completion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Completion */
+        post: operations["record_completion_v1_pb_manage_projects__project_id__completion_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/home": {
         parameters: {
             query?: never;
@@ -13563,6 +13938,772 @@ export interface components {
             resetToken: string;
             /** Newpassword */
             newPassword: string;
+        };
+        /** PbAreaIn */
+        PbAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "province" | "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+        };
+        /** PbBallotIn */
+        PbBallotIn: {
+            /**
+             * Choices
+             * @description Project ids, at most the cycle's max choices
+             */
+            choices: string[];
+        };
+        /** PbBallotPlacementIn */
+        PbBallotPlacementIn: {
+            /** Onballot */
+            onBallot: boolean;
+        };
+        /** PbCandidateOut */
+        PbCandidateOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Proposalref */
+            proposalRef: string;
+            /** Title */
+            title: string;
+            /** Category */
+            category: string;
+            /** Areakey */
+            areaKey: string;
+            /** Costestimate */
+            costEstimate: string | null;
+        };
+        /**
+         * PbCertificationOut
+         * @description Who certified is kept for the audit, not published; members see that two people did, and when.
+         */
+        PbCertificationOut: {
+            /**
+             * Certifiedat
+             * Format: date-time
+             */
+            certifiedAt: string;
+            /** Ballotcount */
+            ballotCount: number;
+            /** Chainhead */
+            chainHead: string;
+        };
+        /** PbCompletionIn */
+        PbCompletionIn: {
+            /**
+             * Completedon
+             * Format: date
+             */
+            completedOn: string;
+            /**
+             * Evidenceref
+             * @description Completion certificate, photos or inspection report
+             */
+            evidenceRef: string;
+            /** Noteen */
+            noteEn: string;
+            /** Noteta */
+            noteTa: string;
+        };
+        /** PbCompletionOut */
+        PbCompletionOut: {
+            /**
+             * Completedon
+             * Format: date
+             */
+            completedOn: string;
+            /** Evidenceref */
+            evidenceRef: string;
+            /** Noteen */
+            noteEn: string | null;
+            /** Noteta */
+            noteTa: string | null;
+        };
+        /** PbCycleIn */
+        PbCycleIn: {
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /**
+             * Fundkind
+             * @enum {string}
+             */
+            fundKind: "party_fund" | "community_fund";
+            /**
+             * Fundsourceen
+             * @description The lawful fund that pays (OD-25)
+             */
+            fundSourceEn: string;
+            /** Fundsourceta */
+            fundSourceTa: string;
+            /**
+             * Budget
+             * @description Rupees
+             */
+            budget: number | string;
+            /**
+             * Eligibilityen
+             * @description Who may vote, as published to members
+             */
+            eligibilityEn: string;
+            /** Eligibilityta */
+            eligibilityTa: string;
+            /**
+             * Maxchoices
+             * @description How many projects each member may choose
+             */
+            maxChoices: number;
+            /**
+             * Votingopensat
+             * Format: date-time
+             */
+            votingOpensAt: string;
+            /**
+             * Votingclosesat
+             * Format: date-time
+             */
+            votingClosesAt: string;
+            /** @description Required when creating; a cycle's area never changes */
+            area?: components["schemas"]["PbAreaIn"] | null;
+        };
+        /**
+         * PbCycleRulesOut
+         * @description FR-PBG-001: what is published before voting opens and never changes during voting.
+         */
+        PbCycleRulesOut: {
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Fundsourceen */
+            fundSourceEn: string;
+            /** Fundsourceta */
+            fundSourceTa: string;
+            /** Eligibilityen */
+            eligibilityEn: string;
+            /** Eligibilityta */
+            eligibilityTa: string;
+            /** Minage */
+            minAge: number;
+            /** Maxchoices */
+            maxChoices: number;
+            /** Rulespublishedat */
+            rulesPublishedAt: string | null;
+            /**
+             * Statusreason
+             * @description Why a cycle was cancelled
+             */
+            statusReason: string | null;
+        };
+        /** PbCycleSummaryOut */
+        PbCycleSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Cycleref */
+            cycleRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Fundkind
+             * @description OD-25: a party fund or a community fund; never a public budget (FR-PBG-009)
+             * @enum {string}
+             */
+            fundKind: "party_fund" | "community_fund";
+            /** Budget */
+            budget: string;
+            /** Currency */
+            currency: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Votingopensat
+             * Format: date-time
+             */
+            votingOpensAt: string;
+            /**
+             * Votingclosesat
+             * Format: date-time
+             */
+            votingClosesAt: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "proposal_intake" | "review" | "voting_open" | "voting_closed" | "results_certified" | "allocated" | "implemented" | "cancelled";
+            /**
+             * Phase
+             * @enum {string}
+             */
+            phase: "upcoming" | "voting" | "counting" | "results" | "cancelled";
+        };
+        /** PbExpenditureIn */
+        PbExpenditureIn: {
+            /** Amount */
+            amount: number | string;
+            /**
+             * Spenton
+             * Format: date
+             */
+            spentOn: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /**
+             * Evidenceref
+             * @description Invoice, payment voucher or bank reference
+             */
+            evidenceRef: string;
+        };
+        /** PbExpenditureOut */
+        PbExpenditureOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Projectid
+             * Format: uuid
+             */
+            projectId: string;
+            /** Amount */
+            amount: string;
+            /**
+             * Spenton
+             * Format: date
+             */
+            spentOn: string;
+            /** Descriptionen */
+            descriptionEn: string;
+            /** Descriptionta */
+            descriptionTa: string;
+            /** Evidenceref */
+            evidenceRef: string;
+        };
+        /** PbMemberCycleOut */
+        PbMemberCycleOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Cycleref */
+            cycleRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Fundkind
+             * @description OD-25: a party fund or a community fund; never a public budget (FR-PBG-009)
+             * @enum {string}
+             */
+            fundKind: "party_fund" | "community_fund";
+            /** Budget */
+            budget: string;
+            /** Currency */
+            currency: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Votingopensat
+             * Format: date-time
+             */
+            votingOpensAt: string;
+            /**
+             * Votingclosesat
+             * Format: date-time
+             */
+            votingClosesAt: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "proposal_intake" | "review" | "voting_open" | "voting_closed" | "results_certified" | "allocated" | "implemented" | "cancelled";
+            /**
+             * Phase
+             * @enum {string}
+             */
+            phase: "upcoming" | "voting" | "counting" | "results" | "cancelled";
+            rules: components["schemas"]["PbCycleRulesOut"];
+            /**
+             * Projects
+             * @description Only projects on the ballot
+             */
+            projects: components["schemas"]["PbProjectSummaryOut"][];
+            /** Inmyarea */
+            inMyArea: boolean;
+            /**
+             * Canvote
+             * @description Eligible and not voted yet; checked again when the ballot is cast
+             */
+            canVote: boolean;
+            /** Ineligiblereason */
+            ineligibleReason: ("identity_not_verified" | "membership_not_active" | "age_not_recorded" | "under_voting_age" | "outside_cycle_area") | null;
+            /**
+             * Participatedon
+             * @description The day the member took part; their choice is never shown
+             */
+            participatedOn: string | null;
+        };
+        /** PbMemberCycleSummaryOut */
+        PbMemberCycleSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Cycleref */
+            cycleRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Fundkind
+             * @description OD-25: a party fund or a community fund; never a public budget (FR-PBG-009)
+             * @enum {string}
+             */
+            fundKind: "party_fund" | "community_fund";
+            /** Budget */
+            budget: string;
+            /** Currency */
+            currency: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Votingopensat
+             * Format: date-time
+             */
+            votingOpensAt: string;
+            /**
+             * Votingclosesat
+             * Format: date-time
+             */
+            votingClosesAt: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "proposal_intake" | "review" | "voting_open" | "voting_closed" | "results_certified" | "allocated" | "implemented" | "cancelled";
+            /**
+             * Phase
+             * @enum {string}
+             */
+            phase: "upcoming" | "voting" | "counting" | "results" | "cancelled";
+            /** Inmyarea */
+            inMyArea: boolean;
+        };
+        /** PbMemberResultsOut */
+        PbMemberResultsOut: {
+            cycle: components["schemas"]["PbCycleSummaryOut"];
+            /** Ballots */
+            ballots: number;
+            /** Eligiblecount */
+            eligibleCount: number | null;
+            /** Countsshown */
+            countsShown: boolean;
+            /** Budget */
+            budget: string;
+            /** Allocatedtotal */
+            allocatedTotal: string;
+            /** Rows */
+            rows: components["schemas"]["PbResultRowOut"][];
+            /** Certifications */
+            certifications: components["schemas"]["PbCertificationOut"][];
+        };
+        /** PbMoveIn */
+        PbMoveIn: {
+            /**
+             * To
+             * @enum {string}
+             */
+            to: "proposal_intake" | "review" | "voting_open" | "voting_closed" | "cancelled";
+            /**
+             * Reason
+             * @description Required to cancel (10 characters or more)
+             */
+            reason?: string | null;
+        };
+        /** PbProjectDetailOut */
+        PbProjectDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Proposalref */
+            proposalRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /** Category */
+            category: string;
+            /** Areakey */
+            areaKey: string;
+            /** Estimatedcost */
+            estimatedCost: string;
+            /**
+             * Cycleid
+             * Format: uuid
+             */
+            cycleId: string;
+            /** Cycleref */
+            cycleRef: string;
+            /** Cycletitleen */
+            cycleTitleEn: string;
+            /** Cycletitleta */
+            cycleTitleTa: string;
+            /**
+             * Problem
+             * @description From the development proposal, in the author's words
+             */
+            problem: string;
+            /** Solution */
+            solution: string;
+            /** Benefit */
+            benefit: string;
+            financialReview: components["schemas"]["PbReviewOut"] | null;
+            legalReview: components["schemas"]["PbReviewOut"] | null;
+            /** Onballot */
+            onBallot: boolean;
+            /**
+             * Votes
+             * @description Certified total; null before certification or when too few ballots to show
+             */
+            votes: number | null;
+            /** Rank */
+            rank: number | null;
+            /** Funded */
+            funded: boolean | null;
+            /** Allocated */
+            allocated: string | null;
+            /** Spent */
+            spent: string;
+            /** Expenditures */
+            expenditures: components["schemas"]["PbExpenditureOut"][];
+            completion: components["schemas"]["PbCompletionOut"] | null;
+        };
+        /** PbProjectIn */
+        PbProjectIn: {
+            /**
+             * Proposalid
+             * @description Required when adding; an approved-for-planning proposal
+             */
+            proposalId?: string | null;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /** Estimatedcost */
+            estimatedCost: number | string;
+        };
+        /** PbProjectSummaryOut */
+        PbProjectSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Proposalref */
+            proposalRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /** Category */
+            category: string;
+            /** Areakey */
+            areaKey: string;
+            /** Estimatedcost */
+            estimatedCost: string;
+        };
+        /** PbProjectTotalOut */
+        PbProjectTotalOut: {
+            /**
+             * Projectid
+             * Format: uuid
+             */
+            projectId: string;
+            /** Proposalref */
+            proposalRef: string;
+            /** Votes */
+            votes: number;
+        };
+        /** PbReceiptCheckIn */
+        PbReceiptCheckIn: {
+            /** Receiptcode */
+            receiptCode: string;
+        };
+        /** PbReceiptCheckOut */
+        PbReceiptCheckOut: {
+            /**
+             * Counted
+             * @description A ballot with this receipt is in the cycle's counted chain
+             */
+            counted: boolean;
+            /**
+             * Certified
+             * @description And two people have certified that chain's totals
+             */
+            certified: boolean;
+        };
+        /**
+         * PbReceiptOut
+         * @description Shown once. The code is never stored: keep it to check later that the ballot was counted.
+         */
+        PbReceiptOut: {
+            /** Receiptcode */
+            receiptCode: string;
+            /**
+             * Participatedon
+             * Format: date
+             */
+            participatedOn: string;
+        };
+        /** PbRecountOut */
+        PbRecountOut: {
+            /** Chainvalid */
+            chainValid: boolean;
+            /** Problem */
+            problem: string | null;
+            /** Ballots */
+            ballots: number;
+            /** Participation */
+            participation: number;
+            /** Chainhead */
+            chainHead: string;
+            /**
+             * Matchescertified
+             * @description Null before the first certification
+             */
+            matchesCertified: boolean | null;
+            /** Totals */
+            totals: components["schemas"]["PbProjectTotalOut"][];
+        };
+        /** PbResultRowOut */
+        PbResultRowOut: {
+            project: components["schemas"]["PbProjectSummaryOut"];
+            /**
+             * Votes
+             * @description Null when too few ballots were cast to show counts safely
+             */
+            votes: number | null;
+            /** Rank */
+            rank: number;
+            /** Funded */
+            funded: boolean;
+            /** Allocated */
+            allocated: string | null;
+            /** Spent */
+            spent: string;
+            /** Completedon */
+            completedOn: string | null;
+        };
+        /** PbReviewIn */
+        PbReviewIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "financial" | "legal";
+            /**
+             * Reference
+             * @description The review's document or file reference
+             */
+            reference: string;
+            /** Noteen */
+            noteEn: string;
+            /** Noteta */
+            noteTa: string;
+        };
+        /** PbReviewOut */
+        PbReviewOut: {
+            /** Reference */
+            reference: string;
+            /** Noteen */
+            noteEn: string;
+            /** Noteta */
+            noteTa: string;
+            /**
+             * Recordedat
+             * Format: date-time
+             */
+            recordedAt: string;
+        };
+        /** PbStaffCycleOut */
+        PbStaffCycleOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Cycleref */
+            cycleRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Fundkind
+             * @description OD-25: a party fund or a community fund; never a public budget (FR-PBG-009)
+             * @enum {string}
+             */
+            fundKind: "party_fund" | "community_fund";
+            /** Budget */
+            budget: string;
+            /** Currency */
+            currency: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Votingopensat
+             * Format: date-time
+             */
+            votingOpensAt: string;
+            /**
+             * Votingclosesat
+             * Format: date-time
+             */
+            votingClosesAt: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "proposal_intake" | "review" | "voting_open" | "voting_closed" | "results_certified" | "allocated" | "implemented" | "cancelled";
+            /**
+             * Phase
+             * @enum {string}
+             */
+            phase: "upcoming" | "voting" | "counting" | "results" | "cancelled";
+            rules: components["schemas"]["PbCycleRulesOut"];
+            /** Areapath */
+            areaPath: string[];
+            /** Eligiblecount */
+            eligibleCount: number | null;
+            /** Projects */
+            projects: components["schemas"]["PbStaffProjectOut"][];
+            /**
+             * Participation
+             * @description How many took part so far; never who, never a running total per project
+             */
+            participation: number;
+            /** Ballots */
+            ballots: number;
+            /** Certifications */
+            certifications: components["schemas"]["PbCertificationOut"][];
+            /** Allocatedtotal */
+            allocatedTotal: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /** PbStaffProjectOut */
+        PbStaffProjectOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Proposalref */
+            proposalRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Summaryen */
+            summaryEn: string;
+            /** Summaryta */
+            summaryTa: string;
+            /** Category */
+            category: string;
+            /** Areakey */
+            areaKey: string;
+            /** Estimatedcost */
+            estimatedCost: string;
+            /**
+             * Cycleid
+             * Format: uuid
+             */
+            cycleId: string;
+            /** Cycleref */
+            cycleRef: string;
+            /** Cycletitleen */
+            cycleTitleEn: string;
+            /** Cycletitleta */
+            cycleTitleTa: string;
+            /**
+             * Problem
+             * @description From the development proposal, in the author's words
+             */
+            problem: string;
+            /** Solution */
+            solution: string;
+            /** Benefit */
+            benefit: string;
+            financialReview: components["schemas"]["PbReviewOut"] | null;
+            legalReview: components["schemas"]["PbReviewOut"] | null;
+            /** Onballot */
+            onBallot: boolean;
+            /**
+             * Votes
+             * @description Certified total; null before certification or when too few ballots to show
+             */
+            votes: number | null;
+            /** Rank */
+            rank: number | null;
+            /** Funded */
+            funded: boolean | null;
+            /** Allocated */
+            allocated: string | null;
+            /** Spent */
+            spent: string;
+            /** Expenditures */
+            expenditures: components["schemas"]["PbExpenditureOut"][];
+            completion: components["schemas"]["PbCompletionOut"] | null;
+            /**
+             * Proposalid
+             * Format: uuid
+             */
+            proposalId: string;
         };
         /**
          * PendingAdditionOut
@@ -29440,6 +30581,677 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StaffMisinfoReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_cycles_v1_pb_cycles_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbMemberCycleSummaryOut"][];
+                };
+            };
+        };
+    };
+    read_cycle_v1_pb_cycles__cycle_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cycle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbMemberCycleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_project_v1_pb_projects__project_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbProjectDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cast_ballot_v1_pb_cycles__cycle_id__ballot_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cycle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PbBallotIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbReceiptOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    check_receipt_v1_pb_cycles__cycle_id__receipt_check_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cycle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PbReceiptCheckIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbReceiptCheckOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_results_v1_pb_cycles__cycle_id__results_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cycle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbMemberResultsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_managed_v1_pb_manage_cycles_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbCycleSummaryOut"][];
+                };
+            };
+        };
+    };
+    create_cycle_v1_pb_manage_cycles_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PbCycleIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbStaffCycleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_managed_v1_pb_manage_cycles__cycle_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cycle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbStaffCycleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_cycle_v1_pb_manage_cycles__cycle_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cycle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PbCycleIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbStaffCycleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    move_cycle_v1_pb_manage_cycles__cycle_id__move_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cycle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PbMoveIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbStaffCycleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_candidates_v1_pb_manage_cycles__cycle_id__candidates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cycle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbCandidateOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_project_v1_pb_manage_cycles__cycle_id__projects_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cycle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PbProjectIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbStaffCycleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_project_v1_pb_manage_projects__project_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PbProjectIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbStaffCycleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_review_v1_pb_manage_projects__project_id__reviews_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PbReviewIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbStaffCycleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    place_on_ballot_v1_pb_manage_projects__project_id__ballot_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PbBallotPlacementIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbStaffCycleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    recount_v1_pb_manage_cycles__cycle_id__recount_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cycle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbRecountOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    certify_v1_pb_manage_cycles__cycle_id__certify_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cycle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbStaffCycleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    allocate_v1_pb_manage_cycles__cycle_id__allocations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cycle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbStaffCycleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_expenditure_v1_pb_manage_projects__project_id__expenditures_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PbExpenditureIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbExpenditureOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_completion_v1_pb_manage_projects__project_id__completion_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PbCompletionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PbStaffCycleOut"];
                 };
             };
             /** @description Validation Error */
