@@ -113,6 +113,8 @@ DECISIONS: dict[str, DecisionDefinition] = {
 # require the policy needed to receive, retain, assess and reconcile funds.
 FEATURE_POLICY_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "community_finance": ("FIN-01", "FIN-02", "FIN-03", "FIN-05"),
+    # GOV-02: assisted verification uses only an approved workflow (OD-04).
+    "assisted_verification": ("GOV-02",),
 }
 
 

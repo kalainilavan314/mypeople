@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings
 from app.integrations.push import NoPush
 from app.modules.messaging.notifications.service import Dispatched
+from app.modules.membership.renewal.service import RenewalRun
 from app.tasks.notifications import check, dry_run, main, run_once
 
 
@@ -25,6 +26,8 @@ def test_run_once_coordinates_all_four_subsystems():
         patch("app.modules.community.promises.service.escalate_missed_updates", return_value=2) as mock_missed,
         patch("app.modules.community.townhalls.service.remind", return_value=4),
         patch("app.modules.engagement.field.service.purge", return_value=0),
+        patch("app.modules.membership.renewal.service.run", return_value=RenewalRun(opened=2, notices=1, lapsed=0)),
+        patch("app.modules.membership.certificates.service.purge_checks", return_value=3),
         patch(
             "app.modules.messaging.notifications.service.dispatch",
             return_value=Dispatched(sent=5, skipped=2, waiting=0),
@@ -45,6 +48,10 @@ def test_run_once_coordinates_all_four_subsystems():
             "promiseUpdatesMissed": 2,
             "townHallReminders": 4,
             "fieldVisitsPurged": 0,
+            "renewalCyclesOpened": 2,
+            "renewalNotices": 1,
+            "renewalsLapsed": 0,
+            "certificateChecksPurged": 3,
             "sent": 5,
             "skipped": 2,
             "waiting": 0,

@@ -40,6 +40,7 @@ HUB_SERVICES = (
     "area_projects",
     "promises",
     "support",
+    "renewal",
 )
 
 # Services whose routes sit behind a v1.1 module switch (FR-ARCH-011). While the switch is off the
@@ -59,6 +60,7 @@ GATED_BY_MODULE = {
     "invite": "invitations",
     "promises": "promises",
     "support": "community_support",
+    "renewal": "renewal",
 }
 
 # M18: the Promise Tracker is also shown on Home itself, with a count of the promises made for the
@@ -71,7 +73,9 @@ PROMISE_TRACKER = "promises"
 # wait for a Verified identity and an Active membership. The card itself is open: it explains
 # why it is not official yet.
 OPEN_TO_EVERYONE = frozenset(
-    {"my_area", "events", "card", "gallery", "learning", "local_reports", "area_projects", "promises", "support"}
+    {"my_area", "events", "card", "gallery", "learning", "local_reports", "area_projects", "promises", "support",
+     # M33, M34: a lapsed member reaches renewal to reactivate; the screen explains what applies to whom.
+     "renewal"}
 )
 
 

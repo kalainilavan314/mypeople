@@ -8,7 +8,9 @@ Jobs performed per cycle:
 2. Escalate overdue photo removal requests (> 18h) to Tier 5 reviewers.
 3. Alert the next tier once about each case stage past its time limit (FR-WEB-028), mark
    published promises past their due date Delayed (FR-PRM-009), and tell the publishers once when
-   a Delayed promise's 10 working days for an update pass without one.
+   a Delayed promise's 10 working days for an update pass without one. Once the renewal module is on,
+   open yearly renewal cycles, send the 30- and 7-day notices and lapse memberships whose 60-day grace
+   period ended (FR-RNW-002, OD-43); remove certificate-check rate-limit rows older than an hour.
 4. Dispatch pending push notifications respecting quiet hours and preferences.
 
 Concurrency & Safety:
@@ -38,6 +40,8 @@ from app.modules.community.promises import service as promises
 from app.modules.community.townhalls import service as townhalls
 from app.modules.engagement.field import service as field_visits
 from app.modules.content.gallery import service as gallery
+from app.modules.membership.certificates import service as certificates
+from app.modules.membership.renewal import service as renewal
 from app.modules.messaging.broadcasts import service as broadcasts
 from app.modules.messaging.notifications import service as notifications
 
@@ -63,6 +67,8 @@ def run_once(db: Session, push: PushSender, now: datetime | None = None) -> dict
     promise_updates_missed = promises.escalate_missed_updates(db, moment)
     townhall_reminders = townhalls.remind(db, moment)
     field_visits_purged = field_visits.purge(db, moment)
+    renewals = renewal.run(db, moment)
+    certificate_checks_purged = certificates.purge_checks(db)
     pushed = notifications.dispatch(db, push, moment)
     return {
         "broadcastsSent": sent_broadcasts,
@@ -72,6 +78,10 @@ def run_once(db: Session, push: PushSender, now: datetime | None = None) -> dict
         "promiseUpdatesMissed": promise_updates_missed,
         "townHallReminders": townhall_reminders,
         "fieldVisitsPurged": field_visits_purged,
+        "renewalCyclesOpened": renewals.opened,
+        "renewalNotices": renewals.notices,
+        "renewalsLapsed": renewals.lapsed,
+        "certificateChecksPurged": certificate_checks_purged,
         **asdict(pushed),
     }
 

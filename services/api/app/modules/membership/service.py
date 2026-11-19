@@ -24,6 +24,7 @@ from app.modules.audit import service as audit
 from app.modules.membership import repository, rules
 from app.modules.messaging.notifications import service as notifications
 from app.modules.membership.card import repository as card_repository
+from app.modules.membership.certificates import service as certificates
 from app.modules.membership.repository import AwaitingMember, MembershipChange, MembershipState
 from app.modules.membership.rules import ACTIVATE, VIEW_PROFILE, Action
 
@@ -133,6 +134,8 @@ def change(
     if to_state in ("suspended", "inactive"):
         # Codes shown before now must name nobody (FR-CARD-015); scans also check the state live.
         card_repository.replace_card_ref(db, member_id)
+        # A membership certificate stops verifying as valid as well (BR-137).
+        certificates.revoke_membership_certificates(db, member_id, to_state)
     repository.record_change(
         db,
         member_id=member_id,

@@ -259,6 +259,19 @@ export type AreaScorecard = Schemas['AreaScorecardOut'];
 export type Scorecard = Schemas['ScorecardOut'];
 export type ScorecardFile = Schemas['ScorecardFileOut'];
 export type ScorecardCorrection = Schemas['CorrectionOut'];
+// Membership renewal and certificates (M33, M34, D25). Routes answer 404 "feature_unavailable" while renewal is off.
+export type MyRenewal = Schemas['MyRenewalOut'];
+export type RenewalPhase = NonNullable<MyRenewal['phase']>;
+export type RenewalCycle = Schemas['RenewalCycleOut'];
+export type RenewalDueMember = Schemas['RenewalDueMemberOut'];
+export type RenewalSummary = Schemas['RenewalSummaryOut'];
+export type MyCertificates = Schemas['MyCertificatesOut'];
+export type Certificate = Schemas['CertificateOut'];
+export type CertificateKind = Certificate['kind'];
+export type CertificateStatus = Certificate['status'];
+export type CertificateEvent = Schemas['CertificateEventOut'];
+export type ManagedCertificate = Schemas['ManagedCertificateOut'];
+export type PublicCertificate = Schemas['PublicCertificateOut'];
 // Community Support (M11 to M14, S11, S12, D13, D14).
 export type SupportHome = Schemas['SupportHomeOut'];
 export type SupportCategory = Schemas['SupportRequestIn']['category'];
@@ -415,6 +428,22 @@ export type DuplicateCaseFile = Schemas['CaseFileOut'];
 export type DuplicateReportInput = Schemas['ReportInput'];
 export type DuplicateDecisionInput = Schemas['CaseDecisionInput'];
 export type DuplicateFlag = Schemas['DuplicateFlagOut'];
+// Assisted verification (M05, S04). Routes answer 404 "feature_unavailable" while assisted_verification is off.
+export type MyAssistedVerification = Schemas['MyAssistedOut'];
+export type AssistedHelpRequest = Schemas['AssistedHelpRequestOut'];
+export type AssistedHelpRequestInput = Schemas['AssistedHelpRequestIn'];
+export type AssistedReason = AssistedHelpRequest['reason'];
+export type AssistedRoute = AssistedHelpRequest['route'];
+export type AssistedState = AssistedHelpRequest['state'];
+export type AssistedPreferredTime = NonNullable<AssistedHelpRequest['preferredTime']>;
+export type AssistedQueueItem = Schemas['AssistedQueueItemOut'];
+export type AssistedRequestFile = Schemas['AssistedRequestFileOut'];
+export type AssistedSession = Schemas['AssistedSessionOut'];
+export type AssistedReviewSession = Schemas['AssistedReviewSessionOut'];
+export type AssistedDevice = AssistedSession['device'];
+export type AssistedChecklistItem = Schemas['AssistedCompleteIn']['checklist'][number];
+export type AssistedAbandonReason = Schemas['AssistedAbandonIn']['reason'];
+export type AssistedCloseReason = Schemas['AssistedCloseIn']['reason'];
 
 /** A response other than 2xx. `code` is the API's error code, e.g. "invalid_credentials". */
 export class ApiError extends Error {
@@ -853,6 +882,46 @@ export function createApiClient({
     /** Uphold or overturn, with a reason the member sees. Overturning sends the review back for a fresh decision. */
     decideIdentityAppeal: (appealId: string, input: AppealDecisionInput) =>
       request<AppealFile>('POST', `/v1/identity/appeals/${encodeURIComponent(appealId)}/decision`, input),
+    // Assisted verification (M05, S04, FR-IDV-014, FR-STF-004). No image ever passes through these routes.
+    getMyAssistedVerification: () => request<MyAssistedVerification>('GET', '/v1/identity/assisted/me'),
+    /** M05. Problems: already_verified, review_open, contact_not_confirmed, preferred_date_out_of_range. */
+    requestAssistedVerification: (input: AssistedHelpRequestInput) =>
+      request<AssistedHelpRequest>('POST', '/v1/identity/assisted/me', input),
+    cancelAssistedVerification: () => request<AssistedHelpRequest>('POST', '/v1/identity/assisted/me/cancel'),
+    /** S04 queue: open requests in the caller's areas unless states are given. */
+    listAssistedRequests: (states: AssistedState[] = []) => {
+      const q = new URLSearchParams();
+      for (const state of states) q.append('state', state);
+      const qs = q.toString();
+      return request<AssistedQueueItem[]>('GET', `/v1/identity/assisted/manage${qs ? `?${qs}` : ''}`);
+    },
+    getAssistedRequest: (requestId: string) =>
+      request<AssistedRequestFile>('GET', `/v1/identity/assisted/manage/${encodeURIComponent(requestId)}`),
+    scheduleAssistedRequest: (requestId: string, scheduledFor: string, meetingPlace: string) =>
+      request<AssistedRequestFile>('POST', `/v1/identity/assisted/manage/${encodeURIComponent(requestId)}/schedule`, {
+        scheduledFor,
+        meetingPlace,
+      }),
+    startAssistedSession: (requestId: string, device: AssistedDevice) =>
+      request<AssistedSession>('POST', `/v1/identity/assisted/manage/${encodeURIComponent(requestId)}/sessions`, { device }),
+    /** FR-STF-004: problems checklist_incomplete:<item>, missing:<kind>, consent_required until all is in place. */
+    completeAssistedSession: (requestId: string, sessionId: string, checklist: AssistedChecklistItem[], notes?: string) =>
+      request<AssistedRequestFile>(
+        'POST',
+        `/v1/identity/assisted/manage/${encodeURIComponent(requestId)}/sessions/${encodeURIComponent(sessionId)}/complete`,
+        { checklist, notes },
+      ),
+    abandonAssistedSession: (requestId: string, sessionId: string, reason: AssistedAbandonReason, notes?: string) =>
+      request<AssistedRequestFile>(
+        'POST',
+        `/v1/identity/assisted/manage/${encodeURIComponent(requestId)}/sessions/${encodeURIComponent(sessionId)}/abandon`,
+        { reason, notes },
+      ),
+    closeAssistedRequest: (requestId: string, reason: AssistedCloseReason) =>
+      request<AssistedRequestFile>('POST', `/v1/identity/assisted/manage/${encodeURIComponent(requestId)}/close`, { reason }),
+    /** W02: how the images in a review were captured, for a reviewer holding members.verify. */
+    listAssistedSessionsForReview: (reviewId: string) =>
+      request<AssistedReviewSession[]>('GET', `/v1/identity/assisted/reviews/${encodeURIComponent(reviewId)}`),
 
     /** Report that a member may hold another account (needs members.verify). An existing pair returns its case. */
     reportDuplicate: (input: DuplicateReportInput) => request<DuplicateCase>('POST', '/v1/identity/duplicates', input),
@@ -1683,6 +1752,40 @@ export function createApiClient({
     addSupportPartner: (input: SupportPartnerInput) => request<SupportPartner>('POST', '/v1/assistance/manage/partners', input),
     /** Counts only; null means fewer than 10. */
     getSupportStatistics: () => request<SupportStatistics>('GET', '/v1/assistance/manage/statistics'),
+    // Membership renewal (M33, D25) and certificates (M34). Routes answer 404 "feature_unavailable" while renewal is off.
+    getMyRenewal: () => request<MyRenewal>('GET', '/v1/membership/renewal/me'),
+    /** FR-RNW-001: contact and area only. Problems not_due_yet, contact_not_confirmed, area_confirmation_required, … */
+    confirmRenewal: (contactConfirmed: boolean, areaConfirmed: boolean) =>
+      request<MyRenewal>('POST', '/v1/membership/renewal/me/confirm', { contactConfirmed, areaConfirmed }),
+    listRenewalsDue: (phase?: RenewalPhase) =>
+      request<RenewalDueMember[]>('GET', `/v1/membership/renewal/manage${phase ? `?phase=${encodeURIComponent(phase)}` : ''}`),
+    getRenewalSummary: () => request<RenewalSummary>('GET', '/v1/membership/renewal/manage/summary'),
+    getMyCertificates: () => request<MyCertificates>('GET', '/v1/membership/certificates/me'),
+    /** The same certificate again unless its facts changed. Problems membership_not_active, no_attendance_recorded, … */
+    requestCertificate: (kind: CertificateKind, eventId?: string) =>
+      request<Certificate>('POST', '/v1/membership/certificates/me', { kind, eventId }),
+    listCertificates: (filters: { status?: CertificateStatus; kind?: CertificateKind; ref?: string } = {}) => {
+      const q = new URLSearchParams();
+      if (filters.status) q.set('status', filters.status);
+      if (filters.kind) q.set('kind', filters.kind);
+      if (filters.ref) q.set('ref', filters.ref);
+      const qs = q.toString();
+      return request<ManagedCertificate[]>('GET', `/v1/membership/certificates/manage${qs ? `?${qs}` : ''}`);
+    },
+    /** D25: "already_issued" means reissue it instead, with a reason. */
+    issueCertificate: (memberCode: string, kind: CertificateKind, eventId?: string) =>
+      request<ManagedCertificate>('POST', '/v1/membership/certificates/manage', { memberCode, kind, eventId }),
+    revokeCertificate: (certificateId: string, reason: string) =>
+      request<ManagedCertificate>('POST', `/v1/membership/certificates/manage/${encodeURIComponent(certificateId)}/revoke`, {
+        reason,
+      }),
+    reissueCertificate: (certificateId: string, reason: string) =>
+      request<ManagedCertificate>('POST', `/v1/membership/certificates/manage/${encodeURIComponent(certificateId)}/reissue`, {
+        reason,
+      }),
+    /** INT-22, anyone: only the type, holder's name, issue date and status. 404 not_found, 429 too_many_requests. */
+    checkCertificate: (token: string) =>
+      request<PublicCertificate>('GET', `/v1/public/certificates/${encodeURIComponent(token)}`),
     // Town halls (M21 to M23, D18). Routes answer 404 "feature_unavailable" while town_halls is off.
     listTownHalls: () => request<TownHall[]>('GET', '/v1/town-halls'),
     /** Approved questions with vote totals and the member's own; `q` searches the question history. */

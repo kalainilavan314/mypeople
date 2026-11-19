@@ -2527,7 +2527,7 @@
             "description": "not_found"
           },
           "409": {
-            "description": "not_open, claimed_by_another or not_claimed_by_you"
+            "description": "not_open, claimed_by_another, not_claimed_by_you or witnessed_by_you"
           },
           "422": {
             "description": "Validation Error",
@@ -2588,7 +2588,7 @@
             "description": "not_found"
           },
           "409": {
-            "description": "not_open, claimed_by_another or not_claimed_by_you"
+            "description": "not_open, claimed_by_another, not_claimed_by_you or witnessed_by_you"
           },
           "422": {
             "description": "Validation Error",
@@ -2649,7 +2649,7 @@
             "description": "not_found"
           },
           "409": {
-            "description": "not_open, claimed_by_another or not_claimed_by_you"
+            "description": "not_open, claimed_by_another, not_claimed_by_you or witnessed_by_you"
           },
           "422": {
             "description": "Validation Error",
@@ -2720,7 +2720,7 @@
             "description": "not_found"
           },
           "409": {
-            "description": "not_open, claimed_by_another or not_claimed_by_you"
+            "description": "not_open, claimed_by_another, not_claimed_by_you or witnessed_by_you"
           },
           "422": {
             "description": "{\"code\": \"decision_refused\", \"problems\": [...]}"
@@ -22848,6 +22848,1268 @@
           }
         }
       }
+    },
+    "/v1/membership/renewal/me": {
+      "get": {
+        "tags": [
+          "renewal"
+        ],
+        "summary": "Read My Renewal",
+        "description": "M33: the yearly check, its due date and grace period, and the contact and area to confirm.",
+        "operationId": "read_my_renewal_v1_membership_renewal_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyRenewalOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/membership/renewal/me/confirm": {
+      "post": {
+        "tags": [
+          "renewal"
+        ],
+        "summary": "Confirm Renewal",
+        "description": "FR-RNW-001, 003, 009: confirm contact and area; no document or selfie is ever asked for. A lapsed\nmembership becomes Active again (OD-43).",
+        "operationId": "confirm_renewal_v1_membership_renewal_me_confirm_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenewalConfirmIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyRenewalOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "{\"code\": \"renewal_refused\", \"problems\": [...]}: not_due_yet, already_confirmed, contact_not_confirmed, contact_confirmation_required, area_confirmation_required, membership_<state>"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/membership/renewal/manage": {
+      "get": {
+        "tags": [
+          "renewal"
+        ],
+        "summary": "List Due",
+        "description": "D25: members in the caller's areas by renewal phase, soonest due first.",
+        "operationId": "list_due_v1_membership_renewal_manage_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "phase",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "upcoming",
+                    "due",
+                    "grace",
+                    "lapsed"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Phase"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 200,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RenewalDueMemberOut"
+                  },
+                  "title": "Response List Due V1 Membership Renewal Manage Get"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/membership/renewal/manage/summary": {
+      "get": {
+        "tags": [
+          "renewal"
+        ],
+        "summary": "Read Summary",
+        "operationId": "read_summary_v1_membership_renewal_manage_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RenewalSummaryOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/membership/certificates/me": {
+      "get": {
+        "tags": [
+          "certificates"
+        ],
+        "summary": "Read My Certificates",
+        "description": "M34: every certificate the member holds, with the address its QR carries, and what they can ask for.",
+        "operationId": "read_my_certificates_v1_membership_certificates_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyCertificatesOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "certificates"
+        ],
+        "summary": "Request Certificate",
+        "description": "FR-RNW-004 to 006. Problems: identity_not_verified, membership_not_active, event_required,\nno_attendance_recorded, no_completed_assignments. Asking again returns the same certificate unless\nits facts changed; then the new one supersedes it.",
+        "operationId": "request_certificate_v1_membership_certificates_me_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificateRequestIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CertificateOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "{\"code\": \"certificate_refused\", \"problems\": [...]}"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/membership/certificates/manage": {
+      "get": {
+        "tags": [
+          "certificates"
+        ],
+        "summary": "List Certificates",
+        "description": "D25: certificates of members in the caller's areas, newest first.",
+        "operationId": "list_certificates_v1_membership_certificates_manage_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "valid",
+                    "revoked",
+                    "superseded"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "membership",
+                    "event_participation",
+                    "volunteer_service"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "name": "ref",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "A CT- reference or a member ID",
+              "title": "Ref"
+            },
+            "description": "A CT- reference or a member ID"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ManagedCertificateOut"
+                  },
+                  "title": "Response List Certificates V1 Membership Certificates Manage Get"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "{\"code\": \"certificate_refused\", \"problems\": [...]}"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "certificates"
+        ],
+        "summary": "Issue Certificate",
+        "description": "D25: issue a certificate to a member in the caller's area (\"already_issued\": reissue it instead).",
+        "operationId": "issue_certificate_v1_membership_certificates_manage_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificateIssueIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedCertificateOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "{\"code\": \"certificate_refused\", \"problems\": [...]}"
+          }
+        }
+      }
+    },
+    "/v1/membership/certificates/manage/{certificate_id}/revoke": {
+      "post": {
+        "tags": [
+          "certificates"
+        ],
+        "summary": "Revoke Certificate",
+        "description": "FR-RNW-008: it then verifies as Revoked. The member is told and sees the reason.",
+        "operationId": "revoke_certificate_v1_membership_certificates_manage__certificate_id__revoke_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "certificate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Certificate Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificateReasonIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedCertificateOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "{\"code\": \"certificate_refused\", \"problems\": [...]}"
+          }
+        }
+      }
+    },
+    "/v1/membership/certificates/manage/{certificate_id}/reissue": {
+      "post": {
+        "tags": [
+          "certificates"
+        ],
+        "summary": "Reissue Certificate",
+        "description": "FR-RNW-008: a new certificate from the current records; the old one verifies as Superseded.",
+        "operationId": "reissue_certificate_v1_membership_certificates_manage__certificate_id__reissue_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "certificate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Certificate Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificateReasonIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedCertificateOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "{\"code\": \"certificate_refused\", \"problems\": [...]}"
+          }
+        }
+      }
+    },
+    "/v1/public/certificates/{token}": {
+      "get": {
+        "tags": [
+          "certificates"
+        ],
+        "summary": "Check Certificate",
+        "description": "INT-22, FR-RNW-007: anyone, without an account. Only the type, the holder's name, the issue date and\nValid, Revoked or Superseded; nothing else about the holder.",
+        "operationId": "check_certificate_v1_public_certificates__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 100,
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicCertificateOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found: no certificate has this code"
+          },
+          "429": {
+            "description": "too_many_requests, with Retry-After"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/identity/assisted/me": {
+      "get": {
+        "tags": [
+          "assisted verification"
+        ],
+        "summary": "Read My Request",
+        "description": "M05: the member's latest request for help, and what they need before asking.",
+        "operationId": "read_my_request_v1_identity_assisted_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyAssistedOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "assisted verification"
+        ],
+        "summary": "Request Help",
+        "description": "FR-IDV-014: no camera, three failed checks, or the member asks. Problems: already_verified, review_open,\ncontact_not_confirmed, preferred_date_out_of_range. An open request is returned again, not duplicated.",
+        "operationId": "request_help_v1_identity_assisted_me_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistedHelpRequestIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistedHelpRequestOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_your_session"
+          },
+          "422": {
+            "description": "{\"code\": \"assisted_refused\", \"problems\": [...]}"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/identity/assisted/me/cancel": {
+      "post": {
+        "tags": [
+          "assisted verification"
+        ],
+        "summary": "Cancel My Request",
+        "description": "Before a session has started.",
+        "operationId": "cancel_my_request_v1_identity_assisted_me_cancel_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistedHelpRequestOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_your_session"
+          },
+          "422": {
+            "description": "{\"code\": \"assisted_refused\", \"problems\": [...]}"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/identity/assisted/manage": {
+      "get": {
+        "tags": [
+          "assisted verification"
+        ],
+        "summary": "List Requests",
+        "description": "S04 queue: requests in the caller's areas, open ones by default, longest waiting first.",
+        "operationId": "list_requests_v1_identity_assisted_manage_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "requested",
+                      "scheduled",
+                      "in_session",
+                      "completed",
+                      "cancelled",
+                      "closed"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssistedQueueItemOut"
+                  },
+                  "title": "Response List Requests V1 Identity Assisted Manage Get"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_your_session"
+          },
+          "422": {
+            "description": "{\"code\": \"assisted_refused\", \"problems\": [...]}"
+          }
+        }
+      }
+    },
+    "/v1/identity/assisted/manage/{request_id}": {
+      "get": {
+        "tags": [
+          "assisted verification"
+        ],
+        "summary": "Read Request",
+        "description": "The member to meet, their confirmed number while the request is open (each opening is recorded),\nwhich images the server holds (kinds and times only) and the sessions so far.",
+        "operationId": "read_request_v1_identity_assisted_manage__request_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistedRequestFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_your_session"
+          },
+          "422": {
+            "description": "{\"code\": \"assisted_refused\", \"problems\": [...]}"
+          }
+        }
+      }
+    },
+    "/v1/identity/assisted/manage/{request_id}/schedule": {
+      "post": {
+        "tags": [
+          "assisted verification"
+        ],
+        "summary": "Schedule",
+        "operationId": "schedule_v1_identity_assisted_manage__request_id__schedule_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistedScheduleIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistedRequestFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_your_session"
+          },
+          "422": {
+            "description": "{\"code\": \"assisted_refused\", \"problems\": [...]}"
+          }
+        }
+      }
+    },
+    "/v1/identity/assisted/manage/{request_id}/sessions": {
+      "post": {
+        "tags": [
+          "assisted verification"
+        ],
+        "summary": "Start Session",
+        "description": "Start: the caller becomes the witness. The member then takes the photos in their own app.",
+        "operationId": "start_session_v1_identity_assisted_manage__request_id__sessions_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistedStartIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistedSessionOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_your_session"
+          },
+          "422": {
+            "description": "{\"code\": \"assisted_refused\", \"problems\": [...]}"
+          }
+        }
+      }
+    },
+    "/v1/identity/assisted/manage/{request_id}/sessions/{session_id}/complete": {
+      "post": {
+        "tags": [
+          "assisted verification"
+        ],
+        "summary": "Complete Session",
+        "description": "FR-STF-004: refused (checklist_incomplete:<item>, missing:<kind>, consent_required) until everything\nis in place; then the images go to the normal identity review, which someone else decides.",
+        "operationId": "complete_session_v1_identity_assisted_manage__request_id__sessions__session_id__complete_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          },
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistedCompleteIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistedRequestFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_your_session"
+          },
+          "422": {
+            "description": "{\"code\": \"assisted_refused\", \"problems\": [...]}"
+          }
+        }
+      }
+    },
+    "/v1/identity/assisted/manage/{request_id}/sessions/{session_id}/abandon": {
+      "post": {
+        "tags": [
+          "assisted verification"
+        ],
+        "summary": "Abandon Session",
+        "description": "A camera that fails moves the member to the office-visit route; a member who declines closes the request.",
+        "operationId": "abandon_session_v1_identity_assisted_manage__request_id__sessions__session_id__abandon_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          },
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistedAbandonIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistedRequestFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_your_session"
+          },
+          "422": {
+            "description": "{\"code\": \"assisted_refused\", \"problems\": [...]}"
+          }
+        }
+      }
+    },
+    "/v1/identity/assisted/manage/{request_id}/close": {
+      "post": {
+        "tags": [
+          "assisted verification"
+        ],
+        "summary": "Close Request",
+        "operationId": "close_request_v1_identity_assisted_manage__request_id__close_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistedCloseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistedRequestFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_your_session"
+          },
+          "422": {
+            "description": "{\"code\": \"assisted_refused\", \"problems\": [...]}"
+          }
+        }
+      }
+    },
+    "/v1/identity/assisted/reviews/{review_id}": {
+      "get": {
+        "tags": [
+          "assisted verification"
+        ],
+        "summary": "Read Review Sessions",
+        "description": "W02: how the images in this review were captured, for the reviewer deciding it.",
+        "operationId": "read_review_sessions_v1_identity_assisted_reviews__review_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "review_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Review Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssistedReviewSessionOut"
+                  },
+                  "title": "Response Read Review Sessions V1 Identity Assisted Reviews  Review Id  Get"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, own_record or outside_your_area"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "409": {
+            "description": "not_your_session"
+          },
+          "422": {
+            "description": "{\"code\": \"assisted_refused\", \"problems\": [...]}"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -25070,6 +26332,448 @@
         ],
         "title": "AssignmentTransitionIn"
       },
+      "AssistedAbandonIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "member_absent",
+              "camera_failure",
+              "document_missing",
+              "member_declined",
+              "other"
+            ],
+            "title": "Reason"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "AssistedAbandonIn"
+      },
+      "AssistedCloseIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "member_declined",
+              "member_unreachable",
+              "verified_another_way"
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "AssistedCloseIn"
+      },
+      "AssistedCompleteIn": {
+        "properties": {
+          "checklist": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "member_present",
+                "original_document_seen",
+                "face_matches_document",
+                "captured_on_allowed_device",
+                "no_copies_kept",
+                "declaration_by_member"
+              ]
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "Checklist"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "No ID numbers: the images carry the details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "checklist"
+        ],
+        "title": "AssistedCompleteIn"
+      },
+      "AssistedHelpRequestIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "no_camera",
+              "checks_failed",
+              "member_asked"
+            ],
+            "title": "Reason"
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "supervised_capture",
+              "office_visit",
+              "call_back"
+            ],
+            "title": "Route"
+          },
+          "preferredDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferreddate"
+          },
+          "preferredTime": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "morning",
+                  "afternoon",
+                  "evening"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferredtime"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason",
+          "route"
+        ],
+        "title": "AssistedHelpRequestIn",
+        "description": "No ID data: only why, which route and when suits the member (M05)."
+      },
+      "AssistedHelpRequestOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "requestRef": {
+            "type": "string",
+            "title": "Requestref"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "no_camera",
+              "checks_failed",
+              "member_asked"
+            ],
+            "title": "Reason"
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "supervised_capture",
+              "office_visit",
+              "call_back"
+            ],
+            "title": "Route"
+          },
+          "preferredDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferreddate"
+          },
+          "preferredTime": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "morning",
+                  "afternoon",
+                  "evening"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferredtime"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "requested",
+              "scheduled",
+              "in_session",
+              "completed",
+              "cancelled",
+              "closed"
+            ],
+            "title": "State"
+          },
+          "scheduledFor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduledfor"
+          },
+          "meetingPlace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meetingplace"
+          },
+          "closedReason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "member_declined",
+                  "member_unreachable",
+                  "verified_another_way"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedreason"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "requestRef",
+          "reason",
+          "route",
+          "preferredDate",
+          "preferredTime",
+          "state",
+          "scheduledFor",
+          "meetingPlace",
+          "closedReason",
+          "areaKey",
+          "createdAt"
+        ],
+        "title": "AssistedHelpRequestOut"
+      },
+      "AssistedImageOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "receivedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receivedat",
+            "description": "When the server acknowledged it; null while still needed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "receivedAt"
+        ],
+        "title": "AssistedImageOut"
+      },
+      "AssistedQueueItemOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "requestRef": {
+            "type": "string",
+            "title": "Requestref"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "no_camera",
+              "checks_failed",
+              "member_asked"
+            ],
+            "title": "Reason"
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "supervised_capture",
+              "office_visit",
+              "call_back"
+            ],
+            "title": "Route"
+          },
+          "preferredDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferreddate"
+          },
+          "preferredTime": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "morning",
+                  "afternoon",
+                  "evening"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferredtime"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "requested",
+              "scheduled",
+              "in_session",
+              "completed",
+              "cancelled",
+              "closed"
+            ],
+            "title": "State"
+          },
+          "scheduledFor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduledfor"
+          },
+          "meetingPlace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meetingplace"
+          },
+          "closedReason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "member_declined",
+                  "member_unreachable",
+                  "verified_another_way"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedreason"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "requestRef",
+          "reason",
+          "route",
+          "preferredDate",
+          "preferredTime",
+          "state",
+          "scheduledFor",
+          "meetingPlace",
+          "closedReason",
+          "areaKey",
+          "createdAt"
+        ],
+        "title": "AssistedQueueItemOut"
+      },
       "AssistedRecoveryInput": {
         "properties": {
           "nic": {
@@ -25164,6 +26868,247 @@
           "reference"
         ],
         "title": "AssistedRecoveryReceipt"
+      },
+      "AssistedRequestFileOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "requestRef": {
+            "type": "string",
+            "title": "Requestref"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "no_camera",
+              "checks_failed",
+              "member_asked"
+            ],
+            "title": "Reason"
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "supervised_capture",
+              "office_visit",
+              "call_back"
+            ],
+            "title": "Route"
+          },
+          "preferredDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferreddate"
+          },
+          "preferredTime": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "morning",
+                  "afternoon",
+                  "evening"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferredtime"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "requested",
+              "scheduled",
+              "in_session",
+              "completed",
+              "cancelled",
+              "closed"
+            ],
+            "title": "State"
+          },
+          "scheduledFor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduledfor"
+          },
+          "meetingPlace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meetingplace"
+          },
+          "closedReason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "member_declined",
+                  "member_unreachable",
+                  "verified_another_way"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedreason"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "districtName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Districtname"
+          },
+          "dsName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dsname"
+          },
+          "gnName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gnname"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone",
+            "description": "The member's confirmed number, only while the request is open"
+          },
+          "identityRoute": {
+            "type": "string",
+            "enum": [
+              "nic",
+              "passport"
+            ],
+            "title": "Identityroute"
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/AssistedImageOut"
+            },
+            "type": "array",
+            "title": "Images"
+          },
+          "consentGiven": {
+            "type": "boolean",
+            "title": "Consentgiven"
+          },
+          "checklistItems": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "member_present",
+                "original_document_seen",
+                "face_matches_document",
+                "captured_on_allowed_device",
+                "no_copies_kept",
+                "declaration_by_member"
+              ]
+            },
+            "type": "array",
+            "title": "Checklistitems"
+          },
+          "sessions": {
+            "items": {
+              "$ref": "#/components/schemas/AssistedSessionOut"
+            },
+            "type": "array",
+            "title": "Sessions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "requestRef",
+          "reason",
+          "route",
+          "preferredDate",
+          "preferredTime",
+          "state",
+          "scheduledFor",
+          "meetingPlace",
+          "closedReason",
+          "areaKey",
+          "createdAt",
+          "memberCode",
+          "fullName",
+          "districtName",
+          "dsName",
+          "gnName",
+          "phone",
+          "identityRoute",
+          "images",
+          "consentGiven",
+          "checklistItems",
+          "sessions"
+        ],
+        "title": "AssistedRequestFileOut",
+        "description": "S04: who to meet, how to reach them while the request is open, and what the review still needs."
       },
       "AssistedRequestOut": {
         "properties": {
@@ -25316,6 +27261,266 @@
           "note"
         ],
         "title": "AssistedResolutionInput"
+      },
+      "AssistedReviewSessionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "witnessTier": {
+            "type": "string",
+            "title": "Witnesstier",
+            "description": "The witness's tier, never their name"
+          },
+          "device": {
+            "type": "string",
+            "enum": [
+              "member_device",
+              "office_device"
+            ],
+            "title": "Device"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startedat"
+          },
+          "endedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endedat"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "completed",
+                  "abandoned"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "checklist": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Checklist"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "abandonReason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "member_absent",
+                  "camera_failure",
+                  "document_missing",
+                  "member_declined",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abandonreason"
+          },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine",
+            "default": false
+          },
+          "requestRef": {
+            "type": "string",
+            "title": "Requestref"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "witnessTier",
+          "device",
+          "startedAt",
+          "endedAt",
+          "outcome",
+          "checklist",
+          "notes",
+          "abandonReason",
+          "requestRef"
+        ],
+        "title": "AssistedReviewSessionOut"
+      },
+      "AssistedScheduleIn": {
+        "properties": {
+          "scheduledFor": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Scheduledfor"
+          },
+          "meetingPlace": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Meetingplace"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scheduledFor",
+          "meetingPlace"
+        ],
+        "title": "AssistedScheduleIn"
+      },
+      "AssistedSessionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "witnessTier": {
+            "type": "string",
+            "title": "Witnesstier",
+            "description": "The witness's tier, never their name"
+          },
+          "device": {
+            "type": "string",
+            "enum": [
+              "member_device",
+              "office_device"
+            ],
+            "title": "Device"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Startedat"
+          },
+          "endedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endedat"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "completed",
+                  "abandoned"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "checklist": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Checklist"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "abandonReason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "member_absent",
+                  "camera_failure",
+                  "document_missing",
+                  "member_declined",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abandonreason"
+          },
+          "mine": {
+            "type": "boolean",
+            "title": "Mine",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "witnessTier",
+          "device",
+          "startedAt",
+          "endedAt",
+          "outcome",
+          "checklist",
+          "notes",
+          "abandonReason"
+        ],
+        "title": "AssistedSessionOut"
+      },
+      "AssistedStartIn": {
+        "properties": {
+          "device": {
+            "type": "string",
+            "enum": [
+              "member_device",
+              "office_device"
+            ],
+            "title": "Device",
+            "description": "The member's own phone, or a district office's device; never the witness's phone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "device"
+        ],
+        "title": "AssistedStartIn"
       },
       "AudienceReachIn": {
         "properties": {
@@ -27001,6 +29206,349 @@
           "completed"
         ],
         "title": "CatalogueOut"
+      },
+      "CertificateAssignmentOut": {
+        "properties": {
+          "ref": {
+            "type": "string",
+            "title": "Ref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "roleEn": {
+            "type": "string",
+            "title": "Roleen"
+          },
+          "roleTa": {
+            "type": "string",
+            "title": "Roleta"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ref",
+          "titleEn",
+          "titleTa",
+          "roleEn",
+          "roleTa",
+          "date"
+        ],
+        "title": "CertificateAssignmentOut"
+      },
+      "CertificateDetailsOut": {
+        "properties": {
+          "memberSince": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Membersince"
+          },
+          "eventRef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventref"
+          },
+          "eventTitleEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventtitleen"
+          },
+          "eventTitleTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventtitleta"
+          },
+          "eventDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventdate"
+          },
+          "assignmentCount": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assignmentcount"
+          },
+          "assignments": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/CertificateAssignmentOut"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assignments"
+          }
+        },
+        "type": "object",
+        "title": "CertificateDetailsOut",
+        "description": "What the certificate says: the membership's start, the event, or the completed assignments."
+      },
+      "CertificateEventOut": {
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Eventid"
+          },
+          "eventRef": {
+            "type": "string",
+            "title": "Eventref"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "hasCertificate": {
+            "type": "boolean",
+            "title": "Hascertificate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "eventId",
+          "eventRef",
+          "titleEn",
+          "titleTa",
+          "date",
+          "hasCertificate"
+        ],
+        "title": "CertificateEventOut"
+      },
+      "CertificateIssueIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "membership",
+              "event_participation",
+              "volunteer_service"
+            ],
+            "title": "Kind"
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventid",
+            "description": "Needed for an event-participation certificate"
+          },
+          "memberCode": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 3,
+            "title": "Membercode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "memberCode"
+        ],
+        "title": "CertificateIssueIn"
+      },
+      "CertificateOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "certificateRef": {
+            "type": "string",
+            "title": "Certificateref"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "membership",
+              "event_participation",
+              "volunteer_service"
+            ],
+            "title": "Kind"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "valid",
+              "revoked",
+              "superseded"
+            ],
+            "title": "Status"
+          },
+          "statusReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Statusreason",
+            "description": "Why it was revoked or replaced"
+          },
+          "supersededByRef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supersededbyref"
+          },
+          "holderName": {
+            "type": "string",
+            "title": "Holdername"
+          },
+          "issuedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Issuedon"
+          },
+          "details": {
+            "$ref": "#/components/schemas/CertificateDetailsOut"
+          },
+          "verifyUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verifyurl",
+            "description": "The address in the QR; the member's own certificates only, never a staff list"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "certificateRef",
+          "kind",
+          "status",
+          "statusReason",
+          "supersededByRef",
+          "holderName",
+          "issuedOn",
+          "details"
+        ],
+        "title": "CertificateOut"
+      },
+      "CertificateReasonIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "CertificateReasonIn"
+      },
+      "CertificateRequestIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "membership",
+              "event_participation",
+              "volunteer_service"
+            ],
+            "title": "Kind"
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventid",
+            "description": "Needed for an event-participation certificate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "title": "CertificateRequestIn"
       },
       "ChainCheckOut": {
         "properties": {
@@ -34829,6 +37377,107 @@
         ],
         "title": "ManagedAlbumOut"
       },
+      "ManagedCertificateOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "certificateRef": {
+            "type": "string",
+            "title": "Certificateref"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "membership",
+              "event_participation",
+              "volunteer_service"
+            ],
+            "title": "Kind"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "valid",
+              "revoked",
+              "superseded"
+            ],
+            "title": "Status"
+          },
+          "statusReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Statusreason",
+            "description": "Why it was revoked or replaced"
+          },
+          "supersededByRef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supersededbyref"
+          },
+          "holderName": {
+            "type": "string",
+            "title": "Holdername"
+          },
+          "issuedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Issuedon"
+          },
+          "details": {
+            "$ref": "#/components/schemas/CertificateDetailsOut"
+          },
+          "verifyUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verifyurl",
+            "description": "The address in the QR; the member's own certificates only, never a staff list"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "certificateRef",
+          "kind",
+          "status",
+          "statusReason",
+          "supersededByRef",
+          "holderName",
+          "issuedOn",
+          "details",
+          "memberCode",
+          "areaKey"
+        ],
+        "title": "ManagedCertificateOut"
+      },
       "ManagedCourseOut": {
         "properties": {
           "id": {
@@ -36880,6 +39529,98 @@
         ],
         "title": "MyAreaOut"
       },
+      "MyAssistedOut": {
+        "properties": {
+          "request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AssistedHelpRequestOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "identityVerified": {
+            "type": "boolean",
+            "title": "Identityverified"
+          },
+          "reviewState": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewstate"
+          },
+          "contactOnRecord": {
+            "type": "boolean",
+            "title": "Contactonrecord",
+            "description": "Help needs a mobile number confirmed by a code, so the team can call"
+          },
+          "checkFailuresBeforeHelp": {
+            "type": "integer",
+            "title": "Checkfailuresbeforehelp",
+            "default": 3
+          },
+          "preferredWithinDays": {
+            "type": "integer",
+            "title": "Preferredwithindays",
+            "default": 30
+          }
+        },
+        "type": "object",
+        "required": [
+          "request",
+          "identityVerified",
+          "reviewState",
+          "contactOnRecord"
+        ],
+        "title": "MyAssistedOut",
+        "description": "M05: the member's latest request, and whether they can ask now."
+      },
+      "MyCertificatesOut": {
+        "properties": {
+          "certificates": {
+            "items": {
+              "$ref": "#/components/schemas/CertificateOut"
+            },
+            "type": "array",
+            "title": "Certificates"
+          },
+          "membershipProblems": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Membershipproblems",
+            "description": "Empty when a membership certificate can be issued"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/CertificateEventOut"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "completedAssignments": {
+            "type": "integer",
+            "title": "Completedassignments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "certificates",
+          "membershipProblems",
+          "events",
+          "completedAssignments"
+        ],
+        "title": "MyCertificatesOut",
+        "description": "M34: the member's certificates, newest first, and what they can ask for now."
+      },
       "MyHouseholdDetailsIn": {
         "properties": {
           "ageBand": {
@@ -37197,6 +39938,154 @@
           "invitations"
         ],
         "title": "MyReferralsOut"
+      },
+      "MyRenewalOut": {
+        "properties": {
+          "applies": {
+            "type": "boolean",
+            "title": "Applies",
+            "description": "False before the membership is Active, or while it is suspended or inactive"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "Why it does not apply: membership_pending, membership_suspended, membership_inactive"
+          },
+          "membershipState": {
+            "type": "string",
+            "title": "Membershipstate"
+          },
+          "phase": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "upcoming",
+                  "due",
+                  "grace",
+                  "lapsed",
+                  "confirmed"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase"
+          },
+          "canConfirm": {
+            "type": "boolean",
+            "title": "Canconfirm"
+          },
+          "reactivation": {
+            "type": "boolean",
+            "title": "Reactivation",
+            "description": "Confirming makes a lapsed membership Active again (OD-43)"
+          },
+          "cycle": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RenewalCycleOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "graceDays": {
+            "type": "integer",
+            "title": "Gracedays"
+          },
+          "mobileMasked": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mobilemasked",
+            "description": "The confirmed mobile number, all but the last two digits hidden"
+          },
+          "contactOnRecord": {
+            "type": "boolean",
+            "title": "Contactonrecord",
+            "description": "False until a mobile number is confirmed by a code"
+          },
+          "districtName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Districtname"
+          },
+          "dsName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dsname"
+          },
+          "gnName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gnname"
+          },
+          "areaChangeOpen": {
+            "type": "boolean",
+            "title": "Areachangeopen",
+            "description": "An area change is waiting for review; it counts as the area answer"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/RenewalCycleOut"
+            },
+            "type": "array",
+            "title": "History"
+          }
+        },
+        "type": "object",
+        "required": [
+          "applies",
+          "reason",
+          "membershipState",
+          "phase",
+          "canConfirm",
+          "reactivation",
+          "cycle",
+          "graceDays",
+          "mobileMasked",
+          "contactOnRecord",
+          "districtName",
+          "dsName",
+          "gnName",
+          "areaChangeOpen",
+          "history"
+        ],
+        "title": "MyRenewalOut",
+        "description": "M33: where the member's yearly check stands and the two things it asks them to confirm."
       },
       "MyReportOut": {
         "properties": {
@@ -42525,6 +45414,46 @@
         "title": "PublicCardOut",
         "description": "What a shared public card may show (FR-CARD-012, BR-067): no QR, no identity numbers."
       },
+      "PublicCertificateOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "membership",
+              "event_participation",
+              "volunteer_service"
+            ],
+            "title": "Kind"
+          },
+          "holderName": {
+            "type": "string",
+            "title": "Holdername"
+          },
+          "issuedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Issuedon"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "valid",
+              "revoked",
+              "superseded"
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "holderName",
+          "issuedOn",
+          "status"
+        ],
+        "title": "PublicCertificateOut",
+        "description": "FR-RNW-007: only these four, and nothing else about the holder."
+      },
       "PublicReceiptOut": {
         "properties": {
           "caseRef": {
@@ -44204,6 +47133,236 @@
           "reason"
         ],
         "title": "RemovalRequestIn"
+      },
+      "RenewalConfirmIn": {
+        "properties": {
+          "contactConfirmed": {
+            "type": "boolean",
+            "title": "Contactconfirmed",
+            "description": "The member says the mobile number shown is still theirs"
+          },
+          "areaConfirmed": {
+            "type": "boolean",
+            "title": "Areaconfirmed",
+            "description": "The member says the area shown is still right (or an area change is open)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "contactConfirmed",
+          "areaConfirmed"
+        ],
+        "title": "RenewalConfirmIn"
+      },
+      "RenewalCycleOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "dueOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Dueon"
+          },
+          "graceEndsOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Graceendson"
+          },
+          "opensOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Openson",
+            "description": "From this day the member can confirm"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "confirmed",
+              "lapsed"
+            ],
+            "title": "State"
+          },
+          "confirmedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmedat"
+          },
+          "areaConfirmation": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "confirmed",
+                  "change_requested"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Areaconfirmation"
+          },
+          "lapsedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lapsedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "dueOn",
+          "graceEndsOn",
+          "opensOn",
+          "state",
+          "confirmedAt",
+          "areaConfirmation",
+          "lapsedAt"
+        ],
+        "title": "RenewalCycleOut"
+      },
+      "RenewalDueMemberOut": {
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Memberid"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "dueOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Dueon"
+          },
+          "graceEndsOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Graceendson"
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "upcoming",
+              "due",
+              "grace",
+              "lapsed",
+              "confirmed"
+            ],
+            "title": "Phase"
+          },
+          "notice30At": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notice30At"
+          },
+          "notice7At": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notice7At"
+          },
+          "lapsedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lapsedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberId",
+          "memberCode",
+          "fullName",
+          "areaKey",
+          "dueOn",
+          "graceEndsOn",
+          "phase",
+          "notice30At",
+          "notice7At",
+          "lapsedAt"
+        ],
+        "title": "RenewalDueMemberOut"
+      },
+      "RenewalSummaryOut": {
+        "properties": {
+          "upcoming": {
+            "type": "integer",
+            "title": "Upcoming"
+          },
+          "due": {
+            "type": "integer",
+            "title": "Due"
+          },
+          "grace": {
+            "type": "integer",
+            "title": "Grace"
+          },
+          "lapsed": {
+            "type": "integer",
+            "title": "Lapsed"
+          },
+          "graceDays": {
+            "type": "integer",
+            "title": "Gracedays",
+            "default": 60
+          }
+        },
+        "type": "object",
+        "required": [
+          "upcoming",
+          "due",
+          "grace",
+          "lapsed"
+        ],
+        "title": "RenewalSummaryOut"
       },
       "ReplyIn": {
         "properties": {
