@@ -107,7 +107,7 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | M25 | Budget project detail | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
 | M26 | Cast budgeting ballot | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
 | M27 | Budgeting results | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
-| M28 | Tamil AI Assistant | Tamil AI assistant (SC-29) | 3 | Blocked: OD-42 (AI provider) | `apps/member-mobile/app/(member)/assistant.tsx` |  |
+| M28 | Tamil AI Assistant | Tamil AI assistant (SC-29) | 3 | Built (answers wait on OD-42: AI_PROVIDER is `none` until a provider is chosen) | `apps/member-mobile/app/(member)/assistant/` (index, help) | Opened from the top-bar button beside the inbox while `ai_assistant` is on |
 | M29 | Election information | Election mode (SC-30) | 2 | Blocked: DEP-19 (legal opinion) | `apps/member-mobile/app/(member)/election.tsx` |  |
 | M30 | Duty roster and shift check-in | Election mode (SC-30) | 2 | Built | `apps/member-mobile/app/(member)/volunteer/assignments.tsx` | Behind `election_roster`; decided: election duties listed with H12 My assignment |
 | M31 | My committees | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/committees/` |  |
@@ -122,7 +122,7 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | M40 | Guide entry detail | Livelihood guide (SC-36) | 3 | To build | `apps/member-mobile/app/(member)/livelihood/` |  |
 | M41 | Meet your representative | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/representatives/` |  |
 | M42 | Book or manage appointment | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/representatives/` |  |
-| M43 | Voice report | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Blocked: Voice is Phase 3 | `apps/member-mobile/app/(member)/issues/new (voice mode of H07)` | Decided: a voice option inside H07, not a second report screen |
+| M43 | Voice report | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Built | `apps/member-mobile/app/(member)/issues/report.tsx` (voice mode of H07) | Decided: a voice option inside H07, not a second report screen. On-device recognition only (`expo-speech-recognition`); shown while `voice_reports` is on |
 | M44 | Accessibility and data saver | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Built (text size and data saver; voice in Phase 3) | `apps/member-mobile/app/(member)/profile/accessibility.tsx` | In-app text size (Standard, Large, Larger) and a data saver that loads gallery photos on tap; stays on the device |
 | M45 | Messages and channels | SMS and WhatsApp (SC-39) | 1 SMS, 2 WhatsApp | Built (preferences; SMS waits on INT-01, push on INT-02, WhatsApp in Phase 2) | `apps/member-mobile/app/(member)/profile/settings.tsx (channels, with P05)` | Independent push/SMS toggles per category; no second preferences screen. Decided: extends the P05 settings screen; no second preferences screen. |
 | M46 | Diaspora participation | Diaspora (SC-40) | 3 | To build | `apps/member-mobile/app/(member)/diaspora.tsx` |  |
@@ -188,8 +188,8 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | D17 | Scorecard publication | Accountability scorecard (SC-26) | 2 | Built | `apps/admin-web/src/app/(staff)/scorecards/` |  |
 | D18 | Town hall production and moderation | Town hall (SC-27) | 2 | Built | `apps/admin-web/src/app/(staff)/town-halls/` |  |
 | D19 | Budgeting administration | Participatory budgeting (SC-28) | 3 | To build | `apps/admin-web/src/app/(staff)/budgeting/` |  |
-| D20 | Assistant knowledge base | Tamil AI assistant (SC-29) | 3 | Blocked: OD-42 | `apps/admin-web/src/app/(staff)/assistant/` |  |
-| D21 | AI model registry and monitoring | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-42 | `apps/admin-web/src/app/(staff)/ai-models/` |  |
+| D20 | Assistant knowledge base | Tamil AI assistant (SC-29) | 3 | Built | `apps/admin-web/src/app/(staff)/assistant/` |  |
+| D21 | AI model registry and monitoring | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/ai-models/` |  |
 | D22 | Election mode administration | Election mode (SC-30) | 2 | Built (periods, silence windows, notices; duty roster, polling information and period report have no API yet) | `apps/admin-web/src/app/(staff)/elections/` |  |
 | D23 | Committees and wings administration | Wings and committees (SC-31) | 3 | To build | `apps/admin-web/src/app/(staff)/committees/` |  |
 | D24 | Field operations oversight | Field operations (SC-32) | 2 | Built | `apps/admin-web/src/app/(staff)/field/` | Counts by area and month; visits deleted after 12 months (OD-38) |

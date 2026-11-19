@@ -8,8 +8,12 @@ import { colors, control, iconSize, iconTile, spacing } from '@my-people/design-
 import { AppText, fontFamilyFor, useApiQuery, useLanguage, useReloadOnFocus } from '@my-people/mobile-ui';
 
 import { api } from '@/lib/api';
+import { useFeatureEnabled } from '@/lib/useFeatureEnabled';
 
-/** Stable member navigation: account on the left, product in the centre, inbox on the right. */
+/**
+ * Stable member navigation: account on the left, product in the centre, inbox on the right. The AI
+ * assistant's button sits beside the inbox only while its module is on (M28; no sixth tab).
+ */
 export function MemberTopBar() {
   const { t } = useTranslation();
   const language = useLanguage();
@@ -19,6 +23,7 @@ export function MemberTopBar() {
   const inbox = useApiQuery(() => api().getNotifications({ limit: 1 }));
   useReloadOnFocus(inbox.reload);
   const unread = inbox.data?.unread ?? 0;
+  const assistantOn = useFeatureEnabled('ai_assistant');
 
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
@@ -56,6 +61,21 @@ export function MemberTopBar() {
             </AppText>
           </View>
         </View>
+
+        {assistantOn ? (
+          <Pressable
+            onPress={() => router.push('/assistant')}
+            accessibilityRole="button"
+            accessibilityLabel={t('m.assistant.open')}
+            hitSlop={4}
+            style={styles.action}>
+            {({ pressed }) => (
+              <View style={[styles.circle, pressed && styles.pressed]}>
+                <Ionicons name="sparkles-outline" size={iconSize.header} color={colors.primaryDark} />
+              </View>
+            )}
+          </Pressable>
+        ) : null}
 
         <Pressable
           onPress={() => router.push('/notifications')}

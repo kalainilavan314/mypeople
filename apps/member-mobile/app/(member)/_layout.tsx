@@ -39,6 +39,8 @@ export default function MemberLayout() {
       <Stack.Screen name="setup/index" options={{ title: t('m.setup.title') }} />
       <Stack.Screen name="setup/survey" options={{ title: t('m.setup.surveyTitle') }} />
       <Stack.Screen name="notifications" options={{ title: t('m.inbox.title') }} />
+      <Stack.Screen name="assistant/index" options={{ title: t('m.assistant.title') }} />
+      <Stack.Screen name="assistant/help" options={{ title: t('m.assistant.helpTitle') }} />
       <Stack.Screen name="hub" options={{ title: t('m.home.hub') }} />
       <Stack.Screen name="events/[id]" options={{ title: t('m.events.details') }} />
       <Stack.Screen name="events/[id]/pass" options={{ title: t('m.events.passTitle') }} />
