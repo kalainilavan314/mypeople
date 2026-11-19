@@ -6,7 +6,11 @@ import { Notice, type Loaded } from '@my-people/mobile-ui';
 import { QueryView } from '@/components/QueryView';
 import { featureClosed } from '@/lib/errors';
 
-/** The Phase 2 modules with their own m.<feature>.notOpenTitle and notOpenBody words. */
+/**
+ * The modules with their own m.<feature>.notOpenTitle and notOpenBody words. A dotted name is a
+ * second switch inside a block: "official.updates" is official_content (M47, checking a code) beside
+ * fact_checks ("official"), and "election.info" is election_mode (M29) beside election_roster.
+ */
 export type ClosableFeature =
   | 'issues'
   | 'volunteer'
@@ -20,7 +24,9 @@ export type ClosableFeature =
   | 'support'
   | 'townHalls'
   | 'election'
-  | 'official';
+  | 'election.info'
+  | 'official'
+  | 'official.updates';
 
 /**
  * QueryView for a module the team can switch off. While it is off the API answers

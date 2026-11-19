@@ -358,6 +358,23 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     ta: 'இப்பகுதியிலும் இந்நேரத்திலும் தேர்தல் அமைதிக்காலம் நடைமுறையில் உள்ளது.',
     en: 'An election silence period covers this area and time.',
   },
+  // Official content publishing and signing (D30).
+  official_refused: {
+    ta: 'அதிகாரபூர்வ அறிக்கை நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The official statement action was not recorded. Fix the points below and try again.',
+  },
+  signing_unavailable: {
+    ta: 'கையொப்ப விசை அமைக்கப்படாததால் கையொப்பமிட முடியாது. எதுவும் அதிகாரபூர்வமாக வெளியிடப்படவில்லை.',
+    en: 'Signing is unavailable: no signing key is configured on the server. Nothing was published as official.',
+  },
+  not_a_registered_publisher: {
+    ta: 'நீங்கள் பதிவுசெய்யப்பட்ட வெளியீட்டாளர் அல்லாததால் கையொப்பமிட முடியாது. அடுக்கு 5 நிர்வாகி ஒருவர் உங்களைப் பதிவுசெய்ய வேண்டும். இம்முயற்சி தணிக்கைப் பதிவில் சேர்க்கப்பட்டது.',
+    en: 'You are not a registered publisher, so you cannot sign. A Tier 5 administrator must register you. The attempt has been recorded in the audit log.',
+  },
+  official_silence_period: {
+    ta: 'தேர்தல் அமைதிக்காலம் ஒன்று நடைமுறையில் உள்ளது. அது முடியும் வரை அதிகாரபூர்வ அறிக்கைகளை வெளியிடவோ திருத்தவோ முடியாது; மீளப்பெறலாம்.',
+    en: 'An election silence period is in force. Official statements cannot be published or corrected until it ends; they can still be withdrawn.',
+  },
 };
 
 const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
@@ -1166,6 +1183,29 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'இந்த முறைப்பாடு இன்னும் தீர்மானிக்கப்படவில்லை.',
     en: 'This report has not been decided yet.',
   },
+  correction_reason_required: {
+    ta: 'திருத்தத்துக்கான காரணத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 3 எழுத்துகள்).',
+    en: 'Give the reason for the correction in Tamil and English (at least 3 characters).',
+  },
+  withdrawal_reason_required: {
+    ta: 'மீளப்பெறுவதற்கான காரணத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 3 எழுத்துகள்).',
+    en: 'Give the reason for withdrawing in Tamil and English (at least 3 characters).',
+  },
+  nothing_changed: {
+    ta: 'திருத்தத்தில் எதுவும் மாற்றப்படவில்லை. சொற்களையோ படத்தையோ மாற்றிய பின் வெளியிடவும்.',
+    en: 'The correction changes nothing. Change the words or the image, then publish it.',
+  },
+  image_not_found: { ta: 'அந்தப் படம் காணப்படவில்லை. மீண்டும் பதிவேற்றவும்.', en: 'That image was not found. Upload it again.' },
+  needs_sign_publish_permission: {
+    ta: 'இவருக்கு content.sign_publish அனுமதி இல்லை. முதலில் பொறுப்புகளும் அனுமதிகளும் பக்கத்தில் அதை வழங்கவும்.',
+    en: 'This person does not hold content.sign_publish. Grant it on Roles and access first.',
+  },
+  already_registered: { ta: 'இவர் ஏற்கனவே பதிவுசெய்யப்பட்ட வெளியீட்டாளர்.', en: 'This person is already a registered publisher.' },
+  already_revoked: { ta: 'இந்தப் பதிவு ஏற்கனவே மீளப்பெறப்பட்டது.', en: 'This registration was already revoked.' },
+  publisher_name_required: {
+    ta: 'அறிக்கைகளில் காட்டப்படும் பெயரைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the name shown on statements in Tamil and English.',
+  },
 };
 
 /** Problems that name a question or lesson by its number, e.g. "options_required:2". */
@@ -1790,6 +1830,30 @@ const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
   misinfo_appeal_changed: {
     ta: 'முடிவு மாற்றப்பட்டது.',
     en: 'Outcome changed.',
+  },
+  official_drafted: { ta: 'வரைவு உருவாக்கப்பட்டது.', en: 'Draft created.' },
+  official_saved: { ta: 'வரைவு சேமிக்கப்பட்டது.', en: 'Draft saved.' },
+  official_image_attached: {
+    ta: 'படம் வரைவில் இணைக்கப்பட்டது; கையொப்பமிடும்போது அதுவும் கையொப்பமிடப்படும்.',
+    en: 'Image attached to the draft; it is signed with the statement.',
+  },
+  official_image_removed: { ta: 'படம் வரைவிலிருந்து நீக்கப்பட்டது.', en: 'Image removed from the draft.' },
+  official_published: {
+    ta: 'கையொப்பமிட்டு வெளியிடப்பட்டது. சரிபார்ப்புக் குறியீட்டையும் இணைப்பையும் அறிக்கையுடன் பகிருங்கள்.',
+    en: 'Signed and published. Share the check code and link with the statement.',
+  },
+  official_corrected: {
+    ta: 'திருத்தம் கையொப்பமிட்ட புதிய பதிப்பாகச் சேர்க்கப்பட்டது; மூலப் பதிப்பு மாறவில்லை.',
+    en: 'Correction added as a new signed version; the original is unchanged.',
+  },
+  official_withdrawn: {
+    ta: 'அறிக்கை மீளப்பெறப்பட்டது. சரிபார்ப்பவர்கள் அனைவருக்கும் அது காரணத்துடன் தெரிவிக்கப்படும்.',
+    en: 'Statement withdrawn. Everyone who checks it is told, with your reason.',
+  },
+  publisher_registered: { ta: 'வெளியீட்டாளர் பதிவுசெய்யப்பட்டார்.', en: 'Publisher registered.' },
+  publisher_revoked: {
+    ta: 'வெளியீட்டாளர் பதிவு மீளப்பெறப்பட்டது. அவர் முன்பு கையொப்பமிட்டவை தொடர்ந்தும் உறுதிப்படும்.',
+    en: 'Publisher registration revoked. What they signed before still verifies.',
   },
 };
 

@@ -319,13 +319,31 @@ Behind the `field_visits` and `election_roster` switches (phase 2). Neither reco
 
 ### Fact-checks (`/v1/fact-checks`)
 
-Behind the `fact_checks` switch (phase 2). A person decides every report; no automatic score exists (BR-149). Checking a statement against its signed original (FR-AUT-005, M47, D30) waits for the signing keys (INT-24).
+Behind the `fact_checks` switch (phase 2). A person decides every report; no automatic score exists (BR-149). Checking a statement against its signed original (FR-AUT-005) is `/v1/content/official/check`, below.
 
 | Endpoint | Needs | Success | Errors |
 |---|---|---|---|
 | `POST /screenshots` body = the image, `POST /reports` `{link?, description, screenshotId?}` | a session | `201` the `MR-` report, pending | `422 link_or_screenshot_required`, `screenshot_not_found`, `too_many_reports_today` |
 | `GET /reports/mine`, `POST /reports/{id}/appeal` `{body}` | the reporter | outcome and reason; one appeal | `422 not_decided`, `already_appealed` |
 | `GET /manage?open_only`, `GET /manage/{id}/screenshot`, `POST /manage/{id}/decision` `{outcome, reason}`, `POST /manage/{id}/appeal-decision` `{change, outcome?, reason}` | `content.moderate` | the D12 fact-check queue; screenshot views audited | `403 own_record`, `original_decider`; `422 already_decided`, `no_open_appeal`, `new_outcome_required` |
+
+### Official content (`/v1/content/official`)
+
+Behind the `official_content` switch (phase 3). Ed25519 signatures over a sorted-key JSON payload (`signedPayload`, format `tmk-official-statement/1`); [ASSUMPTION] INT-24: one key from `CONTENT_SIGNING_KEY` until a KMS is chosen. "Signed" (and the "Official statement" label) means every revision verifies now (BR-148).
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /keys` | nothing (INT-22) | `200 [{keyId, algorithm, publicKey, firstUsedAt, current}]`, every key that has signed and the current one | `404 feature_unavailable` |
+| `GET /check?code=` (a code or a check link) | nothing; limited per address | `200 {checkCode, status: verified \| withdrawn \| not_verified, problem: no_matching_record \| signature_invalid \| null, statement}`; the statement only when verified or withdrawn | `429 too_many_requests` with `Retry-After` |
+| `GET /images/{id}?size=display\|thumb` | nothing; only images a signed revision carries | `200 image/webp` | `404` |
+| `GET ""?limit`, `GET /{id}` | a session | M47: published and withdrawn statements with the latest revision; one with every revision | `404` |
+| `GET /manage/signing` | `content.sign_publish` or `system.configure` | `{available, keyId, publicKey, myPublisher}` | `403` |
+| `GET /manage?state`, `GET /manage/{id}`, `GET /manage/images/{id}` | as above | drafts and signed statements; a draft's image | `403`, `404` |
+| `POST /manage`, `PUT /manage/{id}` `{titleEn, titleTa, bodyEn, bodyTa, imageId?}` (any may be empty in a draft); `POST /manage/images` body = the image | `content.sign_publish` | `201`/`200` the draft; the image `{id, width, height, sha256}` | `422 official_refused`: `not_allowed_from:<state>`, `image_not_found`, `unsupported_type`; `413`, `415` |
+| `POST /manage/{id}/publish` | `content.sign_publish` and an active registration | `200` revision 1 signed, a `TMK-XXXX-XXXX` check code | `503 signing_unavailable`; `403 not_a_registered_publisher` (audited); `409 {code: silence_period}`; `422 official_refused`: `title_ta_required`, `title_en_required`, `body_ta_required`, `body_en_required`, `not_allowed_from:<state>` |
+| `POST /manage/{id}/corrections` `{titleEn, titleTa, bodyEn, bodyTa, imageId?, reasonEn, reasonTa}` | as above | `200` a new signed revision; earlier ones unchanged (BR-150) | as above, and `nothing_changed` |
+| `POST /manage/{id}/withdraw` `{reasonEn, reasonTa}` | a registered publisher or `system.configure` | `200` withdrawn; every check says so | `403`, `404`, `422 not_allowed_from:<state>` |
+| `GET /publishers`, `POST /publishers` `{memberCode, nameEn, nameTa}`, `POST /publishers/{id}/revoke` `{reason}` | `system.configure` over the platform (Tier 5) | the approved publishers (FR-AUT-001) | `403 platform_scope_required`, `own_record`; `422 official_refused`: `member_not_found`, `needs_sign_publish_permission`, `already_registered`, `already_revoked` |
 
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 
@@ -410,6 +428,7 @@ Review evidence is append-only. The external signed record remains in its contro
 | Endpoint | Needs | Success | Errors |
 |---|---|---|---|
 | `GET /v1/election/current` | a session; the `election_mode` feature | `200 [{periodRef, electionType, titleEn, titleTa, pollingDay, daysToPolling, inSilence, silenceStartsAt, silenceEndsAt, labelEn, labelTa, sourceUrl, sourceReference, sourcePublishedAt, notices}]` for periods whose area contains the member's | `404 feature_unavailable` |
+| `GET /v1/election/official-links` | a session; the `election_mode` feature | `200 {links: [{key, labelEn, labelTa, descriptionEn, descriptionTa, url}], labelEn, labelTa, pollingStationLocator: false}`, M29's Election Commission services; nothing is stored | `404 feature_unavailable` |
 | `GET /v1/election/periods?state&limit` | `election.mode.manage` | `200` declared periods by default | `403` |
 | `POST /v1/election/periods` body `{electionType, titleEn, titleTa, area, startsAt, endsAt, silenceStartsAt, silenceEndsAt, pollingDay, sourceUrl, sourceReference, sourcePublishedAt}` | `election.mode.manage` over the area | `201` the period with `overlaps` (a warning) | `403`, `422 {code: "election_invalid", problems}`: `ends_before_start`, `already_over`, `silence_ends_before_start`, `silence_outside_period`, `silence_must_cover_polling_day`, `source_in_future`, `unknown_area` |
 | `GET /v1/election/periods/{id}` | as above | `200` the period with every notice | `403`, `404` |

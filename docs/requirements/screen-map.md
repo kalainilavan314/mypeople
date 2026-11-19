@@ -108,7 +108,7 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | M26 | Cast budgeting ballot | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
 | M27 | Budgeting results | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
 | M28 | Tamil AI Assistant | Tamil AI assistant (SC-29) | 3 | Blocked: OD-42 (AI provider) | `apps/member-mobile/app/(member)/assistant.tsx` |  |
-| M29 | Election information | Election mode (SC-30) | 2 | Blocked: DEP-19 (legal opinion) | `apps/member-mobile/app/(member)/election.tsx` |  |
+| M29 | Election information | Election mode (SC-30) | 2 | Built | `apps/member-mobile/app/(member)/election.tsx` | Behind `election_mode`; Election Commission dates, notices and links only, labelled; Home banner `src/features/election/ElectionBanner.tsx`. [ASSUMPTION] DEP-19: the switch stays off until the legal opinion is recorded |
 | M30 | Duty roster and shift check-in | Election mode (SC-30) | 2 | Built | `apps/member-mobile/app/(member)/volunteer/assignments.tsx` | Behind `election_roster`; decided: election duties listed with H12 My assignment |
 | M31 | My committees | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/committees/` |  |
 | M32 | Committee space | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/committees/` |  |
@@ -126,8 +126,8 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | M44 | Accessibility and data saver | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Built (text size and data saver; voice in Phase 3) | `apps/member-mobile/app/(member)/profile/accessibility.tsx` | In-app text size (Standard, Large, Larger) and a data saver that loads gallery photos on tap; stays on the device |
 | M45 | Messages and channels | SMS and WhatsApp (SC-39) | 1 SMS, 2 WhatsApp | Built (preferences; SMS waits on INT-01, push on INT-02, WhatsApp in Phase 2) | `apps/member-mobile/app/(member)/profile/settings.tsx (channels, with P05)` | Independent push/SMS toggles per category; no second preferences screen. Decided: extends the P05 settings screen; no second preferences screen. |
 | M46 | Diaspora participation | Diaspora (SC-40) | 3 | To build | `apps/member-mobile/app/(member)/diaspora.tsx` |  |
-| M47 | Official updates | Official content and fact-checks (SC-41) | 2 | Blocked: INT-24 | `apps/member-mobile/app/(member)/official/` |  |
-| M48 | Check or report a statement | Official content and fact-checks (SC-41) | 2 | Partly built | `apps/member-mobile/app/(member)/official/` | Reporting a statement is built (behind `fact_checks`); checking a statement by code waits for INT-24 |
+| M47 | Official updates | Official content and fact-checks (SC-41) | 2 | Built | `apps/member-mobile/app/(member)/official/updates/` | Behind `official_content` (Phase 3 switch); "Official statement" only where the Ed25519 signature verifies; full revision history. [ASSUMPTION] INT-24: key in a server setting until a KMS |
+| M48 | Check or report a statement | Official content and fact-checks (SC-41) | 2 | Built | `apps/member-mobile/app/(member)/official/` | Checking by code or link (`official/check.tsx`, behind `official_content`) and reporting (behind `fact_checks`); a check link opens the public page `apps/member-mobile/app/check/[code].tsx`, no account needed |
 | M49 | Devices and sessions | Account and device security (SC-42) | 1 | Built (remote revocation) | `apps/member-mobile/app/(member)/profile/security.tsx` | Confirmed session termination; device file wipe and passkeys await INT-02/INT-09. |
 | M50 | Security alerts | Account and device security (SC-42) | 1 | Built | `apps/member-mobile/app/(member)/profile/security.tsx` |  |
 | M51 | Card payment handoff | Payment gateway (SC-43) | 3, subject to OD-27 | Blocked: OD-27, OD-40 (payments) | `apps/member-mobile/app/(member)/fund/payment/` |  |
@@ -198,7 +198,7 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | D27 | Blood request desk | Blood donors (SC-35) | 3 | Blocked: OD-39 | `apps/admin-web/src/app/(staff)/blood-requests/` |  |
 | D28 | Livelihood guide content | Livelihood guide (SC-36) | 3 | To build | `apps/admin-web/src/app/(staff)/livelihood/` |  |
 | D29 | Representatives and appointments | Meet your representative (SC-37) | 3 | To build | `apps/admin-web/src/app/(staff)/representatives/` |  |
-| D30 | Official content publishing and signing | Official content and fact-checks (SC-41) | 2 | Blocked: INT-24 (signing keys in KMS) | `apps/admin-web/src/app/(staff)/publishing/` |  |
+| D30 | Official content publishing and signing | Official content and fact-checks (SC-41) | 2 | Built | `apps/admin-web/src/app/(staff)/publishing/` | Draft, image, sign and publish, corrections and withdrawal; Tier 5 registers publishers at `publishing/publishers/`. [ASSUMPTION] INT-24: one Ed25519 key in `CONTENT_SIGNING_KEY` until a KMS; without it signing is refused |
 | D31 | Security centre | Account and device security (SC-42) | 1 | Built | `apps/admin-web/src/app/(staff)/access-reviews/page.tsx` |  |
 | D32 | Analytics dashboards | Administration (SC-17, SC-20) | 1–3 | Built (Phase 1 operational figures; further dashboards and exports later) | `apps/admin-web/src/app/(staff)/analytics/` | Registration, identity reviews, review queue and event attendance for the viewer's areas; groups of 1 to 9 hidden |
 | D33 | Audit log viewer | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/audit/page.tsx` |  |

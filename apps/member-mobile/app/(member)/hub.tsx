@@ -36,7 +36,9 @@ export default function HubScreen() {
                   <CommunityServiceTile key={feature.key} feature={feature} />
                 ))}
               </View>
-              {/* Town halls (M21) and statement reports (M48) have no Home key of their own. */}
+              {/* Town halls (M21), official updates (M47), statement checks and reports (M48) and election
+                  information (M29) have no Home key of their own; each screen says "not open yet" while its
+                  switch is off. */}
               <AppText step="section" accessibilityRole="header" style={[styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
                 {t('m.home.hubMore')}
               </AppText>
@@ -50,11 +52,25 @@ export default function HubScreen() {
                   onPress={() => router.push('/town-halls')}
                 />
                 <MenuRow
+                  icon="document-text-outline"
+                  tint="blue"
+                  label={t('m.official.updatesTitle')}
+                  hint={t('m.official.updatesHint')}
+                  onPress={() => router.push('/official/updates')}
+                />
+                <MenuRow
                   icon="shield-checkmark-outline"
                   tint="blue"
                   label={t('m.official.title')}
                   hint={t('m.official.hubHint')}
                   onPress={() => router.push('/official')}
+                />
+                <MenuRow
+                  icon="information-circle-outline"
+                  tint="teal"
+                  label={t('m.election.infoTitle')}
+                  hint={t('m.election.infoHint')}
+                  onPress={() => router.push('/election')}
                 />
               </SurfaceCard>
             </>
