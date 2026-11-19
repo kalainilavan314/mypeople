@@ -40,6 +40,7 @@ export const permissionNames: Readonly<Record<string, StaffTerm>> = {
   'idv.appeal.decide': { ta: 'சரிபார்ப்பு மேன்முறையீடுகளைத் தீர்மானித்தல்', en: 'Decide verification appeals' },
   'ai.model.approve': { ta: 'AI மாதிரிகளை அங்கீகரித்தல்', en: 'Approve AI models' },
   'ai.model.monitor': { ta: 'AI மாதிரிகளைக் கண்காணித்தல்', en: 'Monitor AI models' },
+  'ai.kb.manage': { ta: 'AI உதவியாளரின் அறிவுத் தளத்தை நிர்வகித்தல்', en: 'Manage the assistant’s knowledge base' },
   'household.view_for_case': { ta: 'விவகாரத்துக்காகக் குடும்ப விவரங்களைப் பார்த்தல்', en: 'View households for a case' },
   'assistance.intake': { ta: 'உதவிக் கோரிக்கைகளைப் பதிவுசெய்தல்', en: 'Take assistance requests' },
   'assistance.casework': { ta: 'உதவி விவகாரங்களைக் கையாளுதல்', en: 'Handle assistance cases' },

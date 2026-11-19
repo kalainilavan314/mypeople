@@ -285,6 +285,47 @@ export type PublicSupportReceipt = Schemas['PublicReceiptOut'];
 export type PublicSupportStatistics = Schemas['PublicSupportStatisticsOut'];
 export type MySupportReferral = Schemas['MyReferralOut'];
 export type SupportReferral = Schemas['ReferralOut'];
+// Tamil AI assistant (M28), its knowledge base (D20) and the AI model registry (D21).
+export type AssistantHome = Schemas['AssistantHomeOut'];
+export type AssistantUnavailableReason = NonNullable<AssistantHome['reason']>;
+export type AssistantConversationSummary = Schemas['AssistantConversationSummaryOut'];
+export type AssistantConversation = Schemas['AssistantConversationOut'];
+export type AssistantMessage = Schemas['AssistantMessageOut'];
+export type AssistantCitation = Schemas['AssistantCitationOut'];
+export type AssistantOutcome = NonNullable<AssistantMessage['outcome']>;
+export type AssistantRating = NonNullable<AssistantMessage['rating']>;
+export type AssistantLanguage = Schemas['AssistantAskIn']['language'];
+export type AssistantAskInput = Schemas['AssistantAskIn'];
+export type AssistantAskResult = Schemas['AssistantAskOut'];
+export type AssistantReceipt = Schemas['AssistantReceiptOut'];
+export type AssistantHandoverInput = Schemas['AssistantHandoverIn'];
+export type AssistantHandover = Schemas['AssistantHandoverOut'];
+export type AssistantHandoverState = AssistantHandover['state'];
+export type AssistantSummary = Schemas['AssistantSummaryOut'];
+export type AssistantErrorReport = Schemas['AssistantErrorReportOut'];
+export type AssistantErrorReportState = AssistantErrorReport['state'];
+export type AssistantStaffHandover = Schemas['AssistantStaffHandoverOut'];
+export type AssistantPreview = Schemas['AssistantPreviewOut'];
+export type KnowledgeSourceSummary = Schemas['KbSourceSummaryOut'];
+export type KnowledgeSource = Schemas['KbSourceOut'];
+export type KnowledgeSourceFile = Schemas['KbSourceFileOut'];
+export type KnowledgeSourceInput = Schemas['KbSourceIn'];
+export type KnowledgeSourceKind = KnowledgeSource['kind'];
+export type KnowledgeSourceState = KnowledgeSource['state'];
+export type AiRegistry = Schemas['AiRegistryOut'];
+export type AiModel = Schemas['AiModelOut'];
+export type AiModelInput = Schemas['AiModelIn'];
+export type AiModelTask = AiModel['task'];
+export type AiModelStatus = AiModel['status'];
+export type AiProviderCode = AiModel['providerCode'];
+export type AiModelSummary = Schemas['AiModelSummaryOut'];
+export type AiModelFile = Schemas['AiModelFileOut'];
+export type AiEvaluation = Schemas['AiEvaluationOut'];
+export type AiEvaluationInput = Schemas['AiEvaluationIn'];
+export type AiFairnessReview = Schemas['AiFairnessOut'];
+export type AiFairnessInput = Schemas['AiFairnessIn'];
+export type AiFairnessOutcome = AiFairnessReview['outcome'];
+export type AiUsage = Schemas['AiUsageOut'];
 // Town halls (M21 to M23, D18).
 export type TownHall = Schemas['TownHallOut'];
 export type TownHallSession = Schemas['TownHallSessionOut'];
@@ -1867,6 +1908,78 @@ export function createApiClient({
       if (!response.ok) throw await toApiError(response);
       return response.text();
     },
+    // Tamil AI assistant (M28). Member routes answer 404 "feature_unavailable" while ai_assistant is off;
+    // 503 "assistant_unavailable" (problems provider_not_configured, model_not_approved) while no model may
+    // answer; 429 "assistant_refused" for too_many_questions, too_many_reports_today, too_many_open_requests.
+    getAssistantHome: () => request<AssistantHome>('GET', '/v1/assistant'),
+    /** Starts a conversation when conversationId is left out. The question comes back with identifiers removed. */
+    askAssistant: (input: AssistantAskInput) => request<AssistantAskResult>('POST', '/v1/assistant/messages', input),
+    getAssistantConversation: (conversationId: string) =>
+      request<AssistantConversation>('GET', `/v1/assistant/conversations/${encodeURIComponent(conversationId)}`),
+    deleteAssistantConversation: (conversationId: string) =>
+      request<void>('DELETE', `/v1/assistant/conversations/${encodeURIComponent(conversationId)}`),
+    /** null takes the rating back. */
+    rateAssistantAnswer: (messageId: string, rating: AssistantRating | null) =>
+      request<AssistantMessage>('POST', `/v1/assistant/messages/${encodeURIComponent(messageId)}/rating`, { rating }),
+    reportAssistantError: (messageId: string, note: string) =>
+      request<AssistantReceipt>('POST', `/v1/assistant/messages/${encodeURIComponent(messageId)}/error-report`, { note }),
+    listMyAssistantHandovers: () => request<AssistantHandover[]>('GET', '/v1/assistant/handovers'),
+    /** shareConversation must be true for the conversation to be passed on (FR-AIA-007). */
+    requestAssistantHandover: (input: AssistantHandoverInput) =>
+      request<AssistantHandover>('POST', '/v1/assistant/handovers', input),
+    // Assistant knowledge base for Knowledge Editors (D20, ai.kb.manage); refusals are "source_refused" (422).
+    getAssistantSummary: () => request<AssistantSummary>('GET', '/v1/assistant/manage/summary'),
+    listKnowledgeSources: (filters: { state?: KnowledgeSourceState; kind?: KnowledgeSourceKind } = {}) =>
+      request<KnowledgeSourceSummary[]>('GET', `/v1/assistant/manage/sources${toEventQuery(filters)}`),
+    getKnowledgeSource: (sourceId: string) =>
+      request<KnowledgeSourceFile>('GET', `/v1/assistant/manage/sources/${encodeURIComponent(sourceId)}`),
+    draftKnowledgeSource: (input: KnowledgeSourceInput) =>
+      request<KnowledgeSource>('POST', '/v1/assistant/manage/sources', input),
+    editKnowledgeSourceDraft: (sourceId: string, input: KnowledgeSourceInput) =>
+      request<KnowledgeSource>('PUT', `/v1/assistant/manage/sources/${encodeURIComponent(sourceId)}`, input),
+    draftKnowledgeSourceVersion: (sourceId: string) =>
+      request<KnowledgeSource>('POST', `/v1/assistant/manage/sources/${encodeURIComponent(sourceId)}/new-version`),
+    /** A second Knowledge Editor approves; the drafter gets 403 "own_draft". */
+    decideKnowledgeSource: (sourceId: string, approve: boolean, reason?: string) =>
+      request<KnowledgeSource>('POST', `/v1/assistant/manage/sources/${encodeURIComponent(sourceId)}/decision`, {
+        approve,
+        reason: reason ?? null,
+      }),
+    reviewKnowledgeSource: (sourceId: string, reviewDue: string) =>
+      request<KnowledgeSource>('POST', `/v1/assistant/manage/sources/${encodeURIComponent(sourceId)}/review`, { reviewDue }),
+    retireKnowledgeSource: (sourceId: string, reason: string) =>
+      request<KnowledgeSource>('POST', `/v1/assistant/manage/sources/${encodeURIComponent(sourceId)}/retire`, { reason }),
+    listAssistantErrorReports: (state?: AssistantErrorReportState) =>
+      request<AssistantErrorReport[]>('GET', `/v1/assistant/manage/error-reports${toEventQuery({ state })}`),
+    resolveAssistantErrorReport: (reportId: string, outcome: 'fixed' | 'no_change', resolution: string) =>
+      request<AssistantErrorReport>('POST', `/v1/assistant/manage/error-reports/${encodeURIComponent(reportId)}/resolve`, {
+        outcome,
+        resolution,
+      }),
+    listAssistantHandovers: (state?: AssistantHandoverState) =>
+      request<AssistantStaffHandover[]>('GET', `/v1/assistant/manage/handovers${toEventQuery({ state })}`),
+    replyToAssistantHandover: (handoverId: string, reply: string) =>
+      request<AssistantStaffHandover>('POST', `/v1/assistant/manage/handovers/${encodeURIComponent(handoverId)}/reply`, {
+        reply,
+      }),
+    closeAssistantHandover: (handoverId: string) =>
+      request<AssistantStaffHandover>('POST', `/v1/assistant/manage/handovers/${encodeURIComponent(handoverId)}/close`),
+    /** Try a question with the configured model, in shadow mode too; never shown to members. */
+    tryAssistantQuestion: (question: string, language: 'ta' | 'en') =>
+      request<AssistantPreview>('POST', '/v1/assistant/manage/try', { question, language }),
+    // AI model registry and monitoring (D21, ai.model.monitor / ai.model.approve); refusals are "model_refused" (422).
+    getAiRegistry: () => request<AiRegistry>('GET', '/v1/ai-models'),
+    registerAiModel: (input: AiModelInput) => request<AiModel>('POST', '/v1/ai-models', input),
+    getAiModel: (modelId: string) => request<AiModelFile>('GET', `/v1/ai-models/${encodeURIComponent(modelId)}`),
+    recordAiEvaluation: (modelId: string, input: AiEvaluationInput) =>
+      request<AiEvaluation>('POST', `/v1/ai-models/${encodeURIComponent(modelId)}/evaluations`, input),
+    recordAiFairnessReview: (modelId: string, input: AiFairnessInput) =>
+      request<AiFairnessReview>('POST', `/v1/ai-models/${encodeURIComponent(modelId)}/fairness-reviews`, input),
+    /** PRM-30. A version that was live before goes live again at once (rollback). */
+    makeAiModelLive: (modelId: string, reason: string) =>
+      request<AiModel>('POST', `/v1/ai-models/${encodeURIComponent(modelId)}/go-live`, { reason }),
+    retireAiModel: (modelId: string, reason: string) =>
+      request<AiModel>('POST', `/v1/ai-models/${encodeURIComponent(modelId)}/retire`, { reason }),
   };
 }
 

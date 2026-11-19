@@ -24,7 +24,8 @@ def last_audit(db_session):
 
 
 def test_tier_five_may_hold_forty_of_the_permissions():
-    assert len(EVERY_TIER5) == 40
+    # Forty-one with PRM-47 ai.kb.manage (Tamil AI assistant, Phase 3).
+    assert len(EVERY_TIER5) == 41
     assert "events.checkin_scan" not in EVERY_TIER5  # kept for the tiers that do the work (BRD §9.8)
 
 
@@ -56,7 +57,7 @@ def test_the_super_administrator_is_widened_and_the_old_assignment_kept_as_histo
     assert (old.state, old.ended_by) == ("revoked", None) and "every Tier 5 permission" in old.end_reason
     entry = last_audit(db_session)
     assert (entry.action, entry.target_id) == ("access.assignment.widened", str(widened.id))
-    assert entry.details["replaced"] == [str(first.id)] and len(entry.details["permissions"]) == 40
+    assert entry.details["replaced"] == [str(first.id)] and len(entry.details["permissions"]) == 41
     active = db_session.scalar(text("SELECT count(*) FROM access.staff_assignment WHERE tier = '5' AND state = 'active'"))
     assert active == 1
 

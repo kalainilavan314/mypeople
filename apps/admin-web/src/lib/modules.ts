@@ -86,6 +86,8 @@ export const builtModules: readonly AdminModule[] = [
     en: 'Finance queue & slips',
     permission: ['finance.review', 'finance.approve', 'finance.export', 'finance.audit_read'] as const,
   },
+  { href: '/assistant', ta: 'AI உதவியாளர் அறிவுத் தளம்', en: 'Assistant knowledge base', permission: ['ai.kb.manage'] as const },
+  { href: '/ai-models', ta: 'AI மாதிரிகள் பதிவேடு', en: 'AI model registry', permission: ['ai.model.monitor', 'ai.model.approve'] as const },
 ] as const;
 
 /** Planned modules in later phases with user-facing bilingual labels. */
@@ -93,5 +95,5 @@ export const plannedModules = [
   { name: 'Participatory budgeting', ta: 'பங்கேற்பு வரவுசெலவுத் திட்டம்', desc: 'Community voting on local budgets' },
   { name: 'Official publishing and signing', ta: 'அதிகாரப்பூர்வ வெளியீடு', desc: 'Official gazette and signed notices' },
   { name: 'Committees and wings', ta: 'குழுக்களும் பிரிவுகளும்', desc: 'Youth, women, and diaspora wings' },
-  { name: 'AI monitoring and further reports', ta: 'அறிக்கைகளும் அவதானிப்பும்', desc: 'Model safety (D21) and dashboards beyond the Phase 1 figures' },
+  { name: 'Further reports', ta: 'மேலதிக அறிக்கைகள்', desc: 'Dashboards beyond the Phase 1 figures' },
 ] as const;

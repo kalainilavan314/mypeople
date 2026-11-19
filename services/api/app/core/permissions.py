@@ -9,8 +9,10 @@ kind of area (TIER_AREA_LEVEL).
 Not grantable through staff assignments, and so not listed here:
 PRM-01, PRM-32 and PRM-56 (a member's own record), the event-scoped
 PRM-17 for members (OD-12), PRM-50 (committee scope), PRM-55 (partner
-organisations), and PRM-47 and PRM-57, which the BRD gives platform scope
-regardless of tier. They arrive with their own modules.
+organisations), and PRM-57, which the BRD gives platform scope regardless
+of tier. They arrive with their own modules. PRM-47 (ai.kb.manage) has that
+platform scope too: it is listed for the tiers that may hold it, and the
+assistant's knowledge base checks only that it is held, never an area.
 """
 
 from typing import Literal
@@ -75,6 +77,7 @@ MATRIX: dict[str, dict[Tier, Grant]] = {
     "idv.appeal.decide": {"4": E, "5": E},  # PRM-29
     "ai.model.approve": {"5": E},  # PRM-30
     "ai.model.monitor": {"5": E},  # PRM-31
+    "ai.kb.manage": {"3B": E, "4": E, "5": E},  # PRM-47 Knowledge Editor (platform scope regardless of tier)
     "household.view_for_case": {"1": E, "2B": E, "3A": E, "3B": E},  # PRM-33
     "assistance.intake": {"1": E, "2B": E, "3B": E},  # PRM-34
     "assistance.casework": {"1": E, "2B": E, "3A": E, "3B": E},  # PRM-35

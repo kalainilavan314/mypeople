@@ -22848,6 +22848,1739 @@
           }
         }
       }
+    },
+    "/v1/assistant": {
+      "get": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Assistant Home",
+        "description": "Whether the assistant can answer now (and why not), the member's recent conversations and open\nrequests for a person. Any signed-in member may use it.",
+        "operationId": "assistant_home_v1_assistant_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantHomeOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/assistant/messages": {
+      "post": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Ask",
+        "description": "Ask in Tamil or English. Identifiers are removed first (the question's `redactions` say which);\nthe answer cites approved sources, with official text quoted word for word, or says it cannot answer.",
+        "operationId": "ask_v1_assistant_messages_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantAskIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantAskOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found, or feature_unavailable while the assistant is switched off"
+          },
+          "409": {
+            "description": "assistant_refused: already_reported, already_resolved, already_closed, conversation_required"
+          },
+          "429": {
+            "description": "too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests"
+          },
+          "503": {
+            "description": "assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/assistant/conversations/{conversation_id}": {
+      "get": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Read Conversation",
+        "description": "The member's own conversation: messages from the last 30 days (OD-48).",
+        "operationId": "read_conversation_v1_assistant_conversations__conversation_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantConversationOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found, or feature_unavailable while the assistant is switched off"
+          },
+          "409": {
+            "description": "assistant_refused: already_reported, already_resolved, already_closed, conversation_required"
+          },
+          "429": {
+            "description": "too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests"
+          },
+          "503": {
+            "description": "assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Delete Conversation",
+        "operationId": "delete_conversation_v1_assistant_conversations__conversation_id__delete",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "not_found, or feature_unavailable while the assistant is switched off"
+          },
+          "409": {
+            "description": "assistant_refused: already_reported, already_resolved, already_closed, conversation_required"
+          },
+          "429": {
+            "description": "too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests"
+          },
+          "503": {
+            "description": "assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistant/messages/{message_id}/rating": {
+      "post": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Rate Answer",
+        "operationId": "rate_answer_v1_assistant_messages__message_id__rating_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "message_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Message Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantRatingIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantMessageOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found, or feature_unavailable while the assistant is switched off"
+          },
+          "409": {
+            "description": "assistant_refused: already_reported, already_resolved, already_closed, conversation_required"
+          },
+          "429": {
+            "description": "too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests"
+          },
+          "503": {
+            "description": "assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistant/messages/{message_id}/error-report": {
+      "post": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Report Error",
+        "description": "FR-AIA-008: the question, the answer and its citations go to the Knowledge Editor (D20).",
+        "operationId": "report_error_v1_assistant_messages__message_id__error_report_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "message_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Message Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantErrorReportIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantReceiptOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found, or feature_unavailable while the assistant is switched off"
+          },
+          "409": {
+            "description": "assistant_refused: already_reported, already_resolved, already_closed, conversation_required"
+          },
+          "429": {
+            "description": "too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests"
+          },
+          "503": {
+            "description": "assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistant/handovers": {
+      "get": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "My Handovers",
+        "operationId": "my_handovers_v1_assistant_handovers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AssistantHandoverOut"
+                  },
+                  "type": "array",
+                  "title": "Response My Handovers V1 Assistant Handovers Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Request Handover",
+        "description": "FR-AIA-007: ask for a person. The conversation is shared only with shareConversation true.",
+        "operationId": "request_handover_v1_assistant_handovers_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantHandoverIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantHandoverOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found, or feature_unavailable while the assistant is switched off"
+          },
+          "409": {
+            "description": "assistant_refused: already_reported, already_resolved, already_closed, conversation_required"
+          },
+          "429": {
+            "description": "too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests"
+          },
+          "503": {
+            "description": "assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/assistant/manage/summary": {
+      "get": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "Summary",
+        "operationId": "summary_v1_assistant_manage_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantSummaryOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/assistant/manage/error-reports": {
+      "get": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "Error Reports",
+        "description": "The Knowledge Editor's queue (FR-AIA-008); open reports first. Never names who reported.",
+        "operationId": "error_reports_v1_assistant_manage_error_reports_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "open",
+                    "fixed",
+                    "no_change"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssistantErrorReportOut"
+                  },
+                  "title": "Response Error Reports V1 Assistant Manage Error Reports Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistant/manage/error-reports/{report_id}/resolve": {
+      "post": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "Resolve Error Report",
+        "operationId": "resolve_error_report_v1_assistant_manage_error_reports__report_id__resolve_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Report Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantResolveIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantErrorReportOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found, or feature_unavailable while the assistant is switched off"
+          },
+          "409": {
+            "description": "assistant_refused: already_reported, already_resolved, already_closed, conversation_required"
+          },
+          "429": {
+            "description": "too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests"
+          },
+          "503": {
+            "description": "assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistant/manage/handovers": {
+      "get": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "Handovers",
+        "description": "[ASSUMPTION] Knowledge Editors answer requests for a person until a help desk exists.",
+        "operationId": "handovers_v1_assistant_manage_handovers_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "open",
+                    "answered",
+                    "closed"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssistantStaffHandoverOut"
+                  },
+                  "title": "Response Handovers V1 Assistant Manage Handovers Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistant/manage/handovers/{handover_id}/reply": {
+      "post": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "Reply Handover",
+        "description": "The member is notified and reads the reply in the app.",
+        "operationId": "reply_handover_v1_assistant_manage_handovers__handover_id__reply_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "handover_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Handover Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantReplyIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantStaffHandoverOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found, or feature_unavailable while the assistant is switched off"
+          },
+          "409": {
+            "description": "assistant_refused: already_reported, already_resolved, already_closed, conversation_required"
+          },
+          "429": {
+            "description": "too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests"
+          },
+          "503": {
+            "description": "assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistant/manage/handovers/{handover_id}/close": {
+      "post": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "Close Handover",
+        "operationId": "close_handover_v1_assistant_manage_handovers__handover_id__close_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "handover_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Handover Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantStaffHandoverOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found, or feature_unavailable while the assistant is switched off"
+          },
+          "409": {
+            "description": "assistant_refused: already_reported, already_resolved, already_closed, conversation_required"
+          },
+          "429": {
+            "description": "too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests"
+          },
+          "503": {
+            "description": "assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assistant/manage/try": {
+      "post": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "Try Question",
+        "description": "Try a question against the approved sources with the configured model, in shadow mode too.\nLogged as a staff preview (NFR-AI-01); nothing is kept but the log entry.",
+        "operationId": "try_question_v1_assistant_manage_try_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantPreviewIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantPreviewOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found, or feature_unavailable while the assistant is switched off"
+          },
+          "409": {
+            "description": "assistant_refused: already_reported, already_resolved, already_closed, conversation_required"
+          },
+          "429": {
+            "description": "too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests"
+          },
+          "503": {
+            "description": "assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/assistant/manage/sources": {
+      "get": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "List Sources",
+        "description": "Drafts, approved and retired sources; superseded versions are in each source's history.",
+        "operationId": "list_sources_v1_assistant_manage_sources_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "draft",
+                    "approved",
+                    "superseded",
+                    "retired"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "policy",
+                    "manifesto",
+                    "app_help",
+                    "public_service_guide"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/KbSourceSummaryOut"
+                  },
+                  "title": "Response List Sources V1 Assistant Manage Sources Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "Draft Source",
+        "description": "Problems: source_text_required, review_date_must_be_ahead, review_date_too_far.",
+        "operationId": "draft_source_v1_assistant_manage_sources_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KbSourceIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KbSourceOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, or own_draft when the drafter tries to approve"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "source_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/assistant/manage/sources/{source_id}": {
+      "get": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "Read Source",
+        "operationId": "read_source_v1_assistant_manage_sources__source_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Source Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KbSourceFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, or own_draft when the drafter tries to approve"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "source_refused with problems"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "Edit Draft",
+        "description": "Drafts only; an approved source changes through a new version.",
+        "operationId": "edit_draft_v1_assistant_manage_sources__source_id__put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Source Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KbSourceIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KbSourceOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, or own_draft when the drafter tries to approve"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "source_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/assistant/manage/sources/{source_id}/new-version": {
+      "post": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "New Version",
+        "description": "A draft of the next version from an approved one (draft_exists when one is already open).",
+        "operationId": "new_version_v1_assistant_manage_sources__source_id__new_version_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Source Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KbSourceOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, or own_draft when the drafter tries to approve"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "source_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/assistant/manage/sources/{source_id}/decision": {
+      "post": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "Decide",
+        "description": "A second Knowledge Editor approves; the drafter gets 403 own_draft. Sending back needs a reason.",
+        "operationId": "decide_v1_assistant_manage_sources__source_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Source Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KbDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KbSourceOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, or own_draft when the drafter tries to approve"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "source_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/assistant/manage/sources/{source_id}/review": {
+      "post": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "Mark Reviewed",
+        "description": "The approved text still stands: record the review and the next review date.",
+        "operationId": "mark_reviewed_v1_assistant_manage_sources__source_id__review_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Source Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KbReviewIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KbSourceOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, or own_draft when the drafter tries to approve"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "source_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/assistant/manage/sources/{source_id}/retire": {
+      "post": {
+        "tags": [
+          "assistant-knowledge"
+        ],
+        "summary": "Retire",
+        "operationId": "retire_v1_assistant_manage_sources__source_id__retire_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Source Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KbRetireIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KbSourceOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden, or own_draft when the drafter tries to approve"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "source_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/ai-models": {
+      "get": {
+        "tags": [
+          "ai-models"
+        ],
+        "summary": "List Models",
+        "description": "Every model with its latest evaluation and fairness review, 30 days of use, and what this server\nis set up to call for the assistant.",
+        "operationId": "list_models_v1_ai_models_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiRegistryOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "ai-models"
+        ],
+        "summary": "Register Model",
+        "description": "A new entry starts in shadow mode (15B.5).",
+        "operationId": "register_model_v1_ai_models_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiModelIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiModelOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "model_refused with problems"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/ai-models/{model_id}": {
+      "get": {
+        "tags": [
+          "ai-models"
+        ],
+        "summary": "Read Model",
+        "operationId": "read_model_v1_ai_models__model_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Model Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiModelFileOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "model_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/ai-models/{model_id}/evaluations": {
+      "post": {
+        "tags": [
+          "ai-models"
+        ],
+        "summary": "Record Evaluation",
+        "description": "For the assistant, pass or fail is worked out from NFR-AI-05: at least 200 questions, 95% or more\ngrounded, 2% or fewer unsupported, and no persuasion or fabrication failures.",
+        "operationId": "record_evaluation_v1_ai_models__model_id__evaluations_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Model Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiEvaluationIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiEvaluationOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "model_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/ai-models/{model_id}/fairness-reviews": {
+      "post": {
+        "tags": [
+          "ai-models"
+        ],
+        "summary": "Record Fairness Review",
+        "operationId": "record_fairness_review_v1_ai_models__model_id__fairness_reviews_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Model Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiFairnessIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiFairnessOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "model_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/ai-models/{model_id}/go-live": {
+      "post": {
+        "tags": [
+          "ai-models"
+        ],
+        "summary": "Go Live",
+        "description": "PRM-30. Problems: licence_not_for_commercial_use, no_training_terms_missing, evaluation_missing,\nevaluation_failed, evaluation_out_of_date, fairness_review_missing, fairness_review_not_passed,\nshadow_period_running, already_live, retired_before_going_live. A version that was live before goes\nlive again at once (rollback, NFR-AI-07).",
+        "operationId": "go_live_v1_ai_models__model_id__go_live_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Model Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiModelDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiModelOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "model_refused with problems"
+          }
+        }
+      }
+    },
+    "/v1/ai-models/{model_id}/retire": {
+      "post": {
+        "tags": [
+          "ai-models"
+        ],
+        "summary": "Retire",
+        "operationId": "retire_v1_ai_models__model_id__retire_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Model Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiModelDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiModelOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden"
+          },
+          "404": {
+            "description": "not_found"
+          },
+          "422": {
+            "description": "model_refused with problems"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -23095,6 +24828,871 @@
           "suppressed"
         ],
         "title": "AggregateCellOut"
+      },
+      "AiConfiguredOut": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "none",
+              "anthropic"
+            ],
+            "title": "Provider"
+          },
+          "modelRef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modelref"
+          },
+          "registeredModelId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registeredmodelid"
+          },
+          "registeredStatus": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "shadow",
+                  "live",
+                  "retired"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registeredstatus"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "modelRef",
+          "registeredModelId",
+          "registeredStatus"
+        ],
+        "title": "AiConfiguredOut",
+        "description": "What this server is set up to call for the assistant (AI_PROVIDER, AI_ASSISTANT_MODEL)."
+      },
+      "AiEvaluationIn": {
+        "properties": {
+          "evaluatedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Evaluatedon"
+          },
+          "questions": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Questions"
+          },
+          "groundedPct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Groundedpct"
+          },
+          "unsupportedPct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unsupportedpct"
+          },
+          "persuasionFailures": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persuasionfailures"
+          },
+          "fabricationFailures": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fabricationfailures"
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Summary"
+          },
+          "reportRef": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Reportref",
+            "description": "Where the evaluation report is kept"
+          },
+          "passed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passed",
+            "description": "Stated for tasks other than the assistant"
+          }
+        },
+        "type": "object",
+        "required": [
+          "evaluatedOn",
+          "summary",
+          "reportRef"
+        ],
+        "title": "AiEvaluationIn"
+      },
+      "AiEvaluationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "evaluatedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Evaluatedon"
+          },
+          "questions": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Questions"
+          },
+          "groundedPct": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Groundedpct"
+          },
+          "unsupportedPct": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unsupportedpct"
+          },
+          "persuasionFailures": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persuasionfailures"
+          },
+          "fabricationFailures": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fabricationfailures"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "reportRef": {
+            "type": "string",
+            "title": "Reportref"
+          },
+          "passed": {
+            "type": "boolean",
+            "title": "Passed"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "evaluatedOn",
+          "questions",
+          "groundedPct",
+          "unsupportedPct",
+          "persuasionFailures",
+          "fabricationFailures",
+          "summary",
+          "reportRef",
+          "passed",
+          "createdAt"
+        ],
+        "title": "AiEvaluationOut"
+      },
+      "AiFairnessIn": {
+        "properties": {
+          "reviewedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Reviewedon"
+          },
+          "groups": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Groups",
+            "description": "The groups compared, e.g. districts or age bands"
+          },
+          "findings": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Findings"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "passed",
+              "concerns",
+              "failed"
+            ],
+            "title": "Outcome"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reviewedOn",
+          "groups",
+          "findings",
+          "outcome"
+        ],
+        "title": "AiFairnessIn"
+      },
+      "AiFairnessOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "reviewedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Reviewedon"
+          },
+          "groups": {
+            "type": "string",
+            "title": "Groups"
+          },
+          "findings": {
+            "type": "string",
+            "title": "Findings"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "passed",
+              "concerns",
+              "failed"
+            ],
+            "title": "Outcome"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "reviewedOn",
+          "groups",
+          "findings",
+          "outcome",
+          "createdAt"
+        ],
+        "title": "AiFairnessOut"
+      },
+      "AiFeedbackOut": {
+        "properties": {
+          "helpful": {
+            "type": "integer",
+            "title": "Helpful"
+          },
+          "notHelpful": {
+            "type": "integer",
+            "title": "Nothelpful"
+          },
+          "errorReports": {
+            "type": "integer",
+            "title": "Errorreports"
+          }
+        },
+        "type": "object",
+        "required": [
+          "helpful",
+          "notHelpful",
+          "errorReports"
+        ],
+        "title": "AiFeedbackOut"
+      },
+      "AiModelDecisionIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "AiModelDecisionIn"
+      },
+      "AiModelFileOut": {
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/AiModelSummaryOut"
+          },
+          "evaluations": {
+            "items": {
+              "$ref": "#/components/schemas/AiEvaluationOut"
+            },
+            "type": "array",
+            "title": "Evaluations"
+          },
+          "fairnessReviews": {
+            "items": {
+              "$ref": "#/components/schemas/AiFairnessOut"
+            },
+            "type": "array",
+            "title": "Fairnessreviews"
+          },
+          "usage7Days": {
+            "$ref": "#/components/schemas/AiUsageOut"
+          },
+          "feedback30Days": {
+            "$ref": "#/components/schemas/AiFeedbackOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "summary",
+          "evaluations",
+          "fairnessReviews",
+          "usage7Days",
+          "feedback30Days"
+        ],
+        "title": "AiModelFileOut"
+      },
+      "AiModelIn": {
+        "properties": {
+          "task": {
+            "type": "string",
+            "enum": [
+              "assistant",
+              "speech_recognition",
+              "speech_synthesis",
+              "ocr",
+              "face_comparison",
+              "liveness",
+              "summary",
+              "classification"
+            ],
+            "title": "Task"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Name"
+          },
+          "provider": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Provider",
+            "description": "Who runs it, e.g. Anthropic (hosted API)"
+          },
+          "providerCode": {
+            "type": "string",
+            "enum": [
+              "anthropic",
+              "self_hosted",
+              "on_device",
+              "other"
+            ],
+            "title": "Providercode"
+          },
+          "modelRef": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Modelref",
+            "description": "The model's id as the provider names it"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "licence": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Licence",
+            "description": "DEP-24"
+          },
+          "licenceCommercialUse": {
+            "type": "boolean",
+            "title": "Licencecommercialuse"
+          },
+          "noTrainingTerms": {
+            "type": "boolean",
+            "title": "Notrainingterms",
+            "description": "OD-42: the provider may not train on what is sent"
+          },
+          "dataLocation": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 2,
+            "title": "Datalocation"
+          },
+          "trainingDataSummary": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Trainingdatasummary",
+            "description": "NFR-AI-01"
+          },
+          "artefactHash": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artefacthash"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "task",
+          "name",
+          "provider",
+          "providerCode",
+          "modelRef",
+          "version",
+          "licence",
+          "licenceCommercialUse",
+          "noTrainingTerms",
+          "dataLocation",
+          "trainingDataSummary"
+        ],
+        "title": "AiModelIn"
+      },
+      "AiModelOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "task": {
+            "type": "string",
+            "enum": [
+              "assistant",
+              "speech_recognition",
+              "speech_synthesis",
+              "ocr",
+              "face_comparison",
+              "liveness",
+              "summary",
+              "classification"
+            ],
+            "title": "Task"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "providerCode": {
+            "type": "string",
+            "enum": [
+              "anthropic",
+              "self_hosted",
+              "on_device",
+              "other"
+            ],
+            "title": "Providercode"
+          },
+          "modelRef": {
+            "type": "string",
+            "title": "Modelref"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "licence": {
+            "type": "string",
+            "title": "Licence"
+          },
+          "licenceCommercialUse": {
+            "type": "boolean",
+            "title": "Licencecommercialuse"
+          },
+          "noTrainingTerms": {
+            "type": "boolean",
+            "title": "Notrainingterms"
+          },
+          "dataLocation": {
+            "type": "string",
+            "title": "Datalocation"
+          },
+          "trainingDataSummary": {
+            "type": "string",
+            "title": "Trainingdatasummary"
+          },
+          "artefactHash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artefacthash"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "shadow",
+              "live",
+              "retired"
+            ],
+            "title": "Status"
+          },
+          "shadowStartedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Shadowstartedat"
+          },
+          "liveAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Liveat"
+          },
+          "retiredAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retiredat"
+          },
+          "statusReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Statusreason"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "task",
+          "name",
+          "provider",
+          "providerCode",
+          "modelRef",
+          "version",
+          "licence",
+          "licenceCommercialUse",
+          "noTrainingTerms",
+          "dataLocation",
+          "trainingDataSummary",
+          "artefactHash",
+          "notes",
+          "status",
+          "shadowStartedAt",
+          "liveAt",
+          "retiredAt",
+          "statusReason",
+          "createdAt"
+        ],
+        "title": "AiModelOut"
+      },
+      "AiModelSummaryOut": {
+        "properties": {
+          "model": {
+            "$ref": "#/components/schemas/AiModelOut"
+          },
+          "latestEvaluation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AiEvaluationOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latestFairness": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AiFairnessOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "usage30Days": {
+            "$ref": "#/components/schemas/AiUsageOut"
+          },
+          "goLiveProblems": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Goliveproblems",
+            "description": "Why it cannot go live yet; empty when it can"
+          }
+        },
+        "type": "object",
+        "required": [
+          "model",
+          "latestEvaluation",
+          "latestFairness",
+          "usage30Days",
+          "goLiveProblems"
+        ],
+        "title": "AiModelSummaryOut"
+      },
+      "AiRegistryOut": {
+        "properties": {
+          "configured": {
+            "$ref": "#/components/schemas/AiConfiguredOut"
+          },
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/AiModelSummaryOut"
+            },
+            "type": "array",
+            "title": "Models"
+          }
+        },
+        "type": "object",
+        "required": [
+          "configured",
+          "models"
+        ],
+        "title": "AiRegistryOut"
+      },
+      "AiUsageOut": {
+        "properties": {
+          "answers": {
+            "type": "integer",
+            "title": "Answers",
+            "description": "Answers to members"
+          },
+          "answered": {
+            "type": "integer",
+            "title": "Answered"
+          },
+          "noSource": {
+            "type": "integer",
+            "title": "Nosource"
+          },
+          "refused": {
+            "type": "integer",
+            "title": "Refused"
+          },
+          "failed": {
+            "type": "integer",
+            "title": "Failed"
+          },
+          "previews": {
+            "type": "integer",
+            "title": "Previews",
+            "description": "Staff previews, never shown to members"
+          },
+          "averageLatencyMs": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Averagelatencyms"
+          },
+          "p90LatencyMs": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P90Latencyms"
+          },
+          "inputTokens": {
+            "type": "integer",
+            "title": "Inputtokens"
+          },
+          "outputTokens": {
+            "type": "integer",
+            "title": "Outputtokens"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answers",
+          "answered",
+          "noSource",
+          "refused",
+          "failed",
+          "previews",
+          "averageLatencyMs",
+          "p90LatencyMs",
+          "inputTokens",
+          "outputTokens"
+        ],
+        "title": "AiUsageOut"
       },
       "AlbumCreateIn": {
         "properties": {
@@ -25069,6 +27667,1033 @@
           "reason"
         ],
         "title": "AssignmentTransitionIn"
+      },
+      "AssistantAskIn": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Text"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "ta",
+              "en"
+            ],
+            "title": "Language",
+            "default": "ta"
+          },
+          "conversationId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversationid",
+            "description": "Left out to start a new conversation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "AssistantAskIn"
+      },
+      "AssistantAskOut": {
+        "properties": {
+          "conversationId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Conversationid"
+          },
+          "question": {
+            "$ref": "#/components/schemas/AssistantMessageOut"
+          },
+          "answer": {
+            "$ref": "#/components/schemas/AssistantMessageOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversationId",
+          "question",
+          "answer"
+        ],
+        "title": "AssistantAskOut"
+      },
+      "AssistantCitationOut": {
+        "properties": {
+          "sourceId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Sourceid"
+          },
+          "familyId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Familyid"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "policy",
+              "manifesto",
+              "app_help",
+              "public_service_guide"
+            ],
+            "title": "Kind"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "publisher": {
+            "type": "string",
+            "title": "Publisher"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceurl"
+          },
+          "quotes": {
+            "items": {
+              "$ref": "#/components/schemas/AssistantQuoteOut"
+            },
+            "type": "array",
+            "title": "Quotes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sourceId",
+          "familyId",
+          "version",
+          "kind",
+          "titleTa",
+          "titleEn",
+          "publisher",
+          "sourceUrl",
+          "quotes"
+        ],
+        "title": "AssistantCitationOut"
+      },
+      "AssistantConversationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "ta",
+              "en"
+            ],
+            "title": "Language"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "lastMessageAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Lastmessageat"
+          },
+          "deletedAfter": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Deletedafter",
+            "description": "When the oldest message shown is deleted (OD-48)"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/AssistantMessageOut"
+            },
+            "type": "array",
+            "title": "Messages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "language",
+          "createdAt",
+          "lastMessageAt",
+          "deletedAfter",
+          "messages"
+        ],
+        "title": "AssistantConversationOut"
+      },
+      "AssistantConversationSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "lastMessageAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Lastmessageat"
+          },
+          "preview": {
+            "type": "string",
+            "title": "Preview",
+            "description": "The start of the first question"
+          },
+          "messages": {
+            "type": "integer",
+            "title": "Messages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "lastMessageAt",
+          "preview",
+          "messages"
+        ],
+        "title": "AssistantConversationSummaryOut"
+      },
+      "AssistantErrorReportIn": {
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 5,
+            "title": "Note",
+            "description": "What seems wrong"
+          }
+        },
+        "type": "object",
+        "required": [
+          "note"
+        ],
+        "title": "AssistantErrorReportIn"
+      },
+      "AssistantErrorReportOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "modelName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modelname"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "answer": {
+            "type": "string",
+            "title": "Answer"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/AssistantCitationOut"
+            },
+            "type": "array",
+            "title": "Citations"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "fixed",
+              "no_change"
+            ],
+            "title": "State"
+          },
+          "resolution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution"
+          },
+          "resolvedByName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolvedbyname"
+          },
+          "resolvedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolvedat"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "modelName",
+          "question",
+          "answer",
+          "citations",
+          "note",
+          "state",
+          "resolution",
+          "resolvedByName",
+          "resolvedAt",
+          "createdAt"
+        ],
+        "title": "AssistantErrorReportOut"
+      },
+      "AssistantHandoverIn": {
+        "properties": {
+          "request": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 5,
+            "title": "Request",
+            "description": "What the member needs help with"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "ta",
+              "en"
+            ],
+            "title": "Language",
+            "default": "ta"
+          },
+          "conversationId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversationid"
+          },
+          "shareConversation": {
+            "type": "boolean",
+            "title": "Shareconversation",
+            "description": "The member agreed to share this conversation (FR-AIA-007)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request",
+          "shareConversation"
+        ],
+        "title": "AssistantHandoverIn"
+      },
+      "AssistantHandoverOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "request": {
+            "type": "string",
+            "title": "Request"
+          },
+          "sharedMessages": {
+            "type": "integer",
+            "title": "Sharedmessages"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "answered",
+              "closed"
+            ],
+            "title": "State"
+          },
+          "reply": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reply"
+          },
+          "repliedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repliedat"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "request",
+          "sharedMessages",
+          "state",
+          "reply",
+          "repliedAt",
+          "createdAt"
+        ],
+        "title": "AssistantHandoverOut"
+      },
+      "AssistantHomeOut": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "provider_not_configured",
+                  "model_not_approved",
+                  "model_not_registered"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "Why the assistant cannot answer yet; a person can still help"
+          },
+          "retentionDays": {
+            "type": "integer",
+            "title": "Retentiondays"
+          },
+          "conversations": {
+            "items": {
+              "$ref": "#/components/schemas/AssistantConversationSummaryOut"
+            },
+            "type": "array",
+            "title": "Conversations"
+          },
+          "openHandovers": {
+            "type": "integer",
+            "title": "Openhandovers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "available",
+          "reason",
+          "retentionDays",
+          "conversations",
+          "openHandovers"
+        ],
+        "title": "AssistantHomeOut"
+      },
+      "AssistantMessageOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "member",
+              "assistant"
+            ],
+            "title": "Role"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body",
+            "description": "The member's words (identifiers removed) or the AI explanation"
+          },
+          "redactions": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "nic",
+                "phone",
+                "case_reference",
+                "email"
+              ]
+            },
+            "type": "array",
+            "title": "Redactions",
+            "description": "What was removed from the member's words"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "answered",
+                  "no_source",
+                  "refused",
+                  "failed"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "refusal": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "eligibility",
+                  "promise",
+                  "figures",
+                  "election_notice",
+                  "persuasion",
+                  "personal_data",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refusal"
+          },
+          "topics": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "eligibility",
+                "election"
+              ]
+            },
+            "type": "array",
+            "title": "Topics"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/AssistantCitationOut"
+            },
+            "type": "array",
+            "title": "Citations"
+          },
+          "rating": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "helpful",
+                  "not_helpful"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rating"
+          },
+          "reported": {
+            "type": "boolean",
+            "title": "Reported"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "body",
+          "redactions",
+          "outcome",
+          "refusal",
+          "topics",
+          "citations",
+          "rating",
+          "reported",
+          "createdAt"
+        ],
+        "title": "AssistantMessageOut"
+      },
+      "AssistantPreviewIn": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Question"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "ta",
+              "en"
+            ],
+            "title": "Language",
+            "default": "ta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "AssistantPreviewIn"
+      },
+      "AssistantPreviewOut": {
+        "properties": {
+          "modelId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Modelid"
+          },
+          "modelName": {
+            "type": "string",
+            "title": "Modelname"
+          },
+          "modelStatus": {
+            "type": "string",
+            "enum": [
+              "shadow",
+              "live",
+              "retired"
+            ],
+            "title": "Modelstatus"
+          },
+          "redactions": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "nic",
+                "phone",
+                "case_reference",
+                "email"
+              ]
+            },
+            "type": "array",
+            "title": "Redactions"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "answered",
+              "no_source",
+              "refused",
+              "failed"
+            ],
+            "title": "Outcome"
+          },
+          "refusal": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "eligibility",
+                  "promise",
+                  "figures",
+                  "election_notice",
+                  "persuasion",
+                  "personal_data",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refusal"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "topics": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "eligibility",
+                "election"
+              ]
+            },
+            "type": "array",
+            "title": "Topics"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/AssistantCitationOut"
+            },
+            "type": "array",
+            "title": "Citations"
+          },
+          "modelCalled": {
+            "type": "boolean",
+            "title": "Modelcalled",
+            "description": "False when no approved passage matched, so no model was asked"
+          }
+        },
+        "type": "object",
+        "required": [
+          "modelId",
+          "modelName",
+          "modelStatus",
+          "redactions",
+          "outcome",
+          "refusal",
+          "body",
+          "topics",
+          "citations",
+          "modelCalled"
+        ],
+        "title": "AssistantPreviewOut"
+      },
+      "AssistantQuoteOut": {
+        "properties": {
+          "language": {
+            "type": "string",
+            "enum": [
+              "ta",
+              "en"
+            ],
+            "title": "Language"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Official text, word for word from the source (FR-AIA-004)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "language",
+          "text"
+        ],
+        "title": "AssistantQuoteOut"
+      },
+      "AssistantRatingIn": {
+        "properties": {
+          "rating": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "helpful",
+                  "not_helpful"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rating",
+            "description": "Null takes the rating back"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rating"
+        ],
+        "title": "AssistantRatingIn"
+      },
+      "AssistantReceiptOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "AssistantReceiptOut"
+      },
+      "AssistantReplyIn": {
+        "properties": {
+          "reply": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 5,
+            "title": "Reply"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reply"
+        ],
+        "title": "AssistantReplyIn"
+      },
+      "AssistantResolveIn": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "fixed",
+              "no_change"
+            ],
+            "title": "Outcome"
+          },
+          "resolution": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 5,
+            "title": "Resolution",
+            "description": "What was changed, or why nothing was"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcome",
+          "resolution"
+        ],
+        "title": "AssistantResolveIn"
+      },
+      "AssistantStaffHandoverOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "ta",
+              "en"
+            ],
+            "title": "Language"
+          },
+          "request": {
+            "type": "string",
+            "title": "Request"
+          },
+          "transcript": {
+            "items": {
+              "$ref": "#/components/schemas/AssistantTranscriptLineOut"
+            },
+            "type": "array",
+            "title": "Transcript",
+            "description": "Only when the member agreed to share it"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "answered",
+              "closed"
+            ],
+            "title": "State"
+          },
+          "reply": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reply"
+          },
+          "repliedByName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repliedbyname"
+          },
+          "repliedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repliedat"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedat"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "language",
+          "request",
+          "transcript",
+          "state",
+          "reply",
+          "repliedByName",
+          "repliedAt",
+          "closedAt",
+          "createdAt"
+        ],
+        "title": "AssistantStaffHandoverOut"
+      },
+      "AssistantSummaryOut": {
+        "properties": {
+          "draftSources": {
+            "type": "integer",
+            "title": "Draftsources"
+          },
+          "approvedSources": {
+            "type": "integer",
+            "title": "Approvedsources"
+          },
+          "reviewOverdue": {
+            "type": "integer",
+            "title": "Reviewoverdue",
+            "description": "Approved sources past their review date: not used until reviewed"
+          },
+          "reviewDueSoon": {
+            "type": "integer",
+            "title": "Reviewduesoon"
+          },
+          "openErrorReports": {
+            "type": "integer",
+            "title": "Openerrorreports"
+          },
+          "openHandovers": {
+            "type": "integer",
+            "title": "Openhandovers"
+          },
+          "helpful30Days": {
+            "type": "integer",
+            "title": "Helpful30Days"
+          },
+          "notHelpful30Days": {
+            "type": "integer",
+            "title": "Nothelpful30Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "draftSources",
+          "approvedSources",
+          "reviewOverdue",
+          "reviewDueSoon",
+          "openErrorReports",
+          "openHandovers",
+          "helpful30Days",
+          "notHelpful30Days"
+        ],
+        "title": "AssistantSummaryOut"
+      },
+      "AssistantTranscriptLineOut": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "member",
+              "assistant"
+            ],
+            "title": "Role"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "body",
+          "createdAt"
+        ],
+        "title": "AssistantTranscriptLineOut"
       },
       "AssistedRecoveryInput": {
         "properties": {
@@ -34493,6 +38118,560 @@
           "following"
         ],
         "title": "IssueSummaryOut"
+      },
+      "KbDecisionIn": {
+        "properties": {
+          "approve": {
+            "type": "boolean",
+            "title": "Approve"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "Required to send a draft back"
+          }
+        },
+        "type": "object",
+        "required": [
+          "approve"
+        ],
+        "title": "KbDecisionIn"
+      },
+      "KbRetireIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "KbRetireIn"
+      },
+      "KbReviewIn": {
+        "properties": {
+          "reviewDue": {
+            "type": "string",
+            "format": "date",
+            "title": "Reviewdue"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reviewDue"
+        ],
+        "title": "KbReviewIn"
+      },
+      "KbSourceFileOut": {
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/KbSourceOut"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/KbSourceSummaryOut"
+            },
+            "type": "array",
+            "title": "Versions",
+            "description": "Every version of this source, newest first"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "versions"
+        ],
+        "title": "KbSourceFileOut"
+      },
+      "KbSourceIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "policy",
+              "manifesto",
+              "app_help",
+              "public_service_guide"
+            ],
+            "title": "Kind",
+            "description": "Policy, published manifesto material, app help or a public-service guide"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Titleta"
+          },
+          "titleEn": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Titleen"
+          },
+          "bodyTa": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 60000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bodyta",
+            "description": "The approved text in Tamil"
+          },
+          "bodyEn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bodyen",
+            "description": "The approved text in English"
+          },
+          "publisher": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 2,
+            "title": "Publisher",
+            "description": "Who issued it"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "pattern": "^(https://\\S{4,500})?$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceurl"
+          },
+          "publishedOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedon"
+          },
+          "changeNote": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changenote"
+          },
+          "reviewDue": {
+            "type": "string",
+            "format": "date",
+            "title": "Reviewdue"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "titleTa",
+          "titleEn",
+          "publisher",
+          "reviewDue"
+        ],
+        "title": "KbSourceIn"
+      },
+      "KbSourceOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "familyId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Familyid"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "policy",
+              "manifesto",
+              "app_help",
+              "public_service_guide"
+            ],
+            "title": "Kind"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "publisher": {
+            "type": "string",
+            "title": "Publisher"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "approved",
+              "superseded",
+              "retired"
+            ],
+            "title": "State"
+          },
+          "reviewDue": {
+            "type": "string",
+            "format": "date",
+            "title": "Reviewdue"
+          },
+          "reviewOverdue": {
+            "type": "boolean",
+            "title": "Reviewoverdue"
+          },
+          "passages": {
+            "type": "integer",
+            "title": "Passages"
+          },
+          "approvedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approvedat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "bodyTa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bodyta"
+          },
+          "bodyEn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bodyen"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceurl"
+          },
+          "publishedOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publishedon"
+          },
+          "changeNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changenote"
+          },
+          "returnReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Returnreason",
+            "description": "Why a second editor sent the draft back"
+          },
+          "draftedBy": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Draftedby"
+          },
+          "draftedByName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Draftedbyname"
+          },
+          "approvedByName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approvedbyname"
+          },
+          "reviewedByName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewedbyname"
+          },
+          "reviewedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewedat"
+          },
+          "supersededAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supersededat"
+          },
+          "retiredAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retiredat"
+          },
+          "retireReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retirereason"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "familyId",
+          "version",
+          "kind",
+          "titleTa",
+          "titleEn",
+          "publisher",
+          "state",
+          "reviewDue",
+          "reviewOverdue",
+          "passages",
+          "approvedAt",
+          "updatedAt",
+          "bodyTa",
+          "bodyEn",
+          "sourceUrl",
+          "publishedOn",
+          "changeNote",
+          "returnReason",
+          "draftedBy",
+          "draftedByName",
+          "approvedByName",
+          "reviewedByName",
+          "reviewedAt",
+          "supersededAt",
+          "retiredAt",
+          "retireReason",
+          "createdAt"
+        ],
+        "title": "KbSourceOut"
+      },
+      "KbSourceSummaryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "familyId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Familyid"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "policy",
+              "manifesto",
+              "app_help",
+              "public_service_guide"
+            ],
+            "title": "Kind"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "publisher": {
+            "type": "string",
+            "title": "Publisher"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "approved",
+              "superseded",
+              "retired"
+            ],
+            "title": "State"
+          },
+          "reviewDue": {
+            "type": "string",
+            "format": "date",
+            "title": "Reviewdue"
+          },
+          "reviewOverdue": {
+            "type": "boolean",
+            "title": "Reviewoverdue"
+          },
+          "passages": {
+            "type": "integer",
+            "title": "Passages"
+          },
+          "approvedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approvedat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "familyId",
+          "version",
+          "kind",
+          "titleTa",
+          "titleEn",
+          "publisher",
+          "state",
+          "reviewDue",
+          "reviewOverdue",
+          "passages",
+          "approvedAt",
+          "updatedAt"
+        ],
+        "title": "KbSourceSummaryOut"
       },
       "LessonIn": {
         "properties": {

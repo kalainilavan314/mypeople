@@ -48,6 +48,8 @@ FEATURES: dict[str, Feature] = {
         Feature("field_visits", "Offline field visits (FR-FLD-001 to 009)", 2),
         Feature("election_roster", "Election duty roster and shift check-in (FR-ELX-005 to 007, 009)", 2),
         Feature("fact_checks", "Misinformation reports and the fact-check queue (FR-AUT-006 to 009)", 2),
+        Feature("ai_assistant", "Tamil AI assistant (FR-AIA-001 to 010)", 3),
+        Feature("voice_reports", "Voice reports: speak a concern in Tamil (FR-VOI-001, FR-VOI-002)", 3),
     )
 }
 
