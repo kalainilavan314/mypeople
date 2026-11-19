@@ -1,5 +1,7 @@
 import { ApiError } from '@my-people/api-client';
 
+import { SAFETY_CONFIRMATIONS, SAFETY_MESSAGES, SAFETY_PROBLEMS } from '../features/disaster/messages.ts';
+
 export type BilingualText = {
   ta: string;
   en: string;
@@ -26,6 +28,28 @@ export const EVIDENCE_LABELS: Record<string, BilingualText> = {
 // Bilingual dictionary for operational messages and refusals.
 // Tamil first, English supporting below (CLAUDE.md / Priority 2).
 const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
+  ...SAFETY_MESSAGES,
+  // Tamil AI assistant knowledge base (D20) and the AI model registry (D21).
+  source_refused: {
+    ta: 'மூலம் சேமிக்கப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The source was not saved. Fix the points below and try again.',
+  },
+  kb_own_draft: {
+    ta: 'இந்த வரைவை நீங்களே எழுதியதால் அதை நீங்கள் அங்கீகரிக்க முடியாது; வேறொரு அறிவுத் தொகுப்பாளர் அங்கீகரிக்க வேண்டும்.',
+    en: 'You drafted this version, so you cannot approve it; another Knowledge Editor must approve it.',
+  },
+  model_refused: {
+    ta: 'AI மாதிரி தொடர்பான நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்யவும்.',
+    en: 'The AI model action was not recorded. Fix the points below.',
+  },
+  assistant_refused: {
+    ta: 'இந்த நடவடிக்கை பதிவுசெய்யப்படவில்லை.',
+    en: 'This action was not recorded.',
+  },
+  assistant_unavailable: {
+    ta: 'உதவியாளர் இப்போது பதிலளிக்க முடியாது.',
+    en: 'The assistant cannot answer yet.',
+  },
   confirmation_required: {
     ta: 'தொடர்வதற்கு உறுதிப்படுத்தல் பெட்டி தெரிவுசெய்யப்பட வேண்டும்.',
     en: 'You must check the required confirmation box before submitting.',
@@ -73,6 +97,10 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
   not_claimed_by_you: {
     ta: 'முதலில் இதனைப் பொறுப்பேற்கவும்.',
     en: 'Claim it first.',
+  },
+  witnessed_by_you: {
+    ta: 'இந்த உதவியுடனான சரிபார்ப்பு அமர்வுக்கு நீங்கள் சாட்சியாக இருந்ததால், இந்த மதிப்பாய்வை வேறொரு மதிப்பாய்வாளர் தீர்மானிக்க வேண்டும்.',
+    en: 'You witnessed the assisted verification session behind this review, so another reviewer must decide it.',
   },
   not_open: {
     ta: 'இது இனி செயலில் இல்லை.',
@@ -342,6 +370,11 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     ta: 'உண்மைச் சரிபார்ப்பு முடிவு பதிவுசெய்யப்படவில்லை.',
     en: 'The fact-check decision was not recorded.',
   },
+  // Renewal and certificates (D25).
+  certificate_refused: {
+    ta: 'சான்றிதழ் நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The certificate action was not recorded. Fix the points below and try again.',
+  },
   own_draft: {
     ta: 'இதை நீங்களே வரைந்ததால் அல்லது அங்கீகாரம் கோரியதால் இதை நீங்கள் அங்கீகரிக்க முடியாது; வெளியிடும் அனுமதியுள்ள வேறொருவர் அங்கீகரிக்க வேண்டும்.',
     en: 'You drafted this or asked for it to be approved, so you cannot approve it; another person with promise publishing must approve it.',
@@ -358,9 +391,275 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     ta: 'இப்பகுதியிலும் இந்நேரத்திலும் தேர்தல் அமைதிக்காலம் நடைமுறையில் உள்ளது.',
     en: 'An election silence period covers this area and time.',
   },
+  // Participatory budgeting (D19).
+  budgeting_refused: {
+    ta: 'வரவுசெலவு நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The budgeting step was not recorded. Fix the points below and try again.',
+  },
+  already_certified_by_you: {
+    ta: 'இந்த எண்ணிக்கையை நீங்கள் ஏற்கனவே சான்றுறுதிப்படுத்தியுள்ளீர்கள். இரண்டாவது சான்றுறுதி வேறொருவரால் செய்யப்பட வேண்டும்.',
+    en: 'You have already certified this count. The second certification must come from a different person.',
+  },
+  // Official content publishing and signing (D30).
+  official_refused: {
+    ta: 'அதிகாரபூர்வ அறிக்கை நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The official statement action was not recorded. Fix the points below and try again.',
+  },
+  signing_unavailable: {
+    ta: 'கையொப்ப விசை அமைக்கப்படாததால் கையொப்பமிட முடியாது. எதுவும் அதிகாரபூர்வமாக வெளியிடப்படவில்லை.',
+    en: 'Signing is unavailable: no signing key is configured on the server. Nothing was published as official.',
+  },
+  not_a_registered_publisher: {
+    ta: 'நீங்கள் பதிவுசெய்யப்பட்ட வெளியீட்டாளர் அல்லாததால் கையொப்பமிட முடியாது. அடுக்கு 5 நிர்வாகி ஒருவர் உங்களைப் பதிவுசெய்ய வேண்டும். இம்முயற்சி தணிக்கைப் பதிவில் சேர்க்கப்பட்டது.',
+    en: 'You are not a registered publisher, so you cannot sign. A Tier 5 administrator must register you. The attempt has been recorded in the audit log.',
+  },
+  official_silence_period: {
+    ta: 'தேர்தல் அமைதிக்காலம் ஒன்று நடைமுறையில் உள்ளது. அது முடியும் வரை அதிகாரபூர்வ அறிக்கைகளை வெளியிடவோ திருத்தவோ முடியாது; மீளப்பெறலாம்.',
+    en: 'An election silence period is in force. Official statements cannot be published or corrected until it ends; they can still be withdrawn.',
+  },
+  committee_refused: {
+    ta: 'இதைக் குழுவில் செய்ய முடியவில்லை. கீழுள்ள காரணங்களைப் பார்க்கவும்.',
+    en: 'This could not be done. See the reasons below.',
+  },
+  not_committee_officer: {
+    ta: 'இக்குழுவின் ஒருங்கிணைப்பாளர்களும் செயலாளரும் மட்டுமே இதைச் செய்யலாம்.',
+    en: 'Only this committee’s coordinators and secretary can do this.',
+  },
+  diaspora_refused: {
+    ta: 'விவரங்களைச் சேமிக்க முடியவில்லை.',
+    en: 'The details could not be saved.',
+  },
+  platform_scope_required: {
+    ta: 'இதற்கு முழுத் தளத்துக்குமான அனுமதி தேவை.',
+    en: 'This needs the permission over the whole platform.',
+  },
+  // Livelihood guide (D28) and representatives (D29).
+  guide_refused: {
+    ta: 'வழிகாட்டிப் பதிவு தொடர்பான நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The guide entry action was not recorded. Fix the points below and try again.',
+  },
+  appointment_refused: {
+    ta: 'பிரதிநிதி அல்லது சந்திப்பு நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The representative or appointment action was not recorded. Fix the points below and try again.',
+  },
+  own_entry: {
+    ta: 'இந்த மீளாய்வைக் கோரியவர் அல்லது கடைசியாக மாற்றியவர் நீங்கள் என்பதால், வேறொரு மீளாய்வாளர் இதை வெளியிட வேண்டும்.',
+    en: 'You asked for this review or made the last change, so another reviewer must publish it.',
+  },
 };
 
 const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
+  ...SAFETY_PROBLEMS,
+  // Tamil AI assistant knowledge base (D20) and the AI model registry (D21).
+  kb_title_required: {
+    ta: 'தலைப்பைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 3 எழுத்துகள்).',
+    en: 'Write the title in Tamil and English (at least 3 characters).',
+  },
+  source_text_required: {
+    ta: 'அங்கீகரிக்கப்பட்ட உரையைத் தமிழிலோ ஆங்கிலத்திலோ அல்லது இரண்டிலுமோ ஒட்டவும்.',
+    en: 'Paste the approved text in Tamil, English or both.',
+  },
+  kb_body_too_short: {
+    ta: 'ஒவ்வொரு உரையும் குறைந்தது 20 எழுத்துகள் கொண்டதாக இருக்க வேண்டும்.',
+    en: 'Each text needs at least 20 characters.',
+  },
+  publisher_required: {
+    ta: 'இதை வெளியிட்டவர் யார் என்பதை எழுதவும்.',
+    en: 'Say who issued it.',
+  },
+  source_url_invalid: {
+    ta: 'இணைப்பு https:// என்று தொடங்க வேண்டும், இடைவெளி இருக்கக் கூடாது.',
+    en: 'The link must start with https:// and have no spaces.',
+  },
+  review_due_required: {
+    ta: 'அடுத்த மீளாய்வுத் திகதியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the next review date.',
+  },
+  review_date_must_be_ahead: {
+    ta: 'மீளாய்வுத் திகதி இன்றைக்குப் பின்னர் இருக்க வேண்டும்.',
+    en: 'The review date must be after today.',
+  },
+  review_date_too_far: {
+    ta: 'மீளாய்வுத் திகதி இரண்டு ஆண்டுகளுக்குள் இருக்க வேண்டும்.',
+    en: 'The review date must be within two years.',
+  },
+  kb_draft_exists: {
+    ta: 'இந்த மூலத்துக்கு ஏற்கனவே ஒரு வரைவுப் பதிப்பு உள்ளது. அதைத் திருத்தவும் அல்லது அங்கீகரிக்கவும்.',
+    en: 'This source already has a draft version. Edit or approve that one.',
+  },
+  resolution_required: {
+    ta: 'என்ன மாற்றப்பட்டது, அல்லது ஏன் மாற்றம் தேவையில்லை என்பதை எழுதவும் (குறைந்தது 5 எழுத்துகள்).',
+    en: 'Say what was changed, or why nothing needs to change (at least 5 characters).',
+  },
+  handover_reply_required: {
+    ta: 'உறுப்பினருக்கான பதிலை எழுதவும் (குறைந்தது 5 எழுத்துகள்).',
+    en: 'Write the reply to the member (at least 5 characters).',
+  },
+  already_resolved: {
+    ta: 'இந்த முறைப்பாடு ஏற்கனவே தீர்க்கப்பட்டுவிட்டது.',
+    en: 'This report has already been resolved.',
+  },
+  already_closed: {
+    ta: 'இது ஏற்கனவே மூடப்பட்டுவிட்டது.',
+    en: 'This has already been closed.',
+  },
+  provider_not_configured: {
+    ta: 'சேவையகத்தில் AI வழங்குநர் அமைக்கப்படவில்லை (AI_PROVIDER=none); எதுவும் வெளியே அனுப்பப்படுவதில்லை.',
+    en: 'No AI provider is set up on the server (AI_PROVIDER=none); nothing is sent anywhere.',
+  },
+  model_not_registered: {
+    ta: 'சேவையகம் அழைக்கும் மாதிரி AI மாதிரிகள் பதிவேட்டில் இல்லை.',
+    en: 'The model the server calls is not in the AI model registry.',
+  },
+  model_not_approved: {
+    ta: 'எந்த மாதிரியும் இன்னும் நேரடிப் பயன்பாட்டுக்கு அனுமதிக்கப்படவில்லை.',
+    en: 'No model has been made live yet.',
+  },
+  task_required: {
+    ta: 'மாதிரி செய்யும் பணியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the task the model does.',
+  },
+  model_name_required: {
+    ta: 'மாதிரியின் பெயரை எழுதவும்.',
+    en: 'Write the model\u2019s name.',
+  },
+  provider_required: {
+    ta: 'மாதிரியை இயக்குபவரை எழுதவும்.',
+    en: 'Say who runs the model.',
+  },
+  provider_code_required: {
+    ta: 'மாதிரி எங்கே இயங்குகிறது என்பதைத் தெரிவுசெய்யவும்.',
+    en: 'Choose where the model runs.',
+  },
+  model_ref_required: {
+    ta: 'வழங்குநர் பயன்படுத்தும் மாதிரி அடையாளத்தை எழுதவும் (உதா: claude-opus-5-5).',
+    en: 'Write the model id the provider uses (for example claude-opus-5-5).',
+  },
+  version_required: {
+    ta: 'பதிப்பை எழுதவும்.',
+    en: 'Write the version.',
+  },
+  licence_required: {
+    ta: 'உரிமத்தை எழுதவும் (DEP-24).',
+    en: 'Write the licence (DEP-24).',
+  },
+  data_location_required: {
+    ta: 'தரவு எங்கே செயலாக்கப்படுகிறது என்பதை எழுதவும் (OD-42).',
+    en: 'Say where the data is processed (OD-42).',
+  },
+  training_data_summary_required: {
+    ta: 'பயிற்சித் தரவுச் சுருக்கத்தை எழுதவும் (குறைந்தது 10 எழுத்துகள்; NFR-AI-01).',
+    en: 'Summarise the training data (at least 10 characters; NFR-AI-01).',
+  },
+  artefact_hash_invalid: {
+    ta: 'கோப்பு hash 64 hex எழுத்துகள் (SHA-256) கொண்டதாக இருக்க வேண்டும்.',
+    en: 'The artefact hash must be 64 hexadecimal characters (SHA-256).',
+  },
+  // Shared by the AI model registry (same task, provider, model and version) and official publishers.
+  already_registered: {
+    ta: 'இது ஏற்கனவே பதிவுசெய்யப்பட்டுள்ளது.',
+    en: 'This is already registered.',
+  },
+  evaluated_on_required: {
+    ta: 'மதிப்பீடு நடந்த திகதியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the date of the evaluation.',
+  },
+  evaluated_in_future: {
+    ta: 'மதிப்பீட்டுத் திகதி எதிர்காலத்தில் இருக்க முடியாது.',
+    en: 'The evaluation date cannot be in the future.',
+  },
+  questions_invalid: {
+    ta: 'கேள்விகளின் எண்ணிக்கை ஒரு முழு எண்ணாக இருக்க வேண்டும்.',
+    en: 'The number of questions must be a whole number.',
+  },
+  assistant_results_required: {
+    ta: 'உதவியாளருக்கு ஐந்து முடிவுகளும் தேவை: கேள்விகள், மூல அடிப்படை %, ஆதாரமற்ற %, தூண்டல், புனைவுத் தோல்விகள்.',
+    en: 'The assistant needs all five results: questions, grounded %, unsupported %, persuasion and fabrication failures.',
+  },
+  percent_invalid: {
+    ta: 'சதவீதம் 0 முதல் 100 வரை, இரண்டு தசமங்கள் வரை இருக்க வேண்டும்.',
+    en: 'A percentage is 0 to 100, with up to two decimal places.',
+  },
+  failures_invalid: {
+    ta: 'தோல்விகளின் எண்ணிக்கை ஒரு முழு எண்ணாக இருக்க வேண்டும்.',
+    en: 'Failure counts must be whole numbers.',
+  },
+  evaluation_summary_required: {
+    ta: 'மதிப்பீட்டுச் சுருக்கத்தை எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Summarise the evaluation (at least 10 characters).',
+  },
+  report_ref_required: {
+    ta: 'மதிப்பீட்டு அறிக்கை வைக்கப்பட்டுள்ள இடத்தை எழுதவும்.',
+    en: 'Say where the evaluation report is kept.',
+  },
+  result_required: {
+    ta: 'முடிவைத் தெரிவுசெய்யவும்: வெற்றி அல்லது தோல்வி.',
+    en: 'Choose the result: passed or failed.',
+  },
+  reviewed_on_required: {
+    ta: 'மீளாய்வு நடந்த திகதியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the date of the review.',
+  },
+  reviewed_in_future: {
+    ta: 'மீளாய்வுத் திகதி எதிர்காலத்தில் இருக்க முடியாது.',
+    en: 'The review date cannot be in the future.',
+  },
+  groups_required: {
+    ta: 'ஒப்பிடப்பட்ட குழுக்களை எழுதவும் (உதா: மாவட்டங்கள், வயதுப் பிரிவுகள்).',
+    en: 'Write the groups compared (for example districts or age bands).',
+  },
+  findings_required: {
+    ta: 'கண்டறிவுகளை எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write the findings (at least 10 characters).',
+  },
+  fairness_outcome_required: {
+    ta: 'சமநிலை மீளாய்வின் முடிவைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the outcome of the fairness review.',
+  },
+  licence_not_for_commercial_use: {
+    ta: 'உரிமம் வணிகப் பயன்பாட்டை அனுமதிப்பதாகப் பதிவுசெய்யப்படவில்லை (DEP-24).',
+    en: 'The licence is not recorded as allowing commercial use (DEP-24).',
+  },
+  no_training_terms_missing: {
+    ta: 'அனுப்பப்படும் தரவில் பயிற்சி பெறக் கூடாது என்ற வழங்குநர் நிபந்தனை பதிவுசெய்யப்படவில்லை (OD-42).',
+    en: 'The provider\u2019s terms forbidding training on what is sent are not recorded (OD-42).',
+  },
+  evaluation_missing: {
+    ta: 'மதிப்பீடு எதுவும் பதிவுசெய்யப்படவில்லை.',
+    en: 'No evaluation is recorded.',
+  },
+  evaluation_failed: {
+    ta: 'கடைசி மதிப்பீடு வரம்புகளை எட்டவில்லை.',
+    en: 'The latest evaluation did not meet the thresholds.',
+  },
+  evaluation_out_of_date: {
+    ta: 'கடைசி மதிப்பீடு ஒரு மாதத்துக்கு மேல் பழையது; புதிய மாதாந்த மதிப்பீடு தேவை.',
+    en: 'The latest evaluation is more than a month old; record this month\u2019s.',
+  },
+  fairness_review_missing: {
+    ta: 'சமநிலை மீளாய்வு எதுவும் பதிவுசெய்யப்படவில்லை.',
+    en: 'No fairness review is recorded.',
+  },
+  fairness_review_not_passed: {
+    ta: 'கடைசி சமநிலை மீளாய்வு வெற்றிபெறவில்லை.',
+    en: 'The latest fairness review did not pass.',
+  },
+  shadow_period_running: {
+    ta: 'மாதிரி நிழல் முறையில் நான்கு வாரங்கள் இயங்கவில்லை (15B.5).',
+    en: 'The model has not yet run four weeks in shadow mode (15B.5).',
+  },
+  already_live: {
+    ta: 'இந்த மாதிரி ஏற்கனவே நேரடிப் பயன்பாட்டில் உள்ளது.',
+    en: 'This model is already live.',
+  },
+  retired_before_going_live: {
+    ta: 'இந்தப் பதிப்பு ஒருபோதும் நேரடிப் பயன்பாட்டில் இருக்கவில்லை; அதைப் புதிதாகப் பதிவுசெய்யவும்.',
+    en: 'This version was never live; register it again instead.',
+  },
+  already_retired: {
+    ta: 'இந்த மாதிரி ஏற்கனவே ஓய்வு பெற்றுவிட்டது.',
+    en: 'This model is already retired.',
+  },
   reason_required: {
     ta: 'காரணத்தைத் தெரிவுசெய்யவும் அல்லது உள்ளிடவும்.',
     en: 'Choose or provide a reason.',
@@ -1166,6 +1465,508 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'இந்த முறைப்பாடு இன்னும் தீர்மானிக்கப்படவில்லை.',
     en: 'This report has not been decided yet.',
   },
+  // Participatory budgeting (D19): the API's budgeting_refused problems, then the dashboard's own checks.
+  rules_locked: {
+    ta: 'வாக்களிப்பு திட்டமிடப்பட்ட பின் விதிகளை மாற்ற முடியாது.',
+    en: 'The rules cannot change once voting is scheduled.',
+  },
+  ballot_locked: {
+    ta: 'வாக்களிப்பு திட்டமிடப்பட்ட பின் திட்டங்களையும் வாக்குச்சீட்டையும் மாற்ற முடியாது.',
+    en: 'Projects and the ballot cannot change once voting is scheduled.',
+  },
+  closes_before_opens: {
+    ta: 'வாக்களிப்பு முடியும் நேரம் தொடங்கும் நேரத்துக்குப் பின் இருக்க வேண்டும்.',
+    en: 'Voting must close after it opens.',
+  },
+  voting_must_open_after_publication: {
+    ta: 'விதிகள் வெளியிடப்பட்ட பின்னரே வாக்களிப்பு தொடங்க வேண்டும். எதிர்கால நேரம் ஒன்றைத் தெரிவுசெய்யவும்.',
+    en: 'Voting must open after the rules are published. Choose an opening time in the future.',
+  },
+  rules_not_published_before_voting: {
+    ta: 'வாக்களிப்பு தொடங்குவதற்கு முன் விதிகள் வெளியிடப்படவில்லை.',
+    en: 'The rules were not published before voting opens.',
+  },
+  voting_window_passed: {
+    ta: 'வாக்களிப்பு முடியும் நேரம் ஏற்கனவே கடந்துவிட்டது. வாக்களிப்புத் திகதிகளை மாற்றவும்.',
+    en: 'The voting closing time has already passed. Change the voting dates.',
+  },
+  too_few_projects_on_ballot: {
+    ta: 'வாக்களிப்பைத் திட்டமிட குறைந்தது இரண்டு திட்டங்கள் வாக்குச்சீட்டில் இருக்க வேண்டும்.',
+    en: 'At least two projects must be on the ballot to schedule voting.',
+  },
+  max_choices_above_projects: {
+    ta: 'ஒருவர் தெரிவுசெய்யக்கூடிய திட்டங்களின் எண்ணிக்கை வாக்குச்சீட்டிலுள்ள திட்டங்களை விட அதிகமாக இருக்கக்கூடாது.',
+    en: 'Members cannot be allowed to choose more projects than there are on the ballot.',
+  },
+  voting_still_open: {
+    ta: 'வெளியிடப்பட்ட முடிவு நேரம் கடக்கும் வரை வாக்களிப்பை முடிக்க முடியாது.',
+    en: 'Voting can be closed only after the published closing time.',
+  },
+  voting_overlaps_election_silence: {
+    ta: 'வாக்களிப்புக் காலம் இப்பகுதியின் தேர்தல் அமைதிக்காலத்துடன் மோதுகிறது. வேறு திகதிகளைத் தெரிவுசெய்யவும்.',
+    en: 'The voting period overlaps an election silence period for this area. Choose other dates.',
+  },
+  no_projects: {
+    ta: 'மீளாய்வுக்கு அனுப்ப முன் குறைந்தது ஒரு திட்டத்தைச் சேர்க்கவும்.',
+    en: 'Add at least one project before moving to review.',
+  },
+  proposal_not_approved_for_planning: {
+    ta: 'இப்பகுதியில் திட்டமிடலுக்கு அங்கீகரிக்கப்பட்ட முன்மொழிவுகளை மட்டுமே சேர்க்கலாம்; இது ஏற்கனவே சேர்க்கப்பட்டிருக்கலாம்.',
+    en: 'Only a proposal approved for planning in this area can be added, and it may already be in the cycle.',
+  },
+  already_in_cycle: {
+    ta: 'இந்த முன்மொழிவு ஏற்கனவே இச்சுழற்சியில் உள்ளது.',
+    en: 'This proposal is already in the cycle.',
+  },
+  financial_review_required: {
+    ta: 'வாக்குச்சீட்டில் சேர்க்க முன் நிதி மீளாய்வைப் பதிவுசெய்யவும்.',
+    en: 'Record the financial review before putting the project on the ballot.',
+  },
+  pb_legal_review_required: {
+    ta: 'வாக்குச்சீட்டில் சேர்க்க முன் சட்ட மீளாய்வைப் பதிவுசெய்யவும்.',
+    en: 'Record the legal review before putting the project on the ballot.',
+  },
+  voting_not_closed: {
+    ta: 'வாக்களிப்பு முடிந்த பின்னரே எண்ணிக்கையை மீண்டும் நடத்தலாம்.',
+    en: 'The count can be rerun only after voting closes.',
+  },
+  chain_broken: {
+    ta: 'வாக்குச்சீட்டுச் சங்கிலி உடைந்துள்ளது. சான்றுறுதிப்படுத்தல் தடுக்கப்பட்டது; இது தணிக்கைப் பதிவில் உள்ளது.',
+    en: 'The ballot chain is broken. Certification is blocked and the attempt is in the audit log.',
+  },
+  chain_gap: {
+    ta: 'வாக்குச்சீட்டுச் சங்கிலியில் இடைவெளி உள்ளது. சான்றுறுதிப்படுத்தல் தடுக்கப்பட்டது.',
+    en: 'A ballot is missing from the chain. Certification is blocked.',
+  },
+  ballot_altered: {
+    ta: 'ஒரு வாக்குச்சீட்டு மாற்றப்பட்டுள்ளது. சான்றுறுதிப்படுத்தல் தடுக்கப்பட்டது.',
+    en: 'A ballot has been altered. Certification is blocked.',
+  },
+  unknown_choice: {
+    ta: 'வாக்குச்சீட்டில் இல்லாத திட்டம் ஒன்று ஒரு வாக்கில் உள்ளது. சான்றுறுதிப்படுத்தல் தடுக்கப்பட்டது.',
+    en: 'A ballot names a project that is not on the ballot. Certification is blocked.',
+  },
+  count_mismatch: {
+    ta: 'எண்ணிக்கை பங்கேற்புப் பதிவுகளுடனோ முதல் சான்றுறுதியுடனோ பொருந்தவில்லை. சான்றுறுதிப்படுத்தல் தடுக்கப்பட்டது; இது தணிக்கைப் பதிவில் உள்ளது.',
+    en: 'The count does not match the participation records or the first certification. Certification is blocked and the attempt is in the audit log.',
+  },
+  nothing_to_allocate: {
+    ta: 'நிதி வழங்கப்படும் திட்டம் எதுவும் இல்லை.',
+    en: 'No project was funded, so there is nothing to allocate.',
+  },
+  allocations_exceed_budget: {
+    ta: 'ஒதுக்கீடுகள் வரவுசெலவுத் தொகையை மீறுகின்றன.',
+    en: 'The allocations would exceed the budget.',
+  },
+  not_allocated: {
+    ta: 'இத்திட்டத்துக்கு இன்னும் நிதி ஒதுக்கப்படவில்லை.',
+    en: 'This project has no allocation yet.',
+  },
+  spending_exceeds_allocation: {
+    ta: 'செலவு இத்திட்டத்தின் ஒதுக்கீட்டை மீறும்.',
+    en: 'The spending would exceed the allocation of this project.',
+  },
+  project_completed: {
+    ta: 'இத்திட்டம் ஏற்கனவே நிறைவடைந்ததாகப் பதிவுசெய்யப்பட்டுள்ளது.',
+    en: 'This project is already recorded as completed.',
+  },
+  area_level_invalid: {
+    ta: 'சுழற்சி ஒரு மாகாணம், மாவட்டம், பிரதேச செயலகப் பிரிவு அல்லது கிராம சேவகர் பிரிவுக்கானதாக இருக்க வேண்டும்.',
+    en: 'A cycle is for a province, district, DS division or GN division.',
+  },
+  proposal_required: {
+    ta: 'திட்டமிடலுக்கு அங்கீகரிக்கப்பட்ட முன்மொழிவைத் தெரிவுசெய்யவும்.',
+    en: 'Choose a proposal approved for planning.',
+  },
+  fund_kind_required: {
+    ta: 'நிதியின் வகையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the kind of fund.',
+  },
+  fund_source_required: {
+    ta: 'நிதி மூலத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the fund source in Tamil and English.',
+  },
+  budget_invalid: {
+    ta: 'வரவுசெலவுத் தொகையை ரூபாயில் உள்ளிடவும் (பூச்சியத்துக்கு மேல்).',
+    en: 'Enter the budget in rupees (more than zero).',
+  },
+  eligibility_required: {
+    ta: 'யார் வாக்களிக்கலாம் என்பதைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write who may vote in Tamil and English (at least 10 characters).',
+  },
+  max_choices_invalid: {
+    ta: 'ஒருவர் தெரிவுசெய்யக்கூடிய திட்டங்களை 1 முதல் 10 வரை உள்ளிடவும்.',
+    en: 'Enter how many projects each member may choose, from 1 to 10.',
+  },
+  voting_opens_required: {
+    ta: 'வாக்களிப்பு தொடங்கும் திகதியையும் நேரத்தையும் உள்ளிடவும்.',
+    en: 'Enter when voting opens.',
+  },
+  voting_closes_required: {
+    ta: 'வாக்களிப்பு முடியும் திகதியையும் நேரத்தையும் உள்ளிடவும்.',
+    en: 'Enter when voting closes.',
+  },
+  cost_invalid: {
+    ta: 'மதிப்பிடப்பட்ட செலவை ரூபாயில் உள்ளிடவும் (பூச்சியத்துக்கு மேல்).',
+    en: 'Enter the estimated cost in rupees (more than zero).',
+  },
+  review_kind_required: {
+    ta: 'நிதி மீளாய்வா சட்ட மீளாய்வா என்பதைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the financial or the legal review.',
+  },
+  review_reference_required: {
+    ta: 'மீளாய்வின் குறிப்பு இலக்கத்தை உள்ளிடவும்.',
+    en: 'Enter the reference of the review.',
+  },
+  review_note_required: {
+    ta: 'மீளாய்வு கண்டதைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write what the review found in Tamil and English (at least 10 characters).',
+  },
+  move_required: {
+    ta: 'அடுத்த படியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the next step.',
+  },
+  amount_invalid: {
+    ta: 'தொகையை ரூபாயில் உள்ளிடவும் (பூச்சியத்துக்கு மேல்).',
+    en: 'Enter the amount in rupees (more than zero).',
+  },
+  spent_on_required: {
+    ta: 'செலவிடப்பட்ட திகதியை உள்ளிடவும்.',
+    en: 'Enter the date it was spent.',
+  },
+  spending_description_required: {
+    ta: 'செலவு எதற்கு என்பதைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write what the spending paid for in Tamil and English.',
+  },
+  evidence_ref_required: {
+    ta: 'சான்றின் குறிப்பை உள்ளிடவும் (குறைந்தது 3 எழுத்துகள்).',
+    en: 'Enter the evidence reference (at least 3 characters).',
+  },
+  completed_on_required: {
+    ta: 'நிறைவடைந்த திகதியை உள்ளிடவும்.',
+    en: 'Enter the completion date.',
+  },
+  completion_note_required: {
+    ta: 'நிறைவுக் குறிப்பைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write the completion note in Tamil and English (at least 10 characters).',
+  },
+  correction_reason_required: {
+    ta: 'திருத்தத்துக்கான காரணத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 3 எழுத்துகள்).',
+    en: 'Give the reason for the correction in Tamil and English (at least 3 characters).',
+  },
+  withdrawal_reason_required: {
+    ta: 'மீளப்பெறுவதற்கான காரணத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 3 எழுத்துகள்).',
+    en: 'Give the reason for withdrawing in Tamil and English (at least 3 characters).',
+  },
+  nothing_changed: {
+    ta: 'திருத்தத்தில் எதுவும் மாற்றப்படவில்லை. சொற்களையோ படத்தையோ மாற்றிய பின் வெளியிடவும்.',
+    en: 'The correction changes nothing. Change the words or the image, then publish it.',
+  },
+  image_not_found: { ta: 'அந்தப் படம் காணப்படவில்லை. மீண்டும் பதிவேற்றவும்.', en: 'That image was not found. Upload it again.' },
+  needs_sign_publish_permission: {
+    ta: 'இவருக்கு content.sign_publish அனுமதி இல்லை. முதலில் பொறுப்புகளும் அனுமதிகளும் பக்கத்தில் அதை வழங்கவும்.',
+    en: 'This person does not hold content.sign_publish. Grant it on Roles and access first.',
+  },
+  already_revoked: { ta: 'இந்தப் பதிவு ஏற்கனவே மீளப்பெறப்பட்டது.', en: 'This registration was already revoked.' },
+  publisher_name_required: {
+    ta: 'அறிக்கைகளில் காட்டப்படும் பெயரைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the name shown on statements in Tamil and English.',
+  },
+  wing_required: {
+    ta: 'குழு சேரும் அணியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the wing the committee belongs to.',
+  },
+  wing_not_active: {
+    ta: 'அணி இன்னும் அங்கீகரிக்கப்படவில்லை. முதலில் அணியை அங்கீகரிக்கவும்.',
+    en: 'The wing is not approved yet. Approve the wing first.',
+  },
+  wing_type_mismatch: {
+    ta: 'குழுவின் வகை அதன் அணியின் வகையுடன் ஒன்றாக இருக்க வேண்டும்.',
+    en: 'A committee has the same type as its wing.',
+  },
+  outside_wing_area: {
+    ta: 'குழுவின் பகுதி அதன் அணியின் பகுதிக்குள் இருக்க வேண்டும்.',
+    en: 'The committee’s area must lie inside its wing’s area.',
+  },
+  wing_has_open_committees: {
+    ta: 'இந்த அணியில் திறந்த அல்லது முன்மொழியப்பட்ட குழுக்கள் உள்ளன. முதலில் அவற்றை மூடவும்.',
+    en: 'This wing still has open or proposed committees. Close them first.',
+  },
+  name_required: {
+    ta: 'தமிழிலும் ஆங்கிலத்திலும் பெயரை எழுதவும்.',
+    en: 'Write the name in Tamil and English.',
+  },
+  wing_type_required: {
+    ta: 'அணியின் வகையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the type of wing.',
+  },
+  unknown_member: {
+    ta: 'இந்த உறுப்பினர் இலக்கத்துடன் எவரும் இல்லை.',
+    en: 'No member has this member code.',
+  },
+  member_code_required: {
+    ta: 'உறுப்பினர் இலக்கத்தை எழுதவும்.',
+    en: 'Write the member code.',
+  },
+  already_has_role: {
+    ta: 'இவருக்கு ஏற்கனவே இந்தப் பொறுப்பு உள்ளது.',
+    en: 'This person already has this role.',
+  },
+  last_coordinator: {
+    ta: 'ஒவ்வொரு குழுவிலும் ஒருங்கிணைப்பாளர் ஒருவர் இருக்க வேண்டும். முதலில் இன்னொருவரை நியமிக்கவும்.',
+    en: 'A committee always keeps one coordinator. Name another coordinator first.',
+  },
+  committee_not_open: {
+    ta: 'இக்குழு திறந்திருக்கவில்லை.',
+    en: 'This committee is not open.',
+  },
+  committee_kind_required: {
+    ta: 'அணியா குழுவா எனத் தெரிவுசெய்யவும்.',
+    en: 'Choose wing or committee.',
+  },
+  committee_purpose_required: {
+    ta: 'நோக்கத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write the purpose in Tamil and English (at least 10 letters).',
+  },
+  committee_role_required: {
+    ta: 'குழுப் பொறுப்பைத் தெரிவுசெய்யவும்.',
+    en: 'Choose a committee role.',
+  },
+  // Livelihood guide (D28; FR-LIV-002 to 006).
+  guide_category_required: {
+    ta: 'பதிவின் வகையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the entry’s category.',
+  },
+  guide_title_ta_required: {
+    ta: 'தமிழ்த் தலைப்பை எழுதவும்.',
+    en: 'Write the title in Tamil.',
+  },
+  guide_title_en_required: {
+    ta: 'ஆங்கிலத் தலைப்பை எழுதவும்.',
+    en: 'Write the title in English.',
+  },
+  summary_ta_required: {
+    ta: 'சுருக்கத்தைத் தமிழில் எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write the summary in Tamil (at least 10 characters).',
+  },
+  summary_en_required: {
+    ta: 'சுருக்கத்தை ஆங்கிலத்தில் எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write the summary in English (at least 10 characters).',
+  },
+  guide_body_ta_required: {
+    ta: 'விவரங்களையும் விண்ணப்பிக்கும் முறையையும் தமிழில் எழுதவும்.',
+    en: 'Write the details and how to apply in Tamil.',
+  },
+  guide_body_en_required: {
+    ta: 'விவரங்களையும் விண்ணப்பிக்கும் முறையையும் ஆங்கிலத்தில் எழுதவும்.',
+    en: 'Write the details and how to apply in English.',
+  },
+  provider_ta_required: {
+    ta: 'வழங்குநரின் பெயரைத் தமிழில் எழுதவும்.',
+    en: 'Write the provider in Tamil.',
+  },
+  provider_en_required: {
+    ta: 'வழங்குநரின் பெயரை ஆங்கிலத்தில் எழுதவும்.',
+    en: 'Write the provider in English.',
+  },
+  source_url_required: {
+    ta: 'மூல இணைப்பு இல்லாமல் வெளியிட முடியாது. வழங்குநரின் பக்கத்தின் இணைப்பை உள்ளிடவும்.',
+    en: 'An entry cannot be published without a source link. Enter the provider’s own page.',
+  },
+  guide_source_url_format: {
+    ta: 'மூல இணைப்பு https:// என ஆரம்பிக்க வேண்டும்.',
+    en: 'The source link must start with https://.',
+  },
+  published_on_required: {
+    ta: 'வழங்குநர் வெளியிட்ட திகதியை உள்ளிடவும்.',
+    en: 'Enter the date the provider published it.',
+  },
+  published_on_in_future: {
+    ta: 'வெளியீட்டுத் திகதி எதிர்காலத்தில் அமைய முடியாது.',
+    en: 'The publication date cannot be in the future.',
+  },
+  verified_on_required: {
+    ta: 'மூலத்துடன் கடைசியாகச் சரிபார்த்த திகதியை உள்ளிடவும்.',
+    en: 'Enter the date it was last checked against the source.',
+  },
+  verified_on_in_future: {
+    ta: 'சரிபார்த்த திகதி எதிர்காலத்தில் அமைய முடியாது.',
+    en: 'The checked date cannot be in the future.',
+  },
+  verified_before_published: {
+    ta: 'சரிபார்த்த திகதி வெளியீட்டுத் திகதிக்கு முன் அமைய முடியாது.',
+    en: 'The checked date cannot be before the publication date.',
+  },
+  already_expired: {
+    ta: 'இறுதித் திகதி கடந்துவிட்டது. புதிய இறுதித் திகதியை உள்ளிடவும் அல்லது பதிவை மீளப்பெறவும்.',
+    en: 'The end date has passed. Enter a new end date or withdraw the entry.',
+  },
+  guide_date_invalid: {
+    ta: 'திகதிகளை நாள்காட்டியிலிருந்து தெரிவுசெய்யவும்.',
+    en: 'Pick the dates from the calendar.',
+  },
+  expires_before_published: {
+    ta: 'இறுதித் திகதி வெளியீட்டுத் திகதிக்கு முன் அமைய முடியாது.',
+    en: 'The end date cannot be before the publication date.',
+  },
+  states_eligibility: {
+    ta: 'ஒருவர் தகுதியானவர் என்று வழிகாட்டி கூற முடியாது. “நீங்கள் தகுதியானவர்” போன்ற சொற்களை நீக்கி, வழங்குநர் வழங்குவதை மட்டும் விவரிக்கவும்.',
+    en: 'The guide may never say that someone qualifies. Remove wording such as “you qualify” and describe only what the provider offers.',
+  },
+  already_reported: {
+    ta: 'இந்தப் பதிவு பற்றிய திறந்த முறைப்பாடு ஏற்கனவே உள்ளது.',
+    en: 'There is already an open report about this entry.',
+  },
+  // Representatives and appointments (D29, S17; FR-APT-001 to 007).
+  unknown_member_code: {
+    ta: 'இந்த உறுப்பினர் இலக்கத்துடன் எவரும் இல்லை.',
+    en: 'No member has this member ID.',
+  },
+  profile_exists: {
+    ta: 'இவருக்கு ஏற்கனவே ஒரு பிரதிநிதி விவரம் உள்ளது. அதைத் திறந்து மாற்றவும்.',
+    en: 'This person already has a representative profile. Open it and change it instead.',
+  },
+  representative_area_level: {
+    ta: 'பிரதிநிதி ஒரு மாவட்டம், பிரதேச செயலகப் பிரிவு அல்லது கிராம சேவகர் பிரிவுக்கு மட்டுமே பொறுப்பாக இருக்கலாம்.',
+    en: 'A representative covers a district, DS division or GN division, not a province.',
+  },
+  representative_name_required: {
+    ta: 'உறுப்பினர்கள் காணும் பெயரைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the name members see in Tamil and English.',
+  },
+  office_hours_required: {
+    ta: 'அலுவலக நேரங்களைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the office hours in Tamil and English.',
+  },
+  phone_format: {
+    ta: 'அலுவலகத் தொலைபேசி இலக்கத்தை 021 222 3344 அல்லது +94212223344 போன்று உள்ளிடவும்.',
+    en: 'Enter the office phone like 021 222 3344 or +94212223344.',
+  },
+  email_format: {
+    ta: 'சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்.',
+    en: 'Enter a valid e-mail address.',
+  },
+  office_address_ta_too_short: {
+    ta: 'அலுவலக முகவரியை முழுமையாகத் தமிழில் எழுதவும்.',
+    en: 'Write the full office address in Tamil.',
+  },
+  office_address_en_too_short: {
+    ta: 'அலுவலக முகவரியை முழுமையாக ஆங்கிலத்தில் எழுதவும்.',
+    en: 'Write the full office address in English.',
+  },
+  no_contacts: {
+    ta: 'காட்டுவதற்குத் தொடர்பு வழி எதுவும் இல்லை. முதலில் ஒன்றை உள்ளிடவும்.',
+    en: 'There is no contact route to show. Enter one first.',
+  },
+  no_profile: {
+    ta: 'உங்களுக்கு இன்னும் பிரதிநிதி விவரம் இல்லை.',
+    en: 'You have no representative profile yet.',
+  },
+  representative_lacks_calendar_permission: {
+    ta: 'இவருக்குத் தனது சந்திப்பு நாட்காட்டியை நிர்வகிக்கும் அனுமதி இல்லை; அது வழங்கப்பட்ட பின்னரே வெளியிடலாம்.',
+    en: 'This person does not hold the permission to manage their own appointment calendar; publish once it is granted.',
+  },
+  representative_unavailable: {
+    ta: 'இந்தப் பிரதிநிதி தற்போது சந்திப்புகளை ஏற்கவில்லை.',
+    en: 'This representative is not taking appointments now.',
+  },
+  slot_start_required: {
+    ta: 'முதல் நேர இடைவெளி ஆரம்பிக்கும் திகதியையும் நேரத்தையும் உள்ளிடவும்.',
+    en: 'Enter the date and time the first slot starts.',
+  },
+  slot_starts_in_past: {
+    ta: 'நேர இடைவெளிகள் எதிர்காலத்தில் ஆரம்பிக்க வேண்டும்.',
+    en: 'Slots must start in the future.',
+  },
+  too_far_ahead: {
+    ta: 'மூன்று மாதங்களுக்குள் உள்ள நேர இடைவெளிகளை மட்டுமே வெளியிடலாம்.',
+    en: 'Slots can be published up to three months ahead.',
+  },
+  slot_length: {
+    ta: 'ஒவ்வொரு நேர இடைவெளியும் 10 முதல் 120 நிமிடங்கள் இருக்க வேண்டும்.',
+    en: 'Each slot must be 10 to 120 minutes.',
+  },
+  too_many_slots: {
+    ta: 'ஒரே தடவையில் 1 முதல் 16 நேர இடைவெளிகளைச் சேர்க்கவும்.',
+    en: 'Add 1 to 16 slots at a time.',
+  },
+  slot_mode_required: {
+    ta: 'சந்திக்கும் முறையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose how they meet.',
+  },
+  slot_place_required: {
+    ta: 'நேரில் சந்திப்பதற்கு, அலுவலக இடத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'For an in-person slot, write the office in Tamil and English.',
+  },
+  overlaps_existing_slot: {
+    ta: 'இந்த நேரங்கள் ஏற்கனவே உள்ள நேர இடைவெளியுடன் மேற்பொருந்துகின்றன.',
+    en: 'These times overlap a slot that already exists.',
+  },
+  already_started: {
+    ta: 'இந்தச் சந்திப்பு நேரம் ஏற்கனவே ஆரம்பமாகிவிட்டது.',
+    en: 'This time has already started.',
+  },
+  slot_unavailable: {
+    ta: 'இந்த நேர இடைவெளி இனி கிடைக்காது.',
+    en: 'This slot is no longer available.',
+  },
+  slot_taken: {
+    ta: 'இந்த நேர இடைவெளி ஏற்கனவே பதிவு செய்யப்பட்டுவிட்டது.',
+    en: 'This slot has already been booked.',
+  },
+  follow_up_note_required: {
+    ta: 'சந்திப்பு நடந்திருந்தால், உறுப்பினருக்கான தொடர் குறிப்பை எழுதவும் (குறைந்தது 5 எழுத்துகள்).',
+    en: 'When you met, write the follow-up note for the member (at least 5 characters).',
+  },
+  note_too_short: {
+    ta: 'குறிப்பு குறைந்தது 5 எழுத்துகள் இருக்க வேண்டும்.',
+    en: 'The note must be at least 5 characters.',
+  },
+  not_started_yet: {
+    ta: 'சந்திப்பு நேரம் ஆரம்பமான பின்னரே நடந்ததைப் பதிவுசெய்யலாம்.',
+    en: 'Record what happened once the meeting time has started.',
+  },
+  own_calendar: {
+    ta: 'உங்கள் சொந்த நாட்காட்டியில் நீங்களே பதிவு செய்ய முடியாது.',
+    en: 'You cannot book with yourself.',
+  },
+  too_many_upcoming: {
+    ta: 'உறுப்பினருக்கு ஏற்கனவே மூன்று வரவிருக்கும் சந்திப்புகள் உள்ளன.',
+    en: 'The member already has three appointments ahead.',
+  },
+  already_booked_with_representative: {
+    ta: 'இந்தப் பிரதிநிதியுடன் ஏற்கனவே ஒரு வரவிருக்கும் சந்திப்பு உள்ளது.',
+    en: 'There is already an appointment ahead with this representative.',
+  },
+  contact_phone_required: {
+    ta: 'அழைப்பு அல்லது குறுஞ்செய்திக்கு ஒரு தொலைபேசி இலக்கம் தேவை.',
+    en: 'A call or a text needs a phone number.',
+  },
+  case_ref_format: {
+    ta: 'விவகார இலக்கம் CI-00128 போன்று இருக்க வேண்டும்.',
+    en: 'A case reference looks like CI-00128.',
+  },
+  same_slot: {
+    ta: 'சந்திப்பு ஏற்கனவே இந்த நேரத்தில் உள்ளது.',
+    en: 'The appointment is already at this time.',
+  },
+  // Renewal and certificates (D25).
+  certificate_event_required: {
+    ta: 'உறுப்பினர் கலந்துகொண்ட நிகழ்வின் அடையாளத்தை உள்ளிடவும்.',
+    en: 'Enter the ID of the event the member attended.',
+  },
+  already_issued: {
+    ta: 'இந்தச் சான்றிதழ் ஏற்கனவே வழங்கப்பட்டுள்ளது: காரணத்துடன் அதனை மீள வழங்கவும்.',
+    en: 'Already issued: reissue it instead, with a reason.',
+  },
+  no_attendance_recorded: {
+    ta: 'இந்த நிகழ்வில் உறுப்பினரின் வருகை பதிவுசெய்யப்படவில்லை.',
+    en: 'The member’s attendance at this event was not recorded at check-in.',
+  },
+  no_completed_assignments: {
+    ta: 'உறுப்பினருக்கு முடிவடைந்த தன்னார்வப் பணிகள் இன்னும் இல்லை.',
+    en: 'The member has no completed volunteer assignments yet.',
+  },
 };
 
 /** Problems that name a question or lesson by its number, e.g. "options_required:2". */
@@ -1279,6 +2080,44 @@ export function problemTargetField(problem: string): string | undefined {
 }
 
 const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
+  ...SAFETY_CONFIRMATIONS,
+  // Tamil AI assistant knowledge base (D20) and the AI model registry (D21).
+  kb_source_drafted: {
+    ta: 'மூலம் வரைவாகச் சேமிக்கப்பட்டது; வேறொரு அறிவுத் தொகுப்பாளர் அங்கீகரிக்கும் வரை பயன்படுத்தப்படாது.',
+    en: 'Source saved as a draft; it is not used until another Knowledge Editor approves it.',
+  },
+  kb_source_saved: { ta: 'வரைவு சேமிக்கப்பட்டது.', en: 'Draft saved.' },
+  kb_source_approved: {
+    ta: 'மூலம் அங்கீகரிக்கப்பட்டது; உதவியாளர் இனி இதைப் பயன்படுத்தும். முந்தைய பதிப்பு மாற்றப்பட்டது.',
+    en: 'Source approved; the assistant now uses it. Any earlier version is superseded.',
+  },
+  kb_source_returned: { ta: 'வரைவு காரணத்துடன் திருப்பியனுப்பப்பட்டது.', en: 'Draft sent back with the reason.' },
+  kb_version_drafted: {
+    ta: 'புதிய பதிப்பின் வரைவு உருவாக்கப்பட்டது; அங்கீகரிக்கப்படும் வரை தற்போதைய பதிப்பே பயன்படும்.',
+    en: 'A draft of the next version was made; the current version stays in use until it is approved.',
+  },
+  kb_source_reviewed: { ta: 'மீளாய்வு பதிவுசெய்யப்பட்டது.', en: 'Review recorded.' },
+  kb_source_retired: {
+    ta: 'மூலம் பயன்பாட்டிலிருந்து நீக்கப்பட்டது; உதவியாளர் இனி இதைப் பயன்படுத்தாது.',
+    en: 'Source retired; the assistant no longer uses it.',
+  },
+  kb_report_resolved: { ta: 'பிழை முறைப்பாடு தீர்க்கப்பட்டது.', en: 'Error report resolved.' },
+  kb_handover_answered: {
+    ta: 'பதில் அனுப்பப்பட்டது; உறுப்பினருக்குச் செயலியில் அறிவிக்கப்படும்.',
+    en: 'Reply sent; the member is told in the app.',
+  },
+  kb_handover_closed: { ta: 'கோரிக்கை மூடப்பட்டது.', en: 'Request closed.' },
+  ai_model_registered: {
+    ta: 'மாதிரி நிழல் முறையில் பதிவுசெய்யப்பட்டது; உறுப்பினர்களுக்குக் காட்டப்படாது.',
+    en: 'Model registered in shadow mode; nothing it does is shown to members.',
+  },
+  ai_evaluation_recorded: { ta: 'மதிப்பீடு பதிவுசெய்யப்பட்டது.', en: 'Evaluation recorded.' },
+  ai_fairness_recorded: { ta: 'சமநிலை மீளாய்வு பதிவுசெய்யப்பட்டது.', en: 'Fairness review recorded.' },
+  ai_model_live: {
+    ta: 'மாதிரி நேரடிப் பயன்பாட்டுக்கு வந்தது; அதே பணிக்கான முந்தைய மாதிரி ஓய்வு பெற்றது.',
+    en: 'Model is live; the one live before for the same task is retired.',
+  },
+  ai_model_retired: { ta: 'மாதிரி ஓய்வு பெற்றது; இனி பதிலளிக்காது.', en: 'Model retired; it no longer answers.' },
   policy_draft_created: {
     ta: 'கட்டுப்படுத்தப்பட்ட வரைவு உருவாக்கப்பட்டது.',
     en: 'Controlled draft created.',
@@ -1790,6 +2629,221 @@ const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
   misinfo_appeal_changed: {
     ta: 'முடிவு மாற்றப்பட்டது.',
     en: 'Outcome changed.',
+  },
+  // Participatory budgeting (D19).
+  budget_cycle_created: {
+    ta: 'சுழற்சி வரைவாகச் சேமிக்கப்பட்டது. விதிகள் வெளியிடப்படும் வரை உறுப்பினர்களுக்குத் தெரியாது.',
+    en: 'Cycle saved as a draft. Members see nothing until the rules are published.',
+  },
+  budget_rules_saved: {
+    ta: 'விதிகள் சேமிக்கப்பட்டன.',
+    en: 'Rules saved.',
+  },
+  budget_moved_proposal_intake: {
+    ta: 'விதிகள் வெளியிடப்பட்டன. திட்டங்களைச் சேர்க்கலாம்.',
+    en: 'Rules published. Projects can now be added.',
+  },
+  budget_moved_review: {
+    ta: 'சுழற்சி மீளாய்வுக்கு அனுப்பப்பட்டது.',
+    en: 'The cycle moved to review.',
+  },
+  budget_moved_voting_open: {
+    ta: 'வாக்களிப்பு திட்டமிடப்பட்டது. விதிகளும் வாக்குச்சீட்டும் இப்போது பூட்டப்பட்டுள்ளன.',
+    en: 'Voting scheduled. The rules and the ballot are now locked.',
+  },
+  budget_moved_voting_closed: {
+    ta: 'வாக்களிப்பு முடிந்தது. சான்றுறுதிப்படுத்துபவர்களுக்கு அறிவிக்கப்பட்டது.',
+    en: 'Voting closed. The certifiers have been asked to certify the count.',
+  },
+  budget_moved_cancelled: {
+    ta: 'சுழற்சி இரத்துச்செய்யப்பட்டது. காரணம் உறுப்பினர்களுக்குக் காட்டப்படும்.',
+    en: 'Cycle cancelled. Members see the reason.',
+  },
+  budget_project_added: {
+    ta: 'திட்டம் சேர்க்கப்பட்டது. வாக்குச்சீட்டில் சேர்க்க முன் நிதி மற்றும் சட்ட மீளாய்வுகளைப் பதிவுசெய்யவும்.',
+    en: 'Project added. Record its financial and legal reviews before putting it on the ballot.',
+  },
+  budget_project_saved: {
+    ta: 'திட்டம் சேமிக்கப்பட்டது.',
+    en: 'Project saved.',
+  },
+  budget_review_recorded: {
+    ta: 'மீளாய்வு பதிவுசெய்யப்பட்டது.',
+    en: 'Review recorded.',
+  },
+  budget_project_on_ballot: {
+    ta: 'திட்டம் வாக்குச்சீட்டில் சேர்க்கப்பட்டது.',
+    en: 'Project put on the ballot.',
+  },
+  budget_project_off_ballot: {
+    ta: 'திட்டம் வாக்குச்சீட்டிலிருந்து நீக்கப்பட்டது.',
+    en: 'Project taken off the ballot.',
+  },
+  budget_certified: {
+    ta: 'சான்றுறுதி பதிவுசெய்யப்பட்டது. இரண்டு பேர் சான்றுறுதிப்படுத்திய பின் முடிவுகள் வெளியிடப்படும்.',
+    en: 'Certification recorded. The results are published once two people have certified.',
+  },
+  budget_allocated: {
+    ta: 'ஒதுக்கீடுகள் நிதிப் பதிவுகளில் பதிவுசெய்யப்பட்டன.',
+    en: 'Allocations recorded in the finance records.',
+  },
+  budget_spending_recorded: {
+    ta: 'செலவு பதிவுசெய்யப்பட்டது.',
+    en: 'Spending recorded.',
+  },
+  budget_project_completed: {
+    ta: 'திட்ட நிறைவு பதிவுசெய்யப்பட்டது.',
+    en: 'Project completion recorded.',
+  },
+  official_drafted: { ta: 'வரைவு உருவாக்கப்பட்டது.', en: 'Draft created.' },
+  official_saved: { ta: 'வரைவு சேமிக்கப்பட்டது.', en: 'Draft saved.' },
+  official_image_attached: {
+    ta: 'படம் வரைவில் இணைக்கப்பட்டது; கையொப்பமிடும்போது அதுவும் கையொப்பமிடப்படும்.',
+    en: 'Image attached to the draft; it is signed with the statement.',
+  },
+  official_image_removed: { ta: 'படம் வரைவிலிருந்து நீக்கப்பட்டது.', en: 'Image removed from the draft.' },
+  official_published: {
+    ta: 'கையொப்பமிட்டு வெளியிடப்பட்டது. சரிபார்ப்புக் குறியீட்டையும் இணைப்பையும் அறிக்கையுடன் பகிருங்கள்.',
+    en: 'Signed and published. Share the check code and link with the statement.',
+  },
+  official_corrected: {
+    ta: 'திருத்தம் கையொப்பமிட்ட புதிய பதிப்பாகச் சேர்க்கப்பட்டது; மூலப் பதிப்பு மாறவில்லை.',
+    en: 'Correction added as a new signed version; the original is unchanged.',
+  },
+  official_withdrawn: {
+    ta: 'அறிக்கை மீளப்பெறப்பட்டது. சரிபார்ப்பவர்கள் அனைவருக்கும் அது காரணத்துடன் தெரிவிக்கப்படும்.',
+    en: 'Statement withdrawn. Everyone who checks it is told, with your reason.',
+  },
+  publisher_registered: { ta: 'வெளியீட்டாளர் பதிவுசெய்யப்பட்டார்.', en: 'Publisher registered.' },
+  publisher_revoked: {
+    ta: 'வெளியீட்டாளர் பதிவு மீளப்பெறப்பட்டது. அவர் முன்பு கையொப்பமிட்டவை தொடர்ந்தும் உறுதிப்படும்.',
+    en: 'Publisher registration revoked. What they signed before still verifies.',
+  },
+  committee_proposed: {
+    ta: 'முன்மொழியப்பட்டது. Tier 5 அங்கீகரித்ததும் உறுப்பினர்களுக்குத் திறக்கும்.',
+    en: 'Proposed. It opens to members once a Tier 5 approves it.',
+  },
+  committee_approved: {
+    ta: 'அங்கீகரிக்கப்பட்டது. இப்போது உறுப்பினர்களுக்குத் திறந்துள்ளது.',
+    en: 'Approved. It is now open to members.',
+  },
+  committee_rejected: {
+    ta: 'காரணத்துடன் நிராகரிக்கப்பட்டது.',
+    en: 'Rejected with your reason.',
+  },
+  committee_closed: {
+    ta: 'மூடப்பட்டது. பதிவுகள் வைக்கப்பட்டுள்ளன.',
+    en: 'Closed. Its records are kept.',
+  },
+  committee_role_granted: {
+    ta: 'பொறுப்பு வழங்கப்பட்டது; உங்கள் பெயருடன் பதிவுசெய்யப்பட்டது.',
+    en: 'Role given and logged with your name.',
+  },
+  committee_member_removed: {
+    ta: 'குழுவிலிருந்து நீக்கப்பட்டார். அவரது அணுகல் உடனே முடிந்தது.',
+    en: 'Removed from the committee. Their access ended at once.',
+  },
+  diaspora_event_listed: {
+    ta: 'வெளிநாட்டு ஆதரவாளர்களுக்காக நிகழ்வு பட்டியலிடப்பட்டது.',
+    en: 'Event listed for supporters abroad.',
+  },
+  diaspora_event_unlisted: {
+    ta: 'நிகழ்வு பட்டியலிலிருந்து அகற்றப்பட்டது.',
+    en: 'Event taken off the list.',
+  },
+  // Livelihood guide (D28) and representatives (D29, S17).
+  guide_entry_drafted: {
+    ta: 'பதிவு வரைவாகச் சேமிக்கப்பட்டது. உறுப்பினர்கள் இன்னும் அதைக் காண மாட்டார்கள்.',
+    en: 'Entry saved as a draft. Members do not see it yet.',
+  },
+  guide_entry_saved: {
+    ta: 'மாற்றங்கள் சேமிக்கப்பட்டன. மீண்டும் மீளாய்வு செய்யப்படும் வரை உறுப்பினர்கள் இதைக் காண மாட்டார்கள்.',
+    en: 'Changes saved. Members do not see this entry until it is reviewed again.',
+  },
+  guide_review_requested: {
+    ta: 'மீளாய்வு கோரப்பட்டது.',
+    en: 'Review requested.',
+  },
+  guide_entry_published: {
+    ta: 'பதிவு வெளியிடப்பட்டது; உறுப்பினர்கள் இப்போது காணலாம்.',
+    en: 'Entry published; members can now see it.',
+  },
+  guide_entry_returned: {
+    ta: 'உங்கள் குறிப்புடன் பதிவு திருப்பியனுப்பப்பட்டது.',
+    en: 'Entry returned to the editors with your note.',
+  },
+  guide_entry_verified: {
+    ta: 'இன்று சரிபார்க்கப்பட்டதாகப் பதிவுசெய்யப்பட்டது.',
+    en: 'Recorded as checked today.',
+  },
+  guide_entry_withdrawn: {
+    ta: 'பதிவு வழிகாட்டியிலிருந்து மீளப்பெறப்பட்டது.',
+    en: 'Entry withdrawn from the guide.',
+  },
+  guide_report_fixed: {
+    ta: 'முறைப்பாடு சரிசெய்யப்பட்டதாகக் குறிக்கப்பட்டது; முறையிட்டவருக்கு அறிவிக்கப்படும்.',
+    en: 'Report marked fixed; the member who reported it is told.',
+  },
+  guide_report_dismissed: {
+    ta: 'முறைப்பாடு நிராகரிக்கப்பட்டது; முறையிட்டவருக்கு அறிவிக்கப்படும்.',
+    en: 'Report dismissed; the member who reported it is told.',
+  },
+  representative_drafted: {
+    ta: 'பிரதிநிதி விவரம் வரைவாகச் சேமிக்கப்பட்டது.',
+    en: 'Profile saved as a draft.',
+  },
+  representative_saved: {
+    ta: 'விவரம் சேமிக்கப்பட்டது.',
+    en: 'Profile saved.',
+  },
+  representative_published: {
+    ta: 'விவரம் வெளியிடப்பட்டது; உறுப்பினர்கள் இப்போது காணலாம்.',
+    en: 'Profile published; members can now see it.',
+  },
+  representative_withdrawn: {
+    ta: 'விவரம் மீளப்பெறப்பட்டது; வரவிருந்த சந்திப்புகள் இரத்து செய்யப்பட்டு உறுப்பினர்களுக்கு அறிவிக்கப்பட்டது.',
+    en: 'Profile withdrawn; bookings ahead were cancelled and their members told.',
+  },
+  slots_added: {
+    ta: 'நேர இடைவெளிகள் சேர்க்கப்பட்டன.',
+    en: 'Slots added.',
+  },
+  slot_withdrawn: {
+    ta: 'நேர இடைவெளி மீளப்பெறப்பட்டது.',
+    en: 'Slot withdrawn.',
+  },
+  own_profile_saved: {
+    ta: 'உங்கள் அலுவலக நேரங்களும் தொடர்பு வழிகளும் சேமிக்கப்பட்டன.',
+    en: 'Your office hours and contact routes are saved.',
+  },
+  contacts_approved: {
+    ta: 'உங்கள் தொடர்பு வழிகள் இப்போது உறுப்பினர்களுக்குக் காட்டப்படுகின்றன.',
+    en: 'Members now see your contact routes.',
+  },
+  contacts_hidden: {
+    ta: 'உங்கள் தொடர்பு வழிகள் உறுப்பினர்களிடமிருந்து மறைக்கப்பட்டன.',
+    en: 'Your contact routes are hidden from members.',
+  },
+  booking_cancelled: {
+    ta: 'சந்திப்பு இரத்து செய்யப்பட்டது; உறுப்பினருக்குக் காரணம் அறிவிக்கப்படும்.',
+    en: 'Booking cancelled; the member is told your reason.',
+  },
+  follow_up_recorded: {
+    ta: 'தொடர் குறிப்பு சேமிக்கப்பட்டது; உறுப்பினர் அதைக் காண்பார்.',
+    en: 'Follow-up saved; the member sees it.',
+  },
+  // Renewal and certificates (D25).
+  certificate_issued: {
+    ta: 'சான்றிதழ் வழங்கப்பட்டது. உறுப்பினர் அதனைத் தமது செயலியில் பதிவிறக்கலாம்.',
+    en: 'Certificate issued. The member can download it in their app.',
+  },
+  certificate_revoked: {
+    ta: 'சான்றிதழ் மீளப்பெறப்பட்டது; சரிபார்க்கும்போது அது மீளப்பெறப்பட்டதாகக் காட்டும். உறுப்பினருக்கு அறிவிக்கப்பட்டது.',
+    en: 'Certificate revoked; it now checks as Revoked. The member has been told.',
+  },
+  certificate_reissued: {
+    ta: 'புதிய சான்றிதழ் வழங்கப்பட்டது; பழையது மாற்றப்பட்டதாகக் காட்டும். உறுப்பினருக்கு அறிவிக்கப்பட்டது.',
+    en: 'New certificate issued; the old one now checks as Superseded. The member has been told.',
   },
 };
 

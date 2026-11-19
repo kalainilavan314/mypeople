@@ -34,24 +34,35 @@ export default function StaffHomeScreen() {
     [permissions],
   );
   const volunteerAssignments = useApiQuery(() => api().listMyVolunteerAssignments(), []);
+  // S18: committees this person coordinates; none (or committees switched off) shows no card.
+  const committees = useApiQuery(() => api().listCoordinatedCommittees().catch(() => []), []);
   const reload = useCallback(() => {
     reviews.reload();
     approvals.reload();
     volunteerAssignments.reload();
-  }, [reviews.reload, approvals.reload, volunteerAssignments.reload]);
+    committees.reload();
+  }, [reviews.reload, approvals.reload, volunteerAssignments.reload, committees.reload]);
   useReloadOnFocus(reload);
 
   const scans = permissions.has('events.checkin_scan') || permissions.has('events.manage');
   const looksUp = permissions.has('members.view_profile');
   const coordinatesVolunteers = permissions.has('volunteers.manage');
   const collectsVisits = permissions.has('field.collect');
+  const recordsRelief = permissions.has('relief.logistics');
+  const meetsMembers = permissions.has('appointment.manage_own');
+  // S04 (OD-04): the assisted-session grant, or identity review rights.
+  const assistsVerification = permissions.has('members.assisted_verification') || permissions.has('members.verify');
   const nothing =
     !permissions.has('members.verify') &&
     !approvesAnything(permissions) &&
     !scans &&
     !looksUp &&
     !coordinatesVolunteers &&
-    !collectsVisits;
+    !collectsVisits &&
+    !committees.data?.length &&
+    !recordsRelief &&
+    !meetsMembers &&
+    !assistsVerification;
 
   return (
     <Screen edges={[]} onRefresh={reload} refreshing={reviews.loading || approvals.loading}>
@@ -111,11 +122,50 @@ export default function StaffHomeScreen() {
         </SurfaceCard>
       ) : null}
 
+      {recordsRelief ? (
+        <SurfaceCard onPress={() => router.push('/staff/relief')} accessibilityLabel={t('s.relief.title')}>
+          <AppText step="section">{t('s.relief.title')}</AppText>
+          <AppText step="body" tone="secondary">
+            {t('s.relief.homeBody')}
+          </AppText>
+        </SurfaceCard>
+      ) : null}
+
+      {meetsMembers ? (
+        <SurfaceCard onPress={() => router.push('/staff/appointments')} accessibilityLabel={t('s.appointments.title')}>
+          <AppText step="section">{t('s.appointments.title')}</AppText>
+          <AppText step="body" tone="secondary">
+            {t('s.appointments.homeBody')}
+          </AppText>
+        </SurfaceCard>
+      ) : null}
+
+      {assistsVerification ? (
+        <SurfaceCard onPress={() => router.push('/staff/assisted-verification')} accessibilityLabel={t('s.assisted.title')}>
+          <AppText step="section">{t('s.assisted.title')}</AppText>
+          <AppText step="body" tone="secondary">
+            {t('s.assisted.homeBody')}
+          </AppText>
+        </SurfaceCard>
+      ) : null}
+
       {coordinatesVolunteers ? (
         <SurfaceCard onPress={() => router.push('/staff/volunteers')} accessibilityLabel={t('s.volunteers.title')}>
           <AppText step="section">{t('s.volunteers.title')}</AppText>
           <AppText step="body" tone="secondary">
             {t('s.volunteers.homeBody')}
+          </AppText>
+        </SurfaceCard>
+      ) : null}
+
+      {committees.data?.length ? (
+        <SurfaceCard onPress={() => router.push('/staff/committees')} accessibilityLabel={t('s.committees.title')}>
+          <AppText step="section">{t('s.committees.title')}</AppText>
+          <AppText step="body" tone="secondary">
+            {t('s.committees.homeBody', {
+              count: committees.data.length,
+              waiting: committees.data.reduce((sum, entry) => sum + entry.waiting, 0),
+            })}
           </AppText>
         </SurfaceCard>
       ) : null}

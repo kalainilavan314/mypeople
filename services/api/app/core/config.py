@@ -101,6 +101,20 @@ class Settings(BaseSettings):
     # from the immutable FIN-01 production control recorded through P3.
     finance_internal_review_threshold_minor: int = 10_000_000
 
+    # Official content signing (FR-AUT-001, 002). An Ed25519 private key: its 32-byte seed,
+    # base64-encoded. [ASSUMPTION] INT-24: the BRD wants the key in a KMS; until one is chosen
+    # the key is a server setting, read only by content/official/signing.py. Without it signing
+    # is unavailable and nothing can be published as official (fails closed).
+    content_signing_key: SecretStr | None = None
+    # The Tamil AI assistant's language model (M28, FR-AIA, INT-17). [ASSUMPTION] OD-42 is still
+    # open: "none" sends nothing anywhere and the assistant says it is not available yet.
+    # "anthropic" needs ANTHROPIC_API_KEY, and members are answered only once the AI Governance
+    # Lead has made that provider's model live in the model registry (D21, 15B.5).
+    ai_provider: Literal["none", "anthropic"] = "none"
+    anthropic_api_key: SecretStr | None = None
+    # A model id as the provider names it; the registry entry must carry the same id.
+    ai_assistant_model: str = "claude-opus-5-5"
+
     @field_validator("allowed_origins", mode="before")
     @classmethod
     def split_comma_separated(cls, value: object) -> object:
@@ -132,6 +146,18 @@ class Settings(BaseSettings):
                 raise ValueError("FINANCE_ENCRYPTION_KEY must be 32 bytes, base64-encoded")
         return value
 
+    @field_validator("content_signing_key")
+    @classmethod
+    def signing_key_is_32_bytes(cls, value: SecretStr | None) -> SecretStr | None:
+        if value is not None:
+            try:
+                key = base64.b64decode(value.get_secret_value(), validate=True)
+            except binascii.Error:
+                key = b""
+            if len(key) != 32:
+                raise ValueError("CONTENT_SIGNING_KEY must be a 32-byte Ed25519 seed, base64-encoded")
+        return value
+
     @model_validator(mode="after")
     def staff_mfa_off_only_in_development(self) -> Self:
         if not self.staff_mfa_required and self.app_env != "development":
@@ -159,6 +185,14 @@ class Settings(BaseSettings):
         # Notify.lk suspends accounts that send one-time codes from its demo sender ID.
         if self.app_env == "production" and self.notify_lk_sender_id == "NotifyDEMO":
             raise ValueError("NOTIFY_LK_SENDER_ID=NotifyDEMO is for tests only; use the approved sender ID in production")
+        return self
+
+    @model_validator(mode="after")
+    def anthropic_needs_its_key(self) -> Self:
+        if self.ai_provider == "anthropic" and not (self.anthropic_api_key and self.anthropic_api_key.get_secret_value()):
+            raise ValueError("AI_PROVIDER=anthropic needs ANTHROPIC_API_KEY")
+        if not self.ai_assistant_model.strip():
+            raise ValueError("AI_ASSISTANT_MODEL must not be empty")
         return self
 
     @model_validator(mode="after")

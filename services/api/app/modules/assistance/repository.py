@@ -214,6 +214,35 @@ def find_case(db: Session, case_id: uuid.UUID, *, lock: bool = False) -> Case | 
     return _case(row) if row else None
 
 
+@dataclass(frozen=True)
+class CaseReference:
+    """What relief logistics may know of a case (FR-DIS-005): that it exists, where, and whether it is open.
+    Never the person, the need or the record."""
+
+    id: uuid.UUID
+    case_ref: str
+    area_path: list[str]
+    open: bool
+
+
+def find_case_reference(db: Session, case_ref: str) -> CaseReference | None:
+    _open(db)
+    row = db.execute(
+        text("""SELECT id, case_ref, area_path, state NOT IN ('closed', 'withdrawn') AS open
+                FROM assistance.case WHERE case_ref = :ref"""),
+        {"ref": case_ref.strip().upper()},
+    ).mappings().one_or_none()
+    return CaseReference(**{**row, "area_path": list(row["area_path"])}) if row else None
+
+
+def case_refs(db: Session, case_ids: list[uuid.UUID]) -> dict[uuid.UUID, str]:
+    if not case_ids:
+        return {}
+    _open(db)
+    rows = db.execute(text("SELECT id, case_ref FROM assistance.case WHERE id = ANY(:ids)"), {"ids": case_ids})
+    return {row.id: row.case_ref for row in rows}
+
+
 def member_cases(db: Session, member_id: uuid.UUID) -> list[Case]:
     _open(db)
     rows = db.execute(text(f"{_CASE} WHERE a.member_id = :m ORDER BY c.created_at DESC"), {"m": member_id}).mappings()

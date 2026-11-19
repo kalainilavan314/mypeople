@@ -122,6 +122,17 @@ _ACTIVITY = {
                COALESCE(p.completed_at, p.updated_at) AS at, c.id AS target_id
         FROM community.course_progress p JOIN community.course c ON c.id = p.course_id
         WHERE p.member_id = :member""",
+    # The target is the committee, so the receipt opens its space; a hidden task stays a record.
+    "committee_task": """
+        SELECT 'committee_task' AS kind, i.item_ref AS reference, i.title,
+               CASE WHEN i.state = 'hidden' THEN 'withdrawn' WHEN i.done_at IS NULL THEN 'open' ELSE 'done' END AS state,
+               COALESCE(i.done_at, i.created_at) AS at, i.committee_id AS target_id
+        FROM engagement.committee_item i WHERE i.item_type = 'task' AND i.assignee_id = :member""",
+    "appointment": """
+        SELECT 'appointment' AS kind, a.appointment_ref AS reference, r.role_en AS title, a.state,
+               COALESCE(a.follow_up_at, a.cancelled_at, a.booked_at) AS at, a.id AS target_id
+        FROM events.appointment a JOIN events.representative r ON r.id = a.representative_id
+        WHERE a.member_id = :member""",
 }
 
 

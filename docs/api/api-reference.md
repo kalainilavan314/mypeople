@@ -291,6 +291,23 @@ Behind the `community_support` switch (phase 2). Help never depends on membershi
 | `GET/POST /manage/programmes`, `POST .../{id}/criteria`, `.../{id}/active`, `GET/POST /manage/partners` | `assistance.programme.manage` to change | programmes with versioned criteria (D14) and partners | `403` |
 | `GET /manage/statistics` | `assistance.decide` or `assistance.programme.manage` | counts by area, category and state; under 10 hidden, also by subtraction | `403` |
 
+### Alerts, relief and blood donors (`/v1/alerts`, `/v1/relief`, `/v1/donors`)
+
+`/v1/alerts` and `/v1/relief` sit behind `disaster_alerts`, `/v1/donors` behind `blood_donors` (both phase 3). The app relays official warnings only and never dispatches help (OS-14). Refusals are `422 {code: "safety_refused" | "relief_refused" | "donor_refused", problems}`. The `relief` and `donors` schemas have row-level security like `assistance`; there is no endpoint that lists or searches donors (FR-BLD-002).
+
+| Endpoint | Who | What | Refusals |
+|---|---|---|---|
+| `GET /v1/alerts?area`, `GET /history?area`, `GET /{id}` | anyone signed in | M35: the emergency numbers, the not-a-dispatch statement, current alerts for the home area or a chosen District/DS/GN key (never GPS), nearby shelters, the member's relief offer; history of the last 90 days; one alert with source name, link, issue and end time | `422 unknown_area` |
+| `POST /v1/alerts/help` `{need, people, details, fullName, phone?, area?, alertId?, consent}` | anyone signed in | M36: an urgent Community Support case (`emergency_needs`), intake staff told at once; `{caseId, caseRef}` | `422 consent_required`, `support_not_open` (Community Support switched off), `alert_not_found` |
+| `PUT/DELETE /v1/alerts/relief-offer` `{tasks, availableUntil, consent}` | Verified, Active members | FR-DIS-004: offer relief help in the home area for up to 90 days | `422 identity_not_verified`, `membership_not_active`, `consent_required`, `home_area_required` |
+| `GET/POST /v1/alerts/manage`, `GET /manage/composer`, `GET /manage/{id}`, `POST /manage/{id}/refresh`, `.../withdraw` | `disaster.relay` over every targeted area | relay from the DMC or the Department of Meteorology with the source's own https link, issue and end time (at most 14 days), to District/DS/GN keys; members there told (unless emergency notices are off on every channel); a check against the source clears the 6-hour flag, a raised severity tells members again; revisions kept | `403 outside_your_area`; `422 unofficial_source`, `link_not_from_source`, `issued_in_future`, `already_ended`, `alert_too_long`, `alert_not_current` |
+| `GET/POST /v1/alerts/manage/shelters`, `PUT .../{id}` | `disaster.relay` | shelters in a DS or GN division from the DMC or a District/Divisional Secretariat, with the report time (out of date after 12 hours) | `422 unauthorised_shelter_source`, `shelter_area_level` |
+| `GET /v1/alerts/manage/volunteers` | `relief.logistics` | relief offers in the coordinator's areas: name, area, tasks, until; no phone | `403` |
+| `GET /v1/relief`, `GET/POST /supplies`, `GET/POST /distributions` | `relief.logistics` over the store and the place | stock per store (District or DS) and item; relief to an open AS- case in the officer's area or a group at a site with households; append-only | `422 more_than_in_stock`, `case_not_found`, `group_details_required`, `outside_store_area`, `date_too_old` |
+| `GET/PUT/DELETE /v1/donors/me`, `GET /me/requests/{id}`, `POST .../answer` `{accept, consent}` | the member | M37 opt-in each save, withdrawal deletes the donor record and answers at once; M38 accept (passes name, phone and contact ways) or decline, once | `422 consent_required`, `broad_area_required`, `already_answered`, `request_closed` |
+| `GET /v1/donors/desk/access`, `GET /desk`, `POST /desk/requests`, `GET .../{id}`, `POST .../{id}/close` | an account a partner was authorised for (PRM-55, second factor given) | raise a request; up to 25 matching donors told, each at most once a day; over 10 an hour waits for Tier 5; counts, and contacts of donors who accepted | `403 not_partner_requester`; `422 needed_by_in_past`, `needed_by_too_far` |
+| `GET /v1/donors/oversight`, `POST /oversight/partners`, `.../{id}/active`, `.../{id}/requesters`, `POST /oversight/requesters/{id}/revoke`, `POST /oversight/requests/{id}/decision` | `donor.oversight` (Tier 5) | partners with agreement references, identity-verified requesters by member code, approval of requests over the limit (never one's own), requests with counts only | `422 identity_not_verified`, `already_a_requester`, `own_request`, `reason_required` |
+
 ### Town halls (`/v1/town-halls`)
 
 Behind the `town_halls` switch (phase 2). The streaming provider is not chosen (OD-44, DEP-20): a session keeps the provider's stream, audio-only and caption links once known. Voice questions wait for Tamil speech-to-text (OD-42).
@@ -319,13 +336,56 @@ Behind the `field_visits` and `election_roster` switches (phase 2). Neither reco
 
 ### Fact-checks (`/v1/fact-checks`)
 
-Behind the `fact_checks` switch (phase 2). A person decides every report; no automatic score exists (BR-149). Checking a statement against its signed original (FR-AUT-005, M47, D30) waits for the signing keys (INT-24).
+Behind the `fact_checks` switch (phase 2). A person decides every report; no automatic score exists (BR-149). Checking a statement against its signed original (FR-AUT-005) is `/v1/content/official/check`, below.
 
 | Endpoint | Needs | Success | Errors |
 |---|---|---|---|
 | `POST /screenshots` body = the image, `POST /reports` `{link?, description, screenshotId?}` | a session | `201` the `MR-` report, pending | `422 link_or_screenshot_required`, `screenshot_not_found`, `too_many_reports_today` |
 | `GET /reports/mine`, `POST /reports/{id}/appeal` `{body}` | the reporter | outcome and reason; one appeal | `422 not_decided`, `already_appealed` |
 | `GET /manage?open_only`, `GET /manage/{id}/screenshot`, `POST /manage/{id}/decision` `{outcome, reason}`, `POST /manage/{id}/appeal-decision` `{change, outcome?, reason}` | `content.moderate` | the D12 fact-check queue; screenshot views audited | `403 own_record`, `original_decider`; `422 already_decided`, `no_open_appeal`, `new_outcome_required` |
+
+### Official content (`/v1/content/official`)
+
+Behind the `official_content` switch (phase 3). Ed25519 signatures over a sorted-key JSON payload (`signedPayload`, format `tmk-official-statement/1`); [ASSUMPTION] INT-24: one key from `CONTENT_SIGNING_KEY` until a KMS is chosen. "Signed" (and the "Official statement" label) means every revision verifies now (BR-148).
+
+| Endpoint | Needs | Success | Errors |
+|---|---|---|---|
+| `GET /keys` | nothing (INT-22) | `200 [{keyId, algorithm, publicKey, firstUsedAt, current}]`, every key that has signed and the current one | `404 feature_unavailable` |
+| `GET /check?code=` (a code or a check link) | nothing; limited per address | `200 {checkCode, status: verified \| withdrawn \| not_verified, problem: no_matching_record \| signature_invalid \| null, statement}`; the statement only when verified or withdrawn | `429 too_many_requests` with `Retry-After` |
+| `GET /images/{id}?size=display\|thumb` | nothing; only images a signed revision carries | `200 image/webp` | `404` |
+| `GET ""?limit`, `GET /{id}` | a session | M47: published and withdrawn statements with the latest revision; one with every revision | `404` |
+| `GET /manage/signing` | `content.sign_publish` or `system.configure` | `{available, keyId, publicKey, myPublisher}` | `403` |
+| `GET /manage?state`, `GET /manage/{id}`, `GET /manage/images/{id}` | as above | drafts and signed statements; a draft's image | `403`, `404` |
+| `POST /manage`, `PUT /manage/{id}` `{titleEn, titleTa, bodyEn, bodyTa, imageId?}` (any may be empty in a draft); `POST /manage/images` body = the image | `content.sign_publish` | `201`/`200` the draft; the image `{id, width, height, sha256}` | `422 official_refused`: `not_allowed_from:<state>`, `image_not_found`, `unsupported_type`; `413`, `415` |
+| `POST /manage/{id}/publish` | `content.sign_publish` and an active registration | `200` revision 1 signed, a `TMK-XXXX-XXXX` check code | `503 signing_unavailable`; `403 not_a_registered_publisher` (audited); `409 {code: silence_period}`; `422 official_refused`: `title_ta_required`, `title_en_required`, `body_ta_required`, `body_en_required`, `not_allowed_from:<state>` |
+| `POST /manage/{id}/corrections` `{titleEn, titleTa, bodyEn, bodyTa, imageId?, reasonEn, reasonTa}` | as above | `200` a new signed revision; earlier ones unchanged (BR-150) | as above, and `nothing_changed` |
+| `POST /manage/{id}/withdraw` `{reasonEn, reasonTa}` | a registered publisher or `system.configure` | `200` withdrawn; every check says so | `403`, `404`, `422 not_allowed_from:<state>` |
+| `GET /publishers`, `POST /publishers` `{memberCode, nameEn, nameTa}`, `POST /publishers/{id}/revoke` `{reason}` | `system.configure` over the platform (Tier 5) | the approved publishers (FR-AUT-001) | `403 platform_scope_required`, `own_record`; `422 official_refused`: `member_not_found`, `needs_sign_publish_permission`, `already_registered`, `already_revoked` |
+### Livelihood guide (`/v1/guide`)
+
+Behind the `livelihood_guide` switch (phase 3, G3). Refusals are `422 {code: "guide_refused", problems}`. The guide is one platform-wide list: `guide.edit` and `guide.review` count in any area [ASSUMPTION].
+
+| Endpoint | Who | Result | Refusals |
+|---|---|---|---|
+| `GET /v1/guide?q&category` | a session | published entries before their end date, newest check first; `q` matches either language (M39, FR-LIV-001) | `401` |
+| `GET /v1/guide/{id}` | a session | the entry with `sourceUrl`, `publishedOn`, `verifiedOn`, `expiresOn`, the fixed `disclaimerEn`/`disclaimerTa` ("check eligibility with the provider", FR-LIV-004) and the member's own open report (M40) | `404` (draft, withdrawn or past its end date) |
+| `POST /v1/guide/{id}/reports` `{reason, note?}` | a session | the report; `guide.edit` holders are told with the entry's link (FR-LIV-006); the reporter is never shown to them | `422 already_reported` |
+| `POST /v1/guide/manage`, `PUT .../{id}` | `guide.edit` | drafts, saved incomplete; saving a published entry takes it off the guide until reviewed again | `422 states_eligibility` |
+| `POST /v1/guide/manage/{id}/request-review`, `POST .../review` `{approve, note?}` | `guide.edit` asks, `guide.review` decides | published, or back to draft with the note | `422 source_url_required`, `<field>_<en|ta>_required`, `published_on_required`, `verified_on_required`, `already_expired`, `reason_required`; `403 own_entry` (the person who asked or last changed it) |
+| `POST /v1/guide/manage/{id}/verified`, `.../withdraw` `{reason}` | `guide.edit` (withdraw: either permission) | checked against the source today; or taken off for good | `422 not_allowed_from:<state>` |
+| `GET /v1/guide/manage?state&expired&q`, `GET .../reports?state`, `POST .../reports/{id}/resolution` `{outcome, note?}` | `guide.edit` or `guide.review` (resolving: `guide.edit`) | D28 lists with `expired`, `needsReverification` (180 days) and `missing`; the report queue; the reporter is told it was checked | `422 reason_required` (dismissing), `already_resolved` |
+
+### Meet Your Representative (`/v1/appointments`)
+
+Behind the `representatives` switch (phase 3, G3). Refusals are `422 {code: "appointment_refused", problems}`.
+
+| Endpoint | Who | Result | Refusals |
+|---|---|---|---|
+| `GET /v1/appointments/representatives`, `GET .../{id}` | a session | published profiles with role, area, office hours, `coversMyArea`, the next free time; detail adds only the contact routes the person approved (BR-143) and the free slots | `404` |
+| `POST /v1/appointments` `{slotId, topic, contactPreference, contactPhone?, needs, needsNote?, caseRef?, caseLinkConsent}` | Verified and Active members [ASSUMPTION] | the booking; `caseRef` is stored only with consent (FR-APT-005); the representative is told | `422 identity_not_verified`, `membership_not_active`, `slot_taken`, `slot_unavailable`, `too_many_upcoming` (3), `already_booked_with_representative`, `own_calendar`, `contact_phone_required`, `case_ref_format`, `representative_unavailable` |
+| `GET /v1/appointments/mine`, `GET .../mine/{id}`, `POST .../mine/{id}/cancel` `{reason?}`, `POST .../mine/{id}/reschedule` `{slotId}` | the member | own bookings with the follow-up note; cancel or move before the start; reminders 24 hours and 1 hour before (notifications task) | `422 already_started`, `not_allowed_from:<state>`, `same_slot`, `slot_taken` |
+| `GET /v1/appointments/calendar?from&days`, `PUT .../calendar/profile`, `POST .../calendar/contacts` `{approve}`, `POST .../calendar/slots`, `POST .../calendar/slots/{id}/withdraw`, `GET .../calendar/bookings/{id}`, `POST .../cancel`, `POST .../follow-up` `{outcome, note?}` | `appointment.manage_own` (PRM-56), own calendar only | S17: slots with bookings (member name and ID, needs, consented case reference), contact approval, slot series without overlap, follow-up visible to the member (FR-APT-006) | `422 overlaps_existing_slot`, `starts_in_past`, `place_required`, `not_started_yet`, `note_required`, `no_contacts`, `no_profile` |
+| `GET/POST /v1/appointments/profiles`, `GET/PUT .../{id}`, `POST .../publish`, `.../withdraw`, `.../slots`, `.../slots/{id}/withdraw` | `appointment.profile.manage` over the profile's area [ASSUMPTION] | D29: profiles by member ID and area; a change of contact routes clears the person's approval; slots show `booked` only, never who | `422 unknown_member_code`, `profile_exists`, `representative_lacks_calendar_permission`; `403 outside_your_area` |
 
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 
@@ -410,6 +470,7 @@ Review evidence is append-only. The external signed record remains in its contro
 | Endpoint | Needs | Success | Errors |
 |---|---|---|---|
 | `GET /v1/election/current` | a session; the `election_mode` feature | `200 [{periodRef, electionType, titleEn, titleTa, pollingDay, daysToPolling, inSilence, silenceStartsAt, silenceEndsAt, labelEn, labelTa, sourceUrl, sourceReference, sourcePublishedAt, notices}]` for periods whose area contains the member's | `404 feature_unavailable` |
+| `GET /v1/election/official-links` | a session; the `election_mode` feature | `200 {links: [{key, labelEn, labelTa, descriptionEn, descriptionTa, url}], labelEn, labelTa, pollingStationLocator: false}`, M29's Election Commission services; nothing is stored | `404 feature_unavailable` |
 | `GET /v1/election/periods?state&limit` | `election.mode.manage` | `200` declared periods by default | `403` |
 | `POST /v1/election/periods` body `{electionType, titleEn, titleTa, area, startsAt, endsAt, silenceStartsAt, silenceEndsAt, pollingDay, sourceUrl, sourceReference, sourcePublishedAt}` | `election.mode.manage` over the area | `201` the period with `overlaps` (a warning) | `403`, `422 {code: "election_invalid", problems}`: `ends_before_start`, `already_over`, `silence_ends_before_start`, `silence_outside_period`, `silence_must_cover_polling_day`, `source_in_future`, `unknown_area` |
 | `GET /v1/election/periods/{id}` | as above | `200` the period with every notice | `403`, `404` |

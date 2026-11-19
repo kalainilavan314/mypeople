@@ -22,11 +22,12 @@ const SESSION = {
   language: 'both', startsAt: '2026-12-05T18:00', endsAt: '2026-12-05T19:30', area: 'district:LK41',
 };
 
-test('town halls are a built module for producers and moderators; participatory budgeting stays planned', () => {
+test('town halls are a built module for producers and moderators', () => {
   const registered = builtModules.find((m) => m.href === '/town-halls');
   assert.ok(registered);
   assert.deepEqual([...registered.permission], ['townhall.produce', 'townhall.moderate']);
-  assert.ok(plannedModules.some((m) => m.name === 'Participatory budgeting'));
+  // Participatory budgeting is built since Phase 3 (features/budgeting).
+  assert.equal(plannedModules.some((m) => m.name === 'Participatory budgeting'), false);
   assert.equal(plannedModules.some((m) => /town hall/i.test(m.name)), false);
   for (const state of Object.keys(MOVES)) assert.match(STATE_LABELS[state].ta, /[஀-௿]/, state);
 });

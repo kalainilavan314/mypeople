@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -8,8 +8,12 @@ import { colors, control, iconSize, iconTile, spacing } from '@my-people/design-
 import { AppText, fontFamilyFor, useApiQuery, useLanguage, useReloadOnFocus } from '@my-people/mobile-ui';
 
 import { api } from '@/lib/api';
+import { useFeatureEnabled } from '@/lib/useFeatureEnabled';
 
-/** Stable member navigation: account on the left, product in the centre, inbox on the right. */
+/**
+ * Stable member navigation: account on the left, product in the centre, inbox on the right. The AI
+ * assistant's button sits beside the inbox only while its module is on (M28; no sixth tab).
+ */
 export function MemberTopBar() {
   const { t } = useTranslation();
   const language = useLanguage();
@@ -19,6 +23,11 @@ export function MemberTopBar() {
   const inbox = useApiQuery(() => api().getNotifications({ limit: 1 }));
   useReloadOnFocus(inbox.reload);
   const unread = inbox.data?.unread ?? 0;
+  const assistantOn = useFeatureEnabled('ai_assistant');
+  // With the assistant button there are three 44 px targets; on 320 px phones the brand tightens a
+  // little so the Tamil party name still fits on one line.
+  const { width } = useWindowDimensions();
+  const compact = assistantOn && width < 360;
 
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
@@ -36,10 +45,10 @@ export function MemberTopBar() {
           )}
         </Pressable>
 
-        <View style={styles.brand} accessibilityRole="header">
+        <View style={[styles.brand, compact && styles.brandCompact]} accessibilityRole="header">
           <Image
             source={require('../../assets/brand/logo.png')}
-            style={styles.brandLogo}
+            style={compact ? styles.brandLogoCompact : styles.brandLogo}
             resizeMode="contain"
             accessible={false}
           />
@@ -56,6 +65,21 @@ export function MemberTopBar() {
             </AppText>
           </View>
         </View>
+
+        {assistantOn ? (
+          <Pressable
+            onPress={() => router.push('/assistant')}
+            accessibilityRole="button"
+            accessibilityLabel={t('m.assistant.open')}
+            hitSlop={4}
+            style={styles.action}>
+            {({ pressed }) => (
+              <View style={[styles.circle, pressed && styles.pressed]}>
+                <Ionicons name="sparkles-outline" size={iconSize.header} color={colors.primaryDark} />
+              </View>
+            )}
+          </Pressable>
+        ) : null}
 
         <Pressable
           onPress={() => router.push('/notifications')}
@@ -106,6 +130,8 @@ const styles = StyleSheet.create({
   pressed: { backgroundColor: colors.surfaceVariant },
   brand: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing[2] },
   brandLogo: { width: 32, height: 32 },
+  brandCompact: { gap: spacing[1] },
+  brandLogoCompact: { width: 26, height: 26 },
   brandText: { flexShrink: 1, minWidth: 0 },
   brandName: { color: colors.text, fontSize: 16, lineHeight: 20 },
   brandTamil: { fontSize: 11, lineHeight: 16 },

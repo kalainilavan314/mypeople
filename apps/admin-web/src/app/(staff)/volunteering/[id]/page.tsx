@@ -108,6 +108,7 @@ async function OpportunityView({ params, searchParams }: Pick<PageProps<'/volunt
     startsAt: toSriLankaDateTimeInput(opportunity.startsAt),
     endsAt: toSriLankaDateTimeInput(opportunity.endsAt),
     places: String(opportunity.places),
+    remote: opportunity.remote ? 'yes' : '',
   };
   const waitingOffers = offers.filter((offer) => offer.state === 'offered');
   const otherOffers = offers.filter((offer) => offer.state !== 'offered');

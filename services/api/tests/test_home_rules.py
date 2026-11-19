@@ -19,7 +19,10 @@ def test_four_quick_actions_and_none_duplicates_a_tab():
 
 def test_the_party_fund_never_comes_before_civic_participation():
     services = rules.HUB_SERVICES
-    assert len(services) == 10 and services[-2:] == ("promises", "support")
+    # The Phase 1 and 2 services come first; the Phase 3 services follow them.
+    assert services[8:10] == ("promises", "support")
+    assert {"budgeting", "committees", "diaspora", "disaster_alerts", "blood_donors",
+            "livelihood_guide", "representatives", "renewal"} <= set(services[10:])
     assert services.index("party_fund") > max(services.index(s) for s in ("ideas", "surveys", "learning"))
 
 

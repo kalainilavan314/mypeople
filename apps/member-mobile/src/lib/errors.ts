@@ -24,7 +24,17 @@ export type RefusalScope =
   | 'promises'
   | 'support'
   | 'townHalls'
-  | 'official';
+  | 'official'
+  | 'budgeting'
+  | 'committees'
+  | 'diaspora'
+  | 'safety'
+  | 'bloodDonors'
+  | 'livelihood'
+  | 'representatives'
+  | 'renewal'
+  | 'verify'
+  | 'assistant';
 
 /**
  * The member-facing message for a failed request: the API's error code when

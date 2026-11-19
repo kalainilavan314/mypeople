@@ -259,6 +259,19 @@ export type AreaScorecard = Schemas['AreaScorecardOut'];
 export type Scorecard = Schemas['ScorecardOut'];
 export type ScorecardFile = Schemas['ScorecardFileOut'];
 export type ScorecardCorrection = Schemas['CorrectionOut'];
+// Membership renewal and certificates (M33, M34, D25). Routes answer 404 "feature_unavailable" while renewal is off.
+export type MyRenewal = Schemas['MyRenewalOut'];
+export type RenewalPhase = NonNullable<MyRenewal['phase']>;
+export type RenewalCycle = Schemas['RenewalCycleOut'];
+export type RenewalDueMember = Schemas['RenewalDueMemberOut'];
+export type RenewalSummary = Schemas['RenewalSummaryOut'];
+export type MyCertificates = Schemas['MyCertificatesOut'];
+export type Certificate = Schemas['CertificateOut'];
+export type CertificateKind = Certificate['kind'];
+export type CertificateStatus = Certificate['status'];
+export type CertificateEvent = Schemas['CertificateEventOut'];
+export type ManagedCertificate = Schemas['ManagedCertificateOut'];
+export type PublicCertificate = Schemas['PublicCertificateOut'];
 // Community Support (M11 to M14, S11, S12, D13, D14).
 export type SupportHome = Schemas['SupportHomeOut'];
 export type SupportCategory = Schemas['SupportRequestIn']['category'];
@@ -285,6 +298,95 @@ export type PublicSupportReceipt = Schemas['PublicReceiptOut'];
 export type PublicSupportStatistics = Schemas['PublicSupportStatisticsOut'];
 export type MySupportReferral = Schemas['MyReferralOut'];
 export type SupportReferral = Schemas['ReferralOut'];
+// Disaster and emergency support (M35, M36, S16, D26) and the blood donor network (M37, M38, D27).
+export type SafetyHome = Schemas['SafetyHomeOut'];
+export type SafetyContact = Schemas['SafetyContactOut'];
+export type SafetySource = Schemas['SafetySourceOut'];
+export type SafetyHelpInput = Schemas['SafetyHelpIn'];
+export type SafetyHelpReceipt = Schemas['SafetyHelpOut'];
+export type SafetyHelpNeed = Schemas['SafetyHelpIn']['need'];
+export type DisasterAlert = Schemas['AlertOut'];
+export type DisasterHazard = Schemas['AlertOut']['hazard'];
+export type DisasterSeverity = Schemas['AlertOut']['severity'];
+export type ManagedDisasterAlert = Schemas['ManagedAlertOut'];
+export type DisasterAlertRevision = Schemas['AlertRevisionOut'];
+export type DisasterAlertRelayInput = Schemas['AlertRelayIn'];
+export type DisasterAlertRefreshInput = Schemas['AlertRefreshIn'];
+export type DisasterAlertComposer = Schemas['AlertComposerOut'];
+export type Shelter = Schemas['ShelterOut'];
+export type ShelterStatus = Schemas['ShelterOut']['status'];
+export type ShelterInput = Schemas['ShelterIn'];
+export type ShelterCreateInput = Schemas['ShelterCreateIn'];
+export type ReliefOffer = Schemas['ReliefOfferOut'];
+export type ReliefOfferInput = Schemas['ReliefOfferIn'];
+export type ReliefTask = Schemas['ReliefOfferIn']['tasks'][number];
+export type ReliefVolunteer = Schemas['ReliefVolunteerOut'];
+export type ReliefOverview = Schemas['ReliefOverviewOut'];
+export type ReliefItem = Schemas['ReliefItemOut'];
+export type ReliefItemKey = Schemas['ReliefItemOut']['key'];
+export type ReliefStock = Schemas['ReliefStockOut'];
+export type ReliefSupply = Schemas['ReliefSupplyOut'];
+export type ReliefSupplyInput = Schemas['ReliefSupplyIn'];
+export type ReliefDistribution = Schemas['ReliefDistributionOut'];
+export type ReliefDistributionInput = Schemas['ReliefDistributionIn'];
+export type BloodDonorHome = Schemas['BloodDonorHomeOut'];
+export type BloodDonor = Schemas['BloodDonorOut'];
+export type BloodDonorInput = Schemas['BloodDonorIn'];
+export type BloodGroup = Schemas['BloodDonorIn']['bloodGroup'];
+export type BloodContactMethod = Schemas['BloodDonorIn']['contactMethods'][number];
+export type BloodNotice = Schemas['BloodNoticeOut'];
+export type BloodDeskAccess = Schemas['BloodDeskAccessOut'];
+export type BloodDesk = Schemas['BloodDeskOut'];
+export type BloodPartner = Schemas['BloodPartnerOut'];
+export type BloodPartnerInput = Schemas['BloodPartnerIn'];
+export type BloodRequest = Schemas['BloodRequestOut'];
+export type BloodRequestDetail = Schemas['BloodRequestDetailOut'];
+export type BloodRequestInput = Schemas['BloodRequestIn'];
+export type BloodUrgency = Schemas['BloodRequestIn']['urgency'];
+export type BloodOutcome = Schemas['BloodCloseIn']['outcome'];
+export type BloodRequester = Schemas['BloodRequesterOut'];
+export type BloodOversight = Schemas['BloodOversightOut'];
+// Tamil AI assistant (M28), its knowledge base (D20) and the AI model registry (D21).
+export type AssistantHome = Schemas['AssistantHomeOut'];
+export type AssistantUnavailableReason = NonNullable<AssistantHome['reason']>;
+export type AssistantConversationSummary = Schemas['AssistantConversationSummaryOut'];
+export type AssistantConversation = Schemas['AssistantConversationOut'];
+export type AssistantMessage = Schemas['AssistantMessageOut'];
+export type AssistantCitation = Schemas['AssistantCitationOut'];
+export type AssistantOutcome = NonNullable<AssistantMessage['outcome']>;
+export type AssistantRating = NonNullable<AssistantMessage['rating']>;
+export type AssistantLanguage = Schemas['AssistantAskIn']['language'];
+export type AssistantAskInput = Schemas['AssistantAskIn'];
+export type AssistantAskResult = Schemas['AssistantAskOut'];
+export type AssistantReceipt = Schemas['AssistantReceiptOut'];
+export type AssistantHandoverInput = Schemas['AssistantHandoverIn'];
+export type AssistantHandover = Schemas['AssistantHandoverOut'];
+export type AssistantHandoverState = AssistantHandover['state'];
+export type AssistantSummary = Schemas['AssistantSummaryOut'];
+export type AssistantErrorReport = Schemas['AssistantErrorReportOut'];
+export type AssistantErrorReportState = AssistantErrorReport['state'];
+export type AssistantStaffHandover = Schemas['AssistantStaffHandoverOut'];
+export type AssistantPreview = Schemas['AssistantPreviewOut'];
+export type KnowledgeSourceSummary = Schemas['KbSourceSummaryOut'];
+export type KnowledgeSource = Schemas['KbSourceOut'];
+export type KnowledgeSourceFile = Schemas['KbSourceFileOut'];
+export type KnowledgeSourceInput = Schemas['KbSourceIn'];
+export type KnowledgeSourceKind = KnowledgeSource['kind'];
+export type KnowledgeSourceState = KnowledgeSource['state'];
+export type AiRegistry = Schemas['AiRegistryOut'];
+export type AiModel = Schemas['AiModelOut'];
+export type AiModelInput = Schemas['AiModelIn'];
+export type AiModelTask = AiModel['task'];
+export type AiModelStatus = AiModel['status'];
+export type AiProviderCode = AiModel['providerCode'];
+export type AiModelSummary = Schemas['AiModelSummaryOut'];
+export type AiModelFile = Schemas['AiModelFileOut'];
+export type AiEvaluation = Schemas['AiEvaluationOut'];
+export type AiEvaluationInput = Schemas['AiEvaluationIn'];
+export type AiFairnessReview = Schemas['AiFairnessOut'];
+export type AiFairnessInput = Schemas['AiFairnessIn'];
+export type AiFairnessOutcome = AiFairnessReview['outcome'];
+export type AiUsage = Schemas['AiUsageOut'];
 // Town halls (M21 to M23, D18).
 export type TownHall = Schemas['TownHallOut'];
 export type TownHallSession = Schemas['TownHallSessionOut'];
@@ -311,6 +413,82 @@ export type ManagedSurveyFile = Schemas['ManagedSurveyFileOut'];
 export type MisinfoReport = Schemas['MisinfoReportOut'];
 export type StaffMisinfoReport = Schemas['StaffMisinfoReportOut'];
 export type MisinfoOutcome = NonNullable<Schemas['MisinfoReportOut']['outcome']>;
+// Participatory budgeting (M24 to M27, D19).
+export type BudgetCycleSummary = Schemas['PbMemberCycleSummaryOut'];
+export type BudgetCycle = Schemas['PbMemberCycleOut'];
+export type BudgetCyclePhase = Schemas['PbCycleSummaryOut']['phase'];
+export type BudgetCycleStatus = Schemas['PbCycleSummaryOut']['status'];
+export type BudgetFundKind = Schemas['PbCycleSummaryOut']['fundKind'];
+export type BudgetIneligibleReason = NonNullable<Schemas['PbMemberCycleOut']['ineligibleReason']>;
+export type BudgetProjectSummary = Schemas['PbProjectSummaryOut'];
+export type BudgetProject = Schemas['PbProjectDetailOut'];
+export type BudgetReceipt = Schemas['PbReceiptOut'];
+export type BudgetReceiptCheck = Schemas['PbReceiptCheckOut'];
+export type BudgetResults = Schemas['PbMemberResultsOut'];
+export type BudgetResultRow = Schemas['PbResultRowOut'];
+export type ManagedBudgetCycleSummary = Schemas['PbCycleSummaryOut'];
+export type ManagedBudgetCycle = Schemas['PbStaffCycleOut'];
+export type ManagedBudgetProject = Schemas['PbStaffProjectOut'];
+export type BudgetCycleInput = Schemas['PbCycleIn'];
+export type BudgetCycleMove = Schemas['PbMoveIn']['to'];
+export type BudgetCandidate = Schemas['PbCandidateOut'];
+export type BudgetProjectInput = Schemas['PbProjectIn'];
+export type BudgetReviewInput = Schemas['PbReviewIn'];
+export type BudgetRecount = Schemas['PbRecountOut'];
+export type BudgetExpenditure = Schemas['PbExpenditureOut'];
+export type BudgetExpenditureInput = Schemas['PbExpenditureIn'];
+export type BudgetCompletionInput = Schemas['PbCompletionIn'];
+// Official content (M47, M48 check part, D30) and the Election Commission links of M29.
+export type OfficialStatement = Schemas['OfficialStatementOut'];
+export type OfficialStatementFile = Schemas['OfficialStatementFileOut'];
+export type OfficialRevision = Schemas['OfficialRevisionOut'];
+export type OfficialCheck = Schemas['OfficialCheckOut'];
+export type OfficialCheckStatus = OfficialCheck['status'];
+export type ManagedOfficialStatement = Schemas['ManagedStatementOut'];
+export type OfficialStatementState = ManagedOfficialStatement['state'];
+export type OfficialDraftInput = Schemas['OfficialDraftIn'];
+export type OfficialCorrectionInput = Schemas['OfficialCorrectionIn'];
+export type OfficialWithdrawInput = Schemas['OfficialWithdrawIn'];
+export type OfficialImage = Schemas['OfficialImageOut'];
+export type OfficialPublisher = Schemas['PublisherOut'];
+export type OfficialPublisherInput = Schemas['PublisherIn'];
+export type OfficialSigningStatus = Schemas['SigningStatusOut'];
+export type OfficialPublicKey = Schemas['PublicKeyOut'];
+export type ElectionOfficialLinks = Schemas['OfficialLinksOut'];
+export type ElectionOfficialLink = Schemas['OfficialLinkOut'];
+// Welfare, jobs and livelihood guide (M39, M40, D28).
+export type GuideEntrySummary = Schemas['GuideEntrySummaryOut'];
+export type GuideEntry = Schemas['GuideEntryOut'];
+export type GuideCategory = Schemas['GuideEntrySummaryOut']['category'];
+export type GuideReport = Schemas['GuideReportOut'];
+export type GuideReportReason = Schemas['GuideReportIn']['reason'];
+export type GuideEntryInput = Schemas['GuideEntryIn'];
+export type GuideEntryManaged = Schemas['GuideEntryManagedOut'];
+export type GuideEntryManagedDetail = Schemas['GuideEntryDetailManagedOut'];
+export type GuideEntryState = Schemas['GuideEntryManagedOut']['state'];
+export type GuideManagedReport = Schemas['GuideManagedReportOut'];
+// Meet Your Representative (M41, M42, S17, D29).
+export type RepresentativeSummary = Schemas['RepresentativeSummaryOut'];
+export type RepresentativeDetail = Schemas['RepresentativeDetailOut'];
+export type AppointmentSlot = Schemas['AppointmentSlotOut'];
+export type Appointment = Schemas['AppointmentOut'];
+export type AppointmentState = Schemas['AppointmentOut']['state'];
+export type AppointmentNeed = Schemas['AppointmentOut']['needs'][number];
+export type AppointmentContactPreference = Schemas['AppointmentOut']['contactPreference'];
+export type AppointmentBookInput = Schemas['AppointmentBookIn'];
+export type AppointmentCalendar = Schemas['CalendarOut'];
+export type AppointmentCalendarSlot = Schemas['CalendarSlotOut'];
+export type AppointmentBooking = Schemas['BookingOut'];
+export type RepresentativeOwnProfile = Schemas['OwnProfileOut'];
+export type RepresentativeOwnProfileInput = Schemas['OwnProfileIn'];
+export type AppointmentSlotSeriesInput = Schemas['SlotSeriesIn'];
+export type AppointmentFollowUpInput = Schemas['AppointmentFollowUpIn'];
+export type RepresentativeProfileSlot = Schemas['ProfileSlotOut'];
+export type RepresentativeManaged = Schemas['RepresentativeManagedOut'];
+export type RepresentativeManagedDetail = Schemas['RepresentativeManagedDetailOut'];
+export type RepresentativeProfileInput = Schemas['RepresentativeProfileIn'];
+export type RepresentativeCreateInput = Schemas['RepresentativeCreateIn'];
+export type RepresentativeProfileState = Schemas['RepresentativeManagedOut']['state'];
 export type CaseListFilters = {
   stage?: CaseStage[];
   mine?: boolean;
@@ -415,6 +593,55 @@ export type DuplicateCaseFile = Schemas['CaseFileOut'];
 export type DuplicateReportInput = Schemas['ReportInput'];
 export type DuplicateDecisionInput = Schemas['CaseDecisionInput'];
 export type DuplicateFlag = Schemas['DuplicateFlagOut'];
+// Wings and committees (M31, M32, S18, D23) and diaspora participation (M46).
+export type Committee = Schemas['CommitteeOut'];
+export type CommitteeCard = Schemas['CommitteeCardOut'];
+export type CommitteeWingType = Committee['wingType'];
+export type CommitteeKind = Committee['kind'];
+export type CommitteeState = Committee['state'];
+export type CommitteeRole = Schemas['CommitteeRoleIn']['role'];
+export type CommitteeMembership = Schemas['CommitteeMembershipOut'];
+export type CommitteeMembershipState = CommitteeMembership['state'];
+export type CommitteeSpace = Schemas['CommitteeSpaceOut'];
+export type CommitteeItem = Schemas['CommitteeItemOut'];
+export type CommitteeItemType = CommitteeItem['itemType'];
+export type CommitteeItemInput = Schemas['CommitteeItemIn'];
+export type CommitteeThread = Schemas['CommitteeThreadOut'];
+export type CommitteePost = Schemas['CommitteePostOut'];
+export type CommitteePostDecision = Schemas['CommitteePostDecisionIn']['decision'];
+export type CommitteeCoordinating = Schemas['CommitteeCoordinatingOut'];
+export type CommitteeManage = Schemas['CommitteeManageOut'];
+export type CommitteeRosterEntry = Schemas['CommitteeRosterEntryOut'];
+export type CommitteeWaitingPost = Schemas['CommitteeWaitingPostOut'];
+export type CommitteeActivity = Schemas['CommitteeActivityOut'];
+export type CommitteeAdmin = Schemas['CommitteeAdminOut'];
+export type CommitteeAdminDetail = Schemas['CommitteeAdminDetailOut'];
+export type CommitteeProposalInput = Schemas['CommitteeProposalIn'];
+export type DiasporaOptions = Schemas['DiasporaOptionsOut'];
+export type DiasporaTopic = DiasporaOptions['topics'][number];
+export type DiasporaMe = Schemas['DiasporaMeOut'];
+export type DiasporaSupporter = Schemas['DiasporaSupporterOut'];
+export type DiasporaSupporterInput = Schemas['DiasporaSupporterIn'];
+export type DiasporaInternationalEvent = Schemas['DiasporaInternationalEventOut'];
+export type DiasporaOpportunity = Schemas['DiasporaOpportunityOut'];
+export type DiasporaEvent = Schemas['DiasporaEventOut'];
+export type DiasporaSummary = Schemas['DiasporaSummaryOut'];
+// Assisted verification (M05, S04). Routes answer 404 "feature_unavailable" while assisted_verification is off.
+export type MyAssistedVerification = Schemas['MyAssistedOut'];
+export type AssistedHelpRequest = Schemas['AssistedHelpRequestOut'];
+export type AssistedHelpRequestInput = Schemas['AssistedHelpRequestIn'];
+export type AssistedReason = AssistedHelpRequest['reason'];
+export type AssistedRoute = AssistedHelpRequest['route'];
+export type AssistedState = AssistedHelpRequest['state'];
+export type AssistedPreferredTime = NonNullable<AssistedHelpRequest['preferredTime']>;
+export type AssistedQueueItem = Schemas['AssistedQueueItemOut'];
+export type AssistedRequestFile = Schemas['AssistedRequestFileOut'];
+export type AssistedSession = Schemas['AssistedSessionOut'];
+export type AssistedReviewSession = Schemas['AssistedReviewSessionOut'];
+export type AssistedDevice = AssistedSession['device'];
+export type AssistedChecklistItem = Schemas['AssistedCompleteIn']['checklist'][number];
+export type AssistedAbandonReason = Schemas['AssistedAbandonIn']['reason'];
+export type AssistedCloseReason = Schemas['AssistedCloseIn']['reason'];
 
 /** A response other than 2xx. `code` is the API's error code, e.g. "invalid_credentials". */
 export class ApiError extends Error {
@@ -853,6 +1080,46 @@ export function createApiClient({
     /** Uphold or overturn, with a reason the member sees. Overturning sends the review back for a fresh decision. */
     decideIdentityAppeal: (appealId: string, input: AppealDecisionInput) =>
       request<AppealFile>('POST', `/v1/identity/appeals/${encodeURIComponent(appealId)}/decision`, input),
+    // Assisted verification (M05, S04, FR-IDV-014, FR-STF-004). No image ever passes through these routes.
+    getMyAssistedVerification: () => request<MyAssistedVerification>('GET', '/v1/identity/assisted/me'),
+    /** M05. Problems: already_verified, review_open, contact_not_confirmed, preferred_date_out_of_range. */
+    requestAssistedVerification: (input: AssistedHelpRequestInput) =>
+      request<AssistedHelpRequest>('POST', '/v1/identity/assisted/me', input),
+    cancelAssistedVerification: () => request<AssistedHelpRequest>('POST', '/v1/identity/assisted/me/cancel'),
+    /** S04 queue: open requests in the caller's areas unless states are given. */
+    listAssistedRequests: (states: AssistedState[] = []) => {
+      const q = new URLSearchParams();
+      for (const state of states) q.append('state', state);
+      const qs = q.toString();
+      return request<AssistedQueueItem[]>('GET', `/v1/identity/assisted/manage${qs ? `?${qs}` : ''}`);
+    },
+    getAssistedRequest: (requestId: string) =>
+      request<AssistedRequestFile>('GET', `/v1/identity/assisted/manage/${encodeURIComponent(requestId)}`),
+    scheduleAssistedRequest: (requestId: string, scheduledFor: string, meetingPlace: string) =>
+      request<AssistedRequestFile>('POST', `/v1/identity/assisted/manage/${encodeURIComponent(requestId)}/schedule`, {
+        scheduledFor,
+        meetingPlace,
+      }),
+    startAssistedSession: (requestId: string, device: AssistedDevice) =>
+      request<AssistedSession>('POST', `/v1/identity/assisted/manage/${encodeURIComponent(requestId)}/sessions`, { device }),
+    /** FR-STF-004: problems checklist_incomplete:<item>, missing:<kind>, consent_required until all is in place. */
+    completeAssistedSession: (requestId: string, sessionId: string, checklist: AssistedChecklistItem[], notes?: string) =>
+      request<AssistedRequestFile>(
+        'POST',
+        `/v1/identity/assisted/manage/${encodeURIComponent(requestId)}/sessions/${encodeURIComponent(sessionId)}/complete`,
+        { checklist, notes },
+      ),
+    abandonAssistedSession: (requestId: string, sessionId: string, reason: AssistedAbandonReason, notes?: string) =>
+      request<AssistedRequestFile>(
+        'POST',
+        `/v1/identity/assisted/manage/${encodeURIComponent(requestId)}/sessions/${encodeURIComponent(sessionId)}/abandon`,
+        { reason, notes },
+      ),
+    closeAssistedRequest: (requestId: string, reason: AssistedCloseReason) =>
+      request<AssistedRequestFile>('POST', `/v1/identity/assisted/manage/${encodeURIComponent(requestId)}/close`, { reason }),
+    /** W02: how the images in a review were captured, for a reviewer holding members.verify. */
+    listAssistedSessionsForReview: (reviewId: string) =>
+      request<AssistedReviewSession[]>('GET', `/v1/identity/assisted/reviews/${encodeURIComponent(reviewId)}`),
 
     /** Report that a member may hold another account (needs members.verify). An existing pair returns its case. */
     reportDuplicate: (input: DuplicateReportInput) => request<DuplicateCase>('POST', '/v1/identity/duplicates', input),
@@ -1683,6 +1950,107 @@ export function createApiClient({
     addSupportPartner: (input: SupportPartnerInput) => request<SupportPartner>('POST', '/v1/assistance/manage/partners', input),
     /** Counts only; null means fewer than 10. */
     getSupportStatistics: () => request<SupportStatistics>('GET', '/v1/assistance/manage/statistics'),
+    // Alerts and safety (M35, M36, D26). Routes answer 404 "feature_unavailable" while disaster_alerts is off;
+    // refusals are "safety_refused" (422) with `problems`. The app relays official warnings only (OS-14).
+    /** M35: alerts follow the home area, or `area` (a key such as ds:LK4103) when given; never GPS. */
+    getSafetyHome: (area?: string) =>
+      request<SafetyHome>('GET', `/v1/alerts${area ? `?area=${encodeURIComponent(area)}` : ''}`),
+    getAlertHistory: (area?: string) =>
+      request<DisasterAlert[]>('GET', `/v1/alerts/history${area ? `?area=${encodeURIComponent(area)}` : ''}`),
+    getAlert: (alertId: string) => request<DisasterAlert>('GET', `/v1/alerts/${encodeURIComponent(alertId)}`),
+    /** M36: becomes an urgent Community Support case; problems include consent_required and support_not_open. */
+    requestEmergencyHelp: (input: SafetyHelpInput) => request<SafetyHelpReceipt>('POST', '/v1/alerts/help', input),
+    saveReliefOffer: (input: ReliefOfferInput) => request<ReliefOffer>('PUT', '/v1/alerts/relief-offer', input),
+    withdrawReliefOffer: () => request<void>('DELETE', '/v1/alerts/relief-offer'),
+    listManagedAlerts: (current = true) => request<ManagedDisasterAlert[]>('GET', `/v1/alerts/manage?current=${current}`),
+    getAlertComposer: () => request<DisasterAlertComposer>('GET', '/v1/alerts/manage/composer'),
+    relayAlert: (input: DisasterAlertRelayInput) => request<ManagedDisasterAlert>('POST', '/v1/alerts/manage', input),
+    getManagedAlert: (alertId: string) =>
+      request<ManagedDisasterAlert>('GET', `/v1/alerts/manage/${encodeURIComponent(alertId)}`),
+    refreshAlert: (alertId: string, input: DisasterAlertRefreshInput) =>
+      request<ManagedDisasterAlert>('POST', `/v1/alerts/manage/${encodeURIComponent(alertId)}/refresh`, input),
+    withdrawAlert: (alertId: string, reason: string) =>
+      request<ManagedDisasterAlert>('POST', `/v1/alerts/manage/${encodeURIComponent(alertId)}/withdraw`, { reason }),
+    listManagedShelters: () => request<Shelter[]>('GET', '/v1/alerts/manage/shelters'),
+    addShelter: (input: ShelterCreateInput) => request<Shelter>('POST', '/v1/alerts/manage/shelters', input),
+    updateShelter: (shelterId: string, input: ShelterInput) =>
+      request<Shelter>('PUT', `/v1/alerts/manage/shelters/${encodeURIComponent(shelterId)}`, input),
+    listReliefVolunteers: () => request<ReliefVolunteer[]>('GET', '/v1/alerts/manage/volunteers'),
+    // Relief logistics (S16, D26), relief.logistics only; refusals are "relief_refused" (422) with `problems`.
+    getReliefOverview: () => request<ReliefOverview>('GET', '/v1/relief'),
+    listReliefSupplies: () => request<ReliefSupply[]>('GET', '/v1/relief/supplies'),
+    recordReliefSupply: (input: ReliefSupplyInput) => request<ReliefSupply>('POST', '/v1/relief/supplies', input),
+    listReliefDistributions: () => request<ReliefDistribution[]>('GET', '/v1/relief/distributions'),
+    /** Problems include more_than_in_stock and case_not_found (an open AS- case in the officer's area). */
+    recordReliefDistribution: (input: ReliefDistributionInput) =>
+      request<ReliefDistribution>('POST', '/v1/relief/distributions', input),
+    // Blood donor network (M37, M38, D27). Routes answer 404 "feature_unavailable" while blood_donors is off;
+    // refusals are "donor_refused" (422) with `problems`. Nothing lists or searches donors (FR-BLD-002).
+    getMyBloodDonor: () => request<BloodDonorHome>('GET', '/v1/donors/me'),
+    /** Opt in or change the details; consent every time (FR-BLD-001). */
+    saveMyBloodDonor: (input: BloodDonorInput) => request<BloodDonor>('PUT', '/v1/donors/me', input),
+    /** FR-BLD-007: deletes the donor record and every answer at once. */
+    withdrawBloodDonor: () => request<void>('DELETE', '/v1/donors/me'),
+    getBloodNotice: (requestId: string) =>
+      request<BloodNotice>('GET', `/v1/donors/me/requests/${encodeURIComponent(requestId)}`),
+    answerBloodNotice: (requestId: string, accept: boolean, consent: boolean) =>
+      request<BloodNotice>('POST', `/v1/donors/me/requests/${encodeURIComponent(requestId)}/answer`, { accept, consent }),
+    getBloodDeskAccess: () => request<BloodDeskAccess>('GET', '/v1/donors/desk/access'),
+    getBloodDesk: () => request<BloodDesk>('GET', '/v1/donors/desk'),
+    raiseBloodRequest: (input: BloodRequestInput) => request<BloodRequestDetail>('POST', '/v1/donors/desk/requests', input),
+    getBloodRequest: (requestId: string) =>
+      request<BloodRequestDetail>('GET', `/v1/donors/desk/requests/${encodeURIComponent(requestId)}`),
+    closeBloodRequest: (requestId: string, outcome: BloodOutcome) =>
+      request<BloodRequestDetail>('POST', `/v1/donors/desk/requests/${encodeURIComponent(requestId)}/close`, { outcome }),
+    getBloodOversight: () => request<BloodOversight>('GET', '/v1/donors/oversight'),
+    addBloodPartner: (input: BloodPartnerInput) => request<BloodPartner>('POST', '/v1/donors/oversight/partners', input),
+    setBloodPartnerActive: (partnerId: string, active: boolean) =>
+      request<BloodPartner>('POST', `/v1/donors/oversight/partners/${encodeURIComponent(partnerId)}/active`, { active }),
+    authoriseBloodRequester: (partnerId: string, memberCode: string) =>
+      request<BloodRequester>('POST', `/v1/donors/oversight/partners/${encodeURIComponent(partnerId)}/requesters`, {
+        memberCode,
+      }),
+    revokeBloodRequester: (requesterId: string) =>
+      request<BloodRequester>('POST', `/v1/donors/oversight/requesters/${encodeURIComponent(requesterId)}/revoke`),
+    decideBloodRequest: (requestId: string, approve: boolean, reason?: string) =>
+      request<BloodRequest>('POST', `/v1/donors/oversight/requests/${encodeURIComponent(requestId)}/decision`, {
+        approve,
+        reason: reason ?? null,
+      }),
+    // Membership renewal (M33, D25) and certificates (M34). Routes answer 404 "feature_unavailable" while renewal is off.
+    getMyRenewal: () => request<MyRenewal>('GET', '/v1/membership/renewal/me'),
+    /** FR-RNW-001: contact and area only. Problems not_due_yet, contact_not_confirmed, area_confirmation_required, … */
+    confirmRenewal: (contactConfirmed: boolean, areaConfirmed: boolean) =>
+      request<MyRenewal>('POST', '/v1/membership/renewal/me/confirm', { contactConfirmed, areaConfirmed }),
+    listRenewalsDue: (phase?: RenewalPhase) =>
+      request<RenewalDueMember[]>('GET', `/v1/membership/renewal/manage${phase ? `?phase=${encodeURIComponent(phase)}` : ''}`),
+    getRenewalSummary: () => request<RenewalSummary>('GET', '/v1/membership/renewal/manage/summary'),
+    getMyCertificates: () => request<MyCertificates>('GET', '/v1/membership/certificates/me'),
+    /** The same certificate again unless its facts changed. Problems membership_not_active, no_attendance_recorded, … */
+    requestCertificate: (kind: CertificateKind, eventId?: string) =>
+      request<Certificate>('POST', '/v1/membership/certificates/me', { kind, eventId }),
+    listCertificates: (filters: { status?: CertificateStatus; kind?: CertificateKind; ref?: string } = {}) => {
+      const q = new URLSearchParams();
+      if (filters.status) q.set('status', filters.status);
+      if (filters.kind) q.set('kind', filters.kind);
+      if (filters.ref) q.set('ref', filters.ref);
+      const qs = q.toString();
+      return request<ManagedCertificate[]>('GET', `/v1/membership/certificates/manage${qs ? `?${qs}` : ''}`);
+    },
+    /** D25: "already_issued" means reissue it instead, with a reason. */
+    issueCertificate: (memberCode: string, kind: CertificateKind, eventId?: string) =>
+      request<ManagedCertificate>('POST', '/v1/membership/certificates/manage', { memberCode, kind, eventId }),
+    revokeCertificate: (certificateId: string, reason: string) =>
+      request<ManagedCertificate>('POST', `/v1/membership/certificates/manage/${encodeURIComponent(certificateId)}/revoke`, {
+        reason,
+      }),
+    reissueCertificate: (certificateId: string, reason: string) =>
+      request<ManagedCertificate>('POST', `/v1/membership/certificates/manage/${encodeURIComponent(certificateId)}/reissue`, {
+        reason,
+      }),
+    /** INT-22, anyone: only the type, holder's name, issue date and status. 404 not_found, 429 too_many_requests. */
+    checkCertificate: (token: string) =>
+      request<PublicCertificate>('GET', `/v1/public/certificates/${encodeURIComponent(token)}`),
     // Town halls (M21 to M23, D18). Routes answer 404 "feature_unavailable" while town_halls is off.
     listTownHalls: () => request<TownHall[]>('GET', '/v1/town-halls'),
     /** Approved questions with vote totals and the member's own; `q` searches the question history. */
@@ -1778,8 +2146,120 @@ export function createApiClient({
         'GET',
         `/v1/volunteering/manage/opportunities/${encodeURIComponent(opportunityId)}`,
       ),
+    // Wings and committees (M31, M32, S18, D23). 404 "feature_unavailable" while committees is off.
+    // Refusals are "committee_refused" (422) with `problems`; 403 "not_committee_officer" outside one's own committee.
+    listCommittees: (wingType?: CommitteeWingType) =>
+      request<CommitteeCard[]>('GET', `/v1/committees${toEventQuery({ wing_type: wingType })}`),
+    /** M32: `items` is empty unless the member is an approved member of the committee. */
+    getCommitteeSpace: (committeeId: string) =>
+      request<CommitteeSpace>('GET', `/v1/committees/${encodeURIComponent(committeeId)}`),
+    applyToCommittee: (committeeId: string, note?: string) =>
+      request<CommitteeMembership>('POST', `/v1/committees/${encodeURIComponent(committeeId)}/applications`, { note }),
+    /** Withdraws an application or leaves the committee ("last_coordinator" for the only coordinator). */
+    leaveCommittee: (committeeId: string) =>
+      request<void>('POST', `/v1/committees/${encodeURIComponent(committeeId)}/leave`),
+    /** A member's thread waits for a coordinator or secretary; there are no direct messages. */
+    startCommitteeThread: (committeeId: string, title: string, body: string) =>
+      request<CommitteeItem>('POST', `/v1/committees/${encodeURIComponent(committeeId)}/threads`, { title, body }),
+    getCommitteeThread: (committeeId: string, threadId: string) =>
+      request<CommitteeThread>('GET', `/v1/committees/${encodeURIComponent(committeeId)}/threads/${encodeURIComponent(threadId)}`),
+    replyInCommitteeThread: (committeeId: string, threadId: string, body: string) =>
+      request<CommitteePost>(
+        'POST',
+        `/v1/committees/${encodeURIComponent(committeeId)}/threads/${encodeURIComponent(threadId)}/posts`,
+        { body },
+      ),
+    completeCommitteeTask: (committeeId: string, itemId: string) =>
+      request<CommitteeItem>('POST', `/v1/committees/${encodeURIComponent(committeeId)}/tasks/${encodeURIComponent(itemId)}/done`),
+    setCommitteeSignup: (committeeId: string, itemId: string, signedUp: boolean) =>
+      request<CommitteeItem>(
+        'PUT',
+        `/v1/committees/${encodeURIComponent(committeeId)}/volunteer/${encodeURIComponent(itemId)}/signup`,
+        { signedUp },
+      ),
+    listCoordinatedCommittees: () => request<CommitteeCoordinating[]>('GET', '/v1/committees/coordinating'),
+    getCommitteeManage: (committeeId: string) =>
+      request<CommitteeManage>('GET', `/v1/committees/${encodeURIComponent(committeeId)}/manage`),
+    decideCommitteeApplication: (committeeId: string, membershipId: string, approve: boolean, role: CommitteeRole, reason?: string) =>
+      request<CommitteeRosterEntry>(
+        'POST',
+        `/v1/committees/${encodeURIComponent(committeeId)}/manage/applications/${encodeURIComponent(membershipId)}/decision`,
+        { approve, role, reason },
+      ),
+    setCommitteeRole: (committeeId: string, membershipId: string, role: CommitteeRole) =>
+      request<CommitteeRosterEntry>(
+        'PUT',
+        `/v1/committees/${encodeURIComponent(committeeId)}/manage/members/${encodeURIComponent(membershipId)}/role`,
+        { role },
+      ),
+    removeCommitteeMember: (committeeId: string, membershipId: string, reason: string) =>
+      request<void>(
+        'POST',
+        `/v1/committees/${encodeURIComponent(committeeId)}/manage/members/${encodeURIComponent(membershipId)}/remove`,
+        { reason },
+      ),
+    createCommitteeItem: (committeeId: string, input: CommitteeItemInput) =>
+      request<CommitteeItem>('POST', `/v1/committees/${encodeURIComponent(committeeId)}/manage/items`, input),
+    /** Minutes: a coordinator other than the author (403 "own_minutes"). Member threads: a coordinator or secretary. */
+    decideCommitteeItem: (committeeId: string, itemId: string, approve: boolean, reason?: string) =>
+      request<CommitteeItem>(
+        'POST',
+        `/v1/committees/${encodeURIComponent(committeeId)}/manage/items/${encodeURIComponent(itemId)}/decision`,
+        { approve, reason },
+      ),
+    hideCommitteeItem: (committeeId: string, itemId: string, reason: string) =>
+      request<CommitteeItem>(
+        'POST',
+        `/v1/committees/${encodeURIComponent(committeeId)}/manage/items/${encodeURIComponent(itemId)}/hide`,
+        { reason },
+      ),
+    listCommitteeSignups: (committeeId: string, itemId: string) =>
+      request<{ names: string[] }>(
+        'GET',
+        `/v1/committees/${encodeURIComponent(committeeId)}/manage/items/${encodeURIComponent(itemId)}/signups`,
+      ),
+    decideCommitteePost: (committeeId: string, postId: string, decision: CommitteePostDecision, reason?: string) =>
+      request<CommitteePost>(
+        'POST',
+        `/v1/committees/${encodeURIComponent(committeeId)}/manage/posts/${encodeURIComponent(postId)}/decision`,
+        { decision, reason },
+      ),
+    // D23: roles.assign or system.configure; approving and closing need system.configure (Tier 5).
+    listAdminCommittees: (filters: { state?: CommitteeState; wingType?: CommitteeWingType } = {}) =>
+      request<CommitteeAdmin[]>('GET', `/v1/committees/admin${toEventQuery({ state: filters.state, wing_type: filters.wingType })}`),
+    proposeCommittee: (input: CommitteeProposalInput) => request<CommitteeAdmin>('POST', '/v1/committees/admin', input),
+    getAdminCommittee: (committeeId: string) =>
+      request<CommitteeAdminDetail>('GET', `/v1/committees/admin/${encodeURIComponent(committeeId)}`),
+    decideCommittee: (committeeId: string, approve: boolean, reason?: string) =>
+      request<CommitteeAdmin>('POST', `/v1/committees/admin/${encodeURIComponent(committeeId)}/decision`, { approve, reason }),
+    closeCommittee: (committeeId: string, reason: string) =>
+      request<CommitteeAdmin>('POST', `/v1/committees/admin/${encodeURIComponent(committeeId)}/close`, { reason }),
+    grantCommitteeRole: (committeeId: string, memberCode: string, role: CommitteeRole) =>
+      request<CommitteeRosterEntry>('POST', `/v1/committees/admin/${encodeURIComponent(committeeId)}/roles`, { memberCode, role }),
+    removeCommitteeMemberAsAdmin: (committeeId: string, membershipId: string, reason: string) =>
+      request<void>(
+        'POST',
+        `/v1/committees/admin/${encodeURIComponent(committeeId)}/members/${encodeURIComponent(membershipId)}/remove`,
+        { reason },
+      ),
+
+    // Diaspora participation (M46). 404 "feature_unavailable" while diaspora is off. There is no payment
+    // route: contributions from abroad stay off until OD-40 (getMyDiaspora().contributions says why).
+    getDiasporaOptions: () => request<DiasporaOptions>('GET', '/v1/diaspora/options'),
+    getMyDiaspora: () => request<DiasporaMe>('GET', '/v1/diaspora/me'),
+    /** Problems: consent_required, country_not_listed, time_zone_not_in_country, unknown_skill. */
+    saveMyDiaspora: (input: DiasporaSupporterInput) => request<DiasporaMe>('PUT', '/v1/diaspora/me', input),
+    withdrawMyDiaspora: () => request<void>('DELETE', '/v1/diaspora/me'),
+    listDiasporaEvents: () => request<DiasporaInternationalEvent[]>('GET', '/v1/diaspora/events'),
+    listDiasporaOpportunities: () => request<DiasporaOpportunity[]>('GET', '/v1/diaspora/opportunities'),
+    listDiasporaManagedEvents: () => request<DiasporaEvent[]>('GET', '/v1/diaspora/manage/events'),
+    setDiasporaEventListed: (eventId: string, international: boolean) =>
+      request<DiasporaEvent>('PUT', `/v1/diaspora/manage/events/${encodeURIComponent(eventId)}`, { international }),
+    /** Counts only; a null count means fewer than 5. Needs analytics.view over the whole platform. */
+    getDiasporaSummary: () => request<DiasporaSummary>('GET', '/v1/diaspora/manage/summary'),
+
     // Fact-checks (M48 reporting part, D12). 404 while fact_checks is off. Checking a statement against
-    // its signed original waits for the signing keys (INT-24).
+    // its signed original is checkOfficialStatement (official_content).
     uploadMisinfoScreenshot: (image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
       request<{ id: string; width: number; height: number }>('POST', '/v1/fact-checks/screenshots', image, contentType),
     /** A link or a screenshot is required ("link_or_screenshot_required"). */
@@ -1798,6 +2278,221 @@ export function createApiClient({
         'POST',
         `/v1/fact-checks/manage/${encodeURIComponent(reportId)}/appeal-decision`,
         { change, outcome, reason },
+      ),
+    // Participatory budgeting (M24 to M27, D19). 404 "feature_unavailable" while participatory_budgeting
+    // is off; refusals are "budgeting_refused" (422) with `problems`.
+    listBudgetCycles: () => request<BudgetCycleSummary[]>('GET', '/v1/pb/cycles'),
+    getBudgetCycle: (cycleId: string) => request<BudgetCycle>('GET', `/v1/pb/cycles/${encodeURIComponent(cycleId)}`),
+    getBudgetProject: (projectId: string) =>
+      request<BudgetProject>('GET', `/v1/pb/projects/${encodeURIComponent(projectId)}`),
+    /**
+     * M26: one ballot per eligible member per cycle. The receipt code comes back once and is never
+     * stored. Throws "budgeting_refused" with already_voted, voting_not_open, an ineligibility reason
+     * or a choice problem.
+     */
+    castBudgetBallot: (cycleId: string, choices: string[]) =>
+      request<BudgetReceipt>('POST', `/v1/pb/cycles/${encodeURIComponent(cycleId)}/ballot`, { choices }),
+    checkBudgetReceipt: (cycleId: string, receiptCode: string) =>
+      request<BudgetReceiptCheck>('POST', `/v1/pb/cycles/${encodeURIComponent(cycleId)}/receipt-check`, { receiptCode }),
+    /** M27: certified totals only; "budgeting_refused" results_not_certified before then. */
+    getBudgetResults: (cycleId: string) =>
+      request<BudgetResults>('GET', `/v1/pb/cycles/${encodeURIComponent(cycleId)}/results`),
+    listManagedBudgetCycles: () => request<ManagedBudgetCycleSummary[]>('GET', '/v1/pb/manage/cycles'),
+    getManagedBudgetCycle: (cycleId: string) =>
+      request<ManagedBudgetCycle>('GET', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}`),
+    createBudgetCycle: (input: BudgetCycleInput) => request<ManagedBudgetCycle>('POST', '/v1/pb/manage/cycles', input),
+    updateBudgetCycle: (cycleId: string, input: BudgetCycleInput) =>
+      request<ManagedBudgetCycle>('PUT', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}`, input),
+    moveBudgetCycle: (cycleId: string, to: BudgetCycleMove, reason?: string) =>
+      request<ManagedBudgetCycle>('POST', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}/move`, { to, reason }),
+    listBudgetCandidates: (cycleId: string) =>
+      request<BudgetCandidate[]>('GET', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}/candidates`),
+    addBudgetProject: (cycleId: string, input: BudgetProjectInput) =>
+      request<ManagedBudgetCycle>('POST', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}/projects`, input),
+    updateBudgetProject: (projectId: string, input: BudgetProjectInput) =>
+      request<ManagedBudgetCycle>('PUT', `/v1/pb/manage/projects/${encodeURIComponent(projectId)}`, input),
+    recordBudgetReview: (projectId: string, input: BudgetReviewInput) =>
+      request<ManagedBudgetCycle>('POST', `/v1/pb/manage/projects/${encodeURIComponent(projectId)}/reviews`, input),
+    placeBudgetProject: (projectId: string, onBallot: boolean) =>
+      request<ManagedBudgetCycle>('POST', `/v1/pb/manage/projects/${encodeURIComponent(projectId)}/ballot`, { onBallot }),
+    recountBudgetCycle: (cycleId: string) =>
+      request<BudgetRecount>('GET', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}/recount`),
+    /** Two different people certify (403 "already_certified_by_you"); a mismatch is "count_mismatch". */
+    certifyBudgetCycle: (cycleId: string) =>
+      request<ManagedBudgetCycle>('POST', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}/certify`),
+    allocateBudgetCycle: (cycleId: string) =>
+      request<ManagedBudgetCycle>('POST', `/v1/pb/manage/cycles/${encodeURIComponent(cycleId)}/allocations`),
+    recordBudgetExpenditure: (projectId: string, input: BudgetExpenditureInput) =>
+      request<BudgetExpenditure>('POST', `/v1/pb/manage/projects/${encodeURIComponent(projectId)}/expenditures`, input),
+    recordBudgetCompletion: (projectId: string, input: BudgetCompletionInput) =>
+      request<ManagedBudgetCycle>('POST', `/v1/pb/manage/projects/${encodeURIComponent(projectId)}/completion`, input),
+    // Official content (M47, M48 check part, D30). 404 while official_content is off. Only content whose
+    // signature verifies is "signed": show the "Official statement" label on nothing else (BR-148).
+    listOfficialStatements: (limit?: number) =>
+      request<OfficialStatement[]>('GET', `/v1/content/official${limit ? `?limit=${limit}` : ''}`),
+    getOfficialStatement: (statementId: string) =>
+      request<OfficialStatementFile>('GET', `/v1/content/official/${encodeURIComponent(statementId)}`),
+    /** Open to anyone, no session needed; `code` may be a check link. 429 "too_many_requests" when one address checks too often. */
+    checkOfficialStatement: (code: string) =>
+      request<OfficialCheck>('GET', `/v1/content/official/check?code=${encodeURIComponent(code)}`),
+    listOfficialPublicKeys: () => request<OfficialPublicKey[]>('GET', '/v1/content/official/keys'),
+    /** An image a published statement carries; served without a session. */
+    officialImageUrl: (imageId: string, size: 'display' | 'thumb' = 'display') =>
+      `${root}/v1/content/official/images/${encodeURIComponent(imageId)}?size=${size}`,
+    /** Whether a signing key is configured and whether the caller is a registered publisher. */
+    getOfficialSigningStatus: () => request<OfficialSigningStatus>('GET', '/v1/content/official/manage/signing'),
+    listManagedOfficialStatements: (states?: readonly OfficialStatementState[]) =>
+      request<ManagedOfficialStatement[]>('GET', `/v1/content/official/manage${toQueueQuery({ states })}`),
+    getManagedOfficialStatement: (statementId: string) =>
+      request<ManagedOfficialStatement>('GET', `/v1/content/official/manage/${encodeURIComponent(statementId)}`),
+    draftOfficialStatement: (input: OfficialDraftInput) =>
+      request<ManagedOfficialStatement>('POST', '/v1/content/official/manage', input),
+    saveOfficialDraft: (statementId: string, input: OfficialDraftInput) =>
+      request<ManagedOfficialStatement>('PUT', `/v1/content/official/manage/${encodeURIComponent(statementId)}`, input),
+    uploadOfficialImage: (image: Blob | ArrayBuffer, contentType: GalleryImageType) =>
+      request<OfficialImage>('POST', '/v1/content/official/manage/images', image, contentType),
+    /** 503 "signing_unavailable" without a key; 403 "not_a_registered_publisher"; 409 "silence_period". */
+    signAndPublishOfficialStatement: (statementId: string) =>
+      request<ManagedOfficialStatement>('POST', `/v1/content/official/manage/${encodeURIComponent(statementId)}/publish`),
+    correctOfficialStatement: (statementId: string, input: OfficialCorrectionInput) =>
+      request<ManagedOfficialStatement>(
+        'POST',
+        `/v1/content/official/manage/${encodeURIComponent(statementId)}/corrections`,
+        input,
+      ),
+    withdrawOfficialStatement: (statementId: string, input: OfficialWithdrawInput) =>
+      request<ManagedOfficialStatement>(
+        'POST',
+        `/v1/content/official/manage/${encodeURIComponent(statementId)}/withdraw`,
+        input,
+      ),
+    listOfficialPublishers: () => request<OfficialPublisher[]>('GET', '/v1/content/official/publishers'),
+    registerOfficialPublisher: (input: OfficialPublisherInput) =>
+      request<OfficialPublisher>('POST', '/v1/content/official/publishers', input),
+    revokeOfficialPublisher: (publisherId: string, reason: string) =>
+      request<OfficialPublisher>('POST', `/v1/content/official/publishers/${encodeURIComponent(publisherId)}/revoke`, { reason }),
+    /** M29: the Election Commission's own services (FR-ELX-002, 003). 404 while election_mode is off. */
+    getElectionOfficialLinks: () => request<ElectionOfficialLinks>('GET', '/v1/election/official-links'),
+    // Livelihood guide (M39, M40, D28). 404 "feature_unavailable" while livelihood_guide is off.
+    searchGuide: (filters: { q?: string; category?: GuideCategory } = {}) => {
+      const q = new URLSearchParams();
+      if (filters.q) q.set('q', filters.q);
+      if (filters.category) q.set('category', filters.category);
+      const qs = q.toString();
+      return request<GuideEntrySummary[]>('GET', `/v1/guide${qs ? `?${qs}` : ''}`);
+    },
+    getGuideEntry: (entryId: string) => request<GuideEntry>('GET', `/v1/guide/${encodeURIComponent(entryId)}`),
+    /** One open report per member and entry ("already_reported"). */
+    reportGuideEntry: (entryId: string, reason: GuideReportReason, note?: string) =>
+      request<GuideReport>('POST', `/v1/guide/${encodeURIComponent(entryId)}/reports`, { reason, note: note || null }),
+    listManagedGuideEntries: (filters: { state?: GuideEntryState; expired?: boolean; q?: string } = {}) => {
+      const q = new URLSearchParams();
+      if (filters.state) q.set('state', filters.state);
+      if (filters.expired) q.set('expired', 'true');
+      if (filters.q) q.set('q', filters.q);
+      const qs = q.toString();
+      return request<GuideEntryManaged[]>('GET', `/v1/guide/manage${qs ? `?${qs}` : ''}`);
+    },
+    getManagedGuideEntry: (entryId: string) =>
+      request<GuideEntryManagedDetail>('GET', `/v1/guide/manage/${encodeURIComponent(entryId)}`),
+    draftGuideEntry: (input: GuideEntryInput) => request<GuideEntryManagedDetail>('POST', '/v1/guide/manage', input),
+    /** Saving a published entry takes it off the guide until it is reviewed again. */
+    saveGuideEntry: (entryId: string, input: GuideEntryInput) =>
+      request<GuideEntryManagedDetail>('PUT', `/v1/guide/manage/${encodeURIComponent(entryId)}`, input),
+    requestGuideReview: (entryId: string) =>
+      request<GuideEntryManagedDetail>('POST', `/v1/guide/manage/${encodeURIComponent(entryId)}/request-review`),
+    /** A second person: 403 "own_entry" for the one who asked or last changed it. */
+    reviewGuideEntry: (entryId: string, approve: boolean, note?: string) =>
+      request<GuideEntryManagedDetail>('POST', `/v1/guide/manage/${encodeURIComponent(entryId)}/review`, {
+        approve,
+        note: note || null,
+      }),
+    markGuideEntryVerified: (entryId: string) =>
+      request<GuideEntryManagedDetail>('POST', `/v1/guide/manage/${encodeURIComponent(entryId)}/verified`),
+    withdrawGuideEntry: (entryId: string, reason: string) =>
+      request<GuideEntryManagedDetail>('POST', `/v1/guide/manage/${encodeURIComponent(entryId)}/withdraw`, { reason }),
+    listGuideReports: (state: 'open' | 'fixed' | 'dismissed' = 'open') =>
+      request<GuideManagedReport[]>('GET', `/v1/guide/manage/reports?state=${state}`),
+    resolveGuideReport: (reportId: string, outcome: 'fixed' | 'dismissed', note?: string) =>
+      request<GuideManagedReport>('POST', `/v1/guide/manage/reports/${encodeURIComponent(reportId)}/resolution`, {
+        outcome,
+        note: note || null,
+      }),
+    // Meet Your Representative (M41, M42, S17, D29). 404 "feature_unavailable" while representatives is off.
+    listRepresentatives: () => request<RepresentativeSummary[]>('GET', '/v1/appointments/representatives'),
+    getRepresentative: (representativeId: string) =>
+      request<RepresentativeDetail>('GET', `/v1/appointments/representatives/${encodeURIComponent(representativeId)}`),
+    listMyAppointments: () => request<Appointment[]>('GET', '/v1/appointments/mine'),
+    getMyAppointment: (appointmentId: string) =>
+      request<Appointment>('GET', `/v1/appointments/mine/${encodeURIComponent(appointmentId)}`),
+    /** Without caseLinkConsent no case reference is stored. */
+    bookAppointment: (input: AppointmentBookInput) => request<Appointment>('POST', '/v1/appointments', input),
+    cancelMyAppointment: (appointmentId: string, reason?: string) =>
+      request<Appointment>('POST', `/v1/appointments/mine/${encodeURIComponent(appointmentId)}/cancel`, {
+        reason: reason || null,
+      }),
+    rescheduleMyAppointment: (appointmentId: string, slotId: string) =>
+      request<Appointment>('POST', `/v1/appointments/mine/${encodeURIComponent(appointmentId)}/reschedule`, { slotId }),
+    getAppointmentCalendar: (filters: { from?: string; days?: number } = {}) => {
+      const q = new URLSearchParams();
+      if (filters.from) q.set('from', filters.from);
+      if (filters.days !== undefined) q.set('days', String(filters.days));
+      const qs = q.toString();
+      return request<AppointmentCalendar>('GET', `/v1/appointments/calendar${qs ? `?${qs}` : ''}`);
+    },
+    updateOwnRepresentativeProfile: (input: RepresentativeOwnProfileInput) =>
+      request<RepresentativeOwnProfile>('PUT', '/v1/appointments/calendar/profile', input),
+    approveOwnContacts: (approve: boolean) =>
+      request<RepresentativeOwnProfile>('POST', '/v1/appointments/calendar/contacts', { approve }),
+    addOwnAppointmentSlots: (input: AppointmentSlotSeriesInput) =>
+      request<RepresentativeProfileSlot[]>('POST', '/v1/appointments/calendar/slots', input),
+    withdrawOwnAppointmentSlot: (slotId: string, reason: string) =>
+      request<RepresentativeProfileSlot>('POST', `/v1/appointments/calendar/slots/${encodeURIComponent(slotId)}/withdraw`, {
+        reason,
+      }),
+    getAppointmentBooking: (appointmentId: string) =>
+      request<AppointmentBooking>('GET', `/v1/appointments/calendar/bookings/${encodeURIComponent(appointmentId)}`),
+    cancelAppointmentBooking: (appointmentId: string, reason: string) =>
+      request<AppointmentBooking>('POST', `/v1/appointments/calendar/bookings/${encodeURIComponent(appointmentId)}/cancel`, {
+        reason,
+      }),
+    recordAppointmentFollowUp: (appointmentId: string, input: AppointmentFollowUpInput) =>
+      request<AppointmentBooking>(
+        'POST',
+        `/v1/appointments/calendar/bookings/${encodeURIComponent(appointmentId)}/follow-up`,
+        input,
+      ),
+    listRepresentativeProfiles: (state?: RepresentativeProfileState) =>
+      request<RepresentativeManaged[]>('GET', `/v1/appointments/profiles${state ? `?state=${state}` : ''}`),
+    getRepresentativeProfile: (representativeId: string) =>
+      request<RepresentativeManagedDetail>('GET', `/v1/appointments/profiles/${encodeURIComponent(representativeId)}`),
+    createRepresentativeProfile: (input: RepresentativeCreateInput) =>
+      request<RepresentativeManagedDetail>('POST', '/v1/appointments/profiles', input),
+    /** Changing a contact route clears the person's approval. */
+    updateRepresentativeProfile: (representativeId: string, input: RepresentativeProfileInput) =>
+      request<RepresentativeManagedDetail>('PUT', `/v1/appointments/profiles/${encodeURIComponent(representativeId)}`, input),
+    publishRepresentativeProfile: (representativeId: string) =>
+      request<RepresentativeManagedDetail>(
+        'POST',
+        `/v1/appointments/profiles/${encodeURIComponent(representativeId)}/publish`,
+      ),
+    withdrawRepresentativeProfile: (representativeId: string, reason: string) =>
+      request<RepresentativeManagedDetail>(
+        'POST',
+        `/v1/appointments/profiles/${encodeURIComponent(representativeId)}/withdraw`,
+        { reason },
+      ),
+    addRepresentativeSlots: (representativeId: string, input: AppointmentSlotSeriesInput) =>
+      request<RepresentativeProfileSlot[]>(
+        'POST',
+        `/v1/appointments/profiles/${encodeURIComponent(representativeId)}/slots`,
+        input,
+      ),
+    withdrawRepresentativeSlot: (representativeId: string, slotId: string, reason: string) =>
+      request<RepresentativeProfileSlot>(
+        'POST',
+        `/v1/appointments/profiles/${encodeURIComponent(representativeId)}/slots/${encodeURIComponent(slotId)}/withdraw`,
+        { reason },
       ),
     // Community Finance endpoints (Milestone 1.4)
     getFundConfig: () => request<FundConfig>('GET', '/v1/fund/config'),
@@ -1867,6 +2562,78 @@ export function createApiClient({
       if (!response.ok) throw await toApiError(response);
       return response.text();
     },
+    // Tamil AI assistant (M28). Member routes answer 404 "feature_unavailable" while ai_assistant is off;
+    // 503 "assistant_unavailable" (problems provider_not_configured, model_not_approved) while no model may
+    // answer; 429 "assistant_refused" for too_many_questions, too_many_reports_today, too_many_open_requests.
+    getAssistantHome: () => request<AssistantHome>('GET', '/v1/assistant'),
+    /** Starts a conversation when conversationId is left out. The question comes back with identifiers removed. */
+    askAssistant: (input: AssistantAskInput) => request<AssistantAskResult>('POST', '/v1/assistant/messages', input),
+    getAssistantConversation: (conversationId: string) =>
+      request<AssistantConversation>('GET', `/v1/assistant/conversations/${encodeURIComponent(conversationId)}`),
+    deleteAssistantConversation: (conversationId: string) =>
+      request<void>('DELETE', `/v1/assistant/conversations/${encodeURIComponent(conversationId)}`),
+    /** null takes the rating back. */
+    rateAssistantAnswer: (messageId: string, rating: AssistantRating | null) =>
+      request<AssistantMessage>('POST', `/v1/assistant/messages/${encodeURIComponent(messageId)}/rating`, { rating }),
+    reportAssistantError: (messageId: string, note: string) =>
+      request<AssistantReceipt>('POST', `/v1/assistant/messages/${encodeURIComponent(messageId)}/error-report`, { note }),
+    listMyAssistantHandovers: () => request<AssistantHandover[]>('GET', '/v1/assistant/handovers'),
+    /** shareConversation must be true for the conversation to be passed on (FR-AIA-007). */
+    requestAssistantHandover: (input: AssistantHandoverInput) =>
+      request<AssistantHandover>('POST', '/v1/assistant/handovers', input),
+    // Assistant knowledge base for Knowledge Editors (D20, ai.kb.manage); refusals are "source_refused" (422).
+    getAssistantSummary: () => request<AssistantSummary>('GET', '/v1/assistant/manage/summary'),
+    listKnowledgeSources: (filters: { state?: KnowledgeSourceState; kind?: KnowledgeSourceKind } = {}) =>
+      request<KnowledgeSourceSummary[]>('GET', `/v1/assistant/manage/sources${toEventQuery(filters)}`),
+    getKnowledgeSource: (sourceId: string) =>
+      request<KnowledgeSourceFile>('GET', `/v1/assistant/manage/sources/${encodeURIComponent(sourceId)}`),
+    draftKnowledgeSource: (input: KnowledgeSourceInput) =>
+      request<KnowledgeSource>('POST', '/v1/assistant/manage/sources', input),
+    editKnowledgeSourceDraft: (sourceId: string, input: KnowledgeSourceInput) =>
+      request<KnowledgeSource>('PUT', `/v1/assistant/manage/sources/${encodeURIComponent(sourceId)}`, input),
+    draftKnowledgeSourceVersion: (sourceId: string) =>
+      request<KnowledgeSource>('POST', `/v1/assistant/manage/sources/${encodeURIComponent(sourceId)}/new-version`),
+    /** A second Knowledge Editor approves; the drafter gets 403 "own_draft". */
+    decideKnowledgeSource: (sourceId: string, approve: boolean, reason?: string) =>
+      request<KnowledgeSource>('POST', `/v1/assistant/manage/sources/${encodeURIComponent(sourceId)}/decision`, {
+        approve,
+        reason: reason ?? null,
+      }),
+    reviewKnowledgeSource: (sourceId: string, reviewDue: string) =>
+      request<KnowledgeSource>('POST', `/v1/assistant/manage/sources/${encodeURIComponent(sourceId)}/review`, { reviewDue }),
+    retireKnowledgeSource: (sourceId: string, reason: string) =>
+      request<KnowledgeSource>('POST', `/v1/assistant/manage/sources/${encodeURIComponent(sourceId)}/retire`, { reason }),
+    listAssistantErrorReports: (state?: AssistantErrorReportState) =>
+      request<AssistantErrorReport[]>('GET', `/v1/assistant/manage/error-reports${toEventQuery({ state })}`),
+    resolveAssistantErrorReport: (reportId: string, outcome: 'fixed' | 'no_change', resolution: string) =>
+      request<AssistantErrorReport>('POST', `/v1/assistant/manage/error-reports/${encodeURIComponent(reportId)}/resolve`, {
+        outcome,
+        resolution,
+      }),
+    listAssistantHandovers: (state?: AssistantHandoverState) =>
+      request<AssistantStaffHandover[]>('GET', `/v1/assistant/manage/handovers${toEventQuery({ state })}`),
+    replyToAssistantHandover: (handoverId: string, reply: string) =>
+      request<AssistantStaffHandover>('POST', `/v1/assistant/manage/handovers/${encodeURIComponent(handoverId)}/reply`, {
+        reply,
+      }),
+    closeAssistantHandover: (handoverId: string) =>
+      request<AssistantStaffHandover>('POST', `/v1/assistant/manage/handovers/${encodeURIComponent(handoverId)}/close`),
+    /** Try a question with the configured model, in shadow mode too; never shown to members. */
+    tryAssistantQuestion: (question: string, language: 'ta' | 'en') =>
+      request<AssistantPreview>('POST', '/v1/assistant/manage/try', { question, language }),
+    // AI model registry and monitoring (D21, ai.model.monitor / ai.model.approve); refusals are "model_refused" (422).
+    getAiRegistry: () => request<AiRegistry>('GET', '/v1/ai-models'),
+    registerAiModel: (input: AiModelInput) => request<AiModel>('POST', '/v1/ai-models', input),
+    getAiModel: (modelId: string) => request<AiModelFile>('GET', `/v1/ai-models/${encodeURIComponent(modelId)}`),
+    recordAiEvaluation: (modelId: string, input: AiEvaluationInput) =>
+      request<AiEvaluation>('POST', `/v1/ai-models/${encodeURIComponent(modelId)}/evaluations`, input),
+    recordAiFairnessReview: (modelId: string, input: AiFairnessInput) =>
+      request<AiFairnessReview>('POST', `/v1/ai-models/${encodeURIComponent(modelId)}/fairness-reviews`, input),
+    /** PRM-30. A version that was live before goes live again at once (rollback). */
+    makeAiModelLive: (modelId: string, reason: string) =>
+      request<AiModel>('POST', `/v1/ai-models/${encodeURIComponent(modelId)}/go-live`, { reason }),
+    retireAiModel: (modelId: string, reason: string) =>
+      request<AiModel>('POST', `/v1/ai-models/${encodeURIComponent(modelId)}/retire`, { reason }),
   };
 }
 

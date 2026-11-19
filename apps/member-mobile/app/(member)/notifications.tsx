@@ -42,6 +42,8 @@ function targetRoute(item: NotificationItem): Href | null {
       return '/profile/privacy';
     case 'security_alert':
       return '/profile/security';
+    case 'assistant_handover':
+      return '/assistant/help';
     case 'removal_request':
       return '/gallery';
     case 'issue':
@@ -65,6 +67,37 @@ function targetRoute(item: NotificationItem): Href | null {
       return '/volunteer/assignments';
     case 'misinfo_report':
       return '/official';
+    case 'committee':
+      return item.targetId ? { pathname: '/committees/[id]', params: { id: item.targetId } } : '/committees';
+    case 'committee_applications':
+    case 'committee_minutes':
+      return item.targetId
+        ? { pathname: '/committees/[id]/coordinate', params: { id: item.targetId } }
+        : '/committees';
+    case 'disaster_alert':
+      return item.targetId ? { pathname: '/alerts/[id]', params: { id: item.targetId } } : '/alerts';
+    case 'blood_request':
+      return item.targetId ? { pathname: '/blood-donors/requests/[id]', params: { id: item.targetId } } : '/blood-donors';
+    case 'guide_entry':
+      return item.targetId ? { pathname: '/livelihood/[id]', params: { id: item.targetId } } : '/livelihood';
+    case 'appointment':
+      return item.targetId
+        ? { pathname: '/representatives/appointments/[id]', params: { id: item.targetId } }
+        : '/representatives/appointments';
+    case 'appointment_calendar':
+      return '/staff/appointments';
+    case 'renewal':
+      return '/renewal';
+    case 'certificate':
+      return item.targetId
+        ? { pathname: '/renewal/certificate/[id]', params: { id: item.targetId } }
+        : '/renewal/certificates';
+    case 'assisted_verification':
+      return '/verify/assisted';
+    case 'assisted_session':
+      return item.targetId
+        ? { pathname: '/staff/assisted-verification/[id]', params: { id: item.targetId } }
+        : '/staff/assisted-verification';
     default:
       return null;
   }

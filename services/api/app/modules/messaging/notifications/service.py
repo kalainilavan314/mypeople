@@ -53,6 +53,12 @@ def notify(
     )
 
 
+def notify_home_areas(db: Session, area_keys: list[str], key: str, target_id: uuid.UUID | None) -> int:
+    """A notice for everyone who lives in these areas and has not turned the topic off (FR-MSG-003, an
+    official alert, FR-DIS-002); the caller commits. Returns how many members it reached."""
+    return repository.insert_for_home_areas(db, area_keys=area_keys, key=key, template=TEMPLATES[key], target_id=target_id)
+
+
 def complete_action(db: Session, target_kind: str, target_id: uuid.UUID, member_id: uuid.UUID | None = None) -> None:
     """The task a notice asked for is done; the caller commits."""
     repository.complete_action(db, target_kind, target_id, member_id)

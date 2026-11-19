@@ -1,7 +1,7 @@
 """Give the Super Administrator every permission Tier 5 may hold.
 
-The owner decided on 12 November 2026 that the Super Administrator should hold all 40 permissions
-the BRD allows at Tier 5 (§9.8), not only the defaults. Tier 5 has nobody above it to grant it, so,
+The owner decided on 12 November 2026 that the Super Administrator should hold every permission
+the BRD allows at Tier 5 (§9.8), not only the defaults: 40 at the time, 47 with Phase 3. Tier 5 has nobody above it to grant it, so,
 like the bootstrap, an operator runs this on the server, from services/api, with the person's NIC on
 standard input, so it never appears in the shell history or the process list:
 

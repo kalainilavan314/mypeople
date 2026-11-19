@@ -29,6 +29,7 @@ import { QueryView } from '@/components/QueryView';
 import { OfflineCard } from '@/features/membership/OfflineCard';
 import { CARD_WIDTH, MemberIdCard } from '@/features/membership/card/MemberIdCard';
 import { useLiveCardCode } from '@/features/membership/card/useLiveCardCode';
+import { useRenewalOpen } from '@/features/renewal/useRenewalOpen';
 import { api } from '@/lib/api';
 import { errorMessage, noAnswer } from '@/lib/errors';
 
@@ -91,7 +92,7 @@ export default function CardScreen() {
 
 function CardAction({ label, icon, divided = false, onPress }: {
   label: string;
-  icon: 'share-outline' | 'time-outline' | 'image-outline' | 'create-outline';
+  icon: 'share-outline' | 'time-outline' | 'image-outline' | 'create-outline' | 'refresh-circle-outline' | 'ribbon-outline';
   divided?: boolean;
   onPress: () => void;
 }) {
@@ -124,6 +125,7 @@ function AvailableCard({ card }: { card: MemberCard }) {
     }, []),
   );
   const qrCode = useLiveCardCode(focused);
+  const renewalOpen = useRenewalOpen();
 
   return (
     <>
@@ -148,6 +150,13 @@ function AvailableCard({ card }: { card: MemberCard }) {
         <CardAction label={t('m.card.signatureRow')} icon="create-outline" divided onPress={() => router.push('/card/sign' as Href)} />
         <CardAction label={t('m.card.progressTitle')} icon="time-outline" divided onPress={() => router.push('/card/progress')} />
         <CardAction label={t('m.card.shareTitle')} icon="share-outline" divided onPress={() => router.push('/card/share' as Href)} />
+        {/* M33, M34: entered from the card tab (BRD screen catalogue). */}
+        {renewalOpen ? (
+          <>
+            <CardAction label={t('m.renewal.renewalRow')} icon="refresh-circle-outline" divided onPress={() => router.push('/renewal' as Href)} />
+            <CardAction label={t('m.renewal.certificatesRow')} icon="ribbon-outline" divided onPress={() => router.push('/renewal/certificates' as Href)} />
+          </>
+        ) : null}
       </SurfaceCard>
 
       {card.lastScannedAt ? (
@@ -164,6 +173,7 @@ function AvailableCard({ card }: { card: MemberCard }) {
 function Unavailable({ card }: { card: MemberCard }) {
   const { t } = useTranslation();
   const membershipPending = card.membershipState === 'pending';
+  const renewalOpen = useRenewalOpen();
   const reason = !card.identityVerified ? 'notActiveBody' : `unavailable_membership_${card.membershipState}`;
   const steps = [
     {
@@ -201,6 +211,10 @@ function Unavailable({ card }: { card: MemberCard }) {
         ))}
       </SurfaceCard>
       <Button label={t('m.card.viewStatus')} onPress={() => router.push('/verify')} />
+      {/* OD-43: a membership that lapsed at renewal is made Active again by confirming the details. */}
+      {renewalOpen && card.membershipState === 'inactive' ? (
+        <Button label={t('m.renewal.renewNow')} variant="secondary" icon="refresh-circle-outline" onPress={() => router.push('/renewal' as Href)} />
+      ) : null}
     </View>
   );
 }

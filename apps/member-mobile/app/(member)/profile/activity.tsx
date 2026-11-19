@@ -22,6 +22,8 @@ const STATE_KEYS: Record<string, string> = {
   survey_response: 'm.profile.activityState_survey_response_',
   proposal: 'm.profile.activityState_proposal_',
   course: 'm.profile.activityState_course_',
+  committee_task: 'm.profile.activityState_committee_task_',
+  appointment: 'm.representatives.state_',
 };
 
 // An issue report's state is its case stage; the member sees the same words as on the report.
@@ -60,6 +62,10 @@ function opener(kind: string, targetId: string): (() => void) | undefined {
       return () => router.push({ pathname: '/ideas/proposals/[id]', params: { id: targetId } });
     case 'course':
       return () => router.push({ pathname: '/learning/[course]', params: { course: targetId } });
+    case 'committee_task': // the target is the committee, whose space lists the task
+      return () => router.push({ pathname: '/committees/[id]', params: { id: targetId } });
+    case 'appointment': // FR-APT-006: the follow-up note is on the appointment
+      return () => router.push({ pathname: '/representatives/appointments/[id]', params: { id: targetId } });
     default:
       return undefined;
   }

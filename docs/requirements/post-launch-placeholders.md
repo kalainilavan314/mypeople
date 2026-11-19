@@ -26,7 +26,7 @@ M1.4 database foundation is absent.
 
 | Future location | Scope and requirements | Dependency |
 | --- | --- | --- |
-| `app/(staff)/assisted-verification` | S04 assisted identity capture, witness checklist and member handoff; FR-STF-004, FR-IDV-014, BR-010, BR-144 | OD-04; the review queue stays in admin W01/W02 |
+| `app/(member)/staff/assisted-verification` | S04 assisted identity capture, witness checklist and member handoff; FR-STF-004, FR-IDV-014, BR-010, BR-144 | Built behind `assisted_verification` (OD-04 recommendation as [ASSUMPTION]; switching it on also needs GOV-02); the review queue stays in admin W01/W02 |
 
 ## Admin web
 

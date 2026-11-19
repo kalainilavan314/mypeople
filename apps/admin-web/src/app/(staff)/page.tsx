@@ -78,11 +78,10 @@ async function StatusSection() {
   );
 }
 
-// D30 is built only when the signing keys exist (INT-24, keys held in KMS); a bare phase would
-// suggest it is merely scheduled.
-const WAITING_ON: Readonly<Record<string, { ta: string; en: string }>> = {
-  'Official publishing and signing': { ta: 'கையொப்ப விசைகளுக்காகக் காத்திருக்கிறது (INT-24)', en: 'Waits on signing keys (INT-24)' },
-};
+// A planned module waiting on an outside decision says what it waits for; a bare phase would
+// suggest it is merely scheduled. (D30 official publishing is built: its key is a server setting
+// until a KMS is chosen, INT-24.)
+const WAITING_ON: Readonly<Record<string, { ta: string; en: string }>> = {};
 
 function waitingLabel(name: string, locale: Locale): string {
   const waiting = WAITING_ON[name];

@@ -92,7 +92,7 @@ def opportunity(db: Session, member_id: uuid.UUID, opportunity_id: uuid.UUID) ->
     found = repository.find_opportunity(db, opportunity_id)
     mine = repository.offer_for(db, opportunity_id, member_id) if found else None
     # Visible while open in the member's area, and always to someone who offered.
-    if found is None or (mine is None and not (found.state == "open" and rules.visible_to(found.area_key, _member_area_keys(db, member_id)))):
+    if found is None or (mine is None and not (found.state == "open" and rules.visible_to(found.area_key, _member_area_keys(db, member_id), found.remote))):
         raise NotFound()
     return OpportunityView(found, mine, opportunity_id in repository.bookmarked(db, member_id))
 

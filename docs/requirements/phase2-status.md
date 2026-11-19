@@ -32,8 +32,8 @@ Checks on 13 November 2026: the full API suite on a fresh database, the dashboar
 
 | Item | Waiting for |
 |---|---|
-| M29 Election information | DEP-19 legal opinion |
-| M47 Official updates, D30 signing, checking a statement by code (FR-AUT-001 to 005) | INT-24 signing keys in KMS |
+| M29 Election information | Built in Phase 3 behind `election_mode`; turning it on in production still waits for the DEP-19 legal opinion ([ASSUMPTION] in code) |
+| M47 Official updates, D30 signing, checking a statement by code (FR-AUT-001 to 005) | Built in Phase 3 behind `official_content`; [ASSUMPTION] INT-24: the signing key is a server setting until a KMS is chosen |
 | M33, M34, D25 Renewal and certificates | OD-43 renewal policy |
 | AI topic, duplicate and summary suggestions for proposals and town hall transcripts; semantic search (FR-DEV-004, 005; AI-07 to 09) | OD-42 AI provider and hosting. Proposal search matches words meanwhile; transcripts are written by staff |
 | AI ordering of the fact-check queue (AI-12) | OD-42. The queue is oldest first; a fact-checker decides every report either way (BR-149) |

@@ -68,7 +68,7 @@ def delete_profile(db: Session, member_id: uuid.UUID) -> bool:
 _OPPORTUNITY = """
     SELECT o.id, o.opportunity_ref, o.title_en, o.title_ta, o.role_en, o.role_ta, o.description_en, o.description_ta,
            o.place_en, o.place_ta, o.bring_en, o.bring_ta, o.team_en, o.team_ta, o.starts_at, o.ends_at, o.event_id,
-           o.skills, o.places, o.area_key, o.area_path, o.state, o.cancel_reason, o.created_by, o.created_at, o.updated_at,
+           o.skills, o.places, o.remote, o.area_key, o.area_path, o.state, o.cancel_reason, o.created_by, o.created_at, o.updated_at,
            (SELECT count(*) FROM engagement.volunteer_offer f WHERE f.opportunity_id = o.id AND f.state = 'confirmed') AS confirmed,
            (SELECT count(*) FROM engagement.volunteer_offer f WHERE f.opportunity_id = o.id AND f.state = 'offered') AS waiting
     FROM engagement.volunteer_opportunity o
@@ -96,6 +96,7 @@ class Opportunity:
     event_id: uuid.UUID | None
     skills: list[str]
     places: int
+    remote: bool  # FR-DSP-003: shown as "Remote" and open to members wherever they live
     area_key: str
     area_path: list[str]
     state: str
@@ -114,6 +115,7 @@ def _opportunity(row: Any) -> Opportunity:
 OPPORTUNITY_FIELDS = (
     "title_en", "title_ta", "role_en", "role_ta", "description_en", "description_ta", "place_en", "place_ta",
     "bring_en", "bring_ta", "team_en", "team_ta", "starts_at", "ends_at", "event_id", "skills", "places",
+    "remote",
 )
 
 
@@ -152,7 +154,7 @@ def open_opportunities_for(db: Session, area_keys: list[str], now: datetime) -> 
     rows = db.execute(
         text(
             f"""{_OPPORTUNITY} WHERE o.state = 'open' AND o.starts_at > :now
-                AND (o.area_key = 'platform' OR o.area_key = ANY(:areas)) ORDER BY o.starts_at LIMIT 100"""
+                AND (o.area_key = 'platform' OR o.area_key = ANY(:areas) OR o.remote) ORDER BY o.starts_at LIMIT 100"""
         ),
         {"now": now, "areas": area_keys},
     ).mappings()

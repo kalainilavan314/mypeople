@@ -6,9 +6,15 @@ Run once every minute from a systemd timer (mypeople-notifications.timer):
 Jobs performed per cycle:
 1. Send due staff broadcasts (with election silence holds and audit trails).
 2. Escalate overdue photo removal requests (> 18h) to Tier 5 reviewers.
-3. Alert the next tier once about each case stage past its time limit (FR-WEB-028), mark
+3. Alert the next tier once about each case stage past its time limit (FR-WEB-028), raise relayed
+   disaster alerts nobody checked for 6 hours (FR-DIS-008), delete alerts after 2 years and blood
+   requests after 12 months (ENT-54, OD-39), mark
    published promises past their due date Delayed (FR-PRM-009), and tell the publishers once when
-   a Delayed promise's 10 working days for an update pass without one.
+   a Delayed promise's 10 working days for an update pass without one; remind members of town
+   halls and of appointments with their representative (24 hours and 1 hour before, FR-APT-003).
+   Once the renewal module is on, open yearly renewal cycles, send the 30- and 7-day notices and
+   lapse memberships whose 60-day grace period ended (FR-RNW-002, OD-43); remove certificate-check
+   rate-limit rows older than an hour.
 4. Dispatch pending push notifications respecting quiet hours and preferences.
 
 Concurrency & Safety:
@@ -33,11 +39,17 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings
 from app.db.session import create_database_engine
 from app.integrations.push import NoPush, PushSender, build_push
+from app.modules.assistance.alerts import service as disaster_alerts
 from app.modules.community.issues import breaches as case_breaches
 from app.modules.community.promises import service as promises
 from app.modules.community.townhalls import service as townhalls
+from app.modules.engagement.budgeting import service as budgeting
+from app.modules.engagement.blood_donors import service as blood_donors
+from app.modules.events.appointments import service as appointments
 from app.modules.engagement.field import service as field_visits
 from app.modules.content.gallery import service as gallery
+from app.modules.membership.certificates import service as certificates
+from app.modules.membership.renewal import service as renewal
 from app.modules.messaging.broadcasts import service as broadcasts
 from app.modules.messaging.notifications import service as notifications
 
@@ -62,7 +74,14 @@ def run_once(db: Session, push: PushSender, now: datetime | None = None) -> dict
     promises_delayed = promises.mark_delayed(db, moment)
     promise_updates_missed = promises.escalate_missed_updates(db, moment)
     townhall_reminders = townhalls.remind(db, moment)
+    appointment_reminders = appointments.remind(db, moment)
     field_visits_purged = field_visits.purge(db, moment)
+    ballots_purged = budgeting.purge_expired(db, moment)
+    alerts_flagged_stale = disaster_alerts.flag_stale(db, moment)
+    alerts_purged = disaster_alerts.purge(db, moment)
+    blood_requests_purged = blood_donors.purge(db, moment)
+    renewals = renewal.run(db, moment)
+    certificate_checks_purged = certificates.purge_checks(db)
     pushed = notifications.dispatch(db, push, moment)
     return {
         "broadcastsSent": sent_broadcasts,
@@ -71,7 +90,16 @@ def run_once(db: Session, push: PushSender, now: datetime | None = None) -> dict
         "promisesDelayed": promises_delayed,
         "promiseUpdatesMissed": promise_updates_missed,
         "townHallReminders": townhall_reminders,
+        "appointmentReminders": appointment_reminders,
         "fieldVisitsPurged": field_visits_purged,
+        "ballotsPurged": ballots_purged,
+        "alertsFlaggedStale": alerts_flagged_stale,
+        "alertsPurged": alerts_purged,
+        "bloodRequestsPurged": blood_requests_purged,
+        "renewalCyclesOpened": renewals.opened,
+        "renewalNotices": renewals.notices,
+        "renewalsLapsed": renewals.lapsed,
+        "certificateChecksPurged": certificate_checks_purged,
         **asdict(pushed),
     }
 

@@ -265,11 +265,17 @@ def test_announcements_are_held_through_silence_and_emergencies_still_go(client,
 
 def test_no_field_records_a_vote_an_intention_or_proof_of_voting(make_client):
     spec = make_client().app.openapi()
-    names = set(spec["paths"])
+    # Participatory budgeting (FR-PBG) holds secret ballots on local projects, not on elections or
+    # candidates. Its paths (/v1/pb/) and schemas (Pb*) are checked by its own tests, so skip them here.
+    names = {path for path in spec["paths"] if not path.startswith("/v1/pb/")}
     for name, schema in spec["components"]["schemas"].items():
+        if name.startswith("Pb"):
+            continue
         names.add(name)
         names.update(schema.get("properties", {}))
-    for operations in spec["paths"].values():
+    for path, operations in spec["paths"].items():
+        if path.startswith("/v1/pb/"):
+            continue
         for operation in operations.values():
             names.update(parameter["name"] for parameter in operation.get("parameters", []))
 

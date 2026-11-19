@@ -3,17 +3,19 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { spacing } from '@my-people/design-tokens/mobile';
-import { AppText, Button, Notice, Screen, SurfaceCard, useApiQuery, useReloadOnFocus } from '@my-people/mobile-ui';
+import { AppText, Button, MenuRow, Screen, SurfaceCard, useApiQuery, useReloadOnFocus } from '@my-people/mobile-ui';
 
 import { FeatureQueryView } from '@/components/FeatureQueryView';
+import { CheckForm } from '@/features/official/CheckForm';
 import { MisinfoReportCard } from '@/features/official/MisinfoReportCard';
 import { api } from '@/lib/api';
 
 /**
- * M48 Check or report a statement: the member's reports with what a fact-checker decided. A person
- * checks every report; there is no automatic score (BR-149). Official updates (M47) and checking a
- * statement by its code both wait for the signing keys (INT-24), so they are only announced here, not
- * offered: nothing is labelled "Official statement" without a signature.
+ * M48 Check or report a statement. Checking a code or link against the signed records
+ * (official_content, FR-AUT-005) opens the result; reporting suspected misinformation and the
+ * member's reports with what a fact-checker decided (fact_checks) follow. A person checks every
+ * report; there is no automatic score (BR-149). Each part says "not open yet" on its own while
+ * its switch is off.
  */
 export default function OfficialStatementsScreen() {
   const { t } = useTranslation();
@@ -21,6 +23,17 @@ export default function OfficialStatementsScreen() {
   useReloadOnFocus(reports.reload);
   return (
     <Screen edges={['bottom']} maxContentWidth={720} onRefresh={reports.reload} refreshing={reports.loading && reports.data !== undefined}>
+      <CheckForm onCheck={(code) => router.push({ pathname: '/official/check', params: { code } })} />
+      <SurfaceCard style={styles.rows}>
+        <MenuRow
+          first
+          icon="document-text-outline"
+          tint="blue"
+          label={t('m.official.updatesTitle')}
+          hint={t('m.official.updatesHint')}
+          onPress={() => router.push('/official/updates')}
+        />
+      </SurfaceCard>
       <FeatureQueryView feature="official" query={reports}>
         {(items) => (
           <>
@@ -33,7 +46,6 @@ export default function OfficialStatementsScreen() {
               </AppText>
               <Button label={t('m.official.report')} icon="flag-outline" onPress={() => router.push('/official/report')} />
             </SurfaceCard>
-            <Notice tone="info">{t('m.official.codeCheckLater')}</Notice>
             <AppText step="section" accessibilityRole="header">
               {t('m.official.myReports')}
             </AppText>
@@ -58,4 +70,5 @@ export default function OfficialStatementsScreen() {
 const styles = StyleSheet.create({
   card: { gap: spacing[3] },
   list: { gap: spacing[3] },
+  rows: { paddingVertical: 0 },
 });

@@ -11,10 +11,17 @@ export const builtModules: readonly AdminModule[] = [
   { href: '/appeals', ta: 'மேன்முறையீடுகள்', en: 'Verification appeals', permission: 'idv.appeal.decide' },
   { href: '/duplicates', ta: 'இரட்டைக் கணக்குகள்', en: 'Duplicate investigations', permission: 'idv.duplicate.investigate' },
   { href: '/membership', ta: 'உறுப்புரிமை', en: 'Membership activation', permission: 'members.activate' },
+  { href: '/renewals', ta: 'புதுப்பித்தலும் சான்றிதழ்களும்', en: 'Renewals and certificates', permission: 'certificate.issue_revoke' },
   { href: '/events', ta: 'நிகழ்வுகள்', en: 'Event console', permission: 'events.manage' },
   { href: '/volunteer-assignments', ta: 'தன்னார்வப் பணிகள்', en: 'Volunteer assignments', permission: 'volunteers.manage' },
   { href: '/volunteering', ta: 'தன்னார்வ வாய்ப்புகள்', en: 'Volunteering opportunities', permission: 'volunteers.manage' },
   { href: '/moderation', ta: 'நடுவர் வரிசை', en: 'Moderation queue', permission: 'content.moderate' },
+  {
+    href: '/publishing',
+    ta: 'அதிகாரபூர்வ வெளியீடும் கையொப்பமும்',
+    en: 'Official publishing and signing',
+    permission: ['content.sign_publish', 'system.configure'] as const,
+  },
   {
     href: '/development',
     ta: 'அபிவிருத்தி முன்மொழிவுகள்',
@@ -28,6 +35,12 @@ export const builtModules: readonly AdminModule[] = [
     ta: 'வாக்குறுதிக் கண்காணிப்பு',
     en: 'Promise tracker',
     permission: ['promise.edit', 'promise.publish', 'content.moderate'] as const,
+  },
+  {
+    href: '/budgeting',
+    ta: 'பங்கேற்பு வரவுசெலவு',
+    en: 'Participatory budgeting',
+    permission: ['pb.manage', 'pb.certify', 'finance.approve'] as const,
   },
   {
     href: '/scorecards',
@@ -50,7 +63,28 @@ export const builtModules: readonly AdminModule[] = [
     permission: ['assistance.intake', 'assistance.casework', 'assistance.decide', 'assistance.programme.manage'] as const,
   },
   { href: '/town-halls', ta: 'மக்கள் மன்றங்கள்', en: 'Town halls', permission: ['townhall.produce', 'townhall.moderate'] as const },
+  {
+    href: '/disaster',
+    ta: 'அனர்த்த எச்சரிக்கைகளும் நிவாரணமும்',
+    en: 'Disaster alerts and relief',
+    permission: ['disaster.relay', 'relief.logistics'] as const,
+  },
+  // donor.request is not a staff permission: lib/staff.ts adds it for accounts a partner authorised (PRM-55).
+  { href: '/blood-requests', ta: 'இரத்தக் கோரிக்கை மேசை', en: 'Blood request desk', permission: ['donor.request', 'donor.oversight'] as const },
+  { href: '/livelihood', ta: 'வாழ்வாதார வழிகாட்டி', en: 'Livelihood guide', permission: ['guide.edit', 'guide.review'] as const },
+  {
+    href: '/representatives',
+    ta: 'பிரதிநிதிகளும் சந்திப்புகளும்',
+    en: 'Representatives and appointments',
+    permission: ['appointment.profile.manage', 'appointment.manage_own'] as const,
+  },
   { href: '/field', ta: 'களப் பார்வைகள்', en: 'Field visits', permission: 'field.collect' },
+  {
+    href: '/committees',
+    ta: 'குழுக்களும் அணிகளும்',
+    en: 'Committees and wings',
+    permission: ['roles.assign', 'system.configure', 'events.manage'] as const,
+  },
   { href: '/gallery', ta: 'புகைப்படங்கள் & நீக்கங்கள்', en: 'Gallery console', permission: ['gallery.publish', 'gallery.takedown'] as const },
   { href: '/messages', ta: 'அறிவித்தல்கள் & செய்திகள்', en: 'Messaging composer', permission: 'notifications.send' },
   { href: '/policy-decisions', ta: 'கொள்கை முடிவுகள்', en: 'Policy decisions', permission: 'system.configure' },
@@ -86,12 +120,11 @@ export const builtModules: readonly AdminModule[] = [
     en: 'Finance queue & slips',
     permission: ['finance.review', 'finance.approve', 'finance.export', 'finance.audit_read'] as const,
   },
+  { href: '/assistant', ta: 'AI உதவியாளர் அறிவுத் தளம்', en: 'Assistant knowledge base', permission: ['ai.kb.manage'] as const },
+  { href: '/ai-models', ta: 'AI மாதிரிகள் பதிவேடு', en: 'AI model registry', permission: ['ai.model.monitor', 'ai.model.approve'] as const },
 ] as const;
 
 /** Planned modules in later phases with user-facing bilingual labels. */
 export const plannedModules = [
-  { name: 'Participatory budgeting', ta: 'பங்கேற்பு வரவுசெலவுத் திட்டம்', desc: 'Community voting on local budgets' },
-  { name: 'Official publishing and signing', ta: 'அதிகாரப்பூர்வ வெளியீடு', desc: 'Official gazette and signed notices' },
-  { name: 'Committees and wings', ta: 'குழுக்களும் பிரிவுகளும்', desc: 'Youth, women, and diaspora wings' },
-  { name: 'AI monitoring and further reports', ta: 'அறிக்கைகளும் அவதானிப்பும்', desc: 'Model safety (D21) and dashboards beyond the Phase 1 figures' },
+  { name: 'Further reports', ta: 'மேலதிக அறிக்கைகள்', desc: 'Dashboards beyond the Phase 1 figures' },
 ] as const;

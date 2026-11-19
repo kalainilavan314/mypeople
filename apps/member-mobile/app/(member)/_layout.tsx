@@ -30,6 +30,7 @@ export default function MemberLayout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="verify" options={{ title: t('m.verify.title') }} />
       <Stack.Screen name="verify/appeal" options={{ title: t('m.verify.appealTitle') }} />
+      <Stack.Screen name="verify/assisted" options={{ title: t('m.verify.assistedTitle') }} />
       <Stack.Screen name="card/code" options={{ presentation: 'fullScreenModal', headerShown: false }} />
       <Stack.Screen name="card/progress" options={{ title: t('m.card.progressTitle') }} />
       <Stack.Screen name="card/share" options={{ title: t('m.card.shareTitle') }} />
@@ -39,6 +40,8 @@ export default function MemberLayout() {
       <Stack.Screen name="setup/index" options={{ title: t('m.setup.title') }} />
       <Stack.Screen name="setup/survey" options={{ title: t('m.setup.surveyTitle') }} />
       <Stack.Screen name="notifications" options={{ title: t('m.inbox.title') }} />
+      <Stack.Screen name="assistant/index" options={{ title: t('m.assistant.title') }} />
+      <Stack.Screen name="assistant/help" options={{ title: t('m.assistant.helpTitle') }} />
       <Stack.Screen name="hub" options={{ title: t('m.home.hub') }} />
       <Stack.Screen name="events/[id]" options={{ title: t('m.events.details') }} />
       <Stack.Screen name="events/[id]/pass" options={{ title: t('m.events.passTitle') }} />
@@ -88,10 +91,43 @@ export default function MemberLayout() {
       <Stack.Screen name="support/index" options={{ title: t('m.support.title') }} />
       <Stack.Screen name="support/request" options={{ title: t('m.support.requestTitle') }} />
       <Stack.Screen name="support/[id]" options={{ title: t('m.support.detailTitle') }} />
+      <Stack.Screen name="alerts/index" options={{ title: t('m.safety.title') }} />
+      <Stack.Screen name="alerts/[id]" options={{ title: t('m.safety.alertTitle') }} />
+      <Stack.Screen name="alerts/history" options={{ title: t('m.safety.historyTitle') }} />
+      <Stack.Screen name="alerts/help" options={{ title: t('m.safety.helpTitle') }} />
+      <Stack.Screen name="alerts/volunteer" options={{ title: t('m.safety.reliefTitle') }} />
+      <Stack.Screen name="blood-donors/index" options={{ title: t('m.bloodDonors.title') }} />
+      <Stack.Screen name="blood-donors/enrol" options={{ title: t('m.bloodDonors.enrolTitle') }} />
+      <Stack.Screen name="blood-donors/requests/[id]" options={{ title: t('m.bloodDonors.requestTitle') }} />
       <Stack.Screen name="town-halls/index" options={{ title: t('m.townHalls.title') }} />
       <Stack.Screen name="town-halls/[id]" options={{ title: t('m.townHalls.sessionTitle') }} />
       <Stack.Screen name="official/index" options={{ title: t('m.official.title') }} />
       <Stack.Screen name="official/report" options={{ title: t('m.official.reportTitle') }} />
+      <Stack.Screen name="budgeting/index" options={{ title: t('m.budgeting.title') }} />
+      <Stack.Screen name="budgeting/[id]" options={{ title: t('m.budgeting.cycleTitle') }} />
+      <Stack.Screen name="budgeting/[id]/ballot" options={{ title: t('m.budgeting.ballotTitle') }} />
+      <Stack.Screen name="budgeting/[id]/results" options={{ title: t('m.budgeting.resultsTitle') }} />
+      <Stack.Screen name="budgeting/projects/[id]" options={{ title: t('m.budgeting.projectTitle') }} />
+      <Stack.Screen name="official/check" options={{ title: t('m.official.resultTitle') }} />
+      <Stack.Screen name="official/updates/index" options={{ title: t('m.official.updatesTitle') }} />
+      <Stack.Screen name="official/updates/[id]" options={{ title: t('m.official.updatesDetailTitle') }} />
+      <Stack.Screen name="election" options={{ title: t('m.election.infoTitle') }} />
+      <Stack.Screen name="committees/index" options={{ title: t('m.committees.title') }} />
+      <Stack.Screen name="committees/[id]/index" options={{ title: t('m.committees.detailTitle') }} />
+      <Stack.Screen name="committees/[id]/thread/[threadId]" options={{ title: t('m.committees.threadTitle') }} />
+      <Stack.Screen name="committees/[id]/coordinate" options={{ title: t('s.committees.toolsTitle') }} />
+      <Stack.Screen name="diaspora/index" options={{ title: t('m.diaspora.title') }} />
+      <Stack.Screen name="diaspora/register" options={{ title: t('m.diaspora.registerTitle') }} />
+      <Stack.Screen name="livelihood/index" options={{ title: t('m.livelihood.title') }} />
+      <Stack.Screen name="livelihood/[id]" options={{ title: t('m.livelihood.entryTitle') }} />
+      <Stack.Screen name="representatives/index" options={{ title: t('m.representatives.title') }} />
+      <Stack.Screen name="representatives/[id]" options={{ title: t('m.representatives.profileTitle') }} />
+      <Stack.Screen name="representatives/book" options={{ title: t('m.representatives.bookScreenTitle') }} />
+      <Stack.Screen name="representatives/appointments/index" options={{ title: t('m.representatives.myAppointments') }} />
+      <Stack.Screen name="representatives/appointments/[id]" options={{ title: t('m.representatives.appointmentTitle') }} />
+      <Stack.Screen name="renewal/index" options={{ title: t('m.renewal.title') }} />
+      <Stack.Screen name="renewal/certificates" options={{ title: t('m.renewal.certificatesTitle') }} />
+      <Stack.Screen name="renewal/certificate/[id]" options={{ title: t('m.renewal.certificateTitle') }} />
       <Stack.Screen name="staff" options={{ headerShown: false }} />
     </Stack>
   );

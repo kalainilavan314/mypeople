@@ -10,6 +10,7 @@ export const permissionNames: Readonly<Record<string, StaffTerm>> = {
   'members.view_profile': { ta: 'உறுப்பினர் சுயவிவரங்களைப் பார்த்தல்', en: 'View member profiles' },
   'members.view_identity_evidence': { ta: 'அடையாள ஆவணங்களைப் பார்த்தல்', en: 'View identity documents' },
   'members.verify': { ta: 'உறுப்பினர் அடையாளத்தைச் சரிபார்த்தல்', en: 'Verify member identities' },
+  'members.assisted_verification': { ta: 'உதவியுடனான அடையாளச் சரிபார்ப்பு அமர்வுகளை நடத்துதல்', en: 'Run assisted identity verification sessions' },
   'members.activate': { ta: 'உறுப்புரிமையைச் செயற்படுத்துதல்', en: 'Activate memberships' },
   'roles.assign': { ta: 'பணியாளர் பொறுப்புகளை ஒதுக்குதல்', en: 'Assign staff roles' },
   'cases.collect': { ta: 'சமூக விவகாரங்களைப் பதிவுசெய்தல்', en: 'Record community cases' },
@@ -40,6 +41,7 @@ export const permissionNames: Readonly<Record<string, StaffTerm>> = {
   'idv.appeal.decide': { ta: 'சரிபார்ப்பு மேன்முறையீடுகளைத் தீர்மானித்தல்', en: 'Decide verification appeals' },
   'ai.model.approve': { ta: 'AI மாதிரிகளை அங்கீகரித்தல்', en: 'Approve AI models' },
   'ai.model.monitor': { ta: 'AI மாதிரிகளைக் கண்காணித்தல்', en: 'Monitor AI models' },
+  'ai.kb.manage': { ta: 'AI உதவியாளரின் அறிவுத் தளத்தை நிர்வகித்தல்', en: 'Manage the assistant’s knowledge base' },
   'household.view_for_case': { ta: 'விவகாரத்துக்காகக் குடும்ப விவரங்களைப் பார்த்தல்', en: 'View households for a case' },
   'assistance.intake': { ta: 'உதவிக் கோரிக்கைகளைப் பதிவுசெய்தல்', en: 'Take assistance requests' },
   'assistance.casework': { ta: 'உதவி விவகாரங்களைக் கையாளுதல்', en: 'Handle assistance cases' },
@@ -59,9 +61,18 @@ export const permissionNames: Readonly<Record<string, StaffTerm>> = {
   'field.collect': { ta: 'களத் தரவைச் சேகரித்தல்', en: 'Collect field data' },
   'certificate.issue_revoke': { ta: 'சான்றிதழ்களை வழங்குதலும் மீளப்பெறுதலும்', en: 'Issue and revoke certificates' },
   'disaster.relay': { ta: 'அதிகாரபூர்வ அனர்த்த எச்சரிக்கைகளை அனுப்புதல்', en: 'Relay official disaster alerts' },
+  'content.sign_publish': { ta: 'அதிகாரபூர்வ அறிக்கைகளில் கையொப்பமிட்டு வெளியிடுதல்', en: 'Sign and publish official statements' },
   'relief.logistics': { ta: 'நிவாரண விநியோகத்தை நிர்வகித்தல்', en: 'Manage relief logistics' },
+  'donor.oversight': {
+    ta: 'இரத்தக் கோரிக்கைப் பங்காளர்களையும் வரம்பு மீறிய கோரிக்கைகளையும் மேற்பார்வையிடுதல்',
+    en: 'Oversee blood request partners and requests over the limit',
+  },
   'privacy.requests.handle': { ta: 'தனியுரிமைக் கோரிக்கைகளைக் கையாளுதல்', en: 'Handle privacy requests' },
   'reports.view': { ta: 'சமூகப் புகார்களைப் பார்த்தல்', en: 'View community reports' },
+  'appointment.manage_own': { ta: 'தனது சந்திப்பு நாட்காட்டியை நிர்வகித்தல்', en: 'Manage own appointment calendar' },
+  'appointment.profile.manage': { ta: 'பிரதிநிதிகளின் விவரங்களை வெளியிடுதல்', en: 'Publish representative profiles' },
+  'guide.edit': { ta: 'வாழ்வாதார வழிகாட்டியைத் திருத்துதல்', en: 'Edit the livelihood guide' },
+  'guide.review': { ta: 'வாழ்வாதார வழிகாட்டிப் பதிவுகளை மீளாய்வு செய்தல்', en: 'Review livelihood guide entries' },
 };
 
 /** The permission's name in the language, or the code itself for one this table does not know yet. */

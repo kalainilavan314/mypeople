@@ -18,6 +18,7 @@ member (identity decisions, event cancellations) go out during silence.
 Nothing here records how anyone votes or intends to vote (FR-ELX-010).
 """
 
+from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
 from typing import Literal
 
@@ -77,6 +78,52 @@ def check_notice(
     if source == "election_commission" and not (source_url and document_reference and source_published_at):
         return ["official_source_required"]
     return []
+
+
+@dataclass(frozen=True)
+class OfficialLink:
+    key: str
+    label_en: str
+    label_ta: str
+    description_en: str
+    description_ta: str
+    url: str
+
+
+# M29, FR-ELX-002, 003, BR-131: links to the Election Commission's own services, opened in the browser;
+# the app collects no voter-registration data and claims no access to the register. [ASSUMPTION] DEP-19:
+# the legal opinion on election features is not recorded yet, and OD-37 (election data sources) is open;
+# Legal Counsel confirms these addresses before the election_mode switch is turned on in production.
+OFFICIAL_LINKS: tuple[OfficialLink, ...] = (
+    OfficialLink(
+        "election_commission",
+        "Election Commission of Sri Lanka",
+        "இலங்கைத் தேர்தல்கள் ஆணைக்குழு",
+        "Official notices, election dates and how to vote, from the Commission itself.",
+        "தேர்தல் திகதிகள், அறிவித்தல்கள், வாக்களிக்கும் முறை: ஆணைக்குழுவின் சொந்தத் தகவல்.",
+        "https://elections.gov.lk",
+    ),
+    OfficialLink(
+        "voter_registration",
+        "Check your voter registration",
+        "உங்கள் வாக்காளர் பதிவைச் சரிபாருங்கள்",
+        "On the Commission's e-services. Nothing you enter there reaches this app.",
+        "ஆணைக்குழுவின் இணையச் சேவையில். அங்கு நீங்கள் உள்ளிடுவது எதுவும் இந்தச் செயலிக்கு வராது.",
+        "https://eservices.elections.gov.lk",
+    ),
+    OfficialLink(
+        "polling_station",
+        "Find your polling station",
+        "உங்கள் வாக்களிப்பு நிலையத்தைக் கண்டறியுங்கள்",
+        "The Commission shows your polling station with your registration.",
+        "உங்கள் பதிவுடன் உங்கள் வாக்களிப்பு நிலையத்தையும் ஆணைக்குழு காட்டும்.",
+        "https://eservices.elections.gov.lk",
+    ),
+)
+
+# FR-ELX-003, OD-37: no authorised polling-station dataset exists, so the app has no locator of its own
+# and shows the Commission's link instead. Turn this on only with written authorisation and a dataset.
+POLLING_STATION_LOCATOR = False
 
 
 def check_close(state: str) -> str | None:

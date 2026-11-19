@@ -1,4 +1,4 @@
-import type { ReviewFile } from '@my-people/api-client';
+import type { AssistedReviewSession, ReviewFile } from '@my-people/api-client';
 import Link from 'next/link';
 import { Suspense, type ReactNode } from 'react';
 
@@ -7,6 +7,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { StateTag } from '@/components/StateTag';
 import { SubmitButton } from '@/components/SubmitButton';
 import { claimOrRelease, decide, reportDuplicate } from '@/features/verification/actions';
+import { ASSISTED_CHECKLIST_LABELS, ASSISTED_DEVICE_LABELS, ASSISTED_OUTCOME_LABELS } from '@/features/verification/assisted';
 import { areaText, formatDate, formatDateTime, words } from '@/lib/format';
 import { loadAreaNames } from '@/lib/areas';
 import { getAdminLocale, getLocalizedMessage, getLocalizedProblem, type Locale } from '@/lib/i18n';
@@ -163,6 +164,10 @@ async function Review({ params, searchParams }: Pick<PageProps<'/verification/[i
         </div>
       </section>
 
+      <Suspense fallback={null}>
+        <AssistedSessions reviewId={review.id} locale={locale} />
+      </Suspense>
+
       {review.duplicateFlags.length > 0 ? (
         <section aria-labelledby="flags" className="rounded-xl border border-error bg-error-bg p-4 text-sm text-error">
           <h2 id="flags" className="font-bold">
@@ -207,6 +212,64 @@ async function Review({ params, searchParams }: Pick<PageProps<'/verification/[i
         </ul>
       </section>
     </>
+  );
+}
+
+/**
+ * W02, S04: how the images in this review were captured when a coordinator or reviewer witnessed an
+ * assisted session: the witness's tier (never their name), the device, the checklist and notes. The
+ * person who witnessed it cannot claim this review (409 witnessed_by_you). Nothing shows when the
+ * review had no session, the module is off, or the list cannot be read: it never blocks the review.
+ */
+async function AssistedSessions({ reviewId, locale }: { reviewId: string; locale: Locale }) {
+  let sessions: AssistedReviewSession[];
+  try {
+    sessions = await (await staffApi()).listAssistedSessionsForReview(reviewId);
+  } catch {
+    return null;
+  }
+  if (sessions.length === 0) return null;
+  return (
+    <section aria-labelledby="assisted" className="flex flex-col gap-2 rounded-xl border border-line bg-card p-4 text-sm">
+      <h2 id="assisted" className="flex flex-col text-base font-bold text-text">
+        <span lang="ta">உதவியுடனான சரிபார்ப்பு அமர்வு</span>
+        <span lang="en" className="text-sm font-semibold text-muted">
+          Assisted verification session
+        </span>
+      </h2>
+      <p lang={locale} className="text-muted">
+        {locale === 'ta'
+          ? 'இந்தப் படங்கள் பயிற்றப்பட்ட ஒருங்கிணைப்பாளர் அல்லது மதிப்பாய்வாளர் முன்னிலையில் எடுக்கப்பட்டன. சாட்சியாக இருந்தவர் இந்த மதிப்பாய்வைப் பொறுப்பேற்க முடியாது; நீங்களே தீர்மானிக்கிறீர்கள்.'
+          : 'These images were taken while a trained coordinator or reviewer witnessed the capture. The witness cannot claim this review; you decide it on the evidence as usual.'}
+      </p>
+      <ul className="flex flex-col gap-3">
+        {sessions.map((session) => {
+          const outcome = ASSISTED_OUTCOME_LABELS[session.outcome ?? 'open'];
+          return (
+            <li key={session.id} className="flex flex-col gap-2 rounded-lg border border-line p-3">
+              <p className="font-semibold text-text">
+                <span className="font-mono">{session.requestRef}</span> · Tier {session.witnessTier} ·{' '}
+                <span lang={locale}>{outcome[locale]}</span>
+              </p>
+              <p className="text-xs text-muted">
+                <span lang={locale}>{ASSISTED_DEVICE_LABELS[session.device][locale]}</span> · {formatDateTime(session.startedAt)}
+                {session.endedAt ? ` – ${formatDateTime(session.endedAt)}` : ''}
+              </p>
+              {session.checklist.length > 0 ? (
+                <ul className="list-disc pl-5 text-xs text-text">
+                  {session.checklist.map((item) => (
+                    <li key={item} lang={locale}>
+                      {ASSISTED_CHECKLIST_LABELS[item]?.[locale] ?? words(item)}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              {session.notes ? <p className="whitespace-pre-wrap text-muted">{session.notes}</p> : null}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }
 

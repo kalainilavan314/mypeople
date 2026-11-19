@@ -7,10 +7,14 @@ permission is the area of the assignment it is in, and each tier has one
 kind of area (TIER_AREA_LEVEL).
 
 Not grantable through staff assignments, and so not listed here:
-PRM-01, PRM-32 and PRM-56 (a member's own record), the event-scoped
+PRM-01 and PRM-32 (a member's own record), the event-scoped
 PRM-17 for members (OD-12), PRM-50 (committee scope), PRM-55 (partner
-organisations), and PRM-47 and PRM-57, which the BRD gives platform scope
-regardless of tier. They arrive with their own modules.
+organisations), and PRM-47 (ai.kb.manage) and PRM-57 (content.sign_publish),
+which the BRD gives platform scope regardless of tier. Both are listed for the
+tiers that may hold them; the assistant's knowledge base and the official
+content module check only that they are held, never an area.
+PRM-56 (appointment.manage_own) is listed: it is granted to staff holding a
+public role, and its scope is the person's own calendar, whatever the area.
 """
 
 from typing import Literal
@@ -44,6 +48,9 @@ MATRIX: dict[str, dict[Tier, Grant]] = {
     "members.view_profile": {"1": D, "2A": D, "2B": E, "3A": D, "3B": E, "4": D, "5": D},  # PRM-02
     "members.view_identity_evidence": {"3A": E, "4": E, "5": E},  # PRM-03
     "members.verify": {"3A": E, "4": E, "5": E},  # PRM-04
+    # [ASSUMPTION] OD-04: S04 runs on "members.verify or an assisted-session grant"; the grant is named in
+    # the BRD's style and given only explicitly, to a trained GN coordinator, a DS officer or a district office.
+    "members.assisted_verification": {"1": E, "2A": E, "3A": E},
     "members.activate": {"3A": E, "4": E, "5": D},  # PRM-05
     "roles.assign": {"4": E, "5": D},  # PRM-06 (Tier 4: Tier 3 and below)
     "cases.collect": {"1": D, "2B": E},  # PRM-07
@@ -75,6 +82,7 @@ MATRIX: dict[str, dict[Tier, Grant]] = {
     "idv.appeal.decide": {"4": E, "5": E},  # PRM-29
     "ai.model.approve": {"5": E},  # PRM-30
     "ai.model.monitor": {"5": E},  # PRM-31
+    "ai.kb.manage": {"3B": E, "4": E, "5": E},  # PRM-47 Knowledge Editor (platform scope regardless of tier)
     "household.view_for_case": {"1": E, "2B": E, "3A": E, "3B": E},  # PRM-33
     "assistance.intake": {"1": E, "2B": E, "3B": E},  # PRM-34
     "assistance.casework": {"1": E, "2B": E, "3A": E, "3B": E},  # PRM-35
@@ -94,7 +102,21 @@ MATRIX: dict[str, dict[Tier, Grant]] = {
     "field.collect": {"1": D, "2B": E},  # PRM-51
     "certificate.issue_revoke": {"3B": E, "5": D},  # PRM-52
     "disaster.relay": {"3B": E, "5": E},  # PRM-53
+    # Platform scope whatever the tier (BRD §9.8 "P*"): official_content checks it without an area.
+    "content.sign_publish": {"3B": E, "5": E},  # PRM-57
     "relief.logistics": {"2B": E, "3B": E},  # PRM-54
+    # [ASSUMPTION] OD-39: PRM-55 (donor.request) belongs to partner accounts, not tiers; its "T5 oversight
+    # read-only", the approval of requests over the hourly limit (FR-BLD-008) and the authorisation of
+    # partners and their requesters are this explicit Tier 5 grant.
+    "donor.oversight": {"5": E},
+    # Phase 3, Meet Your Representative (APT): PRM-56 reaches only the person's own calendar.
+    "appointment.manage_own": {"1": E, "2A": E, "2B": E, "3A": E, "3B": E, "4": E, "5": E},  # PRM-56
+    # Not in the BRD matrix [ASSUMPTION]: D29 says Tier 5 publishes representative profiles and slots.
+    "appointment.profile.manage": {"4": E, "5": D},
+    # Not in the BRD matrix [ASSUMPTION]: FR-LIV-002 needs a content editor role (FR-ADM-013) and
+    # FR-LIV-003 a content review; like PRM-47 they reach the whole guide, whatever the tier's area.
+    "guide.edit": {"3B": E, "4": E, "5": E},
+    "guide.review": {"4": E, "5": D},
     # Not in the BRD matrix [ASSUMPTION]: FR-PROF-018 and 019 route data-subject requests to
     # the DPO without naming a permission; the DPO's account holds it as an explicit Tier 5 grant.
     "privacy.requests.handle": {"5": E},

@@ -48,6 +48,18 @@ FEATURES: dict[str, Feature] = {
         Feature("field_visits", "Offline field visits (FR-FLD-001 to 009)", 2),
         Feature("election_roster", "Election duty roster and shift check-in (FR-ELX-005 to 007, 009)", 2),
         Feature("fact_checks", "Misinformation reports and the fact-check queue (FR-AUT-006 to 009)", 2),
+        Feature("participatory_budgeting", "Participatory budgeting: cycles, private ballots, certified results (FR-PBG-001 to 010)", 3),
+        Feature("official_content", "Signed official statements, publishing and public checks (FR-AUT-001 to 005)", 3),
+        Feature("committees", "Wings and committees (FR-COM-001 to 009)", 3),
+        Feature("diaspora", "Diaspora participation (FR-DSP-001 to 006; contributions stay off, OD-40)", 3),
+        Feature("disaster_alerts", "Disaster alerts, emergency help and relief logistics (FR-DIS-001 to 008)", 3),
+        Feature("blood_donors", "Blood donor network (FR-BLD-001 to 008, OD-39)", 3),
+        Feature("livelihood_guide", "Welfare, jobs and livelihood guide (FR-LIV-001 to 006)", 3),
+        Feature("representatives", "Meet Your Representative: profiles and appointments (FR-APT-001 to 007)", 3),
+        Feature("renewal", "Membership renewal and certificates (FR-RNW-001 to 009, OD-43)", 3),
+        Feature("assisted_verification", "Assisted identity verification (FR-IDV-014, FR-STF-004, OD-04)", 3),
+        Feature("ai_assistant", "Tamil AI assistant (FR-AIA-001 to 010)", 3),
+        Feature("voice_reports", "Voice reports: speak a concern in Tamil (FR-VOI-001, FR-VOI-002)", 3),
     )
 }
 
