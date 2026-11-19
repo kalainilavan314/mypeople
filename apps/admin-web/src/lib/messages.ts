@@ -29,6 +29,27 @@ export const EVIDENCE_LABELS: Record<string, BilingualText> = {
 // Tamil first, English supporting below (CLAUDE.md / Priority 2).
 const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
   ...SAFETY_MESSAGES,
+  // Tamil AI assistant knowledge base (D20) and the AI model registry (D21).
+  source_refused: {
+    ta: 'மூலம் சேமிக்கப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The source was not saved. Fix the points below and try again.',
+  },
+  kb_own_draft: {
+    ta: 'இந்த வரைவை நீங்களே எழுதியதால் அதை நீங்கள் அங்கீகரிக்க முடியாது; வேறொரு அறிவுத் தொகுப்பாளர் அங்கீகரிக்க வேண்டும்.',
+    en: 'You drafted this version, so you cannot approve it; another Knowledge Editor must approve it.',
+  },
+  model_refused: {
+    ta: 'AI மாதிரி தொடர்பான நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்யவும்.',
+    en: 'The AI model action was not recorded. Fix the points below.',
+  },
+  assistant_refused: {
+    ta: 'இந்த நடவடிக்கை பதிவுசெய்யப்படவில்லை.',
+    en: 'This action was not recorded.',
+  },
+  assistant_unavailable: {
+    ta: 'உதவியாளர் இப்போது பதிலளிக்க முடியாது.',
+    en: 'The assistant cannot answer yet.',
+  },
   confirmation_required: {
     ta: 'தொடர்வதற்கு உறுதிப்படுத்தல் பெட்டி தெரிவுசெய்யப்பட வேண்டும்.',
     en: 'You must check the required confirmation box before submitting.',
@@ -429,6 +450,216 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
 
 const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
   ...SAFETY_PROBLEMS,
+  // Tamil AI assistant knowledge base (D20) and the AI model registry (D21).
+  kb_title_required: {
+    ta: 'தலைப்பைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும் (குறைந்தது 3 எழுத்துகள்).',
+    en: 'Write the title in Tamil and English (at least 3 characters).',
+  },
+  source_text_required: {
+    ta: 'அங்கீகரிக்கப்பட்ட உரையைத் தமிழிலோ ஆங்கிலத்திலோ அல்லது இரண்டிலுமோ ஒட்டவும்.',
+    en: 'Paste the approved text in Tamil, English or both.',
+  },
+  kb_body_too_short: {
+    ta: 'ஒவ்வொரு உரையும் குறைந்தது 20 எழுத்துகள் கொண்டதாக இருக்க வேண்டும்.',
+    en: 'Each text needs at least 20 characters.',
+  },
+  publisher_required: {
+    ta: 'இதை வெளியிட்டவர் யார் என்பதை எழுதவும்.',
+    en: 'Say who issued it.',
+  },
+  source_url_invalid: {
+    ta: 'இணைப்பு https:// என்று தொடங்க வேண்டும், இடைவெளி இருக்கக் கூடாது.',
+    en: 'The link must start with https:// and have no spaces.',
+  },
+  review_due_required: {
+    ta: 'அடுத்த மீளாய்வுத் திகதியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the next review date.',
+  },
+  review_date_must_be_ahead: {
+    ta: 'மீளாய்வுத் திகதி இன்றைக்குப் பின்னர் இருக்க வேண்டும்.',
+    en: 'The review date must be after today.',
+  },
+  review_date_too_far: {
+    ta: 'மீளாய்வுத் திகதி இரண்டு ஆண்டுகளுக்குள் இருக்க வேண்டும்.',
+    en: 'The review date must be within two years.',
+  },
+  kb_draft_exists: {
+    ta: 'இந்த மூலத்துக்கு ஏற்கனவே ஒரு வரைவுப் பதிப்பு உள்ளது. அதைத் திருத்தவும் அல்லது அங்கீகரிக்கவும்.',
+    en: 'This source already has a draft version. Edit or approve that one.',
+  },
+  resolution_required: {
+    ta: 'என்ன மாற்றப்பட்டது, அல்லது ஏன் மாற்றம் தேவையில்லை என்பதை எழுதவும் (குறைந்தது 5 எழுத்துகள்).',
+    en: 'Say what was changed, or why nothing needs to change (at least 5 characters).',
+  },
+  handover_reply_required: {
+    ta: 'உறுப்பினருக்கான பதிலை எழுதவும் (குறைந்தது 5 எழுத்துகள்).',
+    en: 'Write the reply to the member (at least 5 characters).',
+  },
+  already_resolved: {
+    ta: 'இந்த முறைப்பாடு ஏற்கனவே தீர்க்கப்பட்டுவிட்டது.',
+    en: 'This report has already been resolved.',
+  },
+  already_closed: {
+    ta: 'இது ஏற்கனவே மூடப்பட்டுவிட்டது.',
+    en: 'This has already been closed.',
+  },
+  provider_not_configured: {
+    ta: 'சேவையகத்தில் AI வழங்குநர் அமைக்கப்படவில்லை (AI_PROVIDER=none); எதுவும் வெளியே அனுப்பப்படுவதில்லை.',
+    en: 'No AI provider is set up on the server (AI_PROVIDER=none); nothing is sent anywhere.',
+  },
+  model_not_registered: {
+    ta: 'சேவையகம் அழைக்கும் மாதிரி AI மாதிரிகள் பதிவேட்டில் இல்லை.',
+    en: 'The model the server calls is not in the AI model registry.',
+  },
+  model_not_approved: {
+    ta: 'எந்த மாதிரியும் இன்னும் நேரடிப் பயன்பாட்டுக்கு அனுமதிக்கப்படவில்லை.',
+    en: 'No model has been made live yet.',
+  },
+  task_required: {
+    ta: 'மாதிரி செய்யும் பணியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the task the model does.',
+  },
+  model_name_required: {
+    ta: 'மாதிரியின் பெயரை எழுதவும்.',
+    en: 'Write the model\u2019s name.',
+  },
+  provider_required: {
+    ta: 'மாதிரியை இயக்குபவரை எழுதவும்.',
+    en: 'Say who runs the model.',
+  },
+  provider_code_required: {
+    ta: 'மாதிரி எங்கே இயங்குகிறது என்பதைத் தெரிவுசெய்யவும்.',
+    en: 'Choose where the model runs.',
+  },
+  model_ref_required: {
+    ta: 'வழங்குநர் பயன்படுத்தும் மாதிரி அடையாளத்தை எழுதவும் (உதா: claude-opus-5-5).',
+    en: 'Write the model id the provider uses (for example claude-opus-5-5).',
+  },
+  version_required: {
+    ta: 'பதிப்பை எழுதவும்.',
+    en: 'Write the version.',
+  },
+  licence_required: {
+    ta: 'உரிமத்தை எழுதவும் (DEP-24).',
+    en: 'Write the licence (DEP-24).',
+  },
+  data_location_required: {
+    ta: 'தரவு எங்கே செயலாக்கப்படுகிறது என்பதை எழுதவும் (OD-42).',
+    en: 'Say where the data is processed (OD-42).',
+  },
+  training_data_summary_required: {
+    ta: 'பயிற்சித் தரவுச் சுருக்கத்தை எழுதவும் (குறைந்தது 10 எழுத்துகள்; NFR-AI-01).',
+    en: 'Summarise the training data (at least 10 characters; NFR-AI-01).',
+  },
+  artefact_hash_invalid: {
+    ta: 'கோப்பு hash 64 hex எழுத்துகள் (SHA-256) கொண்டதாக இருக்க வேண்டும்.',
+    en: 'The artefact hash must be 64 hexadecimal characters (SHA-256).',
+  },
+  // Shared by the AI model registry (same task, provider, model and version) and official publishers.
+  already_registered: {
+    ta: 'இது ஏற்கனவே பதிவுசெய்யப்பட்டுள்ளது.',
+    en: 'This is already registered.',
+  },
+  evaluated_on_required: {
+    ta: 'மதிப்பீடு நடந்த திகதியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the date of the evaluation.',
+  },
+  evaluated_in_future: {
+    ta: 'மதிப்பீட்டுத் திகதி எதிர்காலத்தில் இருக்க முடியாது.',
+    en: 'The evaluation date cannot be in the future.',
+  },
+  questions_invalid: {
+    ta: 'கேள்விகளின் எண்ணிக்கை ஒரு முழு எண்ணாக இருக்க வேண்டும்.',
+    en: 'The number of questions must be a whole number.',
+  },
+  assistant_results_required: {
+    ta: 'உதவியாளருக்கு ஐந்து முடிவுகளும் தேவை: கேள்விகள், மூல அடிப்படை %, ஆதாரமற்ற %, தூண்டல், புனைவுத் தோல்விகள்.',
+    en: 'The assistant needs all five results: questions, grounded %, unsupported %, persuasion and fabrication failures.',
+  },
+  percent_invalid: {
+    ta: 'சதவீதம் 0 முதல் 100 வரை, இரண்டு தசமங்கள் வரை இருக்க வேண்டும்.',
+    en: 'A percentage is 0 to 100, with up to two decimal places.',
+  },
+  failures_invalid: {
+    ta: 'தோல்விகளின் எண்ணிக்கை ஒரு முழு எண்ணாக இருக்க வேண்டும்.',
+    en: 'Failure counts must be whole numbers.',
+  },
+  evaluation_summary_required: {
+    ta: 'மதிப்பீட்டுச் சுருக்கத்தை எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Summarise the evaluation (at least 10 characters).',
+  },
+  report_ref_required: {
+    ta: 'மதிப்பீட்டு அறிக்கை வைக்கப்பட்டுள்ள இடத்தை எழுதவும்.',
+    en: 'Say where the evaluation report is kept.',
+  },
+  result_required: {
+    ta: 'முடிவைத் தெரிவுசெய்யவும்: வெற்றி அல்லது தோல்வி.',
+    en: 'Choose the result: passed or failed.',
+  },
+  reviewed_on_required: {
+    ta: 'மீளாய்வு நடந்த திகதியைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the date of the review.',
+  },
+  reviewed_in_future: {
+    ta: 'மீளாய்வுத் திகதி எதிர்காலத்தில் இருக்க முடியாது.',
+    en: 'The review date cannot be in the future.',
+  },
+  groups_required: {
+    ta: 'ஒப்பிடப்பட்ட குழுக்களை எழுதவும் (உதா: மாவட்டங்கள், வயதுப் பிரிவுகள்).',
+    en: 'Write the groups compared (for example districts or age bands).',
+  },
+  findings_required: {
+    ta: 'கண்டறிவுகளை எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write the findings (at least 10 characters).',
+  },
+  fairness_outcome_required: {
+    ta: 'சமநிலை மீளாய்வின் முடிவைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the outcome of the fairness review.',
+  },
+  licence_not_for_commercial_use: {
+    ta: 'உரிமம் வணிகப் பயன்பாட்டை அனுமதிப்பதாகப் பதிவுசெய்யப்படவில்லை (DEP-24).',
+    en: 'The licence is not recorded as allowing commercial use (DEP-24).',
+  },
+  no_training_terms_missing: {
+    ta: 'அனுப்பப்படும் தரவில் பயிற்சி பெறக் கூடாது என்ற வழங்குநர் நிபந்தனை பதிவுசெய்யப்படவில்லை (OD-42).',
+    en: 'The provider\u2019s terms forbidding training on what is sent are not recorded (OD-42).',
+  },
+  evaluation_missing: {
+    ta: 'மதிப்பீடு எதுவும் பதிவுசெய்யப்படவில்லை.',
+    en: 'No evaluation is recorded.',
+  },
+  evaluation_failed: {
+    ta: 'கடைசி மதிப்பீடு வரம்புகளை எட்டவில்லை.',
+    en: 'The latest evaluation did not meet the thresholds.',
+  },
+  evaluation_out_of_date: {
+    ta: 'கடைசி மதிப்பீடு ஒரு மாதத்துக்கு மேல் பழையது; புதிய மாதாந்த மதிப்பீடு தேவை.',
+    en: 'The latest evaluation is more than a month old; record this month\u2019s.',
+  },
+  fairness_review_missing: {
+    ta: 'சமநிலை மீளாய்வு எதுவும் பதிவுசெய்யப்படவில்லை.',
+    en: 'No fairness review is recorded.',
+  },
+  fairness_review_not_passed: {
+    ta: 'கடைசி சமநிலை மீளாய்வு வெற்றிபெறவில்லை.',
+    en: 'The latest fairness review did not pass.',
+  },
+  shadow_period_running: {
+    ta: 'மாதிரி நிழல் முறையில் நான்கு வாரங்கள் இயங்கவில்லை (15B.5).',
+    en: 'The model has not yet run four weeks in shadow mode (15B.5).',
+  },
+  already_live: {
+    ta: 'இந்த மாதிரி ஏற்கனவே நேரடிப் பயன்பாட்டில் உள்ளது.',
+    en: 'This model is already live.',
+  },
+  retired_before_going_live: {
+    ta: 'இந்தப் பதிப்பு ஒருபோதும் நேரடிப் பயன்பாட்டில் இருக்கவில்லை; அதைப் புதிதாகப் பதிவுசெய்யவும்.',
+    en: 'This version was never live; register it again instead.',
+  },
+  already_retired: {
+    ta: 'இந்த மாதிரி ஏற்கனவே ஓய்வு பெற்றுவிட்டது.',
+    en: 'This model is already retired.',
+  },
   reason_required: {
     ta: 'காரணத்தைத் தெரிவுசெய்யவும் அல்லது உள்ளிடவும்.',
     en: 'Choose or provide a reason.',
@@ -1436,7 +1667,6 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'இவருக்கு content.sign_publish அனுமதி இல்லை. முதலில் பொறுப்புகளும் அனுமதிகளும் பக்கத்தில் அதை வழங்கவும்.',
     en: 'This person does not hold content.sign_publish. Grant it on Roles and access first.',
   },
-  already_registered: { ta: 'இவர் ஏற்கனவே பதிவுசெய்யப்பட்ட வெளியீட்டாளர்.', en: 'This person is already a registered publisher.' },
   already_revoked: { ta: 'இந்தப் பதிவு ஏற்கனவே மீளப்பெறப்பட்டது.', en: 'This registration was already revoked.' },
   publisher_name_required: {
     ta: 'அறிக்கைகளில் காட்டப்படும் பெயரைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
@@ -1586,10 +1816,6 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
   already_reported: {
     ta: 'இந்தப் பதிவு பற்றிய திறந்த முறைப்பாடு ஏற்கனவே உள்ளது.',
     en: 'There is already an open report about this entry.',
-  },
-  already_resolved: {
-    ta: 'இந்த முறைப்பாடு ஏற்கனவே தீர்க்கப்பட்டுவிட்டது.',
-    en: 'This report has already been resolved.',
   },
   // Representatives and appointments (D29, S17; FR-APT-001 to 007).
   unknown_member_code: {
@@ -1855,6 +2081,43 @@ export function problemTargetField(problem: string): string | undefined {
 
 const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
   ...SAFETY_CONFIRMATIONS,
+  // Tamil AI assistant knowledge base (D20) and the AI model registry (D21).
+  kb_source_drafted: {
+    ta: 'மூலம் வரைவாகச் சேமிக்கப்பட்டது; வேறொரு அறிவுத் தொகுப்பாளர் அங்கீகரிக்கும் வரை பயன்படுத்தப்படாது.',
+    en: 'Source saved as a draft; it is not used until another Knowledge Editor approves it.',
+  },
+  kb_source_saved: { ta: 'வரைவு சேமிக்கப்பட்டது.', en: 'Draft saved.' },
+  kb_source_approved: {
+    ta: 'மூலம் அங்கீகரிக்கப்பட்டது; உதவியாளர் இனி இதைப் பயன்படுத்தும். முந்தைய பதிப்பு மாற்றப்பட்டது.',
+    en: 'Source approved; the assistant now uses it. Any earlier version is superseded.',
+  },
+  kb_source_returned: { ta: 'வரைவு காரணத்துடன் திருப்பியனுப்பப்பட்டது.', en: 'Draft sent back with the reason.' },
+  kb_version_drafted: {
+    ta: 'புதிய பதிப்பின் வரைவு உருவாக்கப்பட்டது; அங்கீகரிக்கப்படும் வரை தற்போதைய பதிப்பே பயன்படும்.',
+    en: 'A draft of the next version was made; the current version stays in use until it is approved.',
+  },
+  kb_source_reviewed: { ta: 'மீளாய்வு பதிவுசெய்யப்பட்டது.', en: 'Review recorded.' },
+  kb_source_retired: {
+    ta: 'மூலம் பயன்பாட்டிலிருந்து நீக்கப்பட்டது; உதவியாளர் இனி இதைப் பயன்படுத்தாது.',
+    en: 'Source retired; the assistant no longer uses it.',
+  },
+  kb_report_resolved: { ta: 'பிழை முறைப்பாடு தீர்க்கப்பட்டது.', en: 'Error report resolved.' },
+  kb_handover_answered: {
+    ta: 'பதில் அனுப்பப்பட்டது; உறுப்பினருக்குச் செயலியில் அறிவிக்கப்படும்.',
+    en: 'Reply sent; the member is told in the app.',
+  },
+  kb_handover_closed: { ta: 'கோரிக்கை மூடப்பட்டது.', en: 'Request closed.' },
+  ai_model_registered: {
+    ta: 'மாதிரி நிழல் முறையில் பதிவுசெய்யப்பட்டது; உறுப்பினர்களுக்குக் காட்டப்படாது.',
+    en: 'Model registered in shadow mode; nothing it does is shown to members.',
+  },
+  ai_evaluation_recorded: { ta: 'மதிப்பீடு பதிவுசெய்யப்பட்டது.', en: 'Evaluation recorded.' },
+  ai_fairness_recorded: { ta: 'சமநிலை மீளாய்வு பதிவுசெய்யப்பட்டது.', en: 'Fairness review recorded.' },
+  ai_model_live: {
+    ta: 'மாதிரி நேரடிப் பயன்பாட்டுக்கு வந்தது; அதே பணிக்கான முந்தைய மாதிரி ஓய்வு பெற்றது.',
+    en: 'Model is live; the one live before for the same task is retired.',
+  },
+  ai_model_retired: { ta: 'மாதிரி ஓய்வு பெற்றது; இனி பதிலளிக்காது.', en: 'Model retired; it no longer answers.' },
   policy_draft_created: {
     ta: 'கட்டுப்படுத்தப்பட்ட வரைவு உருவாக்கப்பட்டது.',
     en: 'Controlled draft created.',

@@ -122,4 +122,6 @@ def test_the_registry_lists_every_module_with_the_gate_it_needs(enforced, auth, 
         "blood_donors": "G3",
         "renewal": "G3",
         "assisted_verification": "G3",
+        "ai_assistant": "G3",
+        "voice_reports": "G3",
     }

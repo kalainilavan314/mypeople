@@ -22,6 +22,10 @@ from app.integrations.sms import build_sms
 from app.integrations.push import build_push
 from app.modules.access import router as access
 from app.modules.access.reviews import router as access_reviews
+from app.modules.ai.assistant import router as ai_assistant
+from app.modules.ai.knowledge import router as ai_knowledge
+from app.modules.ai.providers import build_provider as build_assistant_provider
+from app.modules.ai.registry import router as ai_registry
 from app.modules.audit import router as audit
 from app.modules.content.gallery import router as gallery
 from app.modules.content.gallery.dependencies import build_media_store
@@ -124,6 +128,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.official_check_limiter = build_check_limiter()
     app.state.sms = build_sms(settings)
     app.state.push = build_push(settings)
+    app.state.assistant_provider = build_assistant_provider(settings)
     app.include_router(health.router)
     app.include_router(auth.router)
     app.include_router(membership.router)
@@ -188,6 +193,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(membership_certificates.router)
     app.include_router(membership_certificates.public_router)
     app.include_router(identity_assisted.router)
+    app.include_router(ai_assistant.router)
+    app.include_router(ai_assistant.manage_router)
+    app.include_router(ai_knowledge.router)
+    app.include_router(ai_registry.router)
 
     # The middleware added last runs first, so the security headers are also
     # set on the 403 that the origin check returns.

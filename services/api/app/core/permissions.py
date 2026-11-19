@@ -9,9 +9,10 @@ kind of area (TIER_AREA_LEVEL).
 Not grantable through staff assignments, and so not listed here:
 PRM-01 and PRM-32 (a member's own record), the event-scoped
 PRM-17 for members (OD-12), PRM-50 (committee scope), PRM-55 (partner
-organisations), and PRM-47 and PRM-57 (content.sign_publish), which the BRD
-gives platform scope regardless of tier. PRM-47 arrives with its own module;
-PRM-57 is listed, and the official content module checks it without an area.
+organisations), and PRM-47 (ai.kb.manage) and PRM-57 (content.sign_publish),
+which the BRD gives platform scope regardless of tier. Both are listed for the
+tiers that may hold them; the assistant's knowledge base and the official
+content module check only that they are held, never an area.
 PRM-56 (appointment.manage_own) is listed: it is granted to staff holding a
 public role, and its scope is the person's own calendar, whatever the area.
 """
@@ -81,6 +82,7 @@ MATRIX: dict[str, dict[Tier, Grant]] = {
     "idv.appeal.decide": {"4": E, "5": E},  # PRM-29
     "ai.model.approve": {"5": E},  # PRM-30
     "ai.model.monitor": {"5": E},  # PRM-31
+    "ai.kb.manage": {"3B": E, "4": E, "5": E},  # PRM-47 Knowledge Editor (platform scope regardless of tier)
     "household.view_for_case": {"1": E, "2B": E, "3A": E, "3B": E},  # PRM-33
     "assistance.intake": {"1": E, "2B": E, "3B": E},  # PRM-34
     "assistance.casework": {"1": E, "2B": E, "3A": E, "3B": E},  # PRM-35

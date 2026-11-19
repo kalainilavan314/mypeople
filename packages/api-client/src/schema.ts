@@ -10276,6 +10276,501 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/assistant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Assistant Home
+         * @description Whether the assistant can answer now (and why not), the member's recent conversations and open
+         *     requests for a person. Any signed-in member may use it.
+         */
+        get: operations["assistant_home_v1_assistant_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ask
+         * @description Ask in Tamil or English. Identifiers are removed first (the question's `redactions` say which);
+         *     the answer cites approved sources, with official text quoted word for word, or says it cannot answer.
+         */
+        post: operations["ask_v1_assistant_messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/conversations/{conversation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Conversation
+         * @description The member's own conversation: messages from the last 30 days (OD-48).
+         */
+        get: operations["read_conversation_v1_assistant_conversations__conversation_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Conversation */
+        delete: operations["delete_conversation_v1_assistant_conversations__conversation_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/messages/{message_id}/rating": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rate Answer */
+        post: operations["rate_answer_v1_assistant_messages__message_id__rating_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/messages/{message_id}/error-report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report Error
+         * @description FR-AIA-008: the question, the answer and its citations go to the Knowledge Editor (D20).
+         */
+        post: operations["report_error_v1_assistant_messages__message_id__error_report_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/handovers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Handovers */
+        get: operations["my_handovers_v1_assistant_handovers_get"];
+        put?: never;
+        /**
+         * Request Handover
+         * @description FR-AIA-007: ask for a person. The conversation is shared only with shareConversation true.
+         */
+        post: operations["request_handover_v1_assistant_handovers_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/manage/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Summary */
+        get: operations["summary_v1_assistant_manage_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/manage/error-reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Error Reports
+         * @description The Knowledge Editor's queue (FR-AIA-008); open reports first. Never names who reported.
+         */
+        get: operations["error_reports_v1_assistant_manage_error_reports_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/manage/error-reports/{report_id}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resolve Error Report */
+        post: operations["resolve_error_report_v1_assistant_manage_error_reports__report_id__resolve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/manage/handovers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Handovers
+         * @description [ASSUMPTION] Knowledge Editors answer requests for a person until a help desk exists.
+         */
+        get: operations["handovers_v1_assistant_manage_handovers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/manage/handovers/{handover_id}/reply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reply Handover
+         * @description The member is notified and reads the reply in the app.
+         */
+        post: operations["reply_handover_v1_assistant_manage_handovers__handover_id__reply_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/manage/handovers/{handover_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Close Handover */
+        post: operations["close_handover_v1_assistant_manage_handovers__handover_id__close_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/manage/try": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Try Question
+         * @description Try a question against the approved sources with the configured model, in shadow mode too.
+         *     Logged as a staff preview (NFR-AI-01); nothing is kept but the log entry.
+         */
+        post: operations["try_question_v1_assistant_manage_try_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/manage/sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Sources
+         * @description Drafts, approved and retired sources; superseded versions are in each source's history.
+         */
+        get: operations["list_sources_v1_assistant_manage_sources_get"];
+        put?: never;
+        /**
+         * Draft Source
+         * @description Problems: source_text_required, review_date_must_be_ahead, review_date_too_far.
+         */
+        post: operations["draft_source_v1_assistant_manage_sources_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/manage/sources/{source_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Source */
+        get: operations["read_source_v1_assistant_manage_sources__source_id__get"];
+        /**
+         * Edit Draft
+         * @description Drafts only; an approved source changes through a new version.
+         */
+        put: operations["edit_draft_v1_assistant_manage_sources__source_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/manage/sources/{source_id}/new-version": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * New Version
+         * @description A draft of the next version from an approved one (draft_exists when one is already open).
+         */
+        post: operations["new_version_v1_assistant_manage_sources__source_id__new_version_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/manage/sources/{source_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide
+         * @description A second Knowledge Editor approves; the drafter gets 403 own_draft. Sending back needs a reason.
+         */
+        post: operations["decide_v1_assistant_manage_sources__source_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/manage/sources/{source_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark Reviewed
+         * @description The approved text still stands: record the review and the next review date.
+         */
+        post: operations["mark_reviewed_v1_assistant_manage_sources__source_id__review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assistant/manage/sources/{source_id}/retire": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retire */
+        post: operations["retire_v1_assistant_manage_sources__source_id__retire_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ai-models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Models
+         * @description Every model with its latest evaluation and fairness review, 30 days of use, and what this server
+         *     is set up to call for the assistant.
+         */
+        get: operations["list_models_v1_ai_models_get"];
+        put?: never;
+        /**
+         * Register Model
+         * @description A new entry starts in shadow mode (15B.5).
+         */
+        post: operations["register_model_v1_ai_models_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ai-models/{model_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Model */
+        get: operations["read_model_v1_ai_models__model_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ai-models/{model_id}/evaluations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record Evaluation
+         * @description For the assistant, pass or fail is worked out from NFR-AI-05: at least 200 questions, 95% or more
+         *     grounded, 2% or fewer unsupported, and no persuasion or fabrication failures.
+         */
+        post: operations["record_evaluation_v1_ai_models__model_id__evaluations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ai-models/{model_id}/fairness-reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Fairness Review */
+        post: operations["record_fairness_review_v1_ai_models__model_id__fairness_reviews_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ai-models/{model_id}/go-live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Go Live
+         * @description PRM-30. Problems: licence_not_for_commercial_use, no_training_terms_missing, evaluation_missing,
+         *     evaluation_failed, evaluation_out_of_date, fairness_review_missing, fairness_review_not_passed,
+         *     shadow_period_running, already_live, retired_before_going_live. A version that was live before goes
+         *     live again at once (rollback, NFR-AI-07).
+         */
+        post: operations["go_live_v1_ai_models__model_id__go_live_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ai-models/{model_id}/retire": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retire */
+        post: operations["retire_v1_ai_models__model_id__retire_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -10366,6 +10861,316 @@ export interface components {
             count: number | null;
             /** Suppressed */
             suppressed: boolean;
+        };
+        /**
+         * AiConfiguredOut
+         * @description What this server is set up to call for the assistant (AI_PROVIDER, AI_ASSISTANT_MODEL).
+         */
+        AiConfiguredOut: {
+            /**
+             * Provider
+             * @enum {string}
+             */
+            provider: "none" | "anthropic";
+            /** Modelref */
+            modelRef: string | null;
+            /** Registeredmodelid */
+            registeredModelId: string | null;
+            /** Registeredstatus */
+            registeredStatus: ("shadow" | "live" | "retired") | null;
+        };
+        /** AiEvaluationIn */
+        AiEvaluationIn: {
+            /**
+             * Evaluatedon
+             * Format: date
+             */
+            evaluatedOn: string;
+            /** Questions */
+            questions?: number | null;
+            /** Groundedpct */
+            groundedPct?: number | string | null;
+            /** Unsupportedpct */
+            unsupportedPct?: number | string | null;
+            /** Persuasionfailures */
+            persuasionFailures?: number | null;
+            /** Fabricationfailures */
+            fabricationFailures?: number | null;
+            /** Summary */
+            summary: string;
+            /**
+             * Reportref
+             * @description Where the evaluation report is kept
+             */
+            reportRef: string;
+            /**
+             * Passed
+             * @description Stated for tasks other than the assistant
+             */
+            passed?: boolean | null;
+        };
+        /** AiEvaluationOut */
+        AiEvaluationOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Evaluatedon
+             * Format: date
+             */
+            evaluatedOn: string;
+            /** Questions */
+            questions: number | null;
+            /** Groundedpct */
+            groundedPct: string | null;
+            /** Unsupportedpct */
+            unsupportedPct: string | null;
+            /** Persuasionfailures */
+            persuasionFailures: number | null;
+            /** Fabricationfailures */
+            fabricationFailures: number | null;
+            /** Summary */
+            summary: string;
+            /** Reportref */
+            reportRef: string;
+            /** Passed */
+            passed: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** AiFairnessIn */
+        AiFairnessIn: {
+            /**
+             * Reviewedon
+             * Format: date
+             */
+            reviewedOn: string;
+            /**
+             * Groups
+             * @description The groups compared, e.g. districts or age bands
+             */
+            groups: string;
+            /** Findings */
+            findings: string;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "passed" | "concerns" | "failed";
+        };
+        /** AiFairnessOut */
+        AiFairnessOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Reviewedon
+             * Format: date
+             */
+            reviewedOn: string;
+            /** Groups */
+            groups: string;
+            /** Findings */
+            findings: string;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "passed" | "concerns" | "failed";
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** AiFeedbackOut */
+        AiFeedbackOut: {
+            /** Helpful */
+            helpful: number;
+            /** Nothelpful */
+            notHelpful: number;
+            /** Errorreports */
+            errorReports: number;
+        };
+        /** AiModelDecisionIn */
+        AiModelDecisionIn: {
+            /** Reason */
+            reason: string;
+        };
+        /** AiModelFileOut */
+        AiModelFileOut: {
+            summary: components["schemas"]["AiModelSummaryOut"];
+            /** Evaluations */
+            evaluations: components["schemas"]["AiEvaluationOut"][];
+            /** Fairnessreviews */
+            fairnessReviews: components["schemas"]["AiFairnessOut"][];
+            usage7Days: components["schemas"]["AiUsageOut"];
+            feedback30Days: components["schemas"]["AiFeedbackOut"];
+        };
+        /** AiModelIn */
+        AiModelIn: {
+            /**
+             * Task
+             * @enum {string}
+             */
+            task: "assistant" | "speech_recognition" | "speech_synthesis" | "ocr" | "face_comparison" | "liveness" | "summary" | "classification";
+            /** Name */
+            name: string;
+            /**
+             * Provider
+             * @description Who runs it, e.g. Anthropic (hosted API)
+             */
+            provider: string;
+            /**
+             * Providercode
+             * @enum {string}
+             */
+            providerCode: "anthropic" | "self_hosted" | "on_device" | "other";
+            /**
+             * Modelref
+             * @description The model's id as the provider names it
+             */
+            modelRef: string;
+            /** Version */
+            version: string;
+            /**
+             * Licence
+             * @description DEP-24
+             */
+            licence: string;
+            /** Licencecommercialuse */
+            licenceCommercialUse: boolean;
+            /**
+             * Notrainingterms
+             * @description OD-42: the provider may not train on what is sent
+             */
+            noTrainingTerms: boolean;
+            /** Datalocation */
+            dataLocation: string;
+            /**
+             * Trainingdatasummary
+             * @description NFR-AI-01
+             */
+            trainingDataSummary: string;
+            /** Artefacthash */
+            artefactHash?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** AiModelOut */
+        AiModelOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Task
+             * @enum {string}
+             */
+            task: "assistant" | "speech_recognition" | "speech_synthesis" | "ocr" | "face_comparison" | "liveness" | "summary" | "classification";
+            /** Name */
+            name: string;
+            /** Provider */
+            provider: string;
+            /**
+             * Providercode
+             * @enum {string}
+             */
+            providerCode: "anthropic" | "self_hosted" | "on_device" | "other";
+            /** Modelref */
+            modelRef: string;
+            /** Version */
+            version: string;
+            /** Licence */
+            licence: string;
+            /** Licencecommercialuse */
+            licenceCommercialUse: boolean;
+            /** Notrainingterms */
+            noTrainingTerms: boolean;
+            /** Datalocation */
+            dataLocation: string;
+            /** Trainingdatasummary */
+            trainingDataSummary: string;
+            /** Artefacthash */
+            artefactHash: string | null;
+            /** Notes */
+            notes: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "shadow" | "live" | "retired";
+            /**
+             * Shadowstartedat
+             * Format: date-time
+             */
+            shadowStartedAt: string;
+            /** Liveat */
+            liveAt: string | null;
+            /** Retiredat */
+            retiredAt: string | null;
+            /** Statusreason */
+            statusReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** AiModelSummaryOut */
+        AiModelSummaryOut: {
+            model: components["schemas"]["AiModelOut"];
+            latestEvaluation: components["schemas"]["AiEvaluationOut"] | null;
+            latestFairness: components["schemas"]["AiFairnessOut"] | null;
+            usage30Days: components["schemas"]["AiUsageOut"];
+            /**
+             * Goliveproblems
+             * @description Why it cannot go live yet; empty when it can
+             */
+            goLiveProblems: string[];
+        };
+        /** AiRegistryOut */
+        AiRegistryOut: {
+            configured: components["schemas"]["AiConfiguredOut"];
+            /** Models */
+            models: components["schemas"]["AiModelSummaryOut"][];
+        };
+        /** AiUsageOut */
+        AiUsageOut: {
+            /**
+             * Answers
+             * @description Answers to members
+             */
+            answers: number;
+            /** Answered */
+            answered: number;
+            /** Nosource */
+            noSource: number;
+            /** Refused */
+            refused: number;
+            /** Failed */
+            failed: number;
+            /**
+             * Previews
+             * @description Staff previews, never shown to members
+             */
+            previews: number;
+            /** Averagelatencyms */
+            averageLatencyMs: number | null;
+            /** P90Latencyms */
+            p90LatencyMs: number | null;
+            /** Inputtokens */
+            inputTokens: number;
+            /** Outputtokens */
+            outputTokens: number;
         };
         /** AlbumCreateIn */
         AlbumCreateIn: {
@@ -11481,6 +12286,423 @@ export interface components {
             state: "accepted" | "declined" | "cancelled" | "completed";
             /** Reason */
             reason: string;
+        };
+        /** AssistantAskIn */
+        AssistantAskIn: {
+            /** Text */
+            text: string;
+            /**
+             * Language
+             * @default ta
+             * @enum {string}
+             */
+            language: "ta" | "en";
+            /**
+             * Conversationid
+             * @description Left out to start a new conversation
+             */
+            conversationId?: string | null;
+        };
+        /** AssistantAskOut */
+        AssistantAskOut: {
+            /**
+             * Conversationid
+             * Format: uuid
+             */
+            conversationId: string;
+            question: components["schemas"]["AssistantMessageOut"];
+            answer: components["schemas"]["AssistantMessageOut"];
+        };
+        /** AssistantCitationOut */
+        AssistantCitationOut: {
+            /**
+             * Sourceid
+             * Format: uuid
+             */
+            sourceId: string;
+            /**
+             * Familyid
+             * Format: uuid
+             */
+            familyId: string;
+            /** Version */
+            version: number;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "policy" | "manifesto" | "app_help" | "public_service_guide";
+            /** Titleta */
+            titleTa: string;
+            /** Titleen */
+            titleEn: string;
+            /** Publisher */
+            publisher: string;
+            /** Sourceurl */
+            sourceUrl: string | null;
+            /** Quotes */
+            quotes: components["schemas"]["AssistantQuoteOut"][];
+        };
+        /** AssistantConversationOut */
+        AssistantConversationOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "ta" | "en";
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Lastmessageat
+             * Format: date-time
+             */
+            lastMessageAt: string;
+            /**
+             * Deletedafter
+             * Format: date-time
+             * @description When the oldest message shown is deleted (OD-48)
+             */
+            deletedAfter: string;
+            /** Messages */
+            messages: components["schemas"]["AssistantMessageOut"][];
+        };
+        /** AssistantConversationSummaryOut */
+        AssistantConversationSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Lastmessageat
+             * Format: date-time
+             */
+            lastMessageAt: string;
+            /**
+             * Preview
+             * @description The start of the first question
+             */
+            preview: string;
+            /** Messages */
+            messages: number;
+        };
+        /** AssistantErrorReportIn */
+        AssistantErrorReportIn: {
+            /**
+             * Note
+             * @description What seems wrong
+             */
+            note: string;
+        };
+        /** AssistantErrorReportOut */
+        AssistantErrorReportOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Modelname */
+            modelName: string | null;
+            /** Question */
+            question: string;
+            /** Answer */
+            answer: string;
+            /** Citations */
+            citations: components["schemas"]["AssistantCitationOut"][];
+            /** Note */
+            note: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "fixed" | "no_change";
+            /** Resolution */
+            resolution: string | null;
+            /** Resolvedbyname */
+            resolvedByName: string | null;
+            /** Resolvedat */
+            resolvedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** AssistantHandoverIn */
+        AssistantHandoverIn: {
+            /**
+             * Request
+             * @description What the member needs help with
+             */
+            request: string;
+            /**
+             * Language
+             * @default ta
+             * @enum {string}
+             */
+            language: "ta" | "en";
+            /** Conversationid */
+            conversationId?: string | null;
+            /**
+             * Shareconversation
+             * @description The member agreed to share this conversation (FR-AIA-007)
+             */
+            shareConversation: boolean;
+        };
+        /** AssistantHandoverOut */
+        AssistantHandoverOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Request */
+            request: string;
+            /** Sharedmessages */
+            sharedMessages: number;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "answered" | "closed";
+            /** Reply */
+            reply: string | null;
+            /** Repliedat */
+            repliedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** AssistantHomeOut */
+        AssistantHomeOut: {
+            /** Available */
+            available: boolean;
+            /**
+             * Reason
+             * @description Why the assistant cannot answer yet; a person can still help
+             */
+            reason: ("provider_not_configured" | "model_not_approved" | "model_not_registered") | null;
+            /** Retentiondays */
+            retentionDays: number;
+            /** Conversations */
+            conversations: components["schemas"]["AssistantConversationSummaryOut"][];
+            /** Openhandovers */
+            openHandovers: number;
+        };
+        /** AssistantMessageOut */
+        AssistantMessageOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "member" | "assistant";
+            /**
+             * Body
+             * @description The member's words (identifiers removed) or the AI explanation
+             */
+            body: string;
+            /**
+             * Redactions
+             * @description What was removed from the member's words
+             */
+            redactions: ("nic" | "phone" | "case_reference" | "email")[];
+            /** Outcome */
+            outcome: ("answered" | "no_source" | "refused" | "failed") | null;
+            /** Refusal */
+            refusal: ("eligibility" | "promise" | "figures" | "election_notice" | "persuasion" | "personal_data" | "other") | null;
+            /** Topics */
+            topics: ("eligibility" | "election")[];
+            /** Citations */
+            citations: components["schemas"]["AssistantCitationOut"][];
+            /** Rating */
+            rating: ("helpful" | "not_helpful") | null;
+            /** Reported */
+            reported: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** AssistantPreviewIn */
+        AssistantPreviewIn: {
+            /** Question */
+            question: string;
+            /**
+             * Language
+             * @default ta
+             * @enum {string}
+             */
+            language: "ta" | "en";
+        };
+        /** AssistantPreviewOut */
+        AssistantPreviewOut: {
+            /**
+             * Modelid
+             * Format: uuid
+             */
+            modelId: string;
+            /** Modelname */
+            modelName: string;
+            /**
+             * Modelstatus
+             * @enum {string}
+             */
+            modelStatus: "shadow" | "live" | "retired";
+            /** Redactions */
+            redactions: ("nic" | "phone" | "case_reference" | "email")[];
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "answered" | "no_source" | "refused" | "failed";
+            /** Refusal */
+            refusal: ("eligibility" | "promise" | "figures" | "election_notice" | "persuasion" | "personal_data" | "other") | null;
+            /** Body */
+            body: string;
+            /** Topics */
+            topics: ("eligibility" | "election")[];
+            /** Citations */
+            citations: components["schemas"]["AssistantCitationOut"][];
+            /**
+             * Modelcalled
+             * @description False when no approved passage matched, so no model was asked
+             */
+            modelCalled: boolean;
+        };
+        /** AssistantQuoteOut */
+        AssistantQuoteOut: {
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "ta" | "en";
+            /**
+             * Text
+             * @description Official text, word for word from the source (FR-AIA-004)
+             */
+            text: string;
+        };
+        /** AssistantRatingIn */
+        AssistantRatingIn: {
+            /**
+             * Rating
+             * @description Null takes the rating back
+             */
+            rating: ("helpful" | "not_helpful") | null;
+        };
+        /** AssistantReceiptOut */
+        AssistantReceiptOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+        };
+        /** AssistantReplyIn */
+        AssistantReplyIn: {
+            /** Reply */
+            reply: string;
+        };
+        /** AssistantResolveIn */
+        AssistantResolveIn: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "fixed" | "no_change";
+            /**
+             * Resolution
+             * @description What was changed, or why nothing was
+             */
+            resolution: string;
+        };
+        /** AssistantStaffHandoverOut */
+        AssistantStaffHandoverOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "ta" | "en";
+            /** Request */
+            request: string;
+            /**
+             * Transcript
+             * @description Only when the member agreed to share it
+             */
+            transcript: components["schemas"]["AssistantTranscriptLineOut"][];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "answered" | "closed";
+            /** Reply */
+            reply: string | null;
+            /** Repliedbyname */
+            repliedByName: string | null;
+            /** Repliedat */
+            repliedAt: string | null;
+            /** Closedat */
+            closedAt: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** AssistantSummaryOut */
+        AssistantSummaryOut: {
+            /** Draftsources */
+            draftSources: number;
+            /** Approvedsources */
+            approvedSources: number;
+            /**
+             * Reviewoverdue
+             * @description Approved sources past their review date: not used until reviewed
+             */
+            reviewOverdue: number;
+            /** Reviewduesoon */
+            reviewDueSoon: number;
+            /** Openerrorreports */
+            openErrorReports: number;
+            /** Openhandovers */
+            openHandovers: number;
+            /** Helpful30Days */
+            helpful30Days: number;
+            /** Nothelpful30Days */
+            notHelpful30Days: number;
+        };
+        /** AssistantTranscriptLineOut */
+        AssistantTranscriptLineOut: {
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "member" | "assistant";
+            /** Body */
+            body: string;
+            /** Createdat */
+            createdAt: string;
         };
         /** AssistedAbandonIn */
         AssistedAbandonIn: {
@@ -17308,6 +18530,210 @@ export interface components {
             mine: boolean;
             /** Following */
             following: boolean;
+        };
+        /** KbDecisionIn */
+        KbDecisionIn: {
+            /** Approve */
+            approve: boolean;
+            /**
+             * Reason
+             * @description Required to send a draft back
+             */
+            reason?: string | null;
+        };
+        /** KbRetireIn */
+        KbRetireIn: {
+            /** Reason */
+            reason: string;
+        };
+        /** KbReviewIn */
+        KbReviewIn: {
+            /**
+             * Reviewdue
+             * Format: date
+             */
+            reviewDue: string;
+        };
+        /** KbSourceFileOut */
+        KbSourceFileOut: {
+            source: components["schemas"]["KbSourceOut"];
+            /**
+             * Versions
+             * @description Every version of this source, newest first
+             */
+            versions: components["schemas"]["KbSourceSummaryOut"][];
+        };
+        /** KbSourceIn */
+        KbSourceIn: {
+            /**
+             * Kind
+             * @description Policy, published manifesto material, app help or a public-service guide
+             * @enum {string}
+             */
+            kind: "policy" | "manifesto" | "app_help" | "public_service_guide";
+            /** Titleta */
+            titleTa: string;
+            /** Titleen */
+            titleEn: string;
+            /**
+             * Bodyta
+             * @description The approved text in Tamil
+             */
+            bodyTa?: string | null;
+            /**
+             * Bodyen
+             * @description The approved text in English
+             */
+            bodyEn?: string | null;
+            /**
+             * Publisher
+             * @description Who issued it
+             */
+            publisher: string;
+            /** Sourceurl */
+            sourceUrl?: string | null;
+            /** Publishedon */
+            publishedOn?: string | null;
+            /** Changenote */
+            changeNote?: string | null;
+            /**
+             * Reviewdue
+             * Format: date
+             */
+            reviewDue: string;
+        };
+        /** KbSourceOut */
+        KbSourceOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Familyid
+             * Format: uuid
+             */
+            familyId: string;
+            /** Version */
+            version: number;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "policy" | "manifesto" | "app_help" | "public_service_guide";
+            /** Titleta */
+            titleTa: string;
+            /** Titleen */
+            titleEn: string;
+            /** Publisher */
+            publisher: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "approved" | "superseded" | "retired";
+            /**
+             * Reviewdue
+             * Format: date
+             */
+            reviewDue: string;
+            /** Reviewoverdue */
+            reviewOverdue: boolean;
+            /** Passages */
+            passages: number;
+            /** Approvedat */
+            approvedAt: string | null;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+            /** Bodyta */
+            bodyTa: string | null;
+            /** Bodyen */
+            bodyEn: string | null;
+            /** Sourceurl */
+            sourceUrl: string | null;
+            /** Publishedon */
+            publishedOn: string | null;
+            /** Changenote */
+            changeNote: string | null;
+            /**
+             * Returnreason
+             * @description Why a second editor sent the draft back
+             */
+            returnReason: string | null;
+            /**
+             * Draftedby
+             * Format: uuid
+             */
+            draftedBy: string;
+            /** Draftedbyname */
+            draftedByName: string | null;
+            /** Approvedbyname */
+            approvedByName: string | null;
+            /** Reviewedbyname */
+            reviewedByName: string | null;
+            /** Reviewedat */
+            reviewedAt: string | null;
+            /** Supersededat */
+            supersededAt: string | null;
+            /** Retiredat */
+            retiredAt: string | null;
+            /** Retirereason */
+            retireReason: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** KbSourceSummaryOut */
+        KbSourceSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Familyid
+             * Format: uuid
+             */
+            familyId: string;
+            /** Version */
+            version: number;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "policy" | "manifesto" | "app_help" | "public_service_guide";
+            /** Titleta */
+            titleTa: string;
+            /** Titleen */
+            titleEn: string;
+            /** Publisher */
+            publisher: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "draft" | "approved" | "superseded" | "retired";
+            /**
+             * Reviewdue
+             * Format: date
+             */
+            reviewDue: string;
+            /** Reviewoverdue */
+            reviewOverdue: boolean;
+            /** Passages */
+            passages: number;
+            /** Approvedat */
+            approvedAt: string | null;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
         };
         /** LessonIn */
         LessonIn: {
@@ -46793,6 +48219,1385 @@ export interface operations {
                 content?: never;
             };
             /** @description {"code": "assisted_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    assistant_home_v1_assistant_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantHomeOut"];
+                };
+            };
+        };
+    };
+    ask_v1_assistant_messages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistantAskIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantAskOut"];
+                };
+            };
+            /** @description not_found, or feature_unavailable while the assistant is switched off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_refused: already_reported, already_resolved, already_closed, conversation_required */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_conversation_v1_assistant_conversations__conversation_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantConversationOut"];
+                };
+            };
+            /** @description not_found, or feature_unavailable while the assistant is switched off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_refused: already_reported, already_resolved, already_closed, conversation_required */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    delete_conversation_v1_assistant_conversations__conversation_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found, or feature_unavailable while the assistant is switched off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_refused: already_reported, already_resolved, already_closed, conversation_required */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    rate_answer_v1_assistant_messages__message_id__rating_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistantRatingIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantMessageOut"];
+                };
+            };
+            /** @description not_found, or feature_unavailable while the assistant is switched off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_refused: already_reported, already_resolved, already_closed, conversation_required */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    report_error_v1_assistant_messages__message_id__error_report_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistantErrorReportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantReceiptOut"];
+                };
+            };
+            /** @description not_found, or feature_unavailable while the assistant is switched off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_refused: already_reported, already_resolved, already_closed, conversation_required */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    my_handovers_v1_assistant_handovers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantHandoverOut"][];
+                };
+            };
+        };
+    };
+    request_handover_v1_assistant_handovers_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistantHandoverIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantHandoverOut"];
+                };
+            };
+            /** @description not_found, or feature_unavailable while the assistant is switched off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_refused: already_reported, already_resolved, already_closed, conversation_required */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    summary_v1_assistant_manage_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantSummaryOut"];
+                };
+            };
+        };
+    };
+    error_reports_v1_assistant_manage_error_reports_get: {
+        parameters: {
+            query?: {
+                state?: ("open" | "fixed" | "no_change") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantErrorReportOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resolve_error_report_v1_assistant_manage_error_reports__report_id__resolve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistantResolveIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantErrorReportOut"];
+                };
+            };
+            /** @description not_found, or feature_unavailable while the assistant is switched off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_refused: already_reported, already_resolved, already_closed, conversation_required */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    handovers_v1_assistant_manage_handovers_get: {
+        parameters: {
+            query?: {
+                state?: ("open" | "answered" | "closed") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantStaffHandoverOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reply_handover_v1_assistant_manage_handovers__handover_id__reply_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                handover_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistantReplyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantStaffHandoverOut"];
+                };
+            };
+            /** @description not_found, or feature_unavailable while the assistant is switched off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_refused: already_reported, already_resolved, already_closed, conversation_required */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    close_handover_v1_assistant_manage_handovers__handover_id__close_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                handover_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantStaffHandoverOut"];
+                };
+            };
+            /** @description not_found, or feature_unavailable while the assistant is switched off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_refused: already_reported, already_resolved, already_closed, conversation_required */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    try_question_v1_assistant_manage_try_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistantPreviewIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantPreviewOut"];
+                };
+            };
+            /** @description not_found, or feature_unavailable while the assistant is switched off */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_refused: already_reported, already_resolved, already_closed, conversation_required */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_questions (30 an hour), too_many_reports_today, too_many_open_requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description assistant_unavailable: provider_not_configured, model_not_approved or model_not_registered */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_sources_v1_assistant_manage_sources_get: {
+        parameters: {
+            query?: {
+                state?: ("draft" | "approved" | "superseded" | "retired") | null;
+                kind?: ("policy" | "manifesto" | "app_help" | "public_service_guide") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KbSourceSummaryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    draft_source_v1_assistant_manage_sources_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KbSourceIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KbSourceOut"];
+                };
+            };
+            /** @description forbidden, or own_draft when the drafter tries to approve */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description source_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_source_v1_assistant_manage_sources__source_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                source_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KbSourceFileOut"];
+                };
+            };
+            /** @description forbidden, or own_draft when the drafter tries to approve */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description source_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    edit_draft_v1_assistant_manage_sources__source_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                source_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KbSourceIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KbSourceOut"];
+                };
+            };
+            /** @description forbidden, or own_draft when the drafter tries to approve */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description source_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    new_version_v1_assistant_manage_sources__source_id__new_version_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                source_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KbSourceOut"];
+                };
+            };
+            /** @description forbidden, or own_draft when the drafter tries to approve */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description source_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    decide_v1_assistant_manage_sources__source_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                source_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KbDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KbSourceOut"];
+                };
+            };
+            /** @description forbidden, or own_draft when the drafter tries to approve */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description source_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    mark_reviewed_v1_assistant_manage_sources__source_id__review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                source_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KbReviewIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KbSourceOut"];
+                };
+            };
+            /** @description forbidden, or own_draft when the drafter tries to approve */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description source_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    retire_v1_assistant_manage_sources__source_id__retire_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                source_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KbRetireIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KbSourceOut"];
+                };
+            };
+            /** @description forbidden, or own_draft when the drafter tries to approve */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description source_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_models_v1_ai_models_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiRegistryOut"];
+                };
+            };
+        };
+    };
+    register_model_v1_ai_models_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AiModelIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiModelOut"];
+                };
+            };
+            /** @description forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description model_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_model_v1_ai_models__model_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                model_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiModelFileOut"];
+                };
+            };
+            /** @description forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description model_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    record_evaluation_v1_ai_models__model_id__evaluations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                model_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AiEvaluationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiEvaluationOut"];
+                };
+            };
+            /** @description forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description model_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    record_fairness_review_v1_ai_models__model_id__fairness_reviews_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                model_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AiFairnessIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiFairnessOut"];
+                };
+            };
+            /** @description forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description model_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    go_live_v1_ai_models__model_id__go_live_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                model_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AiModelDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiModelOut"];
+                };
+            };
+            /** @description forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description model_refused with problems */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    retire_v1_ai_models__model_id__retire_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                model_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AiModelDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiModelOut"];
+                };
+            };
+            /** @description forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description model_refused with problems */
             422: {
                 headers: {
                     [name: string]: unknown;

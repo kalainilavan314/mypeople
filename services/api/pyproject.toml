@@ -15,6 +15,7 @@ dependencies = [
     "bcrypt>=5.0",
     "cryptography>=50.0",  # AES-256-GCM for identity evidence
     "pillow>=13.0",  # gallery photos: decoded, stripped of metadata, re-encoded as WebP
+    "anthropic>=2.10",  # the Tamil assistant's model, only when AI_PROVIDER=anthropic (OD-42; off by default)
 ]
 
 [project.optional-dependencies]

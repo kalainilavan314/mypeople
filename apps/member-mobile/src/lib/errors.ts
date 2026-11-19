@@ -33,7 +33,8 @@ export type RefusalScope =
   | 'livelihood'
   | 'representatives'
   | 'renewal'
-  | 'verify';
+  | 'verify'
+  | 'assistant';
 
 /**
  * The member-facing message for a failed request: the API's error code when

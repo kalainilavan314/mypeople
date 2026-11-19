@@ -865,4 +865,13 @@ TEMPLATES: dict[str, Template] = {
         "appointment_calendar",
         action_required=True,
     ),
+    # Tamil AI assistant: a person answered the member's request for help (FR-AIA-007).
+    "assistant_handover_answered": Template(
+        "review",
+        "A person has answered your question",
+        "உங்கள் கேள்விக்கு ஒருவர் பதில் அளித்துள்ளார்",
+        "Open the assistant's help requests to read the reply.",
+        "பதிலைப் படிக்க உதவியாளரின் உதவிக் கோரிக்கைகளைத் திறக்கவும்.",
+        "assistant_handover",
+    ),
 }

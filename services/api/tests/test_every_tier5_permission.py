@@ -23,10 +23,10 @@ def last_audit(db_session):
     return db_session.execute(text("SELECT action, target_id, details FROM ops.audit_log ORDER BY id DESC LIMIT 1")).one()
 
 
-def test_tier_five_may_hold_forty_six_of_the_permissions():
-    # 40 from §9.8, plus content.sign_publish, donor.oversight, guide.edit, guide.review,
-    # appointment.manage_own and appointment.profile.manage (Phase 3).
-    assert len(EVERY_TIER5) == 46
+def test_tier_five_may_hold_forty_seven_of_the_permissions():
+    # 40 from §9.8, plus ai.kb.manage (PRM-47), content.sign_publish, donor.oversight, guide.edit,
+    # guide.review, appointment.manage_own and appointment.profile.manage (Phase 3).
+    assert len(EVERY_TIER5) == 47
     assert "events.checkin_scan" not in EVERY_TIER5  # kept for the tiers that do the work (BRD §9.8)
 
 

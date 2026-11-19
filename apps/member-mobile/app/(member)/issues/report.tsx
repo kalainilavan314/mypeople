@@ -18,6 +18,7 @@ import {
   TextField,
   useApiAction,
   useApiQuery,
+  useLanguage,
   useLocalized,
   useMember,
   useReloadOnFocus,
@@ -33,7 +34,10 @@ import { NoAreaNotice } from '@/features/issues/NoAreaNotice';
 import { PhotoThumb } from '@/features/issues/PhotoThumb';
 import { ReportingLocked } from '@/features/issues/ReportingLocked';
 import { pickImage } from '@/features/identity/pickImage';
+import { VoiceInput } from '@/features/voice/VoiceInput';
+import { appendTranscript } from '@/features/voice/voiceTypes';
 import { api } from '@/lib/api';
+import { useFeatureEnabled } from '@/lib/useFeatureEnabled';
 
 /**
  * H07 Report a concern. Only Verified and Active members with a GN division on their profile see
@@ -123,6 +127,7 @@ function ReportForm({ options }: { options: IssueReportingOptions }) {
           }
         />
         <DescriptionCounter length={draft.description.trim().length} min={options.descriptionMin} />
+        <VoiceReport />
       </SurfaceCard>
 
       <PhotosCard draft={draft} maxPhotos={options.maxPhotos} lostPhotos={lostPhotos} />
@@ -143,6 +148,28 @@ function FieldError({ text }: { text: string }) {
     <AppText step="secondary" tone="error" accessibilityRole="alert" accessibilityLiveRegion="polite">
       {text}
     </AppText>
+  );
+}
+
+/**
+ * M43 voice report (FR-VOI-001): speak the description in Tamil or English; the words are added to the
+ * box for the member to check and correct before review. Shown only while voice_reports is on; typing
+ * always works (BR-144), and no audio leaves the device.
+ */
+function VoiceReport() {
+  const on = useFeatureEnabled('voice_reports');
+  const language = useLanguage();
+  if (!on) return null;
+  return (
+    <VoiceInput
+      language={language}
+      onTranscript={(spoken) =>
+        updateDraft((current) => ({
+          ...current,
+          description: appendTranscript(current.description, spoken).slice(0, LIMITS.descriptionMax),
+        }))
+      }
+    />
   );
 }
 
