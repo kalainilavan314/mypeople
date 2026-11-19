@@ -60,6 +60,10 @@ export const permissionNames: Readonly<Record<string, StaffTerm>> = {
   'certificate.issue_revoke': { ta: 'சான்றிதழ்களை வழங்குதலும் மீளப்பெறுதலும்', en: 'Issue and revoke certificates' },
   'disaster.relay': { ta: 'அதிகாரபூர்வ அனர்த்த எச்சரிக்கைகளை அனுப்புதல்', en: 'Relay official disaster alerts' },
   'relief.logistics': { ta: 'நிவாரண விநியோகத்தை நிர்வகித்தல்', en: 'Manage relief logistics' },
+  'donor.oversight': {
+    ta: 'இரத்தக் கோரிக்கைப் பங்காளர்களையும் வரம்பு மீறிய கோரிக்கைகளையும் மேற்பார்வையிடுதல்',
+    en: 'Oversee blood request partners and requests over the limit',
+  },
   'privacy.requests.handle': { ta: 'தனியுரிமைக் கோரிக்கைகளைக் கையாளுதல்', en: 'Handle privacy requests' },
   'reports.view': { ta: 'சமூகப் புகார்களைப் பார்த்தல்', en: 'View community reports' },
 };

@@ -15147,6 +15147,1728 @@
         ]
       }
     },
+    "/v1/alerts": {
+      "get": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Safety Home",
+        "description": "M35: open to anyone signed in. Alerts follow the member's home area, or the area they chose; never GPS.",
+        "operationId": "safety_home_v1_alerts_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "area",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "An area key such as ds:LK4103; the home area when absent",
+              "title": "Area"
+            },
+            "description": "An area key such as ds:LK4103; the home area when absent"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SafetyHomeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/alerts/history": {
+      "get": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Alert History",
+        "description": "FR-DIS-008: expired and withdrawn alerts of the last 90 days.",
+        "operationId": "alert_history_v1_alerts_history_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "area",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "An area key such as ds:LK4103; the home area when absent",
+              "title": "Area"
+            },
+            "description": "An area key such as ds:LK4103; the home area when absent"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AlertOut"
+                  },
+                  "title": "Response Alert History V1 Alerts History Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/alerts/help": {
+      "post": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Request Help",
+        "description": "M36: an urgent Community Support case for follow-up; nobody is dispatched (OS-14). 422 support_not_open\nwhile Community Support is switched off.",
+        "operationId": "request_help_v1_alerts_help_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SafetyHelpIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SafetyHelpOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/alerts/relief-offer": {
+      "put": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Save Relief Offer",
+        "description": "FR-DIS-004: offer relief help in the home area until a date; Verified and Active members.",
+        "operationId": "save_relief_offer_v1_alerts_relief_offer_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReliefOfferIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReliefOfferOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Withdraw Relief Offer",
+        "operationId": "withdraw_relief_offer_v1_alerts_relief_offer_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/alerts/manage": {
+      "get": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Managed Alerts",
+        "description": "Current alerts in the relayer's areas, the ones longest unchecked first; or the history.",
+        "operationId": "managed_alerts_v1_alerts_manage_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "current",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Current"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ManagedAlertOut"
+                  },
+                  "title": "Response Managed Alerts V1 Alerts Manage Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Relay Alert",
+        "description": "FR-DIS-001, 002: relay an official warning; members of the targeted areas are told at once.",
+        "operationId": "relay_alert_v1_alerts_manage_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertRelayIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedAlertOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/alerts/manage/composer": {
+      "get": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Composer",
+        "operationId": "composer_v1_alerts_manage_composer_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertComposerOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/alerts/manage/shelters": {
+      "get": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Managed Shelters",
+        "operationId": "managed_shelters_v1_alerts_manage_shelters_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ShelterOut"
+                  },
+                  "type": "array",
+                  "title": "Response Managed Shelters V1 Alerts Manage Shelters Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Add Shelter",
+        "description": "FR-DIS-006: shelter information from an authorised source, with the time it reported.",
+        "operationId": "add_shelter_v1_alerts_manage_shelters_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShelterCreateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShelterOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/alerts/manage/shelters/{shelter_id}": {
+      "put": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Update Shelter",
+        "operationId": "update_shelter_v1_alerts_manage_shelters__shelter_id__put",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "shelter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Shelter Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShelterIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShelterOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/alerts/manage/volunteers": {
+      "get": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Relief Volunteers",
+        "description": "FR-DIS-004: members who offered relief help in the coordinator's areas.",
+        "operationId": "relief_volunteers_v1_alerts_manage_volunteers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReliefVolunteerOut"
+                  },
+                  "type": "array",
+                  "title": "Response Relief Volunteers V1 Alerts Manage Volunteers Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/alerts/manage/{alert_id}": {
+      "get": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Read Managed",
+        "operationId": "read_managed_v1_alerts_manage__alert_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedAlertOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/alerts/manage/{alert_id}/refresh": {
+      "post": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Refresh Alert",
+        "description": "FR-DIS-008: checked against the source again; the 6-hour flag clears.",
+        "operationId": "refresh_alert_v1_alerts_manage__alert_id__refresh_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertRefreshIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedAlertOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/alerts/manage/{alert_id}/withdraw": {
+      "post": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Withdraw Alert",
+        "operationId": "withdraw_alert_v1_alerts_manage__alert_id__withdraw_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertWithdrawIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedAlertOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/alerts/{alert_id}": {
+      "get": {
+        "tags": [
+          "alerts"
+        ],
+        "summary": "Read Alert",
+        "description": "An official warning with its source, link, times and the emergency numbers (FR-DIS-001, 003).",
+        "operationId": "read_alert_v1_alerts__alert_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/relief": {
+      "get": {
+        "tags": [
+          "relief"
+        ],
+        "summary": "Overview",
+        "description": "The items and the stock of every store in the officer's areas.",
+        "operationId": "overview_v1_relief_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReliefOverviewOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/relief/supplies": {
+      "get": {
+        "tags": [
+          "relief"
+        ],
+        "summary": "List Supplies",
+        "operationId": "list_supplies_v1_relief_supplies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReliefSupplyOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Supplies V1 Relief Supplies Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "relief"
+        ],
+        "summary": "Record Supply",
+        "operationId": "record_supply_v1_relief_supplies_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReliefSupplyIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReliefSupplyOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/relief/distributions": {
+      "get": {
+        "tags": [
+          "relief"
+        ],
+        "summary": "List Distributions",
+        "operationId": "list_distributions_v1_relief_distributions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReliefDistributionOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Distributions V1 Relief Distributions Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "relief"
+        ],
+        "summary": "Record Distribution",
+        "description": "S16: 422 more_than_in_stock when the store does not hold that much; case_not_found for a reference that\nis not an open case in the officer's area (create one through S11 first).",
+        "operationId": "record_distribution_v1_relief_distributions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReliefDistributionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReliefDistributionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/donors/me": {
+      "get": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "My Donor",
+        "description": "M37: the member's own donor record (null until they opt in) and the requests they were told about.",
+        "operationId": "my_donor_v1_donors_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodDonorHomeOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Enrol",
+        "description": "FR-BLD-001: opt in, or change the details; consent each time (422 consent_required).",
+        "operationId": "enrol_v1_donors_me_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BloodDonorIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodDonorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Withdraw",
+        "description": "FR-BLD-007: withdraw; the donor record and every answer are deleted at once.",
+        "operationId": "withdraw_v1_donors_me_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/donors/me/requests/{request_id}": {
+      "get": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Read Notice",
+        "description": "M38: only for a donor who was told about it.",
+        "operationId": "read_notice_v1_donors_me_requests__request_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodNoticeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/donors/me/requests/{request_id}/answer": {
+      "post": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Answer",
+        "description": "M38, FR-BLD-005: accept (with consent to pass on the contact) or decline, once.",
+        "operationId": "answer_v1_donors_me_requests__request_id__answer_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BloodAnswerIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodNoticeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/donors/desk/access": {
+      "get": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Desk Access",
+        "description": "Whether this account may use the partner desk or the Tier 5 oversight; changes nothing.",
+        "operationId": "desk_access_v1_donors_desk_access_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodDeskAccessOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/donors/desk": {
+      "get": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Desk",
+        "operationId": "desk_v1_donors_desk_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodDeskOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/donors/desk/requests": {
+      "post": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Raise Request",
+        "description": "FR-BLD-003, 004, 008: matching donors are told privately; past 10 requests in an hour it waits for\nTier 5 approval (state awaiting_approval).",
+        "operationId": "raise_request_v1_donors_desk_requests_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BloodRequestIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodRequestDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/donors/desk/requests/{request_id}": {
+      "get": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Read Request",
+        "description": "Counts, and the contact of each donor who accepted and consented; never anyone else's identity.",
+        "operationId": "read_request_v1_donors_desk_requests__request_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodRequestDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/donors/desk/requests/{request_id}/close": {
+      "post": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Close Request",
+        "operationId": "close_request_v1_donors_desk_requests__request_id__close_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BloodCloseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodRequestDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/donors/oversight": {
+      "get": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Oversight",
+        "description": "Partners, their requesters, requests waiting for approval and recent requests, with counts only.",
+        "operationId": "oversight_v1_donors_oversight_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodOversightOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/donors/oversight/partners": {
+      "post": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Add Partner",
+        "operationId": "add_partner_v1_donors_oversight_partners_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BloodPartnerIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodPartnerOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/donors/oversight/partners/{partner_id}/active": {
+      "post": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Set Partner Active",
+        "operationId": "set_partner_active_v1_donors_oversight_partners__partner_id__active_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "partner_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Partner Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BloodPartnerActiveIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodPartnerOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/donors/oversight/partners/{partner_id}/requesters": {
+      "post": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Authorise Requester",
+        "description": "PRM-55: a named, identity-verified account of the partner, by its member code.",
+        "operationId": "authorise_requester_v1_donors_oversight_partners__partner_id__requesters_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "partner_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Partner Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BloodRequesterIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodRequesterOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/donors/oversight/requesters/{requester_id}/revoke": {
+      "post": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Revoke Requester",
+        "operationId": "revoke_requester_v1_donors_oversight_requesters__requester_id__revoke_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "requester_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Requester Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodRequesterOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/donors/oversight/requests/{request_id}/decision": {
+      "post": {
+        "tags": [
+          "donors"
+        ],
+        "summary": "Decide",
+        "description": "FR-BLD-008: approve or refuse a request over the hourly limit; never your own (own_request).",
+        "operationId": "decide_v1_donors_oversight_requests__request_id__decision_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BloodDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodRequestOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/town-halls": {
       "get": {
         "tags": [
@@ -23529,6 +25251,495 @@
         ],
         "title": "AlertAnswerIn"
       },
+      "AlertComposerOut": {
+        "properties": {
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SafetySourceOut"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "hazards": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "flood",
+                "cyclone",
+                "heavy_rain",
+                "strong_wind",
+                "landslide",
+                "lightning",
+                "tsunami",
+                "drought",
+                "other"
+              ]
+            },
+            "type": "array",
+            "title": "Hazards"
+          },
+          "severities": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "advisory",
+                "watch",
+                "warning"
+              ]
+            },
+            "type": "array",
+            "title": "Severities"
+          },
+          "longestAlertDays": {
+            "type": "integer",
+            "title": "Longestalertdays"
+          },
+          "staleAfterHours": {
+            "type": "integer",
+            "title": "Staleafterhours"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sources",
+          "hazards",
+          "severities",
+          "longestAlertDays",
+          "staleAfterHours"
+        ],
+        "title": "AlertComposerOut",
+        "description": "What the D26 composer offers: the official sources and the fixed lists."
+      },
+      "AlertOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "alertRef": {
+            "type": "string",
+            "title": "Alertref"
+          },
+          "sourceKey": {
+            "type": "string",
+            "enum": [
+              "dmc",
+              "meteorology",
+              "district_secretariat",
+              "divisional_secretariat"
+            ],
+            "title": "Sourcekey"
+          },
+          "sourceNameEn": {
+            "type": "string",
+            "title": "Sourcenameen"
+          },
+          "sourceNameTa": {
+            "type": "string",
+            "title": "Sourcenameta"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "title": "Sourceurl"
+          },
+          "sourceIssuedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourceissuedat"
+          },
+          "sourceEndsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourceendsat",
+            "description": "The alert expires at the source's end time (FR-DIS-008)"
+          },
+          "hazard": {
+            "type": "string",
+            "enum": [
+              "flood",
+              "cyclone",
+              "heavy_rain",
+              "strong_wind",
+              "landslide",
+              "lightning",
+              "tsunami",
+              "drought",
+              "other"
+            ],
+            "title": "Hazard"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "advisory",
+              "watch",
+              "warning"
+            ],
+            "title": "Severity"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "type": "string",
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "title": "Bodyta"
+          },
+          "targetKeys": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Targetkeys"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "current",
+              "expired",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "withdrawnReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawnreason"
+          },
+          "relayedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Relayedat"
+          },
+          "refreshedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Refreshedat",
+            "description": "When someone last checked the alert against its source"
+          },
+          "stale": {
+            "type": "boolean",
+            "title": "Stale",
+            "description": "Current, and nobody has checked the source for 6 hours (FR-DIS-008)"
+          },
+          "emergencyContacts": {
+            "items": {
+              "$ref": "#/components/schemas/SafetyContactOut"
+            },
+            "type": "array",
+            "title": "Emergencycontacts",
+            "description": "FR-DIS-003: on every alert"
+          },
+          "notDispatchEn": {
+            "type": "string",
+            "title": "Notdispatchen",
+            "default": "This app passes on official warnings only. It is not an emergency service and cannot send help. In danger now, call the emergency numbers."
+          },
+          "notDispatchTa": {
+            "type": "string",
+            "title": "Notdispatchta",
+            "default": "இந்தச் செயலி அதிகாரபூர்வ எச்சரிக்கைகளை மட்டுமே தெரிவிக்கிறது. இது அவசர சேவை அல்ல; உதவியை அனுப்ப முடியாது. இப்போது ஆபத்தில் இருந்தால் அவசர இலக்கங்களை அழையுங்கள்."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "alertRef",
+          "sourceKey",
+          "sourceNameEn",
+          "sourceNameTa",
+          "sourceUrl",
+          "sourceIssuedAt",
+          "sourceEndsAt",
+          "hazard",
+          "severity",
+          "titleEn",
+          "titleTa",
+          "bodyEn",
+          "bodyTa",
+          "targetKeys",
+          "state",
+          "withdrawnReason",
+          "relayedAt",
+          "refreshedAt",
+          "stale",
+          "emergencyContacts"
+        ],
+        "title": "AlertOut",
+        "description": "FR-DIS-001: every alert carries its official source, the source's own link and issue time."
+      },
+      "AlertRefreshIn": {
+        "properties": {
+          "sourceUrl": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 12,
+            "title": "Sourceurl"
+          },
+          "sourceIssuedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourceissuedat"
+          },
+          "sourceEndsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourceendsat"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "advisory",
+              "watch",
+              "warning"
+            ],
+            "title": "Severity"
+          },
+          "titleEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 5,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 220,
+            "minLength": 5,
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "maxLength": 4500,
+            "minLength": 10,
+            "title": "Bodyta"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sourceUrl",
+          "sourceIssuedAt",
+          "sourceEndsAt",
+          "severity",
+          "titleEn",
+          "titleTa",
+          "bodyEn",
+          "bodyTa"
+        ],
+        "title": "AlertRefreshIn"
+      },
+      "AlertRelayIn": {
+        "properties": {
+          "sourceUrl": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 12,
+            "title": "Sourceurl"
+          },
+          "sourceIssuedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourceissuedat"
+          },
+          "sourceEndsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourceendsat"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "advisory",
+              "watch",
+              "warning"
+            ],
+            "title": "Severity"
+          },
+          "titleEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 5,
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "maxLength": 220,
+            "minLength": 5,
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 10,
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "maxLength": 4500,
+            "minLength": 10,
+            "title": "Bodyta"
+          },
+          "sourceKey": {
+            "type": "string",
+            "enum": [
+              "dmc",
+              "meteorology",
+              "district_secretariat",
+              "divisional_secretariat"
+            ],
+            "title": "Sourcekey"
+          },
+          "hazard": {
+            "type": "string",
+            "enum": [
+              "flood",
+              "cyclone",
+              "heavy_rain",
+              "strong_wind",
+              "landslide",
+              "lightning",
+              "tsunami",
+              "drought",
+              "other"
+            ],
+            "title": "Hazard"
+          },
+          "targets": {
+            "items": {
+              "$ref": "#/components/schemas/SafetyAreaIn"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Targets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sourceUrl",
+          "sourceIssuedAt",
+          "sourceEndsAt",
+          "severity",
+          "titleEn",
+          "titleTa",
+          "bodyEn",
+          "bodyTa",
+          "sourceKey",
+          "hazard",
+          "targets"
+        ],
+        "title": "AlertRelayIn"
+      },
+      "AlertRevisionOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "relayed",
+              "refreshed",
+              "withdrawn"
+            ],
+            "title": "Kind"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "title": "Sourceurl"
+          },
+          "sourceIssuedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourceissuedat"
+          },
+          "sourceEndsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourceendsat"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "advisory",
+              "watch",
+              "warning"
+            ],
+            "title": "Severity"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "changedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Changedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "sourceUrl",
+          "sourceIssuedAt",
+          "sourceEndsAt",
+          "severity",
+          "note",
+          "changedAt"
+        ],
+        "title": "AlertRevisionOut"
+      },
+      "AlertWithdrawIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "AlertWithdrawIn"
+      },
       "AnswerIn": {
         "properties": {
           "answer": {
@@ -25503,6 +27714,1116 @@
           "area"
         ],
         "title": "AwaitingMemberOut"
+      },
+      "BloodAnswerIn": {
+        "properties": {
+          "accept": {
+            "type": "boolean",
+            "title": "Accept"
+          },
+          "consent": {
+            "type": "boolean",
+            "title": "Consent",
+            "description": "Consent to pass the donor's name, phone and contact ways to the partner"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accept",
+          "consent"
+        ],
+        "title": "BloodAnswerIn"
+      },
+      "BloodAreaIn": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "district",
+              "ds"
+            ],
+            "title": "Level",
+            "description": "A broad area only: a District or DS division"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 2,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "code"
+        ],
+        "title": "BloodAreaIn"
+      },
+      "BloodCloseIn": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "fulfilled",
+              "partly_fulfilled",
+              "not_needed",
+              "unfulfilled"
+            ],
+            "title": "Outcome"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcome"
+        ],
+        "title": "BloodCloseIn"
+      },
+      "BloodContactOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone"
+          },
+          "methods": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "call",
+                "sms",
+                "whatsapp"
+              ]
+            },
+            "type": "array",
+            "title": "Methods"
+          },
+          "acceptedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Acceptedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "phone",
+          "methods",
+          "acceptedAt"
+        ],
+        "title": "BloodContactOut",
+        "description": "A donor who accepted and consented to share this (FR-BLD-005)."
+      },
+      "BloodDecisionIn": {
+        "properties": {
+          "approve": {
+            "type": "boolean",
+            "title": "Approve"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "approve"
+        ],
+        "title": "BloodDecisionIn"
+      },
+      "BloodDeskAccessOut": {
+        "properties": {
+          "partner": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BloodPartnerOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "oversight": {
+            "type": "boolean",
+            "title": "Oversight"
+          }
+        },
+        "type": "object",
+        "required": [
+          "partner",
+          "oversight"
+        ],
+        "title": "BloodDeskAccessOut",
+        "description": "What the dashboard may show this account: its partner's request desk, the Tier 5 oversight, or neither."
+      },
+      "BloodDeskOut": {
+        "properties": {
+          "partner": {
+            "$ref": "#/components/schemas/BloodPartnerOut"
+          },
+          "requests": {
+            "items": {
+              "$ref": "#/components/schemas/BloodRequestOut"
+            },
+            "type": "array",
+            "title": "Requests"
+          },
+          "requestsPerHour": {
+            "type": "integer",
+            "title": "Requestsperhour",
+            "default": 10
+          },
+          "medicalStatementEn": {
+            "type": "string",
+            "title": "Medicalstatementen",
+            "default": "Whether you can give blood, and whose blood yours suits, is decided only by qualified health professionals at the hospital or blood bank. This app never decides it."
+          },
+          "medicalStatementTa": {
+            "type": "string",
+            "title": "Medicalstatementta",
+            "default": "நீங்கள் இரத்த தானம் செய்ய முடியுமா, உங்கள் இரத்தம் யாருக்குப் பொருந்தும் என்பதை வைத்தியசாலை அல்லது இரத்த வங்கியின் தகுதிவாய்ந்த சுகாதார நிபுணர்கள் மட்டுமே தீர்மானிப்பார்கள். இந்தச் செயலி ஒருபோதும் அதைத் தீர்மானிக்காது."
+          }
+        },
+        "type": "object",
+        "required": [
+          "partner",
+          "requests"
+        ],
+        "title": "BloodDeskOut"
+      },
+      "BloodDonorHomeOut": {
+        "properties": {
+          "donor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BloodDonorOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notices": {
+            "items": {
+              "$ref": "#/components/schemas/BloodNoticeOut"
+            },
+            "type": "array",
+            "title": "Notices"
+          },
+          "bloodGroups": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "A+",
+                "A-",
+                "B+",
+                "B-",
+                "AB+",
+                "AB-",
+                "O+",
+                "O-"
+              ]
+            },
+            "type": "array",
+            "title": "Bloodgroups"
+          },
+          "consentVersion": {
+            "type": "string",
+            "title": "Consentversion",
+            "default": "blood-donor-2026-11"
+          },
+          "medicalStatementEn": {
+            "type": "string",
+            "title": "Medicalstatementen",
+            "default": "Whether you can give blood, and whose blood yours suits, is decided only by qualified health professionals at the hospital or blood bank. This app never decides it."
+          },
+          "medicalStatementTa": {
+            "type": "string",
+            "title": "Medicalstatementta",
+            "default": "நீங்கள் இரத்த தானம் செய்ய முடியுமா, உங்கள் இரத்தம் யாருக்குப் பொருந்தும் என்பதை வைத்தியசாலை அல்லது இரத்த வங்கியின் தகுதிவாய்ந்த சுகாதார நிபுணர்கள் மட்டுமே தீர்மானிப்பார்கள். இந்தச் செயலி ஒருபோதும் அதைத் தீர்மானிக்காது."
+          }
+        },
+        "type": "object",
+        "required": [
+          "donor",
+          "notices",
+          "bloodGroups"
+        ],
+        "title": "BloodDonorHomeOut",
+        "description": "M37: the member's own donor record, if any, and the requests they were told about."
+      },
+      "BloodDonorIn": {
+        "properties": {
+          "bloodGroup": {
+            "type": "string",
+            "enum": [
+              "A+",
+              "A-",
+              "B+",
+              "B-",
+              "AB+",
+              "AB-",
+              "O+",
+              "O-"
+            ],
+            "title": "Bloodgroup"
+          },
+          "area": {
+            "$ref": "#/components/schemas/BloodAreaIn"
+          },
+          "contactName": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Contactname"
+          },
+          "contactPhone": {
+            "type": "string",
+            "pattern": "^\\+?[0-9 ]{9,15}$",
+            "title": "Contactphone"
+          },
+          "contactMethods": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "call",
+                "sms",
+                "whatsapp"
+              ]
+            },
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 1,
+            "title": "Contactmethods"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available",
+            "default": true
+          },
+          "pausedUntil": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pauseduntil",
+            "description": "Not asked until after this date"
+          },
+          "consent": {
+            "type": "boolean",
+            "title": "Consent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bloodGroup",
+          "area",
+          "contactName",
+          "contactPhone",
+          "contactMethods",
+          "consent"
+        ],
+        "title": "BloodDonorIn",
+        "description": "M37: explicit opt-in (FR-BLD-001); the blood group is self-declared."
+      },
+      "BloodDonorOut": {
+        "properties": {
+          "bloodGroup": {
+            "type": "string",
+            "enum": [
+              "A+",
+              "A-",
+              "B+",
+              "B-",
+              "AB+",
+              "AB-",
+              "O+",
+              "O-"
+            ],
+            "title": "Bloodgroup"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "districtKey": {
+            "type": "string",
+            "title": "Districtkey",
+            "description": "The district of the area, for the form"
+          },
+          "contactName": {
+            "type": "string",
+            "title": "Contactname"
+          },
+          "contactPhone": {
+            "type": "string",
+            "title": "Contactphone"
+          },
+          "contactMethods": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "call",
+                "sms",
+                "whatsapp"
+              ]
+            },
+            "type": "array",
+            "title": "Contactmethods"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "pausedUntil": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pauseduntil"
+          },
+          "consentedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Consentedat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bloodGroup",
+          "areaKey",
+          "districtKey",
+          "contactName",
+          "contactPhone",
+          "contactMethods",
+          "available",
+          "pausedUntil",
+          "consentedAt",
+          "updatedAt"
+        ],
+        "title": "BloodDonorOut"
+      },
+      "BloodNoticeOut": {
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Requestid"
+          },
+          "requestRef": {
+            "type": "string",
+            "title": "Requestref"
+          },
+          "partnerName": {
+            "type": "string",
+            "title": "Partnername"
+          },
+          "partnerKind": {
+            "type": "string",
+            "enum": [
+              "hospital",
+              "blood_bank"
+            ],
+            "title": "Partnerkind"
+          },
+          "bloodGroup": {
+            "type": "string",
+            "enum": [
+              "A+",
+              "A-",
+              "B+",
+              "B-",
+              "AB+",
+              "AB-",
+              "O+",
+              "O-"
+            ],
+            "title": "Bloodgroup"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "urgency": {
+            "type": "string",
+            "enum": [
+              "routine",
+              "urgent",
+              "critical"
+            ],
+            "title": "Urgency"
+          },
+          "neededBy": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Neededby"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed",
+              "expired"
+            ],
+            "title": "State"
+          },
+          "answer": {
+            "type": "string",
+            "enum": [
+              "notified",
+              "accepted",
+              "declined"
+            ],
+            "title": "Answer"
+          },
+          "answeredAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answeredat"
+          },
+          "notifiedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Notifiedat"
+          },
+          "medicalStatementEn": {
+            "type": "string",
+            "title": "Medicalstatementen",
+            "default": "Whether you can give blood, and whose blood yours suits, is decided only by qualified health professionals at the hospital or blood bank. This app never decides it."
+          },
+          "medicalStatementTa": {
+            "type": "string",
+            "title": "Medicalstatementta",
+            "default": "நீங்கள் இரத்த தானம் செய்ய முடியுமா, உங்கள் இரத்தம் யாருக்குப் பொருந்தும் என்பதை வைத்தியசாலை அல்லது இரத்த வங்கியின் தகுதிவாய்ந்த சுகாதார நிபுணர்கள் மட்டுமே தீர்மானிப்பார்கள். இந்தச் செயலி ஒருபோதும் அதைத் தீர்மானிக்காது."
+          }
+        },
+        "type": "object",
+        "required": [
+          "requestId",
+          "requestRef",
+          "partnerName",
+          "partnerKind",
+          "bloodGroup",
+          "areaKey",
+          "urgency",
+          "neededBy",
+          "state",
+          "answer",
+          "answeredAt",
+          "notifiedAt"
+        ],
+        "title": "BloodNoticeOut",
+        "description": "M38: what the donor needs to decide, and nothing about the patient."
+      },
+      "BloodOversightOut": {
+        "properties": {
+          "partners": {
+            "items": {
+              "$ref": "#/components/schemas/BloodPartnerOut"
+            },
+            "type": "array",
+            "title": "Partners"
+          },
+          "requesters": {
+            "items": {
+              "$ref": "#/components/schemas/BloodRequesterOut"
+            },
+            "type": "array",
+            "title": "Requesters"
+          },
+          "awaiting": {
+            "items": {
+              "$ref": "#/components/schemas/BloodRequestOut"
+            },
+            "type": "array",
+            "title": "Awaiting"
+          },
+          "recent": {
+            "items": {
+              "$ref": "#/components/schemas/BloodRequestOut"
+            },
+            "type": "array",
+            "title": "Recent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "partners",
+          "requesters",
+          "awaiting",
+          "recent"
+        ],
+        "title": "BloodOversightOut"
+      },
+      "BloodPartnerActiveIn": {
+        "properties": {
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "active"
+        ],
+        "title": "BloodPartnerActiveIn"
+      },
+      "BloodPartnerIn": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "hospital",
+              "blood_bank"
+            ],
+            "title": "Kind"
+          },
+          "districtCode": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 2,
+            "title": "Districtcode"
+          },
+          "agreementRef": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Agreementref",
+            "description": "The signed partner agreement (DEP-18)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "kind",
+          "districtCode",
+          "agreementRef"
+        ],
+        "title": "BloodPartnerIn"
+      },
+      "BloodPartnerOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "hospital",
+              "blood_bank"
+            ],
+            "title": "Kind"
+          },
+          "districtKey": {
+            "type": "string",
+            "title": "Districtkey"
+          },
+          "agreementRef": {
+            "type": "string",
+            "title": "Agreementref"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "districtKey",
+          "agreementRef",
+          "active",
+          "createdAt"
+        ],
+        "title": "BloodPartnerOut"
+      },
+      "BloodRequestDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "requestRef": {
+            "type": "string",
+            "title": "Requestref"
+          },
+          "partnerId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Partnerid"
+          },
+          "partnerName": {
+            "type": "string",
+            "title": "Partnername"
+          },
+          "bloodGroup": {
+            "type": "string",
+            "enum": [
+              "A+",
+              "A-",
+              "B+",
+              "B-",
+              "AB+",
+              "AB-",
+              "O+",
+              "O-"
+            ],
+            "title": "Bloodgroup"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "units": {
+            "type": "integer",
+            "title": "Units"
+          },
+          "urgency": {
+            "type": "string",
+            "enum": [
+              "routine",
+              "urgent",
+              "critical"
+            ],
+            "title": "Urgency"
+          },
+          "neededBy": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Neededby"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "awaiting_approval",
+              "open",
+              "closed",
+              "refused"
+            ],
+            "title": "State"
+          },
+          "expired": {
+            "type": "boolean",
+            "title": "Expired",
+            "description": "Open, but past the time it was needed by"
+          },
+          "overLimit": {
+            "type": "boolean",
+            "title": "Overlimit"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fulfilled",
+                  "partly_fulfilled",
+                  "not_needed",
+                  "unfulfilled"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "notified": {
+            "type": "integer",
+            "title": "Notified"
+          },
+          "accepted": {
+            "type": "integer",
+            "title": "Accepted"
+          },
+          "declined": {
+            "type": "integer",
+            "title": "Declined"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedat"
+          },
+          "contacts": {
+            "items": {
+              "$ref": "#/components/schemas/BloodContactOut"
+            },
+            "type": "array",
+            "title": "Contacts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "requestRef",
+          "partnerId",
+          "partnerName",
+          "bloodGroup",
+          "areaKey",
+          "units",
+          "urgency",
+          "neededBy",
+          "state",
+          "expired",
+          "overLimit",
+          "decisionReason",
+          "outcome",
+          "notified",
+          "accepted",
+          "declined",
+          "createdAt",
+          "closedAt",
+          "contacts"
+        ],
+        "title": "BloodRequestDetailOut"
+      },
+      "BloodRequestIn": {
+        "properties": {
+          "bloodGroup": {
+            "type": "string",
+            "enum": [
+              "A+",
+              "A-",
+              "B+",
+              "B-",
+              "AB+",
+              "AB-",
+              "O+",
+              "O-"
+            ],
+            "title": "Bloodgroup"
+          },
+          "area": {
+            "$ref": "#/components/schemas/BloodAreaIn"
+          },
+          "units": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Units"
+          },
+          "urgency": {
+            "type": "string",
+            "enum": [
+              "routine",
+              "urgent",
+              "critical"
+            ],
+            "title": "Urgency"
+          },
+          "neededBy": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Neededby"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bloodGroup",
+          "area",
+          "units",
+          "urgency",
+          "neededBy"
+        ],
+        "title": "BloodRequestIn"
+      },
+      "BloodRequestOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "requestRef": {
+            "type": "string",
+            "title": "Requestref"
+          },
+          "partnerId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Partnerid"
+          },
+          "partnerName": {
+            "type": "string",
+            "title": "Partnername"
+          },
+          "bloodGroup": {
+            "type": "string",
+            "enum": [
+              "A+",
+              "A-",
+              "B+",
+              "B-",
+              "AB+",
+              "AB-",
+              "O+",
+              "O-"
+            ],
+            "title": "Bloodgroup"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "units": {
+            "type": "integer",
+            "title": "Units"
+          },
+          "urgency": {
+            "type": "string",
+            "enum": [
+              "routine",
+              "urgent",
+              "critical"
+            ],
+            "title": "Urgency"
+          },
+          "neededBy": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Neededby"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "awaiting_approval",
+              "open",
+              "closed",
+              "refused"
+            ],
+            "title": "State"
+          },
+          "expired": {
+            "type": "boolean",
+            "title": "Expired",
+            "description": "Open, but past the time it was needed by"
+          },
+          "overLimit": {
+            "type": "boolean",
+            "title": "Overlimit"
+          },
+          "decisionReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisionreason"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fulfilled",
+                  "partly_fulfilled",
+                  "not_needed",
+                  "unfulfilled"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "notified": {
+            "type": "integer",
+            "title": "Notified"
+          },
+          "accepted": {
+            "type": "integer",
+            "title": "Accepted"
+          },
+          "declined": {
+            "type": "integer",
+            "title": "Declined"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "requestRef",
+          "partnerId",
+          "partnerName",
+          "bloodGroup",
+          "areaKey",
+          "units",
+          "urgency",
+          "neededBy",
+          "state",
+          "expired",
+          "overLimit",
+          "decisionReason",
+          "outcome",
+          "notified",
+          "accepted",
+          "declined",
+          "createdAt",
+          "closedAt"
+        ],
+        "title": "BloodRequestOut",
+        "description": "Counts only (FR-BLD-004)."
+      },
+      "BloodRequesterIn": {
+        "properties": {
+          "memberCode": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 3,
+            "title": "Membercode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "memberCode"
+        ],
+        "title": "BloodRequesterIn"
+      },
+      "BloodRequesterOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "partnerId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Partnerid"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "memberCode": {
+            "type": "string",
+            "title": "Membercode"
+          },
+          "grantedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Grantedat"
+          },
+          "revokedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revokedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "partnerId",
+          "fullName",
+          "memberCode",
+          "grantedAt",
+          "revokedAt"
+        ],
+        "title": "BloodRequesterOut"
       },
       "BroadcastCreateIn": {
         "properties": {
@@ -32196,6 +35517,11 @@
           },
           "promises": {
             "$ref": "#/components/schemas/HomePromisesOut"
+          },
+          "safetyAlerts": {
+            "type": "integer",
+            "title": "Safetyalerts",
+            "description": "Current official warnings for the home area (M35's Home banner); 0 while off"
           }
         },
         "type": "object",
@@ -32212,7 +35538,8 @@
           "quickActions",
           "tabs",
           "hub",
-          "promises"
+          "promises",
+          "safetyAlerts"
         ],
         "title": "HomeOut"
       },
@@ -34828,6 +38155,198 @@
           "publishedAt"
         ],
         "title": "ManagedAlbumOut"
+      },
+      "ManagedAlertOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "alertRef": {
+            "type": "string",
+            "title": "Alertref"
+          },
+          "sourceKey": {
+            "type": "string",
+            "enum": [
+              "dmc",
+              "meteorology",
+              "district_secretariat",
+              "divisional_secretariat"
+            ],
+            "title": "Sourcekey"
+          },
+          "sourceNameEn": {
+            "type": "string",
+            "title": "Sourcenameen"
+          },
+          "sourceNameTa": {
+            "type": "string",
+            "title": "Sourcenameta"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "title": "Sourceurl"
+          },
+          "sourceIssuedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourceissuedat"
+          },
+          "sourceEndsAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourceendsat",
+            "description": "The alert expires at the source's end time (FR-DIS-008)"
+          },
+          "hazard": {
+            "type": "string",
+            "enum": [
+              "flood",
+              "cyclone",
+              "heavy_rain",
+              "strong_wind",
+              "landslide",
+              "lightning",
+              "tsunami",
+              "drought",
+              "other"
+            ],
+            "title": "Hazard"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "advisory",
+              "watch",
+              "warning"
+            ],
+            "title": "Severity"
+          },
+          "titleEn": {
+            "type": "string",
+            "title": "Titleen"
+          },
+          "titleTa": {
+            "type": "string",
+            "title": "Titleta"
+          },
+          "bodyEn": {
+            "type": "string",
+            "title": "Bodyen"
+          },
+          "bodyTa": {
+            "type": "string",
+            "title": "Bodyta"
+          },
+          "targetKeys": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Targetkeys"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "current",
+              "expired",
+              "withdrawn"
+            ],
+            "title": "State"
+          },
+          "withdrawnReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawnreason"
+          },
+          "relayedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Relayedat"
+          },
+          "refreshedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Refreshedat",
+            "description": "When someone last checked the alert against its source"
+          },
+          "stale": {
+            "type": "boolean",
+            "title": "Stale",
+            "description": "Current, and nobody has checked the source for 6 hours (FR-DIS-008)"
+          },
+          "emergencyContacts": {
+            "items": {
+              "$ref": "#/components/schemas/SafetyContactOut"
+            },
+            "type": "array",
+            "title": "Emergencycontacts",
+            "description": "FR-DIS-003: on every alert"
+          },
+          "notDispatchEn": {
+            "type": "string",
+            "title": "Notdispatchen",
+            "default": "This app passes on official warnings only. It is not an emergency service and cannot send help. In danger now, call the emergency numbers."
+          },
+          "notDispatchTa": {
+            "type": "string",
+            "title": "Notdispatchta",
+            "default": "இந்தச் செயலி அதிகாரபூர்வ எச்சரிக்கைகளை மட்டுமே தெரிவிக்கிறது. இது அவசர சேவை அல்ல; உதவியை அனுப்ப முடியாது. இப்போது ஆபத்தில் இருந்தால் அவசர இலக்கங்களை அழையுங்கள்."
+          },
+          "recipients": {
+            "type": "integer",
+            "title": "Recipients",
+            "description": "Members told when it was relayed (and again when its severity rose)"
+          },
+          "relayMinutes": {
+            "type": "integer",
+            "title": "Relayminutes",
+            "description": "Minutes from the source's issue time to the relay (KPI-40)"
+          },
+          "revisions": {
+            "items": {
+              "$ref": "#/components/schemas/AlertRevisionOut"
+            },
+            "type": "array",
+            "title": "Revisions",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "alertRef",
+          "sourceKey",
+          "sourceNameEn",
+          "sourceNameTa",
+          "sourceUrl",
+          "sourceIssuedAt",
+          "sourceEndsAt",
+          "hazard",
+          "severity",
+          "titleEn",
+          "titleTa",
+          "bodyEn",
+          "bodyTa",
+          "targetKeys",
+          "state",
+          "withdrawnReason",
+          "relayedAt",
+          "refreshedAt",
+          "stale",
+          "emergencyContacts",
+          "recipients",
+          "relayMinutes"
+        ],
+        "title": "ManagedAlertOut"
       },
       "ManagedCourseOut": {
         "properties": {
@@ -44074,6 +47593,699 @@
         "title": "RegistrationOut",
         "description": "The tokens are returned for mobile apps; browsers use the HttpOnly cookies."
       },
+      "ReliefAreaIn": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "district",
+              "ds",
+              "gn"
+            ],
+            "title": "Level"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 2,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "code"
+        ],
+        "title": "ReliefAreaIn"
+      },
+      "ReliefDistributionIn": {
+        "properties": {
+          "storeKey": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 3,
+            "title": "Storekey",
+            "description": "The store it came from, such as ds:LK4103"
+          },
+          "area": {
+            "$ref": "#/components/schemas/ReliefAreaIn",
+            "description": "Where it was handed out"
+          },
+          "item": {
+            "type": "string",
+            "enum": [
+              "rice",
+              "dry_rations",
+              "drinking_water",
+              "cooked_meals",
+              "clothing",
+              "mats_blankets",
+              "hygiene_kits",
+              "tarpaulins",
+              "baby_food",
+              "kitchen_sets"
+            ],
+            "title": "Item"
+          },
+          "quantity": {
+            "type": "integer",
+            "maximum": 1000000.0,
+            "minimum": 1.0,
+            "title": "Quantity"
+          },
+          "recipientKind": {
+            "type": "string",
+            "enum": [
+              "case",
+              "group"
+            ],
+            "title": "Recipientkind"
+          },
+          "caseRef": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 12
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caseref",
+            "description": "For a case: its AS- reference"
+          },
+          "groupSite": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Groupsite",
+            "description": "For a group: the shelter or site"
+          },
+          "households": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Households"
+          },
+          "evidence": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Evidence",
+            "description": "The signed list or photo reference"
+          },
+          "deliveredOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Deliveredon"
+          },
+          "alertId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alertid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "storeKey",
+          "area",
+          "item",
+          "quantity",
+          "recipientKind",
+          "evidence",
+          "deliveredOn"
+        ],
+        "title": "ReliefDistributionIn",
+        "description": "S16: never a recipient's name (FR-DIS-005): an AS- case reference, or a group at a site."
+      },
+      "ReliefDistributionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "distributionRef": {
+            "type": "string",
+            "title": "Distributionref"
+          },
+          "storeKey": {
+            "type": "string",
+            "title": "Storekey"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "item": {
+            "type": "string",
+            "enum": [
+              "rice",
+              "dry_rations",
+              "drinking_water",
+              "cooked_meals",
+              "clothing",
+              "mats_blankets",
+              "hygiene_kits",
+              "tarpaulins",
+              "baby_food",
+              "kitchen_sets"
+            ],
+            "title": "Item"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "kg",
+              "packs",
+              "litres",
+              "meals",
+              "pieces",
+              "kits",
+              "sets"
+            ],
+            "title": "Unit"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "recipientKind": {
+            "type": "string",
+            "enum": [
+              "case",
+              "group"
+            ],
+            "title": "Recipientkind"
+          },
+          "caseRef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caseref"
+          },
+          "groupSite": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Groupsite"
+          },
+          "households": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Households"
+          },
+          "evidence": {
+            "type": "string",
+            "title": "Evidence"
+          },
+          "deliveredOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Deliveredon"
+          },
+          "alertId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alertid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "distributionRef",
+          "storeKey",
+          "areaKey",
+          "item",
+          "unit",
+          "quantity",
+          "recipientKind",
+          "caseRef",
+          "groupSite",
+          "households",
+          "evidence",
+          "deliveredOn",
+          "alertId",
+          "createdAt"
+        ],
+        "title": "ReliefDistributionOut"
+      },
+      "ReliefItemOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "enum": [
+              "rice",
+              "dry_rations",
+              "drinking_water",
+              "cooked_meals",
+              "clothing",
+              "mats_blankets",
+              "hygiene_kits",
+              "tarpaulins",
+              "baby_food",
+              "kitchen_sets"
+            ],
+            "title": "Key"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "kg",
+              "packs",
+              "litres",
+              "meals",
+              "pieces",
+              "kits",
+              "sets"
+            ],
+            "title": "Unit"
+          },
+          "nameEn": {
+            "type": "string",
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "title": "Nameta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "unit",
+          "nameEn",
+          "nameTa"
+        ],
+        "title": "ReliefItemOut"
+      },
+      "ReliefOfferIn": {
+        "properties": {
+          "tasks": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "distribution",
+                "cooking",
+                "transport",
+                "shelter_support",
+                "cleaning",
+                "loading",
+                "first_aid"
+              ]
+            },
+            "type": "array",
+            "maxItems": 7,
+            "minItems": 1,
+            "title": "Tasks"
+          },
+          "availableUntil": {
+            "type": "string",
+            "format": "date",
+            "title": "Availableuntil"
+          },
+          "consent": {
+            "type": "boolean",
+            "title": "Consent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tasks",
+          "availableUntil",
+          "consent"
+        ],
+        "title": "ReliefOfferIn"
+      },
+      "ReliefOfferOut": {
+        "properties": {
+          "tasks": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "distribution",
+                "cooking",
+                "transport",
+                "shelter_support",
+                "cleaning",
+                "loading",
+                "first_aid"
+              ]
+            },
+            "type": "array",
+            "title": "Tasks"
+          },
+          "availableUntil": {
+            "type": "string",
+            "format": "date",
+            "title": "Availableuntil"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tasks",
+          "availableUntil",
+          "areaKey",
+          "updatedAt"
+        ],
+        "title": "ReliefOfferOut"
+      },
+      "ReliefOverviewOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReliefItemOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "stock": {
+            "items": {
+              "$ref": "#/components/schemas/ReliefStockOut"
+            },
+            "type": "array",
+            "title": "Stock"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "stock"
+        ],
+        "title": "ReliefOverviewOut",
+        "description": "S16 and D26: the items, and the stock of every store in the officer's areas."
+      },
+      "ReliefStockOut": {
+        "properties": {
+          "storeKey": {
+            "type": "string",
+            "title": "Storekey"
+          },
+          "item": {
+            "type": "string",
+            "enum": [
+              "rice",
+              "dry_rations",
+              "drinking_water",
+              "cooked_meals",
+              "clothing",
+              "mats_blankets",
+              "hygiene_kits",
+              "tarpaulins",
+              "baby_food",
+              "kitchen_sets"
+            ],
+            "title": "Item"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "kg",
+              "packs",
+              "litres",
+              "meals",
+              "pieces",
+              "kits",
+              "sets"
+            ],
+            "title": "Unit"
+          },
+          "received": {
+            "type": "integer",
+            "title": "Received"
+          },
+          "handedOut": {
+            "type": "integer",
+            "title": "Handedout"
+          },
+          "balance": {
+            "type": "integer",
+            "title": "Balance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "storeKey",
+          "item",
+          "unit",
+          "received",
+          "handedOut",
+          "balance"
+        ],
+        "title": "ReliefStockOut"
+      },
+      "ReliefSupplyIn": {
+        "properties": {
+          "store": {
+            "$ref": "#/components/schemas/ReliefAreaIn",
+            "description": "The District or DS division whose store received it"
+          },
+          "item": {
+            "type": "string",
+            "enum": [
+              "rice",
+              "dry_rations",
+              "drinking_water",
+              "cooked_meals",
+              "clothing",
+              "mats_blankets",
+              "hygiene_kits",
+              "tarpaulins",
+              "baby_food",
+              "kitchen_sets"
+            ],
+            "title": "Item"
+          },
+          "quantity": {
+            "type": "integer",
+            "maximum": 1000000.0,
+            "minimum": 1.0,
+            "title": "Quantity"
+          },
+          "supplier": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 2,
+            "title": "Supplier"
+          },
+          "receivedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Receivedon"
+          },
+          "alertId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alertid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "store",
+          "item",
+          "quantity",
+          "supplier",
+          "receivedOn"
+        ],
+        "title": "ReliefSupplyIn"
+      },
+      "ReliefSupplyOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "storeKey": {
+            "type": "string",
+            "title": "Storekey"
+          },
+          "item": {
+            "type": "string",
+            "enum": [
+              "rice",
+              "dry_rations",
+              "drinking_water",
+              "cooked_meals",
+              "clothing",
+              "mats_blankets",
+              "hygiene_kits",
+              "tarpaulins",
+              "baby_food",
+              "kitchen_sets"
+            ],
+            "title": "Item"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "kg",
+              "packs",
+              "litres",
+              "meals",
+              "pieces",
+              "kits",
+              "sets"
+            ],
+            "title": "Unit"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "supplier": {
+            "type": "string",
+            "title": "Supplier"
+          },
+          "receivedOn": {
+            "type": "string",
+            "format": "date",
+            "title": "Receivedon"
+          },
+          "alertId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alertid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "storeKey",
+          "item",
+          "unit",
+          "quantity",
+          "supplier",
+          "receivedOn",
+          "alertId",
+          "createdAt"
+        ],
+        "title": "ReliefSupplyOut"
+      },
+      "ReliefVolunteerOut": {
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "tasks": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "distribution",
+                "cooking",
+                "transport",
+                "shelter_support",
+                "cleaning",
+                "loading",
+                "first_aid"
+              ]
+            },
+            "type": "array",
+            "title": "Tasks"
+          },
+          "availableUntil": {
+            "type": "string",
+            "format": "date",
+            "title": "Availableuntil"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fullName",
+          "areaKey",
+          "tasks",
+          "availableUntil",
+          "updatedAt"
+        ],
+        "title": "ReliefVolunteerOut",
+        "description": "FR-DIS-004: a name, the area, the tasks and until when; never a phone number."
+      },
       "ReminderIn": {
         "properties": {
           "remind": {
@@ -45401,6 +49613,325 @@
         ],
         "title": "RsvpOut"
       },
+      "SafetyAreaIn": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "district",
+              "ds",
+              "gn"
+            ],
+            "title": "Level"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 2,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "code"
+        ],
+        "title": "SafetyAreaIn"
+      },
+      "SafetyContactOut": {
+        "properties": {
+          "number": {
+            "type": "string",
+            "title": "Number"
+          },
+          "nameEn": {
+            "type": "string",
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "title": "Nameta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "number",
+          "nameEn",
+          "nameTa"
+        ],
+        "title": "SafetyContactOut"
+      },
+      "SafetyHelpIn": {
+        "properties": {
+          "need": {
+            "type": "string",
+            "enum": [
+              "food_water",
+              "shelter",
+              "evacuation",
+              "medical",
+              "missing_person",
+              "other"
+            ],
+            "title": "Need"
+          },
+          "people": {
+            "type": "integer",
+            "maximum": 500.0,
+            "minimum": 1.0,
+            "title": "People"
+          },
+          "details": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Details"
+          },
+          "fullName": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Fullname"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\+?[0-9 ]{9,15}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "area": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SafetyAreaIn"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Where help is needed; the home area when absent"
+          },
+          "alertId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alertid"
+          },
+          "consent": {
+            "type": "boolean",
+            "title": "Consent",
+            "description": "Consent to collect the case information (FR-AST-004)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "need",
+          "people",
+          "details",
+          "fullName",
+          "consent"
+        ],
+        "title": "SafetyHelpIn",
+        "description": "M36: an urgent request for follow-up by Community Support. Never a dispatch (OS-14)."
+      },
+      "SafetyHelpOut": {
+        "properties": {
+          "caseId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Caseid"
+          },
+          "caseRef": {
+            "type": "string",
+            "title": "Caseref"
+          }
+        },
+        "type": "object",
+        "required": [
+          "caseId",
+          "caseRef"
+        ],
+        "title": "SafetyHelpOut"
+      },
+      "SafetyHomeOut": {
+        "properties": {
+          "areaKeys": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Areakeys",
+            "description": "The District, DS and GN keys the alerts are for; empty when unknown"
+          },
+          "emergencyContacts": {
+            "items": {
+              "$ref": "#/components/schemas/SafetyContactOut"
+            },
+            "type": "array",
+            "title": "Emergencycontacts"
+          },
+          "notDispatchEn": {
+            "type": "string",
+            "title": "Notdispatchen",
+            "default": "This app passes on official warnings only. It is not an emergency service and cannot send help. In danger now, call the emergency numbers."
+          },
+          "notDispatchTa": {
+            "type": "string",
+            "title": "Notdispatchta",
+            "default": "இந்தச் செயலி அதிகாரபூர்வ எச்சரிக்கைகளை மட்டுமே தெரிவிக்கிறது. இது அவசர சேவை அல்ல; உதவியை அனுப்ப முடியாது. இப்போது ஆபத்தில் இருந்தால் அவசர இலக்கங்களை அழையுங்கள்."
+          },
+          "current": {
+            "items": {
+              "$ref": "#/components/schemas/AlertOut"
+            },
+            "type": "array",
+            "title": "Current"
+          },
+          "shelters": {
+            "items": {
+              "$ref": "#/components/schemas/ShelterOut"
+            },
+            "type": "array",
+            "title": "Shelters"
+          },
+          "reliefOffer": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReliefOfferOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reliefOfferLock": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "identity_not_verified",
+                  "membership_not_active"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reliefofferlock"
+          },
+          "reliefTasks": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "distribution",
+                "cooking",
+                "transport",
+                "shelter_support",
+                "cleaning",
+                "loading",
+                "first_aid"
+              ]
+            },
+            "type": "array",
+            "title": "Relieftasks"
+          },
+          "helpNeeds": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "food_water",
+                "shelter",
+                "evacuation",
+                "medical",
+                "missing_person",
+                "other"
+              ]
+            },
+            "type": "array",
+            "title": "Helpneeds"
+          },
+          "checkedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Checkedat",
+            "description": "When the server answered, for the copy kept on the phone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "areaKeys",
+          "emergencyContacts",
+          "current",
+          "shelters",
+          "reliefOffer",
+          "reliefOfferLock",
+          "reliefTasks",
+          "helpNeeds",
+          "checkedAt"
+        ],
+        "title": "SafetyHomeOut",
+        "description": "M35: the official emergency numbers, the statement that this is not a dispatch service, the current\nalerts for the area, nearby shelters and the member's relief offer."
+      },
+      "SafetySourceOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "enum": [
+              "dmc",
+              "meteorology",
+              "district_secretariat",
+              "divisional_secretariat"
+            ],
+            "title": "Key"
+          },
+          "nameEn": {
+            "type": "string",
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "title": "Nameta"
+          },
+          "domains": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Domains"
+          },
+          "alerts": {
+            "type": "boolean",
+            "title": "Alerts",
+            "description": "May issue hazard warnings (INT-18)"
+          },
+          "shelters": {
+            "type": "boolean",
+            "title": "Shelters",
+            "description": "May publish shelter information (FR-DIS-006)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "nameEn",
+          "nameTa",
+          "domains",
+          "alerts",
+          "shelters"
+        ],
+        "title": "SafetySourceOut"
+      },
       "SaveExitIn": {
         "properties": {
           "lessonId": {
@@ -45927,6 +50458,298 @@
           "current"
         ],
         "title": "SessionOut"
+      },
+      "ShelterCreateIn": {
+        "properties": {
+          "nameEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "maxLength": 220,
+            "minLength": 3,
+            "title": "Nameta"
+          },
+          "placeEn": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Placeen"
+          },
+          "placeTa": {
+            "type": "string",
+            "maxLength": 450,
+            "minLength": 3,
+            "title": "Placeta"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "full",
+              "closed"
+            ],
+            "title": "Status"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "sourceKey": {
+            "type": "string",
+            "enum": [
+              "dmc",
+              "meteorology",
+              "district_secretariat",
+              "divisional_secretariat"
+            ],
+            "title": "Sourcekey"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceurl"
+          },
+          "sourceReportedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourcereportedat"
+          },
+          "area": {
+            "$ref": "#/components/schemas/SafetyAreaIn"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nameEn",
+          "nameTa",
+          "placeEn",
+          "placeTa",
+          "status",
+          "sourceKey",
+          "sourceReportedAt",
+          "area"
+        ],
+        "title": "ShelterCreateIn"
+      },
+      "ShelterIn": {
+        "properties": {
+          "nameEn": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "maxLength": 220,
+            "minLength": 3,
+            "title": "Nameta"
+          },
+          "placeEn": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Placeen"
+          },
+          "placeTa": {
+            "type": "string",
+            "maxLength": 450,
+            "minLength": 3,
+            "title": "Placeta"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "full",
+              "closed"
+            ],
+            "title": "Status"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "sourceKey": {
+            "type": "string",
+            "enum": [
+              "dmc",
+              "meteorology",
+              "district_secretariat",
+              "divisional_secretariat"
+            ],
+            "title": "Sourcekey"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceurl"
+          },
+          "sourceReportedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourcereportedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nameEn",
+          "nameTa",
+          "placeEn",
+          "placeTa",
+          "status",
+          "sourceKey",
+          "sourceReportedAt"
+        ],
+        "title": "ShelterIn"
+      },
+      "ShelterOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "nameEn": {
+            "type": "string",
+            "title": "Nameen"
+          },
+          "nameTa": {
+            "type": "string",
+            "title": "Nameta"
+          },
+          "placeEn": {
+            "type": "string",
+            "title": "Placeen"
+          },
+          "placeTa": {
+            "type": "string",
+            "title": "Placeta"
+          },
+          "areaKey": {
+            "type": "string",
+            "title": "Areakey"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "full",
+              "closed"
+            ],
+            "title": "Status"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "sourceKey": {
+            "type": "string",
+            "enum": [
+              "dmc",
+              "meteorology",
+              "district_secretariat",
+              "divisional_secretariat"
+            ],
+            "title": "Sourcekey"
+          },
+          "sourceNameEn": {
+            "type": "string",
+            "title": "Sourcenameen"
+          },
+          "sourceNameTa": {
+            "type": "string",
+            "title": "Sourcenameta"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceurl"
+          },
+          "sourceReportedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sourcereportedat"
+          },
+          "outOfDate": {
+            "type": "boolean",
+            "title": "Outofdate",
+            "description": "Reported more than 12 hours ago: may be out of date (FR-DIS-006)"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "nameEn",
+          "nameTa",
+          "placeEn",
+          "placeTa",
+          "areaKey",
+          "status",
+          "capacity",
+          "sourceKey",
+          "sourceNameEn",
+          "sourceNameTa",
+          "sourceUrl",
+          "sourceReportedAt",
+          "outOfDate",
+          "updatedAt"
+        ],
+        "title": "ShelterOut"
       },
       "ShiftAnswerIn": {
         "properties": {

@@ -285,6 +285,54 @@ export type PublicSupportReceipt = Schemas['PublicReceiptOut'];
 export type PublicSupportStatistics = Schemas['PublicSupportStatisticsOut'];
 export type MySupportReferral = Schemas['MyReferralOut'];
 export type SupportReferral = Schemas['ReferralOut'];
+// Disaster and emergency support (M35, M36, S16, D26) and the blood donor network (M37, M38, D27).
+export type SafetyHome = Schemas['SafetyHomeOut'];
+export type SafetyContact = Schemas['SafetyContactOut'];
+export type SafetySource = Schemas['SafetySourceOut'];
+export type SafetyHelpInput = Schemas['SafetyHelpIn'];
+export type SafetyHelpReceipt = Schemas['SafetyHelpOut'];
+export type SafetyHelpNeed = Schemas['SafetyHelpIn']['need'];
+export type DisasterAlert = Schemas['AlertOut'];
+export type DisasterHazard = Schemas['AlertOut']['hazard'];
+export type DisasterSeverity = Schemas['AlertOut']['severity'];
+export type ManagedDisasterAlert = Schemas['ManagedAlertOut'];
+export type DisasterAlertRevision = Schemas['AlertRevisionOut'];
+export type DisasterAlertRelayInput = Schemas['AlertRelayIn'];
+export type DisasterAlertRefreshInput = Schemas['AlertRefreshIn'];
+export type DisasterAlertComposer = Schemas['AlertComposerOut'];
+export type Shelter = Schemas['ShelterOut'];
+export type ShelterStatus = Schemas['ShelterOut']['status'];
+export type ShelterInput = Schemas['ShelterIn'];
+export type ShelterCreateInput = Schemas['ShelterCreateIn'];
+export type ReliefOffer = Schemas['ReliefOfferOut'];
+export type ReliefOfferInput = Schemas['ReliefOfferIn'];
+export type ReliefTask = Schemas['ReliefOfferIn']['tasks'][number];
+export type ReliefVolunteer = Schemas['ReliefVolunteerOut'];
+export type ReliefOverview = Schemas['ReliefOverviewOut'];
+export type ReliefItem = Schemas['ReliefItemOut'];
+export type ReliefItemKey = Schemas['ReliefItemOut']['key'];
+export type ReliefStock = Schemas['ReliefStockOut'];
+export type ReliefSupply = Schemas['ReliefSupplyOut'];
+export type ReliefSupplyInput = Schemas['ReliefSupplyIn'];
+export type ReliefDistribution = Schemas['ReliefDistributionOut'];
+export type ReliefDistributionInput = Schemas['ReliefDistributionIn'];
+export type BloodDonorHome = Schemas['BloodDonorHomeOut'];
+export type BloodDonor = Schemas['BloodDonorOut'];
+export type BloodDonorInput = Schemas['BloodDonorIn'];
+export type BloodGroup = Schemas['BloodDonorIn']['bloodGroup'];
+export type BloodContactMethod = Schemas['BloodDonorIn']['contactMethods'][number];
+export type BloodNotice = Schemas['BloodNoticeOut'];
+export type BloodDeskAccess = Schemas['BloodDeskAccessOut'];
+export type BloodDesk = Schemas['BloodDeskOut'];
+export type BloodPartner = Schemas['BloodPartnerOut'];
+export type BloodPartnerInput = Schemas['BloodPartnerIn'];
+export type BloodRequest = Schemas['BloodRequestOut'];
+export type BloodRequestDetail = Schemas['BloodRequestDetailOut'];
+export type BloodRequestInput = Schemas['BloodRequestIn'];
+export type BloodUrgency = Schemas['BloodRequestIn']['urgency'];
+export type BloodOutcome = Schemas['BloodCloseIn']['outcome'];
+export type BloodRequester = Schemas['BloodRequesterOut'];
+export type BloodOversight = Schemas['BloodOversightOut'];
 // Town halls (M21 to M23, D18).
 export type TownHall = Schemas['TownHallOut'];
 export type TownHallSession = Schemas['TownHallSessionOut'];
@@ -1683,6 +1731,73 @@ export function createApiClient({
     addSupportPartner: (input: SupportPartnerInput) => request<SupportPartner>('POST', '/v1/assistance/manage/partners', input),
     /** Counts only; null means fewer than 10. */
     getSupportStatistics: () => request<SupportStatistics>('GET', '/v1/assistance/manage/statistics'),
+    // Alerts and safety (M35, M36, D26). Routes answer 404 "feature_unavailable" while disaster_alerts is off;
+    // refusals are "safety_refused" (422) with `problems`. The app relays official warnings only (OS-14).
+    /** M35: alerts follow the home area, or `area` (a key such as ds:LK4103) when given; never GPS. */
+    getSafetyHome: (area?: string) =>
+      request<SafetyHome>('GET', `/v1/alerts${area ? `?area=${encodeURIComponent(area)}` : ''}`),
+    getAlertHistory: (area?: string) =>
+      request<DisasterAlert[]>('GET', `/v1/alerts/history${area ? `?area=${encodeURIComponent(area)}` : ''}`),
+    getAlert: (alertId: string) => request<DisasterAlert>('GET', `/v1/alerts/${encodeURIComponent(alertId)}`),
+    /** M36: becomes an urgent Community Support case; problems include consent_required and support_not_open. */
+    requestEmergencyHelp: (input: SafetyHelpInput) => request<SafetyHelpReceipt>('POST', '/v1/alerts/help', input),
+    saveReliefOffer: (input: ReliefOfferInput) => request<ReliefOffer>('PUT', '/v1/alerts/relief-offer', input),
+    withdrawReliefOffer: () => request<void>('DELETE', '/v1/alerts/relief-offer'),
+    listManagedAlerts: (current = true) => request<ManagedDisasterAlert[]>('GET', `/v1/alerts/manage?current=${current}`),
+    getAlertComposer: () => request<DisasterAlertComposer>('GET', '/v1/alerts/manage/composer'),
+    relayAlert: (input: DisasterAlertRelayInput) => request<ManagedDisasterAlert>('POST', '/v1/alerts/manage', input),
+    getManagedAlert: (alertId: string) =>
+      request<ManagedDisasterAlert>('GET', `/v1/alerts/manage/${encodeURIComponent(alertId)}`),
+    refreshAlert: (alertId: string, input: DisasterAlertRefreshInput) =>
+      request<ManagedDisasterAlert>('POST', `/v1/alerts/manage/${encodeURIComponent(alertId)}/refresh`, input),
+    withdrawAlert: (alertId: string, reason: string) =>
+      request<ManagedDisasterAlert>('POST', `/v1/alerts/manage/${encodeURIComponent(alertId)}/withdraw`, { reason }),
+    listManagedShelters: () => request<Shelter[]>('GET', '/v1/alerts/manage/shelters'),
+    addShelter: (input: ShelterCreateInput) => request<Shelter>('POST', '/v1/alerts/manage/shelters', input),
+    updateShelter: (shelterId: string, input: ShelterInput) =>
+      request<Shelter>('PUT', `/v1/alerts/manage/shelters/${encodeURIComponent(shelterId)}`, input),
+    listReliefVolunteers: () => request<ReliefVolunteer[]>('GET', '/v1/alerts/manage/volunteers'),
+    // Relief logistics (S16, D26), relief.logistics only; refusals are "relief_refused" (422) with `problems`.
+    getReliefOverview: () => request<ReliefOverview>('GET', '/v1/relief'),
+    listReliefSupplies: () => request<ReliefSupply[]>('GET', '/v1/relief/supplies'),
+    recordReliefSupply: (input: ReliefSupplyInput) => request<ReliefSupply>('POST', '/v1/relief/supplies', input),
+    listReliefDistributions: () => request<ReliefDistribution[]>('GET', '/v1/relief/distributions'),
+    /** Problems include more_than_in_stock and case_not_found (an open AS- case in the officer's area). */
+    recordReliefDistribution: (input: ReliefDistributionInput) =>
+      request<ReliefDistribution>('POST', '/v1/relief/distributions', input),
+    // Blood donor network (M37, M38, D27). Routes answer 404 "feature_unavailable" while blood_donors is off;
+    // refusals are "donor_refused" (422) with `problems`. Nothing lists or searches donors (FR-BLD-002).
+    getMyBloodDonor: () => request<BloodDonorHome>('GET', '/v1/donors/me'),
+    /** Opt in or change the details; consent every time (FR-BLD-001). */
+    saveMyBloodDonor: (input: BloodDonorInput) => request<BloodDonor>('PUT', '/v1/donors/me', input),
+    /** FR-BLD-007: deletes the donor record and every answer at once. */
+    withdrawBloodDonor: () => request<void>('DELETE', '/v1/donors/me'),
+    getBloodNotice: (requestId: string) =>
+      request<BloodNotice>('GET', `/v1/donors/me/requests/${encodeURIComponent(requestId)}`),
+    answerBloodNotice: (requestId: string, accept: boolean, consent: boolean) =>
+      request<BloodNotice>('POST', `/v1/donors/me/requests/${encodeURIComponent(requestId)}/answer`, { accept, consent }),
+    getBloodDeskAccess: () => request<BloodDeskAccess>('GET', '/v1/donors/desk/access'),
+    getBloodDesk: () => request<BloodDesk>('GET', '/v1/donors/desk'),
+    raiseBloodRequest: (input: BloodRequestInput) => request<BloodRequestDetail>('POST', '/v1/donors/desk/requests', input),
+    getBloodRequest: (requestId: string) =>
+      request<BloodRequestDetail>('GET', `/v1/donors/desk/requests/${encodeURIComponent(requestId)}`),
+    closeBloodRequest: (requestId: string, outcome: BloodOutcome) =>
+      request<BloodRequestDetail>('POST', `/v1/donors/desk/requests/${encodeURIComponent(requestId)}/close`, { outcome }),
+    getBloodOversight: () => request<BloodOversight>('GET', '/v1/donors/oversight'),
+    addBloodPartner: (input: BloodPartnerInput) => request<BloodPartner>('POST', '/v1/donors/oversight/partners', input),
+    setBloodPartnerActive: (partnerId: string, active: boolean) =>
+      request<BloodPartner>('POST', `/v1/donors/oversight/partners/${encodeURIComponent(partnerId)}/active`, { active }),
+    authoriseBloodRequester: (partnerId: string, memberCode: string) =>
+      request<BloodRequester>('POST', `/v1/donors/oversight/partners/${encodeURIComponent(partnerId)}/requesters`, {
+        memberCode,
+      }),
+    revokeBloodRequester: (requesterId: string) =>
+      request<BloodRequester>('POST', `/v1/donors/oversight/requesters/${encodeURIComponent(requesterId)}/revoke`),
+    decideBloodRequest: (requestId: string, approve: boolean, reason?: string) =>
+      request<BloodRequest>('POST', `/v1/donors/oversight/requests/${encodeURIComponent(requestId)}/decision`, {
+        approve,
+        reason: reason ?? null,
+      }),
     // Town halls (M21 to M23, D18). Routes answer 404 "feature_unavailable" while town_halls is off.
     listTownHalls: () => request<TownHall[]>('GET', '/v1/town-halls'),
     /** Approved questions with vote totals and the member's own; `q` searches the question history. */

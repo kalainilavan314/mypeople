@@ -40,6 +40,8 @@ HUB_SERVICES = (
     "area_projects",
     "promises",
     "support",
+    "disaster_alerts",
+    "blood_donors",
 )
 
 # Services whose routes sit behind a v1.1 module switch (FR-ARCH-011). While the switch is off the
@@ -59,6 +61,8 @@ GATED_BY_MODULE = {
     "invite": "invitations",
     "promises": "promises",
     "support": "community_support",
+    "disaster_alerts": "disaster_alerts",
+    "blood_donors": "blood_donors",
 }
 
 # M18: the Promise Tracker is also shown on Home itself, with a count of the promises made for the
@@ -71,7 +75,9 @@ PROMISE_TRACKER = "promises"
 # wait for a Verified identity and an Active membership. The card itself is open: it explains
 # why it is not official yet.
 OPEN_TO_EVERYONE = frozenset(
-    {"my_area", "events", "card", "gallery", "learning", "local_reports", "area_projects", "promises", "support"}
+    {"my_area", "events", "card", "gallery", "learning", "local_reports", "area_projects", "promises", "support",
+     # Official warnings and blood donation are for everyone; neither depends on membership (BR-102).
+     "disaster_alerts", "blood_donors"}
 )
 
 

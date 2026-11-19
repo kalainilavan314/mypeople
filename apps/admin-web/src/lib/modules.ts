@@ -50,6 +50,14 @@ export const builtModules: readonly AdminModule[] = [
     permission: ['assistance.intake', 'assistance.casework', 'assistance.decide', 'assistance.programme.manage'] as const,
   },
   { href: '/town-halls', ta: 'மக்கள் மன்றங்கள்', en: 'Town halls', permission: ['townhall.produce', 'townhall.moderate'] as const },
+  {
+    href: '/disaster',
+    ta: 'அனர்த்த எச்சரிக்கைகளும் நிவாரணமும்',
+    en: 'Disaster alerts and relief',
+    permission: ['disaster.relay', 'relief.logistics'] as const,
+  },
+  // donor.request is not a staff permission: lib/staff.ts adds it for accounts a partner authorised (PRM-55).
+  { href: '/blood-requests', ta: 'இரத்தக் கோரிக்கை மேசை', en: 'Blood request desk', permission: ['donor.request', 'donor.oversight'] as const },
   { href: '/field', ta: 'களப் பார்வைகள்', en: 'Field visits', permission: 'field.collect' },
   { href: '/gallery', ta: 'புகைப்படங்கள் & நீக்கங்கள்', en: 'Gallery console', permission: ['gallery.publish', 'gallery.takedown'] as const },
   { href: '/messages', ta: 'அறிவித்தல்கள் & செய்திகள்', en: 'Messaging composer', permission: 'notifications.send' },

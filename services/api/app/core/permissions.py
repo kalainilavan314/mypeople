@@ -95,6 +95,10 @@ MATRIX: dict[str, dict[Tier, Grant]] = {
     "certificate.issue_revoke": {"3B": E, "5": D},  # PRM-52
     "disaster.relay": {"3B": E, "5": E},  # PRM-53
     "relief.logistics": {"2B": E, "3B": E},  # PRM-54
+    # [ASSUMPTION] OD-39: PRM-55 (donor.request) belongs to partner accounts, not tiers; its "T5 oversight
+    # read-only", the approval of requests over the hourly limit (FR-BLD-008) and the authorisation of
+    # partners and their requesters are this explicit Tier 5 grant.
+    "donor.oversight": {"5": E},
     # Not in the BRD matrix [ASSUMPTION]: FR-PROF-018 and 019 route data-subject requests to
     # the DPO without naming a permission; the DPO's account holds it as an explicit Tier 5 grant.
     "privacy.requests.handle": {"5": E},

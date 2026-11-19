@@ -70,6 +70,40 @@ def insert(
     )
 
 
+def insert_for_home_areas(db: Session, *, area_keys: list[str], key: str, template: Template,
+                          target_id: uuid.UUID | None) -> int:
+    """One notice for every member whose home District, DS or GN division is one of these areas, unless
+    they turned the template's topic off on every channel (FR-MSG-003). Returns how many were added."""
+    return db.execute(
+        text(
+            """
+            INSERT INTO notifications.notification (member_id, topic, template, title_en, title_ta, body_en, body_ta,
+                                                    target_kind, target_id, action_required, urgent)
+            SELECT m.id, :topic, :template, :title_en, :title_ta, :body_en, :body_ta, :kind, :target, :action, :urgent
+            FROM npm.member m
+            WHERE m.deleted_at IS NULL
+              AND (('district:' || m.district_code) = ANY(:keys) OR ('ds:' || m.ds_code) = ANY(:keys)
+                   OR ('gn:' || m.gs_code) = ANY(:keys))
+              AND NOT EXISTS (SELECT 1 FROM notifications.preference p
+                              WHERE p.member_id = m.id AND p.topic = :topic AND NOT p.push AND NOT p.sms)
+            """
+        ),
+        {
+            "keys": area_keys,
+            "topic": template.topic,
+            "template": key,
+            "title_en": template.title_en,
+            "title_ta": template.title_ta,
+            "body_en": template.body_en,
+            "body_ta": template.body_ta,
+            "kind": template.target_kind,
+            "target": target_id,
+            "action": template.action_required,
+            "urgent": template.urgent,
+        },
+    ).rowcount
+
+
 def complete_action(db: Session, target_kind: str, target_id: uuid.UUID, member_id: uuid.UUID | None = None) -> None:
     """The task is done: the item leaves "Action needed", read or not (BR-027)."""
     db.execute(

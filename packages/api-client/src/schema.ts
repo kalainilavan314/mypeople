@@ -4924,6 +4924,595 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Safety Home
+         * @description M35: open to anyone signed in. Alerts follow the member's home area, or the area they chose; never GPS.
+         */
+        get: operations["safety_home_v1_alerts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/alerts/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Alert History
+         * @description FR-DIS-008: expired and withdrawn alerts of the last 90 days.
+         */
+        get: operations["alert_history_v1_alerts_history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/alerts/help": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Help
+         * @description M36: an urgent Community Support case for follow-up; nobody is dispatched (OS-14). 422 support_not_open
+         *     while Community Support is switched off.
+         */
+        post: operations["request_help_v1_alerts_help_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/alerts/relief-offer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save Relief Offer
+         * @description FR-DIS-004: offer relief help in the home area until a date; Verified and Active members.
+         */
+        put: operations["save_relief_offer_v1_alerts_relief_offer_put"];
+        post?: never;
+        /** Withdraw Relief Offer */
+        delete: operations["withdraw_relief_offer_v1_alerts_relief_offer_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/alerts/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Managed Alerts
+         * @description Current alerts in the relayer's areas, the ones longest unchecked first; or the history.
+         */
+        get: operations["managed_alerts_v1_alerts_manage_get"];
+        put?: never;
+        /**
+         * Relay Alert
+         * @description FR-DIS-001, 002: relay an official warning; members of the targeted areas are told at once.
+         */
+        post: operations["relay_alert_v1_alerts_manage_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/alerts/manage/composer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Composer */
+        get: operations["composer_v1_alerts_manage_composer_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/alerts/manage/shelters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Managed Shelters */
+        get: operations["managed_shelters_v1_alerts_manage_shelters_get"];
+        put?: never;
+        /**
+         * Add Shelter
+         * @description FR-DIS-006: shelter information from an authorised source, with the time it reported.
+         */
+        post: operations["add_shelter_v1_alerts_manage_shelters_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/alerts/manage/shelters/{shelter_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Shelter */
+        put: operations["update_shelter_v1_alerts_manage_shelters__shelter_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/alerts/manage/volunteers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Relief Volunteers
+         * @description FR-DIS-004: members who offered relief help in the coordinator's areas.
+         */
+        get: operations["relief_volunteers_v1_alerts_manage_volunteers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/alerts/manage/{alert_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Managed */
+        get: operations["read_managed_v1_alerts_manage__alert_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/alerts/manage/{alert_id}/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refresh Alert
+         * @description FR-DIS-008: checked against the source again; the 6-hour flag clears.
+         */
+        post: operations["refresh_alert_v1_alerts_manage__alert_id__refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/alerts/manage/{alert_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw Alert */
+        post: operations["withdraw_alert_v1_alerts_manage__alert_id__withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/alerts/{alert_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Alert
+         * @description An official warning with its source, link, times and the emergency numbers (FR-DIS-001, 003).
+         */
+        get: operations["read_alert_v1_alerts__alert_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/relief": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Overview
+         * @description The items and the stock of every store in the officer's areas.
+         */
+        get: operations["overview_v1_relief_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/relief/supplies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Supplies */
+        get: operations["list_supplies_v1_relief_supplies_get"];
+        put?: never;
+        /** Record Supply */
+        post: operations["record_supply_v1_relief_supplies_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/relief/distributions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Distributions */
+        get: operations["list_distributions_v1_relief_distributions_get"];
+        put?: never;
+        /**
+         * Record Distribution
+         * @description S16: 422 more_than_in_stock when the store does not hold that much; case_not_found for a reference that
+         *     is not an open case in the officer's area (create one through S11 first).
+         */
+        post: operations["record_distribution_v1_relief_distributions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/donors/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Donor
+         * @description M37: the member's own donor record (null until they opt in) and the requests they were told about.
+         */
+        get: operations["my_donor_v1_donors_me_get"];
+        /**
+         * Enrol
+         * @description FR-BLD-001: opt in, or change the details; consent each time (422 consent_required).
+         */
+        put: operations["enrol_v1_donors_me_put"];
+        post?: never;
+        /**
+         * Withdraw
+         * @description FR-BLD-007: withdraw; the donor record and every answer are deleted at once.
+         */
+        delete: operations["withdraw_v1_donors_me_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/donors/me/requests/{request_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Notice
+         * @description M38: only for a donor who was told about it.
+         */
+        get: operations["read_notice_v1_donors_me_requests__request_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/donors/me/requests/{request_id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Answer
+         * @description M38, FR-BLD-005: accept (with consent to pass on the contact) or decline, once.
+         */
+        post: operations["answer_v1_donors_me_requests__request_id__answer_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/donors/desk/access": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Desk Access
+         * @description Whether this account may use the partner desk or the Tier 5 oversight; changes nothing.
+         */
+        get: operations["desk_access_v1_donors_desk_access_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/donors/desk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Desk */
+        get: operations["desk_v1_donors_desk_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/donors/desk/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Raise Request
+         * @description FR-BLD-003, 004, 008: matching donors are told privately; past 10 requests in an hour it waits for
+         *     Tier 5 approval (state awaiting_approval).
+         */
+        post: operations["raise_request_v1_donors_desk_requests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/donors/desk/requests/{request_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Request
+         * @description Counts, and the contact of each donor who accepted and consented; never anyone else's identity.
+         */
+        get: operations["read_request_v1_donors_desk_requests__request_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/donors/desk/requests/{request_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Close Request */
+        post: operations["close_request_v1_donors_desk_requests__request_id__close_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/donors/oversight": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Oversight
+         * @description Partners, their requesters, requests waiting for approval and recent requests, with counts only.
+         */
+        get: operations["oversight_v1_donors_oversight_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/donors/oversight/partners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Partner */
+        post: operations["add_partner_v1_donors_oversight_partners_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/donors/oversight/partners/{partner_id}/active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Set Partner Active */
+        post: operations["set_partner_active_v1_donors_oversight_partners__partner_id__active_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/donors/oversight/partners/{partner_id}/requesters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Authorise Requester
+         * @description PRM-55: a named, identity-verified account of the partner, by its member code.
+         */
+        post: operations["authorise_requester_v1_donors_oversight_partners__partner_id__requesters_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/donors/oversight/requesters/{requester_id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke Requester */
+        post: operations["revoke_requester_v1_donors_oversight_requesters__requester_id__revoke_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/donors/oversight/requests/{request_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide
+         * @description FR-BLD-008: approve or refuse a request over the hourly limit; never your own (own_request).
+         */
+        post: operations["decide_v1_donors_oversight_requests__request_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/town-halls": {
         parameters: {
             query?: never;
@@ -7637,6 +8226,222 @@ export interface components {
              */
             answer: "it_was_me" | "not_me";
         };
+        /**
+         * AlertComposerOut
+         * @description What the D26 composer offers: the official sources and the fixed lists.
+         */
+        AlertComposerOut: {
+            /** Sources */
+            sources: components["schemas"]["SafetySourceOut"][];
+            /** Hazards */
+            hazards: ("flood" | "cyclone" | "heavy_rain" | "strong_wind" | "landslide" | "lightning" | "tsunami" | "drought" | "other")[];
+            /** Severities */
+            severities: ("advisory" | "watch" | "warning")[];
+            /** Longestalertdays */
+            longestAlertDays: number;
+            /** Staleafterhours */
+            staleAfterHours: number;
+        };
+        /**
+         * AlertOut
+         * @description FR-DIS-001: every alert carries its official source, the source's own link and issue time.
+         */
+        AlertOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Alertref */
+            alertRef: string;
+            /**
+             * Sourcekey
+             * @enum {string}
+             */
+            sourceKey: "dmc" | "meteorology" | "district_secretariat" | "divisional_secretariat";
+            /** Sourcenameen */
+            sourceNameEn: string;
+            /** Sourcenameta */
+            sourceNameTa: string;
+            /** Sourceurl */
+            sourceUrl: string;
+            /**
+             * Sourceissuedat
+             * Format: date-time
+             */
+            sourceIssuedAt: string;
+            /**
+             * Sourceendsat
+             * Format: date-time
+             * @description The alert expires at the source's end time (FR-DIS-008)
+             */
+            sourceEndsAt: string;
+            /**
+             * Hazard
+             * @enum {string}
+             */
+            hazard: "flood" | "cyclone" | "heavy_rain" | "strong_wind" | "landslide" | "lightning" | "tsunami" | "drought" | "other";
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "advisory" | "watch" | "warning";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Targetkeys */
+            targetKeys: string[];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "current" | "expired" | "withdrawn";
+            /** Withdrawnreason */
+            withdrawnReason: string | null;
+            /**
+             * Relayedat
+             * Format: date-time
+             */
+            relayedAt: string;
+            /**
+             * Refreshedat
+             * Format: date-time
+             * @description When someone last checked the alert against its source
+             */
+            refreshedAt: string;
+            /**
+             * Stale
+             * @description Current, and nobody has checked the source for 6 hours (FR-DIS-008)
+             */
+            stale: boolean;
+            /**
+             * Emergencycontacts
+             * @description FR-DIS-003: on every alert
+             */
+            emergencyContacts: components["schemas"]["SafetyContactOut"][];
+            /**
+             * Notdispatchen
+             * @default This app passes on official warnings only. It is not an emergency service and cannot send help. In danger now, call the emergency numbers.
+             */
+            notDispatchEn: string;
+            /**
+             * Notdispatchta
+             * @default இந்தச் செயலி அதிகாரபூர்வ எச்சரிக்கைகளை மட்டுமே தெரிவிக்கிறது. இது அவசர சேவை அல்ல; உதவியை அனுப்ப முடியாது. இப்போது ஆபத்தில் இருந்தால் அவசர இலக்கங்களை அழையுங்கள்.
+             */
+            notDispatchTa: string;
+        };
+        /** AlertRefreshIn */
+        AlertRefreshIn: {
+            /** Sourceurl */
+            sourceUrl: string;
+            /**
+             * Sourceissuedat
+             * Format: date-time
+             */
+            sourceIssuedAt: string;
+            /**
+             * Sourceendsat
+             * Format: date-time
+             */
+            sourceEndsAt: string;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "advisory" | "watch" | "warning";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Note */
+            note?: string | null;
+        };
+        /** AlertRelayIn */
+        AlertRelayIn: {
+            /** Sourceurl */
+            sourceUrl: string;
+            /**
+             * Sourceissuedat
+             * Format: date-time
+             */
+            sourceIssuedAt: string;
+            /**
+             * Sourceendsat
+             * Format: date-time
+             */
+            sourceEndsAt: string;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "advisory" | "watch" | "warning";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /**
+             * Sourcekey
+             * @enum {string}
+             */
+            sourceKey: "dmc" | "meteorology" | "district_secretariat" | "divisional_secretariat";
+            /**
+             * Hazard
+             * @enum {string}
+             */
+            hazard: "flood" | "cyclone" | "heavy_rain" | "strong_wind" | "landslide" | "lightning" | "tsunami" | "drought" | "other";
+            /** Targets */
+            targets: components["schemas"]["SafetyAreaIn"][];
+        };
+        /** AlertRevisionOut */
+        AlertRevisionOut: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "relayed" | "refreshed" | "withdrawn";
+            /** Sourceurl */
+            sourceUrl: string;
+            /**
+             * Sourceissuedat
+             * Format: date-time
+             */
+            sourceIssuedAt: string;
+            /**
+             * Sourceendsat
+             * Format: date-time
+             */
+            sourceEndsAt: string;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "advisory" | "watch" | "warning";
+            /** Note */
+            note: string | null;
+            /**
+             * Changedat
+             * Format: date-time
+             */
+            changedAt: string;
+        };
+        /** AlertWithdrawIn */
+        AlertWithdrawIn: {
+            /** Reason */
+            reason: string;
+        };
         /** AnswerIn */
         AnswerIn: {
             /** Answer */
@@ -8346,6 +9151,488 @@ export interface components {
             verifiedAt: string | null;
             /** Area */
             area: string;
+        };
+        /** BloodAnswerIn */
+        BloodAnswerIn: {
+            /** Accept */
+            accept: boolean;
+            /**
+             * Consent
+             * @description Consent to pass the donor's name, phone and contact ways to the partner
+             */
+            consent: boolean;
+        };
+        /** BloodAreaIn */
+        BloodAreaIn: {
+            /**
+             * Level
+             * @description A broad area only: a District or DS division
+             * @enum {string}
+             */
+            level: "district" | "ds";
+            /** Code */
+            code: string;
+        };
+        /** BloodCloseIn */
+        BloodCloseIn: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "fulfilled" | "partly_fulfilled" | "not_needed" | "unfulfilled";
+        };
+        /**
+         * BloodContactOut
+         * @description A donor who accepted and consented to share this (FR-BLD-005).
+         */
+        BloodContactOut: {
+            /** Name */
+            name: string;
+            /** Phone */
+            phone: string;
+            /** Methods */
+            methods: ("call" | "sms" | "whatsapp")[];
+            /**
+             * Acceptedat
+             * Format: date-time
+             */
+            acceptedAt: string;
+        };
+        /** BloodDecisionIn */
+        BloodDecisionIn: {
+            /** Approve */
+            approve: boolean;
+            /** Reason */
+            reason?: string | null;
+        };
+        /**
+         * BloodDeskAccessOut
+         * @description What the dashboard may show this account: its partner's request desk, the Tier 5 oversight, or neither.
+         */
+        BloodDeskAccessOut: {
+            partner: components["schemas"]["BloodPartnerOut"] | null;
+            /** Oversight */
+            oversight: boolean;
+        };
+        /** BloodDeskOut */
+        BloodDeskOut: {
+            partner: components["schemas"]["BloodPartnerOut"];
+            /** Requests */
+            requests: components["schemas"]["BloodRequestOut"][];
+            /**
+             * Requestsperhour
+             * @default 10
+             */
+            requestsPerHour: number;
+            /**
+             * Medicalstatementen
+             * @default Whether you can give blood, and whose blood yours suits, is decided only by qualified health professionals at the hospital or blood bank. This app never decides it.
+             */
+            medicalStatementEn: string;
+            /**
+             * Medicalstatementta
+             * @default நீங்கள் இரத்த தானம் செய்ய முடியுமா, உங்கள் இரத்தம் யாருக்குப் பொருந்தும் என்பதை வைத்தியசாலை அல்லது இரத்த வங்கியின் தகுதிவாய்ந்த சுகாதார நிபுணர்கள் மட்டுமே தீர்மானிப்பார்கள். இந்தச் செயலி ஒருபோதும் அதைத் தீர்மானிக்காது.
+             */
+            medicalStatementTa: string;
+        };
+        /**
+         * BloodDonorHomeOut
+         * @description M37: the member's own donor record, if any, and the requests they were told about.
+         */
+        BloodDonorHomeOut: {
+            donor: components["schemas"]["BloodDonorOut"] | null;
+            /** Notices */
+            notices: components["schemas"]["BloodNoticeOut"][];
+            /** Bloodgroups */
+            bloodGroups: ("A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-")[];
+            /**
+             * Consentversion
+             * @default blood-donor-2026-11
+             */
+            consentVersion: string;
+            /**
+             * Medicalstatementen
+             * @default Whether you can give blood, and whose blood yours suits, is decided only by qualified health professionals at the hospital or blood bank. This app never decides it.
+             */
+            medicalStatementEn: string;
+            /**
+             * Medicalstatementta
+             * @default நீங்கள் இரத்த தானம் செய்ய முடியுமா, உங்கள் இரத்தம் யாருக்குப் பொருந்தும் என்பதை வைத்தியசாலை அல்லது இரத்த வங்கியின் தகுதிவாய்ந்த சுகாதார நிபுணர்கள் மட்டுமே தீர்மானிப்பார்கள். இந்தச் செயலி ஒருபோதும் அதைத் தீர்மானிக்காது.
+             */
+            medicalStatementTa: string;
+        };
+        /**
+         * BloodDonorIn
+         * @description M37: explicit opt-in (FR-BLD-001); the blood group is self-declared.
+         */
+        BloodDonorIn: {
+            /**
+             * Bloodgroup
+             * @enum {string}
+             */
+            bloodGroup: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
+            area: components["schemas"]["BloodAreaIn"];
+            /** Contactname */
+            contactName: string;
+            /** Contactphone */
+            contactPhone: string;
+            /** Contactmethods */
+            contactMethods: ("call" | "sms" | "whatsapp")[];
+            /**
+             * Available
+             * @default true
+             */
+            available: boolean;
+            /**
+             * Pauseduntil
+             * @description Not asked until after this date
+             */
+            pausedUntil?: string | null;
+            /** Consent */
+            consent: boolean;
+        };
+        /** BloodDonorOut */
+        BloodDonorOut: {
+            /**
+             * Bloodgroup
+             * @enum {string}
+             */
+            bloodGroup: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Districtkey
+             * @description The district of the area, for the form
+             */
+            districtKey: string;
+            /** Contactname */
+            contactName: string;
+            /** Contactphone */
+            contactPhone: string;
+            /** Contactmethods */
+            contactMethods: ("call" | "sms" | "whatsapp")[];
+            /** Available */
+            available: boolean;
+            /** Pauseduntil */
+            pausedUntil: string | null;
+            /**
+             * Consentedat
+             * Format: date-time
+             */
+            consentedAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /**
+         * BloodNoticeOut
+         * @description M38: what the donor needs to decide, and nothing about the patient.
+         */
+        BloodNoticeOut: {
+            /**
+             * Requestid
+             * Format: uuid
+             */
+            requestId: string;
+            /** Requestref */
+            requestRef: string;
+            /** Partnername */
+            partnerName: string;
+            /**
+             * Partnerkind
+             * @enum {string}
+             */
+            partnerKind: "hospital" | "blood_bank";
+            /**
+             * Bloodgroup
+             * @enum {string}
+             */
+            bloodGroup: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Urgency
+             * @enum {string}
+             */
+            urgency: "routine" | "urgent" | "critical";
+            /**
+             * Neededby
+             * Format: date-time
+             */
+            neededBy: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "closed" | "expired";
+            /**
+             * Answer
+             * @enum {string}
+             */
+            answer: "notified" | "accepted" | "declined";
+            /** Answeredat */
+            answeredAt: string | null;
+            /**
+             * Notifiedat
+             * Format: date-time
+             */
+            notifiedAt: string;
+            /**
+             * Medicalstatementen
+             * @default Whether you can give blood, and whose blood yours suits, is decided only by qualified health professionals at the hospital or blood bank. This app never decides it.
+             */
+            medicalStatementEn: string;
+            /**
+             * Medicalstatementta
+             * @default நீங்கள் இரத்த தானம் செய்ய முடியுமா, உங்கள் இரத்தம் யாருக்குப் பொருந்தும் என்பதை வைத்தியசாலை அல்லது இரத்த வங்கியின் தகுதிவாய்ந்த சுகாதார நிபுணர்கள் மட்டுமே தீர்மானிப்பார்கள். இந்தச் செயலி ஒருபோதும் அதைத் தீர்மானிக்காது.
+             */
+            medicalStatementTa: string;
+        };
+        /** BloodOversightOut */
+        BloodOversightOut: {
+            /** Partners */
+            partners: components["schemas"]["BloodPartnerOut"][];
+            /** Requesters */
+            requesters: components["schemas"]["BloodRequesterOut"][];
+            /** Awaiting */
+            awaiting: components["schemas"]["BloodRequestOut"][];
+            /** Recent */
+            recent: components["schemas"]["BloodRequestOut"][];
+        };
+        /** BloodPartnerActiveIn */
+        BloodPartnerActiveIn: {
+            /** Active */
+            active: boolean;
+        };
+        /** BloodPartnerIn */
+        BloodPartnerIn: {
+            /** Name */
+            name: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "hospital" | "blood_bank";
+            /** Districtcode */
+            districtCode: string;
+            /**
+             * Agreementref
+             * @description The signed partner agreement (DEP-18)
+             */
+            agreementRef: string;
+        };
+        /** BloodPartnerOut */
+        BloodPartnerOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "hospital" | "blood_bank";
+            /** Districtkey */
+            districtKey: string;
+            /** Agreementref */
+            agreementRef: string;
+            /** Active */
+            active: boolean;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** BloodRequestDetailOut */
+        BloodRequestDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Requestref */
+            requestRef: string;
+            /**
+             * Partnerid
+             * Format: uuid
+             */
+            partnerId: string;
+            /** Partnername */
+            partnerName: string;
+            /**
+             * Bloodgroup
+             * @enum {string}
+             */
+            bloodGroup: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
+            /** Areakey */
+            areaKey: string;
+            /** Units */
+            units: number;
+            /**
+             * Urgency
+             * @enum {string}
+             */
+            urgency: "routine" | "urgent" | "critical";
+            /**
+             * Neededby
+             * Format: date-time
+             */
+            neededBy: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "awaiting_approval" | "open" | "closed" | "refused";
+            /**
+             * Expired
+             * @description Open, but past the time it was needed by
+             */
+            expired: boolean;
+            /** Overlimit */
+            overLimit: boolean;
+            /** Decisionreason */
+            decisionReason: string | null;
+            /** Outcome */
+            outcome: ("fulfilled" | "partly_fulfilled" | "not_needed" | "unfulfilled") | null;
+            /** Notified */
+            notified: number;
+            /** Accepted */
+            accepted: number;
+            /** Declined */
+            declined: number;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Closedat */
+            closedAt: string | null;
+            /** Contacts */
+            contacts: components["schemas"]["BloodContactOut"][];
+        };
+        /** BloodRequestIn */
+        BloodRequestIn: {
+            /**
+             * Bloodgroup
+             * @enum {string}
+             */
+            bloodGroup: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
+            area: components["schemas"]["BloodAreaIn"];
+            /** Units */
+            units: number;
+            /**
+             * Urgency
+             * @enum {string}
+             */
+            urgency: "routine" | "urgent" | "critical";
+            /**
+             * Neededby
+             * Format: date-time
+             */
+            neededBy: string;
+        };
+        /**
+         * BloodRequestOut
+         * @description Counts only (FR-BLD-004).
+         */
+        BloodRequestOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Requestref */
+            requestRef: string;
+            /**
+             * Partnerid
+             * Format: uuid
+             */
+            partnerId: string;
+            /** Partnername */
+            partnerName: string;
+            /**
+             * Bloodgroup
+             * @enum {string}
+             */
+            bloodGroup: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
+            /** Areakey */
+            areaKey: string;
+            /** Units */
+            units: number;
+            /**
+             * Urgency
+             * @enum {string}
+             */
+            urgency: "routine" | "urgent" | "critical";
+            /**
+             * Neededby
+             * Format: date-time
+             */
+            neededBy: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "awaiting_approval" | "open" | "closed" | "refused";
+            /**
+             * Expired
+             * @description Open, but past the time it was needed by
+             */
+            expired: boolean;
+            /** Overlimit */
+            overLimit: boolean;
+            /** Decisionreason */
+            decisionReason: string | null;
+            /** Outcome */
+            outcome: ("fulfilled" | "partly_fulfilled" | "not_needed" | "unfulfilled") | null;
+            /** Notified */
+            notified: number;
+            /** Accepted */
+            accepted: number;
+            /** Declined */
+            declined: number;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Closedat */
+            closedAt: string | null;
+        };
+        /** BloodRequesterIn */
+        BloodRequesterIn: {
+            /** Membercode */
+            memberCode: string;
+        };
+        /** BloodRequesterOut */
+        BloodRequesterOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Partnerid
+             * Format: uuid
+             */
+            partnerId: string;
+            /** Fullname */
+            fullName: string;
+            /** Membercode */
+            memberCode: string;
+            /**
+             * Grantedat
+             * Format: date-time
+             */
+            grantedAt: string;
+            /** Revokedat */
+            revokedAt: string | null;
         };
         /** BroadcastCreateIn */
         BroadcastCreateIn: {
@@ -10909,6 +12196,11 @@ export interface components {
             tabs: components["schemas"]["HomeFeatureOut"][];
             hub: components["schemas"]["HomeHubOut"];
             promises: components["schemas"]["HomePromisesOut"];
+            /**
+             * Safetyalerts
+             * @description Current official warnings for the home area (M35's Home banner); 0 while off
+             */
+            safetyAlerts: number;
         };
         /** HomePromiseCountOut */
         HomePromiseCountOut: {
@@ -11889,6 +13181,111 @@ export interface components {
             returnNote: string | null;
             /** Publishedat */
             publishedAt: string | null;
+        };
+        /** ManagedAlertOut */
+        ManagedAlertOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Alertref */
+            alertRef: string;
+            /**
+             * Sourcekey
+             * @enum {string}
+             */
+            sourceKey: "dmc" | "meteorology" | "district_secretariat" | "divisional_secretariat";
+            /** Sourcenameen */
+            sourceNameEn: string;
+            /** Sourcenameta */
+            sourceNameTa: string;
+            /** Sourceurl */
+            sourceUrl: string;
+            /**
+             * Sourceissuedat
+             * Format: date-time
+             */
+            sourceIssuedAt: string;
+            /**
+             * Sourceendsat
+             * Format: date-time
+             * @description The alert expires at the source's end time (FR-DIS-008)
+             */
+            sourceEndsAt: string;
+            /**
+             * Hazard
+             * @enum {string}
+             */
+            hazard: "flood" | "cyclone" | "heavy_rain" | "strong_wind" | "landslide" | "lightning" | "tsunami" | "drought" | "other";
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "advisory" | "watch" | "warning";
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Bodyen */
+            bodyEn: string;
+            /** Bodyta */
+            bodyTa: string;
+            /** Targetkeys */
+            targetKeys: string[];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "current" | "expired" | "withdrawn";
+            /** Withdrawnreason */
+            withdrawnReason: string | null;
+            /**
+             * Relayedat
+             * Format: date-time
+             */
+            relayedAt: string;
+            /**
+             * Refreshedat
+             * Format: date-time
+             * @description When someone last checked the alert against its source
+             */
+            refreshedAt: string;
+            /**
+             * Stale
+             * @description Current, and nobody has checked the source for 6 hours (FR-DIS-008)
+             */
+            stale: boolean;
+            /**
+             * Emergencycontacts
+             * @description FR-DIS-003: on every alert
+             */
+            emergencyContacts: components["schemas"]["SafetyContactOut"][];
+            /**
+             * Notdispatchen
+             * @default This app passes on official warnings only. It is not an emergency service and cannot send help. In danger now, call the emergency numbers.
+             */
+            notDispatchEn: string;
+            /**
+             * Notdispatchta
+             * @default இந்தச் செயலி அதிகாரபூர்வ எச்சரிக்கைகளை மட்டுமே தெரிவிக்கிறது. இது அவசர சேவை அல்ல; உதவியை அனுப்ப முடியாது. இப்போது ஆபத்தில் இருந்தால் அவசர இலக்கங்களை அழையுங்கள்.
+             */
+            notDispatchTa: string;
+            /**
+             * Recipients
+             * @description Members told when it was relayed (and again when its severity rose)
+             */
+            recipients: number;
+            /**
+             * Relayminutes
+             * @description Minutes from the source's issue time to the relay (KPI-40)
+             */
+            relayMinutes: number;
+            /**
+             * Revisions
+             * @default []
+             */
+            revisions: components["schemas"]["AlertRevisionOut"][];
         };
         /** ManagedCourseOut */
         ManagedCourseOut: {
@@ -15375,6 +16772,272 @@ export interface components {
              */
             referralAccepted: boolean | null;
         };
+        /** ReliefAreaIn */
+        ReliefAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+        };
+        /**
+         * ReliefDistributionIn
+         * @description S16: never a recipient's name (FR-DIS-005): an AS- case reference, or a group at a site.
+         */
+        ReliefDistributionIn: {
+            /**
+             * Storekey
+             * @description The store it came from, such as ds:LK4103
+             */
+            storeKey: string;
+            /** @description Where it was handed out */
+            area: components["schemas"]["ReliefAreaIn"];
+            /**
+             * Item
+             * @enum {string}
+             */
+            item: "rice" | "dry_rations" | "drinking_water" | "cooked_meals" | "clothing" | "mats_blankets" | "hygiene_kits" | "tarpaulins" | "baby_food" | "kitchen_sets";
+            /** Quantity */
+            quantity: number;
+            /**
+             * Recipientkind
+             * @enum {string}
+             */
+            recipientKind: "case" | "group";
+            /**
+             * Caseref
+             * @description For a case: its AS- reference
+             */
+            caseRef?: string | null;
+            /**
+             * Groupsite
+             * @description For a group: the shelter or site
+             */
+            groupSite?: string | null;
+            /** Households */
+            households?: number | null;
+            /**
+             * Evidence
+             * @description The signed list or photo reference
+             */
+            evidence: string;
+            /**
+             * Deliveredon
+             * Format: date
+             */
+            deliveredOn: string;
+            /** Alertid */
+            alertId?: string | null;
+        };
+        /** ReliefDistributionOut */
+        ReliefDistributionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Distributionref */
+            distributionRef: string;
+            /** Storekey */
+            storeKey: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Item
+             * @enum {string}
+             */
+            item: "rice" | "dry_rations" | "drinking_water" | "cooked_meals" | "clothing" | "mats_blankets" | "hygiene_kits" | "tarpaulins" | "baby_food" | "kitchen_sets";
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "kg" | "packs" | "litres" | "meals" | "pieces" | "kits" | "sets";
+            /** Quantity */
+            quantity: number;
+            /**
+             * Recipientkind
+             * @enum {string}
+             */
+            recipientKind: "case" | "group";
+            /** Caseref */
+            caseRef: string | null;
+            /** Groupsite */
+            groupSite: string | null;
+            /** Households */
+            households: number | null;
+            /** Evidence */
+            evidence: string;
+            /**
+             * Deliveredon
+             * Format: date
+             */
+            deliveredOn: string;
+            /** Alertid */
+            alertId: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** ReliefItemOut */
+        ReliefItemOut: {
+            /**
+             * Key
+             * @enum {string}
+             */
+            key: "rice" | "dry_rations" | "drinking_water" | "cooked_meals" | "clothing" | "mats_blankets" | "hygiene_kits" | "tarpaulins" | "baby_food" | "kitchen_sets";
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "kg" | "packs" | "litres" | "meals" | "pieces" | "kits" | "sets";
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+        };
+        /** ReliefOfferIn */
+        ReliefOfferIn: {
+            /** Tasks */
+            tasks: ("distribution" | "cooking" | "transport" | "shelter_support" | "cleaning" | "loading" | "first_aid")[];
+            /**
+             * Availableuntil
+             * Format: date
+             */
+            availableUntil: string;
+            /** Consent */
+            consent: boolean;
+        };
+        /** ReliefOfferOut */
+        ReliefOfferOut: {
+            /** Tasks */
+            tasks: ("distribution" | "cooking" | "transport" | "shelter_support" | "cleaning" | "loading" | "first_aid")[];
+            /**
+             * Availableuntil
+             * Format: date
+             */
+            availableUntil: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /**
+         * ReliefOverviewOut
+         * @description S16 and D26: the items, and the stock of every store in the officer's areas.
+         */
+        ReliefOverviewOut: {
+            /** Items */
+            items: components["schemas"]["ReliefItemOut"][];
+            /** Stock */
+            stock: components["schemas"]["ReliefStockOut"][];
+        };
+        /** ReliefStockOut */
+        ReliefStockOut: {
+            /** Storekey */
+            storeKey: string;
+            /**
+             * Item
+             * @enum {string}
+             */
+            item: "rice" | "dry_rations" | "drinking_water" | "cooked_meals" | "clothing" | "mats_blankets" | "hygiene_kits" | "tarpaulins" | "baby_food" | "kitchen_sets";
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "kg" | "packs" | "litres" | "meals" | "pieces" | "kits" | "sets";
+            /** Received */
+            received: number;
+            /** Handedout */
+            handedOut: number;
+            /** Balance */
+            balance: number;
+        };
+        /** ReliefSupplyIn */
+        ReliefSupplyIn: {
+            /** @description The District or DS division whose store received it */
+            store: components["schemas"]["ReliefAreaIn"];
+            /**
+             * Item
+             * @enum {string}
+             */
+            item: "rice" | "dry_rations" | "drinking_water" | "cooked_meals" | "clothing" | "mats_blankets" | "hygiene_kits" | "tarpaulins" | "baby_food" | "kitchen_sets";
+            /** Quantity */
+            quantity: number;
+            /** Supplier */
+            supplier: string;
+            /**
+             * Receivedon
+             * Format: date
+             */
+            receivedOn: string;
+            /** Alertid */
+            alertId?: string | null;
+        };
+        /** ReliefSupplyOut */
+        ReliefSupplyOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Storekey */
+            storeKey: string;
+            /**
+             * Item
+             * @enum {string}
+             */
+            item: "rice" | "dry_rations" | "drinking_water" | "cooked_meals" | "clothing" | "mats_blankets" | "hygiene_kits" | "tarpaulins" | "baby_food" | "kitchen_sets";
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "kg" | "packs" | "litres" | "meals" | "pieces" | "kits" | "sets";
+            /** Quantity */
+            quantity: number;
+            /** Supplier */
+            supplier: string;
+            /**
+             * Receivedon
+             * Format: date
+             */
+            receivedOn: string;
+            /** Alertid */
+            alertId: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /**
+         * ReliefVolunteerOut
+         * @description FR-DIS-004: a name, the area, the tasks and until when; never a phone number.
+         */
+        ReliefVolunteerOut: {
+            /** Fullname */
+            fullName: string;
+            /** Areakey */
+            areaKey: string;
+            /** Tasks */
+            tasks: ("distribution" | "cooking" | "transport" | "shelter_support" | "cleaning" | "loading" | "first_aid")[];
+            /**
+             * Availableuntil
+             * Format: date
+             */
+            availableUntil: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
         /** ReminderIn */
         ReminderIn: {
             /** Remind */
@@ -15894,6 +17557,128 @@ export interface components {
              */
             response: "going" | "maybe" | "declined" | "waitlisted";
         };
+        /** SafetyAreaIn */
+        SafetyAreaIn: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "district" | "ds" | "gn";
+            /** Code */
+            code: string;
+        };
+        /** SafetyContactOut */
+        SafetyContactOut: {
+            /** Number */
+            number: string;
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+        };
+        /**
+         * SafetyHelpIn
+         * @description M36: an urgent request for follow-up by Community Support. Never a dispatch (OS-14).
+         */
+        SafetyHelpIn: {
+            /**
+             * Need
+             * @enum {string}
+             */
+            need: "food_water" | "shelter" | "evacuation" | "medical" | "missing_person" | "other";
+            /** People */
+            people: number;
+            /** Details */
+            details: string;
+            /** Fullname */
+            fullName: string;
+            /** Phone */
+            phone?: string | null;
+            /** @description Where help is needed; the home area when absent */
+            area?: components["schemas"]["SafetyAreaIn"] | null;
+            /** Alertid */
+            alertId?: string | null;
+            /**
+             * Consent
+             * @description Consent to collect the case information (FR-AST-004)
+             */
+            consent: boolean;
+        };
+        /** SafetyHelpOut */
+        SafetyHelpOut: {
+            /**
+             * Caseid
+             * Format: uuid
+             */
+            caseId: string;
+            /** Caseref */
+            caseRef: string;
+        };
+        /**
+         * SafetyHomeOut
+         * @description M35: the official emergency numbers, the statement that this is not a dispatch service, the current
+         *     alerts for the area, nearby shelters and the member's relief offer.
+         */
+        SafetyHomeOut: {
+            /**
+             * Areakeys
+             * @description The District, DS and GN keys the alerts are for; empty when unknown
+             */
+            areaKeys: string[];
+            /** Emergencycontacts */
+            emergencyContacts: components["schemas"]["SafetyContactOut"][];
+            /**
+             * Notdispatchen
+             * @default This app passes on official warnings only. It is not an emergency service and cannot send help. In danger now, call the emergency numbers.
+             */
+            notDispatchEn: string;
+            /**
+             * Notdispatchta
+             * @default இந்தச் செயலி அதிகாரபூர்வ எச்சரிக்கைகளை மட்டுமே தெரிவிக்கிறது. இது அவசர சேவை அல்ல; உதவியை அனுப்ப முடியாது. இப்போது ஆபத்தில் இருந்தால் அவசர இலக்கங்களை அழையுங்கள்.
+             */
+            notDispatchTa: string;
+            /** Current */
+            current: components["schemas"]["AlertOut"][];
+            /** Shelters */
+            shelters: components["schemas"]["ShelterOut"][];
+            reliefOffer: components["schemas"]["ReliefOfferOut"] | null;
+            /** Reliefofferlock */
+            reliefOfferLock: ("identity_not_verified" | "membership_not_active") | null;
+            /** Relieftasks */
+            reliefTasks: ("distribution" | "cooking" | "transport" | "shelter_support" | "cleaning" | "loading" | "first_aid")[];
+            /** Helpneeds */
+            helpNeeds: ("food_water" | "shelter" | "evacuation" | "medical" | "missing_person" | "other")[];
+            /**
+             * Checkedat
+             * Format: date-time
+             * @description When the server answered, for the copy kept on the phone
+             */
+            checkedAt: string;
+        };
+        /** SafetySourceOut */
+        SafetySourceOut: {
+            /**
+             * Key
+             * @enum {string}
+             */
+            key: "dmc" | "meteorology" | "district_secretariat" | "divisional_secretariat";
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+            /** Domains */
+            domains: string[];
+            /**
+             * Alerts
+             * @description May issue hazard warnings (INT-18)
+             */
+            alerts: boolean;
+            /**
+             * Shelters
+             * @description May publish shelter information (FR-DIS-006)
+             */
+            shelters: boolean;
+        };
         /** SaveExitIn */
         SaveExitIn: {
             /**
@@ -16125,6 +17910,118 @@ export interface components {
             lastSeenAt: string;
             /** Current */
             current: boolean;
+        };
+        /** ShelterCreateIn */
+        ShelterCreateIn: {
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+            /** Placeen */
+            placeEn: string;
+            /** Placeta */
+            placeTa: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "open" | "full" | "closed";
+            /** Capacity */
+            capacity?: number | null;
+            /**
+             * Sourcekey
+             * @enum {string}
+             */
+            sourceKey: "dmc" | "meteorology" | "district_secretariat" | "divisional_secretariat";
+            /** Sourceurl */
+            sourceUrl?: string | null;
+            /**
+             * Sourcereportedat
+             * Format: date-time
+             */
+            sourceReportedAt: string;
+            area: components["schemas"]["SafetyAreaIn"];
+        };
+        /** ShelterIn */
+        ShelterIn: {
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+            /** Placeen */
+            placeEn: string;
+            /** Placeta */
+            placeTa: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "open" | "full" | "closed";
+            /** Capacity */
+            capacity?: number | null;
+            /**
+             * Sourcekey
+             * @enum {string}
+             */
+            sourceKey: "dmc" | "meteorology" | "district_secretariat" | "divisional_secretariat";
+            /** Sourceurl */
+            sourceUrl?: string | null;
+            /**
+             * Sourcereportedat
+             * Format: date-time
+             */
+            sourceReportedAt: string;
+        };
+        /** ShelterOut */
+        ShelterOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Nameen */
+            nameEn: string;
+            /** Nameta */
+            nameTa: string;
+            /** Placeen */
+            placeEn: string;
+            /** Placeta */
+            placeTa: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "open" | "full" | "closed";
+            /** Capacity */
+            capacity: number | null;
+            /**
+             * Sourcekey
+             * @enum {string}
+             */
+            sourceKey: "dmc" | "meteorology" | "district_secretariat" | "divisional_secretariat";
+            /** Sourcenameen */
+            sourceNameEn: string;
+            /** Sourcenameta */
+            sourceNameTa: string;
+            /** Sourceurl */
+            sourceUrl: string | null;
+            /**
+             * Sourcereportedat
+             * Format: date-time
+             */
+            sourceReportedAt: string;
+            /**
+             * Outofdate
+             * @description Reported more than 12 hours ago: may be out of date (FR-DIS-006)
+             */
+            outOfDate: boolean;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
         };
         /** ShiftAnswerIn */
         ShiftAnswerIn: {
@@ -28242,6 +30139,1069 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StatisticsOut"];
+                };
+            };
+        };
+    };
+    safety_home_v1_alerts_get: {
+        parameters: {
+            query?: {
+                /** @description An area key such as ds:LK4103; the home area when absent */
+                area?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SafetyHomeOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    alert_history_v1_alerts_history_get: {
+        parameters: {
+            query?: {
+                /** @description An area key such as ds:LK4103; the home area when absent */
+                area?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_help_v1_alerts_help_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SafetyHelpIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SafetyHelpOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    save_relief_offer_v1_alerts_relief_offer_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReliefOfferIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReliefOfferOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_relief_offer_v1_alerts_relief_offer_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    managed_alerts_v1_alerts_manage_get: {
+        parameters: {
+            query?: {
+                current?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedAlertOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    relay_alert_v1_alerts_manage_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlertRelayIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedAlertOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    composer_v1_alerts_manage_composer_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertComposerOut"];
+                };
+            };
+        };
+    };
+    managed_shelters_v1_alerts_manage_shelters_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShelterOut"][];
+                };
+            };
+        };
+    };
+    add_shelter_v1_alerts_manage_shelters_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShelterCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShelterOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_shelter_v1_alerts_manage_shelters__shelter_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shelter_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShelterIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShelterOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    relief_volunteers_v1_alerts_manage_volunteers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReliefVolunteerOut"][];
+                };
+            };
+        };
+    };
+    read_managed_v1_alerts_manage__alert_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedAlertOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    refresh_alert_v1_alerts_manage__alert_id__refresh_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlertRefreshIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedAlertOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_alert_v1_alerts_manage__alert_id__withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlertWithdrawIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedAlertOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_alert_v1_alerts__alert_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    overview_v1_relief_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReliefOverviewOut"];
+                };
+            };
+        };
+    };
+    list_supplies_v1_relief_supplies_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReliefSupplyOut"][];
+                };
+            };
+        };
+    };
+    record_supply_v1_relief_supplies_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReliefSupplyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReliefSupplyOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_distributions_v1_relief_distributions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReliefDistributionOut"][];
+                };
+            };
+        };
+    };
+    record_distribution_v1_relief_distributions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReliefDistributionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReliefDistributionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_donor_v1_donors_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodDonorHomeOut"];
+                };
+            };
+        };
+    };
+    enrol_v1_donors_me_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BloodDonorIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodDonorOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_v1_donors_me_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_notice_v1_donors_me_requests__request_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodNoticeOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    answer_v1_donors_me_requests__request_id__answer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BloodAnswerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodNoticeOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    desk_access_v1_donors_desk_access_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodDeskAccessOut"];
+                };
+            };
+        };
+    };
+    desk_v1_donors_desk_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodDeskOut"];
+                };
+            };
+        };
+    };
+    raise_request_v1_donors_desk_requests_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BloodRequestIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodRequestDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_request_v1_donors_desk_requests__request_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodRequestDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    close_request_v1_donors_desk_requests__request_id__close_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BloodCloseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodRequestDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    oversight_v1_donors_oversight_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodOversightOut"];
+                };
+            };
+        };
+    };
+    add_partner_v1_donors_oversight_partners_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BloodPartnerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodPartnerOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_partner_active_v1_donors_oversight_partners__partner_id__active_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                partner_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BloodPartnerActiveIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodPartnerOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    authorise_requester_v1_donors_oversight_partners__partner_id__requesters_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                partner_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BloodRequesterIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodRequesterOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_requester_v1_donors_oversight_requesters__requester_id__revoke_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                requester_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodRequesterOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_v1_donors_oversight_requests__request_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BloodDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodRequestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

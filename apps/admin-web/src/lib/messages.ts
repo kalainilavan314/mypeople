@@ -1,5 +1,7 @@
 import { ApiError } from '@my-people/api-client';
 
+import { SAFETY_CONFIRMATIONS, SAFETY_MESSAGES, SAFETY_PROBLEMS } from '../features/disaster/messages.ts';
+
 export type BilingualText = {
   ta: string;
   en: string;
@@ -26,6 +28,7 @@ export const EVIDENCE_LABELS: Record<string, BilingualText> = {
 // Bilingual dictionary for operational messages and refusals.
 // Tamil first, English supporting below (CLAUDE.md / Priority 2).
 const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
+  ...SAFETY_MESSAGES,
   confirmation_required: {
     ta: 'தொடர்வதற்கு உறுதிப்படுத்தல் பெட்டி தெரிவுசெய்யப்பட வேண்டும்.',
     en: 'You must check the required confirmation box before submitting.',
@@ -361,6 +364,7 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
 };
 
 const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
+  ...SAFETY_PROBLEMS,
   reason_required: {
     ta: 'காரணத்தைத் தெரிவுசெய்யவும் அல்லது உள்ளிடவும்.',
     en: 'Choose or provide a reason.',
@@ -1279,6 +1283,7 @@ export function problemTargetField(problem: string): string | undefined {
 }
 
 const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
+  ...SAFETY_CONFIRMATIONS,
   policy_draft_created: {
     ta: 'கட்டுப்படுத்தப்பட்ட வரைவு உருவாக்கப்பட்டது.',
     en: 'Controlled draft created.',

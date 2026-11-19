@@ -88,6 +88,14 @@ export default function MemberLayout() {
       <Stack.Screen name="support/index" options={{ title: t('m.support.title') }} />
       <Stack.Screen name="support/request" options={{ title: t('m.support.requestTitle') }} />
       <Stack.Screen name="support/[id]" options={{ title: t('m.support.detailTitle') }} />
+      <Stack.Screen name="alerts/index" options={{ title: t('m.safety.title') }} />
+      <Stack.Screen name="alerts/[id]" options={{ title: t('m.safety.alertTitle') }} />
+      <Stack.Screen name="alerts/history" options={{ title: t('m.safety.historyTitle') }} />
+      <Stack.Screen name="alerts/help" options={{ title: t('m.safety.helpTitle') }} />
+      <Stack.Screen name="alerts/volunteer" options={{ title: t('m.safety.reliefTitle') }} />
+      <Stack.Screen name="blood-donors/index" options={{ title: t('m.bloodDonors.title') }} />
+      <Stack.Screen name="blood-donors/enrol" options={{ title: t('m.bloodDonors.enrolTitle') }} />
+      <Stack.Screen name="blood-donors/requests/[id]" options={{ title: t('m.bloodDonors.requestTitle') }} />
       <Stack.Screen name="town-halls/index" options={{ title: t('m.townHalls.title') }} />
       <Stack.Screen name="town-halls/[id]" options={{ title: t('m.townHalls.sessionTitle') }} />
       <Stack.Screen name="official/index" options={{ title: t('m.official.title') }} />

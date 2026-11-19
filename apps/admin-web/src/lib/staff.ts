@@ -33,8 +33,21 @@ export const requireStaff = cache(async (): Promise<StaffContext> => {
   }
   if (!sessionVerified) redirect('/mfa');
   const assignments = await api.getMyAccess();
-  return { member, assignments, permissions: new Set(assignments.flatMap((a) => a.permissions)) };
+  const permissions = new Set(assignments.flatMap((a) => a.permissions));
+  // D27: an account a hospital or the blood transfusion service was authorised for holds PRM-55 without a
+  // staff tier. Only for showing the desk; the API checks the authorisation on every call.
+  if (await isBloodRequester(api)) permissions.add('donor.request');
+  return { member, assignments, permissions };
 });
+
+/** False when the module is switched off or the account is not a partner requester. */
+async function isBloodRequester(api: Awaited<ReturnType<typeof staffApi>>): Promise<boolean> {
+  try {
+    return Boolean((await api.getBloodDeskAccess()).partner);
+  } catch {
+    return false;
+  }
+}
 
 /** True when an API refusal means the person lacks the permission or the area. */
 export function isRefusal(error: unknown): error is ApiError {

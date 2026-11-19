@@ -65,6 +65,10 @@ function targetRoute(item: NotificationItem): Href | null {
       return '/volunteer/assignments';
     case 'misinfo_report':
       return '/official';
+    case 'disaster_alert':
+      return item.targetId ? { pathname: '/alerts/[id]', params: { id: item.targetId } } : '/alerts';
+    case 'blood_request':
+      return item.targetId ? { pathname: '/blood-donors/requests/[id]', params: { id: item.targetId } } : '/blood-donors';
     default:
       return null;
   }
