@@ -37,6 +37,7 @@ export const FEATURE_ROUTES: Partial<Record<string, Href>> = {
   blood_donors: '/blood-donors',
   livelihood_guide: '/livelihood',
   representatives: '/representatives',
+  renewal: '/renewal',
 };
 
 export const FEATURE_ICONS: Record<string, IconName> = {
@@ -66,6 +67,7 @@ export const FEATURE_ICONS: Record<string, IconName> = {
   blood_donors: 'water-outline',
   livelihood_guide: 'briefcase-outline',
   representatives: 'chatbubbles-outline',
+  renewal: 'refresh-circle-outline',
 };
 
 /** The tile of each feature; in the sage design (18 November 2026) every tile is the same calm sage. */
@@ -96,4 +98,5 @@ export const FEATURE_TINTS: Partial<Record<string, Tint>> = {
   blood_donors: 'brand',
   livelihood_guide: 'green',
   representatives: 'teal',
+  renewal: 'green',
 };

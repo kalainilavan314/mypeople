@@ -81,6 +81,9 @@ from app.modules.identity.reviews import router as identity_reviews
 from app.modules.membership import router as membership
 from app.modules.membership.card import router as member_card
 from app.modules.membership.invitations import router as member_invitations
+from app.modules.membership.renewal import router as membership_renewal
+from app.modules.membership.certificates import router as membership_certificates
+from app.modules.identity.assisted import router as identity_assisted
 
 API_VERSION = "0.1.0"
 
@@ -181,6 +184,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(election.router)
     app.include_router(election.member_router)
     app.include_router(analytics.router)
+    app.include_router(membership_renewal.router)
+    app.include_router(membership_certificates.router)
+    app.include_router(membership_certificates.public_router)
+    app.include_router(identity_assisted.router)
 
     # The middleware added last runs first, so the security headers are also
     # set on the 403 that the origin check returns.

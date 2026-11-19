@@ -47,6 +47,9 @@ MATRIX: dict[str, dict[Tier, Grant]] = {
     "members.view_profile": {"1": D, "2A": D, "2B": E, "3A": D, "3B": E, "4": D, "5": D},  # PRM-02
     "members.view_identity_evidence": {"3A": E, "4": E, "5": E},  # PRM-03
     "members.verify": {"3A": E, "4": E, "5": E},  # PRM-04
+    # [ASSUMPTION] OD-04: S04 runs on "members.verify or an assisted-session grant"; the grant is named in
+    # the BRD's style and given only explicitly, to a trained GN coordinator, a DS officer or a district office.
+    "members.assisted_verification": {"1": E, "2A": E, "3A": E},
     "members.activate": {"3A": E, "4": E, "5": D},  # PRM-05
     "roles.assign": {"4": E, "5": D},  # PRM-06 (Tier 4: Tier 3 and below)
     "cases.collect": {"1": D, "2B": E},  # PRM-07

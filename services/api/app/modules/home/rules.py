@@ -47,6 +47,7 @@ HUB_SERVICES = (
     "blood_donors",
     "livelihood_guide",  # M39, Phase 3
     "representatives",  # M41, Phase 3
+    "renewal",
 )
 
 # Services whose routes sit behind a v1.1 module switch (FR-ARCH-011). While the switch is off the
@@ -73,6 +74,7 @@ GATED_BY_MODULE = {
     "blood_donors": "blood_donors",
     "livelihood_guide": "livelihood_guide",
     "representatives": "representatives",
+    "renewal": "renewal",
 }
 
 # M18: the Promise Tracker is also shown on Home itself, with a count of the promises made for the
@@ -95,6 +97,8 @@ OPEN_TO_EVERYONE = frozenset(
     # Reading the guide and the representatives' profiles is open to everyone (M39, M41); booking an
     # appointment itself waits for a Verified identity and an Active membership [ASSUMPTION].
     | {"livelihood_guide", "representatives"}
+    # M33, M34: a lapsed member reaches renewal to reactivate; the screen explains what applies to whom.
+    | {"renewal"}
 )
 
 

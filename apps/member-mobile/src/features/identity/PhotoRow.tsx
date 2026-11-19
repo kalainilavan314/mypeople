@@ -20,6 +20,10 @@ type Props = {
   /** The step the member should do next (A18), highlighted. */
   target?: boolean;
   onUploaded: () => void;
+  /** M05: the server's checks flagged the photo just received (FR-IDV-014 counts these). */
+  onFlagged?: () => void;
+  /** M05: the camera could not be opened. */
+  onCameraDenied?: () => void;
 };
 
 type Next = { source: 'camera' | 'library' } | { image: PickedImage };
@@ -44,7 +48,7 @@ const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // the API's limit (FR-REG-010), check
  * size) is shown under the photo. The photo still counts as received; the
  * member decides whether to retake it (FR-IDV-001, BR-091).
  */
-export function PhotoRow({ kind, received, requested, target = false, onUploaded }: Props) {
+export function PhotoRow({ kind, received, requested, target = false, onUploaded, onFlagged, onCameraDenied }: Props) {
   const { t } = useTranslation();
   const [denied, setDenied] = useState(false);
   const [held, setHeld] = useState<PickedImage | null>(null);
@@ -78,6 +82,7 @@ export function PhotoRow({ kind, received, requested, target = false, onUploaded
       const picked = await pickImage(next.source, selfie);
       if ('denied' in picked) {
         setDenied(true);
+        if (next.source === 'camera') onCameraDenied?.();
         return;
       }
       if ('cancelled' in picked) return;
@@ -96,6 +101,7 @@ export function PhotoRow({ kind, received, requested, target = false, onUploaded
         setProgress({ sent, total });
       });
       setAdvice(stored.quality?.problems ?? []);
+      if (stored.quality?.problems.length) onFlagged?.();
     } catch (error) {
       if (noAnswer(error)) setInterrupted(true);
       else hold(null); // refused (wrong type, too large): the same file cannot succeed

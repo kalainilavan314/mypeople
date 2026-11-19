@@ -120,4 +120,6 @@ def test_the_registry_lists_every_module_with_the_gate_it_needs(enforced, auth, 
         "diaspora": "G3",
         "disaster_alerts": "G3",
         "blood_donors": "G3",
+        "renewal": "G3",
+        "assisted_verification": "G3",
     }

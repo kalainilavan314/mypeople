@@ -34,6 +34,7 @@ from app.modules.identity.reviews.repository import ReviewMember, StoredDecision
 from app.modules.identity.reviews.rules import VERIFY, Decision, Route
 from app.modules.identity.appeals import repository as appeals_repository
 from app.modules.identity.appeals.repository import StoredAppeal
+from app.modules.identity.assisted import repository as assisted_repository
 
 
 class ReviewNotFound(Exception):
@@ -107,12 +108,18 @@ def _reload(db: Session, review_id: uuid.UUID) -> StoredReview:
 # --- The member's side ----------------------------------------------------------------
 
 
-def submit(db: Session, member_id: uuid.UUID, route: Route, ip: str) -> StoredReview:
+def submit(
+    db: Session, member_id: uuid.UUID, route: Route, ip: str, *, actor_id: uuid.UUID | None = None, commit: bool = True
+) -> StoredReview:
     """Send the images for team review (FR-REG-019), or a correction back to the same review (FR-REG-023).
 
     Repeating a submit while the review is open returns that review, so a
     double tap never creates a second VR reference.
+
+    An assisted verification session (S04) submits for the member: `actor_id` is then the witness and
+    the caller commits, with its own records in the same transaction (`commit=False`).
     """
+    actor = actor_id or member_id
     repository.lock_member(db, member_id)
     current = {d.kind: str(d.id) for d in identity_repository.current_documents(db, member_id)}
     review = repository.latest_review(db, member_id)
@@ -130,8 +137,9 @@ def submit(db: Session, member_id: uuid.UUID, route: Route, ip: str) -> StoredRe
             raise SubmissionRefused(problems)
         repository.resubmit(db, review.id)
         notifications.complete_action(db, "identity_review", review.id, member_id)  # the correction is done
-        _record(db, member_id, "identity.review.resubmitted", review, ip)
-        db.commit()
+        _record(db, actor, "identity.review.resubmitted", review, ip)
+        if commit:
+            db.commit()
         return _reload(db, review.id)
 
     member = repository.find_member(db, member_id)
@@ -147,13 +155,14 @@ def submit(db: Session, member_id: uuid.UUID, route: Route, ip: str) -> StoredRe
     area_path = access_repository.member_area_path(db, member_id)
     review = repository.insert_review(db, member_id=member_id, route=route, area_path=[a.key for a in area_path])
     repository.set_express_status(
-        db, member_id=member_id, status="review_pending", changed_by=member_id, review_ref=review.review_ref
+        db, member_id=member_id, status="review_pending", changed_by=actor, review_ref=review.review_ref
     )
-    _record(db, member_id, "identity.review.submitted", review, ip, route=route)
+    _record(db, actor, "identity.review.submitted", review, ip, route=route)
     # Another account with the same name and date of birth opens an investigation; the
     # review goes ahead and the reviewer sees the flag (FR-IDV-010, FR-WEB-012, BR-094).
     duplicates.open_profile_matches(db, member_id)
-    db.commit()
+    if commit:
+        db.commit()
     return review
 
 
@@ -221,6 +230,9 @@ def review_file(db: Session, staff: Staff, review_id: uuid.UUID, ip: str) -> Rev
 def claim(db: Session, staff: Staff, review_id: uuid.UUID, ip: str) -> StoredReview:
     """Take a review, so nobody else works on it at the same time (FR-WEB-003). Opens its evidence to this reviewer."""
     review = _load_for_reviewer(db, staff, review_id, ip, lock=True)
+    # [ASSUMPTION] OD-04: the person who witnessed an assisted session never decides the review it fed.
+    if assisted_repository.witnessed(db, review.id, staff.member_id):
+        raise ReviewConflict("witnessed_by_you")
     claimant_still_authorised = review.claimed_by is not None and access.has_permission_over(
         load_staff(db, review.claimed_by), VERIFY, _area_path(review)
     )

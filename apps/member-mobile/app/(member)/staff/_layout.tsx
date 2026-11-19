@@ -65,6 +65,8 @@ function StaffStack() {
       <Stack.Screen name="appointments/[id]" options={{ title: t('s.appointments.bookingTitle') }} />
       <Stack.Screen name="appointments/slots" options={{ title: t('s.appointments.addSlots') }} />
       <Stack.Screen name="appointments/profile" options={{ title: t('s.appointments.editProfile') }} />
+      <Stack.Screen name="assisted-verification/index" options={{ title: t('s.assisted.title') }} />
+      <Stack.Screen name="assisted-verification/[id]" options={{ title: t('s.assisted.sessionTitle') }} />
     </Stack>
   );
 }

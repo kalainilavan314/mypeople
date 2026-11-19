@@ -33,7 +33,7 @@ OPEN_STATES: list[ReviewState] = ["submitted", "in_review", "needs_update"]
 REFUSED = {
     403: {"description": "forbidden, own_record or outside_your_area"},
     404: {"description": "not_found"},
-    409: {"description": "not_open, claimed_by_another or not_claimed_by_you"},
+    409: {"description": "not_open, claimed_by_another, not_claimed_by_you or witnessed_by_you"},
 }
 
 

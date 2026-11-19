@@ -38,6 +38,9 @@ const REASON_LABELS: Record<string, { ta: string; en: string }> = {
   appeal_upheld: { ta: 'மேன்முறையீடு ஏற்கப்பட்டது', en: 'Appeal upheld' },
   deceased: { ta: 'காலமானார்', en: 'Deceased' },
   duplicate_account: { ta: 'இரட்டைக் கணக்கு', en: 'Duplicate account' },
+  // Recorded by the renewal itself (OD-43): a lapse after the grace period, and the member's own reconfirmation.
+  renewal_lapsed: { ta: 'வருடாந்த புதுப்பித்தல் தவறியது', en: 'Yearly renewal not done' },
+  renewal_confirmed: { ta: 'வருடாந்த புதுப்பித்தல் உறுதிப்படுத்தப்பட்டது', en: 'Yearly renewal confirmed' },
   other: { ta: 'ஏனையவை', en: 'Other' },
 };
 

@@ -31,7 +31,9 @@ export type RefusalScope =
   | 'safety'
   | 'bloodDonors'
   | 'livelihood'
-  | 'representatives';
+  | 'representatives'
+  | 'renewal'
+  | 'verify';
 
 /**
  * The member-facing message for a failed request: the API's error code when

@@ -9886,6 +9886,396 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/membership/renewal/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Renewal
+         * @description M33: the yearly check, its due date and grace period, and the contact and area to confirm.
+         */
+        get: operations["read_my_renewal_v1_membership_renewal_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/membership/renewal/me/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm Renewal
+         * @description FR-RNW-001, 003, 009: confirm contact and area; no document or selfie is ever asked for. A lapsed
+         *     membership becomes Active again (OD-43).
+         */
+        post: operations["confirm_renewal_v1_membership_renewal_me_confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/membership/renewal/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Due
+         * @description D25: members in the caller's areas by renewal phase, soonest due first.
+         */
+        get: operations["list_due_v1_membership_renewal_manage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/membership/renewal/manage/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Summary */
+        get: operations["read_summary_v1_membership_renewal_manage_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/membership/certificates/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Certificates
+         * @description M34: every certificate the member holds, with the address its QR carries, and what they can ask for.
+         */
+        get: operations["read_my_certificates_v1_membership_certificates_me_get"];
+        put?: never;
+        /**
+         * Request Certificate
+         * @description FR-RNW-004 to 006. Problems: identity_not_verified, membership_not_active, event_required,
+         *     no_attendance_recorded, no_completed_assignments. Asking again returns the same certificate unless
+         *     its facts changed; then the new one supersedes it.
+         */
+        post: operations["request_certificate_v1_membership_certificates_me_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/membership/certificates/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Certificates
+         * @description D25: certificates of members in the caller's areas, newest first.
+         */
+        get: operations["list_certificates_v1_membership_certificates_manage_get"];
+        put?: never;
+        /**
+         * Issue Certificate
+         * @description D25: issue a certificate to a member in the caller's area ("already_issued": reissue it instead).
+         */
+        post: operations["issue_certificate_v1_membership_certificates_manage_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/membership/certificates/manage/{certificate_id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Revoke Certificate
+         * @description FR-RNW-008: it then verifies as Revoked. The member is told and sees the reason.
+         */
+        post: operations["revoke_certificate_v1_membership_certificates_manage__certificate_id__revoke_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/membership/certificates/manage/{certificate_id}/reissue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reissue Certificate
+         * @description FR-RNW-008: a new certificate from the current records; the old one verifies as Superseded.
+         */
+        post: operations["reissue_certificate_v1_membership_certificates_manage__certificate_id__reissue_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/public/certificates/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check Certificate
+         * @description INT-22, FR-RNW-007: anyone, without an account. Only the type, the issue date and Valid, Revoked or
+         *     Superseded, with the holder's name while it is valid; nothing else about the holder.
+         */
+        get: operations["check_certificate_v1_public_certificates__token__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/assisted/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read My Request
+         * @description M05: the member's latest request for help, and what they need before asking.
+         */
+        get: operations["read_my_request_v1_identity_assisted_me_get"];
+        put?: never;
+        /**
+         * Request Help
+         * @description FR-IDV-014: no camera, three failed checks, or the member asks. Problems: already_verified, review_open,
+         *     contact_not_confirmed, preferred_date_out_of_range. An open request is returned again, not duplicated.
+         */
+        post: operations["request_help_v1_identity_assisted_me_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/assisted/me/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel My Request
+         * @description Before a session has started.
+         */
+        post: operations["cancel_my_request_v1_identity_assisted_me_cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/assisted/manage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Requests
+         * @description S04 queue: requests in the caller's areas, open ones by default, longest waiting first.
+         */
+        get: operations["list_requests_v1_identity_assisted_manage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/assisted/manage/{request_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Request
+         * @description The member to meet, their confirmed number while the request is open (each opening is recorded),
+         *     which images the server holds (kinds and times only) and the sessions so far.
+         */
+        get: operations["read_request_v1_identity_assisted_manage__request_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/assisted/manage/{request_id}/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Schedule */
+        post: operations["schedule_v1_identity_assisted_manage__request_id__schedule_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/assisted/manage/{request_id}/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Session
+         * @description Start: the caller becomes the witness. The member then takes the photos in their own app.
+         */
+        post: operations["start_session_v1_identity_assisted_manage__request_id__sessions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/assisted/manage/{request_id}/sessions/{session_id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Complete Session
+         * @description FR-STF-004: refused (checklist_incomplete:<item>, missing:<kind>, consent_required) until everything
+         *     is in place; then the images go to the normal identity review, which someone else decides.
+         */
+        post: operations["complete_session_v1_identity_assisted_manage__request_id__sessions__session_id__complete_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/assisted/manage/{request_id}/sessions/{session_id}/abandon": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Abandon Session
+         * @description A camera that fails moves the member to the office-visit route; a member who declines closes the request.
+         */
+        post: operations["abandon_session_v1_identity_assisted_manage__request_id__sessions__session_id__abandon_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/assisted/manage/{request_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Close Request */
+        post: operations["close_request_v1_identity_assisted_manage__request_id__close_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/identity/assisted/reviews/{review_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Review Sessions
+         * @description W02: how the images in this review were captured, for the reviewer deciding it.
+         */
+        get: operations["read_review_sessions_v1_identity_assisted_reviews__review_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -11092,6 +11482,148 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** AssistedAbandonIn */
+        AssistedAbandonIn: {
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "member_absent" | "camera_failure" | "document_missing" | "member_declined" | "other";
+            /** Notes */
+            notes?: string | null;
+        };
+        /** AssistedCloseIn */
+        AssistedCloseIn: {
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "member_declined" | "member_unreachable" | "verified_another_way";
+        };
+        /** AssistedCompleteIn */
+        AssistedCompleteIn: {
+            /** Checklist */
+            checklist: ("member_present" | "original_document_seen" | "face_matches_document" | "captured_on_allowed_device" | "no_copies_kept" | "declaration_by_member")[];
+            /**
+             * Notes
+             * @description No ID numbers: the images carry the details
+             */
+            notes?: string | null;
+        };
+        /**
+         * AssistedHelpRequestIn
+         * @description No ID data: only why, which route and when suits the member (M05).
+         */
+        AssistedHelpRequestIn: {
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "no_camera" | "checks_failed" | "member_asked";
+            /**
+             * Route
+             * @enum {string}
+             */
+            route: "supervised_capture" | "office_visit" | "call_back";
+            /** Preferreddate */
+            preferredDate?: string | null;
+            /** Preferredtime */
+            preferredTime?: ("morning" | "afternoon" | "evening") | null;
+        };
+        /** AssistedHelpRequestOut */
+        AssistedHelpRequestOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Requestref */
+            requestRef: string;
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "no_camera" | "checks_failed" | "member_asked";
+            /**
+             * Route
+             * @enum {string}
+             */
+            route: "supervised_capture" | "office_visit" | "call_back";
+            /** Preferreddate */
+            preferredDate: string | null;
+            /** Preferredtime */
+            preferredTime: ("morning" | "afternoon" | "evening") | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "requested" | "scheduled" | "in_session" | "completed" | "cancelled" | "closed";
+            /** Scheduledfor */
+            scheduledFor: string | null;
+            /** Meetingplace */
+            meetingPlace: string | null;
+            /** Closedreason */
+            closedReason: ("member_declined" | "member_unreachable" | "verified_another_way") | null;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** AssistedImageOut */
+        AssistedImageOut: {
+            /** Kind */
+            kind: string;
+            /**
+             * Receivedat
+             * @description When the server acknowledged it; null while still needed
+             */
+            receivedAt: string | null;
+        };
+        /** AssistedQueueItemOut */
+        AssistedQueueItemOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Requestref */
+            requestRef: string;
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "no_camera" | "checks_failed" | "member_asked";
+            /**
+             * Route
+             * @enum {string}
+             */
+            route: "supervised_capture" | "office_visit" | "call_back";
+            /** Preferreddate */
+            preferredDate: string | null;
+            /** Preferredtime */
+            preferredTime: ("morning" | "afternoon" | "evening") | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "requested" | "scheduled" | "in_session" | "completed" | "cancelled" | "closed";
+            /** Scheduledfor */
+            scheduledFor: string | null;
+            /** Meetingplace */
+            meetingPlace: string | null;
+            /** Closedreason */
+            closedReason: ("member_declined" | "member_unreachable" | "verified_another_way") | null;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
         /** AssistedRecoveryInput */
         AssistedRecoveryInput: {
             /** Nic */
@@ -11117,6 +11649,79 @@ export interface components {
         AssistedRecoveryReceipt: {
             /** Reference */
             reference: string;
+        };
+        /**
+         * AssistedRequestFileOut
+         * @description S04: who to meet, how to reach them while the request is open, and what the review still needs.
+         */
+        AssistedRequestFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Requestref */
+            requestRef: string;
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "no_camera" | "checks_failed" | "member_asked";
+            /**
+             * Route
+             * @enum {string}
+             */
+            route: "supervised_capture" | "office_visit" | "call_back";
+            /** Preferreddate */
+            preferredDate: string | null;
+            /** Preferredtime */
+            preferredTime: ("morning" | "afternoon" | "evening") | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "requested" | "scheduled" | "in_session" | "completed" | "cancelled" | "closed";
+            /** Scheduledfor */
+            scheduledFor: string | null;
+            /** Meetingplace */
+            meetingPlace: string | null;
+            /** Closedreason */
+            closedReason: ("member_declined" | "member_unreachable" | "verified_another_way") | null;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Membercode */
+            memberCode: string;
+            /** Fullname */
+            fullName: string;
+            /** Districtname */
+            districtName: string | null;
+            /** Dsname */
+            dsName: string | null;
+            /** Gnname */
+            gnName: string | null;
+            /**
+             * Phone
+             * @description The member's confirmed number, only while the request is open
+             */
+            phone: string | null;
+            /**
+             * Identityroute
+             * @enum {string}
+             */
+            identityRoute: "nic" | "passport";
+            /** Images */
+            images: components["schemas"]["AssistedImageOut"][];
+            /** Consentgiven */
+            consentGiven: boolean;
+            /** Checklistitems */
+            checklistItems: ("member_present" | "original_document_seen" | "face_matches_document" | "captured_on_allowed_device" | "no_copies_kept" | "declaration_by_member")[];
+            /** Sessions */
+            sessions: components["schemas"]["AssistedSessionOut"][];
         };
         /** AssistedRequestOut */
         AssistedRequestOut: {
@@ -11166,6 +11771,103 @@ export interface components {
             newPhone?: string | null;
             /** Note */
             note: string;
+        };
+        /** AssistedReviewSessionOut */
+        AssistedReviewSessionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Witnesstier
+             * @description The witness's tier, never their name
+             */
+            witnessTier: string;
+            /**
+             * Device
+             * @enum {string}
+             */
+            device: "member_device" | "office_device";
+            /**
+             * Startedat
+             * Format: date-time
+             */
+            startedAt: string;
+            /** Endedat */
+            endedAt: string | null;
+            /** Outcome */
+            outcome: ("completed" | "abandoned") | null;
+            /** Checklist */
+            checklist: string[];
+            /** Notes */
+            notes: string | null;
+            /** Abandonreason */
+            abandonReason: ("member_absent" | "camera_failure" | "document_missing" | "member_declined" | "other") | null;
+            /**
+             * Mine
+             * @default false
+             */
+            mine: boolean;
+            /** Requestref */
+            requestRef: string;
+        };
+        /** AssistedScheduleIn */
+        AssistedScheduleIn: {
+            /**
+             * Scheduledfor
+             * Format: date-time
+             */
+            scheduledFor: string;
+            /** Meetingplace */
+            meetingPlace: string;
+        };
+        /** AssistedSessionOut */
+        AssistedSessionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Witnesstier
+             * @description The witness's tier, never their name
+             */
+            witnessTier: string;
+            /**
+             * Device
+             * @enum {string}
+             */
+            device: "member_device" | "office_device";
+            /**
+             * Startedat
+             * Format: date-time
+             */
+            startedAt: string;
+            /** Endedat */
+            endedAt: string | null;
+            /** Outcome */
+            outcome: ("completed" | "abandoned") | null;
+            /** Checklist */
+            checklist: string[];
+            /** Notes */
+            notes: string | null;
+            /** Abandonreason */
+            abandonReason: ("member_absent" | "camera_failure" | "document_missing" | "member_declined" | "other") | null;
+            /**
+             * Mine
+             * @default false
+             */
+            mine: boolean;
+        };
+        /** AssistedStartIn */
+        AssistedStartIn: {
+            /**
+             * Device
+             * @description The member's own phone, or a district office's device; never the witness's phone
+             * @enum {string}
+             */
+            device: "member_device" | "office_device";
         };
         /** AudienceReachIn */
         AudienceReachIn: {
@@ -12328,6 +13030,138 @@ export interface components {
             mine: components["schemas"]["CourseCardOut"][];
             /** Completed */
             completed: components["schemas"]["CourseCardOut"][];
+        };
+        /** CertificateAssignmentOut */
+        CertificateAssignmentOut: {
+            /** Ref */
+            ref: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /** Roleen */
+            roleEn: string;
+            /** Roleta */
+            roleTa: string;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+        };
+        /**
+         * CertificateDetailsOut
+         * @description What the certificate says: the membership's start, the event, or the completed assignments.
+         */
+        CertificateDetailsOut: {
+            /** Membersince */
+            memberSince?: string | null;
+            /** Eventref */
+            eventRef?: string | null;
+            /** Eventtitleen */
+            eventTitleEn?: string | null;
+            /** Eventtitleta */
+            eventTitleTa?: string | null;
+            /** Eventdate */
+            eventDate?: string | null;
+            /** Assignmentcount */
+            assignmentCount?: number | null;
+            /** Assignments */
+            assignments?: components["schemas"]["CertificateAssignmentOut"][] | null;
+        };
+        /** CertificateEventOut */
+        CertificateEventOut: {
+            /**
+             * Eventid
+             * Format: uuid
+             */
+            eventId: string;
+            /** Eventref */
+            eventRef: string;
+            /** Titleen */
+            titleEn: string;
+            /** Titleta */
+            titleTa: string;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Hascertificate */
+            hasCertificate: boolean;
+        };
+        /** CertificateIssueIn */
+        CertificateIssueIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "membership" | "event_participation" | "volunteer_service";
+            /**
+             * Eventid
+             * @description Needed for an event-participation certificate
+             */
+            eventId?: string | null;
+            /** Membercode */
+            memberCode: string;
+        };
+        /** CertificateOut */
+        CertificateOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Certificateref */
+            certificateRef: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "membership" | "event_participation" | "volunteer_service";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "valid" | "revoked" | "superseded";
+            /**
+             * Statusreason
+             * @description Why it was revoked or replaced
+             */
+            statusReason: string | null;
+            /** Supersededbyref */
+            supersededByRef: string | null;
+            /** Holdername */
+            holderName: string;
+            /**
+             * Issuedon
+             * Format: date
+             */
+            issuedOn: string;
+            details: components["schemas"]["CertificateDetailsOut"];
+            /**
+             * Verifyurl
+             * @description The address in the QR; the member's own certificates only, never a staff list
+             */
+            verifyUrl?: string | null;
+        };
+        /** CertificateReasonIn */
+        CertificateReasonIn: {
+            /** Reason */
+            reason: string;
+        };
+        /** CertificateRequestIn */
+        CertificateRequestIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "membership" | "event_participation" | "volunteer_service";
+            /**
+             * Eventid
+             * @description Needed for an event-participation certificate
+             */
+            eventId?: string | null;
         };
         /** ChainCheckOut */
         ChainCheckOut: {
@@ -16706,6 +17540,50 @@ export interface components {
              */
             revisions: components["schemas"]["AlertRevisionOut"][];
         };
+        /** ManagedCertificateOut */
+        ManagedCertificateOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Certificateref */
+            certificateRef: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "membership" | "event_participation" | "volunteer_service";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "valid" | "revoked" | "superseded";
+            /**
+             * Statusreason
+             * @description Why it was revoked or replaced
+             */
+            statusReason: string | null;
+            /** Supersededbyref */
+            supersededByRef: string | null;
+            /** Holdername */
+            holderName: string;
+            /**
+             * Issuedon
+             * Format: date
+             */
+            issuedOn: string;
+            details: components["schemas"]["CertificateDetailsOut"];
+            /**
+             * Verifyurl
+             * @description The address in the QR; the member's own certificates only, never a staff list
+             */
+            verifyUrl?: string | null;
+            /** Membercode */
+            memberCode: string;
+            /** Areakey */
+            areaKey: string;
+        };
         /** ManagedCourseOut */
         ManagedCourseOut: {
             /**
@@ -17543,6 +18421,49 @@ export interface components {
             projects: components["schemas"]["IssueSummaryOut"][];
         };
         /**
+         * MyAssistedOut
+         * @description M05: the member's latest request, and whether they can ask now.
+         */
+        MyAssistedOut: {
+            request: components["schemas"]["AssistedHelpRequestOut"] | null;
+            /** Identityverified */
+            identityVerified: boolean;
+            /** Reviewstate */
+            reviewState: string | null;
+            /**
+             * Contactonrecord
+             * @description Help needs a mobile number confirmed by a code, so the team can call
+             */
+            contactOnRecord: boolean;
+            /**
+             * Checkfailuresbeforehelp
+             * @default 3
+             */
+            checkFailuresBeforeHelp: number;
+            /**
+             * Preferredwithindays
+             * @default 30
+             */
+            preferredWithinDays: number;
+        };
+        /**
+         * MyCertificatesOut
+         * @description M34: the member's certificates, newest first, and what they can ask for now.
+         */
+        MyCertificatesOut: {
+            /** Certificates */
+            certificates: components["schemas"]["CertificateOut"][];
+            /**
+             * Membershipproblems
+             * @description Empty when a membership certificate can be issued
+             */
+            membershipProblems: string[];
+            /** Events */
+            events: components["schemas"]["CertificateEventOut"][];
+            /** Completedassignments */
+            completedAssignments: number;
+        };
+        /**
          * MyHouseholdDetailsIn
          * @description An adult's own entry (OD-30: each adult confirms their own). A field left out stays as it
          *     is; a field sent as null is cleared.
@@ -17651,6 +18572,59 @@ export interface components {
             referralCode: string;
             /** Invitations */
             invitations: components["schemas"]["InvitationOut"][];
+        };
+        /**
+         * MyRenewalOut
+         * @description M33: where the member's yearly check stands and the two things it asks them to confirm.
+         */
+        MyRenewalOut: {
+            /**
+             * Applies
+             * @description False before the membership is Active, or while it is suspended or inactive
+             */
+            applies: boolean;
+            /**
+             * Reason
+             * @description Why it does not apply: membership_pending, membership_suspended, membership_inactive
+             */
+            reason: string | null;
+            /** Membershipstate */
+            membershipState: string;
+            /** Phase */
+            phase: ("upcoming" | "due" | "grace" | "lapsed" | "confirmed") | null;
+            /** Canconfirm */
+            canConfirm: boolean;
+            /**
+             * Reactivation
+             * @description Confirming makes a lapsed membership Active again (OD-43)
+             */
+            reactivation: boolean;
+            cycle: components["schemas"]["RenewalCycleOut"] | null;
+            /** Gracedays */
+            graceDays: number;
+            /**
+             * Mobilemasked
+             * @description The confirmed mobile number, all but the last two digits hidden
+             */
+            mobileMasked: string | null;
+            /**
+             * Contactonrecord
+             * @description False until a mobile number is confirmed by a code
+             */
+            contactOnRecord: boolean;
+            /** Districtname */
+            districtName: string | null;
+            /** Dsname */
+            dsName: string | null;
+            /** Gnname */
+            gnName: string | null;
+            /**
+             * Areachangeopen
+             * @description An area change is waiting for review; it counts as the area answer
+             */
+            areaChangeOpen: boolean;
+            /** History */
+            history: components["schemas"]["RenewalCycleOut"][];
         };
         /**
          * MyReportOut
@@ -20795,6 +21769,30 @@ export interface components {
             /** Gnname */
             gnName: string | null;
         };
+        /**
+         * PublicCertificateOut
+         * @description FR-RNW-007: only these four. A revoked or superseded certificate shows its status and nothing about
+         *     the holder: the name is given only while the certificate is valid.
+         */
+        PublicCertificateOut: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "membership" | "event_participation" | "volunteer_service";
+            /** Holdername */
+            holderName: string | null;
+            /**
+             * Issuedon
+             * Format: date
+             */
+            issuedOn: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "valid" | "revoked" | "superseded";
+        };
         /** PublicKeyOut */
         PublicKeyOut: {
             /** Keyid */
@@ -21793,6 +22791,105 @@ export interface components {
              * @default
              */
             note: string;
+        };
+        /** RenewalConfirmIn */
+        RenewalConfirmIn: {
+            /**
+             * Contactconfirmed
+             * @description The member says the mobile number shown is still theirs
+             */
+            contactConfirmed: boolean;
+            /**
+             * Areaconfirmed
+             * @description The member says the area shown is still right (or an area change is open)
+             */
+            areaConfirmed: boolean;
+        };
+        /** RenewalCycleOut */
+        RenewalCycleOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Dueon
+             * Format: date
+             */
+            dueOn: string;
+            /**
+             * Graceendson
+             * Format: date
+             */
+            graceEndsOn: string;
+            /**
+             * Openson
+             * Format: date
+             * @description From this day the member can confirm
+             */
+            opensOn: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "open" | "confirmed" | "lapsed";
+            /** Confirmedat */
+            confirmedAt: string | null;
+            /** Areaconfirmation */
+            areaConfirmation: ("confirmed" | "change_requested") | null;
+            /** Lapsedat */
+            lapsedAt: string | null;
+        };
+        /** RenewalDueMemberOut */
+        RenewalDueMemberOut: {
+            /**
+             * Memberid
+             * Format: uuid
+             */
+            memberId: string;
+            /** Membercode */
+            memberCode: string;
+            /** Fullname */
+            fullName: string;
+            /** Areakey */
+            areaKey: string;
+            /**
+             * Dueon
+             * Format: date
+             */
+            dueOn: string;
+            /**
+             * Graceendson
+             * Format: date
+             */
+            graceEndsOn: string;
+            /**
+             * Phase
+             * @enum {string}
+             */
+            phase: "upcoming" | "due" | "grace" | "lapsed" | "confirmed";
+            /** Notice30At */
+            notice30At: string | null;
+            /** Notice7At */
+            notice7At: string | null;
+            /** Lapsedat */
+            lapsedAt: string | null;
+        };
+        /** RenewalSummaryOut */
+        RenewalSummaryOut: {
+            /** Upcoming */
+            upcoming: number;
+            /** Due */
+            due: number;
+            /** Grace */
+            grace: number;
+            /** Lapsed */
+            lapsed: number;
+            /**
+             * Gracedays
+             * @default 60
+             */
+            graceDays: number;
         };
         /** ReplyIn */
         ReplyIn: {
@@ -26678,7 +27775,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            /** @description not_open, claimed_by_another, not_claimed_by_you or witnessed_by_you */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -26730,7 +27827,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            /** @description not_open, claimed_by_another, not_claimed_by_you or witnessed_by_you */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -26782,7 +27879,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            /** @description not_open, claimed_by_another, not_claimed_by_you or witnessed_by_you */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -26838,7 +27935,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description not_open, claimed_by_another or not_claimed_by_you */
+            /** @description not_open, claimed_by_another, not_claimed_by_you or witnessed_by_you */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -44740,6 +45837,962 @@ export interface operations {
                 };
             };
             /** @description period_days_must_be_7_30_or_90 */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_my_renewal_v1_membership_renewal_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyRenewalOut"];
+                };
+            };
+        };
+    };
+    confirm_renewal_v1_membership_renewal_me_confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RenewalConfirmIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyRenewalOut"];
+                };
+            };
+            /** @description {"code": "renewal_refused", "problems": [...]}: not_due_yet, already_confirmed, contact_not_confirmed, contact_confirmation_required, area_confirmation_required, membership_<state> */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_due_v1_membership_renewal_manage_get: {
+        parameters: {
+            query?: {
+                phase?: ("upcoming" | "due" | "grace" | "lapsed") | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RenewalDueMemberOut"][];
+                };
+            };
+            /** @description forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_summary_v1_membership_renewal_manage_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RenewalSummaryOut"];
+                };
+            };
+            /** @description forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_my_certificates_v1_membership_certificates_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyCertificatesOut"];
+                };
+            };
+        };
+    };
+    request_certificate_v1_membership_certificates_me_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CertificateRequestIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CertificateOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "certificate_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_certificates_v1_membership_certificates_manage_get: {
+        parameters: {
+            query?: {
+                status?: ("valid" | "revoked" | "superseded") | null;
+                kind?: ("membership" | "event_participation" | "volunteer_service") | null;
+                /** @description A CT- reference or a member ID */
+                ref?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedCertificateOut"][];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "certificate_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    issue_certificate_v1_membership_certificates_manage_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CertificateIssueIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedCertificateOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "certificate_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    revoke_certificate_v1_membership_certificates_manage__certificate_id__revoke_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                certificate_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CertificateReasonIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedCertificateOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "certificate_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    reissue_certificate_v1_membership_certificates_manage__certificate_id__reissue_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                certificate_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CertificateReasonIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagedCertificateOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "certificate_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    check_certificate_v1_public_certificates__token__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicCertificateOut"];
+                };
+            };
+            /** @description not_found: no certificate has this code */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description too_many_requests, with Retry-After */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_my_request_v1_identity_assisted_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyAssistedOut"];
+                };
+            };
+        };
+    };
+    request_help_v1_identity_assisted_me_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistedHelpRequestIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistedHelpRequestOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_your_session */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "assisted_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    cancel_my_request_v1_identity_assisted_me_cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistedHelpRequestOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_your_session */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "assisted_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_requests_v1_identity_assisted_manage_get: {
+        parameters: {
+            query?: {
+                state?: ("requested" | "scheduled" | "in_session" | "completed" | "cancelled" | "closed")[] | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistedQueueItemOut"][];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_your_session */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "assisted_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_request_v1_identity_assisted_manage__request_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistedRequestFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_your_session */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "assisted_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    schedule_v1_identity_assisted_manage__request_id__schedule_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistedScheduleIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistedRequestFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_your_session */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "assisted_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    start_session_v1_identity_assisted_manage__request_id__sessions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistedStartIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistedSessionOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_your_session */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "assisted_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    complete_session_v1_identity_assisted_manage__request_id__sessions__session_id__complete_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistedCompleteIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistedRequestFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_your_session */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "assisted_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    abandon_session_v1_identity_assisted_manage__request_id__sessions__session_id__abandon_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistedAbandonIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistedRequestFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_your_session */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "assisted_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    close_request_v1_identity_assisted_manage__request_id__close_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistedCloseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistedRequestFileOut"];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_your_session */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "assisted_refused", "problems": [...]} */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_review_sessions_v1_identity_assisted_reviews__review_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                review_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistedReviewSessionOut"][];
+                };
+            };
+            /** @description forbidden, own_record or outside_your_area */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_your_session */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description {"code": "assisted_refused", "problems": [...]} */
             422: {
                 headers: {
                     [name: string]: unknown;

@@ -50,6 +50,8 @@ export default function StaffHomeScreen() {
   const collectsVisits = permissions.has('field.collect');
   const recordsRelief = permissions.has('relief.logistics');
   const meetsMembers = permissions.has('appointment.manage_own');
+  // S04 (OD-04): the assisted-session grant, or identity review rights.
+  const assistsVerification = permissions.has('members.assisted_verification') || permissions.has('members.verify');
   const nothing =
     !permissions.has('members.verify') &&
     !approvesAnything(permissions) &&
@@ -59,7 +61,8 @@ export default function StaffHomeScreen() {
     !collectsVisits &&
     !committees.data?.length &&
     !recordsRelief &&
-    !meetsMembers;
+    !meetsMembers &&
+    !assistsVerification;
 
   return (
     <Screen edges={[]} onRefresh={reload} refreshing={reviews.loading || approvals.loading}>
@@ -133,6 +136,15 @@ export default function StaffHomeScreen() {
           <AppText step="section">{t('s.appointments.title')}</AppText>
           <AppText step="body" tone="secondary">
             {t('s.appointments.homeBody')}
+          </AppText>
+        </SurfaceCard>
+      ) : null}
+
+      {assistsVerification ? (
+        <SurfaceCard onPress={() => router.push('/staff/assisted-verification')} accessibilityLabel={t('s.assisted.title')}>
+          <AppText step="section">{t('s.assisted.title')}</AppText>
+          <AppText step="body" tone="secondary">
+            {t('s.assisted.homeBody')}
           </AppText>
         </SurfaceCard>
       ) : null}
