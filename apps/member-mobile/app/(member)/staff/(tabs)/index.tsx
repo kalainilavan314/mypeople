@@ -45,13 +45,15 @@ export default function StaffHomeScreen() {
   const looksUp = permissions.has('members.view_profile');
   const coordinatesVolunteers = permissions.has('volunteers.manage');
   const collectsVisits = permissions.has('field.collect');
+  const meetsMembers = permissions.has('appointment.manage_own');
   const nothing =
     !permissions.has('members.verify') &&
     !approvesAnything(permissions) &&
     !scans &&
     !looksUp &&
     !coordinatesVolunteers &&
-    !collectsVisits;
+    !collectsVisits &&
+    !meetsMembers;
 
   return (
     <Screen edges={[]} onRefresh={reload} refreshing={reviews.loading || approvals.loading}>
@@ -107,6 +109,15 @@ export default function StaffHomeScreen() {
           <AppText step="section">{t('s.fieldVisits.title')}</AppText>
           <AppText step="body" tone="secondary">
             {t('s.fieldVisits.homeBody')}
+          </AppText>
+        </SurfaceCard>
+      ) : null}
+
+      {meetsMembers ? (
+        <SurfaceCard onPress={() => router.push('/staff/appointments')} accessibilityLabel={t('s.appointments.title')}>
+          <AppText step="section">{t('s.appointments.title')}</AppText>
+          <AppText step="body" tone="secondary">
+            {t('s.appointments.homeBody')}
           </AppText>
         </SurfaceCard>
       ) : null}

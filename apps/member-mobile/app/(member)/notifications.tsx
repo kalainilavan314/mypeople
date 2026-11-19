@@ -65,6 +65,14 @@ function targetRoute(item: NotificationItem): Href | null {
       return '/volunteer/assignments';
     case 'misinfo_report':
       return '/official';
+    case 'guide_entry':
+      return item.targetId ? { pathname: '/livelihood/[id]', params: { id: item.targetId } } : '/livelihood';
+    case 'appointment':
+      return item.targetId
+        ? { pathname: '/representatives/appointments/[id]', params: { id: item.targetId } }
+        : '/representatives/appointments';
+    case 'appointment_calendar':
+      return '/staff/appointments';
     default:
       return null;
   }

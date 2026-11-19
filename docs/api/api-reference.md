@@ -327,6 +327,32 @@ Behind the `fact_checks` switch (phase 2). A person decides every report; no aut
 | `GET /reports/mine`, `POST /reports/{id}/appeal` `{body}` | the reporter | outcome and reason; one appeal | `422 not_decided`, `already_appealed` |
 | `GET /manage?open_only`, `GET /manage/{id}/screenshot`, `POST /manage/{id}/decision` `{outcome, reason}`, `POST /manage/{id}/appeal-decision` `{change, outcome?, reason}` | `content.moderate` | the D12 fact-check queue; screenshot views audited | `403 own_record`, `original_decider`; `422 already_decided`, `no_open_appeal`, `new_outcome_required` |
 
+### Livelihood guide (`/v1/guide`)
+
+Behind the `livelihood_guide` switch (phase 3, G3). Refusals are `422 {code: "guide_refused", problems}`. The guide is one platform-wide list: `guide.edit` and `guide.review` count in any area [ASSUMPTION].
+
+| Endpoint | Who | Result | Refusals |
+|---|---|---|---|
+| `GET /v1/guide?q&category` | a session | published entries before their end date, newest check first; `q` matches either language (M39, FR-LIV-001) | `401` |
+| `GET /v1/guide/{id}` | a session | the entry with `sourceUrl`, `publishedOn`, `verifiedOn`, `expiresOn`, the fixed `disclaimerEn`/`disclaimerTa` ("check eligibility with the provider", FR-LIV-004) and the member's own open report (M40) | `404` (draft, withdrawn or past its end date) |
+| `POST /v1/guide/{id}/reports` `{reason, note?}` | a session | the report; `guide.edit` holders are told with the entry's link (FR-LIV-006); the reporter is never shown to them | `422 already_reported` |
+| `POST /v1/guide/manage`, `PUT .../{id}` | `guide.edit` | drafts, saved incomplete; saving a published entry takes it off the guide until reviewed again | `422 states_eligibility` |
+| `POST /v1/guide/manage/{id}/request-review`, `POST .../review` `{approve, note?}` | `guide.edit` asks, `guide.review` decides | published, or back to draft with the note | `422 source_url_required`, `<field>_<en|ta>_required`, `published_on_required`, `verified_on_required`, `already_expired`, `reason_required`; `403 own_entry` (the person who asked or last changed it) |
+| `POST /v1/guide/manage/{id}/verified`, `.../withdraw` `{reason}` | `guide.edit` (withdraw: either permission) | checked against the source today; or taken off for good | `422 not_allowed_from:<state>` |
+| `GET /v1/guide/manage?state&expired&q`, `GET .../reports?state`, `POST .../reports/{id}/resolution` `{outcome, note?}` | `guide.edit` or `guide.review` (resolving: `guide.edit`) | D28 lists with `expired`, `needsReverification` (180 days) and `missing`; the report queue; the reporter is told it was checked | `422 reason_required` (dismissing), `already_resolved` |
+
+### Meet Your Representative (`/v1/appointments`)
+
+Behind the `representatives` switch (phase 3, G3). Refusals are `422 {code: "appointment_refused", problems}`.
+
+| Endpoint | Who | Result | Refusals |
+|---|---|---|---|
+| `GET /v1/appointments/representatives`, `GET .../{id}` | a session | published profiles with role, area, office hours, `coversMyArea`, the next free time; detail adds only the contact routes the person approved (BR-143) and the free slots | `404` |
+| `POST /v1/appointments` `{slotId, topic, contactPreference, contactPhone?, needs, needsNote?, caseRef?, caseLinkConsent}` | Verified and Active members [ASSUMPTION] | the booking; `caseRef` is stored only with consent (FR-APT-005); the representative is told | `422 identity_not_verified`, `membership_not_active`, `slot_taken`, `slot_unavailable`, `too_many_upcoming` (3), `already_booked_with_representative`, `own_calendar`, `contact_phone_required`, `case_ref_format`, `representative_unavailable` |
+| `GET /v1/appointments/mine`, `GET .../mine/{id}`, `POST .../mine/{id}/cancel` `{reason?}`, `POST .../mine/{id}/reschedule` `{slotId}` | the member | own bookings with the follow-up note; cancel or move before the start; reminders 24 hours and 1 hour before (notifications task) | `422 already_started`, `not_allowed_from:<state>`, `same_slot`, `slot_taken` |
+| `GET /v1/appointments/calendar?from&days`, `PUT .../calendar/profile`, `POST .../calendar/contacts` `{approve}`, `POST .../calendar/slots`, `POST .../calendar/slots/{id}/withdraw`, `GET .../calendar/bookings/{id}`, `POST .../cancel`, `POST .../follow-up` `{outcome, note?}` | `appointment.manage_own` (PRM-56), own calendar only | S17: slots with bookings (member name and ID, needs, consented case reference), contact approval, slot series without overlap, follow-up visible to the member (FR-APT-006) | `422 overlaps_existing_slot`, `starts_in_past`, `place_required`, `not_started_yet`, `note_required`, `no_contacts`, `no_profile` |
+| `GET/POST /v1/appointments/profiles`, `GET/PUT .../{id}`, `POST .../publish`, `.../withdraw`, `.../slots`, `.../slots/{id}/withdraw` | `appointment.profile.manage` over the profile's area [ASSUMPTION] | D29: profiles by member ID and area; a change of contact routes clears the person's approval; slots show `booked` only, never who | `422 unknown_member_code`, `profile_exists`, `representative_lacks_calendar_permission`; `403 outside_your_area` |
+
 ### Profile and privacy (`/v1/profile`, `/v1/auth/password`, `/v1/privacy`)
 
 | Endpoint | Needs | Success | Errors |

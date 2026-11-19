@@ -57,6 +57,10 @@ function StaffStack() {
       <Stack.Screen name="field-visits/index" options={{ title: t('s.fieldVisits.title') }} />
       <Stack.Screen name="field-visits/new" options={{ title: t('s.fieldVisits.newTitle') }} />
       <Stack.Screen name="field-visits/sync" options={{ title: t('s.fieldVisits.syncTitle') }} />
+      <Stack.Screen name="appointments/index" options={{ title: t('s.appointments.title') }} />
+      <Stack.Screen name="appointments/[id]" options={{ title: t('s.appointments.bookingTitle') }} />
+      <Stack.Screen name="appointments/slots" options={{ title: t('s.appointments.addSlots') }} />
+      <Stack.Screen name="appointments/profile" options={{ title: t('s.appointments.editProfile') }} />
     </Stack>
   );
 }
