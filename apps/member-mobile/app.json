@@ -38,7 +38,7 @@
         {
           "cameraPermission": "TMK uses the camera to photograph your ID and take a selfie for identity verification, proof of residence for an area change, and, for staff, to scan event passes and membership cards at check-in.",
           "photosPermission": "TMK lets you choose a photo of your ID or proof of residence when you cannot use the camera.",
-          "microphonePermission": false
+          "microphonePermission": "TMK uses the microphone only when you tap Speak instead, to turn your words into text on your phone. No recording is kept or sent."
         }
       ],
       "expo-sharing",
@@ -46,11 +46,17 @@
         "expo-camera",
         {
           "cameraPermission": "TMK uses the camera to photograph your ID and take a selfie for identity verification, proof of residence for an area change, and, for staff, to scan event passes and membership cards at check-in.",
-          "microphonePermission": false,
+          "microphonePermission": "TMK uses the microphone only when you tap Speak instead, to turn your words into text on your phone. No recording is kept or sent.",
           "recordAudioAndroid": false
         }
       ],
-      "expo-speech-recognition"
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "TMK uses the microphone only when you tap Speak instead, to turn your words into text on your phone. No recording is kept or sent.",
+          "speechRecognitionPermission": "TMK turns your speech into text on your phone when you tap Speak instead. No recording is kept or sent."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
