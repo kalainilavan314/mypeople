@@ -50,6 +50,13 @@ export const builtModules: readonly AdminModule[] = [
     permission: ['assistance.intake', 'assistance.casework', 'assistance.decide', 'assistance.programme.manage'] as const,
   },
   { href: '/town-halls', ta: 'மக்கள் மன்றங்கள்', en: 'Town halls', permission: ['townhall.produce', 'townhall.moderate'] as const },
+  { href: '/livelihood', ta: 'வாழ்வாதார வழிகாட்டி', en: 'Livelihood guide', permission: ['guide.edit', 'guide.review'] as const },
+  {
+    href: '/representatives',
+    ta: 'பிரதிநிதிகளும் சந்திப்புகளும்',
+    en: 'Representatives and appointments',
+    permission: ['appointment.profile.manage', 'appointment.manage_own'] as const,
+  },
   { href: '/field', ta: 'களப் பார்வைகள்', en: 'Field visits', permission: 'field.collect' },
   { href: '/gallery', ta: 'புகைப்படங்கள் & நீக்கங்கள்', en: 'Gallery console', permission: ['gallery.publish', 'gallery.takedown'] as const },
   { href: '/messages', ta: 'அறிவித்தல்கள் & செய்திகள்', en: 'Messaging composer', permission: 'notifications.send' },

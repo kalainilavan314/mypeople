@@ -358,6 +358,19 @@ const BILINGUAL_MESSAGES: Record<string, BilingualText> = {
     ta: 'இப்பகுதியிலும் இந்நேரத்திலும் தேர்தல் அமைதிக்காலம் நடைமுறையில் உள்ளது.',
     en: 'An election silence period covers this area and time.',
   },
+  // Livelihood guide (D28) and representatives (D29).
+  guide_refused: {
+    ta: 'வழிகாட்டிப் பதிவு தொடர்பான நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The guide entry action was not recorded. Fix the points below and try again.',
+  },
+  appointment_refused: {
+    ta: 'பிரதிநிதி அல்லது சந்திப்பு நடவடிக்கை பதிவுசெய்யப்படவில்லை. கீழுள்ள காரணங்களைச் சரிசெய்து மீண்டும் முயலவும்.',
+    en: 'The representative or appointment action was not recorded. Fix the points below and try again.',
+  },
+  own_entry: {
+    ta: 'இந்த மீளாய்வைக் கோரியவர் அல்லது கடைசியாக மாற்றியவர் நீங்கள் என்பதால், வேறொரு மீளாய்வாளர் இதை வெளியிட வேண்டும்.',
+    en: 'You asked for this review or made the last change, so another reviewer must publish it.',
+  },
 };
 
 const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
@@ -1166,6 +1179,232 @@ const BILINGUAL_PROBLEMS: Record<string, BilingualText> = {
     ta: 'இந்த முறைப்பாடு இன்னும் தீர்மானிக்கப்படவில்லை.',
     en: 'This report has not been decided yet.',
   },
+  // Livelihood guide (D28; FR-LIV-002 to 006).
+  guide_category_required: {
+    ta: 'பதிவின் வகையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose the entry’s category.',
+  },
+  guide_title_ta_required: {
+    ta: 'தமிழ்த் தலைப்பை எழுதவும்.',
+    en: 'Write the title in Tamil.',
+  },
+  guide_title_en_required: {
+    ta: 'ஆங்கிலத் தலைப்பை எழுதவும்.',
+    en: 'Write the title in English.',
+  },
+  summary_ta_required: {
+    ta: 'சுருக்கத்தைத் தமிழில் எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write the summary in Tamil (at least 10 characters).',
+  },
+  summary_en_required: {
+    ta: 'சுருக்கத்தை ஆங்கிலத்தில் எழுதவும் (குறைந்தது 10 எழுத்துகள்).',
+    en: 'Write the summary in English (at least 10 characters).',
+  },
+  guide_body_ta_required: {
+    ta: 'விவரங்களையும் விண்ணப்பிக்கும் முறையையும் தமிழில் எழுதவும்.',
+    en: 'Write the details and how to apply in Tamil.',
+  },
+  guide_body_en_required: {
+    ta: 'விவரங்களையும் விண்ணப்பிக்கும் முறையையும் ஆங்கிலத்தில் எழுதவும்.',
+    en: 'Write the details and how to apply in English.',
+  },
+  provider_ta_required: {
+    ta: 'வழங்குநரின் பெயரைத் தமிழில் எழுதவும்.',
+    en: 'Write the provider in Tamil.',
+  },
+  provider_en_required: {
+    ta: 'வழங்குநரின் பெயரை ஆங்கிலத்தில் எழுதவும்.',
+    en: 'Write the provider in English.',
+  },
+  source_url_required: {
+    ta: 'மூல இணைப்பு இல்லாமல் வெளியிட முடியாது. வழங்குநரின் பக்கத்தின் இணைப்பை உள்ளிடவும்.',
+    en: 'An entry cannot be published without a source link. Enter the provider’s own page.',
+  },
+  guide_source_url_format: {
+    ta: 'மூல இணைப்பு https:// என ஆரம்பிக்க வேண்டும்.',
+    en: 'The source link must start with https://.',
+  },
+  published_on_required: {
+    ta: 'வழங்குநர் வெளியிட்ட திகதியை உள்ளிடவும்.',
+    en: 'Enter the date the provider published it.',
+  },
+  published_on_in_future: {
+    ta: 'வெளியீட்டுத் திகதி எதிர்காலத்தில் அமைய முடியாது.',
+    en: 'The publication date cannot be in the future.',
+  },
+  verified_on_required: {
+    ta: 'மூலத்துடன் கடைசியாகச் சரிபார்த்த திகதியை உள்ளிடவும்.',
+    en: 'Enter the date it was last checked against the source.',
+  },
+  verified_on_in_future: {
+    ta: 'சரிபார்த்த திகதி எதிர்காலத்தில் அமைய முடியாது.',
+    en: 'The checked date cannot be in the future.',
+  },
+  verified_before_published: {
+    ta: 'சரிபார்த்த திகதி வெளியீட்டுத் திகதிக்கு முன் அமைய முடியாது.',
+    en: 'The checked date cannot be before the publication date.',
+  },
+  already_expired: {
+    ta: 'இறுதித் திகதி கடந்துவிட்டது. புதிய இறுதித் திகதியை உள்ளிடவும் அல்லது பதிவை மீளப்பெறவும்.',
+    en: 'The end date has passed. Enter a new end date or withdraw the entry.',
+  },
+  guide_date_invalid: {
+    ta: 'திகதிகளை நாள்காட்டியிலிருந்து தெரிவுசெய்யவும்.',
+    en: 'Pick the dates from the calendar.',
+  },
+  expires_before_published: {
+    ta: 'இறுதித் திகதி வெளியீட்டுத் திகதிக்கு முன் அமைய முடியாது.',
+    en: 'The end date cannot be before the publication date.',
+  },
+  states_eligibility: {
+    ta: 'ஒருவர் தகுதியானவர் என்று வழிகாட்டி கூற முடியாது. “நீங்கள் தகுதியானவர்” போன்ற சொற்களை நீக்கி, வழங்குநர் வழங்குவதை மட்டும் விவரிக்கவும்.',
+    en: 'The guide may never say that someone qualifies. Remove wording such as “you qualify” and describe only what the provider offers.',
+  },
+  already_reported: {
+    ta: 'இந்தப் பதிவு பற்றிய திறந்த முறைப்பாடு ஏற்கனவே உள்ளது.',
+    en: 'There is already an open report about this entry.',
+  },
+  already_resolved: {
+    ta: 'இந்த முறைப்பாடு ஏற்கனவே தீர்க்கப்பட்டுவிட்டது.',
+    en: 'This report has already been resolved.',
+  },
+  // Representatives and appointments (D29, S17; FR-APT-001 to 007).
+  member_code_required: {
+    ta: 'பணியை வகிப்பவரின் உறுப்பினர் இலக்கத்தை உள்ளிடவும்.',
+    en: 'Enter the member ID of the person holding the role.',
+  },
+  unknown_member_code: {
+    ta: 'இந்த உறுப்பினர் இலக்கத்துடன் எவரும் இல்லை.',
+    en: 'No member has this member ID.',
+  },
+  profile_exists: {
+    ta: 'இவருக்கு ஏற்கனவே ஒரு பிரதிநிதி விவரம் உள்ளது. அதைத் திறந்து மாற்றவும்.',
+    en: 'This person already has a representative profile. Open it and change it instead.',
+  },
+  representative_area_level: {
+    ta: 'பிரதிநிதி ஒரு மாவட்டம், பிரதேச செயலகப் பிரிவு அல்லது கிராம சேவகர் பிரிவுக்கு மட்டுமே பொறுப்பாக இருக்கலாம்.',
+    en: 'A representative covers a district, DS division or GN division, not a province.',
+  },
+  representative_name_required: {
+    ta: 'உறுப்பினர்கள் காணும் பெயரைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the name members see in Tamil and English.',
+  },
+  office_hours_required: {
+    ta: 'அலுவலக நேரங்களைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'Write the office hours in Tamil and English.',
+  },
+  phone_format: {
+    ta: 'அலுவலகத் தொலைபேசி இலக்கத்தை 021 222 3344 அல்லது +94212223344 போன்று உள்ளிடவும்.',
+    en: 'Enter the office phone like 021 222 3344 or +94212223344.',
+  },
+  email_format: {
+    ta: 'சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்.',
+    en: 'Enter a valid e-mail address.',
+  },
+  office_address_ta_too_short: {
+    ta: 'அலுவலக முகவரியை முழுமையாகத் தமிழில் எழுதவும்.',
+    en: 'Write the full office address in Tamil.',
+  },
+  office_address_en_too_short: {
+    ta: 'அலுவலக முகவரியை முழுமையாக ஆங்கிலத்தில் எழுதவும்.',
+    en: 'Write the full office address in English.',
+  },
+  no_contacts: {
+    ta: 'காட்டுவதற்குத் தொடர்பு வழி எதுவும் இல்லை. முதலில் ஒன்றை உள்ளிடவும்.',
+    en: 'There is no contact route to show. Enter one first.',
+  },
+  no_profile: {
+    ta: 'உங்களுக்கு இன்னும் பிரதிநிதி விவரம் இல்லை.',
+    en: 'You have no representative profile yet.',
+  },
+  representative_lacks_calendar_permission: {
+    ta: 'இவருக்குத் தனது சந்திப்பு நாட்காட்டியை நிர்வகிக்கும் அனுமதி இல்லை; அது வழங்கப்பட்ட பின்னரே வெளியிடலாம்.',
+    en: 'This person does not hold the permission to manage their own appointment calendar; publish once it is granted.',
+  },
+  representative_unavailable: {
+    ta: 'இந்தப் பிரதிநிதி தற்போது சந்திப்புகளை ஏற்கவில்லை.',
+    en: 'This representative is not taking appointments now.',
+  },
+  slot_start_required: {
+    ta: 'முதல் நேர இடைவெளி ஆரம்பிக்கும் திகதியையும் நேரத்தையும் உள்ளிடவும்.',
+    en: 'Enter the date and time the first slot starts.',
+  },
+  slot_starts_in_past: {
+    ta: 'நேர இடைவெளிகள் எதிர்காலத்தில் ஆரம்பிக்க வேண்டும்.',
+    en: 'Slots must start in the future.',
+  },
+  too_far_ahead: {
+    ta: 'மூன்று மாதங்களுக்குள் உள்ள நேர இடைவெளிகளை மட்டுமே வெளியிடலாம்.',
+    en: 'Slots can be published up to three months ahead.',
+  },
+  slot_length: {
+    ta: 'ஒவ்வொரு நேர இடைவெளியும் 10 முதல் 120 நிமிடங்கள் இருக்க வேண்டும்.',
+    en: 'Each slot must be 10 to 120 minutes.',
+  },
+  too_many_slots: {
+    ta: 'ஒரே தடவையில் 1 முதல் 16 நேர இடைவெளிகளைச் சேர்க்கவும்.',
+    en: 'Add 1 to 16 slots at a time.',
+  },
+  slot_mode_required: {
+    ta: 'சந்திக்கும் முறையைத் தெரிவுசெய்யவும்.',
+    en: 'Choose how they meet.',
+  },
+  slot_place_required: {
+    ta: 'நேரில் சந்திப்பதற்கு, அலுவலக இடத்தைத் தமிழிலும் ஆங்கிலத்திலும் எழுதவும்.',
+    en: 'For an in-person slot, write the office in Tamil and English.',
+  },
+  overlaps_existing_slot: {
+    ta: 'இந்த நேரங்கள் ஏற்கனவே உள்ள நேர இடைவெளியுடன் மேற்பொருந்துகின்றன.',
+    en: 'These times overlap a slot that already exists.',
+  },
+  already_started: {
+    ta: 'இந்தச் சந்திப்பு நேரம் ஏற்கனவே ஆரம்பமாகிவிட்டது.',
+    en: 'This time has already started.',
+  },
+  slot_unavailable: {
+    ta: 'இந்த நேர இடைவெளி இனி கிடைக்காது.',
+    en: 'This slot is no longer available.',
+  },
+  slot_taken: {
+    ta: 'இந்த நேர இடைவெளி ஏற்கனவே பதிவு செய்யப்பட்டுவிட்டது.',
+    en: 'This slot has already been booked.',
+  },
+  follow_up_note_required: {
+    ta: 'சந்திப்பு நடந்திருந்தால், உறுப்பினருக்கான தொடர் குறிப்பை எழுதவும் (குறைந்தது 5 எழுத்துகள்).',
+    en: 'When you met, write the follow-up note for the member (at least 5 characters).',
+  },
+  note_too_short: {
+    ta: 'குறிப்பு குறைந்தது 5 எழுத்துகள் இருக்க வேண்டும்.',
+    en: 'The note must be at least 5 characters.',
+  },
+  not_started_yet: {
+    ta: 'சந்திப்பு நேரம் ஆரம்பமான பின்னரே நடந்ததைப் பதிவுசெய்யலாம்.',
+    en: 'Record what happened once the meeting time has started.',
+  },
+  own_calendar: {
+    ta: 'உங்கள் சொந்த நாட்காட்டியில் நீங்களே பதிவு செய்ய முடியாது.',
+    en: 'You cannot book with yourself.',
+  },
+  too_many_upcoming: {
+    ta: 'உறுப்பினருக்கு ஏற்கனவே மூன்று வரவிருக்கும் சந்திப்புகள் உள்ளன.',
+    en: 'The member already has three appointments ahead.',
+  },
+  already_booked_with_representative: {
+    ta: 'இந்தப் பிரதிநிதியுடன் ஏற்கனவே ஒரு வரவிருக்கும் சந்திப்பு உள்ளது.',
+    en: 'There is already an appointment ahead with this representative.',
+  },
+  contact_phone_required: {
+    ta: 'அழைப்பு அல்லது குறுஞ்செய்திக்கு ஒரு தொலைபேசி இலக்கம் தேவை.',
+    en: 'A call or a text needs a phone number.',
+  },
+  case_ref_format: {
+    ta: 'விவகார இலக்கம் CI-00128 போன்று இருக்க வேண்டும்.',
+    en: 'A case reference looks like CI-00128.',
+  },
+  same_slot: {
+    ta: 'சந்திப்பு ஏற்கனவே இந்த நேரத்தில் உள்ளது.',
+    en: 'The appointment is already at this time.',
+  },
 };
 
 /** Problems that name a question or lesson by its number, e.g. "options_required:2". */
@@ -1790,6 +2029,87 @@ const BILINGUAL_CONFIRMATIONS: Record<string, BilingualText> = {
   misinfo_appeal_changed: {
     ta: 'முடிவு மாற்றப்பட்டது.',
     en: 'Outcome changed.',
+  },
+  // Livelihood guide (D28) and representatives (D29, S17).
+  guide_entry_drafted: {
+    ta: 'பதிவு வரைவாகச் சேமிக்கப்பட்டது. உறுப்பினர்கள் இன்னும் அதைக் காண மாட்டார்கள்.',
+    en: 'Entry saved as a draft. Members do not see it yet.',
+  },
+  guide_entry_saved: {
+    ta: 'மாற்றங்கள் சேமிக்கப்பட்டன. மீண்டும் மீளாய்வு செய்யப்படும் வரை உறுப்பினர்கள் இதைக் காண மாட்டார்கள்.',
+    en: 'Changes saved. Members do not see this entry until it is reviewed again.',
+  },
+  guide_review_requested: {
+    ta: 'மீளாய்வு கோரப்பட்டது.',
+    en: 'Review requested.',
+  },
+  guide_entry_published: {
+    ta: 'பதிவு வெளியிடப்பட்டது; உறுப்பினர்கள் இப்போது காணலாம்.',
+    en: 'Entry published; members can now see it.',
+  },
+  guide_entry_returned: {
+    ta: 'உங்கள் குறிப்புடன் பதிவு திருப்பியனுப்பப்பட்டது.',
+    en: 'Entry returned to the editors with your note.',
+  },
+  guide_entry_verified: {
+    ta: 'இன்று சரிபார்க்கப்பட்டதாகப் பதிவுசெய்யப்பட்டது.',
+    en: 'Recorded as checked today.',
+  },
+  guide_entry_withdrawn: {
+    ta: 'பதிவு வழிகாட்டியிலிருந்து மீளப்பெறப்பட்டது.',
+    en: 'Entry withdrawn from the guide.',
+  },
+  guide_report_fixed: {
+    ta: 'முறைப்பாடு சரிசெய்யப்பட்டதாகக் குறிக்கப்பட்டது; முறையிட்டவருக்கு அறிவிக்கப்படும்.',
+    en: 'Report marked fixed; the member who reported it is told.',
+  },
+  guide_report_dismissed: {
+    ta: 'முறைப்பாடு நிராகரிக்கப்பட்டது; முறையிட்டவருக்கு அறிவிக்கப்படும்.',
+    en: 'Report dismissed; the member who reported it is told.',
+  },
+  representative_drafted: {
+    ta: 'பிரதிநிதி விவரம் வரைவாகச் சேமிக்கப்பட்டது.',
+    en: 'Profile saved as a draft.',
+  },
+  representative_saved: {
+    ta: 'விவரம் சேமிக்கப்பட்டது.',
+    en: 'Profile saved.',
+  },
+  representative_published: {
+    ta: 'விவரம் வெளியிடப்பட்டது; உறுப்பினர்கள் இப்போது காணலாம்.',
+    en: 'Profile published; members can now see it.',
+  },
+  representative_withdrawn: {
+    ta: 'விவரம் மீளப்பெறப்பட்டது; வரவிருந்த சந்திப்புகள் இரத்து செய்யப்பட்டு உறுப்பினர்களுக்கு அறிவிக்கப்பட்டது.',
+    en: 'Profile withdrawn; bookings ahead were cancelled and their members told.',
+  },
+  slots_added: {
+    ta: 'நேர இடைவெளிகள் சேர்க்கப்பட்டன.',
+    en: 'Slots added.',
+  },
+  slot_withdrawn: {
+    ta: 'நேர இடைவெளி மீளப்பெறப்பட்டது.',
+    en: 'Slot withdrawn.',
+  },
+  own_profile_saved: {
+    ta: 'உங்கள் அலுவலக நேரங்களும் தொடர்பு வழிகளும் சேமிக்கப்பட்டன.',
+    en: 'Your office hours and contact routes are saved.',
+  },
+  contacts_approved: {
+    ta: 'உங்கள் தொடர்பு வழிகள் இப்போது உறுப்பினர்களுக்குக் காட்டப்படுகின்றன.',
+    en: 'Members now see your contact routes.',
+  },
+  contacts_hidden: {
+    ta: 'உங்கள் தொடர்பு வழிகள் உறுப்பினர்களிடமிருந்து மறைக்கப்பட்டன.',
+    en: 'Your contact routes are hidden from members.',
+  },
+  booking_cancelled: {
+    ta: 'சந்திப்பு இரத்து செய்யப்பட்டது; உறுப்பினருக்குக் காரணம் அறிவிக்கப்படும்.',
+    en: 'Booking cancelled; the member is told your reason.',
+  },
+  follow_up_recorded: {
+    ta: 'தொடர் குறிப்பு சேமிக்கப்பட்டது; உறுப்பினர் அதைக் காண்பார்.',
+    en: 'Follow-up saved; the member sees it.',
   },
 };
 
