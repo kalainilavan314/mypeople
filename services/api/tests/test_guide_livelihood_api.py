@@ -6,6 +6,7 @@ import pytest
 from sqlalchemy import text
 
 from app.modules.content.guide import rules
+from app.modules.content.guide.service import today as guide_today  # the Sri Lankan day, as the API uses
 
 
 @pytest.fixture
@@ -26,7 +27,7 @@ def reviewer(super_admin):
 
 
 def entry_body(**overrides):
-    today = date.today()
+    today = guide_today()
     return {
         "category": "scholarship",
         "titleEn": "Mahapola higher education scholarship",
@@ -128,7 +129,7 @@ def test_an_entry_leaves_the_list_after_its_end_date(client, auth, editor, revie
     listed = client.get("/v1/guide", headers=auth(member)).json()
     detail = client.get(f"/v1/guide/{entry_id}", headers=auth(member))
     expired = client.get("/v1/guide/manage", params={"expired": True}, headers=auth(editor)).json()
-    late = client.post("/v1/guide/manage", json=entry_body(expiresOn=(date.today() - timedelta(days=1)).isoformat()),
+    late = client.post("/v1/guide/manage", json=entry_body(expiresOn=(guide_today() - timedelta(days=1)).isoformat()),
                        headers=auth(editor)).json()
     late_review = client.post(f"/v1/guide/manage/{late['id']}/request-review", headers=auth(editor))
 
@@ -184,7 +185,7 @@ def test_changing_a_published_entry_takes_it_off_the_guide_until_reviewed(client
     assert changed.json()["state"] == "draft"
     assert while_changed.status_code == 404
     assert verify_draft.json()["detail"]["problems"] == ["not_allowed_from:draft"]
-    assert verified.json()["verifiedOn"] == date.today().isoformat()
+    assert verified.json()["verifiedOn"] == guide_today().isoformat()
     assert withdrawn.json()["state"] == "withdrawn" and gone.status_code == 404
 
 
