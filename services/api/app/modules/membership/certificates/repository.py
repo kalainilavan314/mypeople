@@ -10,6 +10,7 @@ from typing import Any
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from app.modules.community.issues.rules import LOCAL_ZONE
 from app.modules.membership.certificates.rules import CHECK_WINDOW
 
 # Serialises certificate requests per member, so a double tap cannot make two.
@@ -184,7 +185,7 @@ def member_since(db: Session, member_id: uuid.UUID) -> date | None:
         ),
         {"id": member_id},
     )
-    return moment.date() if moment else None
+    return moment.astimezone(LOCAL_ZONE).date() if moment else None
 
 
 @dataclass(frozen=True)

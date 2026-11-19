@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -24,6 +24,10 @@ export function MemberTopBar() {
   useReloadOnFocus(inbox.reload);
   const unread = inbox.data?.unread ?? 0;
   const assistantOn = useFeatureEnabled('ai_assistant');
+  // With the assistant button there are three 44 px targets; on 320 px phones the brand tightens a
+  // little so the Tamil party name still fits on one line.
+  const { width } = useWindowDimensions();
+  const compact = assistantOn && width < 360;
 
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
@@ -41,10 +45,10 @@ export function MemberTopBar() {
           )}
         </Pressable>
 
-        <View style={styles.brand} accessibilityRole="header">
+        <View style={[styles.brand, compact && styles.brandCompact]} accessibilityRole="header">
           <Image
             source={require('../../assets/brand/logo.png')}
-            style={styles.brandLogo}
+            style={compact ? styles.brandLogoCompact : styles.brandLogo}
             resizeMode="contain"
             accessible={false}
           />
@@ -126,6 +130,8 @@ const styles = StyleSheet.create({
   pressed: { backgroundColor: colors.surfaceVariant },
   brand: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing[2] },
   brandLogo: { width: 32, height: 32 },
+  brandCompact: { gap: spacing[1] },
+  brandLogoCompact: { width: 26, height: 26 },
   brandText: { flexShrink: 1, minWidth: 0 },
   brandName: { color: colors.text, fontSize: 16, lineHeight: 20 },
   brandTamil: { fontSize: 11, lineHeight: 16 },

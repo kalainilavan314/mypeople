@@ -9,6 +9,8 @@ export function headerOptions(language: string, scale: TypographyScale = 'defaul
     headerShadowVisible: false,
     headerTintColor: colors.primary,
     headerTitleAlign: 'center' as const,
+    // A long title (common in Tamil) is cut with an ellipsis; this keeps a gap between it and the back arrow.
+    headerTitleContainerStyle: { paddingHorizontal: 8 },
     headerTitleStyle: {
       fontFamily: fontFamilyFor(language, title.weight),
       fontSize: language === 'ta' ? tamilSize(title.size) : title.size,

@@ -126,9 +126,5 @@ export const builtModules: readonly AdminModule[] = [
 
 /** Planned modules in later phases with user-facing bilingual labels. */
 export const plannedModules = [
-  { name: 'AI monitoring and further reports', ta: 'அறிக்கைகளும் அவதானிப்பும்', desc: 'Model safety (D21) and dashboards beyond the Phase 1 figures' },
-  { name: 'Participatory budgeting', ta: 'பங்கேற்பு வரவுசெலவுத் திட்டம்', desc: 'Community voting on local budgets' },
-  { name: 'Official publishing and signing', ta: 'அதிகாரப்பூர்வ வெளியீடு', desc: 'Official gazette and signed notices' },
-  { name: 'Committees and wings', ta: 'குழுக்களும் பிரிவுகளும்', desc: 'Youth, women, and diaspora wings' },
   { name: 'Further reports', ta: 'மேலதிக அறிக்கைகள்', desc: 'Dashboards beyond the Phase 1 figures' },
 ] as const;

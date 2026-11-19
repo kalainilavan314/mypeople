@@ -1931,7 +1931,7 @@ export const ta: AppStrings = {
   },
   // Alerts and safety, emergency help and relief volunteering (M35, M36, FR-DIS).
   safety: {
-    title: 'எச்சரிக்கைகளும் பாதுகாப்பும்',
+    title: 'எச்சரிக்கைகள்',
     alertTitle: 'அதிகாரபூர்வ எச்சரிக்கை',
     historyTitle: 'முந்தைய எச்சரிக்கைகள்',
     helpTitle: 'அவசர உதவி',
@@ -2338,7 +2338,7 @@ export const ta: AppStrings = {
     },
   },
   representatives: {
-    title: 'உங்கள் பிரதிநிதியைச் சந்தியுங்கள்',
+    title: 'பிரதிநிதிகள்',
     profileTitle: 'பிரதிநிதி',
     bookScreenTitle: 'சந்திப்பைப் பதிவுசெய்யுங்கள்',
     appointmentTitle: 'சந்திப்பு',

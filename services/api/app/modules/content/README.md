@@ -2,8 +2,7 @@
 
 Gallery, official content and its signing, fact-checks, the livelihood guide and official alerts.
 
-**Status: gallery built (Batch 17, `gallery/`); official content and its signing built (Phase 3, `official/`, behind `official_content`); the guide and alerts not built yet.** Fact-checks live in `community/factchecks`. The live Express API still serves the PWA's sample gallery.
-**Status: gallery built (Batch 17, `gallery/`); the livelihood guide built (Phase 3, `guide/`, behind `livelihood_guide`); official content and alerts not built yet (fact-checks live in `community/factchecks`).** The live Express API still serves the PWA's sample gallery.
+**Status: gallery built (Batch 17, `gallery/`); official content and its signing built (Phase 3, `official/`, behind `official_content`); the livelihood guide built (Phase 3, `guide/`, behind `livelihood_guide`).** Fact-checks live in `community/factchecks`; disaster alerts live in `assistance/alerts`. The live Express API still serves the PWA's sample gallery.
 
 - `gallery/rules.py`: album states, submission checks, the two-person publish rule, removal decisions and the 24-hour clock. Publishing is refused during an election silence window for the album's area (`election` module, NFR-ELC-03).
 - `gallery/images.py`: decoding and re-encoding uploads as WebP without metadata; blurring.

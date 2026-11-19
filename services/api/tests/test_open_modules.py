@@ -9,6 +9,7 @@ from app.modules.features import open_modules
 from app.modules.features import service as features
 from app.modules.features.rules import FEATURES
 from app.modules.policy_decisions import service as policy_decisions
+from app.modules.policy_decisions.rules import FEATURE_POLICY_REQUIREMENTS
 
 APPROVAL = "Owner decision, 16 Nov 2026"
 REASON = f"Opened by server command on the owner's decision: {APPROVAL}"
@@ -25,24 +26,28 @@ def flags(db_session):
     return {row["key"]: row for row in rows}
 
 
-def test_every_module_opens_with_its_own_gate_and_the_party_fund_waits_for_its_decisions(db_session, super_admin, all_off):
+def test_every_module_opens_with_its_own_gate_and_modules_wait_for_their_policy_decisions(db_session, super_admin, all_off):
     staff = access.load_staff(db_session, super_admin.id)
 
     results = {r.key: r.outcome for r in features.open_modules(db_session, staff, list(FEATURES), APPROVAL, REASON)}
     stored = flags(db_session)
 
-    finance = results.pop("community_finance")
-    if policy_decisions.missing_feature_decisions(db_session, "community_finance"):
-        assert finance.startswith("refused:policy_decisions_required:")
+    # The party fund (FIN-01 to 05) and assisted verification (GOV-02, OD-04) stay off until their
+    # policy decisions are approved; every other module opens.
+    waiting = {key: results.pop(key) for key in FEATURE_POLICY_REQUIREMENTS}
+    for key, outcome in waiting.items():
+        if policy_decisions.missing_feature_decisions(db_session, key):
+            assert outcome.startswith("refused:policy_decisions_required:"), key
+        assert stored[key]["enabled"] == (outcome == "on")
     assert set(results.values()) == {"on"}
     for key in results:
         assert (stored[key]["enabled"], stored[key]["gate"], stored[key]["approval_ref"]) == (True, FEATURES[key].gate, APPROVAL)
-    assert stored["community_finance"]["enabled"] == (finance == "on")
+    refused = sum(outcome != "on" for outcome in waiting.values())
     actions = db_session.execute(
         text("SELECT action, count(*) FROM ops.audit_log WHERE actor_id = :a AND action LIKE 'features.%' GROUP BY action"),
         {"a": super_admin.id},
     ).all()
-    assert dict(actions) == {"features.gate_recorded": len(FEATURES), "features.enabled": len(FEATURES) - (finance != "on")}
+    assert dict(actions) == {"features.gate_recorded": len(FEATURES), "features.enabled": len(FEATURES) - refused}
 
 
 def test_a_module_already_on_is_left_as_it_is(db_session, super_admin, all_off):

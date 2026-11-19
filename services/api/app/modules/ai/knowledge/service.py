@@ -20,6 +20,7 @@ from app.modules.access.service import Staff, refuse
 from app.modules.ai.knowledge import repository, rules
 from app.modules.ai.knowledge.repository import Hit, Source, SourceCounts
 from app.modules.audit import service as audit
+from app.modules.community.issues.rules import LOCAL_ZONE
 
 
 class SourceRefused(Exception):
@@ -32,8 +33,9 @@ class SourceNotFound(Exception):
     pass
 
 
-def _today() -> date:
-    return datetime.now(UTC).date()
+def today() -> date:
+    """Review dates are Sri Lankan days."""
+    return datetime.now(UTC).astimezone(LOCAL_ZONE).date()
 
 
 def _require(db: Session, staff: Staff, ip: str, target: str) -> None:
@@ -83,7 +85,7 @@ def draft(db: Session, staff: Staff, values: dict[str, Any], ip: str) -> Source:
     _require(db, staff, ip, "new")
     values = _clean(values)
     problems = rules.check_source(body_ta=values.get("body_ta"), body_en=values.get("body_en"),
-                                  review_due=values["review_due"], today=_today())
+                                  review_due=values["review_due"], today=today())
     if problems:
         raise SourceRefused(problems)
     source_id = repository.insert(db, values, family_id=None, version=1, drafted_by=staff.member_id)
@@ -99,7 +101,7 @@ def edit_draft(db: Session, staff: Staff, source_id: uuid.UUID, values: dict[str
         raise SourceRefused(f"not_allowed_from:{source.state}")
     values = _clean(values)
     problems = rules.check_source(body_ta=values.get("body_ta"), body_en=values.get("body_en"),
-                                  review_due=values["review_due"], today=_today())
+                                  review_due=values["review_due"], today=today())
     if problems:
         raise SourceRefused(problems)
     repository.update(db, source_id, {**{k: values.get(k) for k in repository.FIELDS}, "return_reason": None})
@@ -146,7 +148,7 @@ def decide(db: Session, staff: Staff, source_id: uuid.UUID, approve: bool, reaso
     if not rules.is_second_person(source.drafted_by, staff.member_id):
         refuse(db, staff, rules.MANAGE, "own_draft", ip, target=("kb_source", str(source_id)), area_path=(PLATFORM,))
     if approve:
-        if rules.review_overdue(source.review_due, _today()) or source.review_due == _today():
+        if rules.review_overdue(source.review_due, today()) or source.review_due == today():
             raise SourceRefused("review_date_must_be_ahead")
         repository.supersede_approved(db, source.family_id)
         repository.update(db, source_id, {"state": "approved", "approved_by": staff.member_id,
@@ -168,7 +170,7 @@ def mark_reviewed(db: Session, staff: Staff, source_id: uuid.UUID, review_due: d
     source = _found(db, source_id, lock=True)
     if source.state != "approved":
         raise SourceRefused(f"not_allowed_from:{source.state}")
-    problems = rules.check_review(review_due, _today())
+    problems = rules.check_review(review_due, today())
     if problems:
         raise SourceRefused(problems)
     repository.update(db, source_id, {"review_due": review_due, "reviewed_by": staff.member_id,
@@ -193,11 +195,11 @@ def retire(db: Session, staff: Staff, source_id: uuid.UUID, reason: str, ip: str
 
 
 def counts(db: Session) -> SourceCounts:
-    return repository.counts(db, _today())
+    return repository.counts(db, today())
 
 
 # --- For the assistant ---------------------------------------------------------------------------------
 
 
 def search(db: Session, question_terms: list[str], *, excluded_kinds: list[str], limit: int) -> list[Hit]:
-    return repository.search(db, question_terms, excluded_kinds=excluded_kinds, today=_today(), limit=limit)
+    return repository.search(db, question_terms, excluded_kinds=excluded_kinds, today=today(), limit=limit)

@@ -6,12 +6,12 @@ Built screens are in the Expo member and staff apps and the Next.js dashboard; n
 
 | App | Screens | Built |
 |---|---|---|
-| Member app | 112 | 88 |
-| Staff app | 18 | 15 |
-| Dashboard | 44 | 35 |
-| **All** | **174** | **138** |
+| Member app | 112 | 107 |
+| Staff app | 18 | 18 |
+| Dashboard | 44 | 43 |
+| **All** | **174** | **168** |
 
-Counted on 13 November 2026, after the Phase 2 build. Three staff app screens (S11, S12, S15) are built on the dashboard rather than in the app; M48 is partly built and not counted. Phase 2 modules stay behind their switches until Gate G2 (`docs/requirements/phase2-status.md`).
+Counted on 20 November 2026, after the Phase 3 build. Three staff app screens (S11, S12, S15) are built on the dashboard rather than in the app. The six not built wait on outside decisions: C04's wallet pass (INT-03), M02 NIC reading (OD-42), M03 selfie and face match (OD-28, OD-29), and card payments M51, M52 and D11 (OD-27, OD-40; the owner chose bank transfer only). Phase 2 and 3 modules stay behind their switches until their gates.
 
 Status: **Built**; **API built** (the endpoint exists and is tested, only the screen is missing); **Partly built**; **To build**; **Blocked** (waits on the decision or integration named).
 
@@ -107,44 +107,21 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | M25 | Budget project detail | Participatory budgeting (SC-28) | 3 | Built | `apps/member-mobile/app/(member)/budgeting/projects/[id].tsx` | Reviews, allocation, spending and completion evidence |
 | M26 | Cast budgeting ballot | Participatory budgeting (SC-28) | 3 | Built | `apps/member-mobile/app/(member)/budgeting/[id]/ballot.tsx` | Online only; receipt code shown once, copy kept on the device |
 | M27 | Budgeting results | Participatory budgeting (SC-28) | 3 | Built | `apps/member-mobile/app/(member)/budgeting/[id]/results.tsx` | Certified totals only; counts hidden under 10 ballots |
-| M28 | Tamil AI Assistant | Tamil AI assistant (SC-29) | 3 | Blocked: OD-42 (AI provider) | `apps/member-mobile/app/(member)/assistant.tsx` |  |
 | M29 | Election information | Election mode (SC-30) | 2 | Built | `apps/member-mobile/app/(member)/election.tsx` | Behind `election_mode`; Election Commission dates, notices and links only, labelled; Home banner `src/features/election/ElectionBanner.tsx`. [ASSUMPTION] DEP-19: the switch stays off until the legal opinion is recorded |
-| M24 | Budgeting cycle overview | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
-| M25 | Budget project detail | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
-| M26 | Cast budgeting ballot | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
-| M27 | Budgeting results | Participatory budgeting (SC-28) | 3 | To build | `apps/member-mobile/app/(member)/budgeting/` |  |
 | M28 | Tamil AI Assistant | Tamil AI assistant (SC-29) | 3 | Built (answers wait on OD-42: AI_PROVIDER is `none` until a provider is chosen) | `apps/member-mobile/app/(member)/assistant/` (index, help) | Opened from the top-bar button beside the inbox while `ai_assistant` is on |
-| M29 | Election information | Election mode (SC-30) | 2 | Blocked: DEP-19 (legal opinion) | `apps/member-mobile/app/(member)/election.tsx` |  |
 | M30 | Duty roster and shift check-in | Election mode (SC-30) | 2 | Built | `apps/member-mobile/app/(member)/volunteer/assignments.tsx` | Behind `election_roster`; decided: election duties listed with H12 My assignment |
 | M31 | My committees | Wings and committees (SC-31) | 3 | Built | `apps/member-mobile/app/(member)/committees/index.tsx` | Behind `committees`; Tier 5 approves each wing and committee |
 | M32 | Committee space | Wings and committees (SC-31) | 3 | Built | `apps/member-mobile/app/(member)/committees/[id]/` | Moderated threads at `[id]/thread/[threadId]`; no direct messages (OS-17) |
-| M33 | Membership renewal | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 (renewal) | `apps/member-mobile/app/(member)/renewal/` |  |
-| M34 | My certificates | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 | `apps/member-mobile/app/(member)/renewal/` |  |
 | M35 | Alerts and safety | Disaster support (SC-34) | 3 (alert relay may move to 2) | Built | `apps/member-mobile/app/(member)/alerts/` | Behind `disaster_alerts`; open to everyone signed in. Alerts by home area or a chosen District/DS/GN (never GPS), alert detail, 90-day history, shelters, relief volunteering (`alerts/volunteer`), last alerts kept on the phone with their time; Home banner |
 | M36 | Emergency help request | Disaster support (SC-34) | 3 (alert relay may move to 2) | Built | `apps/member-mobile/app/(member)/alerts/help.tsx` | Emergency numbers work offline; the request becomes an urgent Community Support case (fails closed while `community_support` is off) |
 | M37 | Blood donor enrolment | Blood donors (SC-35) | 3 | Built | `apps/member-mobile/app/(member)/blood-donors/` | Behind `blood_donors`; OD-39 built as the BRD's recommendation [ASSUMPTION]; go-live still needs OD-39 and DEP-18 |
 | M38 | Donation request response | Blood donors (SC-35) | 3 | Built | `apps/member-mobile/app/(member)/blood-donors/requests/[id].tsx` | Contact passed on only after accept with consent |
-| M31 | My committees | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/committees/` |  |
-| M32 | Committee space | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/committees/` |  |
 | M33 | Membership renewal | Renewal and certificates (SC-33) | 2–3 | Built (feature-gated `renewal`; OD-43 recommendation as [ASSUMPTION]) | `apps/member-mobile/app/(member)/renewal/index.tsx` | Contact and area only, never documents (BR-136); notices 30 and 7 days before; 60-day grace, then Inactive with reactivation by confirming |
 | M34 | My certificates | Renewal and certificates (SC-33) | 2–3 | Built (feature-gated `renewal`) | `apps/member-mobile/app/(member)/renewal/certificates.tsx`, `renewal/certificate/[id].tsx`; public check `apps/member-mobile/app/certificate/[token].tsx` | Membership, event-participation and volunteer-service certificates; PDF with a verification QR; never an NIC or passport number |
-| M35 | Alerts and safety | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/alerts/` |  |
-| M36 | Emergency help request | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/alerts/` |  |
-| M37 | Blood donor enrolment | Blood donors (SC-35) | 3 | Blocked: OD-39 (blood donors) | `apps/member-mobile/app/(member)/blood-donors/` |  |
-| M38 | Donation request response | Blood donors (SC-35) | 3 | Blocked: OD-39 | `apps/member-mobile/app/(member)/blood-donors/` |  |
-| M39 | Livelihood and welfare guide | Livelihood guide (SC-36) | 3 | To build | `apps/member-mobile/app/(member)/livelihood/` |  |
-| M40 | Guide entry detail | Livelihood guide (SC-36) | 3 | To build | `apps/member-mobile/app/(member)/livelihood/` |  |
-| M41 | Meet your representative | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/representatives/` |  |
-| M42 | Book or manage appointment | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/representatives/` |  |
-| M35 | Alerts and safety | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/alerts/` |  |
-| M36 | Emergency help request | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/alerts/` |  |
-| M37 | Blood donor enrolment | Blood donors (SC-35) | 3 | Blocked: OD-39 (blood donors) | `apps/member-mobile/app/(member)/blood-donors/` |  |
-| M38 | Donation request response | Blood donors (SC-35) | 3 | Blocked: OD-39 | `apps/member-mobile/app/(member)/blood-donors/` |  |
 | M39 | Livelihood and welfare guide | Livelihood guide (SC-36) | 3 | Built | `apps/member-mobile/app/(member)/livelihood/index.tsx` | Behind `livelihood_guide` |
 | M40 | Guide entry detail | Livelihood guide (SC-36) | 3 | Built | `apps/member-mobile/app/(member)/livelihood/[id].tsx` | Behind `livelihood_guide` |
 | M41 | Meet your representative | Meet your representative (SC-37) | 3 | Built | `apps/member-mobile/app/(member)/representatives/index.tsx`, `[id].tsx` | Behind `representatives` |
 | M42 | Book or manage appointment | Meet your representative (SC-37) | 3 | Built | `apps/member-mobile/app/(member)/representatives/book.tsx`, `appointments/` | Behind `representatives` |
-| M43 | Voice report | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Blocked: Voice is Phase 3 | `apps/member-mobile/app/(member)/issues/new (voice mode of H07)` | Decided: a voice option inside H07, not a second report screen |
 | M43 | Voice report | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Built | `apps/member-mobile/app/(member)/issues/report.tsx` (voice mode of H07) | Decided: a voice option inside H07, not a second report screen. On-device recognition only (`expo-speech-recognition`); shown while `voice_reports` is on |
 | M44 | Accessibility and data saver | Voice and low bandwidth (SC-38) | 1 manual alternatives, 3 voice | Built (text size and data saver; voice in Phase 3) | `apps/member-mobile/app/(member)/profile/accessibility.tsx` | In-app text size (Standard, Large, Larger) and a data saver that loads gallery photos on tap; stays on the device |
 | M45 | Messages and channels | SMS and WhatsApp (SC-39) | 1 SMS, 2 WhatsApp | Built (preferences; SMS waits on INT-01, push on INT-02, WhatsApp in Phase 2) | `apps/member-mobile/app/(member)/profile/settings.tsx (channels, with P05)` | Independent push/SMS toggles per category; no second preferences screen. Decided: extends the P05 settings screen; no second preferences screen. |
@@ -176,11 +153,8 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | S14 | Operational notifications | Staff app (SC-19) | 1–2 | Built | `apps/member-mobile/app/(member)/staff/(tabs)/alerts.tsx` |  |
 | S15 | Election duty roster manager | Election mode (SC-30) | 2 | Built (dashboard) | `apps/admin-web/src/app/(staff)/roster/`, `apps/admin-web/src/app/(staff)/elections/[id]/roster/` | Shifts, offers, messages and cancellation on the dashboard; members answer and check in with M30 |
 | S16 | Relief distribution record | Disaster support (SC-34) | 3 (alert relay may move to 2) | Built | `apps/member-mobile/app/(member)/staff/relief/` | relief.logistics; quantity checks against the store; AS- case or group, never a name; draft encrypted on the phone |
-| S17 | Appointment calendar | Meet your representative (SC-37) | 3 | To build | `apps/member-mobile/app/(member)/staff/appointments/` |  |
 | S18 | Committee coordinator tools | Wings and committees (SC-31) | 3 | Built | `apps/member-mobile/app/(member)/staff/committees/` | Also at `committees/[id]/coordinate` for coordinators without a staff role (PRM-50 is committee-scoped) |
-| S16 | Relief distribution record | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/member-mobile/app/(member)/staff/relief/` |  |
 | S17 | Appointment calendar | Meet your representative (SC-37) | 3 | Built | `apps/member-mobile/app/(member)/staff/appointments/` | Behind `representatives`; also on the web at `/representatives/calendar` |
-| S18 | Committee coordinator tools | Wings and committees (SC-31) | 3 | To build | `apps/member-mobile/app/(member)/staff/committees/` |  |
 
 ## Dashboard
 
@@ -214,28 +188,17 @@ Status: **Built**; **API built** (the endpoint exists and is tested, only the sc
 | D17 | Scorecard publication | Accountability scorecard (SC-26) | 2 | Built | `apps/admin-web/src/app/(staff)/scorecards/` |  |
 | D18 | Town hall production and moderation | Town hall (SC-27) | 2 | Built | `apps/admin-web/src/app/(staff)/town-halls/` |  |
 | D19 | Budgeting administration | Participatory budgeting (SC-28) | 3 | Built | `apps/admin-web/src/app/(staff)/budgeting/` | Cycles, projects, recount, two-person certification, allocations, spending |
-| D20 | Assistant knowledge base | Tamil AI assistant (SC-29) | 3 | Blocked: OD-42 | `apps/admin-web/src/app/(staff)/assistant/` |  |
-| D21 | AI model registry and monitoring | AI-assisted identity screening (SC-21) | 1–2 | Blocked: OD-42 | `apps/admin-web/src/app/(staff)/ai-models/` |  |
-| D19 | Budgeting administration | Participatory budgeting (SC-28) | 3 | To build | `apps/admin-web/src/app/(staff)/budgeting/` |  |
 | D20 | Assistant knowledge base | Tamil AI assistant (SC-29) | 3 | Built | `apps/admin-web/src/app/(staff)/assistant/` |  |
 | D21 | AI model registry and monitoring | AI-assisted identity screening (SC-21) | 1–2 | Built | `apps/admin-web/src/app/(staff)/ai-models/` |  |
 | D22 | Election mode administration | Election mode (SC-30) | 2 | Built (periods, silence windows, notices; duty roster, polling information and period report have no API yet) | `apps/admin-web/src/app/(staff)/elections/` |  |
 | D23 | Committees and wings administration | Wings and committees (SC-31) | 3 | Built | `apps/admin-web/src/app/(staff)/committees/` | Diaspora events and counts at `committees/diaspora` |
 | D24 | Field operations oversight | Field operations (SC-32) | 2 | Built | `apps/admin-web/src/app/(staff)/field/` | Counts by area and month; visits deleted after 12 months (OD-38) |
-| D25 | Renewals and certificates | Renewal and certificates (SC-33) | 2–3 | Blocked: OD-43 | `apps/admin-web/src/app/(staff)/renewals/` |  |
 | D26 | Disaster alerts and relief logistics | Disaster support (SC-34) | 3 (alert relay may move to 2) | Built | `apps/admin-web/src/app/(staff)/disaster/` | Alert composer, 6-hour stale flag, checks and withdrawal, shelters, relief stock and distributions, relief volunteers |
 | D27 | Blood request desk | Blood donors (SC-35) | 3 | Built | `apps/admin-web/src/app/(staff)/blood-requests/` | Partner desk (PRM-55) and Tier 5 oversight (`donor.oversight` [ASSUMPTION]); counts only until a donor consents |
 | D25 | Renewals and certificates | Renewal and certificates (SC-33) | 2–3 | Built (feature-gated `renewal`) | `apps/admin-web/src/app/(staff)/renewals/` | Due list by phase with grace periods; issue, revoke and reissue certificates with a reason (PRM-52) |
-| D26 | Disaster alerts and relief logistics | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/admin-web/src/app/(staff)/disaster/` |  |
-| D27 | Blood request desk | Blood donors (SC-35) | 3 | Blocked: OD-39 | `apps/admin-web/src/app/(staff)/blood-requests/` |  |
-| D28 | Livelihood guide content | Livelihood guide (SC-36) | 3 | To build | `apps/admin-web/src/app/(staff)/livelihood/` |  |
-| D29 | Representatives and appointments | Meet your representative (SC-37) | 3 | To build | `apps/admin-web/src/app/(staff)/representatives/` |  |
 | D30 | Official content publishing and signing | Official content and fact-checks (SC-41) | 2 | Built | `apps/admin-web/src/app/(staff)/publishing/` | Draft, image, sign and publish, corrections and withdrawal; Tier 5 registers publishers at `publishing/publishers/`. [ASSUMPTION] INT-24: one Ed25519 key in `CONTENT_SIGNING_KEY` until a KMS; without it signing is refused |
-| D26 | Disaster alerts and relief logistics | Disaster support (SC-34) | 3 (alert relay may move to 2) | To build | `apps/admin-web/src/app/(staff)/disaster/` |  |
-| D27 | Blood request desk | Blood donors (SC-35) | 3 | Blocked: OD-39 | `apps/admin-web/src/app/(staff)/blood-requests/` |  |
 | D28 | Livelihood guide content | Livelihood guide (SC-36) | 3 | Built | `apps/admin-web/src/app/(staff)/livelihood/` | Behind `livelihood_guide` |
 | D29 | Representatives and appointments | Meet your representative (SC-37) | 3 | Built | `apps/admin-web/src/app/(staff)/representatives/` | Behind `representatives` |
-| D30 | Official content publishing and signing | Official content and fact-checks (SC-41) | 2 | Blocked: INT-24 (signing keys in KMS) | `apps/admin-web/src/app/(staff)/publishing/` |  |
 | D31 | Security centre | Account and device security (SC-42) | 1 | Built | `apps/admin-web/src/app/(staff)/access-reviews/page.tsx` |  |
 | D32 | Analytics dashboards | Administration (SC-17, SC-20) | 1–3 | Built (Phase 1 operational figures; further dashboards and exports later) | `apps/admin-web/src/app/(staff)/analytics/` | Registration, identity reviews, review queue and event attendance for the viewer's areas; groups of 1 to 9 hidden |
 | D33 | Audit log viewer | Administration (SC-17, SC-20) | 1–3 | Built | `apps/admin-web/src/app/(staff)/audit/page.tsx` |  |

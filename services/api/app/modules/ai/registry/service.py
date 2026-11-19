@@ -19,6 +19,7 @@ from app.modules.access.service import Staff, refuse
 from app.modules.ai.registry import repository, rules
 from app.modules.ai.registry.repository import Evaluation, FairnessReview, Feedback, Model, Usage
 from app.modules.audit import service as audit
+from app.modules.community.issues.rules import LOCAL_ZONE
 
 
 class ModelRefused(Exception):
@@ -80,7 +81,7 @@ def _go_live_problems(model: Model, evaluations: list[Evaluation], fairness: lis
         status=model.status, was_live=model.live_at is not None, licence_commercial_use=model.licence_commercial_use,
         provider_code=model.provider_code, no_training_terms=model.no_training_terms,
         shadow_started_at=model.shadow_started_at, evaluation=_latest_evaluation(evaluations),
-        fairness=fairness[0].outcome if fairness else None, now=now, today=now.date(),
+        fairness=fairness[0].outcome if fairness else None, now=now, today=now.astimezone(LOCAL_ZONE).date(),
     )
 
 
@@ -130,7 +131,9 @@ def record_evaluation(db: Session, staff: Staff, model_id: uuid.UUID, values: di
     _require(db, staff, GOVERN, ip, str(model_id))
     model = _found(db, model_id)
     problems: list[str] = []
-    if values["evaluated_on"] > _now().date():
+    # Dates are Sri Lankan days: an evaluation run at 01:00 in Colombo is dated that day, which is still
+    # the day before in UTC.
+    if values["evaluated_on"] > _now().astimezone(LOCAL_ZONE).date():
         problems.append("evaluated_in_future")
     if model.task == "assistant":
         passed = not rules.check_assistant_evaluation(
@@ -158,7 +161,7 @@ def record_evaluation(db: Session, staff: Staff, model_id: uuid.UUID, values: di
 def record_fairness_review(db: Session, staff: Staff, model_id: uuid.UUID, values: dict[str, Any], ip: str) -> FairnessReview:
     _require(db, staff, GOVERN, ip, str(model_id))
     _found(db, model_id)
-    if values["reviewed_on"] > _now().date():
+    if values["reviewed_on"] > _now().astimezone(LOCAL_ZONE).date():
         raise ModelRefused("reviewed_in_future")
     review_id = repository.insert_fairness_review(db, model_id, values, staff.member_id)
     audit.record(db, actor_id=staff.member_id, action="ai.model.fairness_recorded", target_type="ai_model",

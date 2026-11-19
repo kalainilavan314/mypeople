@@ -1,7 +1,7 @@
 """Request and response bodies for the assistant's knowledge base (D20)."""
 
 import uuid
-from datetime import UTC, date, datetime
+from datetime import date, datetime
 
 from pydantic import Field
 
@@ -10,6 +10,7 @@ from app.modules.ai.knowledge import rules
 from app.modules.ai.knowledge.repository import Source
 from app.modules.ai.knowledge.rules import Kind, State
 from app.modules.ai.knowledge.service import SourceFile
+from app.modules.ai.knowledge.service import today
 
 
 class KbSourceIn(CamelModel):
@@ -45,7 +46,7 @@ class KbSourceSummaryOut(CamelModel):
         return {
             "id": s.id, "family_id": s.family_id, "version": s.version, "kind": s.kind, "title_ta": s.title_ta,
             "title_en": s.title_en, "publisher": s.publisher, "state": s.state, "review_due": s.review_due,
-            "review_overdue": s.state == "approved" and rules.review_overdue(s.review_due, datetime.now(UTC).date()),
+            "review_overdue": s.state == "approved" and rules.review_overdue(s.review_due, today()),
             "passages": s.passages, "approved_at": s.approved_at, "updated_at": s.updated_at,
         }
 

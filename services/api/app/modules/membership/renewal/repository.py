@@ -11,6 +11,7 @@ from typing import Any
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from app.modules.community.issues.rules import LOCAL_ZONE
 from app.modules.membership.renewal.rules import GRACE_DAYS, OPENS_DAYS_BEFORE
 
 # A member's area keys in the audit log's form, from the codes sign-up stores (see
@@ -121,7 +122,8 @@ def active_since(db: Session, member_id: uuid.UUID) -> date | None:
         ),
         {"id": member_id},
     )
-    return moment.date() if moment else None
+    # The Sri Lankan date: a membership activated at 00:30 in Colombo began that day, not the UTC day before.
+    return moment.astimezone(LOCAL_ZONE).date() if moment else None
 
 
 def active_members_without_cycle(db: Session, limit: int) -> list[uuid.UUID]:
