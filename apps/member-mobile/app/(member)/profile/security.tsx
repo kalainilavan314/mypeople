@@ -23,6 +23,7 @@ import {
 } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
+import { deviceName } from '@/features/profile/deviceName';
 import { api } from '@/lib/api';
 import { errorMessage, problemsOf } from '@/lib/errors';
 
@@ -102,7 +103,7 @@ export default function SecurityScreen() {
                     </View>
                     <View style={styles.sessionCopy}>
                       <AppText step="card" style={styles.sessionTitle}>
-                        {session.deviceLabel}
+                        {deviceName(t, session.deviceLabel)}
                       </AppText>
                       <AppText step="secondary" tone="muted">
                         {t('m.profile.lastUsed', { time: formatDateTime(session.lastSeenAt, language) })}
@@ -112,10 +113,10 @@ export default function SecurityScreen() {
                       <StatusTag tone="verified" label={t('m.profile.thisDevice')} />
                     ) : (
                       <Pressable
-                        onPress={() => confirmRevoke(session.id, session.deviceLabel)}
+                        onPress={() => confirmRevoke(session.id, deviceName(t, session.deviceLabel))}
                         disabled={revoke.busy}
                         accessibilityRole="button"
-                        accessibilityLabel={`${t('m.profile.signOutDevice')}: ${session.deviceLabel}`}
+                        accessibilityLabel={`${t('m.profile.signOutDevice')}: ${deviceName(t, session.deviceLabel)}`}
                         style={({ pressed }) => [styles.compactAction, pressed && styles.pressed, revoke.busy && styles.disabled]}>
                         {revoke.busy ? (
                           <ActivityIndicator size="small" color={colors.primary} />
@@ -239,7 +240,7 @@ function AlertSummary({ alert }: { alert: SecurityAlert }) {
     <>
       <AppText step="card" style={styles.alertTitle}>{t(`m.profile.alertKind_${alert.kind}`)}</AppText>
       <AppText step="secondary" tone="muted">
-        {t('m.profile.alertWhen', { device: alert.deviceLabel, time: formatDateTime(alert.createdAt, language) })}
+        {t('m.profile.alertWhen', { device: deviceName(t, alert.deviceLabel), time: formatDateTime(alert.createdAt, language) })}
       </AppText>
     </>
   );

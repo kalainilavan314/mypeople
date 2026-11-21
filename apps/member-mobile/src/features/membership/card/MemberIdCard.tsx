@@ -107,7 +107,7 @@ export function MemberIdCard({ card, width, qrCode, onPhotoPress, onSignPress }:
                 <Text allowFontScaling={false} numberOfLines={1} style={[styles.value, ui(700)]}>{card.districtName}</Text>
               </Detail>
               <Detail label={label('m.card.since')} language={language}>
-                <Text allowFontScaling={false} style={[styles.value, ui(700)]}>{since}</Text>
+                <Text allowFontScaling={false} style={[styles.value, text(language, 700)]}>{since}</Text>
               </Detail>
             </View>
             <View style={styles.divider} />

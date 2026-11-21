@@ -14,7 +14,11 @@ type Props<K extends string> = {
   label: string;
 };
 
-/** Two or three equal tabs on a grey track; the chosen one is a white raised segment (All / Action needed). */
+/**
+ * Two or three equal tabs on a grey track; the chosen one is a white raised segment (All / Action needed).
+ * A long label (common in Tamil, or three tabs on a 320 px phone) wraps onto a second centred line
+ * instead of being cut off.
+ */
 export function SegmentedControl<K extends string>({ options, selected, onSelect, label }: Props<K>) {
   return (
     <View style={styles.track} accessibilityRole="tablist" accessibilityLabel={label}>
@@ -28,7 +32,7 @@ export function SegmentedControl<K extends string>({ options, selected, onSelect
             accessibilityState={{ selected: active }}
             aria-selected={active}
             style={[styles.segment, active && styles.active]}>
-            <AppText step="body" tone={active ? 'default' : 'muted'} numberOfLines={1}>
+            <AppText step="body" tone={active ? 'default' : 'muted'} numberOfLines={2} style={styles.label}>
               {option.label}
             </AppText>
           </Pressable>
@@ -40,7 +44,17 @@ export function SegmentedControl<K extends string>({ options, selected, onSelect
 
 const styles = StyleSheet.create({
   track: { flexDirection: 'row', backgroundColor: colors.primaryContainer, borderRadius: radius.control, padding: spacing[1], gap: spacing[1] },
-  segment: { flex: 1, minHeight: 44, borderRadius: radius.control - 3, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing[2] },
+  segment: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 44,
+    borderRadius: radius.control - 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing[1],
+    paddingVertical: 2,
+  },
+  label: { textAlign: 'center' },
   active: {
     backgroundColor: colors.card,
     shadowColor: colors.primary,

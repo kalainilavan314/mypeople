@@ -1,4 +1,9 @@
+import { createElement } from 'react';
+import { Platform } from 'react-native';
+
 import { colors, comfortableTypeScale, typeScale } from '@my-people/design-tokens/mobile';
+
+import { WebBackButton } from '../components/WebBackButton';
 import { fontFamilyFor, tamilSize, type TypographyScale } from '../fonts';
 
 /** Header styling for the stacks: quiet page chrome with one brand-coloured affordance. */
@@ -20,6 +25,13 @@ export function headerOptions(language: string, scale: TypographyScale = 'defaul
     // Without a back title the button is announced with the previous route's
     // name, e.g. "(tabs), back". "Back" makes it "Go back".
     headerBackTitle: language === 'ta' ? 'பின்செல்' : 'Back',
+    // The web build's back arrow becomes a 44 px target; the apps keep the platform's native button.
+    ...(Platform.OS === 'web'
+      ? {
+          headerLeft: ({ canGoBack }: { canGoBack?: boolean }) =>
+            canGoBack ? createElement(WebBackButton, { label: language === 'ta' ? 'பின்செல்' : 'Back' }) : null,
+        }
+      : {}),
     contentStyle: { backgroundColor: colors.page },
   };
 }
