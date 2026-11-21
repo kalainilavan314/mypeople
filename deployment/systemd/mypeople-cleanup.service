@@ -1,0 +1,26 @@
+[Unit]
+Description=TMK daily data cleanup (expired previews, appointments after 2 years, assistant data after 30 days)
+After=network.target postgresql.service mypeople-api.service
+Wants=network.target
+
+[Service]
+Type=oneshot
+User=app
+Group=app
+WorkingDirectory=/srv/secure/app/mypeople-api/current
+EnvironmentFile=/srv/secure/app/mypeople-api/shared/.env
+ExecStart=/srv/secure/app/mypeople-api/current/.venv/bin/python -m app.tasks.cleanup
+TimeoutStartSec=10min
+StandardOutput=journal
+StandardError=journal
+
+# Security and sandbox hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+UMask=0077

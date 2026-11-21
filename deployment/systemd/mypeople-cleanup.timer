@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the TMK data cleanup once a day at 03:00 Sri Lanka time
+
+[Timer]
+# 21:30 UTC is 03:00 in Colombo: a quiet hour, well apart from the 02:00 UTC encrypted backup.
+OnCalendar=*-*-* 21:30:00 UTC
+AccuracySec=1min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
