@@ -268,16 +268,20 @@ function FundFlow({ config }: { config: FundConfig }) {
                   disabled={amount - STEP_LKR < MIN_LKR}
                   accessibilityRole="button"
                   accessibilityLabel={t('m.fund.lessAmount', { step: STEP_LKR })}
-                  style={[styles.stepButton, styles.stepMinus, amount - STEP_LKR < MIN_LKR && styles.stepDisabled]}>
-                  <Ionicons name="remove" size={16} color={fundColors.ink} />
+                  style={styles.stepTarget}>
+                  <View style={[styles.stepButton, styles.stepMinus, amount - STEP_LKR < MIN_LKR && styles.stepDisabled]}>
+                    <Ionicons name="remove" size={16} color={fundColors.ink} />
+                  </View>
                 </Pressable>
                 <Pressable
                   onPress={() => setAmount((value) => Math.min(MAX_LKR, value + STEP_LKR))}
                   disabled={amount + STEP_LKR > MAX_LKR}
                   accessibilityRole="button"
                   accessibilityLabel={t('m.fund.moreAmount', { step: STEP_LKR })}
-                  style={[styles.stepButton, styles.stepPlus]}>
-                  <Ionicons name="add" size={16} color={fundColors.onInk} />
+                  style={styles.stepTarget}>
+                  <View style={[styles.stepButton, styles.stepPlus]}>
+                    <Ionicons name="add" size={16} color={fundColors.onInk} />
+                  </View>
                 </Pressable>
               </View>
             </View>
@@ -486,7 +490,9 @@ const styles = StyleSheet.create({
   thumb: { width: 64, height: 64, borderRadius: 14, backgroundColor: '#f4f4f5', alignItems: 'center', justifyContent: 'center' },
   thumbImage: { width: 50, height: 50 },
   itemText: { flex: 1, gap: 2 },
-  stepper: { gap: 10, alignItems: 'center' },
+  // 32 px circles as designed, each inside a 44 px touch target.
+  stepper: { gap: 0, alignItems: 'center' },
+  stepTarget: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   stepButton: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   stepMinus: { borderWidth: 1.5, borderColor: fundColors.ink },
   stepPlus: { backgroundColor: fundColors.ink },

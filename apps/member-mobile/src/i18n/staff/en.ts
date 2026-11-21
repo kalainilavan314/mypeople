@@ -749,10 +749,10 @@ export const en = {
     identity: 'Identity verified',
     identityNo: 'Identity not verified',
     membership: 'Membership: {{state}}',
-    state_pending: 'pending',
-    state_active: 'active',
-    state_suspended: 'suspended',
-    state_inactive: 'inactive',
+    state_pending: 'Pending',
+    state_active: 'Active',
+    state_suspended: 'Suspended',
+    state_inactive: 'Inactive',
   },
 } as const;
 
