@@ -1,6 +1,6 @@
 # FastAPI Background Tasks & Systemd Timers (Production)
 
-This directory contains the systemd units installed on the production server on 10 November 2026: the FastAPI service, the notification scheduler and the admin dashboard (`mypeople-admin.service`, Next.js on `127.0.0.1:3003`). They run as `app` from `/srv/secure/app/mypeople-api/current` and `/srv/secure/app/mypeople-admin/current`, with settings in each one's `shared/.env` (see `deployment/README.md`).
+This directory contains the systemd units installed on the production server on 10 November 2026: the FastAPI service, the notification scheduler, the daily cleanup (added 21 November 2026) and the admin dashboard (`mypeople-admin.service`, Next.js on `127.0.0.1:3003`). They run as `app` from `/srv/secure/app/mypeople-api/current` and `/srv/secure/app/mypeople-admin/current`, with settings in each one's `shared/.env` (see `deployment/README.md`).
 
 ---
 
@@ -11,6 +11,8 @@ This directory contains the systemd units installed on the production server on 
 | `mypeople-api.service` | `simple` | Continuous daemon | Uvicorn server running FastAPI on `127.0.0.1:8000`. |
 | `mypeople-notifications.timer` | `timer` | Every 1 minute (`*:0/1:00`) | Triggers the dispatcher oneshot service. `AccuracySec=5s`, `Persistent=true`. |
 | `mypeople-notifications.service` | `oneshot` | Runs per timer trigger | Executes `python -m app.tasks.notifications`. `TimeoutStartSec=45s`. |
+| `mypeople-cleanup.timer` | `timer` | Daily at 21:30 UTC (03:00 Sri Lanka) | Triggers the cleanup oneshot service. `Persistent=true`, so a missed day runs at the next boot. Installed 21 November 2026. |
+| `mypeople-cleanup.service` | `oneshot` | Runs per timer trigger | Executes `python -m app.tasks.cleanup`: expired assignment previews, representative appointments two years after the meeting (ENT-58), assistant messages after 30 days, hand-overs 30 days after they close and resolved assistant error reports after a year (OD-48). `TimeoutStartSec=10min`. |
 
 ---
 
