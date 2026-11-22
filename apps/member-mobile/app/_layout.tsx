@@ -132,7 +132,7 @@ function AppContent() {
       {!splashAnimationDone ? (
         <Animated.View style={[styles.splashOverlay, { opacity: fadeAnim }]}>
           <Image
-            source={require('../assets/brand/splash-logo.png')}
+            source={require('../assets/brand/splash-icon.png')}
             style={styles.splashImage}
             resizeMode="contain"
             accessible={false}
@@ -158,5 +158,6 @@ const styles = StyleSheet.create({
     zIndex: 999,
     pointerEvents: 'none',
   },
-  splashImage: { width: 200, height: 200 },
+  // The same image, size and colour as the native launch screen (app.json), so the hand-over is seamless.
+  splashImage: { width: 288, height: 288 },
 });
