@@ -23,13 +23,18 @@
     },
     "plugins": [
       "expo-router",
+      "./plugins/withNoForceDark.js",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#ffffff",
-          "image": "./assets/brand/splash-logo.png",
-          "imageWidth": 300,
-          "resizeMode": "contain"
+          "image": "./assets/brand/splash-icon.png",
+          "imageWidth": 288,
+          "resizeMode": "contain",
+          "backgroundColor": "#f6f8f5",
+          "dark": {
+            "image": "./assets/brand/splash-icon.png",
+            "backgroundColor": "#f6f8f5"
+          }
         }
       ],
       "expo-secure-store",
