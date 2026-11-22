@@ -69,7 +69,7 @@ async function CaseQueue({ searchParams }: { searchParams: PageProps<'/cases'>['
   } catch (error) {
     if (error instanceof ApiError && error.code === 'feature_unavailable') {
       return (
-        <p className="rounded-xl border border-line bg-card p-6 text-sm text-muted">
+        <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-sm text-muted">
           Community cases are not switched on yet. Cases appear here once the community issues module is switched on.
         </p>
       );
@@ -137,7 +137,7 @@ async function CaseQueue({ searchParams }: { searchParams: PageProps<'/cases'>['
         </ul>
       </section>
 
-      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-4">
+      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
         <label htmlFor="case-search" className="flex min-w-56 flex-col gap-1 text-sm font-semibold text-text">
           Case ID or title
           <input

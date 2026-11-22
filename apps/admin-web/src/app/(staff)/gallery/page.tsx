@@ -129,7 +129,7 @@ async function AlbumsContent({ searchParams }: { searchParams: PageProps<'/galle
     <>
       <Feedback error={error} problems={problems} done={done} />
 
-      <form className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3" role="search">
+      <form className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-3" role="search">
         <label className="flex flex-col gap-1 text-sm font-semibold text-text">
           <span lang={locale}>{locale === 'ta' ? 'நிலை வடிகட்டி' : 'State filter'}</span>
           <select name="state" defaultValue={state ?? ''} className="min-h-11 rounded-lg border border-line px-3 bg-surface">
@@ -145,12 +145,12 @@ async function AlbumsContent({ searchParams }: { searchParams: PageProps<'/galle
       </form>
 
       {albums.length === 0 ? (
-        <div className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-6 text-center text-sm text-muted">
           <span lang={locale}>{locale === 'ta' ? 'உங்கள் பகுதிக்கு எந்தத் தொகுப்புகளும் காணப்படவில்லை.' : 'No albums found matching your area and filter.'}</span>
         </div>
       ) : null}
 
-      <div hidden={albums.length === 0} className="overflow-x-auto rounded-xl border border-line bg-card">
+      <div hidden={albums.length === 0} className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
         <table className="w-full text-left text-sm">
           <caption className="sr-only">Managed albums</caption>
           <thead className="border-b border-line text-xs text-muted">
@@ -248,7 +248,7 @@ async function RemovalsQueueContent({ searchParams }: { searchParams: PageProps<
         ) : null}
       </div>
 
-      <form className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3" role="search">
+      <form className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-3" role="search">
         <input type="hidden" name="tab" value="removals" />
         <label className="flex flex-col gap-1 text-sm font-semibold text-text">
           <span lang={locale}>{locale === 'ta' ? 'நிலை வடிகட்டி' : 'State filter'}</span>
@@ -265,7 +265,7 @@ async function RemovalsQueueContent({ searchParams }: { searchParams: PageProps<
       </form>
 
       {requests.length === 0 ? (
-        <div className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-6 text-center text-sm text-muted">
           {locale === 'ta' ? 'இந்த வடிகட்டியில் நீக்கல் கோரிக்கைகள் இல்லை.' : 'No removal requests found for this filter.'}
         </div>
       ) : null}

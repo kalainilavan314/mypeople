@@ -86,7 +86,7 @@ async function Renewals({ searchParams }: { searchParams: PageProps<'/renewals'>
       </p>
       <dl className="grid gap-3 sm:grid-cols-4" aria-label="Members by renewal phase">
         {PHASES.map((key) => (
-          <div key={key} className="rounded-xl border border-line bg-card p-4">
+          <div key={key} className="rounded-2xl border border-line bg-card shadow-card p-4">
             <dt>
               <BilingualText ta={PHASE_LABELS[key].ta} en={PHASE_LABELS[key].en} />
             </dt>
@@ -94,7 +94,7 @@ async function Renewals({ searchParams }: { searchParams: PageProps<'/renewals'>
           </div>
         ))}
       </dl>
-      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-4">
+      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
         <label htmlFor="renewal-phase" className="flex min-w-52 flex-col gap-1 text-sm font-semibold text-text">
           Phase
           <select id="renewal-phase" name="phase" defaultValue={phase ?? ''} className={CONTROL}>

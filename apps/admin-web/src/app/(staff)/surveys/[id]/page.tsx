@@ -68,7 +68,7 @@ async function SurveyView({ params, searchParams }: Pick<PageProps<'/surveys/[id
       return (
         <>
           {backLink}
-          <p className="rounded-xl border border-line bg-card p-6 text-sm text-muted">Ideas and surveys are not switched on yet.</p>
+          <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-sm text-muted">Ideas and surveys are not switched on yet.</p>
         </>
       );
     }
@@ -175,7 +175,7 @@ async function SurveyView({ params, searchParams }: Pick<PageProps<'/surveys/[id
         <aside aria-label="State" className="flex flex-col gap-4">
           <SurveyStateForm surveyId={survey.id} state={survey.state} />
           {survey.state === 'draft' && questions.length > 0 ? (
-            <div className="rounded-xl border border-line bg-card p-4 text-sm">
+            <div className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm">
               <h2 className="font-semibold text-text">Saved questions ({questions.length})</h2>
               <ol className="mt-2 flex list-decimal flex-col gap-1 pl-5 text-muted">
                 {questions.map((question) => (
@@ -197,7 +197,7 @@ async function SurveyView({ params, searchParams }: Pick<PageProps<'/surveys/[id
 
 function Section({ id, title, intro, children }: { id: string; title: string; intro?: string; children: ReactNode }) {
   return (
-    <section id={`${id}-section`} aria-labelledby={`${id}-heading`} className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:p-6">
+    <section id={`${id}-section`} aria-labelledby={`${id}-heading`} className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <div className="flex flex-col gap-1">
         <h2 id={`${id}-heading`} className="text-lg font-bold text-text">
           {title}

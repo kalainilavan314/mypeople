@@ -147,7 +147,7 @@ async function CommitteeList({ searchParams }: { searchParams: PageProps<'/commi
         )}
       </Section>
 
-      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-4">
+      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
         <label htmlFor="committee-state" className="flex min-w-52 flex-col gap-1 text-sm font-semibold text-text">
           State
           <select id="committee-state" name="state" defaultValue={state ?? ''} className={CONTROL}>

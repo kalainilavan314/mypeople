@@ -214,7 +214,7 @@ async function ScorecardView({ params, searchParams }: Pick<PageProps<'/scorecar
             />
           ) : null}
           {card.state === 'shared' ? (
-            <div className="rounded-xl border border-line bg-card p-4 text-sm">
+            <div className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm">
               <p className="font-semibold text-text">Review period</p>
               <p className="text-muted">Publishing is possible from {formatDateTime(card.publishableAt)} (10 working days after sharing).</p>
               {openCorrections.length > 0 ? <p className="mt-1 font-semibold text-warning">! {openCorrections.length} correction requests are open.</p> : null}

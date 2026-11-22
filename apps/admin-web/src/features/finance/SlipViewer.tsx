@@ -18,7 +18,7 @@ export function SlipViewer({ contributionId, hasSlip }: { contributionId: string
 
   return (
     <>
-      <div className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4">
+      <div className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
         <div className="flex items-center justify-between">
           <div>
             <h4 className="text-sm font-semibold text-text">Transfer Slip Evidence</h4>

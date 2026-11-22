@@ -246,7 +246,7 @@ export function OwnerSelect({
 export function ActionCard({ id, title, intro, children }: { id: string; title: string; intro?: string; children: ReactNode }) {
   const locale = useLocale();
   return (
-    <section aria-labelledby={`${id}-heading`} className="flex flex-col gap-4 rounded-xl border border-line bg-card p-4 sm:p-5">
+    <section aria-labelledby={`${id}-heading`} className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-5">
       <div className="flex flex-col gap-1">
         <h3 id={`${id}-heading`} lang={locale} className="text-base font-bold text-text">
           {title}

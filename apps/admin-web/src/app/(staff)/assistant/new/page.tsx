@@ -35,7 +35,7 @@ async function NewSource() {
     return <PageProblem locale={await getAdminLocale(staff.member.language)} message={KNOWLEDGE_REFUSED} />;
   }
   return (
-    <div className="rounded-xl border border-line bg-card p-4 sm:p-6">
+    <div className="rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <SourceForm current={{ reviewDue: defaultReviewDue(new Date()) }} />
     </div>
   );

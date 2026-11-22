@@ -82,7 +82,7 @@ async function Calendar({ searchParams }: { searchParams: PageProps<'/representa
     return (
       <>
         <Feedback done={one(query.done)} />
-        <p className="rounded-xl border border-line bg-card p-6 text-sm text-muted">
+        <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-sm text-muted">
           You have no representative profile yet. A profile manager creates it under Representatives with your member ID; your
           calendar opens here once it exists.
         </p>
@@ -133,7 +133,7 @@ async function Calendar({ searchParams }: { searchParams: PageProps<'/representa
         </div>
 
         <aside aria-label="Your profile and slots" className="flex flex-col gap-4">
-          <section aria-labelledby="own-profile-heading" className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 text-sm">
+          <section aria-labelledby="own-profile-heading" className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 text-sm">
             <h2 id="own-profile-heading" className="font-bold text-text">
               <span lang="ta">எனது பொது விவரம்</span> · My public profile
             </h2>

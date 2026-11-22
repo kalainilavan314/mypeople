@@ -84,11 +84,11 @@ async function Visits({ searchParams }: { searchParams: PageProps<'/field'>['sea
         ))}
       </nav>
       {visits.length === 0 ? (
-        <p className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">{openOnly ? 'No open follow-ups.' : 'No visits recorded in your areas.'}</p>
+        <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-center text-sm text-muted">{openOnly ? 'No open follow-ups.' : 'No visits recorded in your areas.'}</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {visits.map((visit) => (
-            <li key={visit.id} className="flex flex-col gap-2 rounded-xl border border-line bg-card p-4 text-sm">
+            <li key={visit.id} className="flex flex-col gap-2 rounded-2xl border border-line bg-card shadow-card p-4 text-sm">
               <p className="flex flex-wrap items-center gap-2">
                 <span className="font-mono text-xs font-semibold text-muted">{visit.visitRef}</span>
                 <span className="font-semibold text-text">

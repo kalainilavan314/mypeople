@@ -58,7 +58,7 @@ async function Appeal({ params, searchParams }: Pick<PageProps<'/appeals/[id]'>,
         </Link>
       </PageHeader>
       <Feedback error={query.error} problems={query.problems} done={query.done} />
-      <section className="flex flex-col gap-2 rounded-xl border border-line bg-card p-4 text-sm">
+      <section className="flex flex-col gap-2 rounded-2xl border border-line bg-card shadow-card p-4 text-sm">
         <p>
           <StateTag state={appeal.state} /> · {locale === 'ta' ? 'சரிபார்ப்பு' : 'review'} <span className="font-mono">{appeal.reviewRef}</span> ·{' '}
           {locale === 'ta' ? 'சமர்ப்பிக்கப்பட்டது' : 'submitted'} {formatDateTime(appeal.submittedAt)}
@@ -90,7 +90,7 @@ async function Appeal({ params, searchParams }: Pick<PageProps<'/appeals/[id]'>,
         <h2 id="evidence-heading" className="text-base font-bold text-text">
           <span lang={locale}>{locale === 'ta' ? 'அடையாள ஆவணச் சான்றுகள்' : 'Identity evidence images'}</span>
         </h2>
-        <ul className="divide-y divide-line rounded-xl border border-line bg-card">
+        <ul className="divide-y divide-line rounded-2xl border border-line bg-card shadow-card">
           {appeal.documents.map((document) => (
             <li key={document.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm">
               <span className="font-semibold text-text">

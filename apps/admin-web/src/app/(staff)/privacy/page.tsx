@@ -93,7 +93,7 @@ async function RegisterContent({ searchParams }: { searchParams: PageProps<'/pri
         </div>
       ) : null}
 
-      <form role="search" className="flex w-fit flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3">
+      <form role="search" className="flex w-fit flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-3">
         <label htmlFor="request-state" className="flex flex-col gap-1 text-sm font-semibold">
           <span lang={locale}>{words.filterLabel}</span>
           <select id="request-state" name="state" defaultValue={filter} className={`min-h-11 rounded-lg border border-line bg-card px-3 ${FOCUS}`}>
@@ -122,11 +122,11 @@ async function RegisterContent({ searchParams }: { searchParams: PageProps<'/pri
       </div>
 
       {entries.length === 0 ? (
-        <p lang={locale} className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">
+        <p lang={locale} className="rounded-2xl border border-line bg-card shadow-card p-6 text-center text-sm text-muted">
           {words.empty}
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-line bg-card">
+        <div className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
           <table className="w-full text-left text-sm">
             <caption className="sr-only">{words.tableCaption}</caption>
             <thead className="border-b border-line text-xs">

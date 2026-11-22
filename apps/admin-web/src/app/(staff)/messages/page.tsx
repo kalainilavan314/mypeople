@@ -78,7 +78,7 @@ async function BroadcastsContent({ searchParams }: { searchParams: PageProps<'/m
         ) : null}
       </div>
 
-      <form className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3" role="search">
+      <form className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-3" role="search">
         <label className="flex flex-col gap-1 text-sm font-semibold">
           <span lang={locale}>{locale === 'ta' ? 'நிலை வடிகட்டி' : 'State filter'}</span>
           <select name="state" defaultValue={state ?? ''} className="min-h-11 rounded-lg border border-line px-3 bg-surface">
@@ -96,12 +96,12 @@ async function BroadcastsContent({ searchParams }: { searchParams: PageProps<'/m
       </form>
 
       {broadcasts.length === 0 ? (
-        <div className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-6 text-center text-sm text-muted">
           {locale === 'ta' ? 'தேடலுக்கேற்ற அறிவித்தல்கள் எதுவும் கிடைக்கவில்லை.' : 'No broadcasts found matching your filter.'}
         </div>
       ) : null}
 
-      <div hidden={broadcasts.length === 0} className="overflow-x-auto rounded-xl border border-line bg-card">
+      <div hidden={broadcasts.length === 0} className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
         <table className="w-full text-left text-sm">
           <caption className="sr-only">Staff broadcasts</caption>
           <thead className="border-b border-line text-xs text-muted">

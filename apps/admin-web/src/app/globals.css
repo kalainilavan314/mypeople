@@ -5,6 +5,7 @@
    border-line, font-sans and so on. Do not add literal colours or fonts here. */
 @theme inline {
   --color-primary: var(--mp-primary);
+  --color-primary-dark: var(--mp-primary-dark);
   --color-on-primary: var(--mp-on-primary);
   --color-brand-yellow: var(--mp-brand-yellow);
   --color-brand-gold: var(--mp-brand-gold);
@@ -13,6 +14,21 @@
   --color-card: var(--mp-card);
   --color-surface: var(--mp-surface-variant);
   --color-ink: var(--mp-text);
+  --color-text: var(--mp-text);
+  --color-text-secondary: var(--mp-text-secondary);
+  --color-divider: var(--mp-divider);
+  --color-accent-purple: var(--mp-accent-purple);
+  --color-accent-blue: var(--mp-accent-blue);
+  --color-accent-green: var(--mp-accent-green);
+  --color-accent-red: var(--mp-accent-red);
+  --color-accent-orange: var(--mp-accent-orange);
+  --color-accent-teal: var(--mp-accent-teal);
+  --color-accent-indigo: var(--mp-accent-indigo);
+  --color-accent-gold: var(--mp-accent-gold);
+  --color-accent-pink: var(--mp-accent-pink);
+  /* Soft card shadows tinted with the text colour, so they follow the palette. */
+  --shadow-card: 0 1px 2px color-mix(in srgb, var(--mp-text) 5%, transparent), 0 6px 18px color-mix(in srgb, var(--mp-text) 6%, transparent);
+  --shadow-raised: 0 2px 4px color-mix(in srgb, var(--mp-text) 6%, transparent), 0 12px 28px color-mix(in srgb, var(--mp-text) 10%, transparent);
   --color-muted: var(--mp-text-muted);
   --color-line: var(--mp-border);
   --color-success: var(--mp-success-text);

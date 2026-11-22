@@ -92,7 +92,7 @@ async function EntryList({ searchParams }: { searchParams: PageProps<'/livelihoo
         second person reviews each entry before members see it, and an entry leaves the guide the day after its end date. The guide
         never says that someone qualifies.
       </p>
-      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-4">
+      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
         <label htmlFor="guide-state" className="flex min-w-52 flex-col gap-1 text-sm font-semibold text-text">
           State
           <select id="guide-state" name="state" defaultValue={filter ?? ''} className={CONTROL}>

@@ -36,7 +36,7 @@ async function MembershipContent({ searchParams }: { searchParams: PageProps<'/m
             : 'A verified identity does not automatically activate membership. Every status change requires an explicit reason.'}
         </p>
       </div>
-      <form action={findMember} className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3">
+      <form action={findMember} className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-3">
         <label className="flex flex-col gap-1 text-sm font-semibold text-text">
           <span lang={locale} className="text-xs">
             {locale === 'ta' ? 'உறுப்பினர் அடையாளக் குறியீட்டை உள்ளிடவும் *' : 'Open a member by exact member ID *'}

@@ -37,7 +37,7 @@ async function RegisterModel() {
     return <PageProblem locale={await getAdminLocale(staff.member.language)} message={REGISTRY_REFUSED} />;
   }
   return (
-    <div className="rounded-xl border border-line bg-card p-4 sm:p-6">
+    <div className="rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <SimpleForm
         id="register"
         action={registerModel}

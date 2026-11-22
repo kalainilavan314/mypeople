@@ -63,7 +63,7 @@ async function Queue({ searchParams }: { searchParams: PageProps<'/verification'
         </p>
       </div>
 
-      <form className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3" role="search">
+      <form className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-3" role="search">
         <label className="flex flex-col gap-1 text-sm font-semibold text-text">
           <span lang={locale} className="text-xs">{locale === 'ta' ? 'நிலை' : 'State'}</span>
           <select name="state" defaultValue={state ?? ''} className="min-h-11 rounded-lg border border-line px-2">
@@ -94,14 +94,14 @@ async function Queue({ searchParams }: { searchParams: PageProps<'/verification'
       </form>
 
       {reviews.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-line bg-card p-8 text-center">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-line bg-card shadow-card p-8 text-center">
           <p lang={locale} className="text-sm font-semibold text-muted">
             {locale === 'ta' ? 'சரிபார்ப்புகள் எதுவும் பொருந்தவில்லை.' : 'No identity reviews match the selected filters.'}
           </p>
         </div>
       ) : null}
 
-      <div hidden={reviews.length === 0} className="overflow-x-auto rounded-xl border border-line bg-card">
+      <div hidden={reviews.length === 0} className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
         <table className="w-full text-left text-sm">
           <caption className="sr-only">Identity reviews</caption>
           <thead className="border-b border-line text-xs text-muted">

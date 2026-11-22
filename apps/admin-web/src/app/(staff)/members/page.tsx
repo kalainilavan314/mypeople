@@ -47,7 +47,7 @@ async function MembersSearchContent({ searchParams }: { searchParams: PageProps<
 
       <Feedback error={query.error} />
 
-      <form action={findHouseholdMember} className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-4">
+      <form action={findHouseholdMember} className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
         <label className="flex flex-col gap-1 text-sm font-semibold text-text">
           <span lang={locale} className="text-xs">
             {locale === 'ta' ? 'உறுப்பினர் அடையாளக் குறியீடு (Member ID) *' : 'Member ID Code *'}

@@ -297,7 +297,7 @@ async function ModelView({ params, searchParams }: Pick<PageProps<'/ai-models/[i
                 />
               </div>
             ) : (
-              <p className="rounded-xl border border-line bg-card p-4 text-sm text-muted">Making a model live needs ai.model.approve (PRM-30).</p>
+              <p className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm text-muted">Making a model live needs ai.model.approve (PRM-30).</p>
             )
           ) : null}
           {model.status !== 'retired' && approver ? (

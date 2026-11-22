@@ -66,7 +66,7 @@ export function CaseControls({
         )}
       </form>
       {claimedByMe ? (
-        <form action={decideCase} className="flex flex-col gap-4 rounded-xl border border-line bg-card p-4">
+        <form action={decideCase} className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-4">
           <input type="hidden" name="kind" value={kind} />
           <input type="hidden" name="id" value={id} />
 

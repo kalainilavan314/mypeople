@@ -46,7 +46,7 @@ async function Audit({ searchParams }: { searchParams: PageProps<'/audit'>['sear
 
   return (
     <>
-      <form className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3" role="search">
+      <form className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-3" role="search">
         <label className="flex flex-col gap-1 text-sm font-semibold text-text">
           <span lang={locale} className="text-xs">{locale === 'ta' ? 'செயல்முறை' : 'Action'}</span>
           <input name="action" defaultValue={action} placeholder="identity.review.decided" className="min-h-11 rounded-lg border border-line px-3 font-mono" />
@@ -72,13 +72,13 @@ async function Audit({ searchParams }: { searchParams: PageProps<'/audit'>['sear
         </p>
       ) : null}
       {entries.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-line bg-card p-8 text-center text-muted">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-line bg-card shadow-card p-8 text-center text-muted">
           <p lang={locale} className="text-sm font-semibold">
             {locale === 'ta' ? 'தணிக்கைப் பதிவுகள் எதுவும் காணப்படவில்லை' : 'No audit log entries found matching this filter.'}
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-line bg-card">
+        <div className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
           <table className="w-full text-left text-sm">
             <caption className="sr-only">Audit entries</caption>
             <thead className="border-b border-line text-xs text-muted">

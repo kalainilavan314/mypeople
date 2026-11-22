@@ -46,7 +46,7 @@ async function Intake() {
         For danger to life, give the emergency numbers first: Police 119, Suwa Seriya ambulance 1990, Disaster Management Centre 117.
         Nobody needs to be a member to get help, and nothing about membership or politics is asked.
       </p>
-      <div className="rounded-xl border border-line bg-card p-4 sm:p-6">
+      <div className="rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
         <IntakeForm areaOptions={areaOptions} partners={partners} />
       </div>
     </div>

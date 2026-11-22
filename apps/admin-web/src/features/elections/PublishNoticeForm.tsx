@@ -23,7 +23,7 @@ export function PublishNoticeForm({ periodId }: { periodId: string }) {
 
   return (
     // Remounted after each refusal so every control starts from the values just typed.
-    <form key={state?.attempt ?? 0} action={formAction} aria-labelledby="publish-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-4 sm:p-6">
+    <form key={state?.attempt ?? 0} action={formAction} aria-labelledby="publish-heading" className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <div className="flex flex-col gap-1 border-b border-line pb-2">
         <h2 id="publish-heading" lang={locale} className="text-base font-bold">
           {words.publishTitle}

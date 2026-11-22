@@ -32,7 +32,7 @@ async function NewProfile() {
   }
   const areaOptions = (await areaOptionsFor(staff.assignments, 'appointment.profile.manage')).filter((option) => !option.value.startsWith('province:'));
   return (
-    <div className="rounded-xl border border-line bg-card p-4 sm:p-6">
+    <div className="rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <ProfileForm areaOptions={areaOptions} />
     </div>
   );

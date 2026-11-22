@@ -77,7 +77,7 @@ async function PeriodsContent({ searchParams }: { searchParams: PageProps<'/elec
       </div>
 
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <form role="search" className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3">
+        <form role="search" className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-3">
           <label htmlFor="period-state" className="flex flex-col gap-1 text-sm font-semibold">
             <span lang={locale}>{words.filterLabel}</span>
             <select
@@ -115,11 +115,11 @@ async function PeriodsContent({ searchParams }: { searchParams: PageProps<'/elec
       ) : null}
 
       {periods.length === 0 ? (
-        <p lang={locale} className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">
+        <p lang={locale} className="rounded-2xl border border-line bg-card shadow-card p-6 text-center text-sm text-muted">
           {words.empty}
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-line bg-card">
+        <div className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
           <table className="w-full text-left text-sm">
             <caption className="sr-only">{words.tableCaption}</caption>
             <thead className="border-b border-line text-xs">

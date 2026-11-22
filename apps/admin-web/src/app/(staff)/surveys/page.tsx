@@ -55,7 +55,7 @@ async function SurveyList({ searchParams }: { searchParams: PageProps<'/surveys'
     surveys = await (await staffApi()).listManagedSurveys();
   } catch (error) {
     if (error instanceof ApiError && error.code === 'feature_unavailable') {
-      return <p className="rounded-xl border border-line bg-card p-6 text-sm text-muted">Ideas and surveys are not switched on yet.</p>;
+      return <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-sm text-muted">Ideas and surveys are not switched on yet.</p>;
     }
     return <LoadFailure error={error} locale={locale} refused={REFUSED} notFound="The survey list is not available." />;
   }

@@ -95,26 +95,26 @@ async function FinanceQueue({
     <div className="flex flex-col gap-6">
       {/* Metric summary banner */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl border border-line bg-card p-4">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-4">
           <p className="text-xs font-medium text-muted">Shown: awaiting review</p>
           <p className="mt-1 text-2xl font-bold text-text">{countSubmitted}</p>
         </div>
-        <div className="rounded-xl border border-line bg-card p-4">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-4">
           <p className="text-xs font-medium text-muted">Shown: awaiting approval</p>
           <p className="mt-1 text-2xl font-bold text-warning">{countReconciled}</p>
         </div>
-        <div className="rounded-xl border border-line bg-card p-4">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-4">
           <p className="text-xs font-medium text-muted">Shown: verified & issued</p>
           <p className="mt-1 text-2xl font-bold text-success">{countVerified}</p>
         </div>
-        <div className="rounded-xl border border-line bg-card p-4">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-4">
           <p className="text-xs font-medium text-muted">Shown: risk flagged</p>
           <p className="mt-1 text-2xl font-bold text-error">{countFlagged}</p>
         </div>
       </div>
 
       {/* Filter and Export Bar */}
-      <div className="flex flex-col gap-4 rounded-xl border border-line bg-card p-4">
+      <div className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-4">
         <form className="flex flex-wrap items-end gap-3" role="search">
           <label className="flex flex-col gap-1 text-xs font-semibold text-text">
             <span>Status</span>

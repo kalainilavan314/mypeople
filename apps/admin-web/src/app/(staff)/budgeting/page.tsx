@@ -66,7 +66,7 @@ async function CycleList({ searchParams }: { searchParams: PageProps<'/budgeting
   return (
     <div className="flex flex-col gap-4">
       <Feedback done={one(query.done)} />
-      <p className="flex flex-col gap-1 rounded-xl border border-line bg-card p-4 text-sm">
+      <p className="flex flex-col gap-1 rounded-2xl border border-line bg-card shadow-card p-4 text-sm">
         <span lang="ta" className="font-semibold text-text">{CONSULTATION_LABEL.ta}</span>
         <span lang="en" className="text-muted">{CONSULTATION_LABEL.en}</span>
       </p>

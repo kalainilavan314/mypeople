@@ -43,7 +43,7 @@ async function NewAlbumForm({ searchParams }: { searchParams: PageProps<'/galler
     <>
       <Feedback error={error} problems={problems} />
 
-      <form action={createAlbum} className="flex flex-col gap-6 rounded-xl border border-line bg-card p-6">
+      <form action={createAlbum} className="flex flex-col gap-6 rounded-2xl border border-line bg-card shadow-card p-6">
         <section aria-labelledby="section-basic" className="flex flex-col gap-4">
           <h2 id="section-basic" className="text-base font-bold text-text">
             <span lang={locale}>{locale === 'ta' ? '1. புகைப்படத் தொகுப்பின் அடையாளம்' : '1. Album identity'}</span>

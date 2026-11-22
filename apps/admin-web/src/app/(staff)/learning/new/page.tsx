@@ -13,7 +13,7 @@ export default function NewCoursePage() {
         ← Back to learning courses
       </Link>
       <PageHeader ta="புதிய பாடநெறி" en="New course" />
-      <div className="rounded-xl border border-line bg-card p-4 sm:p-6">
+      <div className="rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
         <CourseForm />
       </div>
     </>

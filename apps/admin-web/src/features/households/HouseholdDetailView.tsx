@@ -96,7 +96,7 @@ export function HouseholdDetailView({ data, locale }: Props) {
         </div>
       </section>
 
-      <section className="rounded-xl border border-line bg-card p-4 text-sm shadow-sm" aria-label="Member overview">
+      <section className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm shadow-sm" aria-label="Member overview">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <span lang={locale} className="block text-xs font-semibold text-muted">
@@ -116,7 +116,7 @@ export function HouseholdDetailView({ data, locale }: Props) {
         </div>
       </section>
 
-      <section className="rounded-xl border border-line bg-card p-4 text-sm shadow-sm" aria-label="Household information">
+      <section className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm shadow-sm" aria-label="Household information">
         <h2 className="text-base font-bold text-text mb-3">
           <span lang={locale}>{household.name || (locale === 'ta' ? 'பெயரிடப்படாத குடும்பம்' : 'Unnamed household')}</span>
         </h2>
@@ -146,7 +146,7 @@ export function HouseholdDetailView({ data, locale }: Props) {
         </div>
       </section>
 
-      <section className="rounded-xl border border-line bg-card p-4 text-sm shadow-sm" aria-label="Members list">
+      <section className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm shadow-sm" aria-label="Members list">
         <h2 className="text-base font-bold text-text mb-3">
           <span lang={locale}>
             {locale === 'ta' ? 'குடும்ப உறுப்பினர்கள்' : 'Household members'} ({household.members.length})

@@ -117,5 +117,5 @@ test('the pages show the server set-up, monitoring and every governance action',
     assert.ok(detail.includes(action), action);
   }
   assert.match(await readSrc('app/(staff)/ai-models/new/page.tsx'), /registerModel/);
-  assert.match(await readSrc('components/StaffSidebar.tsx'), /case '\/ai-models':/);
+  assert.match(await readSrc('components/ModuleIcons.tsx'), /case '\/ai-models':/);
 });

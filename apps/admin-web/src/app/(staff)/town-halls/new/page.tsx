@@ -25,7 +25,7 @@ async function NewTownHall() {
   const staff = await requireStaff();
   const areaOptions = await areaOptionsFor(staff.assignments, 'townhall.produce');
   return (
-    <div className="rounded-xl border border-line bg-card p-4 sm:p-6">
+    <div className="rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <TownHallForm areaOptions={areaOptions} />
     </div>
   );

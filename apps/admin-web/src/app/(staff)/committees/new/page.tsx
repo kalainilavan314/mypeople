@@ -96,7 +96,7 @@ async function NewCommittee() {
     },
   ];
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-line bg-card p-4 sm:p-6">
+    <div className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <p className="text-sm text-muted">
         A proposal opens to members only after a Tier 5 approves it (FR-COM-001). The youth wing is for members aged 18 and over
         (OD-15).

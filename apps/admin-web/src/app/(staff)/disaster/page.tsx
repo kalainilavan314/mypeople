@@ -57,7 +57,7 @@ async function AlertList({ searchParams }: { searchParams: PageProps<'/disaster'
   const history = one(query.view) === 'history';
   if (!staff.permissions.has('disaster.relay')) {
     return (
-      <p className="rounded-xl border border-line bg-card p-6 text-sm text-muted">
+      <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-sm text-muted">
         Your roles do not include relaying alerts. Relief officers record stock and distributions on the{' '}
         <Link href="/disaster/relief" className={`font-semibold text-primary underline ${FOCUS_RING}`}>
           relief page

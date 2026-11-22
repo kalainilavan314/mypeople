@@ -75,7 +75,7 @@ async function Review({ params, searchParams }: Pick<PageProps<'/verification/[i
       </PageHeader>
       <Feedback error={query.error} problems={query.problems} done={query.done} />
 
-      <section className="grid gap-3 rounded-xl border border-line bg-card p-4 sm:grid-cols-2" aria-label="Member">
+      <section className="grid gap-3 rounded-2xl border border-line bg-card shadow-card p-4 sm:grid-cols-2" aria-label="Member">
         <Fact label={locale === 'ta' ? 'உறுப்பினர்' : 'Member'} locale={locale}>{review.member.fullName}</Fact>
         <Fact label={locale === 'ta' ? 'உறுப்பினர் அடையாளக் குறியீடு' : 'Member ID'} locale={locale}>
           <span className="font-mono">{review.member.memberCode}</span>
@@ -118,7 +118,7 @@ async function Review({ params, searchParams }: Pick<PageProps<'/verification/[i
               : 'Each image opens in a new tab through a link for you alone that expires after 5 minutes; every opening is recorded and the member sees when (not who). Images open only while you hold this review.'}
           </span>
         </p>
-        <ul className="divide-y divide-line rounded-xl border border-line bg-card">
+        <ul className="divide-y divide-line rounded-2xl border border-line bg-card shadow-card">
           {review.documents.map((document) => (
             <li key={document.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
               <span>
@@ -199,7 +199,7 @@ async function Review({ params, searchParams }: Pick<PageProps<'/verification/[i
         ) : null}
         <ul className="flex flex-col gap-2">
           {review.decisions.map((decision) => (
-            <li key={decision.id} className="rounded-xl border border-line bg-card p-3 text-sm">
+            <li key={decision.id} className="rounded-2xl border border-line bg-card shadow-card p-3 text-sm">
               <p className="font-semibold text-text">
                 {words(decision.decision)} · Tier {decision.reviewerTier} · {formatDateTime(decision.decidedAt)}
               </p>
@@ -230,7 +230,7 @@ async function AssistedSessions({ reviewId, locale }: { reviewId: string; locale
   }
   if (sessions.length === 0) return null;
   return (
-    <section aria-labelledby="assisted" className="flex flex-col gap-2 rounded-xl border border-line bg-card p-4 text-sm">
+    <section aria-labelledby="assisted" className="flex flex-col gap-2 rounded-2xl border border-line bg-card shadow-card p-4 text-sm">
       <h2 id="assisted" className="flex flex-col text-base font-bold text-text">
         <span lang="ta">உதவியுடனான சரிபார்ப்பு அமர்வு</span>
         <span lang="en" className="text-sm font-semibold text-muted">
@@ -294,7 +294,7 @@ function DecisionForm({
   const problems = (one(query.problems) ?? '').split(',');
   const hasProblem = (p: string) => problems.includes(p);
   return (
-    <form action={decide} className="flex flex-col gap-4 rounded-xl border border-line bg-card p-4">
+    <form action={decide} className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-4">
       <input type="hidden" name="reviewId" value={review.id} />
       <div>
         <h2 className="text-base font-bold text-text">
@@ -435,7 +435,7 @@ function Reason({ name, options, locale }: { name: string; options: readonly str
 
 function DuplicateReport({ review, locale }: { review: ReviewFile; locale: Locale }) {
   return (
-    <details className="rounded-xl border border-line bg-card p-4">
+    <details className="rounded-2xl border border-line bg-card shadow-card p-4">
       <summary className="min-h-11 cursor-pointer text-sm font-semibold text-text">
         <span lang={locale}>
           {locale === 'ta' ? 'சந்தேகத்திற்கிடமான இரட்டைக் கணக்கைப் புகாரளிக்கவும்' : 'Report a suspected duplicate account'}

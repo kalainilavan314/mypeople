@@ -30,7 +30,7 @@ async function NewEntry() {
     return <PageProblem locale={locale} message="Writing guide entries needs guide editing." />;
   }
   return (
-    <div className="rounded-xl border border-line bg-card p-4 sm:p-6">
+    <div className="rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <EntryForm />
     </div>
   );

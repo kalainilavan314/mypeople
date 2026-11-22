@@ -52,9 +52,9 @@ async function Statistics() {
         Counts only: no names, no cases. Any group from 1 to 9 shows as “fewer than 10” so that nobody can be singled out.
       </p>
       {statistics.cells.length === 0 ? (
-        <p className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">No support cases to count yet.</p>
+        <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-center text-sm text-muted">No support cases to count yet.</p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-line bg-card">
+        <div className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
           <table className="w-full text-left text-sm">
             <caption className="sr-only">Support cases by area, kind of help and state</caption>
             <thead className="border-b border-line text-xs">

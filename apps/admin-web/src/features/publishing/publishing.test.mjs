@@ -92,6 +92,6 @@ test('the pages say why signing is unavailable and send a silence refusal in the
   assert.match(status, /not a registered publisher/);
   const actions = await readSrc('features/publishing/actions.ts');
   assert.match(actions, /silence_period' \? 'official_silence_period'/);
-  const sidebar = await readSrc('components/StaffSidebar.tsx');
+  const sidebar = await readSrc('components/ModuleIcons.tsx');
   assert.match(sidebar, /case '\/publishing':/);
 });

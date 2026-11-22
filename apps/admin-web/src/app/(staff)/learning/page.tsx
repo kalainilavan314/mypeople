@@ -53,7 +53,7 @@ async function CourseList({ searchParams }: { searchParams: PageProps<'/learning
     courses = await (await staffApi()).listManagedCourses();
   } catch (error) {
     if (error instanceof ApiError && error.code === 'feature_unavailable') {
-      return <p className="rounded-xl border border-line bg-card p-6 text-sm text-muted">Learning is not switched on yet.</p>;
+      return <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-sm text-muted">Learning is not switched on yet.</p>;
     }
     return <LoadFailure error={error} locale={locale} refused={REFUSED} notFound="The course list is not available." />;
   }

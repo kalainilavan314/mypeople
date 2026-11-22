@@ -103,7 +103,7 @@ async function CommitteeDetail({
     <div className="flex flex-col gap-4">
       <PageHeader ta={committee.nameTa} en={committee.nameEn} />
       <Feedback done={done} />
-      <section className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:p-6">
+      <section className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
         <p className="flex flex-wrap items-center gap-2">
           <span className="font-mono text-sm font-semibold">{committee.committeeRef}</span>
           <BilingualTag label={STATE_LABELS[committee.state]} tone={STATE_TONES[committee.state]} />

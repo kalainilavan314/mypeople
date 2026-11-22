@@ -49,7 +49,7 @@ async function Inbox({ searchParams }: { searchParams: PageProps<'/volunteering/
     items = await (await staffApi()).listVolunteerInbox();
   } catch (error) {
     if (error instanceof ApiError && error.code === 'feature_unavailable') {
-      return <p className="rounded-xl border border-line bg-card p-6 text-sm text-muted">Volunteering is not switched on yet.</p>;
+      return <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-sm text-muted">Volunteering is not switched on yet.</p>;
     }
     return <LoadFailure error={error} locale={locale} refused={REFUSED} notFound="The volunteer inbox is not available." />;
   }
@@ -62,12 +62,12 @@ async function Inbox({ searchParams }: { searchParams: PageProps<'/volunteering/
         their phone number.
       </p>
       {items.length === 0 ? (
-        <p className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">No messages are waiting for an answer.</p>
+        <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-center text-sm text-muted">No messages are waiting for an answer.</p>
       ) : (
         <ul className="flex flex-col gap-4">
           {items.map((item) => (
             <li key={item.id}>
-              <article aria-labelledby={`contact-${item.id}`} className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:p-5">
+              <article aria-labelledby={`contact-${item.id}`} className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-5">
                 <div className="flex flex-wrap items-center gap-2">
                   <BilingualTag label={INBOX_KIND_LABELS[item.kind] ?? { ta: item.kind, en: item.kind }} tone={item.kind === 'change_request' ? 'waiting' : 'neutral'} />
                   <h2 id={`contact-${item.id}`} className="font-semibold text-text">

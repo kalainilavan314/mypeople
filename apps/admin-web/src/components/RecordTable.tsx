@@ -24,20 +24,20 @@ export function RecordTable<T>({ caption, rows, columns, href, linkText, rowKey,
   if (rows.length === 0) {
     if (typeof empty === 'string') {
       return (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-line bg-card p-8 text-center text-muted">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-line bg-card shadow-card p-8 text-center text-muted">
           <p className="text-sm font-medium">{empty}</p>
         </div>
       );
     }
-    return <div className="rounded-xl border border-line bg-card p-8">{empty}</div>;
+    return <div className="rounded-2xl border border-line bg-card shadow-card p-8">{empty}</div>;
   }
   return (
-    <div className="overflow-x-auto rounded-xl border border-line bg-card">
+    <div className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
       <table className="w-full text-left text-sm">
         <caption className="sr-only">{caption}</caption>
-        <thead className="border-b border-line text-xs text-muted">
+        <thead className="border-b border-line bg-surface text-xs uppercase tracking-wide text-muted">
           <tr>
-            <th scope="col" className="px-3 py-2">
+            <th scope="col" className="px-4 py-3">
               {refHeader ?? (
                 <span lang={locale} className="font-semibold text-text">
                   {locale === 'ta' ? 'குறிப்பு எண்' : 'Reference'}
@@ -45,7 +45,7 @@ export function RecordTable<T>({ caption, rows, columns, href, linkText, rowKey,
               )}
             </th>
             {columns.map((column, idx) => (
-              <th key={idx} scope="col" className="px-3 py-2 font-semibold text-text">
+              <th key={idx} scope="col" className="px-4 py-3 font-semibold text-text">
                 {column.header}
               </th>
             ))}
@@ -53,14 +53,14 @@ export function RecordTable<T>({ caption, rows, columns, href, linkText, rowKey,
         </thead>
         <tbody className="divide-y divide-line">
           {rows.map((row) => (
-            <tr key={rowKey(row)}>
-              <td className="px-3 py-2">
+            <tr key={rowKey(row)} className="transition-colors hover:bg-surface/70">
+              <td className="px-4 py-3">
                 <Link href={href(row)} className="font-mono font-semibold text-primary underline">
                   {linkText(row)}
                 </Link>
               </td>
               {columns.map((column, idx) => (
-                <td key={idx} className="px-3 py-2">
+                <td key={idx} className="px-4 py-3">
                   {column.cell(row)}
                 </td>
               ))}
