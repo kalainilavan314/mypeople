@@ -48,7 +48,7 @@ async function Reviews({ searchParams }: { searchParams: PageProps<'/access-revi
   return (
     <>
       <Feedback error={query.error} problems={query.problems} done={query.done} />
-      <section className="flex flex-col gap-1 rounded-xl border border-line bg-card p-4 text-sm">
+      <section className="flex flex-col gap-1 rounded-2xl border border-line bg-card shadow-card p-4 text-sm">
         <p className="font-semibold text-text">
           {due.quarter} · {locale === 'ta' ? 'முடிவு செய்ய வேண்டிய இறுதித் திகதி:' : 'decide by'} {formatDate(lastDay)}
         </p>
@@ -63,7 +63,7 @@ async function Reviews({ searchParams }: { searchParams: PageProps<'/access-revi
           <span lang={locale}>{locale === 'ta' ? 'உங்கள் மீளாய்வுக்காகக் காத்திருப்பவை' : 'Waiting for your review'}</span>
         </h2>
         {due.items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border border-line bg-card p-8 text-center text-muted">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-line bg-card shadow-card p-8 text-center text-muted">
             <p lang={locale} className="text-sm font-semibold text-text">
               {locale === 'ta' ? 'மீளாய்வுக்காக எதுவும் நிலுவையில் இல்லை' : 'No reviews pending this quarter'}
             </p>
@@ -86,7 +86,7 @@ async function Reviews({ searchParams }: { searchParams: PageProps<'/access-revi
 
 function DueRole({ grant, locale, areaNames }: { grant: DueGrant; locale: Locale; areaNames: AreaNames }) {
   return (
-    <li className="flex flex-col gap-2 rounded-xl border border-line bg-card p-3 text-sm">
+    <li className="flex flex-col gap-2 rounded-2xl border border-line bg-card shadow-card p-3 text-sm">
       <p className="font-semibold text-text">
         {grant.fullName} <span className="font-mono text-muted">{grant.memberCode}</span>
       </p>

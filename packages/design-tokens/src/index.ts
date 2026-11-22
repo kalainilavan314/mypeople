@@ -49,6 +49,44 @@ export const colors = {
   errorBackground: '#fef2f2',
 } as const;
 
+/**
+ * The staff dashboard's own look (owner's request, 22 November 2026): a cool light page, white
+ * cards, navy text and soft borders. Only the dashboard uses these, in place of the neutral colours
+ * of `colors`; brand red, status colours and the locked fonts stay the same, and the PWA and the
+ * apps keep `colors`. Text pairs pass WCAG AA (4.5:1) on card, page and surface; see the dashboard's
+ * palette test.
+ */
+export const dashboardColors = {
+  page: '#f2f6fc',
+  card: '#ffffff',
+  surfaceVariant: '#eef2f9',
+  border: '#e1e7f0',
+  divider: '#eef2f7',
+  inputBorder: '#c3cddc',
+  controlBorder: '#7b879f',
+  text: '#1f2d4d',
+  textSecondary: '#3d4a68',
+  textMuted: '#5b6884',
+} as const;
+
+/**
+ * Accent colours for the dashboard's icon tiles and charts. Each carries a white icon at 3:1 or
+ * more (WCAG non-text contrast); none is used for text or to carry meaning on its own.
+ */
+export const dashboardAccents = {
+  purple: '#6c5ce7',
+  blue: '#1f8fd6',
+  green: '#12a079',
+  red: '#e5484d',
+  orange: '#cf6c0d',
+  teal: '#0f9a94',
+  indigo: '#4361c9',
+  gold: '#a97705',
+  pink: '#d6407a',
+} as const;
+
+export type DashboardAccent = keyof typeof dashboardAccents;
+
 /** Spacing on an 8-point grid, in pixels. */
 export const spacing = {
   1: 4,

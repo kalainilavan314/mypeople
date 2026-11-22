@@ -166,5 +166,5 @@ test('the pages call the budgeting API and keep per-project totals out of sight 
     assert.ok(actions.includes(`api.${call}(`), call);
   }
   assert.match(await readSrc('app/(staff)/budgeting/new/page.tsx'), /areaOptionsFor\(staff\.assignments, MANAGE\)/);
-  assert.match(await readSrc('components/StaffSidebar.tsx'), /case '\/budgeting':/);
+  assert.match(await readSrc('components/ModuleIcons.tsx'), /case '\/budgeting':/);
 });

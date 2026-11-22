@@ -2,7 +2,9 @@ import type { WorkQueues } from '@my-people/api-client';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
-import { PageHeader } from '@/components/PageHeader';
+import { BarChart, RingChart } from '@/components/MiniCharts';
+import { ACCENT_TILE, getModuleIcon, moduleAccent, type Accent } from '@/components/ModuleIcons';
+import { StatCard } from '@/components/StatCard';
 import { ConsoleLoading } from '@/components/ConsoleLoading';
 import { DashboardRefresh } from '@/components/DashboardRefresh';
 import { SystemStatus } from '@/components/SystemStatus';
@@ -14,22 +16,23 @@ import { isRefusal, requireStaff } from '@/lib/staff';
 export default function DashboardHome() {
   return (
     <>
-      <div className="flex flex-col gap-1 border-b border-line pb-6">
-        <PageHeader ta="நிர்வாகம் மற்றும் பணி வரிசைகள்" en="Operations desk" />
-        <p className="max-w-2xl text-sm leading-6 text-muted">
-          Review assigned work, resolve time-sensitive requests, and open the administration tools you are permitted to use.
-        </p>
-        <DashboardRefresh />
-      </div>
+      <Suspense fallback={<div className="h-36 animate-pulse rounded-2xl bg-surface" />}>
+        <WelcomeBanner />
+      </Suspense>
 
       <Suspense fallback={null}>
         <DashboardNotice />
       </Suspense>
 
       <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_22rem]">
-        <Suspense fallback={<ConsoleLoading rows={4} />}>
-          <PriorityWorkQueues />
-        </Suspense>
+        <div className="flex min-w-0 flex-col gap-8">
+          <Suspense fallback={<ConsoleLoading rows={4} />}>
+            <PriorityWorkQueues />
+          </Suspense>
+          <Suspense fallback={<ConsoleLoading rows={2} />}>
+            <InsightsSection />
+          </Suspense>
+        </div>
 
         <aside className="flex flex-col gap-8 xl:sticky xl:top-6" aria-label="Administration overview">
           <Suspense fallback={<ConsoleLoading rows={3} />}>
@@ -49,12 +52,48 @@ export default function DashboardHome() {
   );
 }
 
+/** The page's h1: a brand banner greeting the staff member, with the date and the refresh control. */
+async function WelcomeBanner() {
+  const staff = await requireStaff();
+  const locale = await getAdminLocale(staff.member.language);
+  const firstName = staff.member.fullName.split(' ')[0];
+  const today = new Intl.DateTimeFormat(locale === 'ta' ? 'ta-LK' : 'en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Asia/Colombo',
+  }).format(new Date());
+
+  return (
+    <header className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-primary-dark p-6 text-on-primary shadow-raised sm:p-8">
+      <span aria-hidden="true" className="absolute -right-10 -top-12 h-44 w-44 rounded-full bg-on-primary/10" />
+      <span aria-hidden="true" className="absolute -bottom-16 right-24 h-36 w-36 rounded-full bg-brand-gold/25" />
+      <div className="relative flex flex-wrap items-end justify-between gap-4">
+        <div className="flex max-w-2xl flex-col gap-2">
+          <p lang={locale} className="text-sm font-medium text-on-primary/85">
+            {today}
+          </p>
+          <h1 lang={locale} className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            {locale === 'ta' ? `வணக்கம், ${firstName}` : `Welcome back, ${firstName}`}
+          </h1>
+          <p lang={locale} className="text-sm leading-6 text-on-primary/90">
+            {locale === 'ta'
+              ? 'உங்கள் பணி வரிசைகள், அனுமதிகள் மற்றும் கருவிகள் ஒரே இடத்தில்.'
+              : 'Your work queues, approvals and tools in one place.'}
+          </p>
+        </div>
+        <DashboardRefresh onBrand />
+      </div>
+    </header>
+  );
+}
 async function DashboardNotice() {
   const staff = await requireStaff();
   const locale = await getAdminLocale(staff.member.language);
 
   return (
-    <p className="flex flex-col gap-1 rounded-lg border border-warning/50 bg-warning-bg px-4 py-3 text-sm text-warning">
+    <p className="flex flex-col gap-1 rounded-2xl border border-warning/40 bg-warning-bg px-5 py-3 text-sm text-warning">
       <span lang={locale} className="font-semibold">
         {locale === 'ta'
           ? '! வெளியீட்டுக்கு முந்தைய சூழல். பாதுகாப்பு கட்டுப்பாடுகள், தணிக்கை நீர்வரி மற்றும் உற்பத்தி உள்ளடக்கப் பாதுகாப்புக் கொள்கைகள் அனைத்துப் பணியாளர் தொகுதிகளிலும் செயலில் உள்ளன.'
@@ -115,6 +154,20 @@ async function PlannedModulesSection() {
     </section>
   );
 }
+
+/** Each queue card in its own colour, so neighbouring cards are easy to tell apart. */
+const QUEUE_ACCENTS: Readonly<Record<string, Accent>> = {
+  '/verification': 'indigo',
+  '/appeals': 'purple',
+  '/duplicates': 'orange',
+  '/membership': 'green',
+  '/gallery?tab=removals': 'red',
+  '/gallery?tab=albums': 'pink',
+  '/events': 'blue',
+  '/messages': 'gold',
+  '/settings': 'teal',
+  '/reports': 'red',
+};
 
 /** Operational action cards showing only queues the staff member is permitted to access. */
 async function PriorityWorkQueues() {
@@ -352,31 +405,9 @@ async function PriorityWorkQueues() {
         </p>
       ) : null}
 
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
         {cards.map((card) => (
-          <Link
-            key={card.href}
-            href={card.href}
-            className={`group flex min-h-36 flex-col justify-between gap-5 rounded-lg border p-5 transition-colors hover:border-primary/40 hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
-              card.urgent && card.count > 0 ? 'border-warning/60 bg-warning-bg/30' : 'border-line bg-card'
-            }`}>
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex flex-col gap-1">
-              <span lang={locale} className="text-sm font-semibold text-text group-hover:text-primary">
-                {card.title}
-              </span>
-              <span className="text-xs text-muted">{card.countLabel}</span>
-              {card.urgentNotice ? (
-                <p className="mt-2 rounded-md bg-error-bg px-2 py-1 text-xs font-medium text-error">
-                  ! {card.urgentNotice}
-                </p>
-              ) : null}
-              </div>
-              <span className="text-3xl font-semibold tabular-nums text-text">{card.count}</span>
-            </div>
-
-            <p className="text-xs leading-5 text-muted">{card.subtext}</p>
-          </Link>
+          <StatCard key={card.href} {...card} accent={QUEUE_ACCENTS[card.href]} locale={locale} />
         ))}
       </div>
     </section>
@@ -404,19 +435,89 @@ async function MyModules() {
           {locale === 'ta' ? 'உங்கள் பொறுப்புக்கு எந்த தொகுதியும் ஒதுக்கப்படவில்லை.' : 'Your role has no dashboard modules.'}
         </p>
       ) : null}
-      <ul className="flex flex-col divide-y divide-line rounded-lg border border-line bg-card">
-        {allowed.map((module) => (
-          <li key={module.href}>
-            <Link
-              href={module.href}
-              className="flex min-h-12 items-center px-4 py-3 text-sm font-medium text-text transition-colors hover:bg-surface hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset">
-              <span lang={locale} className="text-sm font-semibold text-text">
-                {locale === 'ta' ? module.ta : module.en}
-              </span>
-            </Link>
-          </li>
-        ))}
+      <ul className="grid grid-cols-2 gap-3">
+        {allowed.map((module) => {
+          const Icon = getModuleIcon(module.href);
+          return (
+            <li key={module.href}>
+              <Link
+                href={module.href}
+                className="flex h-full min-h-24 flex-col items-start gap-2 rounded-2xl border border-line bg-card p-3 shadow-card transition hover:-translate-y-0.5 hover:shadow-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                <span aria-hidden="true" className={`flex h-9 w-9 items-center justify-center rounded-lg ${ACCENT_TILE[moduleAccent(module.href)]}`}>
+                  <Icon className="h-5 w-5" />
+                </span>
+                <span lang={locale} className="text-xs font-semibold leading-snug text-text">
+                  {locale === 'ta' ? module.ta : module.en}
+                </span>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
+    </section>
+  );
+}
+
+/** Last 30 days at a glance: the membership journey as bars, event attendance as a ring. */
+async function InsightsSection() {
+  const staff = await requireStaff();
+  if (!staff.permissions.has('analytics.view')) return null;
+  const locale = await getAdminLocale(staff.member.language);
+  let figures: Awaited<ReturnType<Awaited<ReturnType<typeof staffApi>>['getOperationsAnalytics']>> | null = null;
+  try {
+    figures = await (await staffApi()).getOperationsAnalytics(30);
+  } catch (error) {
+    if (isRefusal(error)) return null;
+    throw error;
+  }
+  const ta = locale === 'ta';
+  const hours = figures.medianHours === null ? '—' : `${Math.round(figures.medianHours)} ${ta ? 'மணி' : 'h'}`;
+
+  return (
+    <section aria-labelledby="insights-heading" className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <h2 id="insights-heading" lang={locale} className="text-lg font-semibold text-text">
+          {ta ? 'கடந்த 30 நாட்கள்' : 'Last 30 days'}
+        </h2>
+        <Link href="/analytics" lang={locale} className="text-sm font-semibold text-primary hover:underline">
+          {ta ? 'முழுப் பகுப்பாய்வு' : 'Full analytics'}
+        </Link>
+      </div>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <div className="flex flex-col gap-4 rounded-2xl border border-line bg-card p-5 shadow-card">
+          <h3 lang={locale} className="text-sm font-semibold text-text-secondary">
+            {ta ? 'உறுப்பினர் பயணம்' : 'Membership journey'}
+          </h3>
+          <BarChart
+            locale={locale}
+            caption={ta ? 'கடந்த 30 நாட்களின் உறுப்பினர் பயணம்' : 'Membership journey in the last 30 days'}
+            bars={[
+              { label: ta ? 'தொடங்கியவை' : 'Started', value: figures.started, accent: 'blue' },
+              { label: ta ? 'சமர்ப்பித்தவை' : 'Submitted', value: figures.submitted, accent: 'purple' },
+              { label: ta ? 'சரிபார்க்கப்பட்டவை' : 'Verified', value: figures.verified, accent: 'teal' },
+              { label: ta ? 'செயலில்' : 'Active', value: figures.active, accent: 'green' },
+            ]}
+          />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+          <div className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-line bg-card p-5 shadow-card">
+            <RingChart value={figures.attendanceRate} locale={locale} label={ta ? 'நிகழ்வு வருகை' : 'Event attendance'} />
+          </div>
+          <div className="flex items-center gap-4 rounded-2xl border border-line bg-card p-5 shadow-card">
+            <span aria-hidden="true" className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${ACCENT_TILE.orange}`}>
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </span>
+            <div className="flex flex-col">
+              <span lang={locale} className="text-xs font-medium text-muted">
+                {ta ? 'சரிபார்ப்புக்கான நடுத்தரக் காத்திருப்பு' : 'Median review wait'}
+              </span>
+              <span className="text-2xl font-bold tabular-nums text-text">{hours}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

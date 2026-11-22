@@ -198,7 +198,7 @@ async function SourceView({ params, searchParams }: Pick<PageProps<'/assistant/[
 
         <aside aria-label="Actions" className="flex flex-col gap-4">
           {source.state === 'draft' && ownDraft ? (
-            <p className="rounded-xl border border-line bg-card p-4 text-sm text-muted">
+            <p className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm text-muted">
               You drafted this version, so another Knowledge Editor must approve it or send it back.
             </p>
           ) : null}
@@ -227,7 +227,7 @@ async function SourceView({ params, searchParams }: Pick<PageProps<'/assistant/[
             />
           ) : null}
           {source.state === 'approved' && openDraft ? (
-            <p className="rounded-xl border border-line bg-card p-4 text-sm text-muted">
+            <p className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm text-muted">
               A new version is being drafted:{' '}
               <Link href={`/assistant/${openDraft.id}`} className={`font-semibold text-primary underline ${FOCUS_RING}`}>
                 version {openDraft.version}
@@ -264,7 +264,7 @@ async function SourceView({ params, searchParams }: Pick<PageProps<'/assistant/[
             />
           ) : null}
           {source.state === 'superseded' || source.state === 'retired' ? (
-            <p className="rounded-xl border border-line bg-card p-4 text-sm text-muted">This version is kept for the record and cannot be changed.</p>
+            <p className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm text-muted">This version is kept for the record and cannot be changed.</p>
           ) : null}
         </aside>
       </div>

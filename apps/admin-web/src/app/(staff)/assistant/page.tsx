@@ -116,7 +116,7 @@ async function SourceList({ searchParams }: { searchParams: PageProps<'/assistan
       en="Approved sources"
       intro="The assistant answers only from approved sources: policies, published manifesto material, app help and public-service guides. Each version needs a second Knowledge Editor's approval and a review date; past it, the source is not used until reviewed again.">
       <Feedback done={one(query.done)} />
-      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-4">
+      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
         <label htmlFor="source-state" className="flex min-w-52 flex-col gap-1 text-sm font-semibold text-text">
           State
           <select id="source-state" name="state" defaultValue={state ?? ''} className={CONTROL}>

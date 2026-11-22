@@ -118,7 +118,7 @@ async function PeriodFile({ params, searchParams }: Pick<PageProps<'/elections/[
       ) : null}
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <section aria-labelledby="details-heading" className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:p-6">
+        <section aria-labelledby="details-heading" className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
           <h2 id="details-heading" lang={locale} className="text-base font-bold">
             {words.detailsTitle}
           </h2>
@@ -153,7 +153,7 @@ async function PeriodFile({ params, searchParams }: Pick<PageProps<'/elections/[
           </dl>
         </section>
 
-        <section aria-labelledby="source-heading" className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:p-6">
+        <section aria-labelledby="source-heading" className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
           <div className="flex flex-col gap-1">
             <h2 id="source-heading" lang={locale} className="text-base font-bold">
               {words.sourceTitle}
@@ -172,7 +172,7 @@ async function PeriodFile({ params, searchParams }: Pick<PageProps<'/elections/[
         </section>
       </div>
 
-      <section aria-labelledby="roster-heading" className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:p-6">
+      <section aria-labelledby="roster-heading" className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 id="roster-heading" className="flex flex-col text-base font-bold">
             <span lang="ta">பணிப் பட்டியலும் கால அறிக்கையும்</span>
@@ -197,7 +197,7 @@ async function PeriodFile({ params, searchParams }: Pick<PageProps<'/elections/[
           {words.noticesTitle}
         </h2>
         {period.notices.length === 0 ? (
-          <p lang={locale} className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">
+          <p lang={locale} className="rounded-2xl border border-line bg-card shadow-card p-6 text-center text-sm text-muted">
             {words.noticesEmpty}
           </p>
         ) : (
@@ -218,7 +218,7 @@ async function PeriodFile({ params, searchParams }: Pick<PageProps<'/elections/[
           <ClosePeriodForm periodId={period.id} words={words} problems={(one(query.problems) ?? '').split(',').filter(Boolean)} locale={locale} />
         </>
       ) : (
-        <p lang={locale} className="rounded-xl border border-line bg-card p-4 text-sm text-muted">
+        <p lang={locale} className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm text-muted">
           {words.closedText}
         </p>
       )}
@@ -361,7 +361,7 @@ function NoticeCard({ notice, periodId, words, newTab, locale }: { notice: Elect
   const withdrawn = notice.withdrawnAt !== null;
   const other: Locale = locale === 'ta' ? 'en' : 'ta';
   return (
-    <article aria-labelledby={`notice-${notice.id}`} className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:p-6">
+    <article aria-labelledby={`notice-${notice.id}`} className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <div className="flex flex-wrap items-center gap-2">
         <SourceLabel text={locale === 'ta' ? notice.labelTa : notice.labelEn} locale={locale} />
         <StateTag state={withdrawn ? 'withdrawn' : 'published'} />

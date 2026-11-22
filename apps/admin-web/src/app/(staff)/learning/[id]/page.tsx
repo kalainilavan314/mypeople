@@ -65,7 +65,7 @@ async function CourseView({ params, searchParams }: Pick<PageProps<'/learning/[i
       return (
         <>
           {backLink}
-          <p className="rounded-xl border border-line bg-card p-6 text-sm text-muted">Learning is not switched on yet.</p>
+          <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-sm text-muted">Learning is not switched on yet.</p>
         </>
       );
     }
@@ -164,7 +164,7 @@ async function CourseView({ params, searchParams }: Pick<PageProps<'/learning/[i
 
 function Section({ id, title, intro, children }: { id: string; title: string; intro?: string; children: ReactNode }) {
   return (
-    <section id={`${id}-section`} aria-labelledby={`${id}-heading`} className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:p-6">
+    <section id={`${id}-section`} aria-labelledby={`${id}-heading`} className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <div className="flex flex-col gap-1">
         <h2 id={`${id}-heading`} className="text-lg font-bold text-text">
           {title}

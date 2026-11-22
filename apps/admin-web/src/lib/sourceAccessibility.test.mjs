@@ -114,53 +114,53 @@ test('StaffSidebar declares accessible dialog roles for mobile navigation and al
   assert.match(code, /aria-label=/);
 });
 
-test('Admin UI palette pairs pass WCAG 2.2 AA contrast requirements', () => {
-  // Brand and theme tokens used across admin-web
-  const tokens = {
-    primary: '#096670', // Teal brand primary
-    onPrimary: '#ffffff',
-    text: '#16191f',
-    card: '#ffffff',
-    page: '#f7f9fa',
-    textSecondary: '#4b5563',
-    textMuted: '#6b7280',
-    error: '#b91c1c',
-    errorBg: '#fef2f2',
-    success: '#15803d',
-    successBg: '#f0fdf4',
-    warning: '#b45309',
-    warningBg: '#fffbeb',
-  };
+/** The named hex values of one `export const name = { ... } as const` block in the design tokens. */
+async function tokenBlock(name) {
+  const url = new URL('../../../../packages/design-tokens/src/index.ts', import.meta.url);
+  const source = await readFile(url, 'utf8');
+  const start = source.indexOf(`export const ${name} = {`);
+  assert.ok(start >= 0, `design tokens export ${name}`);
+  const block = source.slice(start, source.indexOf('} as const;', start));
+  return Object.fromEntries([...block.matchAll(/(\w+): '(#[0-9a-fA-F]{6})'/g)].map((m) => [m[1], m[2]]));
+}
+
+test('Admin UI palette pairs pass WCAG 2.2 AA contrast requirements', async () => {
+  // The dashboard's real colours: the shared brand and status colours, with the dashboard's own
+  // neutrals in place of the shared ones (as layout.tsx sets them), and its accents.
+  const tokens = { ...(await tokenBlock('colors')), ...(await tokenBlock('dashboardColors')) };
+  const accents = await tokenBlock('dashboardAccents');
 
   const bodyPairs = [
-    ['onPrimary', 'primary', 'Button on primary'],
+    ['onPrimary', 'primary', 'Button text on primary'],
+    ['onPrimary', 'primaryDark', 'Welcome banner text on the dark end of its gradient'],
     ['text', 'card', 'Body text on card'],
     ['text', 'page', 'Body text on page'],
     ['textSecondary', 'card', 'Secondary text on card'],
-    ['error', 'errorBg', 'Error banner text'],
-    ['success', 'successBg', 'Success banner text'],
-    ['warning', 'warningBg', 'Warning banner text'],
+    ['textMuted', 'card', 'Muted text on card'],
+    ['textMuted', 'page', 'Muted text on page'],
+    ['textMuted', 'surfaceVariant', 'Muted text on a grey surface'],
+    ['primary', 'card', 'Links and active labels on card'],
+    ['error', 'errorBackground', 'Error banner text'],
+    ['successText', 'successBackground', 'Success banner text'],
+    ['warningText', 'warningBackground', 'Warning banner text'],
   ];
-
   for (const [fgKey, bgKey, description] of bodyPairs) {
     const ratio = contrast(tokens[fgKey], tokens[bgKey]);
-    assert.ok(
-      ratio >= 4.5,
-      `${description} (${fgKey} on ${bgKey}) contrast ${ratio.toFixed(2)}:1 must meet 4.5:1 AA body contrast`,
-    );
+    assert.ok(ratio >= 4.5, `${description} (${fgKey} on ${bgKey}) contrast ${ratio.toFixed(2)}:1 must meet 4.5:1 AA body contrast`);
   }
 
-  // Large text and graphical elements >= 3.0:1
+  // Graphical elements and large text >= 3.0:1.
   const graphicalPairs = [
     ['primary', 'card', 'Primary accents on card'],
-    ['textMuted', 'card', 'Muted placeholders on card'],
+    ['controlBorder', 'card', 'Control borders on card'],
   ];
-
   for (const [fgKey, bgKey, description] of graphicalPairs) {
     const ratio = contrast(tokens[fgKey], tokens[bgKey]);
-    assert.ok(
-      ratio >= 3.0,
-      `${description} (${fgKey} on ${bgKey}) contrast ${ratio.toFixed(2)}:1 must meet 3.0:1 UI element contrast`,
-    );
+    assert.ok(ratio >= 3.0, `${description} (${fgKey} on ${bgKey}) contrast ${ratio.toFixed(2)}:1 must meet 3.0:1 UI element contrast`);
+  }
+  assert.ok(Object.keys(accents).length >= 9, 'every accent colour is checked');
+  for (const [name, hex] of Object.entries(accents)) {
+    const ratio = contrast(tokens.onPrimary, hex);
+    assert.ok(ratio >= 3.0, `White icon on the ${name} accent tile contrast ${ratio.toFixed(2)}:1 must meet 3.0:1`);
   }
 });

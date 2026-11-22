@@ -53,7 +53,7 @@ async function MfaStep({ searchParams }: { searchParams: PageProps<'/mfa'>['sear
       <Feedback error={params.error} />
       {enrolling ? <Enrolment /> : null}
 
-      <form action={giveCode} className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4">
+      <form action={giveCode} className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
         <input type="hidden" name="enrolling" value={enrolling ? '1' : '0'} />
         <label className="flex flex-col gap-1 text-sm font-semibold text-text">
           <span lang={locale}>{locale === 'ta' ? 'ஆறு இலக்கக் குறியீடு *' : 'Six-digit code *'}</span>

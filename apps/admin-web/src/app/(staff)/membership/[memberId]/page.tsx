@@ -78,7 +78,7 @@ async function FileView({ params, searchParams }: Pick<PageProps<'/membership/[m
       </PageHeader>
       <Feedback error={query.error} problems={query.problems} done={query.done} />
 
-      <section className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 text-sm" aria-label="Membership status">
+      <section className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 text-sm" aria-label="Membership status">
         <div>
           <span lang={locale} className="block text-xs font-semibold text-muted">
             {locale === 'ta' ? 'தற்போதைய உறுப்புரிமை நிலை' : 'Current membership state'}
@@ -104,7 +104,7 @@ async function FileView({ params, searchParams }: Pick<PageProps<'/membership/[m
       </section>
 
       {allowed.length > 0 ? (
-        <form action={changeMembership} className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4">
+        <form action={changeMembership} className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
           <input type="hidden" name="memberId" value={memberId} />
           <div>
             <h2 className="text-base font-bold text-text">
@@ -200,7 +200,7 @@ async function FileView({ params, searchParams }: Pick<PageProps<'/membership/[m
           </div>
         </form>
       ) : (
-        <div className="rounded-xl border border-line bg-card p-4 text-sm text-muted">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm text-muted">
           <p lang={locale} className="font-semibold text-text">
             {locale === 'ta'
               ? 'இந்த நிலைக்கு அனுமதிக்கப்பட்ட மேலதிக மாற்றங்கள் எதுவும் இல்லை.'
@@ -216,7 +216,7 @@ async function FileView({ params, searchParams }: Pick<PageProps<'/membership/[m
           </h2>
         </div>
         {file.history.length === 0 ? (
-          <div className="rounded-xl border border-line bg-card p-4 text-sm text-muted">
+          <div className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm text-muted">
             <p lang={locale} className="font-semibold text-text">
               {locale === 'ta'
                 ? 'இன்னும் மாற்றங்கள் எதுவும் இல்லை: பதிவுசெய்ததிலிருந்து நிலுவையில் உள்ளது.'
@@ -226,7 +226,7 @@ async function FileView({ params, searchParams }: Pick<PageProps<'/membership/[m
         ) : null}
         <ul className="flex flex-col gap-2">
           {file.history.map((change) => (
-            <li key={change.changedAt} className="rounded-xl border border-line bg-card p-3 text-sm">
+            <li key={change.changedAt} className="rounded-2xl border border-line bg-card shadow-card p-3 text-sm">
               <p className="font-semibold text-text">
                 {ACTION_LABELS[change.action]?.[locale] ?? words(change.action)}: {change.fromState} → {change.toState}
               </p>

@@ -81,7 +81,7 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
             </span>
           </div>
 
-          <div className="overflow-x-auto rounded-xl border border-line bg-card">
+          <div className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
             <table className="w-full text-left text-sm">
               <caption className="sr-only">Feature flag registry</caption>
               <thead className="border-b border-line text-xs text-muted">
@@ -211,7 +211,7 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-xl border border-line bg-card p-4">
+            <div className="rounded-2xl border border-line bg-card shadow-card p-4">
               <span className="text-xs font-semibold text-muted">{locale === 'ta' ? 'அங்கீகாரக் கொள்கை' : 'Authentication policy'}</span>
               <p className="mt-1 font-bold">{locale === 'ta' ? 'கட்டாய பணியாளர் MFA (TOTP)' : 'Mandatory Staff MFA (TOTP)'}</p>
               <p className="mt-1 text-xs text-muted">
@@ -221,7 +221,7 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
               </p>
             </div>
 
-            <div className="rounded-xl border border-line bg-card p-4">
+            <div className="rounded-2xl border border-line bg-card shadow-card p-4">
               <span className="text-xs font-semibold text-muted">{locale === 'ta' ? 'அமர்வுப் பாதுகாப்பு' : 'Session security'}</span>
               <p className="mt-1 font-bold">{locale === 'ta' ? '15 நிமிட அணுகல் காலம்' : '15-minute access lifetime'}</p>
               <p className="mt-1 text-xs text-muted">
@@ -231,7 +231,7 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
               </p>
             </div>
 
-            <div className="rounded-xl border border-line bg-card p-4">
+            <div className="rounded-2xl border border-line bg-card shadow-card p-4">
               <span className="text-xs font-semibold text-muted">{locale === 'ta' ? 'தணிக்கை ஒருமைப்பாடு' : 'Audit trail integrity'}</span>
               <p className="mt-1 font-bold">{locale === 'ta' ? 'கிரிப்டோகிராஃபிக் ஹாஷ் இணைப்பு' : 'Cryptographic hash-chaining'}</p>
               <p className="mt-1 text-xs text-muted">
@@ -241,7 +241,7 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
               </p>
             </div>
 
-            <div className="rounded-xl border border-line bg-card p-4">
+            <div className="rounded-2xl border border-line bg-card shadow-card p-4">
               <span className="text-xs font-semibold text-muted">{locale === 'ta' ? 'சான்றுப் பெட்டகம்' : 'Evidence vault'}</span>
               <p className="mt-1 font-bold">{locale === 'ta' ? 'AES-256-GCM குறியாக்கம்' : 'AES-256-GCM encryption'}</p>
               <p className="mt-1 text-xs text-muted">
@@ -251,7 +251,7 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
               </p>
             </div>
 
-            <div className="rounded-xl border border-line bg-card p-4">
+            <div className="rounded-2xl border border-line bg-card shadow-card p-4">
               <span className="text-xs font-semibold text-muted">{locale === 'ta' ? 'உள்ளடக்கப் பாதுகாப்பு' : 'Content security'}</span>
               <p className="mt-1 font-bold">{locale === 'ta' ? 'EXIF/GPS நீக்கம்' : 'EXIF/GPS metadata stripping'}</p>
               <p className="mt-1 text-xs text-muted">
@@ -261,7 +261,7 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
               </p>
             </div>
 
-            <div className="rounded-xl border border-line bg-card p-4">
+            <div className="rounded-2xl border border-line bg-card shadow-card p-4">
               <span className="text-xs font-semibold text-muted">{locale === 'ta' ? 'தேர்தல் விதிமுறைகள்' : 'Electoral compliance'}</span>
               <p className="mt-1 font-bold">{locale === 'ta' ? 'அமைதிக்கால தன்னியக்கம்' : 'Silence window automation'}</p>
               <p className="mt-1 text-xs text-muted">
@@ -321,7 +321,7 @@ async function SettingsContent({ searchParams }: { searchParams: PageProps<'/set
             </div>
           ) : null}
 
-          <div className="overflow-x-auto rounded-xl border border-line bg-card">
+          <div className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
             <table className="w-full text-left text-sm">
               <caption className="sr-only">Electoral and administrative districts</caption>
               <thead className="border-b border-line text-xs text-muted">

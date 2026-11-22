@@ -108,7 +108,7 @@ async function RequestFile({ params, searchParams }: Pick<PageProps<'/privacy/[i
 
       <Feedback error={one(query.error)} problems={one(query.problems)} done={one(query.done)} />
 
-      <section aria-labelledby="request-heading" className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:p-6">
+      <section aria-labelledby="request-heading" className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
         <h2 id="request-heading" lang={locale} className="text-base font-bold">
           {words.requestTitle}
         </h2>
@@ -155,7 +155,7 @@ async function RequestFile({ params, searchParams }: Pick<PageProps<'/privacy/[i
           <h2 id="retention-heading" lang={locale} className="text-base font-bold">
             {words.retentionTitle}
           </h2>
-          <div className="overflow-x-auto rounded-xl border border-line bg-card">
+          <div className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
             <table aria-labelledby="retention-heading" className="w-full text-left text-sm">
               <thead className="border-b border-line text-xs">
                 <tr>
@@ -187,7 +187,7 @@ async function RequestFile({ params, searchParams }: Pick<PageProps<'/privacy/[i
       {entry.state === 'open' ? (
         <CloseRequestForm entry={entry} words={words} problems={problems} locale={locale} />
       ) : (
-        <p lang={locale} className="rounded-xl border border-line bg-card p-4 text-sm text-muted">
+        <p lang={locale} className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm text-muted">
           {words.closedText}
         </p>
       )}
@@ -211,7 +211,7 @@ function CloseRequestForm({ entry, words, problems, locale }: { entry: PrivacyRe
   const confirmProblem = problems.includes('confirmation_required');
   const closure = entry.kind === 'closure';
   return (
-    <form action={closePrivacyRequest} aria-labelledby="close-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-4 sm:p-6">
+    <form action={closePrivacyRequest} aria-labelledby="close-heading" className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <div className="flex flex-col gap-1 border-b border-line pb-2">
         <h2 id="close-heading" lang={locale} className="text-base font-bold">
           {words.closeTitle}

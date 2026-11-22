@@ -95,7 +95,7 @@ async function AlbumDetail({ params, searchParams }: Pick<PageProps<'/gallery/al
       ) : null}
 
       {/* Album Summary Section */}
-      <div className="rounded-xl border border-line bg-card p-6">
+      <div className="rounded-2xl border border-line bg-card shadow-card p-6">
         <div>
           <span className="text-xs font-semibold text-muted">
             {locale === 'ta' ? 'சுருக்கம்' : 'Summary'}
@@ -118,7 +118,7 @@ async function AlbumDetail({ params, searchParams }: Pick<PageProps<'/gallery/al
 
       {/* Album details stay editable while the album is a draft, including after it was returned for changes. */}
       {isDraft ? (
-        <details className="rounded-xl border border-line bg-card p-6">
+        <details className="rounded-2xl border border-line bg-card shadow-card p-6">
           <summary className="cursor-pointer text-base font-bold text-text">
             <span lang={locale}>{locale === 'ta' ? 'தொகுப்பு விவரங்களைத் திருத்துக' : 'Edit album details'}</span>
           </summary>
@@ -175,7 +175,7 @@ async function AlbumDetail({ params, searchParams }: Pick<PageProps<'/gallery/al
       ) : null}
 
       {/* Photos Management */}
-      <section aria-labelledby="photos-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
+      <section aria-labelledby="photos-heading" className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-3">
           <h2 id="photos-heading" className="text-base font-bold text-text">
             {locale === 'ta' ? `புகைப்படங்கள் (${album.photos.length})` : `Photos (${album.photos.length})`}
@@ -290,7 +290,7 @@ async function AlbumDetail({ params, searchParams }: Pick<PageProps<'/gallery/al
 
       {/* Submission & Publication Lifecycle Controls */}
       {isDraft ? (
-        <section aria-labelledby="submit-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
+        <section aria-labelledby="submit-heading" className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-6">
           <div className="border-b border-line pb-2">
             <h2 id="submit-heading" className="text-base font-bold text-text">
               <span lang={locale}>{locale === 'ta' ? 'வெளியீட்டிற்காகத் தொகுப்பைச் சமர்ப்பித்தல்' : 'Submit album for publication'}</span>
@@ -312,7 +312,7 @@ async function AlbumDetail({ params, searchParams }: Pick<PageProps<'/gallery/al
       ) : null}
 
       {isSubmitted ? (
-        <section aria-labelledby="approval-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
+        <section aria-labelledby="approval-heading" className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-6">
           <div className="border-b border-line pb-2">
             <h2 id="approval-heading" className="text-base font-bold text-text">
               <span lang={locale}>{locale === 'ta' ? 'ஆய்வு மற்றும் வெளியீட்டு முடிவு' : 'Review and publication decision'}</span>

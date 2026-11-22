@@ -73,7 +73,7 @@ async function EventsContent({ searchParams }: { searchParams: PageProps<'/event
         </p>
       </div>
 
-      <form className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3" role="search">
+      <form className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-3" role="search">
         <label className="flex flex-col gap-1 text-sm font-semibold text-text">
           <span lang={locale}>{locale === 'ta' ? 'நிலை வடிகட்டி' : 'Status filter'}</span>
           <select name="state" defaultValue={state ?? ''} className="min-h-11 rounded-lg border border-line px-3 bg-surface">
@@ -91,12 +91,12 @@ async function EventsContent({ searchParams }: { searchParams: PageProps<'/event
       </form>
 
       {events.length === 0 ? (
-        <div className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-6 text-center text-sm text-muted">
           <span lang={locale}>{locale === 'ta' ? 'உங்கள் பகுதிக்கு எந்த நிகழ்வுகளும் காணப்படவில்லை.' : 'No events found for your area and filter.'}</span>
         </div>
       ) : null}
 
-      <div hidden={events.length === 0} className="overflow-x-auto rounded-xl border border-line bg-card">
+      <div hidden={events.length === 0} className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
         <table className="w-full text-left text-sm">
           <caption className="sr-only">Managed events list</caption>
           <thead className="border-b border-line text-xs text-muted">

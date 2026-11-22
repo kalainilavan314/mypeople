@@ -76,7 +76,7 @@ async function PromiseList({ searchParams }: { searchParams: PageProps<'/promise
         Drafts, promises waiting for approval and published promises in your areas. Nothing is deleted: a promise is withdrawn with a
         public reason.
       </p>
-      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-4">
+      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
         <label htmlFor="promise-status" className="flex min-w-52 flex-col gap-1 text-sm font-semibold text-text">
           Status
           <select id="promise-status" name="status" defaultValue={status ?? ''} className={CONTROL}>

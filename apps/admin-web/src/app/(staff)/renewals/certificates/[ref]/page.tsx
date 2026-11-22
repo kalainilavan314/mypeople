@@ -161,7 +161,7 @@ async function CertificateView({
           />
         </div>
       ) : (
-        <p className="rounded-xl border border-line bg-card p-4 text-sm text-muted">
+        <p className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm text-muted">
           Only a valid certificate can be revoked or reissued. To give this member a new one, issue it from the renewals page.
         </p>
       )}

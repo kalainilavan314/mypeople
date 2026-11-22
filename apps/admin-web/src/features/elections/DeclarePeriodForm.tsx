@@ -37,7 +37,7 @@ export function DeclarePeriodForm({ districts }: { districts: District[] }) {
   return (
     // A new key after each refusal remounts the form, so every control (selects included) starts from
     // the values just typed rather than being reset to the first render's defaults.
-    <form key={state?.attempt ?? 0} action={formAction} className="flex flex-col gap-6 rounded-xl border border-line bg-card p-4 sm:p-6">
+    <form key={state?.attempt ?? 0} action={formAction} className="flex flex-col gap-6 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <Feedback error={state?.error} problems={problems.join(',')} />
 
       <section aria-labelledby="declare-election" className="flex flex-col gap-4">

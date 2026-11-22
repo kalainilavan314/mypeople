@@ -45,7 +45,7 @@ export function TryForm() {
       </form>
 
       {preview ? (
-        <section aria-label="Preview answer" className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4">
+        <section aria-label="Preview answer" className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
           <p className="flex flex-wrap items-center gap-2">
             <BilingualTag label={OUTCOME_LABELS[preview.outcome]} tone={OUTCOME_TONES[preview.outcome]} />
             {preview.refusal ? <BilingualTag label={REFUSAL_LABELS[preview.refusal] ?? { ta: preview.refusal, en: preview.refusal }} tone="waiting" /> : null}

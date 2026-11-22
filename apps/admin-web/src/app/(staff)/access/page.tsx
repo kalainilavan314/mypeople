@@ -218,7 +218,7 @@ async function Access({ searchParams }: { searchParams: PageProps<'/access'>['se
           </h2>
         </div>
         {assignments.length === 0 ? (
-          <div className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">
+          <div className="rounded-2xl border border-line bg-card shadow-card p-6 text-center text-sm text-muted">
             <p lang={locale} className="font-semibold text-text">
               {locale === 'ta'
                 ? 'உங்கள் கட்டுப்பாட்டுப் பகுதிகளில் எந்தவொரு செயலிலுள்ள பணியாளர் பொறுப்புகளும் இல்லை.'
@@ -228,7 +228,7 @@ async function Access({ searchParams }: { searchParams: PageProps<'/access'>['se
         ) : null}
         <ul className="flex flex-col gap-2">
           {assignments.map((assignment) => (
-            <li key={assignment.id} className="flex flex-col gap-2 rounded-xl border border-line bg-card p-3 text-sm">
+            <li key={assignment.id} className="flex flex-col gap-2 rounded-2xl border border-line bg-card shadow-card p-3 text-sm">
               <p className="font-semibold text-text">
                 {assignment.fullName} <span className="font-mono text-muted">{assignment.memberCode}</span>
               </p>
@@ -316,7 +316,7 @@ function AssignForm({
   const hasProblem = (p: string) => problems.includes(p);
 
   return (
-    <details className="rounded-xl border border-line bg-card p-4" open={hasProblem('code_required') || hasProblem('member_not_found')}>
+    <details className="rounded-2xl border border-line bg-card shadow-card p-4" open={hasProblem('code_required') || hasProblem('member_not_found')}>
       <summary className="min-h-11 cursor-pointer text-sm font-semibold">
         <span lang={locale} className="font-semibold text-text">
           {locale === 'ta' ? 'பணியாளர் பொறுப்பை ஒதுக்குதல்' : 'Assign a role'}

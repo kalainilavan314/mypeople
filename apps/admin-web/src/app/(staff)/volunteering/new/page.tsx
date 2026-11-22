@@ -45,7 +45,7 @@ async function NewOpportunity() {
     skills = (await client.getVolunteerSkills()).skills;
   } catch (error) {
     if (error instanceof ApiError && error.code === 'feature_unavailable') {
-      return <p className="rounded-xl border border-line bg-card p-6 text-sm text-muted">Volunteering is not switched on yet.</p>;
+      return <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-sm text-muted">Volunteering is not switched on yet.</p>;
     }
     return <LoadFailure error={error} locale={locale} refused={REFUSED} notFound="The skills list is not available." />;
   }
@@ -59,7 +59,7 @@ async function NewOpportunity() {
   const areaOptions = await areaOptionsFor(staff.assignments, 'volunteers.manage');
 
   return (
-    <div className="rounded-xl border border-line bg-card p-4 sm:p-6">
+    <div className="rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <OpportunityForm
         areaOptions={areaOptions}
         skills={skills}

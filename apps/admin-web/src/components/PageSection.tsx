@@ -6,7 +6,7 @@ const FOCUS = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
 /** A page section with its heading in Tamil first and English under it. */
 export function Section({ id, ta, en, intro, children }: { id: string; ta: string; en: string; intro?: ReactNode; children: ReactNode }) {
   return (
-    <section id={id} aria-labelledby={`${id}-heading`} className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:p-6">
+    <section id={id} aria-labelledby={`${id}-heading`} className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <div className="flex flex-col gap-1">
         <h2 id={`${id}-heading`} className="flex flex-col text-lg font-bold text-text">
           <span lang="ta">{ta}</span>
@@ -62,7 +62,7 @@ export function ButtonLink({ href, children }: { href: string; children: ReactNo
 
 /** A module whose feature switch is off answers 404 "feature_unavailable"; the page says so plainly. */
 export function NotSwitchedOn({ what }: { what: string }) {
-  return <p className="rounded-xl border border-line bg-card p-6 text-sm text-muted">{what} is not switched on yet.</p>;
+  return <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-sm text-muted">{what} is not switched on yet.</p>;
 }
 
 export const FOCUS_RING = FOCUS;

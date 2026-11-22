@@ -95,7 +95,7 @@ async function ProfileList({ searchParams }: { searchParams: PageProps<'/represe
         Role profiles in your areas. Members see a published profile with its role, area and office hours; contact routes appear
         only after the person approves them. Profile managers see whether a slot is taken, never who took it.
       </p>
-      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-4">
+      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
         <label htmlFor="profile-state" className="flex min-w-52 flex-col gap-1 text-sm font-semibold text-text">
           State
           <select id="profile-state" name="state" defaultValue={state ?? ''} className={CONTROL}>

@@ -96,7 +96,7 @@ async function BroadcastDetail({ params, searchParams }: Pick<PageProps<'/messag
 
       {/* Recipient Reach & Scope Estimate */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-line bg-card p-4">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-4">
           <span className="text-xs text-muted">{locale === 'ta' ? 'மதிப்பிடப்பட்ட பெறுநர்கள்' : 'Audience estimate'}</span>
           <p className="mt-1 text-2xl font-bold">{preview.reaches.toLocaleString()}</p>
           <p className="text-xs text-muted">
@@ -104,7 +104,7 @@ async function BroadcastDetail({ params, searchParams }: Pick<PageProps<'/messag
           </p>
         </div>
 
-        <div className="rounded-xl border border-line bg-card p-4">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-4">
           <span className="text-xs text-muted">{locale === 'ta' ? 'இரண்டாம் நபர் ஒப்புதல்' : 'Second-person approval'}</span>
           <p className="mt-1 font-semibold">
             {preview.needsApproval
@@ -118,7 +118,7 @@ async function BroadcastDetail({ params, searchParams }: Pick<PageProps<'/messag
           </p>
         </div>
 
-        <div className="rounded-xl border border-line bg-card p-4">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-4">
           <span className="text-xs text-muted">{locale === 'ta' ? 'நிலை' : 'Status'}</span>
           <p className="mt-1 font-semibold capitalize">
             {locale === 'ta'
@@ -161,7 +161,7 @@ async function BroadcastDetail({ params, searchParams }: Pick<PageProps<'/messag
       ) : null}
 
       {/* Content Preview Cards */}
-      <section aria-labelledby="preview-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
+      <section aria-labelledby="preview-heading" className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-6">
         <h2 id="preview-heading" className="text-base font-bold border-b border-line pb-2 text-text">
           {locale === 'ta' ? 'உறுப்பினர்களுக்கான செய்தி முன்னோட்டம்' : 'Member message preview'}
         </h2>
@@ -200,7 +200,7 @@ async function BroadcastDetail({ params, searchParams }: Pick<PageProps<'/messag
 
       {/* Lifecycle Actions */}
       {isDraft ? (
-        <section aria-labelledby="send-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
+        <section aria-labelledby="send-heading" className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-6">
           <div className="border-b border-line pb-2">
             <h2 id="send-heading" className="text-base font-bold text-text">
               {locale === 'ta' ? 'அறிவித்தலை அனுப்புதல் அல்லது திட்டமிடுதல்' : 'Dispatch or schedule broadcast'}
@@ -251,7 +251,7 @@ async function BroadcastDetail({ params, searchParams }: Pick<PageProps<'/messag
       ) : null}
 
       {isPending ? (
-        <section aria-labelledby="approval-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
+        <section aria-labelledby="approval-heading" className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-6">
           <div className="border-b border-line pb-2">
             <h2 id="approval-heading" className="text-base font-bold text-text">
               {locale === 'ta' ? 'உயர்நிலை பணியாளர் ஒப்புதல்' : 'Senior staff approval'}
@@ -286,7 +286,7 @@ async function BroadcastDetail({ params, searchParams }: Pick<PageProps<'/messag
 
       {/* Edit Form for Drafts */}
       {isDraft ? (
-        <section aria-labelledby="edit-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
+        <section aria-labelledby="edit-heading" className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-6">
           <h2 id="edit-heading" className="text-base font-bold border-b border-line pb-2 text-text">
             {locale === 'ta' ? 'வரைவு உள்ளடக்கத்தைத் திருத்துதல்' : 'Edit draft content'}
           </h2>
@@ -379,7 +379,7 @@ async function BroadcastDetail({ params, searchParams }: Pick<PageProps<'/messag
       ) : null}
 
       {isCancelled ? (
-        <div className="rounded-xl border border-line bg-card p-4 text-xs font-medium text-muted">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-4 text-xs font-medium text-muted">
           {locale === 'ta' ? 'இந்த அறிவித்தல் இரத்து செய்யப்பட்டுள்ளது, இனி அனுப்பப்படாது.' : 'This broadcast was cancelled and cannot be sent.'}
         </div>
       ) : null}

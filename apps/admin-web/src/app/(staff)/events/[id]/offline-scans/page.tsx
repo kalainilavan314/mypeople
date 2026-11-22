@@ -104,7 +104,7 @@ async function OfflineScans({ params, searchParams }: Pick<PageProps<'/events/[i
         {words.intro}
       </p>
       {done === 'scan_accepted' || done === 'scan_rejected' ? (
-        <p role="status" lang={locale} className="rounded-xl border border-line bg-card px-4 py-3 text-sm font-semibold">
+        <p role="status" lang={locale} className="rounded-2xl border border-line bg-card shadow-card px-4 py-3 text-sm font-semibold">
           {words[done]}
         </p>
       ) : null}
@@ -115,13 +115,13 @@ async function OfflineScans({ params, searchParams }: Pick<PageProps<'/events/[i
       ) : null}
 
       {waiting.length === 0 ? (
-        <p lang={locale} className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">
+        <p lang={locale} className="rounded-2xl border border-line bg-card shadow-card p-6 text-center text-sm text-muted">
           {words.empty}
         </p>
       ) : (
         <ul className="flex flex-col gap-4">
           {waiting.map((scan) => (
-            <li key={scan.scanEventId} className="rounded-xl border border-line bg-card p-4">
+            <li key={scan.scanEventId} className="rounded-2xl border border-line bg-card shadow-card p-4">
               <dl className="grid gap-2 text-sm sm:grid-cols-3">
                 <div>
                   <dt lang={locale} className="text-muted">{words.scannedAt}</dt>

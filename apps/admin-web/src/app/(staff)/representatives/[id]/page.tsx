@@ -207,7 +207,7 @@ async function ProfileView({ params, searchParams }: Pick<PageProps<'/representa
                 targets={APPOINTMENT_TARGETS}
               />
             ) : (
-              <p className="rounded-xl border border-line bg-card p-4 text-sm text-muted">
+              <p className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm text-muted">
                 This profile cannot be published yet: the person does not hold the permission to manage their own appointment
                 calendar (PRM-56), so no one would see the bookings. Ask an administrator to grant it in Roles and access.
               </p>

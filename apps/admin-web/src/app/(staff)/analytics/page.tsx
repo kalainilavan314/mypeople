@@ -68,7 +68,7 @@ async function AnalyticsContent({ searchParams }: { searchParams: PageProps<'/an
         <p lang={locale}>{figures.platformWide ? words.scopePlatform : words.scopeAreas}</p>
       </div>
 
-      <form role="search" className="flex w-fit flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-3">
+      <form role="search" className="flex w-fit flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-3">
         <label htmlFor="analytics-period" className="flex flex-col gap-1 text-sm font-semibold">
           <span lang={locale}>{words.periodLabel}</span>
           <select id="analytics-period" name="periodDays" defaultValue={String(period)} className={`min-h-11 rounded-lg border border-line bg-card px-3 ${FOCUS}`}>
@@ -146,7 +146,7 @@ function show(figure: Figure, words: Words): string {
 
 function FigureCard({ title, figures, words, locale }: { title: string; figures: Figure[]; words: Words; locale: string }) {
   return (
-    <section className="rounded-xl border border-line bg-card p-4" aria-labelledby={`figures-${title}`}>
+    <section className="rounded-2xl border border-line bg-card shadow-card p-4" aria-labelledby={`figures-${title}`}>
       <h2 id={`figures-${title}`} lang={locale} className="mb-3 text-base font-semibold">
         {title}
       </h2>

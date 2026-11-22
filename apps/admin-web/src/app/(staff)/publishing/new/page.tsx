@@ -11,7 +11,7 @@ export default function NewStatementPage() {
     <>
       <BackLink href="/publishing">Back to official publishing</BackLink>
       <PageHeader ta="புதிய அதிகாரபூர்வ அறிக்கை" en="New official statement" />
-      <div className="rounded-xl border border-line bg-card p-4 sm:p-6">
+      <div className="rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
         <SimpleForm
           id="new-statement"
           action={createDraft}

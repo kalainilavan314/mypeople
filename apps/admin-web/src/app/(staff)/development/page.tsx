@@ -71,7 +71,7 @@ async function ProposalQueue({ searchParams }: { searchParams: PageProps<'/devel
     rows = await (await staffApi()).listManagedProposals({ stage: stage ? [stage] : undefined, category, q: search || undefined });
   } catch (error) {
     if (error instanceof ApiError && error.code === 'feature_unavailable') {
-      return <p className="rounded-xl border border-line bg-card p-6 text-sm text-muted">Development proposals are not switched on yet.</p>;
+      return <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-sm text-muted">Development proposals are not switched on yet.</p>;
     }
     return <LoadFailure error={error} locale={locale} refused={REFUSED} notFound="The proposal list is not available." />;
   }
@@ -80,7 +80,7 @@ async function ProposalQueue({ searchParams }: { searchParams: PageProps<'/devel
 
   return (
     <div className="flex flex-col gap-4">
-      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-4">
+      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
         <label htmlFor="proposal-search" className="flex min-w-56 flex-col gap-1 text-sm font-semibold text-text">
           Reference or title
           <input id="proposal-search" name="q" type="search" maxLength={80} defaultValue={search} className={CONTROL} />
@@ -225,7 +225,7 @@ async function RegionalNeeds() {
 
 function NeedsSection({ children }: { children: ReactNode }) {
   return (
-    <section aria-labelledby="needs-heading" className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:p-6">
+    <section aria-labelledby="needs-heading" className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <h2 id="needs-heading" className="flex flex-col text-lg font-bold text-text">
         <span lang="ta">பிராந்தியத் தேவைகள்</span>
         <span lang="en" className="text-sm font-semibold text-muted">

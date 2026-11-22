@@ -423,7 +423,7 @@ async function Appeals() {
 
 function Section({ id, title, ta, children }: { id: string; title: string; ta: string; children: ReactNode }) {
   return (
-    <section id={id} aria-labelledby={`${id}-heading`} className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:p-6">
+    <section id={id} aria-labelledby={`${id}-heading`} className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <h2 id={`${id}-heading`} className="flex flex-col text-lg font-bold text-text">
         <span lang="ta">{ta}</span>
         <span lang="en" className="text-sm font-semibold text-muted">

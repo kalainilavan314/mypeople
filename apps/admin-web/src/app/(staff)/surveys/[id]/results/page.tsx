@@ -74,7 +74,7 @@ async function Results({ params }: Pick<PageProps<'/surveys/[id]/results'>, 'par
       return (
         <>
           {backLink}
-          <p className="rounded-xl border border-line bg-card p-6 text-sm text-muted">Ideas and surveys are not switched on yet.</p>
+          <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-sm text-muted">Ideas and surveys are not switched on yet.</p>
         </>
       );
     }
@@ -116,7 +116,7 @@ async function Results({ params }: Pick<PageProps<'/surveys/[id]/results'>, 'par
           const rows = resultRows(result.question, result.counts);
           return (
             <li key={result.question.id}>
-              <section aria-labelledby={`question-${index + 1}`} className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:p-6">
+              <section aria-labelledby={`question-${index + 1}`} className="flex flex-col gap-3 rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
                 <h2 id={`question-${index + 1}`} className="flex flex-col font-bold text-text">
                   <span className="text-xs font-semibold text-muted">
                     Question {index + 1} · {KIND_LABELS[result.question.kind].en}

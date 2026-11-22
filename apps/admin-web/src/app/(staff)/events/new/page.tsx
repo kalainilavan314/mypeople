@@ -52,7 +52,7 @@ async function NewEventForm({ searchParams }: { searchParams: PageProps<'/events
     <>
       <Feedback error={error} problems={problems} />
 
-      <form action={createEvent} className="flex flex-col gap-6 rounded-xl border border-line bg-card p-6">
+      <form action={createEvent} className="flex flex-col gap-6 rounded-2xl border border-line bg-card shadow-card p-6">
         <section aria-labelledby="section-basic" className="flex flex-col gap-4">
           <h2 id="section-basic" className="text-base font-bold text-text">
             <span lang={locale}>{locale === 'ta' ? '1. நிகழ்வு விவரங்கள்' : '1. Event details'}</span>

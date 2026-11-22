@@ -47,7 +47,7 @@ async function Report() {
   const areaNames = await loadAreaNames(rows.map((row) => row.areaKey));
   const total = rows.reduce((sum, row) => sum + row.count, 0);
   if (rows.length === 0) {
-    return <p className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">No promises to count yet.</p>;
+    return <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-center text-sm text-muted">No promises to count yet.</p>;
   }
   // Statuses in the tracker's own order; the other totals largest first.
   const statusTotals = totalsBy(rows, (row) => row.status);
@@ -86,7 +86,7 @@ async function Report() {
           label={(key) => <span className="text-text">{key}</span>}
         />
       </div>
-      <div className="overflow-x-auto rounded-xl border border-line bg-card">
+      <div className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
         <table className="w-full text-left text-sm">
           <caption className="px-3 pt-3 text-left">
             <span className="flex flex-col font-semibold">
@@ -125,7 +125,7 @@ type TotalsProps = { ta: string; en: string; heading: string; totals: ReportTota
 /** One way of adding the report up: a caption in Tamil and English, then each value with its count. */
 function TotalsTable({ ta, en, heading, totals, label }: TotalsProps) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-line bg-card">
+    <div className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
       <table className="w-full text-left text-sm">
         <caption className="px-3 pt-3 text-left">
           <span className="flex flex-col font-semibold">

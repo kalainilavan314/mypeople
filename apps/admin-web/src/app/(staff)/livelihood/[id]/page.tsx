@@ -198,7 +198,7 @@ async function EntryView({ params, searchParams }: Pick<PageProps<'/livelihood/[
 
         <aside aria-label="Review and publication" className="flex flex-col gap-4">
           {entry.missing.length > 0 ? (
-            <section aria-labelledby="missing-heading" className="flex flex-col gap-2 rounded-xl border border-line bg-card p-4 text-sm">
+            <section aria-labelledby="missing-heading" className="flex flex-col gap-2 rounded-2xl border border-line bg-card shadow-card p-4 text-sm">
               <h2 id="missing-heading" className="font-bold text-text">
                 <span lang="ta">வெளியிடுவதற்கு முன் தேவை</span> · Needed before publication
               </h2>
@@ -223,7 +223,7 @@ async function EntryView({ params, searchParams }: Pick<PageProps<'/livelihood/[
           ) : null}
           {entry.state === 'in_review' && reviews ? (
             ownEntry ? (
-              <p className="rounded-xl border border-line bg-card p-4 text-sm text-muted">
+              <p className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm text-muted">
                 You asked for this review or made the last change, so another reviewer must decide it (FR-LIV-003). The API refuses
                 your decision as “own entry”.
               </p>
@@ -241,7 +241,7 @@ async function EntryView({ params, searchParams }: Pick<PageProps<'/livelihood/[
             )
           ) : null}
           {entry.state === 'in_review' && !reviews ? (
-            <p className="rounded-xl border border-line bg-card p-4 text-sm text-muted">Waiting for someone with guide review to publish it or return it.</p>
+            <p className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm text-muted">Waiting for someone with guide review to publish it or return it.</p>
           ) : null}
           {entry.state === 'published' && edits ? (
             <SimpleForm
@@ -268,7 +268,7 @@ async function EntryView({ params, searchParams }: Pick<PageProps<'/livelihood/[
             />
           ) : null}
           {openReports.length > 0 && !edits ? (
-            <p className="rounded-xl border border-line bg-card p-4 text-sm text-muted">An editor with guide editing resolves the open reports.</p>
+            <p className="rounded-2xl border border-line bg-card shadow-card p-4 text-sm text-muted">An editor with guide editing resolves the open reports.</p>
           ) : null}
         </aside>
       </div>

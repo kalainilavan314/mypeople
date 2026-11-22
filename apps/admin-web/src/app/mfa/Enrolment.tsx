@@ -14,7 +14,7 @@ export function Enrolment() {
 
   if (state && 'secret' in state) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-xl border border-line bg-card p-4">
+      <div className="flex flex-col items-center gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
         {/* The SVG comes from the qrcode library on the server, as a data URL, never as markup; next/image
             would add nothing for an inline data URL. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}

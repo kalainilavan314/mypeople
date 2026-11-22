@@ -86,7 +86,7 @@ async function NewBroadcastForm({ searchParams }: { searchParams: PageProps<'/me
         </p>
       </section>
 
-      <form action={createBroadcast} className="flex flex-col gap-6 rounded-xl border border-line bg-card p-6">
+      <form action={createBroadcast} className="flex flex-col gap-6 rounded-2xl border border-line bg-card shadow-card p-6">
         <section aria-labelledby="section-audience" className="flex flex-col gap-4">
           <h2 id="section-audience" className="text-base font-bold text-text">
             <span lang={locale}>{locale === 'ta' ? '1. தலைப்பு வகை & இலக்குப் பகுதி' : '1. Topic & Audience scope'}</span>

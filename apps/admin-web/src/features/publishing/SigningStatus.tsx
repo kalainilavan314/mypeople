@@ -7,7 +7,7 @@ import type { OfficialSigningStatus } from '@my-people/api-client';
  */
 export function SigningStatus({ status, canSign }: { status: OfficialSigningStatus; canSign: boolean }) {
   return (
-    <section aria-labelledby="signing-status-heading" className="flex flex-col gap-2 rounded-xl border border-line bg-card p-4 text-sm">
+    <section aria-labelledby="signing-status-heading" className="flex flex-col gap-2 rounded-2xl border border-line bg-card shadow-card p-4 text-sm">
       <h2 id="signing-status-heading" className="flex flex-col font-bold text-text">
         <span lang="ta">கையொப்ப நிலை</span>
         <span lang="en" className="text-xs font-semibold text-muted">

@@ -25,7 +25,7 @@ async function NewPromise() {
   const staff = await requireStaff();
   const areaOptions = await areaOptionsFor(staff.assignments, 'promise.edit');
   return (
-    <div className="rounded-xl border border-line bg-card p-4 sm:p-6">
+    <div className="rounded-2xl border border-line bg-card shadow-card p-4 sm:p-6">
       <PromiseForm areaOptions={areaOptions} />
     </div>
   );

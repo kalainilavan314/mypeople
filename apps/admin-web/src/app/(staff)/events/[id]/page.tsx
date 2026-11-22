@@ -97,7 +97,7 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
 
       {/* Summary KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-line bg-card p-4">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-4">
           <span className="text-xs text-muted">{locale === 'ta' ? 'நேர அட்டவணை & வருகைப்பதிவு' : 'Schedule & Check-in'}</span>
           <p className="mt-1 font-semibold">{formatDateTime(event.startsAt)}</p>
           <p className="text-xs text-muted">{locale === 'ta' ? 'முடிவு:' : 'until'} {formatDateTime(event.endsAt)}</p>
@@ -106,7 +106,7 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
           </p>
         </div>
 
-        <div className="rounded-xl border border-line bg-card p-4">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-4">
           <span className="text-xs text-muted">{locale === 'ta' ? 'பதிவு நிலை (RSVP)' : 'RSVP status'}</span>
           <p className="mt-1 font-semibold">
             {event.going} {event.capacity ? `/ ${event.capacity}` : (locale === 'ta' ? 'பதிவானவர்கள்' : 'going')}
@@ -118,7 +118,7 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
           </p>
         </div>
 
-        <div className="rounded-xl border border-line bg-card p-4">
+        <div className="rounded-2xl border border-line bg-card shadow-card p-4">
           <span className="text-xs text-muted">{locale === 'ta' ? 'நிகழ்விடம்' : 'Venue'}</span>
           <p className="mt-1 font-semibold">{event.venue}</p>
           {event.meetingPoint ? <p className="text-xs text-muted">{locale === 'ta' ? 'சந்திக்கும் இடம்:' : 'Meeting:'} {event.meetingPoint}</p> : null}
@@ -149,7 +149,7 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
         </a>
       ) : null}
       {isPublished && attendance ? (
-        <section aria-labelledby="attendance-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
+        <section aria-labelledby="attendance-heading" className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-6">
           <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-3">
             <h2 id="attendance-heading" className="text-base font-bold text-text">
               <span lang={locale}>{locale === 'ta' ? 'வருகைப்பதிவேடு மற்றும் அனுமதி' : 'Attendance roster & check-in'}</span>
@@ -196,7 +196,7 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
 
       {/* Lifecycle Actions: Publish or Cancel */}
       {isDraft ? (
-        <section aria-labelledby="publish-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
+        <section aria-labelledby="publish-heading" className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-6">
           <div className="border-b border-line pb-2">
             <h2 id="publish-heading" className="text-base font-bold text-text">
               <span lang={locale}>{locale === 'ta' ? 'நிகழ்வை வெளியிடல்' : 'Publish event'}</span>
@@ -233,7 +233,7 @@ async function EventDetail({ params, searchParams }: Pick<PageProps<'/events/[id
 
       {/* Edit Event Form (draft or published) */}
       {!isCancelled ? (
-        <section aria-labelledby="edit-heading" className="flex flex-col gap-4 rounded-xl border border-line bg-card p-6">
+        <section aria-labelledby="edit-heading" className="flex flex-col gap-4 rounded-2xl border border-line bg-card shadow-card p-6">
           <div className="border-b border-line pb-2">
             <h2 id="edit-heading" className="text-base font-bold text-text">
               <span lang={locale}>

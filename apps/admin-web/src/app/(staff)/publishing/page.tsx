@@ -73,7 +73,7 @@ async function StatementList({ searchParams }: { searchParams: PageProps<'/publi
         A statement is official only once a registered publisher signs it. After that it never changes: a correction is a new signed
         version with its reason, and withdrawing keeps the record and tells everyone who checks it.
       </p>
-      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-4">
+      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
         <label htmlFor="official-state" className="flex min-w-52 flex-col gap-1 text-sm font-semibold text-text">
           State
           <select id="official-state" name="state" defaultValue={state ?? ''} className={CONTROL}>

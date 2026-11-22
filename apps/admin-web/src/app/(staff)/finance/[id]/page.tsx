@@ -115,7 +115,7 @@ async function ContributionDetail({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Left Column: Contribution Details & Declarations */}
         <div className="flex flex-col gap-6">
-          <div className="rounded-xl border border-line bg-card p-6">
+          <div className="rounded-2xl border border-line bg-card shadow-card p-6">
             <h3 className="text-base font-semibold text-text">Contribution Overview</h3>
             <dl className="mt-4 divide-y divide-line text-sm">
               <div className="flex justify-between py-2.5">
@@ -159,7 +159,7 @@ async function ContributionDetail({
           </div>
 
           {/* Declarations Card */}
-          <div className="rounded-xl border border-line bg-card p-6">
+          <div className="rounded-2xl border border-line bg-card shadow-card p-6">
             <h3 className="text-base font-semibold text-text">Donor Declarations</h3>
             <div className="mt-4 space-y-3 text-xs">
               <div className="flex items-start gap-2">
@@ -190,7 +190,7 @@ async function ContributionDetail({
           </div>
 
           {/* Claim Case Card */}
-          <div className="rounded-xl border border-line bg-card p-6">
+          <div className="rounded-2xl border border-line bg-card shadow-card p-6">
             <h3 className="text-base font-semibold text-text">Case Ownership</h3>
             <div className="mt-2 text-sm text-text">
               {contribution.claimedByName ? (
@@ -227,7 +227,7 @@ async function ContributionDetail({
           <SlipViewer contributionId={contribution.id} hasSlip={contribution.hasSlip} />
 
           {/* Section A: Bank Statement Reconciliation (Reviewer) */}
-          <div className="rounded-xl border border-line bg-card p-6">
+          <div className="rounded-2xl border border-line bg-card shadow-card p-6">
             <h3 className="text-base font-semibold text-text">Step 1: Bank Statement Reconciliation</h3>
             <p className="mt-1 text-xs text-muted">
               Verify the transfer slip against the party bank account credit statement.
@@ -307,7 +307,7 @@ async function ContributionDetail({
           </div>
 
           {/* Section B: Independent Second-Person Approval (Approver) */}
-          <div className="rounded-xl border border-line bg-card p-6">
+          <div className="rounded-2xl border border-line bg-card shadow-card p-6">
             <h3 className="text-base font-semibold text-text">Step 2: Independent Second-Person Approval</h3>
             <p className="mt-1 text-xs text-muted">
               Must be performed by an independent staff member separate from the reviewer and donor.
@@ -410,7 +410,7 @@ async function ContributionDetail({
           </div>
 
           {/* Section C: Timeline & Audit History */}
-          <div className="rounded-xl border border-line bg-card p-6">
+          <div className="rounded-2xl border border-line bg-card shadow-card p-6">
             <h3 className="text-base font-semibold text-text">Audit Timeline</h3>
             <div className="mt-4 space-y-4">
               {contribution.timeline.map((entry, idx) => (

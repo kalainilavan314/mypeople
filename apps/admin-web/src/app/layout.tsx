@@ -9,7 +9,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import type { CSSProperties } from 'react';
 
-import { colors, cssFontStack } from '@my-people/design-tokens';
+import { colors, cssFontStack, dashboardAccents, dashboardColors } from '@my-people/design-tokens';
 import { LanguageProvider } from '@/lib/i18n/context';
 import type { Locale } from '@/lib/i18n/types';
 
@@ -26,8 +26,12 @@ export const instant = false;
 // Tailwind's theme, so packages/design-tokens stays the one source of colours
 // and the locked fonts.
 const toKebab = (name: string) => name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+// The dashboard's own neutrals (dashboardColors) replace the shared ones; brand and status colours stay.
 const tokenVariables = {
-  ...Object.fromEntries(Object.entries(colors).map(([name, value]) => [`--mp-${toKebab(name)}`, value])),
+  ...Object.fromEntries(
+    Object.entries({ ...colors, ...dashboardColors }).map(([name, value]) => [`--mp-${toKebab(name)}`, value]),
+  ),
+  ...Object.fromEntries(Object.entries(dashboardAccents).map(([name, value]) => [`--mp-accent-${name}`, value])),
   '--mp-font-ui': cssFontStack.ui,
   '--mp-font-mono': cssFontStack.mono,
 } as CSSProperties;

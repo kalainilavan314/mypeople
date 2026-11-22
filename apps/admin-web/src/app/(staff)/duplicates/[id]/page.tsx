@@ -64,7 +64,7 @@ async function DuplicateCase({ params, searchParams }: Pick<PageProps<'/duplicat
       </p>
       <div className="grid gap-3 md:grid-cols-2">
         {file.members.map((member) => (
-          <section key={member.memberId} className="flex flex-col gap-2 rounded-xl border border-line bg-card p-4 text-sm">
+          <section key={member.memberId} className="flex flex-col gap-2 rounded-2xl border border-line bg-card shadow-card p-4 text-sm">
             <h2 className="font-bold text-text">{member.details.fullName}</h2>
             <p className="font-mono text-muted">{member.details.memberCode}</p>
             <p className="flex flex-wrap items-baseline gap-1">

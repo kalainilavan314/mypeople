@@ -47,7 +47,7 @@ async function VolunteerList({ searchParams }: { searchParams: PageProps<'/volun
     skills = (await client.getVolunteerSkills()).skills;
   } catch (error) {
     if (error instanceof ApiError && error.code === 'feature_unavailable') {
-      return <p className="rounded-xl border border-line bg-card p-6 text-sm text-muted">Volunteering is not switched on yet.</p>;
+      return <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-sm text-muted">Volunteering is not switched on yet.</p>;
     }
     return <LoadFailure error={error} locale={locale} refused={REFUSED} notFound="The skills list is not available." />;
   }
@@ -74,7 +74,7 @@ async function VolunteerList({ searchParams }: { searchParams: PageProps<'/volun
         </span>
       </p>
 
-      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-xl border border-line bg-card p-4">
+      <form role="search" method="get" className="flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-card shadow-card p-4">
         <label htmlFor="volunteer-skill" className="flex min-w-56 flex-col gap-1 text-sm font-semibold text-text">
           Skill
           <select id="volunteer-skill" name="skill" defaultValue={skill?.key ?? ''} className={`min-h-11 rounded-lg border border-line bg-card px-3 font-normal ${FOCUS}`}>
@@ -102,11 +102,11 @@ async function VolunteerList({ searchParams }: { searchParams: PageProps<'/volun
       </p>
 
       {cards.length === 0 ? (
-        <p className="rounded-xl border border-line bg-card p-6 text-center text-sm text-muted">
+        <p className="rounded-2xl border border-line bg-card shadow-card p-6 text-center text-sm text-muted">
           {skill ? 'No volunteer in your areas shared this skill.' : 'No volunteer in your areas has shared a skills profile yet.'}
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-line bg-card">
+        <div className="overflow-x-auto rounded-2xl border border-line bg-card shadow-card">
           <table className="w-full text-left text-sm">
             <caption className="sr-only">Volunteers who shared their skills, by name</caption>
             <thead className="border-b border-line text-xs">
