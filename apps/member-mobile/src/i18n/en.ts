@@ -207,7 +207,6 @@ export const en = {
     title: 'TMK',
     titleOther: 'தாயக மக்கள் கழகம்',
     subtitle: 'Thayaga Makkal Kazhagam',
-    body: 'Register, verify your identity and stay connected with your local community.',
     chooseLanguage: 'Choose your language',
     signIn: 'Sign in',
     createAccount: 'Create an account',

@@ -205,7 +205,6 @@ export const ta: AppStrings = {
     title: 'தாயக மக்கள் கழகம்',
     titleOther: 'TMK',
     subtitle: 'Thayaga Makkal Kazhagam',
-    body: 'பதிவுசெய்து, உங்கள் அடையாளத்தை உறுதிப்படுத்தி, உள்ளூர் சமூகத்துடன் இணைந்திருங்கள்.',
     chooseLanguage: 'உங்கள் மொழியைத் தெரிவுசெய்யவும்',
     signIn: 'உள்நுழைக',
     createAccount: 'கணக்கை உருவாக்கு',
