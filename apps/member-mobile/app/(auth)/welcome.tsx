@@ -42,21 +42,17 @@ export default function WelcomeScreen() {
           />
         </View>
         <View style={styles.heroCopy}>
-          <AppText step="page" accessibilityRole="header">
+          <AppText step="page" accessibilityRole="header" style={styles.centred}>
             {t('m.welcome.title')}
           </AppText>
-          <AppText step="section" tone="secondary">
+          <AppText step="section" tone="secondary" style={styles.centred}>
             {t('m.welcome.titleOther')}
           </AppText>
-          <AppText step="secondary" tone="muted">
+          <AppText step="secondary" tone="muted" style={styles.centred}>
             {t('m.welcome.subtitle')}
           </AppText>
         </View>
       </View>
-
-      <AppText step="body" style={styles.introduction}>
-        {t('m.welcome.body')}
-      </AppText>
 
       {state.status === 'signed_out' && state.expired ? <Notice tone="warning">{t('m.welcome.expired')}</Notice> : null}
       {state.status === 'not_configured' ? <Notice tone="error">{t('m.welcome.notConfigured')}</Notice> : null}
@@ -123,8 +119,9 @@ const styles = StyleSheet.create({
   // A 2:1 frame holds the flag: on the web a bundled image otherwise keeps its own pixel height.
   flag: { width: '100%', aspectRatio: 2, overflow: 'hidden' },
   flagImage: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' },
-  heroCopy: { gap: spacing[1], padding: spacing[4] },
-  introduction: { maxWidth: 480 },
+  // The three names sit centred under the flag, one above the other.
+  heroCopy: { gap: spacing[1], padding: spacing[4], alignItems: 'center' },
+  centred: { textAlign: 'center' },
   gap: { gap: spacing[3] },
   languageGroup: { gap: spacing[2], marginTop: spacing[2] },
   actions: { gap: spacing[3], marginTop: spacing[2] },
