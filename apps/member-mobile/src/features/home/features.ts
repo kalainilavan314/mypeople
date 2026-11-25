@@ -1,6 +1,7 @@
 import type { Href } from 'expo-router';
 import type Ionicons from '@expo/vector-icons/Ionicons';
 import type { ComponentProps } from 'react';
+import type { ImageSourcePropType } from 'react-native';
 
 import type { Tint } from '@my-people/design-tokens/mobile';
 
@@ -68,6 +69,34 @@ export const FEATURE_ICONS: Record<string, IconName> = {
   livelihood_guide: 'briefcase-outline',
   representatives: 'chatbubbles-outline',
   renewal: 'refresh-circle-outline',
+};
+
+/**
+ * The photo on each service button (owner's pictures, 25 November 2026). A key with no photo
+ * (Ideas, for now) shows its icon on a plain tile.
+ */
+export const FEATURE_PHOTOS: Partial<Record<string, ImageSourcePropType>> = {
+  report_issue: require('../../../assets/features/report-issue.webp'),
+  volunteer: require('../../../assets/features/volunteer.webp'),
+  my_area: require('../../../assets/features/my-area.webp'),
+  community: require('../../../assets/features/community.webp'),
+  surveys: require('../../../assets/features/surveys.webp'),
+  learning: require('../../../assets/features/learning.webp'),
+  party_fund: require('../../../assets/features/party-fund.webp'),
+  invite: require('../../../assets/features/invite.webp'),
+  volunteering: require('../../../assets/features/volunteering.webp'),
+  local_reports: require('../../../assets/features/local-reports.webp'),
+  area_projects: require('../../../assets/features/area-projects.webp'),
+  promises: require('../../../assets/features/promises.webp'),
+  support: require('../../../assets/features/support.webp'),
+  budgeting: require('../../../assets/features/budgeting.webp'),
+  committees: require('../../../assets/features/committees.webp'),
+  diaspora: require('../../../assets/features/diaspora.webp'),
+  disaster_alerts: require('../../../assets/features/disaster-alerts.webp'),
+  blood_donors: require('../../../assets/features/blood-donors.webp'),
+  livelihood_guide: require('../../../assets/features/livelihood-guide.webp'),
+  representatives: require('../../../assets/features/representatives.webp'),
+  renewal: require('../../../assets/features/renewal.webp'),
 };
 
 /** The tile of each feature; in the sage design (18 November 2026) every tile is the same calm sage. */
