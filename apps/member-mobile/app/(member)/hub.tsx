@@ -6,7 +6,7 @@ import { spacing } from '@my-people/design-tokens/mobile';
 import { AppText, MenuRow, Screen, SurfaceCard, useApiQuery } from '@my-people/mobile-ui';
 
 import { QueryView } from '@/components/QueryView';
-import { CommunityServiceTile } from '@/features/home/CommunityServiceTile';
+import { FeatureTile } from '@/features/home/FeatureTile';
 import { MemberWelcomeCard } from '@/features/home/MemberWelcomeCard';
 import { api } from '@/lib/api';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
@@ -24,16 +24,15 @@ export default function HubScreen() {
       refreshing={home.loading && home.data !== undefined}>
       <QueryView query={home}>
         {(data) => {
-          const place = data.hub.gnLabel ?? [data.districtName, data.gnName].filter(Boolean).join(' / ');
           return (
             <>
-              <MemberWelcomeCard place={place} membershipState={data.membershipState} />
+              <MemberWelcomeCard membershipState={data.membershipState} />
               <AppText step="section" accessibilityRole="header" style={[styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
                 {t('m.home.hubServices')}
               </AppText>
               <View style={styles.serviceGrid}>
                 {data.hub.services.map((feature) => (
-                  <CommunityServiceTile key={feature.key} feature={feature} />
+                  <FeatureTile key={feature.key} feature={feature} />
                 ))}
               </View>
               {/* Town halls (M21), official updates (M47), statement checks and reports (M48) and election

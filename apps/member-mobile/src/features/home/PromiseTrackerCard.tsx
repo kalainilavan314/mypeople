@@ -8,7 +8,7 @@ import { AppText, StatusTag, SurfaceCard } from '@my-people/mobile-ui';
 
 import { STATUS_TONES } from '@/features/promises/labels';
 
-import { FeatureTile } from './FeatureTile';
+import { FeatureRow } from './FeatureRow';
 
 /**
  * M18 on Home: the Promise Tracker with the published promises made for the member's area, counted
@@ -20,7 +20,7 @@ export function PromiseTrackerCard({ summary }: { summary: HomeView['promises'] 
   if (!summary.feature.available) {
     return (
       <SurfaceCard style={styles.tile}>
-        <FeatureTile feature={summary.feature} />
+        <FeatureRow feature={summary.feature} />
       </SurfaceCard>
     );
   }

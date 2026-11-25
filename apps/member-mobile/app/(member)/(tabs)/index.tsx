@@ -24,7 +24,7 @@ import { PhotoBackdrop } from '@/components/PhotoBackdrop';
 import { QueryView } from '@/components/QueryView';
 import { ElectionBanner } from '@/features/election/ElectionBanner';
 import { EventRow } from '@/features/events/EventRow';
-import { HomeActionTile } from '@/features/home/HomeActionTile';
+import { FeatureTile } from '@/features/home/FeatureTile';
 import { MemberWelcomeCard } from '@/features/home/MemberWelcomeCard';
 import { PromiseTrackerCard } from '@/features/home/PromiseTrackerCard';
 import { StaffRoleTags } from '@/features/staff/StaffRoleTags';
@@ -73,7 +73,6 @@ function HomeBody({ data }: { data: HomeView }) {
   const { t } = useTranslation();
   const language = useLanguage();
   const localized = useLocalized();
-  const place = [data.districtName, data.gnName].filter(Boolean).join(' / ');
   const next = data.nextStep;
   const showComingUp = next?.kind !== 'event_soon';
   const roles = useMyStaffRoles();
@@ -82,7 +81,7 @@ function HomeBody({ data }: { data: HomeView }) {
 
   return (
     <>
-      <MemberWelcomeCard place={place} membershipState={data.membershipState} />
+      <MemberWelcomeCard membershipState={data.membershipState} />
       <ElectionBanner />
 
       {data.safetyAlerts > 0 ? (
@@ -143,7 +142,7 @@ function HomeBody({ data }: { data: HomeView }) {
       </AppText>
       <View style={styles.actionGrid}>
         {data.quickActions.map((feature) => (
-          <HomeActionTile key={feature.key} feature={feature} />
+          <FeatureTile key={feature.key} feature={feature} />
         ))}
       </View>
 
