@@ -470,7 +470,7 @@ export const en = {
   },
   home: {
     staffSection: 'Staff section',
-    staffSectionBody: 'Tasks, check-in, approvals and member look-up for your role.',
+    staffWorkspace: 'Staff workspace',
     greetingMorning: 'Good morning',
     greetingAfternoon: 'Good afternoon',
     greetingEvening: 'Good evening',

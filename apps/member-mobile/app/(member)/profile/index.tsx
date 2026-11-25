@@ -1,8 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ProfileView } from '@my-people/api-client';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router, type Href } from 'expo-router';
-import type { ComponentProps, ReactNode } from 'react';
+import { useState, type ComponentProps, type ReactNode } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -122,45 +121,56 @@ export default function ProfileScreen() {
   );
 }
 
+// The cover picture (owner's flag image, 26 November 2026) is already cut to the arch, with a round
+// opening at the bottom centre for the avatar; these are that opening's centre and size as shares
+// of the picture, so the avatar fills it at every width.
+const COVER_RATIO = 793 / 543;
+const AVATAR_CENTRE_Y = 0.924;
+const AVATAR_WIDTH_SHARE = 0.216;
+
 function ProfileHero({ data, roles }: { data: ProfileView; roles: MyStaffRoles }) {
   const { t } = useTranslation();
-  const { largeText, stackHero } = useResponsiveLayout();
+  const { largeText } = useResponsiveLayout();
   const name = data.displayName ?? data.legalName;
+  const [coverWidth, setCoverWidth] = useState(0);
+  const coverHeight = coverWidth / COVER_RATIO;
+  const avatarSize = Math.round(coverWidth * AVATAR_WIDTH_SHARE);
+  const avatarTop = coverHeight * AVATAR_CENTRE_Y - avatarSize / 2;
 
   return (
-    <LinearGradient
-      colors={[colors.primaryDark, colors.primary, colors.primaryLight]}
-      locations={[0, 0.58, 1]}
-      start={{ x: 0, y: 0.5 }}
-      end={{ x: 1, y: 0.5 }}
-      style={[styles.hero, stackHero && styles.stackedHero]}>
-      <Image
-        source={require('../../../assets/brand/logo.png')}
-        style={styles.heroLogo}
-        resizeMode="contain"
-        accessible={false}
-        importantForAccessibility="no"
-      />
-      <View style={[styles.heroTop, stackHero && styles.stackedHeroTop]}>
-        <View style={styles.avatar} accessibilityElementsHidden importantForAccessibility="no">
-          <AppText step="page" tone="inverse" style={styles.avatarLetter}>
-            {name.slice(0, 1).toUpperCase()}
-          </AppText>
-        </View>
-        <View style={styles.identity}>
-          <AppText
-            step="page"
-            tone="inverse"
-            accessibilityRole="header"
-            style={[styles.memberName, largeText && styles.largeTextMemberName]}>
-            {name}
-          </AppText>
-          <AppText step="secondary" tone="inverse" mono style={styles.memberCode}>
-            {data.memberCode}
-          </AppText>
-        </View>
+    <View style={styles.hero}>
+      <View style={styles.cover} onLayout={(event) => setCoverWidth(event.nativeEvent.layout.width)}>
+        <Image
+          source={require('../../../assets/backgrounds/profile-cover.webp')}
+          style={styles.coverImage}
+          resizeMode="cover"
+          accessible={false}
+          importantForAccessibility="no"
+        />
+        {coverWidth > 0 ? (
+          <View
+            style={[styles.avatar, { width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2, top: avatarTop }]}
+            accessibilityElementsHidden
+            importantForAccessibility="no">
+            <AppText step="page" tone="inverse" style={[styles.avatarLetter, { fontSize: avatarSize * 0.46, lineHeight: avatarSize * 0.6 }]}>
+              {name.slice(0, 1).toUpperCase()}
+            </AppText>
+          </View>
+        ) : null}
       </View>
-      <View style={[styles.statuses, stackHero && styles.stackedStatuses]}>
+
+      <View style={[styles.identity, { marginTop: Math.max(0, avatarTop + avatarSize - coverHeight) + spacing[2] }]}>
+        <AppText
+          step="page"
+          accessibilityRole="header"
+          style={[styles.memberName, largeText && styles.largeTextMemberName]}>
+          {name}
+        </AppText>
+        <AppText step="secondary" mono style={styles.memberCode}>
+          {data.memberCode}
+        </AppText>
+      </View>
+      <View style={styles.statuses}>
         <StatusTag
           tone={IDENTITY_TONE[data.identityState]}
           label={`${t('m.profile.identity')}: ${t(`m.verify.status_${data.identityState}`)}`}
@@ -172,7 +182,7 @@ function ProfileHero({ data, roles }: { data: ProfileView; roles: MyStaffRoles }
         {/* The tier the team assigned, as soon as it counts (OD-26: one app for members and staff). */}
         <StaffRoleTags roles={roles} />
       </View>
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -228,44 +238,25 @@ function ProfileRow({ icon, label, href, first = false }: { icon: IconName; labe
 }
 
 const styles = StyleSheet.create({
-  hero: {
-    position: 'relative',
-    minHeight: 190,
-    borderRadius: radius.card,
-    padding: spacing[4],
-    overflow: 'hidden',
-    justifyContent: 'space-between',
-    gap: spacing[3],
-  },
-  stackedHero: { minHeight: 0 },
-  heroLogo: {
-    position: 'absolute',
-    width: 170,
-    height: 170,
-    right: -22,
-    top: 10,
-    tintColor: colors.onPrimary,
-    opacity: 0.1,
-  },
-  heroTop: { zIndex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing[3] },
-  stackedHeroTop: { alignItems: 'flex-start', flexDirection: 'column' },
+  hero: { alignItems: 'center', gap: spacing[2] },
+  // The arch keeps the picture's own shape; it never grows past a comfortable size on wide screens.
+  cover: { width: '100%', maxWidth: 460, aspectRatio: COVER_RATIO },
+  coverImage: { width: '100%', height: '100%' },
   avatar: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    borderWidth: 2,
-    borderColor: colors.onPrimary,
+    position: 'absolute',
+    alignSelf: 'center',
+    borderWidth: 4,
+    borderColor: colors.card,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    backgroundColor: colors.primary,
   },
-  avatarLetter: { fontSize: 30, lineHeight: 38, fontWeight: '700' },
-  identity: { flex: 1, minWidth: 0, gap: spacing[1] },
-  memberName: { fontSize: 24, lineHeight: 32, fontWeight: '700' },
+  avatarLetter: { fontWeight: '700' },
+  identity: { alignItems: 'center', gap: spacing[1] },
+  memberName: { fontSize: 26, lineHeight: 34, fontWeight: '700', textAlign: 'center' },
   largeTextMemberName: { fontSize: 22, lineHeight: 32 },
-  memberCode: { fontSize: 15, lineHeight: 22, fontWeight: '600' },
-  statuses: { zIndex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2], paddingBottom: spacing[1] },
-  stackedStatuses: { alignItems: 'flex-start', flexDirection: 'column' },
+  memberCode: { fontSize: 15, lineHeight: 22, fontWeight: '600', textAlign: 'center' },
+  statuses: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing[2] },
   section: { gap: spacing[3] },
   sectionTitle: { fontSize: 20, lineHeight: 28, fontWeight: '700' },
   responsiveSectionTitle: { fontSize: 18, lineHeight: 27 },

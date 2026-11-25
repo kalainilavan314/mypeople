@@ -56,7 +56,12 @@ export const colors = {
   glassBorder: 'rgba(255, 255, 255, 0.92)',
   /** Shadow colour for the few raised surfaces (tab bar, frosted cards); kept very light. */
   shadow: '#203c30',
+  /** The Staff workspace card's sparkle (owner's request, 26 November 2026). */
+  highlightGold: '#f2c94c',
 } as const;
+
+/** The Staff workspace card's moving neon edge and glow, in order round the gradient (owner's reference video). */
+export const staffGlow = ['#ec4899', '#8b5cf6', '#3b82f6', '#22d3ee', '#a8e6c9', '#f2c94c', '#ec4899'] as const;
 
 /**
  * Pale tile behind an icon, with the icon's colour (quick actions, list rows, notices). The design

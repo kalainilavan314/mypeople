@@ -467,7 +467,7 @@ export const ta: AppStrings = {
   },
   home: {
     staffSection: 'பணியாளர் பகுதி',
-    staffSectionBody: 'உங்கள் பொறுப்புக்கான பணிகள், வருகைப் பதிவு, அனுமதிகள், உறுப்பினர் தேடல்.',
+    staffWorkspace: 'பணியாளர் பணியிடம்',
     greetingMorning: 'காலை வணக்கம்',
     greetingAfternoon: 'மதிய வணக்கம்',
     greetingEvening: 'மாலை வணக்கம்',

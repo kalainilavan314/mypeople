@@ -27,7 +27,7 @@ import { EventRow } from '@/features/events/EventRow';
 import { FeatureTile } from '@/features/home/FeatureTile';
 import { MemberWelcomeCard } from '@/features/home/MemberWelcomeCard';
 import { PromiseTrackerCard } from '@/features/home/PromiseTrackerCard';
-import { StaffRoleTags } from '@/features/staff/StaffRoleTags';
+import { StaffWorkspaceCard } from '@/features/staff/StaffWorkspaceCard';
 import { useMyStaffRoles } from '@/features/staff/useMyStaffRoles';
 import { api } from '@/lib/api';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
@@ -125,17 +125,7 @@ function HomeBody({ data }: { data: HomeView }) {
 
       {/* Only for people with a staff role: their tier, and the way into the Staff section, which
           asks for the authenticator code (OD-26, one app for members and staff). */}
-      {staff ? (
-        <SurfaceCard variant="glass" onPress={() => router.push('/staff')} accessibilityLabel={t('m.home.staffSection')}>
-          <AppText step="section">{t('m.home.staffSection')}</AppText>
-          <View style={styles.tags}>
-            <StaffRoleTags roles={roles} />
-          </View>
-          <AppText step="secondary" tone="secondary">
-            {t('m.home.staffSectionBody')}
-          </AppText>
-        </SurfaceCard>
-      ) : null}
+      {staff ? <StaffWorkspaceCard roles={roles} /> : null}
 
       <AppText step="section" accessibilityRole="header" style={[styles.sectionTitle, largeText && styles.responsiveSectionTitle]}>
         {t('m.home.quickActions')}
