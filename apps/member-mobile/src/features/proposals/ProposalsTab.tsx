@@ -37,15 +37,9 @@ export function ProposalsTab({ switcher }: { switcher: ReactNode }) {
         {(data) => (
           <>
             <SurfaceCard style={styles.card}>
-              <AppText step="body" tone="secondary">
-                {t('m.proposals.intro')}
-              </AppText>
               <Button label={t('m.proposals.newProposal')} icon="document-text-outline" onPress={() => router.push('/ideas/proposals/new')} />
             </SurfaceCard>
             <SearchField label={t('m.proposals.search')} value={text} onChangeText={setText} returnKeyType="search" />
-            <AppText step="caption" tone="muted">
-              {t('m.proposals.searchHint')}
-            </AppText>
             <ProposalList heading={t('m.proposals.areaHeading')} empty={words ? t('m.proposals.noMatches') : t('m.proposals.noArea')} items={data.area} />
             <ProposalList heading={t('m.proposals.mineHeading')} empty={words ? t('m.proposals.noMatches') : t('m.proposals.noMine')} items={data.mine} />
           </>

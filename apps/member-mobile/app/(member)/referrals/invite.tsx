@@ -96,9 +96,6 @@ function InviteBody({ code, onShared }: { code: string; onShared: () => void }) 
         <AppText step="section" accessibilityRole="header">
           {t('m.referrals.invitation')}
         </AppText>
-        <AppText step="body" tone="secondary">
-          {t('m.referrals.languageHint')}
-        </AppText>
         <SegmentedControl
           label={t('m.referrals.language')}
           selected={language}
@@ -147,9 +144,6 @@ function InviteBody({ code, onShared }: { code: string; onShared: () => void }) 
                 : t('m.referrals.notShared')}
           </Notice>
         ) : null}
-        <AppText step="secondary" tone="muted">
-          {t('m.referrals.privacyNote')}
-        </AppText>
       </SurfaceCard>
 
       <Notice tone="info">{t('m.referrals.noRewards')}</Notice>

@@ -26,9 +26,6 @@ export default function VolunteerScreen() {
       <FeatureQueryView feature="volunteer" query={opportunities}>
         {(items) => (
           <>
-            <AppText step="body" tone="secondary">
-              {t('m.volunteer.intro')}
-            </AppText>
             <SurfaceCard style={styles.rowCard}>
               <MenuRow
                 first

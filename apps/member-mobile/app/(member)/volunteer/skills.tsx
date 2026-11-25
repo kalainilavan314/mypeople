@@ -9,14 +9,12 @@ import {
   Button,
   Checkbox,
   confirmAction,
-  formatDate,
   Notice,
   Screen,
   SegmentedControl,
   SurfaceCard,
   useApiAction,
   useApiQuery,
-  useLanguage,
   useLocalized,
 } from '@my-people/mobile-ui';
 
@@ -47,7 +45,6 @@ export default function SkillsScreen() {
 
 function SkillsForm({ data, reload }: { data: VolunteerSkills; reload: () => void }) {
   const { t } = useTranslation();
-  const language = useLanguage();
   const localized = useLocalized();
   const [skills, setSkills] = useState<string[]>(data.profile?.skills ?? []);
   const [availability, setAvailability] = useState<VolunteerAvailability[]>(data.profile?.availability ?? []);
@@ -94,9 +91,6 @@ function SkillsForm({ data, reload }: { data: VolunteerSkills; reload: () => voi
 
   return (
     <View style={styles.form}>
-      <AppText step="body" tone="secondary">
-        {t('m.volunteer.skillsIntro')}
-      </AppText>
 
       <SurfaceCard style={styles.card}>
         <AppText step="section" accessibilityRole="header">
@@ -145,14 +139,6 @@ function SkillsForm({ data, reload }: { data: VolunteerSkills; reload: () => voi
 
       <SurfaceCard style={styles.card}>
         <Checkbox label={t('m.volunteer.consent')} checked={consent} onChange={setConsent} />
-        <AppText step="secondary" tone="muted">
-          {t('m.volunteer.consentNote')}
-        </AppText>
-        {data.profile ? (
-          <AppText step="caption" tone="muted">
-            {t('m.volunteer.consentedOn', { date: formatDate(data.profile.consentedAt, language) })}
-          </AppText>
-        ) : null}
       </SurfaceCard>
 
       {outcome === 'saved' ? <Notice tone="success">{t('m.volunteer.skillsSaved')}</Notice> : null}

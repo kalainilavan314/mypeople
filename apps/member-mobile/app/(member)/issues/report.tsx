@@ -220,9 +220,6 @@ function PlaceCard({ draft, options, error }: { draft: IssueDraft; options: Issu
           error={error ? t('m.issues.placeError') : null}
         />
       )}
-      <AppText step="secondary" tone="muted">
-        {t('m.issues.noGps')}
-      </AppText>
     </SurfaceCard>
   );
 }

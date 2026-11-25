@@ -77,9 +77,6 @@ function AreaBody({ area, initial }: { area: MyArea; initial: Segment }) {
             {gnName}
           </AppText>
         ) : null}
-        <AppText step="secondary" tone="secondary">
-          {t('m.issues.areaIntro')}
-        </AppText>
       </SurfaceCard>
 
       <Button label={t('m.issues.reportConcern')} icon="megaphone-outline" onPress={() => router.push('/issues/report')} />
