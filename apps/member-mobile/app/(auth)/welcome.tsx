@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { colors, control, radius, spacing } from '@my-people/design-tokens/mobile';
@@ -8,6 +8,7 @@ import { colors, control, radius, spacing } from '@my-people/design-tokens/mobil
 import { AppText, Button, Notice, Screen, readOfflineCard, type OfflineCardPreview, useLanguage, useSession } from '@my-people/mobile-ui';
 
 import { OfflineCard } from '@/features/membership/OfflineCard';
+import { WelcomeSlides } from '@/features/welcome/WelcomeSlides';
 import { chooseLanguage, type AppLanguage } from '@/lib/i18n';
 
 const LANGUAGES: { key: AppLanguage; label: string }[] = [
@@ -31,16 +32,7 @@ export default function WelcomeScreen() {
   return (
     <Screen edges={['top', 'bottom']} maxContentWidth={560}>
       <View style={styles.hero}>
-        {/* The party's flag with its emblem: red over yellow. */}
-        <View style={styles.flag}>
-          <Image
-            source={require('../../assets/brand/flag.png')}
-            style={styles.flagImage}
-            resizeMode="cover"
-            accessible={false}
-            importantForAccessibility="no"
-          />
-        </View>
+        <WelcomeSlides />
         <View style={styles.heroCopy}>
           <AppText step="page" accessibilityRole="header" style={styles.centred}>
             {t('m.welcome.title')}
@@ -116,10 +108,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryContainer,
     overflow: 'hidden',
   },
-  // A 2:1 frame holds the flag: on the web a bundled image otherwise keeps its own pixel height.
-  flag: { width: '100%', aspectRatio: 2, overflow: 'hidden' },
-  flagImage: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' },
-  // The three names sit centred under the flag, one above the other.
+  // The three names sit centred under the pictures, one above the other.
   heroCopy: { gap: spacing[1], padding: spacing[4], alignItems: 'center' },
   centred: { textAlign: 'center' },
   gap: { gap: spacing[3] },

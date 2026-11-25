@@ -152,9 +152,9 @@ export const comfortableTypeScale = {
   section: { size: 18, lineHeight: 27, weight: 700 },
   card: { size: 15, lineHeight: 22, weight: 600 },
   body: { size: 16, lineHeight: 24, weight: 400 },
-  label: { size: 14, lineHeight: 21, weight: 600 },
-  secondary: { size: 14, lineHeight: 21, weight: 400 },
-  caption: { size: 12, lineHeight: 18, weight: 600 },
+  label: { size: 15, lineHeight: 22, weight: 600 },
+  secondary: { size: 15, lineHeight: 22, weight: 400 },
+  caption: { size: 13, lineHeight: 19, weight: 600 },
   nav: { size: 12, lineHeight: 18, weight: 600 },
 } as const;
 

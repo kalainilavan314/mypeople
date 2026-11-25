@@ -25,9 +25,6 @@ export function IdeasTab({ switcher }: { switcher: ReactNode }) {
         {(data) => (
           <>
             <SurfaceCard style={styles.card}>
-              <AppText step="body" tone="secondary">
-                {t('m.ideas.intro')}
-              </AppText>
               <ModerationNotice />
               <Button label={t('m.ideas.shareIdea')} icon="bulb-outline" onPress={() => router.push('/ideas/new')} />
             </SurfaceCard>
